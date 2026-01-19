@@ -542,4 +542,56 @@ After security review:
 
 ---
 
+## Türkiye Özel: Bankacılık ve Fintech Güvenliği
+
+### BDDK Güvenlik Gereksinimleri
+```
+- [ ] Müşteri verileri AES-256 ile şifrelenmiş
+- [ ] TLS 1.3 zorunlu (TLS 1.2 minimum)
+- [ ] 2FA/MFA aktif (kritik işlemler için)
+- [ ] IP whitelist (admin paneli için)
+- [ ] WAF aktif (DDoS koruması)
+- [ ] Penetration test raporu güncel
+```
+
+### MASAK Güvenlik Kontrolleri
+```
+- [ ] Şüpheli işlem logları immutable
+- [ ] MASAK raporları şifrelenmiş kanal ile gönderiliyor
+- [ ] Yaptırım listesi güncellemeleri otomatik
+- [ ] PEP veritabanı erişimi güvenli
+```
+
+### Supabase Güvenlik (Türkiye Projeleri)
+```typescript
+// KRITIK: Row Level Security ZORUNLU
+// Müşteri verisi içeren TÜM tablolarda aktif olmalı
+
+// ❌ YANLIŞ: RLS kapalı
+// ALTER TABLE customers DISABLE ROW LEVEL SECURITY;
+
+// ✅ DOĞRU: RLS aktif + policy tanımlı
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "user_isolation" ON customers
+  FOR ALL USING (auth.uid() = user_id);
+```
+
+### Türkiye IP/Lokasyon Kontrolleri
+```typescript
+// Yurtdışı erişim kontrolü (gerekirse)
+const TURKEY_IP_RANGES = ['78.', '85.', '88.', '95.', '176.', '212.', '213.']
+
+function isTurkeyIP(ip: string): boolean {
+  return TURKEY_IP_RANGES.some(range => ip.startsWith(range))
+}
+
+// Kritik işlemlerde lokasyon doğrulama
+if (!isTurkeyIP(userIP) && transaction.amount > 10000) {
+  await requireAdditionalVerification(userId)
+}
+```
+
+---
+
 **Remember**: Security is not optional, especially for platforms handling real money. One vulnerability can cost users real financial losses. Be thorough, be paranoid, be proactive.

@@ -11,10 +11,20 @@ Located in `~/.claude/agents/`:
 | tdd-guide | Test-driven development | New features, bug fixes |
 | code-reviewer | Code review | After writing code |
 | security-reviewer | Security analysis | Before commits |
+| compliance-reviewer | BDDK/MASAK/KVKK uyum | RegTech projelerinde |
 | build-error-resolver | Fix build errors | When build fails |
 | e2e-runner | E2E testing | Critical user flows |
 | refactor-cleaner | Dead code cleanup | Code maintenance |
 | doc-updater | Documentation | Updating docs |
+
+## Digital Board Agents (Digimental)
+
+| Agent | Role | When to Use |
+|-------|------|-------------|
+| cfo-analyst | CFO - Finansal analiz | Maliyet/ROI hesaplaması |
+| cmo-analyst | CMO - Pazarlama | Marketing stratejisi |
+| cto-analyst | CTO - Teknik | architect + code-reviewer |
+| compliance-reviewer | Legal | BDDK/MASAK/KVKK uyum |
 
 ## Immediate Agent Usage
 

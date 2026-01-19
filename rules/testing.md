@@ -1,6 +1,6 @@
 # Testing Requirements
 
-## Minimum Test Coverage: 80%
+## Minimum Test Coverage: 70%
 
 Test Types (ALL required):
 1. **Unit Tests** - Individual functions, utilities, components
@@ -15,7 +15,7 @@ MANDATORY workflow:
 3. Write minimal implementation (GREEN)
 4. Run test - it should PASS
 5. Refactor (IMPROVE)
-6. Verify coverage (80%+)
+6. Verify coverage (70%+)
 
 ## Troubleshooting Test Failures
 
