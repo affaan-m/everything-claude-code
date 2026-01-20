@@ -31,6 +31,7 @@ everything-claude-code/
 |   |   |-- commands.md           # Docker commands
 |   |-- coding-standards.md       # Python/PEP8 conventions
 |   |-- backend-patterns.md       # ORM patterns, recordset operations
+|   |-- frontend-patterns.md      # OWL components, QWeb, hooks, services
 |   |-- project-guidelines-example.md
 |   |-- tdd-workflow/             # Two-phase testing methodology
 |   |-- security-review/          # Security checklist for Odoo

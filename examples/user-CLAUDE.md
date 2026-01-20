@@ -105,6 +105,7 @@ Located in `~/.claude/skills/`:
 | tdd-workflow/ | Two-phase testing methodology |
 | security-review/ | Security checklist for Odoo |
 | backend-patterns.md | ORM patterns, recordset operations |
+| frontend-patterns.md | OWL components, QWeb, hooks, services |
 | coding-standards.md | Python/PEP8 conventions |
 
 ---
