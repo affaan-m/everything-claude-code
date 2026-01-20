@@ -1,25 +1,26 @@
 ---
-description: Restate requirements, assess risks, and create step-by-step implementation plan. WAIT for user CONFIRM before touching any code.
+description: Restate requirements, assess risks, and create step-by-step implementation plan for Odoo modules. WAIT for user CONFIRM before touching any code.
 ---
 
 # Plan Command
 
-This command invokes the **planner** agent to create a comprehensive implementation plan before writing any code.
+This command invokes the **planner** agent to create a comprehensive implementation plan for Odoo modules before writing any code.
 
 ## What This Command Does
 
 1. **Restate Requirements** - Clarify what needs to be built
-2. **Identify Risks** - Surface potential issues and blockers
-3. **Create Step Plan** - Break down implementation into phases
-4. **Wait for Confirmation** - MUST receive user approval before proceeding
+2. **Design Module Structure** - Models, views, security, data
+3. **Identify Risks** - Surface potential issues and blockers
+4. **Create Step Plan** - Break down implementation into phases
+5. **Wait for Confirmation** - MUST receive user approval before proceeding
 
 ## When to Use
 
 Use `/plan` when:
-- Starting a new feature
-- Making significant architectural changes
-- Working on complex refactoring
-- Multiple files/components will be affected
+- Starting a new Odoo module
+- Adding significant features to existing module
+- Making architectural changes
+- Multiple models/views will be affected
 - Requirements are unclear or ambiguous
 
 ## How It Works
@@ -27,69 +28,175 @@ Use `/plan` when:
 The planner agent will:
 
 1. **Analyze the request** and restate requirements in clear terms
-2. **Break down into phases** with specific, actionable steps
-3. **Identify dependencies** between components
-4. **Assess risks** and potential blockers
-5. **Estimate complexity** (High/Medium/Low)
-6. **Present the plan** and WAIT for your explicit confirmation
+2. **Design module structure** with models, fields, relationships
+3. **Plan security** - ACLs, record rules, groups
+4. **Plan views** - Form, tree, search, actions, menus
+5. **Break down into phases** with specific, actionable steps
+6. **Assess risks** and potential blockers
+7. **Present the plan** and WAIT for your explicit confirmation
 
 ## Example Usage
 
 ```
-User: /plan I need to add real-time notifications when markets resolve
+User: /plan I need a module to track employee training certifications
 
 Agent (planner):
-# Implementation Plan: Real-Time Market Resolution Notifications
+# Implementation Plan: Employee Training Certifications Module
 
 ## Requirements Restatement
-- Send notifications to users when markets they're watching resolve
-- Support multiple notification channels (in-app, email, webhook)
-- Ensure notifications are delivered reliably
-- Include market outcome and user's position result
+- Track employee training certifications
+- Store certification name, date obtained, expiry date
+- Link certifications to employees
+- Notify when certifications are about to expire
+- Allow managers to view team certifications
+
+## Module Structure
+
+### __manifest__.py
+```python
+{
+    'name': 'HR Training Certifications',
+    'version': '15.0.1.0.0',
+    'category': 'Human Resources',
+    'summary': 'Track employee training certifications',
+    'depends': ['hr'],
+    'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
+        'data/ir_cron_data.xml',
+        'views/hr_certification_views.xml',
+        'views/hr_employee_views.xml',
+        'views/menu_views.xml',
+    ],
+    'installable': True,
+    'license': 'LGPL-3',
+}
+```
+
+### Models
+
+**hr.certification** (New Model)
+```python
+class HrCertification(models.Model):
+    _name = 'hr.certification'
+    _description = 'Employee Certification'
+
+    name = fields.Char(string="Certification Name", required=True)
+    employee_id = fields.Many2one('hr.employee', required=True, ondelete='cascade')
+    date_obtained = fields.Date(string="Date Obtained")
+    date_expiry = fields.Date(string="Expiry Date")
+    state = fields.Selection([
+        ('valid', 'Valid'),
+        ('expiring', 'Expiring Soon'),
+        ('expired', 'Expired'),
+    ], compute='_compute_state', store=True)
+    document = fields.Binary(string="Certificate Document")
+```
+
+**hr.employee** (Extension)
+```python
+class HrEmployee(models.Model):
+    _inherit = 'hr.employee'
+
+    certification_ids = fields.One2many('hr.certification', 'employee_id')
+    certification_count = fields.Integer(compute='_compute_certification_count')
+```
 
 ## Implementation Phases
 
-### Phase 1: Database Schema
-- Add notifications table with columns: id, user_id, market_id, type, status, created_at
-- Add user_notification_preferences table for channel preferences
-- Create indexes on user_id and market_id for performance
+### Phase 1: Database Schema & Models
+- Create hr_certification model
+- Add fields and computed methods
+- Extend hr.employee with One2many
+- Write Phase 1 database tests
 
-### Phase 2: Notification Service
-- Create notification service in lib/notifications.ts
-- Implement notification queue using BullMQ/Redis
-- Add retry logic for failed deliveries
-- Create notification templates
+### Phase 2: Security
+- Create security groups (User, Manager)
+- Define ir.model.access.csv
+- Add record rules for department visibility
+- Test access rights
 
-### Phase 3: Integration Points
-- Hook into market resolution logic (when status changes to "resolved")
-- Query all users with positions in market
-- Enqueue notifications for each user
+### Phase 3: Views & UI
+- Certification form view
+- Certification tree view
+- Search view with filters
+- Employee form extension (notebook page)
+- Action and menu items
 
-### Phase 4: Frontend Components
-- Create NotificationBell component in header
-- Add NotificationList modal
-- Implement real-time updates via Supabase subscriptions
-- Add notification preferences page
+### Phase 4: Business Logic
+- Compute certification state
+- Expiry notification cron job
+- Email template for notifications
+- Write Phase 2 unit tests
+
+## Security Plan
+
+**ir.model.access.csv:**
+```csv
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_certification_user,certification.user,model_hr_certification,hr.group_hr_user,1,1,1,0
+access_certification_manager,certification.manager,model_hr_certification,hr.group_hr_manager,1,1,1,1
+```
+
+**Record Rules:**
+- Users see own employee certifications
+- Managers see department certifications
 
 ## Dependencies
-- Redis (for queue)
-- Email service (SendGrid/Resend)
-- Supabase real-time subscriptions
+- hr (Human Resources core)
 
 ## Risks
-- HIGH: Email deliverability (SPF/DKIM required)
-- MEDIUM: Performance with 1000+ users per market
-- MEDIUM: Notification spam if markets resolve frequently
-- LOW: Real-time subscription overhead
+- HIGH: Cron job performance with many employees
+- MEDIUM: Email deliverability for notifications
+- LOW: Date timezone handling
+
+## Testing Plan
+- Phase 1: Direct DB tests for schema
+- Phase 2: TransactionCase for business logic
+- Phase 2: Security tests for access rights
 
 ## Estimated Complexity: MEDIUM
-- Backend: 4-6 hours
-- Frontend: 3-4 hours
-- Testing: 2-3 hours
-- Total: 9-13 hours
 
 **WAITING FOR CONFIRMATION**: Proceed with this plan? (yes/no/modify)
 ```
+
+## Odoo-Specific Planning
+
+The planner agent considers:
+
+### Module Structure
+```
+hr_certification/
+├── __init__.py
+├── __manifest__.py
+├── models/
+│   ├── __init__.py
+│   ├── hr_certification.py
+│   └── hr_employee.py
+├── views/
+│   ├── hr_certification_views.xml
+│   ├── hr_employee_views.xml
+│   └── menu_views.xml
+├── security/
+│   ├── security.xml
+│   └── ir.model.access.csv
+├── data/
+│   └── ir_cron_data.xml
+└── tests/
+    ├── __init__.py
+    ├── test_phase1_db.py
+    └── test_phase2_orm.py
+```
+
+### Security Considerations
+- ACLs for each new model
+- Record rules for data isolation
+- Group hierarchy
+- Field-level access with `groups` attribute
+
+### Testing Requirements
+- Phase 1: Database schema verification
+- Phase 2: ORM unit tests in `tests/` folder
 
 ## Important Notes
 
@@ -104,8 +211,8 @@ If you want changes, respond with:
 
 After planning:
 - Use `/tdd` to implement with test-driven development
-- Use `/build-and-fix` if build errors occur
 - Use `/code-review` to review completed implementation
+- Use `/test-coverage` to verify test coverage
 
 ## Related Agents
 

@@ -1,57 +1,56 @@
-# Contributing to Everything Claude Code
+# Contributing to Everything Claude Code for Odoo 15
 
-Thanks for wanting to contribute. This repo is meant to be a community resource for Claude Code users.
+Thanks for wanting to contribute. This repo is meant to be a community resource for Odoo developers using Claude Code.
 
 ## What We're Looking For
 
 ### Agents
 
-New agents that handle specific tasks well:
-- Language-specific reviewers (Python, Go, Rust)
-- Framework experts (Django, Rails, Laravel, Spring)
-- DevOps specialists (Kubernetes, Terraform, CI/CD)
-- Domain experts (ML pipelines, data engineering, mobile)
+New agents that handle Odoo-specific tasks:
+- Odoo version specialists (14.0, 16.0, 17.0 patterns)
+- Module experts (Accounting, HR, Manufacturing, Inventory)
+- Integration specialists (REST API, XMLRPC, external systems)
+- Localization experts (specific country adaptations)
 
 ### Skills
 
 Workflow definitions and domain knowledge:
-- Language best practices
-- Framework patterns
+- ORM advanced patterns
+- Performance optimization techniques
+- Module migration guides
 - Testing strategies
-- Architecture guides
-- Domain-specific knowledge
+- Security hardening
 
 ### Commands
 
-Slash commands that invoke useful workflows:
+Slash commands that invoke useful Odoo workflows:
+- Module scaffolding
+- Data migration
+- Database analysis
 - Deployment commands
-- Testing commands
-- Documentation commands
-- Code generation commands
 
 ### Hooks
 
-Useful automations:
-- Linting/formatting hooks
-- Security checks
-- Validation hooks
-- Notification hooks
+Useful automations for Python/Odoo:
+- Linting hooks (flake8, pylint)
+- Security checks (sudo audit, ACL validation)
+- XML validation
+- Manifest validation
 
 ### Rules
 
 Always-follow guidelines:
-- Security rules
-- Code style rules
+- Odoo coding standards
+- Security rules for specific domains
+- Performance requirements
 - Testing requirements
-- Naming conventions
 
 ### MCP Configurations
 
 New or improved MCP server configs:
-- Database integrations
-- Cloud provider MCPs
-- Monitoring tools
-- Communication tools
+- Database tools for PostgreSQL
+- Odoo-specific integrations
+- Documentation tools
 
 ---
 
@@ -67,14 +66,14 @@ cd everything-claude-code
 ### 2. Create a branch
 
 ```bash
-git checkout -b add-python-reviewer
+git checkout -b add-manufacturing-skill
 ```
 
 ### 3. Add your contribution
 
 Place files in the appropriate directory:
 - `agents/` for new agents
-- `skills/` for skills (can be single .md or directory)
+- `skills/` for skills (can be single .md or directory with SKILL.md)
 - `commands/` for slash commands
 - `rules/` for rule files
 - `hooks/` for hook configurations
@@ -95,7 +94,7 @@ model: sonnet
 Instructions here...
 ```
 
-**Skills** should be clear and actionable:
+**Skills** should be clear and actionable with Odoo examples:
 
 ```markdown
 # Skill Name
@@ -104,9 +103,14 @@ Instructions here...
 
 ...
 
-## How It Works
+## Odoo Patterns
 
-...
+```python
+# Example code
+class MyModel(models.Model):
+    _name = 'my.model'
+    _description = 'My Model'
+```
 
 ## Examples
 
@@ -122,7 +126,7 @@ description: Brief description of command
 
 # Command Name
 
-Detailed instructions...
+Detailed instructions for Odoo workflow...
 ```
 
 **Hooks** should include descriptions:
@@ -131,25 +135,40 @@ Detailed instructions...
 {
   "matcher": "...",
   "hooks": [...],
-  "description": "What this hook does"
+  "description": "What this hook does for Odoo development"
 }
 ```
 
-### 5. Test your contribution
+### 5. Use environment variable placeholders
 
-Make sure your config works with Claude Code before submitting.
+For Docker commands, use:
+- `$ODOO_CONTAINER` instead of hardcoded container names
+- `$ODOO_DB` instead of hardcoded database names
+- `$ODOO_PORT` for port references
 
-### 6. Submit a PR
+```bash
+# Good
+docker exec $ODOO_CONTAINER odoo -d $ODOO_DB -u module_name --stop-after-init
+
+# Bad
+docker exec odoo15_web odoo -d production_db -u module_name --stop-after-init
+```
+
+### 6. Test your contribution
+
+Make sure your config works with Claude Code on an actual Odoo 15 project before submitting.
+
+### 7. Submit a PR
 
 ```bash
 git add .
-git commit -m "Add Python code reviewer agent"
-git push origin add-python-reviewer
+git commit -m "Add Manufacturing module skill"
+git push origin add-manufacturing-skill
 ```
 
 Then open a PR with:
 - What you added
-- Why it's useful
+- Why it's useful for Odoo development
 - How you tested it
 
 ---
@@ -160,9 +179,11 @@ Then open a PR with:
 
 - Keep configs focused and modular
 - Include clear descriptions
-- Test before submitting
+- Test on real Odoo 15 projects before submitting
 - Follow existing patterns
 - Document any dependencies
+- Use Python/PEP8 conventions in code examples
+- Include ACL and security considerations
 
 ### Don't
 
@@ -171,21 +192,56 @@ Then open a PR with:
 - Submit untested configs
 - Create duplicate functionality
 - Add configs that require specific paid services without alternatives
+- Use `print()` in examples (use `_logger.debug`)
+- Use raw SQL without justification
+
+---
+
+## Python/Odoo Code Style
+
+When adding code examples:
+
+```python
+# Good - follows Odoo conventions
+from odoo import api, fields, models
+from odoo.exceptions import UserError, ValidationError
+
+import logging
+_logger = logging.getLogger(__name__)
+
+class MyModel(models.Model):
+    _name = 'my.model'
+    _description = 'My Model Description'
+
+    name = fields.Char(string='Name', required=True)
+    partner_id = fields.Many2one('res.partner', ondelete='restrict')
+
+    @api.depends('partner_id')
+    def _compute_display_name(self):
+        for record in self:
+            record.display_name = record.name
+
+    def action_confirm(self):
+        """Confirm the record."""
+        _logger.debug('Confirming record %s', self.id)
+        self.write({'state': 'confirmed'})
+```
 
 ---
 
 ## File Naming
 
-- Use lowercase with hyphens: `python-reviewer.md`
-- Be descriptive: `tdd-workflow.md` not `workflow.md`
+- Use lowercase with hyphens: `manufacturing-patterns.md`
+- Be descriptive: `two-phase-testing.md` not `testing.md`
 - Match the agent/skill name to the filename
+- For Odoo-specific content, prefix appropriately: `odoo-15-developer/`
 
 ---
 
 ## Questions?
 
-Open an issue or reach out on X: [@affaanmustafa](https://x.com/affaanmustafa)
+Open an issue if you have questions about contributing.
 
 ---
 
-Thanks for contributing. Let's build a great resource together.
+Thanks for contributing. Let's build a great resource for Odoo developers using Claude Code.

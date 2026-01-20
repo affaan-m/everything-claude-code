@@ -1,16 +1,14 @@
-# Project Guidelines Skill (Example)
+# Project Guidelines Skill (Odoo Module Example)
 
-This is an example of a project-specific skill. Use this as a template for your own projects.
-
-Based on a real production application: [Zenith](https://zenith.chat) - AI-powered customer discovery platform.
+This is an example of a project-specific skill for Odoo 15 module development. Use this as a template for your own projects.
 
 ---
 
 ## When to Use
 
-Reference this skill when working on the specific project it's designed for. Project skills contain:
+Reference this skill when working on Odoo module projects. Project skills contain:
 - Architecture overview
-- File structure
+- Module structure
 - Code patterns
 - Testing requirements
 - Deployment workflow
@@ -20,198 +18,201 @@ Reference this skill when working on the specific project it's designed for. Pro
 ## Architecture Overview
 
 **Tech Stack:**
-- **Frontend**: Next.js 15 (App Router), TypeScript, React
-- **Backend**: FastAPI (Python), Pydantic models
-- **Database**: Supabase (PostgreSQL)
-- **AI**: Claude API with tool calling and structured output
-- **Deployment**: Google Cloud Run
-- **Testing**: Playwright (E2E), pytest (backend), React Testing Library
+- **Backend**: Odoo 15 (Python 3.8+)
+- **Database**: PostgreSQL 13+
+- **ORM**: Odoo ORM
+- **Testing**: TransactionCase (Two-Phase Testing)
+- **Environment**: Docker containers
+- **Version Control**: Git
+
+**Environment Variables (placeholders):**
+```bash
+ODOO_CONTAINER=odoo_web          # Docker container name
+ODOO_DB=odoo_db                  # Database name
+ODOO_PORT=8069                   # Odoo port
+POSTGRES_CONTAINER=odoo_postgres  # PostgreSQL container
+```
 
 **Services:**
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                         Frontend                            │
-│  Next.js 15 + TypeScript + TailwindCSS                     │
-│  Deployed: Vercel / Cloud Run                              │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                         Backend                             │
-│  FastAPI + Python 3.11 + Pydantic                          │
-│  Deployed: Cloud Run                                       │
+│                      Odoo Container                          │
+│  Python 3.8 + Odoo 15 + Custom Modules                      │
+│  Deployed: Docker / Cloud VM                                │
 └─────────────────────────────────────────────────────────────┘
                               │
               ┌───────────────┼───────────────┐
               ▼               ▼               ▼
         ┌──────────┐   ┌──────────┐   ┌──────────┐
-        │ Supabase │   │  Claude  │   │  Redis   │
-        │ Database │   │   API    │   │  Cache   │
+        │PostgreSQL│   │  Redis   │   │ External │
+        │ Database │   │  Cache   │   │   APIs   │
         └──────────┘   └──────────┘   └──────────┘
 ```
 
 ---
 
-## File Structure
+## Module Structure
 
 ```
-project/
-├── frontend/
-│   └── src/
-│       ├── app/              # Next.js app router pages
-│       │   ├── api/          # API routes
-│       │   ├── (auth)/       # Auth-protected routes
-│       │   └── workspace/    # Main app workspace
-│       ├── components/       # React components
-│       │   ├── ui/           # Base UI components
-│       │   ├── forms/        # Form components
-│       │   └── layouts/      # Layout components
-│       ├── hooks/            # Custom React hooks
-│       ├── lib/              # Utilities
-│       ├── types/            # TypeScript definitions
-│       └── config/           # Configuration
-│
-├── backend/
-│   ├── routers/              # FastAPI route handlers
-│   ├── models.py             # Pydantic models
-│   ├── main.py               # FastAPI app entry
-│   ├── auth_system.py        # Authentication
-│   ├── database.py           # Database operations
-│   ├── services/             # Business logic
-│   └── tests/                # pytest tests
-│
-├── deploy/                   # Deployment configs
-├── docs/                     # Documentation
-└── scripts/                  # Utility scripts
+custom_module/
+├── __init__.py
+├── __manifest__.py
+├── models/
+│   ├── __init__.py
+│   ├── custom_model.py         # Main model
+│   └── custom_line.py          # Line model
+├── views/
+│   ├── custom_model_views.xml  # Form, tree, search views
+│   └── menu_views.xml          # Menu items
+├── security/
+│   ├── ir.model.access.csv     # ACLs
+│   └── security_rules.xml      # Record rules
+├── data/
+│   └── data.xml                # Initial data
+├── wizards/
+│   ├── __init__.py
+│   └── import_wizard.py        # Transient models
+├── reports/
+│   └── report_template.xml
+├── static/
+│   └── description/
+│       └── icon.png
+└── tests/
+    ├── __init__.py
+    ├── test_phase1_db.py       # Phase 1: Direct DB tests
+    └── test_phase2_orm.py      # Phase 2: ORM tests
 ```
 
 ---
 
 ## Code Patterns
 
-### API Response Format (FastAPI)
+### Model Definition
 
 ```python
-from pydantic import BaseModel
-from typing import Generic, TypeVar, Optional
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError, ValidationError
 
-T = TypeVar('T')
+import logging
+_logger = logging.getLogger(__name__)
 
-class ApiResponse(BaseModel, Generic[T]):
-    success: bool
-    data: Optional[T] = None
-    error: Optional[str] = None
+class CustomModel(models.Model):
+    _name = 'custom.model'
+    _description = 'Custom Model'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'create_date desc'
 
-    @classmethod
-    def ok(cls, data: T) -> "ApiResponse[T]":
-        return cls(success=True, data=data)
+    name = fields.Char(
+        string="Name",
+        required=True,
+        index=True,
+        tracking=True,
+    )
 
-    @classmethod
-    def fail(cls, error: str) -> "ApiResponse[T]":
-        return cls(success=False, error=error)
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('confirmed', 'Confirmed'),
+        ('done', 'Done'),
+    ], default='draft', tracking=True)
+
+    partner_id = fields.Many2one(
+        'res.partner',
+        string="Partner",
+        ondelete='restrict',
+        index=True,
+    )
+
+    line_ids = fields.One2many(
+        'custom.model.line',
+        'parent_id',
+        string="Lines",
+    )
+
+    total = fields.Float(
+        compute='_compute_total',
+        store=True,
+    )
+
+    @api.depends('line_ids.amount')
+    def _compute_total(self):
+        for record in self:
+            record.total = sum(record.line_ids.mapped('amount'))
+
+    def action_confirm(self):
+        self.ensure_one()
+        if self.state != 'draft':
+            raise UserError(_("Only draft records can be confirmed"))
+        self.write({'state': 'confirmed'})
+
+    def action_done(self):
+        self.ensure_one()
+        if self.state != 'confirmed':
+            raise UserError(_("Only confirmed records can be marked done"))
+        self.write({'state': 'done'})
 ```
 
-### Frontend API Calls (TypeScript)
+### Security Files
 
-```typescript
-interface ApiResponse<T> {
-  success: boolean
-  data?: T
-  error?: string
-}
-
-async function fetchApi<T>(
-  endpoint: string,
-  options?: RequestInit
-): Promise<ApiResponse<T>> {
-  try {
-    const response = await fetch(`/api${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-    })
-
-    if (!response.ok) {
-      return { success: false, error: `HTTP ${response.status}` }
-    }
-
-    return await response.json()
-  } catch (error) {
-    return { success: false, error: String(error) }
-  }
-}
+**ir.model.access.csv:**
+```csv
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_custom_model_user,custom.model.user,model_custom_model,base.group_user,1,1,1,0
+access_custom_model_manager,custom.model.manager,model_custom_model,custom_module.group_manager,1,1,1,1
 ```
 
-### Claude AI Integration (Structured Output)
+**security_rules.xml:**
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="rule_custom_model_user_own" model="ir.rule">
+        <field name="name">Custom Model: User sees own records</field>
+        <field name="model_id" ref="model_custom_model"/>
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>
+```
+
+### Manifest File
 
 ```python
-from anthropic import Anthropic
-from pydantic import BaseModel
+{
+    'name': 'Custom Module',
+    'version': '15.0.1.0.0',
+    'category': 'Custom',
+    'summary': 'Custom module for business needs',
+    'description': """
+Custom Module
+=============
 
-class AnalysisResult(BaseModel):
-    summary: str
-    key_points: list[str]
-    confidence: float
+Features:
+* Feature 1
+* Feature 2
 
-async def analyze_with_claude(content: str) -> AnalysisResult:
-    client = Anthropic()
-
-    response = client.messages.create(
-        model="claude-sonnet-4-5-20250514",
-        max_tokens=1024,
-        messages=[{"role": "user", "content": content}],
-        tools=[{
-            "name": "provide_analysis",
-            "description": "Provide structured analysis",
-            "input_schema": AnalysisResult.model_json_schema()
-        }],
-        tool_choice={"type": "tool", "name": "provide_analysis"}
-    )
-
-    # Extract tool use result
-    tool_use = next(
-        block for block in response.content
-        if block.type == "tool_use"
-    )
-
-    return AnalysisResult(**tool_use.input)
-```
-
-### Custom Hooks (React)
-
-```typescript
-import { useState, useCallback } from 'react'
-
-interface UseApiState<T> {
-  data: T | null
-  loading: boolean
-  error: string | null
-}
-
-export function useApi<T>(
-  fetchFn: () => Promise<ApiResponse<T>>
-) {
-  const [state, setState] = useState<UseApiState<T>>({
-    data: null,
-    loading: false,
-    error: null,
-  })
-
-  const execute = useCallback(async () => {
-    setState(prev => ({ ...prev, loading: true, error: null }))
-
-    const result = await fetchFn()
-
-    if (result.success) {
-      setState({ data: result.data!, loading: false, error: null })
-    } else {
-      setState({ data: null, loading: false, error: result.error! })
-    }
-  }, [fetchFn])
-
-  return { ...state, execute }
+Configuration:
+1. Go to Settings
+2. Configure options
+    """,
+    'author': 'Company Name',
+    'website': 'https://example.com',
+    'depends': [
+        'base',
+        'mail',
+    ],
+    'data': [
+        # Security first
+        'security/ir.model.access.csv',
+        'security/security_rules.xml',
+        # Then views
+        'views/custom_model_views.xml',
+        'views/menu_views.xml',
+        # Then data
+        'data/data.xml',
+    ],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+    'license': 'LGPL-3',
 }
 ```
 
@@ -219,67 +220,101 @@ export function useApi<T>(
 
 ## Testing Requirements
 
-### Backend (pytest)
+### Two-Phase Testing
+
+**Phase 1: Direct Database Tests (test_phase1_db.py):**
+```python
+from odoo.tests.common import TransactionCase
+
+class TestPhase1DirectDB(TransactionCase):
+    """Phase 1: Direct database verification."""
+
+    def test_table_exists(self):
+        """Verify table was created."""
+        self.env.cr.execute("""
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables
+                WHERE table_name = 'custom_model'
+            )
+        """)
+        self.assertTrue(self.env.cr.fetchone()[0])
+
+    def test_columns_exist(self):
+        """Verify all columns exist."""
+        self.env.cr.execute("""
+            SELECT column_name FROM information_schema.columns
+            WHERE table_name = 'custom_model'
+        """)
+        columns = [r[0] for r in self.env.cr.fetchall()]
+        self.assertIn('name', columns)
+        self.assertIn('state', columns)
+        self.assertIn('partner_id', columns)
+```
+
+**Phase 2: ORM Unit Tests (test_phase2_orm.py):**
+```python
+from odoo.tests.common import TransactionCase
+from odoo.exceptions import UserError, ValidationError
+
+class TestPhase2ORM(TransactionCase):
+    """Phase 2: ORM-level unit tests."""
+
+    def setUp(self):
+        super().setUp()
+        self.partner = self.env['res.partner'].create({
+            'name': 'Test Partner'
+        })
+
+    def test_create_record(self):
+        """Test record creation."""
+        record = self.env['custom.model'].create({
+            'name': 'Test Record',
+            'partner_id': self.partner.id,
+        })
+        self.assertEqual(record.state, 'draft')
+        self.assertEqual(record.partner_id, self.partner)
+
+    def test_workflow_confirm(self):
+        """Test confirmation workflow."""
+        record = self.env['custom.model'].create({'name': 'Test'})
+        record.action_confirm()
+        self.assertEqual(record.state, 'confirmed')
+
+    def test_confirm_non_draft_raises_error(self):
+        """Test confirming non-draft record raises error."""
+        record = self.env['custom.model'].create({'name': 'Test'})
+        record.action_confirm()
+        with self.assertRaises(UserError):
+            record.action_confirm()
+
+    def test_computed_total(self):
+        """Test computed total field."""
+        record = self.env['custom.model'].create({'name': 'Test'})
+        self.env['custom.model.line'].create([
+            {'parent_id': record.id, 'amount': 100},
+            {'parent_id': record.id, 'amount': 200},
+        ])
+        self.assertEqual(record.total, 300)
+```
+
+### Running Tests
 
 ```bash
-# Run all tests
-poetry run pytest tests/
-
-# Run with coverage
-poetry run pytest tests/ --cov=. --cov-report=html
+# Run all tests for module
+docker exec $ODOO_CONTAINER python3 -m pytest \
+    /mnt/extra-addons/custom_module/tests/ -v
 
 # Run specific test file
-poetry run pytest tests/test_auth.py -v
-```
+docker exec $ODOO_CONTAINER python3 -m pytest \
+    /mnt/extra-addons/custom_module/tests/test_phase2_orm.py -v
 
-**Test structure:**
-```python
-import pytest
-from httpx import AsyncClient
-from main import app
-
-@pytest.fixture
-async def client():
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        yield ac
-
-@pytest.mark.asyncio
-async def test_health_check(client: AsyncClient):
-    response = await client.get("/health")
-    assert response.status_code == 200
-    assert response.json()["status"] == "healthy"
-```
-
-### Frontend (React Testing Library)
-
-```bash
-# Run tests
-npm run test
-
-# Run with coverage
-npm run test -- --coverage
-
-# Run E2E tests
-npm run test:e2e
-```
-
-**Test structure:**
-```typescript
-import { render, screen, fireEvent } from '@testing-library/react'
-import { WorkspacePanel } from './WorkspacePanel'
-
-describe('WorkspacePanel', () => {
-  it('renders workspace correctly', () => {
-    render(<WorkspacePanel />)
-    expect(screen.getByRole('main')).toBeInTheDocument()
-  })
-
-  it('handles session creation', async () => {
-    render(<WorkspacePanel />)
-    fireEvent.click(screen.getByText('New Session'))
-    expect(await screen.findByText('Session created')).toBeInTheDocument()
-  })
-})
+# Run with Odoo test runner
+docker exec $ODOO_CONTAINER python3 /usr/bin/odoo \
+    -c /etc/odoo/odoo.conf \
+    -d $ODOO_DB \
+    --test-enable \
+    --stop-after-init \
+    -i custom_module
 ```
 
 ---
@@ -289,57 +324,69 @@ describe('WorkspacePanel', () => {
 ### Pre-Deployment Checklist
 
 - [ ] All tests passing locally
-- [ ] `npm run build` succeeds (frontend)
-- [ ] `poetry run pytest` passes (backend)
-- [ ] No hardcoded secrets
-- [ ] Environment variables documented
-- [ ] Database migrations ready
+- [ ] Module installs cleanly
+- [ ] Module upgrades cleanly
+- [ ] No Odoo log errors
+- [ ] Security files complete
+- [ ] No hardcoded credentials
 
 ### Deployment Commands
 
 ```bash
-# Build and deploy frontend
-cd frontend && npm run build
-gcloud run deploy frontend --source .
+# Update module
+docker exec $ODOO_CONTAINER python3 /usr/bin/odoo \
+    -c /etc/odoo/odoo.conf \
+    -d $ODOO_DB \
+    -u custom_module \
+    --stop-after-init
 
-# Build and deploy backend
-cd backend
-gcloud run deploy backend --source .
+# Install module
+docker exec $ODOO_CONTAINER python3 /usr/bin/odoo \
+    -c /etc/odoo/odoo.conf \
+    -d $ODOO_DB \
+    -i custom_module \
+    --stop-after-init
+
+# Restart Odoo
+docker restart $ODOO_CONTAINER
 ```
 
-### Environment Variables
+### Environment Setup
 
 ```bash
-# Frontend (.env.local)
-NEXT_PUBLIC_API_URL=https://api.example.com
-NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+# Docker environment
+export ODOO_CONTAINER=odoo_web
+export ODOO_DB=odoo_db
+export ODOO_PORT=8069
+export POSTGRES_CONTAINER=odoo_postgres
 
-# Backend (.env)
-DATABASE_URL=postgresql://...
-ANTHROPIC_API_KEY=sk-ant-...
-SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_KEY=eyJ...
+# Access Odoo shell
+docker exec -it $ODOO_CONTAINER python3 /usr/bin/odoo shell \
+    -c /etc/odoo/odoo.conf -d $ODOO_DB
+
+# Access PostgreSQL
+docker exec -it $POSTGRES_CONTAINER psql -U odoo -d $ODOO_DB
 ```
 
 ---
 
 ## Critical Rules
 
-1. **No emojis** in code, comments, or documentation
-2. **Immutability** - never mutate objects or arrays
-3. **TDD** - write tests before implementation
-4. **80% coverage** minimum
-5. **Many small files** - 200-400 lines typical, 800 max
-6. **No console.log** in production code
-7. **Proper error handling** with try/catch
-8. **Input validation** with Pydantic/Zod
+1. **_description required** on all models
+2. **ondelete required** on all Many2one fields
+3. **Security files first** in manifest data list
+4. **Two-phase testing** - Phase 1 DB, Phase 2 ORM
+5. **_logger.debug** for debugging, not _logger.info
+6. **Parameterized queries** for all raw SQL
+7. **Document sudo()** usage with justification
+8. **No print()** statements - use logging
 
 ---
 
 ## Related Skills
 
-- `coding-standards.md` - General coding best practices
-- `backend-patterns.md` - API and database patterns
-- `frontend-patterns.md` - React and Next.js patterns
-- `tdd-workflow/` - Test-driven development methodology
+- `coding-standards.md` - Python/Odoo coding best practices
+- `backend-patterns.md` - ORM and database patterns
+- `security-review/` - Security review checklist
+- `tdd-workflow/` - Two-phase testing methodology
+- `odoo-15-developer/` - Comprehensive Odoo 15 guide

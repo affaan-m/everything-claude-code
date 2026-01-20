@@ -1,9 +1,9 @@
-# User-Level CLAUDE.md Example
+# User-Level CLAUDE.md Example for Odoo 15 Development
 
-This is an example user-level CLAUDE.md file. Place at `~/.claude/CLAUDE.md`.
+This is an example user-level CLAUDE.md file for Odoo developers. Place at `~/.claude/CLAUDE.md`.
 
 User-level configs apply globally across all projects. Use for:
-- Personal coding preferences
+- Personal coding preferences for Python/Odoo
 - Universal rules you always want enforced
 - Links to your modular rules
 
@@ -11,14 +11,26 @@ User-level configs apply globally across all projects. Use for:
 
 ## Core Philosophy
 
-You are Claude Code. I use specialized agents and skills for complex tasks.
+You are Claude Code configured for Odoo 15 development. I use specialized agents and skills for complex tasks.
 
 **Key Principles:**
 1. **Agent-First**: Delegate to specialized agents for complex work
 2. **Parallel Execution**: Use Task tool with multiple agents when possible
-3. **Plan Before Execute**: Use Plan Mode for complex operations
-4. **Test-Driven**: Write tests before implementation
-5. **Security-First**: Never compromise on security
+3. **Plan Before Execute**: Use Plan Mode for complex module implementations
+4. **Two-Phase Testing**: Phase 1 (DB verification), Phase 2 (ORM unit tests)
+5. **Security-First**: ACLs, record rules, documented sudo()
+
+---
+
+## Environment Configuration
+
+```bash
+# Set these in your shell profile
+export ODOO_CONTAINER=odoo15_web
+export ODOO_DB=odoo15_db
+export ODOO_PORT=8069
+export POSTGRES_CONTAINER=odoo15_postgres
+```
 
 ---
 
@@ -28,13 +40,13 @@ Detailed guidelines are in `~/.claude/rules/`:
 
 | Rule File | Contents |
 |-----------|----------|
-| security.md | Security checks, secret management |
-| coding-style.md | Immutability, file organization, error handling |
-| testing.md | TDD workflow, 80% coverage requirement |
+| security.md | ACLs, record rules, sudo documentation |
+| coding-style.md | ORM patterns, module organization |
+| testing.md | Two-phase TDD, 80% coverage requirement |
 | git-workflow.md | Commit format, PR workflow |
-| agents.md | Agent orchestration, when to use which agent |
-| patterns.md | API response, repository patterns |
-| performance.md | Model selection, context management |
+| agents.md | Agent orchestration, Odoo-specific tasks |
+| patterns.md | Computed fields, wizards, controllers |
+| performance.md | N+1 prevention, prefetching, batch operations |
 
 ---
 
@@ -44,44 +56,56 @@ Located in `~/.claude/agents/`:
 
 | Agent | Purpose |
 |-------|---------|
-| planner | Feature implementation planning |
-| architect | System design and architecture |
-| tdd-guide | Test-driven development |
-| code-reviewer | Code review for quality/security |
-| security-reviewer | Security vulnerability analysis |
-| build-error-resolver | Build error resolution |
-| e2e-runner | Playwright E2E testing |
-| refactor-cleaner | Dead code cleanup |
-| doc-updater | Documentation updates |
+| planner | Module implementation planning |
+| architect | System design, inheritance patterns |
+| tdd-guide | Two-phase test-driven development |
+| code-reviewer | ACL, ORM, security review |
+| security-reviewer | ACL validation, sudo audit |
+| e2e-runner | Playwright E2E with Odoo selectors |
+| refactor-cleaner | Dead code cleanup with vulture |
+| doc-updater | Documentation from __manifest__.py |
 
 ---
 
 ## Personal Preferences
 
 ### Code Style
-- No emojis in code, comments, or documentation
-- Prefer immutability - never mutate objects or arrays
+- Use `_logger.debug` for debugging, never `print()`
+- ORM methods over raw SQL
 - Many small files over few large files
-- 200-400 lines typical, 800 max per file
+- 200-400 lines typical, 800 max per model file
+- All models have `_description` attribute
+
+### Python/Odoo Conventions
+- snake_case for variables and functions
+- PascalCase for classes
+- `_name` uses dot notation: `hr.employee.certification`
+- Prefix private methods with underscore: `_compute_state()`
 
 ### Git
 - Conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `test:`
-- Always test locally before committing
-- Small, focused commits
+- Always test module locally before committing
+- Small, focused commits by component (models, views, security)
 
 ### Testing
-- TDD: Write tests first
+- Two-Phase TDD: Write tests first
 - 80% minimum coverage
-- Unit + integration + E2E for critical flows
+- Use TransactionCase with setUpClass
+- Test data factories for reusable fixtures
 
 ---
 
-## Editor Integration
+## Skills
 
-I use Zed as my primary editor:
-- Agent Panel for file tracking
-- CMD+Shift+R for command palette
-- Vim mode enabled
+Located in `~/.claude/skills/`:
+
+| Skill | Purpose |
+|-------|---------|
+| odoo-15-developer/ | Complete Odoo 15 development reference |
+| tdd-workflow/ | Two-phase testing methodology |
+| security-review/ | Security checklist for Odoo |
+| backend-patterns.md | ORM patterns, recordset operations |
+| coding-standards.md | Python/PEP8 conventions |
 
 ---
 
@@ -89,10 +113,13 @@ I use Zed as my primary editor:
 
 You are successful when:
 - All tests pass (80%+ coverage)
-- No security vulnerabilities
-- Code is readable and maintainable
-- User requirements are met
+- ACLs defined for all new models
+- Record rules for sensitive data
+- sudo() usage documented
+- No `_logger.info` for debugging (use `_logger.debug`)
+- No `print()` statements
+- Module installs and updates cleanly
 
 ---
 
-**Philosophy**: Agent-first design, parallel execution, plan before action, test before code, security always.
+**Philosophy**: Agent-first design, parallel execution, plan before action, two-phase testing, security always.

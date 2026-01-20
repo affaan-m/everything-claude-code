@@ -1,39 +1,39 @@
 ---
-description: Enforce test-driven development workflow. Scaffold interfaces, generate tests FIRST, then implement minimal code to pass. Ensure 80%+ coverage.
+description: Enforce test-driven development workflow for Odoo modules. Write tests FIRST using Two-Phase Testing methodology, then implement minimal code to pass.
 ---
 
 # TDD Command
 
-This command invokes the **tdd-guide** agent to enforce test-driven development methodology.
+This command invokes the **tdd-guide** agent to enforce test-driven development methodology for Odoo modules.
 
 ## What This Command Does
 
-1. **Scaffold Interfaces** - Define types/interfaces first
-2. **Generate Tests First** - Write failing tests (RED)
-3. **Implement Minimal Code** - Write just enough to pass (GREEN)
-4. **Refactor** - Improve code while keeping tests green (REFACTOR)
-5. **Verify Coverage** - Ensure 80%+ test coverage
+1. **Define Model Structure** - Design models/fields first
+2. **Write Phase 1 Tests** - Direct database tests with real data
+3. **Write Phase 2 Tests** - ORM unit tests (TransactionCase)
+4. **Implement Minimal Code** - Write just enough to pass (GREEN)
+5. **Refactor** - Improve code while keeping tests green
 
 ## When to Use
 
 Use `/tdd` when:
-- Implementing new features
-- Adding new functions/components
+- Implementing new Odoo models or features
+- Adding new methods or computed fields
 - Fixing bugs (write test that reproduces bug first)
-- Refactoring existing code
+- Refactoring existing module code
 - Building critical business logic
 
 ## How It Works
 
 The tdd-guide agent will:
 
-1. **Define interfaces** for inputs/outputs
-2. **Write tests that will FAIL** (because code doesn't exist yet)
-3. **Run tests** and verify they fail for the right reason
-4. **Write minimal implementation** to make tests pass
-5. **Run tests** and verify they pass
-6. **Refactor** code while keeping tests green
-7. **Check coverage** and add more tests if below 80%
+1. **Design model structure** with fields and relationships
+2. **Write Phase 1 tests** using direct database verification
+3. **Write Phase 2 tests** using TransactionCase
+4. **Run tests** and verify they fail for the right reason
+5. **Write minimal implementation** to make tests pass
+6. **Run tests** and verify they pass
+7. **Refactor** code while keeping tests green
 
 ## TDD Cycle
 
@@ -46,135 +46,160 @@ REFACTOR: Improve code, keep tests passing
 REPEAT:   Next feature/scenario
 ```
 
+## Two-Phase Testing
+
+### Phase 1: Direct Database Testing
+
+```python
+# .0temp/test_credit_limit.py
+"""Phase 1: Verify database schema and business logic with real data."""
+import sys
+sys.path.append('/odoo')
+import odoo
+
+# Test with REAL database data
+# Verify table columns exist
+# Verify constraints work
+# Verify computed fields calculate correctly
+```
+
+### Phase 2: ORM Unit Tests
+
+```python
+# module_name/tests/test_partner_credit.py
+from odoo.tests import TransactionCase, tagged
+from odoo.exceptions import ValidationError
+
+@tagged('post_install', '-at_install')
+class TestPartnerCredit(TransactionCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.partner = cls.env['res.partner'].create({
+            'name': 'Test Partner',
+            'credit_limit': 1000.0,
+        })
+
+    def test_credit_limit_calculation(self):
+        """Credit limit should be applied correctly."""
+        available_credit = self.partner.calculate_available_credit()
+        self.assertEqual(available_credit, 1000.0)
+
+    def test_credit_with_debt(self):
+        """Available credit should decrease with outstanding debt."""
+        self.partner.write({'total_due': 300.0})
+        available_credit = self.partner.calculate_available_credit()
+        self.assertEqual(available_credit, 700.0)
+
+    def test_negative_credit_raises_error(self):
+        """Negative credit limit should raise ValidationError."""
+        with self.assertRaises(ValidationError):
+            self.partner.write({'credit_limit': -100.0})
+```
+
 ## Example Usage
 
 ```
-User: /tdd I need a function to calculate market liquidity score
+User: /tdd I need a method to calculate available credit for partners
 
 Agent (tdd-guide):
-# TDD Session: Market Liquidity Score Calculator
+# TDD Session: Partner Available Credit Calculator
 
-## Step 1: Define Interface (SCAFFOLD)
+## Step 1: Design Interface
 
-```typescript
-// lib/liquidity.ts
-export interface MarketData {
-  totalVolume: number
-  bidAskSpread: number
-  activeTraders: number
-  lastTradeTime: Date
-}
+```python
+# models/res_partner.py
+from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
-export function calculateLiquidityScore(market: MarketData): number {
-  // TODO: Implementation
-  throw new Error('Not implemented')
-}
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
+
+    credit_limit = fields.Float(string="Credit Limit")
+    total_due = fields.Float(string="Total Due")
+    available_credit = fields.Float(
+        compute='_compute_available_credit',
+        string="Available Credit"
+    )
+
+    @api.depends('credit_limit', 'total_due')
+    def _compute_available_credit(self) -> None:
+        """Calculate available credit for partner."""
+        raise NotImplementedError("TODO: Implement")
 ```
 
-## Step 2: Write Failing Test (RED)
+## Step 2: Write Failing Tests (RED)
 
-```typescript
-// lib/liquidity.test.ts
-import { calculateLiquidityScore } from './liquidity'
+```python
+# tests/test_partner_credit.py
+from odoo.tests import TransactionCase, tagged
+from odoo.exceptions import ValidationError
 
-describe('calculateLiquidityScore', () => {
-  it('should return high score for liquid market', () => {
-    const market = {
-      totalVolume: 100000,
-      bidAskSpread: 0.01,
-      activeTraders: 500,
-      lastTradeTime: new Date()
-    }
+@tagged('post_install', '-at_install')
+class TestPartnerCredit(TransactionCase):
 
-    const score = calculateLiquidityScore(market)
+    def _create_partner(self, **kwargs):
+        """Factory for creating test partners."""
+        values = {
+            'name': 'Test Partner',
+            'credit_limit': 1000.0,
+            'total_due': 0.0,
+        }
+        values.update(kwargs)
+        return self.env['res.partner'].create(values)
 
-    expect(score).toBeGreaterThan(80)
-    expect(score).toBeLessThanOrEqual(100)
-  })
+    def test_available_credit_full_limit(self):
+        """Partner with no debt should have full credit available."""
+        partner = self._create_partner(credit_limit=1000.0)
+        self.assertEqual(partner.available_credit, 1000.0)
 
-  it('should return low score for illiquid market', () => {
-    const market = {
-      totalVolume: 100,
-      bidAskSpread: 0.5,
-      activeTraders: 2,
-      lastTradeTime: new Date(Date.now() - 86400000) // 1 day ago
-    }
+    def test_available_credit_with_debt(self):
+        """Available credit should decrease with outstanding debt."""
+        partner = self._create_partner(credit_limit=1000.0, total_due=300.0)
+        self.assertEqual(partner.available_credit, 700.0)
 
-    const score = calculateLiquidityScore(market)
-
-    expect(score).toBeLessThan(30)
-    expect(score).toBeGreaterThanOrEqual(0)
-  })
-
-  it('should handle edge case: zero volume', () => {
-    const market = {
-      totalVolume: 0,
-      bidAskSpread: 0,
-      activeTraders: 0,
-      lastTradeTime: new Date()
-    }
-
-    const score = calculateLiquidityScore(market)
-
-    expect(score).toBe(0)
-  })
-})
+    def test_available_credit_zero_when_exceeded(self):
+        """Available credit should be zero when debt exceeds limit."""
+        partner = self._create_partner(credit_limit=1000.0, total_due=1500.0)
+        self.assertEqual(partner.available_credit, 0.0)
 ```
 
 ## Step 3: Run Tests - Verify FAIL
 
 ```bash
-npm test lib/liquidity.test.ts
+docker exec $ODOO_CONTAINER python3 -m odoo.tests.loader \
+    custom_module.tests.test_partner_credit
 
-FAIL lib/liquidity.test.ts
-  ✕ should return high score for liquid market (2 ms)
-    Error: Not implemented
+FAIL: test_available_credit_full_limit
+  NotImplementedError: TODO: Implement
 
-1 test failed, 0 passed
+1 test failed
 ```
 
 ✅ Tests fail as expected. Ready to implement.
 
 ## Step 4: Implement Minimal Code (GREEN)
 
-```typescript
-// lib/liquidity.ts
-export function calculateLiquidityScore(market: MarketData): number {
-  // Handle zero volume edge case
-  if (market.totalVolume === 0) {
-    return 0
-  }
-
-  // Calculate component scores (0-100 scale)
-  const volumeScore = Math.min(market.totalVolume / 1000, 100)
-  const spreadScore = Math.max(100 - (market.bidAskSpread * 1000), 0)
-  const traderScore = Math.min(market.activeTraders / 10, 100)
-
-  // Recent activity bonus
-  const hoursSinceLastTrade = (Date.now() - market.lastTradeTime.getTime()) / (1000 * 60 * 60)
-  const recencyScore = Math.max(100 - (hoursSinceLastTrade * 10), 0)
-
-  // Weighted average
-  const score = (
-    volumeScore * 0.4 +
-    spreadScore * 0.3 +
-    traderScore * 0.2 +
-    recencyScore * 0.1
-  )
-
-  return Math.min(Math.max(score, 0), 100) // Clamp to 0-100
-}
+```python
+# models/res_partner.py
+@api.depends('credit_limit', 'total_due')
+def _compute_available_credit(self) -> None:
+    """Calculate available credit for partner."""
+    for partner in self:
+        available = partner.credit_limit - (partner.total_due or 0.0)
+        partner.available_credit = max(0.0, available)
 ```
 
 ## Step 5: Run Tests - Verify PASS
 
 ```bash
-npm test lib/liquidity.test.ts
+docker exec $ODOO_CONTAINER python3 -m odoo.tests.loader \
+    custom_module.tests.test_partner_credit
 
-PASS lib/liquidity.test.ts
-  ✓ should return high score for liquid market (3 ms)
-  ✓ should return low score for illiquid market (2 ms)
-  ✓ should handle edge case: zero volume (1 ms)
+PASS: test_available_credit_full_limit
+PASS: test_available_credit_with_debt
+PASS: test_available_credit_zero_when_exceeded
 
 3 tests passed
 ```
@@ -183,74 +208,44 @@ PASS lib/liquidity.test.ts
 
 ## Step 6: Refactor (IMPROVE)
 
-```typescript
-// lib/liquidity.ts - Refactored with constants and better readability
-const WEIGHTS = {
-  VOLUME: 0.4,
-  SPREAD: 0.3,
-  TRADERS: 0.2,
-  RECENCY: 0.1,
-} as const
+```python
+# models/res_partner.py
+MINIMUM_CREDIT_BUFFER = 50.0
 
-const SCALE_FACTORS = {
-  VOLUME: 1000,
-  SPREAD: 1000,
-  TRADERS: 10,
-  RECENCY_PENALTY: 10,
-} as const
+@api.depends('credit_limit', 'total_due')
+def _compute_available_credit(self) -> None:
+    """Calculate available credit for partner.
 
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max)
-}
-
-export function calculateLiquidityScore(market: MarketData): number {
-  if (market.totalVolume === 0) return 0
-
-  const volumeScore = Math.min(market.totalVolume / SCALE_FACTORS.VOLUME, 100)
-  const spreadScore = clamp(100 - (market.bidAskSpread * SCALE_FACTORS.SPREAD), 0, 100)
-  const traderScore = Math.min(market.activeTraders / SCALE_FACTORS.TRADERS, 100)
-
-  const hoursSinceLastTrade = (Date.now() - market.lastTradeTime.getTime()) / (1000 * 60 * 60)
-  const recencyScore = clamp(100 - (hoursSinceLastTrade * SCALE_FACTORS.RECENCY_PENALTY), 0, 100)
-
-  const weightedScore =
-    volumeScore * WEIGHTS.VOLUME +
-    spreadScore * WEIGHTS.SPREAD +
-    traderScore * WEIGHTS.TRADERS +
-    recencyScore * WEIGHTS.RECENCY
-
-  return clamp(weightedScore, 0, 100)
-}
-```
-
-## Step 7: Verify Tests Still Pass
-
-```bash
-npm test lib/liquidity.test.ts
-
-PASS lib/liquidity.test.ts
-  ✓ should return high score for liquid market (3 ms)
-  ✓ should return low score for illiquid market (2 ms)
-  ✓ should handle edge case: zero volume (1 ms)
-
-3 tests passed
-```
-
-✅ Refactoring complete, tests still passing!
-
-## Step 8: Check Coverage
-
-```bash
-npm test -- --coverage lib/liquidity.test.ts
-
-File           | % Stmts | % Branch | % Funcs | % Lines
----------------|---------|----------|---------|--------
-liquidity.ts   |   100   |   100    |   100   |   100
-
-Coverage: 100% ✅ (Target: 80%)
+    Returns the available credit limit minus outstanding debt,
+    with a minimum buffer for safety.
+    """
+    for partner in self:
+        outstanding = partner.total_due or 0.0
+        available = partner.credit_limit - outstanding - MINIMUM_CREDIT_BUFFER
+        partner.available_credit = max(0.0, available)
 ```
 
 ✅ TDD session complete!
+```
+
+## Running Tests
+
+### Phase 1: Direct Database Testing
+```bash
+# Copy test script and run
+docker cp .0temp/test_implementation.py $ODOO_CONTAINER:/tmp/
+docker exec $ODOO_CONTAINER python3 /tmp/test_implementation.py
+```
+
+### Phase 2: Odoo Standard Tests
+```bash
+# Run specific test
+docker exec $ODOO_CONTAINER python3 -m odoo.tests.loader \
+    module_name.tests.test_file
+
+# Run all module tests
+docker exec $ODOO_CONTAINER python3 -m odoo.tests.loader \
+    module_name.tests
 ```
 
 ## TDD Best Practices
@@ -260,60 +255,37 @@ Coverage: 100% ✅ (Target: 80%)
 - ✅ Run tests and verify they FAIL before implementing
 - ✅ Write minimal code to make tests pass
 - ✅ Refactor only after tests are green
-- ✅ Add edge cases and error scenarios
-- ✅ Aim for 80%+ coverage (100% for critical code)
+- ✅ Use TransactionCase for automatic rollback
+- ✅ Create test data factories for reusability
+- ✅ Test business behavior, not implementation
 
 **DON'T:**
 - ❌ Write implementation before tests
 - ❌ Skip running tests after each change
-- ❌ Write too much code at once
-- ❌ Ignore failing tests
-- ❌ Test implementation details (test behavior)
+- ❌ Use raw SQL in tests (use ORM)
+- ❌ Test private methods directly
+- ❌ Ignore Phase 1 testing
 - ❌ Mock everything (prefer integration tests)
 
-## Test Types to Include
+## Test Types
 
-**Unit Tests** (Function-level):
-- Happy path scenarios
-- Edge cases (empty, null, max values)
-- Error conditions
-- Boundary values
+**Phase 1 - Direct Database:**
+- Schema verification
+- Constraint validation
+- Real data scenarios
+- Edge case discovery
 
-**Integration Tests** (Component-level):
-- API endpoints
-- Database operations
-- External service calls
-- React components with hooks
-
-**E2E Tests** (use `/e2e` command):
-- Critical user flows
-- Multi-step processes
-- Full stack integration
-
-## Coverage Requirements
-
-- **80% minimum** for all code
-- **100% required** for:
-  - Financial calculations
-  - Authentication logic
-  - Security-critical code
-  - Core business logic
-
-## Important Notes
-
-**MANDATORY**: Tests must be written BEFORE implementation. The TDD cycle is:
-
-1. **RED** - Write failing test
-2. **GREEN** - Implement to pass
-3. **REFACTOR** - Improve code
-
-Never skip the RED phase. Never write code before tests.
+**Phase 2 - ORM Unit Tests:**
+- CRUD operations
+- Computed fields
+- Workflow transitions
+- Constraint validations
+- Access rights
 
 ## Integration with Other Commands
 
 - Use `/plan` first to understand what to build
 - Use `/tdd` to implement with tests
-- Use `/build-and-fix` if build errors occur
 - Use `/code-review` to review implementation
 - Use `/test-coverage` to verify coverage
 
@@ -322,5 +294,5 @@ Never skip the RED phase. Never write code before tests.
 This command invokes the `tdd-guide` agent located at:
 `~/.claude/agents/tdd-guide.md`
 
-And can reference the `tdd-workflow` skill at:
+And references the `tdd-workflow` skill at:
 `~/.claude/skills/tdd-workflow/`

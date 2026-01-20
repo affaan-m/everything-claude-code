@@ -1,409 +1,499 @@
 ---
 name: tdd-workflow
-description: Use this skill when writing new features, fixing bugs, or refactoring code. Enforces test-driven development with 80%+ coverage including unit, integration, and E2E tests.
+description: Use this skill when writing new features, fixing bugs, or refactoring Odoo modules. Enforces Two-Phase Testing methodology with direct database verification (Phase 1) and ORM unit tests (Phase 2).
 ---
 
-# Test-Driven Development Workflow
+# Odoo Two-Phase Testing Workflow
 
-This skill ensures all code development follows TDD principles with comprehensive test coverage.
+This skill ensures all Odoo module development follows the Two-Phase Testing methodology for comprehensive test coverage.
 
 ## When to Activate
 
-- Writing new features or functionality
+- Writing new models or features
 - Fixing bugs or issues
 - Refactoring existing code
-- Adding API endpoints
-- Creating new components
+- Adding fields or methods
+- Creating wizards or reports
 
 ## Core Principles
 
-### 1. Tests BEFORE Code
+### 1. Two-Phase Testing is Mandatory
+
+Every feature must have both:
+- **Phase 1**: Direct database tests (verify schema)
+- **Phase 2**: ORM unit tests (verify business logic)
+
+### 2. Tests BEFORE Code
+
 ALWAYS write tests first, then implement code to make tests pass.
 
-### 2. Coverage Requirements
-- Minimum 80% coverage (unit + integration + E2E)
-- All edge cases covered
-- Error scenarios tested
-- Boundary conditions verified
+### 3. Test Structure
 
-### 3. Test Types
+All tests inherit from `TransactionCase` for automatic rollback.
 
-#### Unit Tests
-- Individual functions and utilities
-- Component logic
-- Pure functions
-- Helpers and utilities
+## Two-Phase Testing Methodology
 
-#### Integration Tests
-- API endpoints
-- Database operations
-- Service interactions
-- External API calls
+### Phase 1: Direct Database Tests
 
-#### E2E Tests (Playwright)
-- Critical user flows
-- Complete workflows
-- Browser automation
-- UI interactions
+**Purpose**: Verify database schema is correct before testing business logic.
 
-## TDD Workflow Steps
+```python
+from odoo.tests.common import TransactionCase
 
-### Step 1: Write User Journeys
-```
-As a [role], I want to [action], so that [benefit]
+class TestPhase1DirectDB(TransactionCase):
+    """Phase 1: Direct database verification.
 
-Example:
-As a user, I want to search for markets semantically,
-so that I can find relevant markets even without exact keywords.
-```
+    These tests verify the database schema is correctly created
+    before testing business logic through the ORM.
+    """
 
-### Step 2: Generate Test Cases
-For each user journey, create comprehensive test cases:
+    def test_01_table_exists(self):
+        """Verify main table was created."""
+        self.env.cr.execute("""
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables
+                WHERE table_name = 'custom_model'
+            )
+        """)
+        exists = self.env.cr.fetchone()[0]
+        self.assertTrue(exists, "Table custom_model should exist")
 
-```typescript
-describe('Semantic Search', () => {
-  it('returns relevant markets for query', async () => {
-    // Test implementation
-  })
+    def test_02_required_columns_exist(self):
+        """Verify all required columns exist with correct types."""
+        self.env.cr.execute("""
+            SELECT column_name, data_type, is_nullable
+            FROM information_schema.columns
+            WHERE table_name = 'custom_model'
+            ORDER BY ordinal_position
+        """)
+        columns = {r[0]: {'type': r[1], 'nullable': r[2]} for r in self.env.cr.fetchall()}
 
-  it('handles empty query gracefully', async () => {
-    // Test edge case
-  })
+        # Check required columns
+        self.assertIn('id', columns)
+        self.assertIn('name', columns)
+        self.assertIn('state', columns)
+        self.assertIn('create_uid', columns)
+        self.assertIn('write_uid', columns)
 
-  it('falls back to substring search when Redis unavailable', async () => {
-    // Test fallback behavior
-  })
+    def test_03_foreign_keys_exist(self):
+        """Verify foreign key constraints."""
+        self.env.cr.execute("""
+            SELECT
+                tc.constraint_name,
+                kcu.column_name,
+                ccu.table_name AS foreign_table
+            FROM information_schema.table_constraints tc
+            JOIN information_schema.key_column_usage kcu
+                ON tc.constraint_name = kcu.constraint_name
+            JOIN information_schema.constraint_column_usage ccu
+                ON ccu.constraint_name = tc.constraint_name
+            WHERE tc.table_name = 'custom_model'
+            AND tc.constraint_type = 'FOREIGN KEY'
+        """)
+        fks = {r[1]: r[2] for r in self.env.cr.fetchall()}
 
-  it('sorts results by similarity score', async () => {
-    // Test sorting logic
-  })
-})
-```
+        self.assertIn('partner_id', fks)
+        self.assertEqual(fks['partner_id'], 'res_partner')
 
-### Step 3: Run Tests (They Should Fail)
-```bash
-npm test
-# Tests should fail - we haven't implemented yet
-```
+    def test_04_indexes_exist(self):
+        """Verify expected indexes exist for performance."""
+        self.env.cr.execute("""
+            SELECT indexname, indexdef
+            FROM pg_indexes
+            WHERE tablename = 'custom_model'
+        """)
+        indexes = [r[0] for r in self.env.cr.fetchall()]
 
-### Step 4: Implement Code
-Write minimal code to make tests pass:
+        # Check for index on frequently searched fields
+        # Odoo creates indexes named: <table>_<column>_index
+        self.assertTrue(
+            any('name' in idx for idx in indexes),
+            "Index on name column should exist"
+        )
 
-```typescript
-// Implementation guided by tests
-export async function searchMarkets(query: string) {
-  // Implementation here
-}
-```
+    def test_05_sql_constraints_work(self):
+        """Verify SQL constraints are enforced."""
+        from psycopg2 import IntegrityError
 
-### Step 5: Run Tests Again
-```bash
-npm test
-# Tests should now pass
-```
-
-### Step 6: Refactor
-Improve code quality while keeping tests green:
-- Remove duplication
-- Improve naming
-- Optimize performance
-- Enhance readability
-
-### Step 7: Verify Coverage
-```bash
-npm run test:coverage
-# Verify 80%+ coverage achieved
-```
-
-## Testing Patterns
-
-### Unit Test Pattern (Jest/Vitest)
-```typescript
-import { render, screen, fireEvent } from '@testing-library/react'
-import { Button } from './Button'
-
-describe('Button Component', () => {
-  it('renders with correct text', () => {
-    render(<Button>Click me</Button>)
-    expect(screen.getByText('Click me')).toBeInTheDocument()
-  })
-
-  it('calls onClick when clicked', () => {
-    const handleClick = jest.fn()
-    render(<Button onClick={handleClick}>Click</Button>)
-
-    fireEvent.click(screen.getByRole('button'))
-
-    expect(handleClick).toHaveBeenCalledTimes(1)
-  })
-
-  it('is disabled when disabled prop is true', () => {
-    render(<Button disabled>Click</Button>)
-    expect(screen.getByRole('button')).toBeDisabled()
-  })
-})
+        with self.assertRaises(IntegrityError):
+            self.env.cr.execute("""
+                INSERT INTO custom_model (name, state, create_uid, write_uid, create_date, write_date)
+                VALUES (NULL, 'draft', 1, 1, NOW(), NOW())
+            """)
 ```
 
-### API Integration Test Pattern
-```typescript
-import { NextRequest } from 'next/server'
-import { GET } from './route'
+### Phase 2: ORM Unit Tests
 
-describe('GET /api/markets', () => {
-  it('returns markets successfully', async () => {
-    const request = new NextRequest('http://localhost/api/markets')
-    const response = await GET(request)
-    const data = await response.json()
+**Purpose**: Test business logic through Odoo's ORM layer.
 
-    expect(response.status).toBe(200)
-    expect(data.success).toBe(true)
-    expect(Array.isArray(data.data)).toBe(true)
-  })
+```python
+from odoo.tests.common import TransactionCase
+from odoo.exceptions import UserError, ValidationError
 
-  it('validates query parameters', async () => {
-    const request = new NextRequest('http://localhost/api/markets?limit=invalid')
-    const response = await GET(request)
+class TestPhase2ORM(TransactionCase):
+    """Phase 2: ORM-level unit tests.
 
-    expect(response.status).toBe(400)
-  })
+    These tests verify business logic works correctly
+    through the Odoo ORM layer.
+    """
 
-  it('handles database errors gracefully', async () => {
-    // Mock database failure
-    const request = new NextRequest('http://localhost/api/markets')
-    // Test error handling
-  })
-})
-```
+    def setUp(self):
+        super().setUp()
+        # Create test fixtures
+        self.partner = self.env['res.partner'].create({
+            'name': 'Test Partner'
+        })
+        self.user = self.env['res.users'].create({
+            'name': 'Test User',
+            'login': 'test_user@example.com',
+        })
 
-### E2E Test Pattern (Playwright)
-```typescript
-import { test, expect } from '@playwright/test'
+    # === CRUD Tests ===
 
-test('user can search and filter markets', async ({ page }) => {
-  // Navigate to markets page
-  await page.goto('/')
-  await page.click('a[href="/markets"]')
+    def test_create_with_defaults(self):
+        """Test record creation with default values."""
+        record = self.env['custom.model'].create({
+            'name': 'Test Record'
+        })
 
-  // Verify page loaded
-  await expect(page.locator('h1')).toContainText('Markets')
+        self.assertTrue(record.id)
+        self.assertEqual(record.name, 'Test Record')
+        self.assertEqual(record.state, 'draft')
 
-  // Search for markets
-  await page.fill('input[placeholder="Search markets"]', 'election')
+    def test_create_with_all_fields(self):
+        """Test record creation with all fields."""
+        record = self.env['custom.model'].create({
+            'name': 'Full Record',
+            'partner_id': self.partner.id,
+            'state': 'draft',
+        })
 
-  // Wait for debounce and results
-  await page.waitForTimeout(600)
+        self.assertEqual(record.partner_id, self.partner)
 
-  // Verify search results displayed
-  const results = page.locator('[data-testid="market-card"]')
-  await expect(results).toHaveCount(5, { timeout: 5000 })
+    def test_read_record(self):
+        """Test reading record fields."""
+        record = self.env['custom.model'].create({'name': 'Read Test'})
+        data = record.read(['name', 'state'])[0]
 
-  // Verify results contain search term
-  const firstResult = results.first()
-  await expect(firstResult).toContainText('election', { ignoreCase: true })
+        self.assertEqual(data['name'], 'Read Test')
+        self.assertEqual(data['state'], 'draft')
 
-  // Filter by status
-  await page.click('button:has-text("Active")')
+    def test_write_record(self):
+        """Test updating record."""
+        record = self.env['custom.model'].create({'name': 'Original'})
+        record.write({'name': 'Updated'})
 
-  // Verify filtered results
-  await expect(results).toHaveCount(3)
-})
+        self.assertEqual(record.name, 'Updated')
 
-test('user can create a new market', async ({ page }) => {
-  // Login first
-  await page.goto('/creator-dashboard')
+    def test_unlink_draft_record(self):
+        """Test deleting draft record."""
+        record = self.env['custom.model'].create({'name': 'To Delete'})
+        record_id = record.id
+        record.unlink()
 
-  // Fill market creation form
-  await page.fill('input[name="name"]', 'Test Market')
-  await page.fill('textarea[name="description"]', 'Test description')
-  await page.fill('input[name="endDate"]', '2025-12-31')
+        self.assertFalse(self.env['custom.model'].browse(record_id).exists())
 
-  // Submit form
-  await page.click('button[type="submit"]')
+    def test_unlink_non_draft_raises_error(self):
+        """Test that non-draft records cannot be deleted."""
+        record = self.env['custom.model'].create({'name': 'Protected'})
+        record.action_confirm()
 
-  // Verify success message
-  await expect(page.locator('text=Market created successfully')).toBeVisible()
+        with self.assertRaises(UserError):
+            record.unlink()
 
-  // Verify redirect to market page
-  await expect(page).toHaveURL(/\/markets\/test-market/)
-})
+    # === Workflow Tests ===
+
+    def test_workflow_draft_to_confirmed(self):
+        """Test confirmation workflow."""
+        record = self.env['custom.model'].create({'name': 'Workflow Test'})
+        self.assertEqual(record.state, 'draft')
+
+        record.action_confirm()
+
+        self.assertEqual(record.state, 'confirmed')
+
+    def test_workflow_confirmed_to_done(self):
+        """Test completion workflow."""
+        record = self.env['custom.model'].create({'name': 'Complete Test'})
+        record.action_confirm()
+        record.action_done()
+
+        self.assertEqual(record.state, 'done')
+
+    def test_workflow_invalid_transition_raises_error(self):
+        """Test invalid workflow transition raises error."""
+        record = self.env['custom.model'].create({'name': 'Invalid Test'})
+
+        with self.assertRaises(UserError):
+            record.action_done()  # Cannot go from draft to done directly
+
+    # === Computed Field Tests ===
+
+    def test_computed_total_empty_lines(self):
+        """Test computed total with no lines."""
+        record = self.env['custom.model'].create({'name': 'Empty'})
+
+        self.assertEqual(record.total, 0)
+
+    def test_computed_total_with_lines(self):
+        """Test computed total calculation."""
+        record = self.env['custom.model'].create({'name': 'With Lines'})
+        self.env['custom.model.line'].create([
+            {'parent_id': record.id, 'amount': 100.0},
+            {'parent_id': record.id, 'amount': 250.0},
+            {'parent_id': record.id, 'amount': 50.0},
+        ])
+
+        self.assertEqual(record.total, 400.0)
+
+    # === Constraint Tests ===
+
+    def test_constraint_name_required(self):
+        """Test that name is required."""
+        with self.assertRaises(Exception):
+            self.env['custom.model'].create({})
+
+    def test_constraint_dates_validation(self):
+        """Test date validation constraint."""
+        with self.assertRaises(ValidationError):
+            self.env['custom.model'].create({
+                'name': 'Date Test',
+                'date_start': '2024-12-31',
+                'date_end': '2024-01-01',  # End before start
+            })
+
+    # === Access Rights Tests ===
+
+    def test_user_can_create(self):
+        """Test user can create records."""
+        record = self.env['custom.model'].with_user(self.user).create({
+            'name': 'User Created'
+        })
+        self.assertTrue(record.id)
+
+    def test_user_cannot_delete_others_record(self):
+        """Test user cannot delete another user's record."""
+        admin = self.env.ref('base.user_admin')
+        record = self.env['custom.model'].with_user(admin).create({
+            'name': 'Admin Record'
+        })
+
+        # User should not be able to delete admin's record
+        # (depends on record rules configuration)
 ```
 
 ## Test File Organization
 
 ```
-src/
-├── components/
-│   ├── Button/
-│   │   ├── Button.tsx
-│   │   ├── Button.test.tsx          # Unit tests
-│   │   └── Button.stories.tsx       # Storybook
-│   └── MarketCard/
-│       ├── MarketCard.tsx
-│       └── MarketCard.test.tsx
-├── app/
-│   └── api/
-│       └── markets/
-│           ├── route.ts
-│           └── route.test.ts         # Integration tests
-└── e2e/
-    ├── markets.spec.ts               # E2E tests
-    ├── trading.spec.ts
-    └── auth.spec.ts
+module_name/
+└── tests/
+    ├── __init__.py
+    ├── test_phase1_db.py          # Phase 1: Direct DB tests
+    ├── test_phase2_orm.py         # Phase 2: ORM tests
+    ├── test_phase2_workflow.py    # Phase 2: Workflow tests
+    └── common.py                  # Shared fixtures and utilities
 ```
 
-## Mocking External Services
+### Common Test Fixtures
 
-### Supabase Mock
-```typescript
-jest.mock('@/lib/supabase', () => ({
-  supabase: {
-    from: jest.fn(() => ({
-      select: jest.fn(() => ({
-        eq: jest.fn(() => Promise.resolve({
-          data: [{ id: 1, name: 'Test Market' }],
-          error: null
-        }))
-      }))
-    }))
-  }
-}))
+```python
+# tests/common.py
+from odoo.tests.common import TransactionCase
+
+class CustomModelTestCase(TransactionCase):
+    """Base test case with common fixtures."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # Create shared test data
+        cls.partner = cls.env['res.partner'].create({
+            'name': 'Test Partner',
+            'email': 'test@example.com',
+        })
+        cls.product = cls.env['product.product'].create({
+            'name': 'Test Product',
+        })
+
+    def create_test_record(self, **kwargs):
+        """Helper to create test records with defaults."""
+        defaults = {
+            'name': 'Test Record',
+            'partner_id': self.partner.id,
+        }
+        defaults.update(kwargs)
+        return self.env['custom.model'].create(defaults)
 ```
 
-### Redis Mock
-```typescript
-jest.mock('@/lib/redis', () => ({
-  searchMarketsByVector: jest.fn(() => Promise.resolve([
-    { slug: 'test-market', similarity_score: 0.95 }
-  ])),
-  checkRedisHealth: jest.fn(() => Promise.resolve({ connected: true }))
-}))
-```
+## Running Tests
 
-### OpenAI Mock
-```typescript
-jest.mock('@/lib/openai', () => ({
-  generateEmbedding: jest.fn(() => Promise.resolve(
-    new Array(1536).fill(0.1) // Mock 1536-dim embedding
-  ))
-}))
-```
+### Docker Commands
 
-## Test Coverage Verification
-
-### Run Coverage Report
 ```bash
-npm run test:coverage
+# Run all tests for module
+docker exec $ODOO_CONTAINER python3 -m pytest \
+    /mnt/extra-addons/module_name/tests/ -v
+
+# Run only Phase 1 tests
+docker exec $ODOO_CONTAINER python3 -m pytest \
+    /mnt/extra-addons/module_name/tests/test_phase1_db.py -v
+
+# Run only Phase 2 tests
+docker exec $ODOO_CONTAINER python3 -m pytest \
+    /mnt/extra-addons/module_name/tests/test_phase2_orm.py -v
+
+# Run specific test method
+docker exec $ODOO_CONTAINER python3 -m pytest \
+    /mnt/extra-addons/module_name/tests/test_phase2_orm.py::TestPhase2ORM::test_workflow_confirm -v
+
+# Run with coverage
+docker exec $ODOO_CONTAINER python3 -m pytest \
+    /mnt/extra-addons/module_name/tests/ \
+    --cov=/mnt/extra-addons/module_name \
+    --cov-report=html
 ```
 
-### Coverage Thresholds
-```json
-{
-  "jest": {
-    "coverageThresholds": {
-      "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80,
-        "statements": 80
-      }
-    }
-  }
-}
-```
+### Odoo Test Runner
 
-## Common Testing Mistakes to Avoid
-
-### ❌ WRONG: Testing Implementation Details
-```typescript
-// Don't test internal state
-expect(component.state.count).toBe(5)
-```
-
-### ✅ CORRECT: Test User-Visible Behavior
-```typescript
-// Test what users see
-expect(screen.getByText('Count: 5')).toBeInTheDocument()
-```
-
-### ❌ WRONG: Brittle Selectors
-```typescript
-// Breaks easily
-await page.click('.css-class-xyz')
-```
-
-### ✅ CORRECT: Semantic Selectors
-```typescript
-// Resilient to changes
-await page.click('button:has-text("Submit")')
-await page.click('[data-testid="submit-button"]')
-```
-
-### ❌ WRONG: No Test Isolation
-```typescript
-// Tests depend on each other
-test('creates user', () => { /* ... */ })
-test('updates same user', () => { /* depends on previous test */ })
-```
-
-### ✅ CORRECT: Independent Tests
-```typescript
-// Each test sets up its own data
-test('creates user', () => {
-  const user = createTestUser()
-  // Test logic
-})
-
-test('updates user', () => {
-  const user = createTestUser()
-  // Update logic
-})
-```
-
-## Continuous Testing
-
-### Watch Mode During Development
 ```bash
-npm test -- --watch
-# Tests run automatically on file changes
+# Install module with tests
+docker exec $ODOO_CONTAINER python3 /usr/bin/odoo \
+    -c /etc/odoo/odoo.conf \
+    -d $ODOO_DB \
+    --test-enable \
+    --stop-after-init \
+    -i module_name
+
+# Update module with tests
+docker exec $ODOO_CONTAINER python3 /usr/bin/odoo \
+    -c /etc/odoo/odoo.conf \
+    -d $ODOO_DB \
+    --test-enable \
+    --stop-after-init \
+    -u module_name
 ```
 
-### Pre-Commit Hook
+## TDD Workflow Steps
+
+### Step 1: Write User Story
+```
+As a [role], I want to [action], so that [benefit]
+
+Example:
+As a manager, I want to approve pending orders,
+so that they can be processed for fulfillment.
+```
+
+### Step 2: Write Phase 1 Tests
+```python
+# Verify database schema supports the feature
+def test_approval_columns_exist(self):
+    self.env.cr.execute("""
+        SELECT column_name FROM information_schema.columns
+        WHERE table_name = 'custom_model'
+    """)
+    columns = [r[0] for r in self.env.cr.fetchall()]
+    self.assertIn('approved_by', columns)
+    self.assertIn('approved_date', columns)
+```
+
+### Step 3: Write Phase 2 Tests
+```python
+# Verify business logic works
+def test_approval_workflow(self):
+    record = self.create_test_record()
+    record.action_approve()
+    self.assertEqual(record.state, 'approved')
+    self.assertEqual(record.approved_by, self.env.user)
+```
+
+### Step 4: Run Tests (They Should Fail)
 ```bash
-# Runs before every commit
-npm test && npm run lint
+docker exec $ODOO_CONTAINER python3 -m pytest \
+    /mnt/extra-addons/module_name/tests/ -v
+# Tests should fail - we haven't implemented yet
 ```
 
-### CI/CD Integration
-```yaml
-# GitHub Actions
-- name: Run Tests
-  run: npm test -- --coverage
-- name: Upload Coverage
-  uses: codecov/codecov-action@v3
+### Step 5: Implement Code
+```python
+# Add fields and methods to make tests pass
+approved_by = fields.Many2one('res.users', readonly=True)
+approved_date = fields.Datetime(readonly=True)
+
+def action_approve(self):
+    self.write({
+        'state': 'approved',
+        'approved_by': self.env.user.id,
+        'approved_date': fields.Datetime.now(),
+    })
+```
+
+### Step 6: Run Tests Again
+```bash
+docker exec $ODOO_CONTAINER python3 -m pytest \
+    /mnt/extra-addons/module_name/tests/ -v
+# Tests should now pass
+```
+
+### Step 7: Refactor
+Improve code quality while keeping tests green.
+
+## Common Testing Patterns
+
+### Testing Exceptions
+
+```python
+def test_validation_error_raised(self):
+    with self.assertRaises(ValidationError):
+        self.env['custom.model'].create({
+            'name': 'Invalid',
+            'amount': -100,  # Negative not allowed
+        })
+
+def test_user_error_message(self):
+    record = self.create_test_record()
+    with self.assertRaisesRegex(UserError, "cannot be confirmed"):
+        record.action_confirm()
+```
+
+### Testing with Different Users
+
+```python
+def test_manager_can_approve(self):
+    manager = self.env.ref('module.group_manager').users[0]
+    record = self.create_test_record()
+    record.with_user(manager).action_approve()
+    self.assertEqual(record.state, 'approved')
+
+def test_user_cannot_approve(self):
+    regular_user = self.env['res.users'].create({
+        'name': 'Regular',
+        'login': 'regular@test.com',
+    })
+    record = self.create_test_record()
+    with self.assertRaises(AccessError):
+        record.with_user(regular_user).action_approve()
 ```
 
 ## Best Practices
 
-1. **Write Tests First** - Always TDD
-2. **One Assert Per Test** - Focus on single behavior
-3. **Descriptive Test Names** - Explain what's tested
-4. **Arrange-Act-Assert** - Clear test structure
-5. **Mock External Dependencies** - Isolate unit tests
-6. **Test Edge Cases** - Null, undefined, empty, large
-7. **Test Error Paths** - Not just happy paths
-8. **Keep Tests Fast** - Unit tests < 50ms each
-9. **Clean Up After Tests** - No side effects
-10. **Review Coverage Reports** - Identify gaps
+1. **Always Two Phases** - Never skip Phase 1 DB tests
+2. **Tests Before Code** - Write tests first, then implement
+3. **One Assert Per Test** - Focus on single behavior
+4. **Descriptive Names** - Test names explain what's tested
+5. **Independent Tests** - Each test sets up its own data
+6. **Clean Up** - Use TransactionCase for automatic rollback
+7. **Mock External Services** - Don't call real APIs in tests
+8. **Test Edge Cases** - Empty, null, boundary conditions
 
 ## Success Metrics
 
-- 80%+ code coverage achieved
-- All tests passing (green)
-- No skipped or disabled tests
-- Fast test execution (< 30s for unit tests)
-- E2E tests cover critical user flows
+- Phase 1 tests verify all schema elements
+- Phase 2 tests cover all business logic
+- All tests pass before deployment
 - Tests catch bugs before production
+- Fast test execution (< 30s for unit tests)
 
 ---
 
-**Remember**: Tests are not optional. They are the safety net that enables confident refactoring, rapid development, and production reliability.
+**Remember**: Two-Phase Testing is not optional. Phase 1 catches schema issues early, Phase 2 verifies business logic. Together they ensure robust, reliable Odoo modules.

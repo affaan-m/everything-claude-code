@@ -1,11 +1,11 @@
 ---
 name: coding-standards
-description: Universal coding standards, best practices, and patterns for TypeScript, JavaScript, React, and Node.js development.
+description: Python and Odoo coding standards, best practices, and patterns following PEP8, Black, and Odoo OCA guidelines.
 ---
 
 # Coding Standards & Best Practices
 
-Universal coding standards applicable across all projects.
+Python and Odoo 15 coding standards applicable across all modules.
 
 ## Code Quality Principles
 
@@ -13,7 +13,7 @@ Universal coding standards applicable across all projects.
 - Code is read more than written
 - Clear variable and function names
 - Self-documenting code preferred over comments
-- Consistent formatting
+- Consistent formatting (Black, isort)
 
 ### 2. KISS (Keep It Simple, Stupid)
 - Simplest solution that works
@@ -22,8 +22,8 @@ Universal coding standards applicable across all projects.
 - Easy to understand > clever code
 
 ### 3. DRY (Don't Repeat Yourself)
-- Extract common logic into functions
-- Create reusable components
+- Extract common logic into methods
+- Create reusable mixins
 - Share utilities across modules
 - Avoid copy-paste programming
 
@@ -33,488 +33,451 @@ Universal coding standards applicable across all projects.
 - Add complexity only when required
 - Start simple, refactor when needed
 
-## TypeScript/JavaScript Standards
+## Python Standards (PEP8)
 
 ### Variable Naming
 
-```typescript
-// ✅ GOOD: Descriptive names
-const marketSearchQuery = 'election'
-const isUserAuthenticated = true
-const totalRevenue = 1000
+```python
+# Good: Descriptive names (snake_case)
+partner_search_query = 'acme'
+is_user_authenticated = True
+total_revenue = 1000.00
 
-// ❌ BAD: Unclear names
-const q = 'election'
-const flag = true
-const x = 1000
+# Bad: Unclear names
+q = 'acme'
+flag = True
+x = 1000.00
 ```
 
 ### Function Naming
 
-```typescript
-// ✅ GOOD: Verb-noun pattern
-async function fetchMarketData(marketId: string) { }
-function calculateSimilarity(a: number[], b: number[]) { }
-function isValidEmail(email: string): boolean { }
+```python
+# Good: Verb-noun pattern with snake_case
+def fetch_partner_data(partner_id):
+    pass
 
-// ❌ BAD: Unclear or noun-only
-async function market(id: string) { }
-function similarity(a, b) { }
-function email(e) { }
+def calculate_order_total(order):
+    pass
+
+def is_valid_email(email):
+    return bool(re.match(r'[^@]+@[^@]+\.[^@]+', email))
+
+# Bad: Unclear or non-descriptive
+def partner(id):
+    pass
+
+def calc(o):
+    pass
 ```
 
-### Immutability Pattern (CRITICAL)
+### Class Naming (Odoo Models)
 
-```typescript
-// ✅ ALWAYS use spread operator
-const updatedUser = {
-  ...user,
-  name: 'New Name'
-}
+```python
+# Good: PascalCase class, descriptive model name
+class SaleOrderLine(models.Model):
+    _name = 'sale.order.line'
+    _description = 'Sale Order Line'
 
-const updatedArray = [...items, newItem]
+class HrEmployeeSkill(models.Model):
+    _name = 'hr.employee.skill'
+    _description = 'Employee Skill'
 
-// ❌ NEVER mutate directly
-user.name = 'New Name'  // BAD
-items.push(newItem)     // BAD
+# Bad: Unclear naming
+class Sol(models.Model):
+    _name = 'sol'  # Too short, unclear
+```
+
+### Method Naming Conventions (Odoo)
+
+```python
+class CustomModel(models.Model):
+    _name = 'custom.model'
+    _description = 'Custom Model'
+
+    # Compute methods: _compute_<field_name>
+    @api.depends('line_ids.amount')
+    def _compute_total(self):
+        for record in self:
+            record.total = sum(record.line_ids.mapped('amount'))
+
+    # Onchange methods: _onchange_<field_name>
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        if self.partner_id:
+            self.phone = self.partner_id.phone
+
+    # Constraint methods: _check_<constraint_name>
+    @api.constrains('date_start', 'date_end')
+    def _check_dates(self):
+        for record in self:
+            if record.date_start > record.date_end:
+                raise ValidationError(_("End date must be after start date"))
+
+    # Action methods: action_<action_name>
+    def action_confirm(self):
+        self.write({'state': 'confirmed'})
+
+    # Private methods: _<method_name>
+    def _prepare_invoice_values(self):
+        return {'partner_id': self.partner_id.id}
 ```
 
 ### Error Handling
 
-```typescript
-// ✅ GOOD: Comprehensive error handling
-async function fetchData(url: string) {
-  try {
-    const response = await fetch(url)
+```python
+from odoo.exceptions import UserError, ValidationError, AccessError
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-    }
+# Good: Comprehensive error handling
+def action_confirm(self):
+    self.ensure_one()
+    if not self.line_ids:
+        raise UserError(_("Cannot confirm order without lines"))
 
-    return await response.json()
-  } catch (error) {
-    console.error('Fetch failed:', error)
-    throw new Error('Failed to fetch data')
-  }
-}
+    if self.state != 'draft':
+        raise UserError(_("Only draft orders can be confirmed"))
 
-// ❌ BAD: No error handling
-async function fetchData(url) {
-  const response = await fetch(url)
-  return response.json()
-}
+    try:
+        self._create_related_records()
+        self.write({'state': 'confirmed'})
+    except Exception as e:
+        _logger.error("Failed to confirm order %s: %s", self.id, str(e))
+        raise UserError(_("Failed to confirm order. Please contact support."))
+
+# Bad: No error handling
+def action_confirm(self):
+    self._create_related_records()
+    self.write({'state': 'confirmed'})
 ```
 
-### Async/Await Best Practices
+### Logging Standards
 
-```typescript
-// ✅ GOOD: Parallel execution when possible
-const [users, markets, stats] = await Promise.all([
-  fetchUsers(),
-  fetchMarkets(),
-  fetchStats()
-])
+```python
+import logging
+_logger = logging.getLogger(__name__)
 
-// ❌ BAD: Sequential when unnecessary
-const users = await fetchUsers()
-const markets = await fetchMarkets()
-const stats = await fetchStats()
+# Good: Use appropriate log levels
+_logger.debug("Processing record %s", record.id)  # For debugging
+_logger.info("Batch process completed: %d records", count)  # Significant events
+_logger.warning("Configuration missing, using default")  # Recoverable issues
+_logger.error("Failed to process record %s: %s", record.id, str(e))  # Errors
+
+# Bad: Using info for debug, or print statements
+_logger.info("Variable x = %s", x)  # Should be debug
+print("Debug:", variable)  # Never use print
+
+# Bad: Logging sensitive data
+_logger.info("User password: %s", password)  # NEVER log passwords
 ```
 
-### Type Safety
+## Odoo ORM Best Practices
 
-```typescript
-// ✅ GOOD: Proper types
-interface Market {
-  id: string
-  name: string
-  status: 'active' | 'resolved' | 'closed'
-  created_at: Date
-}
+### Field Definitions
 
-function getMarket(id: string): Promise<Market> {
-  // Implementation
-}
+```python
+# Good: Proper field definitions
+class CustomModel(models.Model):
+    _name = 'custom.model'
+    _description = 'Custom Model'  # REQUIRED
 
-// ❌ BAD: Using 'any'
-function getMarket(id: any): Promise<any> {
-  // Implementation
-}
+    name = fields.Char(
+        string="Name",
+        required=True,
+        index=True,  # Frequently searched
+        tracking=True,  # Audit trail
+    )
+
+    partner_id = fields.Many2one(
+        'res.partner',
+        string="Partner",
+        ondelete='restrict',  # ALWAYS specify ondelete
+        index=True,
+    )
+
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('confirmed', 'Confirmed'),
+        ('done', 'Done'),
+    ], default='draft', tracking=True)
+
+    total = fields.Float(
+        compute='_compute_total',
+        store=True,  # Store if frequently filtered
+    )
+
+# Bad: Missing attributes
+class BadModel(models.Model):
+    _name = 'bad.model'
+    # Missing _description
+
+    partner_id = fields.Many2one('res.partner')  # Missing ondelete
+    old_field = fields.Char  # Missing parentheses
 ```
 
-## React Best Practices
+### Recordset Operations
 
-### Component Structure
+```python
+# Good: Use mapped, filtered, sorted
+partners = self.order_ids.mapped('partner_id')
+active_orders = self.order_ids.filtered(lambda o: o.state == 'active')
+sorted_orders = self.order_ids.sorted(key=lambda o: o.date, reverse=True)
 
-```typescript
-// ✅ GOOD: Functional component with types
-interface ButtonProps {
-  children: React.ReactNode
-  onClick: () => void
-  disabled?: boolean
-  variant?: 'primary' | 'secondary'
-}
+# Good: Efficient iteration
+for record in self:
+    record.total = sum(record.line_ids.mapped('amount'))
 
-export function Button({
-  children,
-  onClick,
-  disabled = false,
-  variant = 'primary'
-}: ButtonProps) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`btn btn-${variant}`}
-    >
-      {children}
-    </button>
-  )
-}
+# Bad: Access outside loop (N+1 queries)
+for record in records:
+    partner_name = record.partner_id.name  # Query per iteration
 
-// ❌ BAD: No types, unclear structure
-export function Button(props) {
-  return <button onClick={props.onClick}>{props.children}</button>
-}
+# Good: Prefetch first
+records = self.env['model'].search([])
+_ = records.mapped('partner_id.name')  # Prefetch
+for record in records:
+    partner_name = record.partner_id.name  # Uses cache
 ```
 
-### Custom Hooks
+### Search and Browse
 
-```typescript
-// ✅ GOOD: Reusable custom hook
-export function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value)
+```python
+# Good: Search returns recordset
+orders = self.env['sale.order'].search([
+    ('state', '=', 'sale'),
+    ('partner_id', '=', partner_id),
+], limit=10, order='date desc')
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value)
-    }, delay)
+# Good: Browse with known IDs
+order = self.env['sale.order'].browse(order_id)
+if order.exists():
+    # Process order
+    pass
 
-    return () => clearTimeout(handler)
-  }, [value, delay])
+# Bad: Browse without existence check
+order = self.env['sale.order'].browse(unknown_id)
+order.name  # May fail if ID doesn't exist
 
-  return debouncedValue
-}
-
-// Usage
-const debouncedQuery = useDebounce(searchQuery, 500)
+# Good: Search with IN operator instead of loop
+partner_ids = partners.ids
+orders = self.env['sale.order'].search([('partner_id', 'in', partner_ids)])
 ```
 
-### State Management
+### Context and Environment
 
-```typescript
-// ✅ GOOD: Proper state updates
-const [count, setCount] = useState(0)
+```python
+# Good: Context usage
+record.with_context(force_company=company_id).action()
+record.with_user(user).action()
+record.with_company(company).action()
 
-// Functional update for state based on previous state
-setCount(prev => prev + 1)
+# Bad: Direct context modification (context is immutable)
+self.env.context['key'] = value  # Will fail
 
-// ❌ BAD: Direct state reference
-setCount(count + 1)  // Can be stale in async scenarios
-```
-
-### Conditional Rendering
-
-```typescript
-// ✅ GOOD: Clear conditional rendering
-{isLoading && <Spinner />}
-{error && <ErrorMessage error={error} />}
-{data && <DataDisplay data={data} />}
-
-// ❌ BAD: Ternary hell
-{isLoading ? <Spinner /> : error ? <ErrorMessage error={error} /> : data ? <DataDisplay data={data} /> : null}
-```
-
-## API Design Standards
-
-### REST API Conventions
-
-```
-GET    /api/markets              # List all markets
-GET    /api/markets/:id          # Get specific market
-POST   /api/markets              # Create new market
-PUT    /api/markets/:id          # Update market (full)
-PATCH  /api/markets/:id          # Update market (partial)
-DELETE /api/markets/:id          # Delete market
-
-# Query parameters for filtering
-GET /api/markets?status=active&limit=10&offset=0
-```
-
-### Response Format
-
-```typescript
-// ✅ GOOD: Consistent response structure
-interface ApiResponse<T> {
-  success: boolean
-  data?: T
-  error?: string
-  meta?: {
-    total: number
-    page: number
-    limit: number
-  }
-}
-
-// Success response
-return NextResponse.json({
-  success: true,
-  data: markets,
-  meta: { total: 100, page: 1, limit: 10 }
-})
-
-// Error response
-return NextResponse.json({
-  success: false,
-  error: 'Invalid request'
-}, { status: 400 })
-```
-
-### Input Validation
-
-```typescript
-import { z } from 'zod'
-
-// ✅ GOOD: Schema validation
-const CreateMarketSchema = z.object({
-  name: z.string().min(1).max(200),
-  description: z.string().min(1).max(2000),
-  endDate: z.string().datetime(),
-  categories: z.array(z.string()).min(1)
-})
-
-export async function POST(request: Request) {
-  const body = await request.json()
-
-  try {
-    const validated = CreateMarketSchema.parse(body)
-    // Proceed with validated data
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        success: false,
-        error: 'Validation failed',
-        details: error.errors
-      }, { status: 400 })
-    }
-  }
-}
+# Good: Create new context
+self.with_context(key=value).action()
 ```
 
 ## File Organization
 
-### Project Structure
+### Module Structure
 
 ```
-src/
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   ├── markets/           # Market pages
-│   └── (auth)/           # Auth pages (route groups)
-├── components/            # React components
-│   ├── ui/               # Generic UI components
-│   ├── forms/            # Form components
-│   └── layouts/          # Layout components
-├── hooks/                # Custom React hooks
-├── lib/                  # Utilities and configs
-│   ├── api/             # API clients
-│   ├── utils/           # Helper functions
-│   └── constants/       # Constants
-├── types/                # TypeScript types
-└── styles/              # Global styles
+module_name/
+├── __init__.py
+├── __manifest__.py
+├── models/
+│   ├── __init__.py
+│   ├── model_one.py          # One model per file
+│   └── model_two.py
+├── views/
+│   ├── model_one_views.xml   # Views per model
+│   ├── model_two_views.xml
+│   └── menu_views.xml        # Menus separate
+├── security/
+│   ├── ir.model.access.csv   # ACLs
+│   └── security_rules.xml    # Record rules
+├── data/
+│   └── data.xml
+├── wizards/
+│   ├── __init__.py
+│   └── wizard_name.py
+├── reports/
+│   └── report_template.xml
+└── tests/
+    ├── __init__.py
+    └── test_model.py
 ```
 
 ### File Naming
 
 ```
-components/Button.tsx          # PascalCase for components
-hooks/useAuth.ts              # camelCase with 'use' prefix
-lib/formatDate.ts             # camelCase for utilities
-types/market.types.ts         # camelCase with .types suffix
+models/sale_order.py          # snake_case for Python files
+views/sale_order_views.xml    # snake_case for XML files
+security/ir.model.access.csv  # Standard security filename
+```
+
+### Import Order (PEP8 + Odoo)
+
+```python
+# 1. Standard library imports
+import logging
+from datetime import datetime, timedelta
+
+# 2. Third-party imports
+import requests
+
+# 3. Odoo imports
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError, ValidationError
+
+# 4. Local imports (within module)
+from .utils import helper_function
+
+_logger = logging.getLogger(__name__)
 ```
 
 ## Comments & Documentation
 
 ### When to Comment
 
-```typescript
-// ✅ GOOD: Explain WHY, not WHAT
-// Use exponential backoff to avoid overwhelming the API during outages
-const delay = Math.min(1000 * Math.pow(2, retryCount), 30000)
+```python
+# Good: Explain WHY, not WHAT
+# Use exponential backoff to avoid overwhelming external API during outages
+delay = min(1000 * (2 ** retry_count), 30000)
 
-// Deliberately using mutation here for performance with large arrays
-items.push(newItem)
+# Sudo required: System needs to create audit log regardless of user permissions
+self.env['audit.log'].sudo().create({'action': 'user_login'})
 
-// ❌ BAD: Stating the obvious
-// Increment counter by 1
-count++
+# Bad: Stating the obvious
+# Increment counter by 1
+count += 1
 
-// Set name to user's name
-name = user.name
+# Set name to partner's name
+name = partner.name
 ```
 
-### JSDoc for Public APIs
+### Docstrings
 
-```typescript
-/**
- * Searches markets using semantic similarity.
- *
- * @param query - Natural language search query
- * @param limit - Maximum number of results (default: 10)
- * @returns Array of markets sorted by similarity score
- * @throws {Error} If OpenAI API fails or Redis unavailable
- *
- * @example
- * ```typescript
- * const results = await searchMarkets('election', 5)
- * console.log(results[0].name) // "Trump vs Biden"
- * ```
- */
-export async function searchMarkets(
-  query: string,
-  limit: number = 10
-): Promise<Market[]> {
-  // Implementation
-}
-```
+```python
+def calculate_discount(self, amount, discount_percent):
+    """Calculate discount amount for order.
 
-## Performance Best Practices
+    Args:
+        amount (float): Original order amount
+        discount_percent (float): Discount percentage (0-100)
 
-### Memoization
+    Returns:
+        float: Discount amount
 
-```typescript
-import { useMemo, useCallback } from 'react'
+    Raises:
+        ValidationError: If discount_percent is not between 0 and 100
 
-// ✅ GOOD: Memoize expensive computations
-const sortedMarkets = useMemo(() => {
-  return markets.sort((a, b) => b.volume - a.volume)
-}, [markets])
-
-// ✅ GOOD: Memoize callbacks
-const handleSearch = useCallback((query: string) => {
-  setSearchQuery(query)
-}, [])
-```
-
-### Lazy Loading
-
-```typescript
-import { lazy, Suspense } from 'react'
-
-// ✅ GOOD: Lazy load heavy components
-const HeavyChart = lazy(() => import('./HeavyChart'))
-
-export function Dashboard() {
-  return (
-    <Suspense fallback={<Spinner />}>
-      <HeavyChart />
-    </Suspense>
-  )
-}
-```
-
-### Database Queries
-
-```typescript
-// ✅ GOOD: Select only needed columns
-const { data } = await supabase
-  .from('markets')
-  .select('id, name, status')
-  .limit(10)
-
-// ❌ BAD: Select everything
-const { data } = await supabase
-  .from('markets')
-  .select('*')
-```
-
-## Testing Standards
-
-### Test Structure (AAA Pattern)
-
-```typescript
-test('calculates similarity correctly', () => {
-  // Arrange
-  const vector1 = [1, 0, 0]
-  const vector2 = [0, 1, 0]
-
-  // Act
-  const similarity = calculateCosineSimilarity(vector1, vector2)
-
-  // Assert
-  expect(similarity).toBe(0)
-})
-```
-
-### Test Naming
-
-```typescript
-// ✅ GOOD: Descriptive test names
-test('returns empty array when no markets match query', () => { })
-test('throws error when OpenAI API key is missing', () => { })
-test('falls back to substring search when Redis unavailable', () => { })
-
-// ❌ BAD: Vague test names
-test('works', () => { })
-test('test search', () => { })
+    Example:
+        >>> order.calculate_discount(100.0, 10.0)
+        10.0
+    """
+    if not 0 <= discount_percent <= 100:
+        raise ValidationError(_("Discount must be between 0 and 100"))
+    return amount * discount_percent / 100
 ```
 
 ## Code Smell Detection
 
-Watch for these anti-patterns:
+### 1. Long Methods
+```python
+# Bad: Method > 50 lines
+def process_order(self):
+    # 100 lines of code
+    pass
 
-### 1. Long Functions
-```typescript
-// ❌ BAD: Function > 50 lines
-function processMarketData() {
-  // 100 lines of code
-}
-
-// ✅ GOOD: Split into smaller functions
-function processMarketData() {
-  const validated = validateData()
-  const transformed = transformData(validated)
-  return saveData(transformed)
-}
+# Good: Split into smaller methods
+def process_order(self):
+    self._validate_order()
+    self._calculate_totals()
+    self._create_invoice()
+    self._send_notification()
 ```
 
 ### 2. Deep Nesting
-```typescript
-// ❌ BAD: 5+ levels of nesting
-if (user) {
-  if (user.isAdmin) {
-    if (market) {
-      if (market.isActive) {
-        if (hasPermission) {
-          // Do something
-        }
-      }
-    }
-  }
-}
+```python
+# Bad: 5+ levels of nesting
+if user:
+    if user.is_admin:
+        if order:
+            if order.is_active:
+                if has_permission:
+                    # Do something
+                    pass
 
-// ✅ GOOD: Early returns
-if (!user) return
-if (!user.isAdmin) return
-if (!market) return
-if (!market.isActive) return
-if (!hasPermission) return
+# Good: Early returns
+if not user:
+    return
+if not user.is_admin:
+    return
+if not order:
+    return
+if not order.is_active:
+    return
+if not has_permission:
+    return
 
-// Do something
+# Do something
 ```
 
 ### 3. Magic Numbers
-```typescript
-// ❌ BAD: Unexplained numbers
-if (retryCount > 3) { }
-setTimeout(callback, 500)
+```python
+# Bad: Unexplained numbers
+if retry_count > 3:
+    pass
 
-// ✅ GOOD: Named constants
-const MAX_RETRIES = 3
-const DEBOUNCE_DELAY_MS = 500
-
-if (retryCount > MAX_RETRIES) { }
-setTimeout(callback, DEBOUNCE_DELAY_MS)
+# Good: Named constants
+MAX_RETRIES = 3
+if retry_count > MAX_RETRIES:
+    pass
 ```
 
-**Remember**: Code quality is not negotiable. Clear, maintainable code enables rapid development and confident refactoring.
+### 4. Duplicate Code
+```python
+# Bad: Repeated logic
+def action_confirm(self):
+    self.ensure_one()
+    if self.state != 'draft':
+        raise UserError(_("Invalid state"))
+    self.state = 'confirmed'
+
+def action_approve(self):
+    self.ensure_one()
+    if self.state != 'draft':
+        raise UserError(_("Invalid state"))
+    self.state = 'approved'
+
+# Good: Extract common logic
+def _check_can_proceed(self):
+    self.ensure_one()
+    if self.state != 'draft':
+        raise UserError(_("Invalid state"))
+
+def action_confirm(self):
+    self._check_can_proceed()
+    self.state = 'confirmed'
+
+def action_approve(self):
+    self._check_can_proceed()
+    self.state = 'approved'
+```
+
+## Linting Tools
+
+```bash
+# Run flake8 for PEP8 compliance
+flake8 --max-line-length=120 --ignore=E501,W503 models/
+
+# Run pylint with Odoo plugin
+pylint --load-plugins=pylint_odoo models/
+
+# Run Black for formatting
+black models/
+
+# Run isort for import ordering
+isort models/
+```
+
+**Remember**: Code quality is not negotiable. Clear, maintainable code enables rapid development and confident refactoring in Odoo modules.

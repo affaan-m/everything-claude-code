@@ -1,582 +1,493 @@
 ---
 name: backend-patterns
-description: Backend architecture patterns, API design, database optimization, and server-side best practices for Node.js, Express, and Next.js API routes.
+description: Odoo ORM patterns, model design, database optimization, and server-side best practices for Odoo 15 development.
 ---
 
-# Backend Development Patterns
+# Odoo Backend Development Patterns
 
-Backend architecture patterns and best practices for scalable server-side applications.
+Backend architecture patterns and best practices for Odoo 15 module development.
 
-## API Design Patterns
+## ORM Patterns
 
-### RESTful API Structure
+### CRUD Operations
 
-```typescript
-// ✅ Resource-based URLs
-GET    /api/markets                 # List resources
-GET    /api/markets/:id             # Get single resource
-POST   /api/markets                 # Create resource
-PUT    /api/markets/:id             # Replace resource
-PATCH  /api/markets/:id             # Update resource
-DELETE /api/markets/:id             # Delete resource
+```python
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError, ValidationError
 
-// ✅ Query parameters for filtering, sorting, pagination
-GET /api/markets?status=active&sort=volume&limit=20&offset=0
+class CustomModel(models.Model):
+    _name = 'custom.model'
+    _description = 'Custom Model'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'create_date desc'
+
+    # Create
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('reference'):
+                vals['reference'] = self.env['ir.sequence'].next_by_code('custom.model')
+        return super().create(vals_list)
+
+    # Read - search with domain
+    def get_active_records(self):
+        return self.search([
+            ('state', '=', 'active'),
+            ('company_id', '=', self.env.company.id),
+        ], limit=100, order='name')
+
+    # Update
+    def write(self, vals):
+        if 'state' in vals and vals['state'] == 'done':
+            self._check_can_complete()
+        return super().write(vals)
+
+    # Delete
+    def unlink(self):
+        for record in self:
+            if record.state != 'draft':
+                raise UserError(_("Cannot delete non-draft records"))
+        return super().unlink()
 ```
 
-### Repository Pattern
+### Recordset Operations
 
-```typescript
-// Abstract data access logic
-interface MarketRepository {
-  findAll(filters?: MarketFilters): Promise<Market[]>
-  findById(id: string): Promise<Market | null>
-  create(data: CreateMarketDto): Promise<Market>
-  update(id: string, data: UpdateMarketDto): Promise<Market>
-  delete(id: string): Promise<void>
-}
+```python
+# Filtered - returns recordset matching condition
+active_orders = orders.filtered(lambda o: o.state == 'active')
+active_orders = orders.filtered('is_active')  # Shortcut for boolean fields
 
-class SupabaseMarketRepository implements MarketRepository {
-  async findAll(filters?: MarketFilters): Promise<Market[]> {
-    let query = supabase.from('markets').select('*')
+# Mapped - extracts field values or related records
+partner_ids = orders.mapped('partner_id')
+amounts = orders.mapped('amount_total')
+line_products = orders.mapped('order_line.product_id')
 
-    if (filters?.status) {
-      query = query.eq('status', filters.status)
-    }
+# Sorted - returns sorted recordset
+sorted_orders = orders.sorted(key=lambda o: o.date_order, reverse=True)
+sorted_orders = orders.sorted('date_order', reverse=True)
 
-    if (filters?.limit) {
-      query = query.limit(filters.limit)
-    }
+# Grouped - group by field
+from collections import defaultdict
+orders_by_partner = defaultdict(lambda: self.env['sale.order'])
+for order in orders:
+    orders_by_partner[order.partner_id] |= order
 
-    const { data, error } = await query
+# Exists - check if records exist
+if order.exists():
+    order.action_confirm()
 
-    if (error) throw new Error(error.message)
-    return data
-  }
-
-  // Other methods...
-}
+# Ensure one - validate single record
+self.ensure_one()
 ```
 
-### Service Layer Pattern
+### Search Patterns
 
-```typescript
-// Business logic separated from data access
-class MarketService {
-  constructor(private marketRepo: MarketRepository) {}
+```python
+# Basic search
+partners = self.env['res.partner'].search([
+    ('is_company', '=', True),
+    ('country_id.code', '=', 'US'),
+])
 
-  async searchMarkets(query: string, limit: number = 10): Promise<Market[]> {
-    // Business logic
-    const embedding = await generateEmbedding(query)
-    const results = await this.vectorSearch(embedding, limit)
+# Search with OR
+partners = self.env['res.partner'].search([
+    '|',
+    ('email', 'ilike', 'example.com'),
+    ('phone', '!=', False),
+])
 
-    // Fetch full data
-    const markets = await this.marketRepo.findByIds(results.map(r => r.id))
+# Complex domain with AND/OR
+domain = [
+    '&',
+    ('state', '=', 'active'),
+    '|',
+    ('type', '=', 'customer'),
+    ('type', '=', 'prospect'),
+]
 
-    // Sort by similarity
-    return markets.sort((a, b) => {
-      const scoreA = results.find(r => r.id === a.id)?.score || 0
-      const scoreB = results.find(r => r.id === b.id)?.score || 0
-      return scoreA - scoreB
-    })
-  }
+# Search count (efficient for large datasets)
+count = self.env['sale.order'].search_count([('state', '=', 'sale')])
 
-  private async vectorSearch(embedding: number[], limit: number) {
-    // Vector search implementation
-  }
-}
+# Search read (returns list of dicts)
+data = self.env['res.partner'].search_read(
+    domain=[('is_company', '=', True)],
+    fields=['name', 'email', 'phone'],
+    limit=10,
+    order='name'
+)
+
+# Read group (aggregation)
+results = self.env['sale.order'].read_group(
+    domain=[('state', '=', 'sale')],
+    fields=['partner_id', 'amount_total:sum'],
+    groupby=['partner_id'],
+    orderby='amount_total desc',
+    limit=10
+)
 ```
 
-### Middleware Pattern
+### Computed Fields
 
-```typescript
-// Request/response processing pipeline
-export function withAuth(handler: NextApiHandler): NextApiHandler {
-  return async (req, res) => {
-    const token = req.headers.authorization?.replace('Bearer ', '')
+```python
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
 
-    if (!token) {
-      return res.status(401).json({ error: 'Unauthorized' })
-    }
+    # Stored computed field (for filtering/grouping)
+    total_weight = fields.Float(
+        compute='_compute_total_weight',
+        store=True,
+        help="Total weight of all order lines"
+    )
 
-    try {
-      const user = await verifyToken(token)
-      req.user = user
-      return handler(req, res)
-    } catch (error) {
-      return res.status(401).json({ error: 'Invalid token' })
-    }
-  }
-}
+    # Non-stored computed field (always current)
+    days_since_order = fields.Integer(
+        compute='_compute_days_since_order',
+        help="Days since order was created"
+    )
 
-// Usage
-export default withAuth(async (req, res) => {
-  // Handler has access to req.user
-})
+    @api.depends('order_line.product_id.weight', 'order_line.product_uom_qty')
+    def _compute_total_weight(self):
+        for order in self:
+            order.total_weight = sum(
+                line.product_id.weight * line.product_uom_qty
+                for line in order.order_line
+                if line.product_id.weight
+            )
+
+    def _compute_days_since_order(self):
+        today = fields.Date.today()
+        for order in self:
+            if order.date_order:
+                delta = today - order.date_order.date()
+                order.days_since_order = delta.days
+            else:
+                order.days_since_order = 0
+```
+
+### Context Patterns
+
+```python
+# Pass context to method
+self.with_context(skip_validation=True).action_confirm()
+
+# Check context in method
+def action_confirm(self):
+    if not self.env.context.get('skip_validation'):
+        self._validate_order()
+    self.write({'state': 'confirmed'})
+
+# Change user context
+admin_user = self.env.ref('base.user_admin')
+self.with_user(admin_user).action_admin_only()
+
+# Change company context
+self.with_company(company_id).action()
+
+# Combine context changes
+self.with_context(active_test=False).with_company(company).search([])
 ```
 
 ## Database Patterns
 
 ### Query Optimization
 
-```typescript
-// ✅ GOOD: Select only needed columns
-const { data } = await supabase
-  .from('markets')
-  .select('id, name, status, volume')
-  .eq('status', 'active')
-  .order('volume', { ascending: false })
-  .limit(10)
+```python
+# Bad: N+1 query problem
+for order in orders:
+    partner_name = order.partner_id.name  # Query per iteration
 
-// ❌ BAD: Select everything
-const { data } = await supabase
-  .from('markets')
-  .select('*')
-```
+# Good: Prefetch related records
+orders = self.env['sale.order'].search([])
+_ = orders.mapped('partner_id.name')  # Prefetch all partners
+for order in orders:
+    partner_name = order.partner_id.name  # Uses cache
 
-### N+1 Query Prevention
-
-```typescript
-// ❌ BAD: N+1 query problem
-const markets = await getMarkets()
-for (const market of markets) {
-  market.creator = await getUser(market.creator_id)  // N queries
-}
-
-// ✅ GOOD: Batch fetch
-const markets = await getMarkets()
-const creatorIds = markets.map(m => m.creator_id)
-const creators = await getUsers(creatorIds)  // 1 query
-const creatorMap = new Map(creators.map(c => [c.id, c]))
-
-markets.forEach(market => {
-  market.creator = creatorMap.get(market.creator_id)
-})
-```
-
-### Transaction Pattern
-
-```typescript
-async function createMarketWithPosition(
-  marketData: CreateMarketDto,
-  positionData: CreatePositionDto
-) {
-  // Use Supabase transaction
-  const { data, error } = await supabase.rpc('create_market_with_position', {
-    market_data: marketData,
-    position_data: positionData
-  })
-
-  if (error) throw new Error('Transaction failed')
-  return data
-}
-
-// SQL function in Supabase
-CREATE OR REPLACE FUNCTION create_market_with_position(
-  market_data jsonb,
-  position_data jsonb
+# Good: Use read_group for aggregation
+totals = self.env['sale.order.line'].read_group(
+    domain=[('order_id', 'in', order_ids)],
+    fields=['order_id', 'price_subtotal:sum'],
+    groupby=['order_id']
 )
-RETURNS jsonb
-LANGUAGE plpgsql
-AS $$
-BEGIN
-  -- Start transaction automatically
-  INSERT INTO markets VALUES (market_data);
-  INSERT INTO positions VALUES (position_data);
-  RETURN jsonb_build_object('success', true);
-EXCEPTION
-  WHEN OTHERS THEN
-    -- Rollback happens automatically
-    RETURN jsonb_build_object('success', false, 'error', SQLERRM);
-END;
-$$;
+
+# Bad: Search inside loop
+for partner in partners:
+    orders = self.env['sale.order'].search([('partner_id', '=', partner.id)])
+
+# Good: Single search with IN operator
+partner_ids = partners.ids
+orders = self.env['sale.order'].search([('partner_id', 'in', partner_ids)])
+orders_by_partner = defaultdict(lambda: self.env['sale.order'])
+for order in orders:
+    orders_by_partner[order.partner_id.id] |= order
 ```
 
-## Caching Strategies
+### Raw SQL (When Necessary)
 
-### Redis Caching Layer
+```python
+# Only use raw SQL when ORM cannot achieve the result
+# ALWAYS use parameterized queries
 
-```typescript
-class CachedMarketRepository implements MarketRepository {
-  constructor(
-    private baseRepo: MarketRepository,
-    private redis: RedisClient
-  ) {}
+def _get_partner_statistics(self):
+    """Get partner statistics with window functions.
 
-  async findById(id: string): Promise<Market | null> {
-    // Check cache first
-    const cached = await this.redis.get(`market:${id}`)
+    Raw SQL Justification:
+    - Purpose: Complex reporting query with window functions
+    - ORM limitation: Cannot express PARTITION BY in ORM
+    - Security: All parameters are validated integers from system
+    """
+    self.env.cr.execute("""
+        SELECT
+            partner_id,
+            SUM(amount_total) as total_sales,
+            SUM(amount_total) OVER (PARTITION BY partner_id ORDER BY date_order) as running_total
+        FROM sale_order
+        WHERE partner_id IN %s
+        AND state = 'sale'
+        GROUP BY partner_id, date_order, amount_total
+    """, (tuple(self.partner_ids.ids),))
 
-    if (cached) {
-      return JSON.parse(cached)
-    }
+    return self.env.cr.dictfetchall()
 
-    // Cache miss - fetch from database
-    const market = await this.baseRepo.findById(id)
-
-    if (market) {
-      // Cache for 5 minutes
-      await this.redis.setex(`market:${id}`, 300, JSON.stringify(market))
-    }
-
-    return market
-  }
-
-  async invalidateCache(id: string): Promise<void> {
-    await this.redis.del(`market:${id}`)
-  }
-}
+# NEVER do this - SQL injection vulnerability
+def bad_search(self, name):
+    self.env.cr.execute(f"SELECT * FROM res_partner WHERE name = '{name}'")
 ```
 
-### Cache-Aside Pattern
+### Transaction Patterns
 
-```typescript
-async function getMarketWithCache(id: string): Promise<Market> {
-  const cacheKey = `market:${id}`
+```python
+# Odoo manages transactions automatically
+# Use savepoints for partial rollback
 
-  // Try cache
-  const cached = await redis.get(cacheKey)
-  if (cached) return JSON.parse(cached)
+def process_batch(self):
+    for record in self:
+        try:
+            with self.env.cr.savepoint():
+                record._process_single()
+        except Exception as e:
+            _logger.error("Failed to process %s: %s", record.id, e)
+            record.state = 'error'
+            continue
 
-  // Cache miss - fetch from DB
-  const market = await db.markets.findUnique({ where: { id } })
+# Flush changes to database
+def action_with_flush(self):
+    self.write({'state': 'processing'})
+    self.env.flush_all()  # Ensure write is committed
+    self._external_api_call()  # External call sees committed data
+```
 
-  if (!market) throw new Error('Market not found')
+## Service Layer Patterns
 
-  // Update cache
-  await redis.setex(cacheKey, 300, JSON.stringify(market))
+### Business Logic Separation
 
-  return market
-}
+```python
+class SaleOrderService(models.AbstractModel):
+    """Business logic service for sale orders.
+
+    Separates complex business logic from model layer.
+    """
+    _name = 'sale.order.service'
+    _description = 'Sale Order Business Logic Service'
+
+    def calculate_shipping(self, order):
+        """Calculate shipping cost based on business rules."""
+        if order.amount_total > 100:
+            return 0  # Free shipping
+        return self._get_shipping_rate(order.partner_id.country_id)
+
+    def validate_order(self, order):
+        """Validate order before confirmation."""
+        errors = []
+        if not order.order_line:
+            errors.append(_("Order must have at least one line"))
+        if order.amount_total <= 0:
+            errors.append(_("Order total must be positive"))
+        return errors
+
+    def _get_shipping_rate(self, country):
+        """Get shipping rate for country."""
+        rates = self.env['shipping.rate'].search([
+            ('country_id', '=', country.id)
+        ], limit=1)
+        return rates.rate if rates else 10.0
+
+# Usage in model
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
+
+    def action_confirm(self):
+        service = self.env['sale.order.service']
+        errors = service.validate_order(self)
+        if errors:
+            raise UserError('\n'.join(errors))
+        return super().action_confirm()
+```
+
+### Mixin Pattern
+
+```python
+class ApprovalMixin(models.AbstractModel):
+    """Mixin for models requiring approval workflow."""
+    _name = 'approval.mixin'
+    _description = 'Approval Workflow Mixin'
+
+    approval_state = fields.Selection([
+        ('pending', 'Pending Approval'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ], default='pending', tracking=True)
+
+    approved_by = fields.Many2one('res.users', readonly=True)
+    approved_date = fields.Datetime(readonly=True)
+
+    def action_approve(self):
+        self.write({
+            'approval_state': 'approved',
+            'approved_by': self.env.user.id,
+            'approved_date': fields.Datetime.now(),
+        })
+
+    def action_reject(self):
+        self.write({'approval_state': 'rejected'})
+
+    def action_reset(self):
+        self.write({
+            'approval_state': 'pending',
+            'approved_by': False,
+            'approved_date': False,
+        })
+
+# Usage
+class PurchaseRequest(models.Model):
+    _name = 'purchase.request'
+    _inherit = ['mail.thread', 'approval.mixin']
+    _description = 'Purchase Request'
+
+    name = fields.Char(required=True)
+    amount = fields.Float()
 ```
 
 ## Error Handling Patterns
 
-### Centralized Error Handler
+### Custom Exceptions
 
-```typescript
-class ApiError extends Error {
-  constructor(
-    public statusCode: number,
-    public message: string,
-    public isOperational = true
-  ) {
-    super(message)
-    Object.setPrototypeOf(this, ApiError.prototype)
-  }
-}
+```python
+from odoo.exceptions import UserError, ValidationError, AccessError
 
-export function errorHandler(error: unknown, req: Request): Response {
-  if (error instanceof ApiError) {
-    return NextResponse.json({
-      success: false,
-      error: error.message
-    }, { status: error.statusCode })
-  }
+class OrderProcessingError(Exception):
+    """Custom exception for order processing failures."""
+    pass
 
-  if (error instanceof z.ZodError) {
-    return NextResponse.json({
-      success: false,
-      error: 'Validation failed',
-      details: error.errors
-    }, { status: 400 })
-  }
-
-  // Log unexpected errors
-  console.error('Unexpected error:', error)
-
-  return NextResponse.json({
-    success: false,
-    error: 'Internal server error'
-  }, { status: 500 })
-}
-
-// Usage
-export async function GET(request: Request) {
-  try {
-    const data = await fetchData()
-    return NextResponse.json({ success: true, data })
-  } catch (error) {
-    return errorHandler(error, request)
-  }
-}
+def process_order(self):
+    try:
+        self._validate_inventory()
+        self._reserve_stock()
+        self._create_delivery()
+    except OrderProcessingError as e:
+        raise UserError(_("Order processing failed: %s") % str(e))
+    except AccessError:
+        raise UserError(_("You don't have permission to process this order"))
+    except Exception as e:
+        _logger.exception("Unexpected error processing order %s", self.id)
+        raise UserError(_("An unexpected error occurred. Please contact support."))
 ```
 
-### Retry with Exponential Backoff
+### Validation Pattern
 
-```typescript
-async function fetchWithRetry<T>(
-  fn: () => Promise<T>,
-  maxRetries = 3
-): Promise<T> {
-  let lastError: Error
+```python
+@api.constrains('date_start', 'date_end', 'amount')
+def _check_values(self):
+    for record in self:
+        if record.date_start and record.date_end:
+            if record.date_start > record.date_end:
+                raise ValidationError(_("End date must be after start date"))
 
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      return await fn()
-    } catch (error) {
-      lastError = error as Error
+        if record.amount <= 0:
+            raise ValidationError(_("Amount must be positive"))
 
-      if (i < maxRetries - 1) {
-        // Exponential backoff: 1s, 2s, 4s
-        const delay = Math.pow(2, i) * 1000
-        await new Promise(resolve => setTimeout(resolve, delay))
-      }
-    }
-  }
+# Pre-validation before expensive operations
+def action_confirm(self):
+    self.ensure_one()
+    errors = self._validate_can_confirm()
+    if errors:
+        raise UserError('\n'.join(errors))
+    self._do_confirm()
 
-  throw lastError!
-}
-
-// Usage
-const data = await fetchWithRetry(() => fetchFromAPI())
+def _validate_can_confirm(self):
+    errors = []
+    if self.state != 'draft':
+        errors.append(_("Only draft orders can be confirmed"))
+    if not self.line_ids:
+        errors.append(_("Order must have at least one line"))
+    return errors
 ```
 
-## Authentication & Authorization
+## Scheduled Actions
 
-### JWT Token Validation
+```python
+class AutomaticProcessing(models.Model):
+    _name = 'automatic.processing'
+    _description = 'Automatic Processing'
 
-```typescript
-import jwt from 'jsonwebtoken'
+    @api.model
+    def _cron_process_pending_orders(self):
+        """Process pending orders (called by scheduled action)."""
+        orders = self.env['sale.order'].search([
+            ('state', '=', 'pending'),
+            ('date_order', '<', fields.Datetime.now()),
+        ], limit=100)
 
-interface JWTPayload {
-  userId: string
-  email: string
-  role: 'admin' | 'user'
-}
+        for order in orders:
+            try:
+                with self.env.cr.savepoint():
+                    order.action_confirm()
+                    _logger.info("Auto-confirmed order %s", order.name)
+            except Exception as e:
+                _logger.error("Failed to auto-confirm %s: %s", order.name, e)
+                continue
 
-export function verifyToken(token: string): JWTPayload {
-  try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload
-    return payload
-  } catch (error) {
-    throw new ApiError(401, 'Invalid token')
-  }
-}
-
-export async function requireAuth(request: Request) {
-  const token = request.headers.get('authorization')?.replace('Bearer ', '')
-
-  if (!token) {
-    throw new ApiError(401, 'Missing authorization token')
-  }
-
-  return verifyToken(token)
-}
-
-// Usage in API route
-export async function GET(request: Request) {
-  const user = await requireAuth(request)
-
-  const data = await getDataForUser(user.userId)
-
-  return NextResponse.json({ success: true, data })
-}
+        return True
 ```
 
-### Role-Based Access Control
+## Controller Patterns (HTTP Endpoints)
 
-```typescript
-type Permission = 'read' | 'write' | 'delete' | 'admin'
+```python
+from odoo import http
+from odoo.http import request
 
-interface User {
-  id: string
-  role: 'admin' | 'moderator' | 'user'
-}
+class CustomController(http.Controller):
 
-const rolePermissions: Record<User['role'], Permission[]> = {
-  admin: ['read', 'write', 'delete', 'admin'],
-  moderator: ['read', 'write', 'delete'],
-  user: ['read', 'write']
-}
+    @http.route('/api/orders', type='json', auth='user', methods=['GET'])
+    def get_orders(self, **kwargs):
+        """Get orders for current user."""
+        orders = request.env['sale.order'].search([
+            ('partner_id', '=', request.env.user.partner_id.id)
+        ])
+        return {
+            'success': True,
+            'data': [{
+                'id': o.id,
+                'name': o.name,
+                'total': o.amount_total,
+            } for o in orders]
+        }
 
-export function hasPermission(user: User, permission: Permission): boolean {
-  return rolePermissions[user.role].includes(permission)
-}
+    @http.route('/api/orders/<int:order_id>', type='json', auth='user')
+    def get_order(self, order_id):
+        """Get single order."""
+        order = request.env['sale.order'].browse(order_id)
+        if not order.exists():
+            return {'success': False, 'error': 'Order not found'}
+        return {'success': True, 'data': {'id': order.id, 'name': order.name}}
 
-export function requirePermission(permission: Permission) {
-  return async (request: Request) => {
-    const user = await requireAuth(request)
+    @http.route('/api/public', type='json', auth='public', csrf=False)
+    def public_endpoint(self):
+        """Public API endpoint (CSRF disabled - must justify).
 
-    if (!hasPermission(user, permission)) {
-      throw new ApiError(403, 'Insufficient permissions')
-    }
-
-    return user
-  }
-}
-
-// Usage
-export const DELETE = requirePermission('delete')(async (request: Request) => {
-  // Handler with permission check
-})
+        CSRF disabled: Public API endpoint, read-only data.
+        No state modification, returns only public information.
+        """
+        return {'status': 'ok'}
 ```
 
-## Rate Limiting
-
-### Simple In-Memory Rate Limiter
-
-```typescript
-class RateLimiter {
-  private requests = new Map<string, number[]>()
-
-  async checkLimit(
-    identifier: string,
-    maxRequests: number,
-    windowMs: number
-  ): Promise<boolean> {
-    const now = Date.now()
-    const requests = this.requests.get(identifier) || []
-
-    // Remove old requests outside window
-    const recentRequests = requests.filter(time => now - time < windowMs)
-
-    if (recentRequests.length >= maxRequests) {
-      return false  // Rate limit exceeded
-    }
-
-    // Add current request
-    recentRequests.push(now)
-    this.requests.set(identifier, recentRequests)
-
-    return true
-  }
-}
-
-const limiter = new RateLimiter()
-
-export async function GET(request: Request) {
-  const ip = request.headers.get('x-forwarded-for') || 'unknown'
-
-  const allowed = await limiter.checkLimit(ip, 100, 60000)  // 100 req/min
-
-  if (!allowed) {
-    return NextResponse.json({
-      error: 'Rate limit exceeded'
-    }, { status: 429 })
-  }
-
-  // Continue with request
-}
-```
-
-## Background Jobs & Queues
-
-### Simple Queue Pattern
-
-```typescript
-class JobQueue<T> {
-  private queue: T[] = []
-  private processing = false
-
-  async add(job: T): Promise<void> {
-    this.queue.push(job)
-
-    if (!this.processing) {
-      this.process()
-    }
-  }
-
-  private async process(): Promise<void> {
-    this.processing = true
-
-    while (this.queue.length > 0) {
-      const job = this.queue.shift()!
-
-      try {
-        await this.execute(job)
-      } catch (error) {
-        console.error('Job failed:', error)
-      }
-    }
-
-    this.processing = false
-  }
-
-  private async execute(job: T): Promise<void> {
-    // Job execution logic
-  }
-}
-
-// Usage for indexing markets
-interface IndexJob {
-  marketId: string
-}
-
-const indexQueue = new JobQueue<IndexJob>()
-
-export async function POST(request: Request) {
-  const { marketId } = await request.json()
-
-  // Add to queue instead of blocking
-  await indexQueue.add({ marketId })
-
-  return NextResponse.json({ success: true, message: 'Job queued' })
-}
-```
-
-## Logging & Monitoring
-
-### Structured Logging
-
-```typescript
-interface LogContext {
-  userId?: string
-  requestId?: string
-  method?: string
-  path?: string
-  [key: string]: unknown
-}
-
-class Logger {
-  log(level: 'info' | 'warn' | 'error', message: string, context?: LogContext) {
-    const entry = {
-      timestamp: new Date().toISOString(),
-      level,
-      message,
-      ...context
-    }
-
-    console.log(JSON.stringify(entry))
-  }
-
-  info(message: string, context?: LogContext) {
-    this.log('info', message, context)
-  }
-
-  warn(message: string, context?: LogContext) {
-    this.log('warn', message, context)
-  }
-
-  error(message: string, error: Error, context?: LogContext) {
-    this.log('error', message, {
-      ...context,
-      error: error.message,
-      stack: error.stack
-    })
-  }
-}
-
-const logger = new Logger()
-
-// Usage
-export async function GET(request: Request) {
-  const requestId = crypto.randomUUID()
-
-  logger.info('Fetching markets', {
-    requestId,
-    method: 'GET',
-    path: '/api/markets'
-  })
-
-  try {
-    const markets = await fetchMarkets()
-    return NextResponse.json({ success: true, data: markets })
-  } catch (error) {
-    logger.error('Failed to fetch markets', error as Error, { requestId })
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
-  }
-}
-```
-
-**Remember**: Backend patterns enable scalable, maintainable server-side applications. Choose patterns that fit your complexity level.
+**Remember**: Odoo ORM patterns enable scalable, maintainable backend applications. Prefer ORM methods over raw SQL, use proper error handling, and always consider multi-company and access rights.

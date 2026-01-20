@@ -14,77 +14,52 @@
       "env": {
         "FIRECRAWL_API_KEY": "YOUR_FIRECRAWL_KEY_HERE"
       },
-      "description": "Web scraping and crawling"
-    },
-    "supabase": {
-      "command": "npx",
-      "args": ["-y", "@supabase/mcp-server-supabase@latest", "--project-ref=YOUR_PROJECT_REF"],
-      "description": "Supabase database operations"
+      "description": "Web scraping for Odoo documentation and community resources"
     },
     "memory": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-memory"],
-      "description": "Persistent memory across sessions"
+      "description": "Persistent memory across sessions - useful for tracking module state"
     },
     "sequential-thinking": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
-      "description": "Chain-of-thought reasoning"
-    },
-    "vercel": {
-      "type": "http",
-      "url": "https://mcp.vercel.com",
-      "description": "Vercel deployments and projects"
-    },
-    "railway": {
-      "command": "npx",
-      "args": ["-y", "@railway/mcp-server"],
-      "description": "Railway deployments"
-    },
-    "cloudflare-docs": {
-      "type": "http",
-      "url": "https://docs.mcp.cloudflare.com/mcp",
-      "description": "Cloudflare documentation search"
-    },
-    "cloudflare-workers-builds": {
-      "type": "http",
-      "url": "https://builds.mcp.cloudflare.com/mcp",
-      "description": "Cloudflare Workers builds"
-    },
-    "cloudflare-workers-bindings": {
-      "type": "http",
-      "url": "https://bindings.mcp.cloudflare.com/mcp",
-      "description": "Cloudflare Workers bindings"
-    },
-    "cloudflare-observability": {
-      "type": "http",
-      "url": "https://observability.mcp.cloudflare.com/mcp",
-      "description": "Cloudflare observability/logs"
-    },
-    "clickhouse": {
-      "type": "http",
-      "url": "https://mcp.clickhouse.cloud/mcp",
-      "description": "ClickHouse analytics queries"
+      "description": "Chain-of-thought reasoning for complex Odoo debugging"
     },
     "context7": {
       "command": "npx",
       "args": ["-y", "@context7/mcp-server"],
-      "description": "Live documentation lookup"
-    },
-    "magic": {
-      "command": "npx",
-      "args": ["-y", "@magicuidesign/mcp@latest"],
-      "description": "Magic UI components"
+      "description": "Live documentation lookup for Python libraries and Odoo API"
     },
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/projects"],
-      "description": "Filesystem operations (set your path)"
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/mnt/extra-addons"],
+      "description": "Filesystem operations for Odoo addons (set your addons path)"
+    },
+    "markitdown": {
+      "command": "npx",
+      "args": ["-y", "markitdown-mcp"],
+      "description": "Convert documents to markdown - useful for Odoo documentation"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-playwright"],
+      "description": "Browser automation for Odoo E2E testing"
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgresql://odoo:odoo@localhost:5432/odoo"
+      },
+      "description": "PostgreSQL direct access for Odoo database analysis"
     }
   },
   "_comments": {
     "usage": "Copy the servers you need to your ~/.claude.json mcpServers section",
     "env_vars": "Replace YOUR_*_HERE placeholders with actual values",
+    "odoo_paths": "Update filesystem path to match your Odoo addons directory",
+    "postgres": "Update connection string to match your Odoo database",
     "disabling": "Use disabledMcpServers array in project config to disable per-project",
     "context_warning": "Keep under 10 MCPs enabled to preserve context window"
   }

@@ -1,14 +1,14 @@
 ---
-description: Generate and run end-to-end tests with Playwright. Creates test journeys, runs tests, captures screenshots/videos/traces, and uploads artifacts.
+description: Generate and run end-to-end tests with Playwright for Odoo. Creates test journeys for Odoo workflows, captures screenshots/videos/traces, and uploads artifacts.
 ---
 
 # E2E Command
 
-This command invokes the **e2e-runner** agent to generate, maintain, and execute end-to-end tests using Playwright.
+This command invokes the **e2e-runner** agent to generate, maintain, and execute end-to-end tests using Playwright for Odoo web interface.
 
 ## What This Command Does
 
-1. **Generate Test Journeys** - Create Playwright tests for user flows
+1. **Generate Test Journeys** - Create Playwright tests for Odoo workflows
 2. **Run E2E Tests** - Execute tests across browsers
 3. **Capture Artifacts** - Screenshots, videos, traces on failures
 4. **Upload Results** - HTML reports and JUnit XML
@@ -17,141 +17,150 @@ This command invokes the **e2e-runner** agent to generate, maintain, and execute
 ## When to Use
 
 Use `/e2e` when:
-- Testing critical user journeys (login, trading, payments)
-- Verifying multi-step flows work end-to-end
+- Testing critical Odoo workflows (sales, purchases, HR)
+- Verifying multi-step wizard flows
 - Testing UI interactions and navigation
-- Validating integration between frontend and backend
+- Validating form submissions and validations
 - Preparing for production deployment
 
 ## How It Works
 
 The e2e-runner agent will:
 
-1. **Analyze user flow** and identify test scenarios
-2. **Generate Playwright test** using Page Object Model pattern
-3. **Run tests** across multiple browsers (Chrome, Firefox, Safari)
+1. **Analyze Odoo workflow** and identify test scenarios
+2. **Generate Playwright test** using Odoo-specific selectors
+3. **Run tests** across browsers (Chrome, Firefox)
 4. **Capture failures** with screenshots, videos, and traces
 5. **Generate report** with results and artifacts
-6. **Identify flaky tests** and recommend fixes
+
+## Odoo-Specific Selectors
+
+Odoo uses specific selectors for elements:
+
+```typescript
+// Field selectors
+page.locator('[data-name="partner_id"]')
+page.locator('.o_field_widget[name="name"]')
+page.locator('.o_field_many2one[name="company_id"]')
+
+// Button selectors
+page.locator('button.o_form_button_save')
+page.locator('button[name="action_confirm"]')
+page.locator('.o_statusbar_status button[data-value="confirmed"]')
+
+// Menu selectors
+page.locator('.o_menu_entry_lvl_1:has-text("Sales")')
+page.locator('.o_menu_entry_lvl_2:has-text("Orders")')
+
+// Form elements
+page.locator('.o_form_view')
+page.locator('.o_list_view')
+page.locator('.o_kanban_view')
+
+// Chatter
+page.locator('.o_chatter')
+page.locator('.o_Message')
+```
 
 ## Example Usage
 
 ```
-User: /e2e Test the market search and view flow
+User: /e2e Test the sale order creation and confirmation flow
 
 Agent (e2e-runner):
-# E2E Test Generation: Market Search and View Flow
+# E2E Test Generation: Sale Order Workflow
 
 ## Test Scenario Identified
 
-**User Journey:** Market Search → View Results → Click Market → View Details
+**User Journey:** Create Sale Order → Add Lines → Confirm → Create Invoice
 
 **Test Coverage:**
-1. Navigate to markets page
-2. Perform semantic search
-3. Verify search results
-4. Click on first result
-5. Verify market details page loads
-6. Verify chart renders
+1. Navigate to Sales > Orders
+2. Create new sale order
+3. Select customer
+4. Add order line with product
+5. Save and confirm order
+6. Verify order state changes
 
 ## Generated Test Code
 
 ```typescript
-// tests/e2e/markets/search-and-view.spec.ts
+// tests/e2e/sales/order-workflow.spec.ts
 import { test, expect } from '@playwright/test'
-import { MarketsPage } from '../../pages/MarketsPage'
-import { MarketDetailsPage } from '../../pages/MarketDetailsPage'
 
-test.describe('Market Search and View Flow', () => {
-  test('user can search markets and view details', async ({ page }) => {
-    // 1. Navigate to markets page
-    const marketsPage = new MarketsPage(page)
-    await marketsPage.goto()
-
-    // Verify page loaded
-    await expect(page).toHaveTitle(/Markets/)
-    await expect(page.locator('h1')).toContainText('Markets')
-
-    // 2. Perform semantic search
-    await marketsPage.searchMarkets('election')
-
-    // Wait for API response
-    await page.waitForResponse(resp =>
-      resp.url().includes('/api/markets/search') && resp.status() === 200
-    )
-
-    // 3. Verify search results
-    const marketCards = marketsPage.marketCards
-    await expect(marketCards.first()).toBeVisible()
-    const resultCount = await marketCards.count()
-    expect(resultCount).toBeGreaterThan(0)
-
-    // Take screenshot of search results
-    await page.screenshot({ path: 'artifacts/search-results.png' })
-
-    // 4. Click on first result
-    const firstMarketTitle = await marketCards.first().textContent()
-    await marketCards.first().click()
-
-    // 5. Verify market details page loads
-    await expect(page).toHaveURL(/\/markets\/[a-z0-9-]+/)
-
-    const detailsPage = new MarketDetailsPage(page)
-    await expect(detailsPage.marketName).toBeVisible()
-    await expect(detailsPage.marketDescription).toBeVisible()
-
-    // 6. Verify chart renders
-    await expect(detailsPage.priceChart).toBeVisible()
-
-    // Verify market name matches
-    const detailsTitle = await detailsPage.marketName.textContent()
-    expect(detailsTitle?.toLowerCase()).toContain(
-      firstMarketTitle?.toLowerCase().substring(0, 20) || ''
-    )
-
-    // Take screenshot of market details
-    await page.screenshot({ path: 'artifacts/market-details.png' })
+test.describe('Sale Order Workflow', () => {
+  test.beforeEach(async ({ page }) => {
+    // Login to Odoo
+    await page.goto('http://localhost:8069/web/login')
+    await page.fill('input[name="login"]', 'admin')
+    await page.fill('input[name="password"]', 'admin')
+    await page.click('button[type="submit"]')
+    await page.waitForURL('**/web#*')
   })
 
-  test('search with no results shows empty state', async ({ page }) => {
-    const marketsPage = new MarketsPage(page)
-    await marketsPage.goto()
+  test('user can create and confirm sale order', async ({ page }) => {
+    // 1. Navigate to Sales > Orders
+    await page.click('.o_menu_entry_lvl_1:has-text("Sales")')
+    await page.click('.o_menu_entry_lvl_2:has-text("Orders")')
+    await page.waitForSelector('.o_list_view')
 
-    // Search for non-existent market
-    await marketsPage.searchMarkets('xyznonexistentmarket123456')
+    // 2. Click Create button
+    await page.click('.o_list_button_add')
+    await page.waitForSelector('.o_form_view')
 
-    // Verify empty state
-    await expect(page.locator('[data-testid="no-results"]')).toBeVisible()
-    await expect(page.locator('[data-testid="no-results"]')).toContainText(
-      /no.*results|no.*markets/i
-    )
+    // 3. Select customer (Many2one field)
+    await page.click('.o_field_many2one[name="partner_id"] input')
+    await page.fill('.o_field_many2one[name="partner_id"] input', 'Azure')
+    await page.waitForSelector('.o_m2o_dropdown_option')
+    await page.click('.o_m2o_dropdown_option:first-child')
 
-    const marketCount = await marketsPage.marketCards.count()
-    expect(marketCount).toBe(0)
+    // 4. Add order line
+    await page.click('.o_field_x2many[name="order_line"] .o_field_x2many_list_row_add a')
+
+    // Select product
+    await page.click('.o_field_many2one[name="product_id"] input')
+    await page.fill('.o_field_many2one[name="product_id"] input', 'Office')
+    await page.waitForSelector('.o_m2o_dropdown_option')
+    await page.click('.o_m2o_dropdown_option:first-child')
+
+    // Set quantity
+    await page.fill('.o_field_widget[name="product_uom_qty"] input', '5')
+
+    // 5. Save the order
+    await page.click('button.o_form_button_save')
+    await page.waitForSelector('.o_form_status_indicator_buttons:not(.o_form_status_saved)')
+
+    // Take screenshot of created order
+    await page.screenshot({ path: 'artifacts/sale-order-created.png' })
+
+    // 6. Confirm the order
+    await page.click('button[name="action_confirm"]')
+
+    // Wait for state change
+    await page.waitForSelector('.o_statusbar_status button.btn-primary:has-text("Sales Order")')
+
+    // Verify order is confirmed
+    const stateButton = page.locator('.o_statusbar_status button.btn-primary')
+    await expect(stateButton).toContainText('Sales Order')
+
+    // Take screenshot of confirmed order
+    await page.screenshot({ path: 'artifacts/sale-order-confirmed.png' })
   })
 
-  test('can clear search and see all markets again', async ({ page }) => {
-    const marketsPage = new MarketsPage(page)
-    await marketsPage.goto()
+  test('order validation fails without customer', async ({ page }) => {
+    // Navigate to Sales > Orders
+    await page.click('.o_menu_entry_lvl_1:has-text("Sales")')
+    await page.click('.o_menu_entry_lvl_2:has-text("Orders")')
 
-    // Initial market count
-    const initialCount = await marketsPage.marketCards.count()
+    // Create new order without customer
+    await page.click('.o_list_button_add')
+    await page.waitForSelector('.o_form_view')
 
-    // Perform search
-    await marketsPage.searchMarkets('trump')
-    await page.waitForLoadState('networkidle')
+    // Try to save without customer
+    await page.click('button.o_form_button_save')
 
-    // Verify filtered results
-    const filteredCount = await marketsPage.marketCards.count()
-    expect(filteredCount).toBeLessThan(initialCount)
-
-    // Clear search
-    await marketsPage.searchInput.clear()
-    await page.waitForLoadState('networkidle')
-
-    // Verify all markets shown again
-    const finalCount = await marketsPage.marketCards.count()
-    expect(finalCount).toBe(initialCount)
+    // Verify validation error appears
+    await expect(page.locator('.o_notification_manager')).toContainText('required')
   })
 })
 ```
@@ -160,19 +169,18 @@ test.describe('Market Search and View Flow', () => {
 
 ```bash
 # Run the generated test
-npx playwright test tests/e2e/markets/search-and-view.spec.ts
+npx playwright test tests/e2e/sales/order-workflow.spec.ts
 
-Running 3 tests using 3 workers
+Running 2 tests using 2 workers
 
-  ✓  [chromium] › search-and-view.spec.ts:5:3 › user can search markets and view details (4.2s)
-  ✓  [chromium] › search-and-view.spec.ts:52:3 › search with no results shows empty state (1.8s)
-  ✓  [chromium] › search-and-view.spec.ts:67:3 › can clear search and see all markets again (2.9s)
+  ✓  [chromium] › order-workflow.spec.ts:10:3 › user can create and confirm sale order (8.2s)
+  ✓  [chromium] › order-workflow.spec.ts:62:3 › order validation fails without customer (3.1s)
 
-  3 passed (9.1s)
+  2 passed (11.5s)
 
 Artifacts generated:
-- artifacts/search-results.png
-- artifacts/market-details.png
+- artifacts/sale-order-created.png
+- artifacts/sale-order-confirmed.png
 - playwright-report/index.html
 ```
 
@@ -183,162 +191,93 @@ Artifacts generated:
 ║                    E2E Test Results                          ║
 ╠══════════════════════════════════════════════════════════════╣
 ║ Status:     ✅ ALL TESTS PASSED                              ║
-║ Total:      3 tests                                          ║
-║ Passed:     3 (100%)                                         ║
-║ Failed:     0                                                ║
-║ Flaky:      0                                                ║
-║ Duration:   9.1s                                             ║
+║ Total:      2 tests                                          ║
+║ Passed:     2 (100%)                                         ║
+║ Duration:   11.5s                                            ║
 ╚══════════════════════════════════════════════════════════════╝
 
 Artifacts:
 📸 Screenshots: 2 files
-📹 Videos: 0 files (only on failure)
-🔍 Traces: 0 files (only on failure)
 📊 HTML Report: playwright-report/index.html
 
 View report: npx playwright show-report
 ```
 
-✅ E2E test suite ready for CI/CD integration!
+✅ E2E test suite ready!
 ```
 
-## Test Artifacts
+## Odoo Critical Flows
 
-When tests run, the following artifacts are captured:
-
-**On All Tests:**
-- HTML Report with timeline and results
-- JUnit XML for CI integration
-
-**On Failure Only:**
-- Screenshot of the failing state
-- Video recording of the test
-- Trace file for debugging (step-by-step replay)
-- Network logs
-- Console logs
-
-## Viewing Artifacts
-
-```bash
-# View HTML report in browser
-npx playwright show-report
-
-# View specific trace file
-npx playwright show-trace artifacts/trace-abc123.zip
-
-# Screenshots are saved in artifacts/ directory
-open artifacts/search-results.png
-```
-
-## Flaky Test Detection
-
-If a test fails intermittently:
-
-```
-⚠️  FLAKY TEST DETECTED: tests/e2e/markets/trade.spec.ts
-
-Test passed 7/10 runs (70% pass rate)
-
-Common failure:
-"Timeout waiting for element '[data-testid="confirm-btn"]'"
-
-Recommended fixes:
-1. Add explicit wait: await page.waitForSelector('[data-testid="confirm-btn"]')
-2. Increase timeout: { timeout: 10000 }
-3. Check for race conditions in component
-4. Verify element is not hidden by animation
-
-Quarantine recommendation: Mark as test.fixme() until fixed
-```
-
-## Browser Configuration
-
-Tests run on multiple browsers by default:
-- ✅ Chromium (Desktop Chrome)
-- ✅ Firefox (Desktop)
-- ✅ WebKit (Desktop Safari)
-- ✅ Mobile Chrome (optional)
-
-Configure in `playwright.config.ts` to adjust browsers.
-
-## CI/CD Integration
-
-Add to your CI pipeline:
-
-```yaml
-# .github/workflows/e2e.yml
-- name: Install Playwright
-  run: npx playwright install --with-deps
-
-- name: Run E2E tests
-  run: npx playwright test
-
-- name: Upload artifacts
-  if: always()
-  uses: actions/upload-artifact@v3
-  with:
-    name: playwright-report
-    path: playwright-report/
-```
-
-## PMX-Specific Critical Flows
-
-For PMX, prioritize these E2E tests:
+Prioritize these E2E tests:
 
 **🔴 CRITICAL (Must Always Pass):**
-1. User can connect wallet
-2. User can browse markets
-3. User can search markets (semantic search)
-4. User can view market details
-5. User can place trade (with test funds)
-6. Market resolves correctly
-7. User can withdraw funds
+1. User can login
+2. User can navigate to module
+3. User can create/edit records
+4. Workflow buttons work (confirm, cancel, etc.)
+5. Computed fields update correctly
+6. One2many/Many2many fields work
 
 **🟡 IMPORTANT:**
-1. Market creation flow
-2. User profile updates
-3. Real-time price updates
-4. Chart rendering
-5. Filter and sort markets
-6. Mobile responsive layout
+1. Search filters work
+2. Reports generate correctly
+3. Wizards complete successfully
+4. Attachments upload
+5. Chatter messages post
+
+## Playwright Configuration for Odoo
+
+```typescript
+// playwright.config.ts
+import { defineConfig } from '@playwright/test'
+
+export default defineConfig({
+  testDir: './tests/e2e',
+  timeout: 60000,  // Odoo can be slow
+  use: {
+    baseURL: process.env.ODOO_URL || 'http://localhost:8069',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+    trace: 'retain-on-failure',
+  },
+  projects: [
+    { name: 'chromium', use: { browserName: 'chromium' } },
+    { name: 'firefox', use: { browserName: 'firefox' } },
+  ],
+})
+```
+
+## Environment Setup
+
+```bash
+# Set Odoo URL for tests
+export ODOO_URL=http://localhost:$ODOO_PORT
+
+# Install Playwright
+npm init -y
+npm install -D @playwright/test
+npx playwright install
+
+# Run tests
+npx playwright test
+```
 
 ## Best Practices
 
 **DO:**
-- ✅ Use Page Object Model for maintainability
-- ✅ Use data-testid attributes for selectors
-- ✅ Wait for API responses, not arbitrary timeouts
-- ✅ Test critical user journeys end-to-end
-- ✅ Run tests before merging to main
-- ✅ Review artifacts when tests fail
+- ✅ Use Odoo-specific selectors (data-name, o_field_widget)
+- ✅ Wait for network idle after actions
+- ✅ Handle Odoo's async field updates
+- ✅ Test critical workflows end-to-end
+- ✅ Capture screenshots at key steps
+- ✅ Use test database (not production)
 
 **DON'T:**
-- ❌ Use brittle selectors (CSS classes can change)
-- ❌ Test implementation details
-- ❌ Run tests against production
-- ❌ Ignore flaky tests
-- ❌ Skip artifact review on failures
+- ❌ Use CSS classes that may change
+- ❌ Test against production database
+- ❌ Ignore Odoo's loading states
 - ❌ Test every edge case with E2E (use unit tests)
-
-## Important Notes
-
-**CRITICAL for PMX:**
-- E2E tests involving real money MUST run on testnet/staging only
-- Never run trading tests against production
-- Set `test.skip(process.env.NODE_ENV === 'production')` for financial tests
-- Use test wallets with small test funds only
-
-## Integration with Other Commands
-
-- Use `/plan` to identify critical journeys to test
-- Use `/tdd` for unit tests (faster, more granular)
-- Use `/e2e` for integration and user journey tests
-- Use `/code-review` to verify test quality
-
-## Related Agents
-
-This command invokes the `e2e-runner` agent located at:
-`~/.claude/agents/e2e-runner.md`
+- ❌ Hardcode record IDs
 
 ## Quick Commands
 
@@ -347,7 +286,7 @@ This command invokes the `e2e-runner` agent located at:
 npx playwright test
 
 # Run specific test file
-npx playwright test tests/e2e/markets/search.spec.ts
+npx playwright test tests/e2e/sales/order.spec.ts
 
 # Run in headed mode (see browser)
 npx playwright test --headed
@@ -355,9 +294,14 @@ npx playwright test --headed
 # Debug test
 npx playwright test --debug
 
-# Generate test code
-npx playwright codegen http://localhost:3000
+# Generate test code interactively
+npx playwright codegen http://localhost:$ODOO_PORT
 
 # View report
 npx playwright show-report
 ```
+
+## Related Agents
+
+This command invokes the `e2e-runner` agent located at:
+`~/.claude/agents/e2e-runner.md`
