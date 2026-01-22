@@ -1,19 +1,61 @@
 # Oh My Claude Code
 
-Principles-first workflow system for Claude Code.
+> Claude Code를 원칙 기반으로 작동하게 만드는 설정
 
-## Installation
+**"Done" means proven, not claimed.**
 
-### For Humans
+---
 
-Copy and paste this to Claude Code:
+## Why
+
+Claude Code는 강력하지만, 가끔:
+- 코드를 읽지 않고 수정함
+- "완료"라고 하지만 테스트 안 돌림
+- 실패해도 계속 같은 시도를 반복
+- 기존 패턴 무시하고 새 패턴 도입
+
+**Oh My Claude Code**는 이 문제를 해결합니다.
+
+---
+
+## 7 Principles
+
+| # | Principle | Effect |
+|---|-----------|--------|
+| 1 | **Understand before modifying** | 수정 전 반드시 코드 읽기 |
+| 2 | **No completion without evidence** | 테스트/빌드 통과 증거 필수 |
+| 3 | **3 failures → STOP** | 3회 실패시 멈추고 질문 |
+| 4 | **Small changes, frequent verify** | 작게 변경, 자주 검증 |
+| 5 | **See the whole after completion** | 완료 후 전체 정리 |
+| 6 | **Research when uncertain** | 모르면 추측 말고 조사 |
+| 7 | **Respect existing patterns** | 기존 코드 스타일 따르기 |
+
+---
+
+## 5 Agents
+
+| Agent | Role |
+|-------|------|
+| `analyze` | 코드베이스 분석, LSP/AST-Grep 활용 |
+| `research` | 외부 문서/베스트 프랙티스 조사 |
+| `architect` | 시스템 설계, ADR 작성 |
+| `verify` | 빌드/테스트 실행, 증거 수집 |
+| `refine` | 구현 후 정리, 데드코드 제거 |
+
+---
+
+## Install
+
+**For Humans** - Claude Code에 복사:
 
 ```
-Install oh-my-claude-code by following:
+Install oh-my-claude-code:
 https://raw.githubusercontent.com/kekmodel/oh-my-claude-code/master/README.md
 ```
 
-### For LLM Agents
+**For Agents** - 아래 순서대로 실행:
+
+### 1. Core Setup
 
 ```bash
 git clone https://github.com/kekmodel/oh-my-claude-code.git /tmp/omcc
@@ -23,17 +65,72 @@ cp /tmp/omcc/rules/*.md ~/.claude/rules/
 rm -rf /tmp/omcc
 ```
 
-## What's Included
+### 2. LSP Setup (Optional but Recommended)
 
-**Rules**
-- `principles.md` - 7 core principles
-- `workflow.md` - Agent/tool orchestration
+LSP 활성화 - 쉘 프로필에 추가:
 
-**Agents**
-- `research.md` - External docs lookup
-- `architect.md` - System design
-- `verify.md` - Validation
-- `refine.md` - Cleanup
+```bash
+echo 'export ENABLE_LSP_TOOL=1' >> ~/.bashrc  # or ~/.zshrc
+```
+
+LSP 플러그인 설치:
+
+```bash
+claude plugin install pyright@claude-code-lsps       # Python
+claude plugin install vtsls@claude-code-lsps         # TypeScript/JavaScript
+claude plugin install gopls@claude-code-lsps         # Go
+claude plugin install rust-analyzer@claude-code-lsps # Rust
+```
+
+Language Server 설치 (프로젝트 언어에 맞게):
+
+```bash
+# Python
+npm install -g pyright
+
+# TypeScript
+npm install -g typescript-language-server typescript
+
+# Go
+go install golang.org/x/tools/gopls@latest
+
+# Rust
+rustup component add rust-analyzer
+```
+
+### 3. AST-Grep Setup (Optional)
+
+구조적 코드 검색을 위한 AST-Grep 설치:
+
+```bash
+# macOS
+brew install ast-grep
+
+# Linux (cargo)
+cargo install ast-grep --locked
+
+# npm
+npm install -g @ast-grep/cli
+```
+
+### 4. Verify & Notify
+
+설치 완료 후 확인:
+
+```bash
+ls ~/.claude/agents/*.md ~/.claude/rules/*.md
+```
+
+모든 파일이 존재하면 사용자에게 안내:
+
+```
+Oh My Claude Code 설치 완료!
+
+설정을 적용하려면 Claude Code를 종료하고 다시 시작해주세요.
+(Ctrl+C 또는 /exit 후 다시 claude 실행)
+```
+
+---
 
 ## License
 

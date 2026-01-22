@@ -37,7 +37,7 @@ Guidelines:
 
 ## When NOT to Use This Agent
 
-- Internal codebase exploration (use Explore)
+- Internal codebase analysis (use Analyze)
 - System design decisions (use Architect)
 - Code verification (use Verify)
 - Post-implementation cleanup (use Refine)

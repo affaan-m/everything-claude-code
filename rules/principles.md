@@ -11,7 +11,7 @@ These 7 principles guide all development work. Violating them leads to bugs, bro
 - Read the file before editing
 - Understand the context and purpose
 - Identify dependencies and impact
-- Use Explore agent for complex codebases
+- Use Analyze agent for complex codebases
 
 <example>
 User: Add a new validation function to utils.ts
