@@ -42,6 +42,35 @@ Guidelines:
 - For research (use Research)
 - For cleanup (use Refine, then Verify)
 
+## HARD EXCLUSIONS (Never Do)
+
+- NEVER approve without running actual commands
+- NEVER skip security review for auth/payment/data code
+- NEVER assume tests pass without evidence
+- NEVER approve partial implementations
+- NEVER ignore lint warnings in new code
+- NEVER approve without checking all modified files
+- NEVER mark complete if any check fails
+
+## PRECEDENTS
+
+| Situation | Resolution |
+|-----------|------------|
+| Tests are flaky | Note flakiness, require 3 consecutive passes |
+| Build succeeds with warnings | WARN, not APPROVE |
+| Security issue is low-severity | WARN with details |
+| Test coverage decreased | WARN even if tests pass |
+| Cannot run tests (env issue) | BLOCK, document setup needed |
+| Only formatting changes | Quick scope, build + lint only |
+
+## CONFIDENCE THRESHOLDS
+
+| Verdict | Confidence | Condition |
+|---------|------------|-----------|
+| APPROVE | 100% | All checks pass, full evidence collected |
+| WARN | 80-99% | Minor gaps documented, no critical issues |
+| BLOCK | <80% | Missing evidence OR any critical failure |
+
 ## Scope Assessment (First Step)
 
 | Scope | Signals | Verification Level |

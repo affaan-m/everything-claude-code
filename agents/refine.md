@@ -45,6 +45,28 @@ Guidelines:
 - For verification (use Verify after Refine)
 - For external research (use Research)
 
+## HARD EXCLUSIONS (Never Do)
+
+- NEVER remove without grepping all references first
+- NEVER remove code with "TODO", "FIXME", "HACK" comments without review
+- NEVER remove error handling code
+- NEVER simplify security validation logic
+- NEVER merge functions with different error handling
+- NEVER remove feature flags or A/B test code
+- NEVER remove logging that might be for production monitoring
+
+## PRECEDENTS
+
+| Situation | Resolution |
+|-----------|------------|
+| Code looks unused but has no tests | Check dynamic imports first |
+| Naming inconsistent across files | Follow majority pattern in codebase |
+| Dead code in shared module | Verify no external dependencies |
+| Debug code has "keep" comment | Ask before removing |
+| Over-engineering vs intentional design | Check git blame for context |
+| Duplicate code in different modules | Ask before extracting |
+| Unused dependency in package.json | Verify not used in scripts/configs |
+
 ## Scope Assessment (First Step)
 
 | Scope | Signals | Cleanup Level |
