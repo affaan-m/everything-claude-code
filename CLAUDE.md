@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Purpose
 
-Production-ready Claude Code configurations (agents, skills, hooks, commands, rules, contexts, MCP configs) from an Anthropic hackathon winner. Battle-tested over 10+ months of daily use.
+Production-ready Claude Code configurations for **any software development workflow**. Battle-tested automation for planning, coding, testing, and reviewing across languages and frameworks.
 
 ## Architecture
 
-This is a **configuration repository**, not a code project. It contains markdown files, JSON configs, and shell scripts that users copy to `~/.claude/` to customize Claude Code behavior.
+This is a **configuration repository**, not a code project. Copy files to `~/.claude/` to customize Claude Code behavior.
 
 ### Component Types
 
@@ -45,7 +45,7 @@ description: Brief description
 **Hooks** in `hooks/hooks.json`:
 ```json
 {
-  "matcher": "tool == \"Edit\" && tool_input.file_path matches \"...\""",
+  "matcher": "tool == \"Edit\" && tool_input.file_path matches \"...\"",
   "hooks": [{"type": "command", "command": "..."}],
   "description": "What this hook does"
 }
@@ -64,12 +64,28 @@ description: Brief description
 2. **Parallel execution** - Launch independent agents simultaneously
 3. **Plan before execute** - Use planner agent for complex features
 4. **Modular rules** - One domain per rule file, not monolithic configs
+5. **Language-agnostic core** - Workflow patterns work across any stack
 
 ## Model Selection for Agents
 
 - **opus** - Complex reasoning: planning, architecture, security review
 - **sonnet** - General tasks: code review, documentation, refactoring
 - **haiku** - Quick tasks: formatting, simple lookups, build error resolution
+
+## Adapting to Your Stack
+
+Skills and rules are **modular and composable**. Replace or extend for your technology:
+
+| Domain | Example Skills |
+|--------|----------------|
+| Web Frontend | `frontend-patterns.md` (React, Vue, Svelte) |
+| Web Backend | `backend-patterns.md` (Node, Django, Rails) |
+| Systems | `systems-patterns.md` (Rust, C++, Go) |
+| Mobile | `mobile-patterns.md` (Swift, Kotlin, Flutter) |
+| Data/ML | `data-patterns.md` (Python, SQL, Spark) |
+| DevOps | `devops-patterns.md` (Docker, K8s, Terraform) |
+
+**To add your stack:** Create `skills/your-stack-patterns.md` with domain rules.
 
 ## Conventions
 
@@ -107,3 +123,4 @@ description: Brief description
 2. Follow the format for that component type
 3. Test with Claude Code before submitting
 4. Use conventional commits: `feat:`, `fix:`, `docs:`
+5. Keep patterns language-agnostic where possible
