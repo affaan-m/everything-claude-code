@@ -98,7 +98,22 @@ go install golang.org/x/tools/gopls@latest
 rustup component add rust-analyzer
 ```
 
-### 3. Restart Claude Code
+### 3. AST-Grep Setup (Optional)
+
+구조적 코드 검색을 위한 AST-Grep 설치:
+
+```bash
+# macOS
+brew install ast-grep
+
+# Linux (cargo)
+cargo install ast-grep --locked
+
+# npm
+npm install -g @ast-grep/cli
+```
+
+### 4. Restart Claude Code
 
 설정 적용을 위해 Claude Code 재시작.
 
