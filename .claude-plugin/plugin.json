@@ -24,6 +24,5 @@
     "best-practices"
   ],
   "commands": "./commands",
-  "skills": "./skills",
-  "hooks": "./hooks/hooks.json"
+  "skills": "./skills"
 }
