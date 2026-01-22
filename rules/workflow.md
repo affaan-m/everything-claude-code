@@ -19,10 +19,10 @@ Classify every request before acting.
 
 | Situation | Agent | Trigger |
 |-----------|-------|---------|
-| Need to understand codebase | **Explore** (built-in) | Before any unfamiliar code change |
+| Need to understand codebase | **Explore** | Before any unfamiliar code change |
 | Need external documentation | **Research** | Unfamiliar API, library, pattern |
 | Need structural decisions | **Architect** | New feature, multi-component change |
-| Need implementation steps | **Plan** (built-in) | Multi-step implementation |
+| Need implementation steps | **Plan** | Multi-step implementation |
 | Need to validate changes | **Verify** | After implementation, before complete |
 | Need post-implementation cleanup | **Refine** | After feature complete, code feels messy |
 

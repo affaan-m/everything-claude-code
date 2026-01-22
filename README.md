@@ -32,10 +32,11 @@ Claude Code는 강력하지만, 가끔:
 
 ---
 
-## 4 Agents
+## 5 Agents
 
 | Agent | Role |
 |-------|------|
+| `explore` | 코드베이스 탐색, LSP/AST-Grep 활용 |
 | `research` | 외부 문서/베스트 프랙티스 조사 |
 | `architect` | 시스템 설계, ADR 작성 |
 | `verify` | 빌드/테스트 실행, 증거 수집 |
