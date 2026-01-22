@@ -23,11 +23,9 @@ Invokes the **planner** agent.
 
 ## Example
 
-```
-/plan I need to add real-time notifications when markets resolve
-
-Agent output:
-# Plan: Real-Time Notifications
+<example>
+User: /plan I need to add real-time notifications when markets resolve
+Assistant: # Plan: Real-Time Notifications
 
 ## Phases
 1. Database schema (notifications table)
@@ -40,7 +38,7 @@ Agent output:
 - MEDIUM: Performance at scale
 
 **WAITING FOR CONFIRMATION**: Proceed? (yes/no/modify)
-```
+</example>
 
 ## Responses
 
