@@ -29,4 +29,4 @@ Safely identify and remove dead code with test verification:
 
 6. Show summary of cleaned items
 
-Never delete code without running tests first!
+NEVER delete code without running tests first.

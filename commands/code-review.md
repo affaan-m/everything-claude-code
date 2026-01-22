@@ -41,4 +41,4 @@ Comprehensive security and quality review of uncommitted changes:
 
 4. Block commit if CRITICAL or HIGH issues found
 
-Never approve code with security vulnerabilities!
+NEVER approve code with security vulnerabilities.

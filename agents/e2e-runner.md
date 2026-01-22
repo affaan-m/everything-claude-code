@@ -65,7 +65,7 @@ test.skip(process.env.CI, 'Flaky in CI')
 
 - Use `[data-testid]` locators (not CSS classes)
 - Wait for responses: `await page.waitForResponse(r => r.url().includes('/api/'))`
-- Never use arbitrary `waitForTimeout`
+- NEVER use arbitrary `waitForTimeout`
 
 ## Config Essentials
 

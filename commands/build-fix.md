@@ -30,4 +30,4 @@ Incrementally fix TypeScript and build errors:
    - Errors remaining
    - New errors introduced
 
-Fix one error at a time for safety!
+Fix one error at a time for safety.
