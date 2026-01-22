@@ -1,7 +1,7 @@
 <!--
 name: 'Agent: Research'
 description: External research - documentation, best practices, implementation examples
-eccVersion: 1.0.0
+version: 1.0.0
 model: opus
 tools:
   - WebSearch

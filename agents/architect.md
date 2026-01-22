@@ -1,7 +1,7 @@
 <!--
 name: 'Agent: Architect'
 description: System design and architectural decisions for new features or major refactoring
-eccVersion: 1.0.0
+version: 1.0.0
 model: opus
 tools:
   - Read

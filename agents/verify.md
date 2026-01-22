@@ -1,7 +1,7 @@
 <!--
 name: 'Agent: Verify'
 description: Validation and evidence collection after implementation
-eccVersion: 1.0.0
+version: 1.0.0
 model: sonnet
 tools:
   - Read

@@ -1,7 +1,7 @@
 <!--
 name: 'Agent: Refine'
 description: Post-implementation cleanup and code cohesion
-eccVersion: 1.0.0
+version: 1.0.0
 model: sonnet
 tools:
   - Read

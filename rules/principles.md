@@ -1,7 +1,7 @@
 <!--
 name: Core Principles
 description: Non-negotiable principles that guide all development work
-eccVersion: 1.0.0
+version: 1.0.0
 priority: highest
 -->
 

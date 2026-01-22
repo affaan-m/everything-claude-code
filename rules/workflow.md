@@ -1,7 +1,7 @@
 <!--
 name: Workflow
 description: Orchestration rules for agents and tools
-eccVersion: 1.0.0
+version: 1.0.0
 priority: highest
 -->
 
