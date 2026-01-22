@@ -7,10 +7,7 @@
     "url": "https://x.com/affaanmustafa"
   },
   "homepage": "https://github.com/affaan-m/everything-claude-code",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/affaan-m/everything-claude-code.git"
-  },
+  "repository": "https://github.com/affaan-m/everything-claude-code.git",
   "license": "MIT",
   "keywords": [
     "claude-code",
@@ -25,9 +22,5 @@
     "workflow",
     "automation",
     "best-practices"
-  ],
-  "commands": "./commands",
-  "agents": "./agents",
-  "skills": "./skills",
-  "hooks": "./hooks/hooks.json"
+  ]
 }
