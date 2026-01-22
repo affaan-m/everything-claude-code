@@ -7,7 +7,7 @@ ALWAYS create new objects, NEVER mutate:
 ```javascript
 // WRONG: Mutation
 function updateUser(user, name) {
-  user.name = name  // MUTATION!
+  user.name = name  // MUTATION
   return user
 }
 
