@@ -42,8 +42,14 @@ The advanced techniques - token optimization, memory persistence across sessions
 
 ## What's Inside
 
+This repo is a **Claude Code plugin** - install it directly or copy components manually.
+
 ```
 everything-claude-code/
+|-- .claude-plugin/   # Plugin and marketplace manifests
+|   |-- plugin.json         # Plugin metadata and component paths
+|   |-- marketplace.json    # Marketplace catalog for /plugin marketplace add
+|
 |-- agents/           # Specialized subagents for delegation
 |   |-- planner.md           # Feature implementation planning
 |   |-- architect.md         # System design decisions
@@ -56,13 +62,15 @@ everything-claude-code/
 |   |-- doc-updater.md       # Documentation sync
 |
 |-- skills/           # Workflow definitions and domain knowledge
-|   |-- coding-standards.md         # Language best practices
-|   |-- backend-patterns.md         # API, database, caching patterns
-|   |-- frontend-patterns.md        # React, Next.js patterns
+|   |-- coding-standards/           # Language best practices
+|   |-- backend-patterns/           # API, database, caching patterns
+|   |-- frontend-patterns/          # React, Next.js patterns
 |   |-- continuous-learning/        # Auto-extract patterns from sessions (Longform Guide)
 |   |-- strategic-compact/          # Manual compaction suggestions (Longform Guide)
 |   |-- tdd-workflow/               # TDD methodology
 |   |-- security-review/            # Security checklist
+|   |-- eval-harness/               # Verification loop evaluation (Longform Guide)
+|   |-- verification-loop/          # Continuous verification (Longform Guide)
 |
 |-- commands/         # Slash commands for quick execution
 |   |-- tdd.md              # /tdd - Test-driven development
@@ -72,8 +80,10 @@ everything-claude-code/
 |   |-- build-fix.md        # /build-fix - Fix build errors
 |   |-- refactor-clean.md   # /refactor-clean - Dead code removal
 |   |-- learn.md            # /learn - Extract patterns mid-session (Longform Guide)
+|   |-- checkpoint.md       # /checkpoint - Save verification state (Longform Guide)
+|   |-- verify.md           # /verify - Run verification loop (Longform Guide)
 |
-|-- rules/            # Always-follow guidelines
+|-- rules/            # Always-follow guidelines (copy to ~/.claude/rules/)
 |   |-- security.md         # Mandatory security checks
 |   |-- coding-style.md     # Immutability, file organization
 |   |-- testing.md          # TDD, 80% coverage requirement
@@ -84,9 +94,6 @@ everything-claude-code/
 |-- hooks/            # Trigger-based automations
 |   |-- hooks.json                # All hooks config (PreToolUse, PostToolUse, Stop, etc.)
 |   |-- memory-persistence/       # Session lifecycle hooks (Longform Guide)
-|   |   |-- pre-compact.sh        # Save state before compaction
-|   |   |-- session-start.sh      # Load previous context
-|   |   |-- session-end.sh        # Persist learnings on end
 |   |-- strategic-compact/        # Compaction suggestions (Longform Guide)
 |
 |-- contexts/         # Dynamic system prompt injection contexts (Longform Guide)
@@ -97,20 +104,54 @@ everything-claude-code/
 |-- examples/         # Example configurations and sessions
 |   |-- CLAUDE.md           # Example project-level config
 |   |-- user-CLAUDE.md      # Example user-level config
-|   |-- sessions/           # Example session log files (Longform Guide)
 |
 |-- mcp-configs/      # MCP server configurations
 |   |-- mcp-servers.json    # GitHub, Supabase, Vercel, Railway, etc.
 |
-|-- plugins/          # Plugin ecosystem documentation
-    |-- README.md           # Plugins, marketplaces, skills guide
+|-- marketplace.json  # Self-hosted marketplace config (for /plugin marketplace add)
 ```
 
 ---
 
-## Quick Start
+## Installation
 
-### 1. Copy what you need
+### Option 1: Install as Plugin (Recommended)
+
+The easiest way to use this repo - install as a Claude Code plugin:
+
+```bash
+# Add this repo as a marketplace
+/plugin marketplace add affaan-m/everything-claude-code
+
+# Install the plugin
+/plugin install everything-claude-code@everything-claude-code
+```
+
+Or add directly to your `~/.claude/settings.json`:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "everything-claude-code": {
+      "source": {
+        "source": "github",
+        "repo": "affaan-m/everything-claude-code"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "everything-claude-code@everything-claude-code": true
+  }
+}
+```
+
+This gives you instant access to all commands, agents, skills, and hooks.
+
+---
+
+### Option 2: Manual Installation
+
+If you prefer manual control over what's installed:
 
 ```bash
 # Clone the repo
@@ -129,17 +170,19 @@ cp everything-claude-code/commands/*.md ~/.claude/commands/
 cp -r everything-claude-code/skills/* ~/.claude/skills/
 ```
 
-### 2. Add hooks to settings.json
+#### Add hooks to settings.json
 
 Copy the hooks from `hooks/hooks.json` to your `~/.claude/settings.json`.
 
-### 3. Configure MCPs
+#### Configure MCPs
 
 Copy desired MCP servers from `mcp-configs/mcp-servers.json` to your `~/.claude.json`.
 
 **Important:** Replace `YOUR_*_HERE` placeholders with your actual API keys.
 
-### 4. Read the guides
+---
+
+### Read the Guides
 
 Seriously, read the guides. These configs make 10x more sense with context.
 

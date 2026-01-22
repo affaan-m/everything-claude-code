@@ -47,7 +47,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/strategic-compact/suggest-compact.sh"
+            "command": "./hooks/strategic-compact/suggest-compact.sh"
           }
         ],
         "description": "Suggest manual compaction at logical intervals"
@@ -59,7 +59,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/memory-persistence/pre-compact.sh"
+            "command": "./hooks/memory-persistence/pre-compact.sh"
           }
         ],
         "description": "Save state before context compaction"
@@ -71,7 +71,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/memory-persistence/session-start.sh"
+            "command": "./hooks/memory-persistence/session-start.sh"
           }
         ],
         "description": "Load previous context on new session"
@@ -135,7 +135,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/memory-persistence/session-end.sh"
+            "command": "./hooks/memory-persistence/session-end.sh"
           }
         ],
         "description": "Persist session state on end"
@@ -145,7 +145,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/skills/continuous-learning/evaluate-session.sh"
+            "command": "./skills/continuous-learning/evaluate-session.sh"
           }
         ],
         "description": "Evaluate session for extractable patterns"
