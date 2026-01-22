@@ -76,8 +76,10 @@ echo 'export ENABLE_LSP_TOOL=1' >> ~/.bashrc  # or ~/.zshrc
 LSP 플러그인 설치:
 
 ```bash
-claude mcp add pyright -- npx -y @anthropic-ai/claude-code-mcp-lsp --lsp "npx -y pyright-langserver --stdio"
-claude mcp add typescript -- npx -y @anthropic-ai/claude-code-mcp-lsp --lsp "npx -y typescript-language-server --stdio"
+claude plugin install pyright@Piebald-AI/claude-code-lsps       # Python
+claude plugin install vtsls@Piebald-AI/claude-code-lsps         # TypeScript/JavaScript
+claude plugin install gopls@Piebald-AI/claude-code-lsps         # Go
+claude plugin install rust-analyzer@Piebald-AI/claude-code-lsps # Rust
 ```
 
 Language Server 설치 (프로젝트 언어에 맞게):
