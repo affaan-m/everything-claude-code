@@ -56,6 +56,7 @@ description: Brief description
 2. **Parallel execution** - Launch independent agents simultaneously
 3. **Plan before execute** - Use planner agent for complex features
 4. **Modular rules** - One domain per rule file, not monolithic configs
+5. **LSP-first** - Prefer LSP tools over text search for code navigation
 
 ## Conventions
 
