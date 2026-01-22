@@ -43,20 +43,9 @@ No errors → Continue
 
 ## LSP Setup
 
-**Option 1: Plugins (Recommended)**
 ```bash
 claude plugin install pyright-lsp      # Python
 claude plugin install typescript-lsp   # TypeScript
-```
-
-**Option 2: MCP Server**
-```bash
-# Install underlying LSP servers first
-pip install python-lsp-server          # Python
-npm install -g typescript-language-server  # TypeScript
-
-# Then add cclsp MCP
-claude mcp add cclsp
 ```
 
 ## Performance

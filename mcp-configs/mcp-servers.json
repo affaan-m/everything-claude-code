@@ -80,11 +80,6 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/projects"],
       "description": "Filesystem operations (set your path)"
-    },
-    "cclsp": {
-      "command": "npx",
-      "args": ["-y", "cclsp"],
-      "description": "LSP integration via MCP (requires: pylsp for Python, typescript-language-server for TS)"
     }
   },
   "_comments": {
