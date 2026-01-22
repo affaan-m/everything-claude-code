@@ -10,7 +10,7 @@ Classify every request before acting.
 |------|--------|--------|
 | **Trivial** | Single file, obvious fix, typo | Execute directly → Verify |
 | **Explicit** | Specific file/line given | Execute directly → Verify |
-| **Exploratory** | "How does X work?" | Explore → Answer |
+| **Exploratory** | "How does X work?" | Analyze → Answer |
 | **Research** | "What is best practice for X?" | Research → Answer |
 | **Design** | New feature, refactoring | Architect → Plan → Implement |
 | **Ambiguous** | Unclear scope or intent | Ask clarifying question |
@@ -19,7 +19,7 @@ Classify every request before acting.
 
 | Situation | Agent | Trigger |
 |-----------|-------|---------|
-| Need to understand codebase | **Explore** | Before any unfamiliar code change |
+| Need to understand codebase | **Analyze** | Before any unfamiliar code change |
 | Need external documentation | **Research** | Unfamiliar API, library, pattern |
 | Need structural decisions | **Architect** | New feature, multi-component change |
 | Need implementation steps | **Plan** | Multi-step implementation |
@@ -39,7 +39,7 @@ Classify every request before acting.
 [Codebase Assessment] ─── Understand current state
     │
     ▼
-[Explore] ─── Internal code understanding
+[Analyze] ─── Internal code understanding
     │
     ▼
 [Research] ─── External docs if needed (optional)
@@ -101,7 +101,7 @@ Evaluate before making changes.
 | Edit existing file | Edit | `sed` in Bash |
 | Create new file | Write | `echo >` in Bash |
 | Run commands | Bash | Only for actual commands |
-| Complex codebase search | Explore agent | Multiple Grep calls |
+| Complex codebase search | Analyze agent | Multiple Grep calls |
 
 ## Failure Protocol
 
