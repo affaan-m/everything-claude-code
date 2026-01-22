@@ -1,36 +1,58 @@
 # Oh My Claude Code
 
-Claude Code가 원칙을 따르고, 증거 기반으로 작업하고, 실패시 멈추도록 만드는 설정입니다.
+> Claude Code를 원칙 기반으로 작동하게 만드는 설정
 
-## What It Does
+**"Done" means proven, not claimed.**
 
-**7 Core Principles** - Claude Code가 항상 따르는 원칙
-1. 수정 전 코드 읽기
-2. 증거 없이 완료 없음
-3. 3회 실패시 STOP → REVERT → ASK
-4. 작은 변경, 자주 검증
-5. 완료 후 전체 정리
-6. 불확실하면 연구
-7. 기존 패턴 존중
+---
 
-**4 Specialized Agents** - 위임용 에이전트
-- `research` - 외부 문서/베스트 프랙티스 조사
-- `architect` - 시스템 설계
-- `verify` - 검증 및 증거 수집
-- `refine` - 구현 후 정리
+## Why
 
-## Installation
+Claude Code는 강력하지만, 가끔:
+- 코드를 읽지 않고 수정함
+- "완료"라고 하지만 테스트 안 돌림
+- 실패해도 계속 같은 시도를 반복
+- 기존 패턴 무시하고 새 패턴 도입
 
-### For Humans
+**Oh My Claude Code**는 이 문제를 해결합니다.
 
-Claude Code에 이 메시지 복사:
+---
+
+## 7 Principles
+
+| # | Principle | Effect |
+|---|-----------|--------|
+| 1 | **Understand before modifying** | 수정 전 반드시 코드 읽기 |
+| 2 | **No completion without evidence** | 테스트/빌드 통과 증거 필수 |
+| 3 | **3 failures → STOP** | 3회 실패시 멈추고 질문 |
+| 4 | **Small changes, frequent verify** | 작게 변경, 자주 검증 |
+| 5 | **See the whole after completion** | 완료 후 전체 정리 |
+| 6 | **Research when uncertain** | 모르면 추측 말고 조사 |
+| 7 | **Respect existing patterns** | 기존 코드 스타일 따르기 |
+
+---
+
+## 4 Agents
+
+| Agent | Role |
+|-------|------|
+| `research` | 외부 문서/베스트 프랙티스 조사 |
+| `architect` | 시스템 설계, ADR 작성 |
+| `verify` | 빌드/테스트 실행, 증거 수집 |
+| `refine` | 구현 후 정리, 데드코드 제거 |
+
+---
+
+## Install
+
+**For Humans** - Claude Code에 복사:
 
 ```
-Install oh-my-claude-code by following:
+Install oh-my-claude-code:
 https://raw.githubusercontent.com/kekmodel/oh-my-claude-code/master/README.md
 ```
 
-### For LLM Agents
+**For Agents**:
 
 ```bash
 git clone https://github.com/kekmodel/oh-my-claude-code.git /tmp/omcc
@@ -39,6 +61,8 @@ cp /tmp/omcc/agents/*.md ~/.claude/agents/
 cp /tmp/omcc/rules/*.md ~/.claude/rules/
 rm -rf /tmp/omcc
 ```
+
+---
 
 ## License
 
