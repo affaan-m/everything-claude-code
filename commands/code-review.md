@@ -1,44 +1,31 @@
 ---
-description: Comprehensive security and quality review of uncommitted changes. Checks for secrets, vulnerabilities, code quality.
+description: Comprehensive security and quality review of uncommitted changes.
 ---
 
-# Code Review
+Review uncommitted changes for security and quality issues.
 
-Comprehensive security and quality review of uncommitted changes:
+Steps:
+1. Get changed files: `git diff --name-only HEAD`
+2. For each file, check for issues by severity:
 
-1. Get changed files: git diff --name-only HEAD
-
-2. For each changed file, check for:
-
-**Security Issues (CRITICAL):**
+**CRITICAL (block commit):**
 - Hardcoded credentials, API keys, tokens
-- SQL injection vulnerabilities
-- XSS vulnerabilities  
+- SQL injection, XSS vulnerabilities
 - Missing input validation
-- Insecure dependencies
 - Path traversal risks
 
-**Code Quality (HIGH):**
-- Functions > 50 lines
-- Files > 800 lines
+**HIGH (should fix):**
+- Functions > 50 lines, files > 800 lines
 - Nesting depth > 4 levels
 - Missing error handling
 - console.log statements
-- TODO/FIXME comments
-- Missing JSDoc for public APIs
 
-**Best Practices (MEDIUM):**
-- Mutation patterns (use immutable instead)
-- Emoji usage in code/comments
+**MEDIUM (consider):**
+- Mutation patterns (use immutable)
 - Missing tests for new code
-- Accessibility issues (a11y)
+- Accessibility issues
 
-3. Generate report with:
-   - Severity: CRITICAL, HIGH, MEDIUM, LOW
-   - File location and line numbers
-   - Issue description
-   - Suggested fix
-
+3. Generate report: severity, file:line, issue, suggested fix
 4. Block commit if CRITICAL or HIGH issues found
 
 NEVER approve code with security vulnerabilities.

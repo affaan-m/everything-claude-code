@@ -2,48 +2,31 @@
 description: Create implementation plan and WAIT for user confirmation before coding.
 ---
 
-# /plan
+Create an implementation plan for: $ARGUMENTS
 
-Invokes the **planner** agent.
+Steps:
+1. Analyze requirements and identify success criteria
+2. Review existing codebase for affected components
+3. Break down into phases with specific steps and file paths
+4. Identify dependencies and risks (HIGH/MEDIUM/LOW)
+5. **WAIT for user confirmation before coding**
 
-## When to Use
-
-- Starting a new feature
-- Significant architectural changes
-- Complex refactoring
-- Multiple files affected
-- Unclear requirements
-
-## What It Does
-
-1. Restate requirements clearly
-2. Break down into phases with specific steps
-3. Identify dependencies and risks
-4. **WAIT for user confirmation before coding**
-
-## Example
-
-<example>
-User: /plan I need to add real-time notifications when markets resolve
-Assistant: # Plan: Real-Time Notifications
+Output format:
+```
+# Plan: [Feature Name]
 
 ## Phases
-1. Database schema (notifications table)
-2. Notification service with queue
-3. Integration with market resolution
-4. Frontend components
+1. [Phase]: [Details]
+2. [Phase]: [Details]
 
 ## Risks
-- HIGH: Email deliverability
-- MEDIUM: Performance at scale
+- HIGH: [Risk]
+- MEDIUM: [Risk]
 
 **WAITING FOR CONFIRMATION**: Proceed? (yes/no/modify)
-</example>
+```
 
-## Responses
-
-- "yes" / "proceed" → Start implementation
-- "modify: [changes]" → Revise plan
-- "no" → Cancel
-
-See `agents/planner.md` for details.
+User responses:
+- "yes" / "proceed" - Start implementation
+- "modify: [changes]" - Revise plan
+- "no" - Cancel
