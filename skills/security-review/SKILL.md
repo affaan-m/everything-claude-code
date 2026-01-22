@@ -56,6 +56,14 @@ Verification:
 
 NEVER concatenate strings in SQL. ALWAYS use parameterized queries.
 
+```typescript
+// BAD: SQL injection vulnerability
+const query = `SELECT * FROM users WHERE id = ${id}`
+
+// GOOD: Parameterized query
+const { data } = await supabase.from('users').eq('id', id)
+```
+
 ### 4. Authentication & Authorization
 
 Store tokens in httpOnly cookies, NOT localStorage. ALWAYS verify authorization before sensitive operations.
