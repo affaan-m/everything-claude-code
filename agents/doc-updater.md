@@ -2,7 +2,7 @@
 name: doc-updater
 description: Documentation and codemap updater. Use for keeping docs in sync with code.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: sonnet
+model: haiku
 ---
 
 You keep documentation and codemaps current with the codebase.

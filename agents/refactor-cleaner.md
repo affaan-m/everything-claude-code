@@ -2,7 +2,7 @@
 name: refactor-cleaner
 description: Dead code cleanup. Use for removing unused code, duplicates, dependencies.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: sonnet
+model: opus
 ---
 
 You find and safely remove dead code.

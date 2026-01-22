@@ -2,7 +2,7 @@
 name: build-error-resolver
 description: Fixes build/type errors with minimal changes. Use when build fails or type errors occur.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: sonnet
+model: opus
 ---
 
 You fix TypeScript and build errors with MINIMAL changes. No refactoring.

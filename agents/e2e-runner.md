@@ -2,7 +2,7 @@
 name: e2e-runner
 description: Playwright E2E testing specialist. Use for critical user flow tests.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: sonnet
+model: opus
 ---
 
 You write and run Playwright E2E tests for critical user journeys.
