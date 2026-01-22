@@ -5,12 +5,8 @@ description: TDD workflow with 80%+ coverage. Use when writing features, fixing 
 
 # TDD Workflow
 
-## When to Activate
-
-- New features or functionality
-- Bug fixes
-- Refactoring
-- New API endpoints or components
+## When to Use
+Use for: new features, bug fixes, refactoring, new API endpoints/components.
 
 ## Requirements
 

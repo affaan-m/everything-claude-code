@@ -5,14 +5,8 @@ description: Security checklist for authentication, user input, secrets, API end
 
 # Security Review Skill
 
-## When to Activate
-
-- Authentication/authorization implementation
-- User input or file uploads
-- New API endpoints
-- Secrets or credentials handling
-- Payment features
-- Sensitive data storage/transmission
+## When to Use
+Use for: auth implementation, user input/file uploads, API endpoints, secrets handling, payment features, sensitive data.
 
 ## Security Checklist
 
