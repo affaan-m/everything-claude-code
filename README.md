@@ -113,9 +113,22 @@ cargo install ast-grep --locked
 npm install -g @ast-grep/cli
 ```
 
-### 4. Restart Claude Code
+### 4. Verify & Notify
 
-**사용자 액션 필요**: 설정 적용을 위해 Claude Code를 종료하고 다시 시작해주세요.
+설치 완료 후 확인:
+
+```bash
+ls ~/.claude/agents/*.md ~/.claude/rules/*.md
+```
+
+모든 파일이 존재하면 사용자에게 안내:
+
+```
+Oh My Claude Code 설치 완료!
+
+설정을 적용하려면 Claude Code를 종료하고 다시 시작해주세요.
+(Ctrl+C 또는 /exit 후 다시 claude 실행)
+```
 
 ---
 
