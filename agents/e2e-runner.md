@@ -500,28 +500,28 @@ test('market search with complex query', async ({ page }) => {
 
 **1. Race Conditions**
 ```typescript
-// ❌ FLAKY: Don't assume element is ready
+// BAD: FLAKY: Don't assume element is ready
 await page.click('[data-testid="button"]')
 
-// ✅ STABLE: Wait for element to be ready
+// GOOD: STABLE: Wait for element to be ready
 await page.locator('[data-testid="button"]').click() // Built-in auto-wait
 ```
 
 **2. Network Timing**
 ```typescript
-// ❌ FLAKY: Arbitrary timeout
+// BAD: FLAKY: Arbitrary timeout
 await page.waitForTimeout(5000)
 
-// ✅ STABLE: Wait for specific condition
+// GOOD: STABLE: Wait for specific condition
 await page.waitForResponse(resp => resp.url().includes('/api/markets'))
 ```
 
 **3. Animation Timing**
 ```typescript
-// ❌ FLAKY: Click during animation
+// BAD: FLAKY: Click during animation
 await page.click('[data-testid="menu-item"]')
 
-// ✅ STABLE: Wait for animation to complete
+// GOOD: STABLE: Wait for animation to complete
 await page.locator('[data-testid="menu-item"]').waitFor({ state: 'visible' })
 await page.waitForLoadState('networkidle')
 await page.click('[data-testid="menu-item"]')
@@ -620,7 +620,7 @@ jobs:
 
 **Date:** YYYY-MM-DD HH:MM
 **Duration:** Xm Ys
-**Status:** ✅ PASSING / ❌ FAILING
+**Status:** PASSING / FAILING
 
 ## Summary
 
@@ -633,20 +633,20 @@ jobs:
 ## Test Results by Suite
 
 ### Markets - Browse & Search
-- ✅ user can browse markets (2.3s)
-- ✅ semantic search returns relevant results (1.8s)
-- ✅ search handles no results (1.2s)
-- ❌ search with special characters (0.9s)
+- [PASS] user can browse markets (2.3s)
+- [PASS] semantic search returns relevant results (1.8s)
+- [PASS] search handles no results (1.2s)
+- [FAIL] search with special characters (0.9s)
 
 ### Wallet - Connection
-- ✅ user can connect MetaMask (3.1s)
-- ⚠️  user can connect Phantom (2.8s) - FLAKY
-- ✅ user can disconnect wallet (1.5s)
+- [PASS] user can connect MetaMask (3.1s)
+- [WARN]  user can connect Phantom (2.8s) - FLAKY
+- [PASS] user can disconnect wallet (1.5s)
 
 ### Trading - Core Flows
-- ✅ user can place buy order (5.2s)
-- ❌ user can place sell order (4.8s)
-- ✅ insufficient balance shows error (1.9s)
+- [PASS] user can place buy order (5.2s)
+- [FAIL] user can place sell order (4.8s)
+- [PASS] insufficient balance shows error (1.9s)
 
 ## Failed Tests
 
@@ -695,13 +695,13 @@ jobs:
 ## Success Metrics
 
 After E2E test run:
-- ✅ All critical journeys passing (100%)
-- ✅ Pass rate > 95% overall
-- ✅ Flaky rate < 5%
-- ✅ No failed tests blocking deployment
-- ✅ Artifacts uploaded and accessible
-- ✅ Test duration < 10 minutes
-- ✅ HTML report generated
+- [PASS] All critical journeys passing (100%)
+- [PASS] Pass rate > 95% overall
+- [PASS] Flaky rate < 5%
+- [PASS] No failed tests blocking deployment
+- [PASS] Artifacts uploaded and accessible
+- [PASS] Test duration < 10 minutes
+- [PASS] HTML report generated
 
 ---
 

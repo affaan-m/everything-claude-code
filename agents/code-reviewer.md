@@ -81,15 +81,15 @@ File: src/api/client.ts:42
 Issue: API key exposed in source code
 Fix: Move to environment variable
 
-const apiKey = "sk-abc123";  // ❌ Bad
-const apiKey = process.env.API_KEY;  // ✓ Good
+const apiKey = "sk-abc123";  // BAD: Bad
+const apiKey = process.env.API_KEY;  // GOOD: Good
 ```
 
 ## Approval Criteria
 
-- ✅ Approve: No CRITICAL or HIGH issues
-- ⚠️ Warning: MEDIUM issues only (can merge with caution)
-- ❌ Block: CRITICAL or HIGH issues found
+- [APPROVE] Approve: No CRITICAL or HIGH issues
+- [WARN] Warning: MEDIUM issues only (can merge with caution)
+- [BLOCK] Block: CRITICAL or HIGH issues found
 
 ## Project-Specific Guidelines (Example)
 

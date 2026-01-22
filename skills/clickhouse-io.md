@@ -86,7 +86,7 @@ ORDER BY hour DESC;
 ### Efficient Filtering
 
 ```sql
--- ✅ GOOD: Use indexed columns first
+-- GOOD: GOOD: Use indexed columns first
 SELECT *
 FROM markets_analytics
 WHERE date >= '2025-01-01'
@@ -95,7 +95,7 @@ WHERE date >= '2025-01-01'
 ORDER BY date DESC
 LIMIT 100;
 
--- ❌ BAD: Filter on non-indexed columns first
+-- BAD: BAD: Filter on non-indexed columns first
 SELECT *
 FROM markets_analytics
 WHERE volume > 1000
@@ -106,7 +106,7 @@ WHERE volume > 1000
 ### Aggregations
 
 ```sql
--- ✅ GOOD: Use ClickHouse-specific aggregation functions
+-- GOOD: GOOD: Use ClickHouse-specific aggregation functions
 SELECT
     toStartOfDay(created_at) AS day,
     market_id,
@@ -119,7 +119,7 @@ WHERE created_at >= today() - INTERVAL 7 DAY
 GROUP BY day, market_id
 ORDER BY day DESC, total_volume DESC;
 
--- ✅ Use quantile for percentiles (more efficient than percentile)
+-- GOOD: Use quantile for percentiles (more efficient than percentile)
 SELECT
     quantile(0.50)(trade_size) AS median,
     quantile(0.95)(trade_size) AS p95,
@@ -162,7 +162,7 @@ const clickhouse = new ClickHouse({
   }
 })
 
-// ✅ Batch insert (efficient)
+// GOOD: Batch insert (efficient)
 async function bulkInsertTrades(trades: Trade[]) {
   const values = trades.map(trade => `(
     '${trade.id}',
@@ -178,7 +178,7 @@ async function bulkInsertTrades(trades: Trade[]) {
   `).toPromise()
 }
 
-// ❌ Individual inserts (slow)
+// BAD: Individual inserts (slow)
 async function insertTrade(trade: Trade) {
   // Don't do this in a loop!
   await clickhouse.query(`

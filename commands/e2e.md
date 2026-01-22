@@ -164,9 +164,9 @@ npx playwright test tests/e2e/markets/search-and-view.spec.ts
 
 Running 3 tests using 3 workers
 
-  ✓  [chromium] › search-and-view.spec.ts:5:3 › user can search markets and view details (4.2s)
-  ✓  [chromium] › search-and-view.spec.ts:52:3 › search with no results shows empty state (1.8s)
-  ✓  [chromium] › search-and-view.spec.ts:67:3 › can clear search and see all markets again (2.9s)
+  [PASS]  [chromium] › search-and-view.spec.ts:5:3 › user can search markets and view details (4.2s)
+  [PASS]  [chromium] › search-and-view.spec.ts:52:3 › search with no results shows empty state (1.8s)
+  [PASS]  [chromium] › search-and-view.spec.ts:67:3 › can clear search and see all markets again (2.9s)
 
   3 passed (9.1s)
 
@@ -182,7 +182,7 @@ Artifacts generated:
 ╔══════════════════════════════════════════════════════════════╗
 ║                    E2E Test Results                          ║
 ╠══════════════════════════════════════════════════════════════╣
-║ Status:     ✅ ALL TESTS PASSED                              ║
+║ Status:     [OK] ALL TESTS PASSED                              ║
 ║ Total:      3 tests                                          ║
 ║ Passed:     3 (100%)                                         ║
 ║ Failed:     0                                                ║
@@ -199,7 +199,7 @@ Artifacts:
 View report: npx playwright show-report
 ```
 
-✅ E2E test suite ready for CI/CD integration!
+[OK] E2E test suite ready for CI/CD integration!
 ```
 
 ## Test Artifacts
@@ -235,7 +235,7 @@ open artifacts/search-results.png
 If a test fails intermittently:
 
 ```
-⚠️  FLAKY TEST DETECTED: tests/e2e/markets/trade.spec.ts
+[WARN]  FLAKY TEST DETECTED: tests/e2e/markets/trade.spec.ts
 
 Test passed 7/10 runs (70% pass rate)
 
@@ -254,10 +254,10 @@ Quarantine recommendation: Mark as test.fixme() until fixed
 ## Browser Configuration
 
 Tests run on multiple browsers by default:
-- ✅ Chromium (Desktop Chrome)
-- ✅ Firefox (Desktop)
-- ✅ WebKit (Desktop Safari)
-- ✅ Mobile Chrome (optional)
+- [OK] Chromium (Desktop Chrome)
+- [OK] Firefox (Desktop)
+- [OK] WebKit (Desktop Safari)
+- [OK] Mobile Chrome (optional)
 
 Configure in `playwright.config.ts` to adjust browsers.
 
@@ -285,7 +285,7 @@ Add to your CI pipeline:
 
 For PMX, prioritize these E2E tests:
 
-**🔴 CRITICAL (Must Always Pass):**
+**[CRITICAL] CRITICAL (Must Always Pass):**
 1. User can connect wallet
 2. User can browse markets
 3. User can search markets (semantic search)
@@ -294,7 +294,7 @@ For PMX, prioritize these E2E tests:
 6. Market resolves correctly
 7. User can withdraw funds
 
-**🟡 IMPORTANT:**
+**[IMPORTANT] IMPORTANT:**
 1. Market creation flow
 2. User profile updates
 3. Real-time price updates
@@ -305,20 +305,20 @@ For PMX, prioritize these E2E tests:
 ## Best Practices
 
 **DO:**
-- ✅ Use Page Object Model for maintainability
-- ✅ Use data-testid attributes for selectors
-- ✅ Wait for API responses, not arbitrary timeouts
-- ✅ Test critical user journeys end-to-end
-- ✅ Run tests before merging to main
-- ✅ Review artifacts when tests fail
+- [OK] Use Page Object Model for maintainability
+- [OK] Use data-testid attributes for selectors
+- [OK] Wait for API responses, not arbitrary timeouts
+- [OK] Test critical user journeys end-to-end
+- [OK] Run tests before merging to main
+- [OK] Review artifacts when tests fail
 
 **DON'T:**
-- ❌ Use brittle selectors (CSS classes can change)
-- ❌ Test implementation details
-- ❌ Run tests against production
-- ❌ Ignore flaky tests
-- ❌ Skip artifact review on failures
-- ❌ Test every edge case with E2E (use unit tests)
+- [NO] Use brittle selectors (CSS classes can change)
+- [NO] Test implementation details
+- [NO] Run tests against production
+- [NO] Ignore flaky tests
+- [NO] Skip artifact review on failures
+- [NO] Test every edge case with E2E (use unit tests)
 
 ## Important Notes
 

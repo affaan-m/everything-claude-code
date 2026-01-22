@@ -220,26 +220,26 @@ Before marking tests complete:
 
 ## Test Smells (Anti-Patterns)
 
-### ❌ Testing Implementation Details
+### BAD: Testing Implementation Details
 ```typescript
 // DON'T test internal state
 expect(component.state.count).toBe(5)
 ```
 
-### ✅ Test User-Visible Behavior
+### GOOD: Test User-Visible Behavior
 ```typescript
 // DO test what users see
 expect(screen.getByText('Count: 5')).toBeInTheDocument()
 ```
 
-### ❌ Tests Depend on Each Other
+### BAD: Tests Depend on Each Other
 ```typescript
 // DON'T rely on previous test
 test('creates user', () => { /* ... */ })
 test('updates same user', () => { /* needs previous test */ })
 ```
 
-### ✅ Independent Tests
+### GOOD: Independent Tests
 ```typescript
 // DO setup data in each test
 test('updates user', () => {

@@ -133,7 +133,7 @@ FAIL lib/liquidity.test.ts
 1 test failed, 0 passed
 ```
 
-✅ Tests fail as expected. Ready to implement.
+[OK] Tests fail as expected. Ready to implement.
 
 ## Step 4: Implement Minimal Code (GREEN)
 
@@ -172,14 +172,14 @@ export function calculateLiquidityScore(market: MarketData): number {
 npm test lib/liquidity.test.ts
 
 PASS lib/liquidity.test.ts
-  ✓ should return high score for liquid market (3 ms)
-  ✓ should return low score for illiquid market (2 ms)
-  ✓ should handle edge case: zero volume (1 ms)
+  [PASS] should return high score for liquid market (3 ms)
+  [PASS] should return low score for illiquid market (2 ms)
+  [PASS] should handle edge case: zero volume (1 ms)
 
 3 tests passed
 ```
 
-✅ All tests passing!
+[OK] All tests passing!
 
 ## Step 6: Refactor (IMPROVE)
 
@@ -229,14 +229,14 @@ export function calculateLiquidityScore(market: MarketData): number {
 npm test lib/liquidity.test.ts
 
 PASS lib/liquidity.test.ts
-  ✓ should return high score for liquid market (3 ms)
-  ✓ should return low score for illiquid market (2 ms)
-  ✓ should handle edge case: zero volume (1 ms)
+  [PASS] should return high score for liquid market (3 ms)
+  [PASS] should return low score for illiquid market (2 ms)
+  [PASS] should handle edge case: zero volume (1 ms)
 
 3 tests passed
 ```
 
-✅ Refactoring complete, tests still passing!
+[OK] Refactoring complete, tests still passing!
 
 ## Step 8: Check Coverage
 
@@ -247,29 +247,29 @@ File           | % Stmts | % Branch | % Funcs | % Lines
 ---------------|---------|----------|---------|--------
 liquidity.ts   |   100   |   100    |   100   |   100
 
-Coverage: 100% ✅ (Target: 80%)
+Coverage: 100% [OK] (Target: 80%)
 ```
 
-✅ TDD session complete!
+[OK] TDD session complete!
 ```
 
 ## TDD Best Practices
 
 **DO:**
-- ✅ Write the test FIRST, before any implementation
-- ✅ Run tests and verify they FAIL before implementing
-- ✅ Write minimal code to make tests pass
-- ✅ Refactor only after tests are green
-- ✅ Add edge cases and error scenarios
-- ✅ Aim for 80%+ coverage (100% for critical code)
+- [OK] Write the test FIRST, before any implementation
+- [OK] Run tests and verify they FAIL before implementing
+- [OK] Write minimal code to make tests pass
+- [OK] Refactor only after tests are green
+- [OK] Add edge cases and error scenarios
+- [OK] Aim for 80%+ coverage (100% for critical code)
 
 **DON'T:**
-- ❌ Write implementation before tests
-- ❌ Skip running tests after each change
-- ❌ Write too much code at once
-- ❌ Ignore failing tests
-- ❌ Test implementation details (test behavior)
-- ❌ Mock everything (prefer integration tests)
+- [NO] Write implementation before tests
+- [NO] Skip running tests after each change
+- [NO] Write too much code at once
+- [NO] Ignore failing tests
+- [NO] Test implementation details (test behavior)
+- [NO] Mock everything (prefer integration tests)
 
 ## Test Types to Include
 
