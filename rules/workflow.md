@@ -1,10 +1,3 @@
-<!--
-name: Workflow
-description: Orchestration rules for agents and tools
-version: 1.0.0
-priority: highest
--->
-
 # Workflow
 
 === THIS DEFINES HOW TO ORCHESTRATE AGENTS AND TOOLS ===

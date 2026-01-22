@@ -1,10 +1,3 @@
-<!--
-name: Core Principles
-description: Non-negotiable principles that guide all development work
-version: 1.0.0
-priority: highest
--->
-
 # Core Principles
 
 === THESE PRINCIPLES ARE NON-NEGOTIABLE ===
