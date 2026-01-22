@@ -2,28 +2,140 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Repository Purpose
+## Purpose
 
-Production-ready Claude Code configurations for **any software development workflow**. Battle-tested automation for planning, coding, testing, and reviewing across languages and frameworks.
+Configuration system enabling Claude to develop **great software** across any technology stack.
 
-## Architecture
+## Core Principles
 
-This is a **configuration repository**, not a code project. Copy files to `~/.claude/` to customize Claude Code behavior.
+These principles guide all development work:
 
-### Component Types
+| # | Principle | Meaning |
+|---|-----------|---------|
+| 1 | **Understand before modifying** | Read code first, grasp context before changes |
+| 2 | **No completion without evidence** | Tests pass, build succeeds, lint clean |
+| 3 | **Acknowledge and recover from failure** | 3 failures → STOP → REVERT → ASK |
+| 4 | **Small changes, frequent verification** | Small change → verify → repeat |
+| 5 | **See the whole after completion** | Clean up fragmented work |
+| 6 | **Research when uncertain** | No guessing, look it up |
+| 7 | **Respect existing patterns** | Harmonize with codebase |
+
+## Agents
+
+| Agent | Model | Purpose | Supports Principles |
+|-------|-------|---------|---------------------|
+| **Explore** (built-in) | Haiku | Internal codebase search | 1, 7 |
+| **Plan** (built-in) | - | Implementation planning | 4 |
+| **Research** | Opus | External research, documentation, best practices | 1, 6 |
+| **Architect** | Opus | System design, ADR, interface definition | 1, 7 |
+| **Verify** | Opus | Validation, evidence collection | 2 |
+| **Refine** | Opus | Post-implementation cleanup | 5, 7 |
+
+## Processes
+
+| Process | Purpose | Supports Principles |
+|---------|---------|---------------------|
+| **Intent Gate** | Classify request, confirm understanding | 1 |
+| **Codebase Assessment** | Evaluate codebase state | 7 |
+| **Self-Correction** | 3 failures → STOP → REVERT → ASK | 3 |
+| **Evidence-based Completion** | No evidence = not complete | 2 |
+
+## Workflow
+
+```
+[Request]
+    ↓
+[Intent Gate] ─── Understand? (Principle 1)
+    ↓
+[Codebase Assessment] ─── Patterns? (Principle 7)
+    ↓
+[Explore + Research] ─── Internal + External (Principles 1, 6)
+    ↓
+[Architect] ─── Design if needed (Principles 1, 7)
+    ↓
+[Plan] ─── Break into small units (Principle 4)
+    ↓
+┌──────────────────────────┐
+│ Implementation Loop      │
+│ Small change → Verify    │←── Self-Correction on failure (Principle 3)
+│        ↓                 │
+│ Repeat...                │
+└──────────────────────────┘
+    ↓
+[Refine] ─── Cleanup (Principles 5, 7)
+    ↓
+[Verify] ─── Collect evidence (Principle 2)
+    ↓
+[Complete] ─── With evidence
+```
+
+## Request Classification (Intent Gate)
+
+| Type | Signal | Action |
+|------|--------|--------|
+| **Trivial** | Single file, obvious fix | Execute → Verify |
+| **Explicit** | Specific file/line given | Execute → Verify |
+| **Exploratory** | "How does X work?" | Explore → Answer |
+| **Open-ended** | "Add feature", "Improve" | Full workflow |
+| **Ambiguous** | Unclear scope | Ask clarifying question |
+
+## Codebase Assessment
+
+| State | Signals | Behavior |
+|-------|---------|----------|
+| **Disciplined** | Consistent patterns, configs present | Follow existing style strictly |
+| **Transitional** | Mixed patterns | Ask: "Which pattern to follow?" |
+| **Chaotic** | No consistency | Propose: "I suggest convention X. OK?" |
+| **Greenfield** | New/empty project | Apply modern best practices |
+
+## Self-Correction Process
+
+```
+Failure 1 → Analyze → Fix → Retry
+Failure 2 → Analyze → Fix → Retry
+Failure 3 →
+    1. STOP   - Stop immediately
+    2. REVERT - Restore last working state
+    3. DOCUMENT - Record what was attempted
+    4. ANALYZE - Root cause analysis
+    5. ASK    - Ask user for guidance
+```
+
+## Evidence Requirements
+
+| Action | Required Evidence |
+|--------|-------------------|
+| Code change | Lint/typecheck clean |
+| Build | Exit code 0 |
+| Test | All pass |
+| Feature | All above + works as intended |
+
+**No evidence = Not complete**
+
+## Delegation Protocol
+
+When delegating to agents:
+
+```
+TASK: [Atomic, specific goal]
+CONTEXT: [Relevant files, patterns, constraints]
+EXPECTED: [Success criteria, deliverables]
+CONSTRAINTS:
+  - MUST DO: [Required actions]
+  - MUST NOT DO: [Forbidden actions]
+```
+
+## Component Types
 
 | Directory | Purpose | Format |
 |-----------|---------|--------|
 | `agents/` | Subagents for delegated tasks | Markdown with YAML frontmatter |
-| `skills/` | Workflow definitions, domain knowledge | Markdown or directory with SKILL.md |
-| `commands/` | Slash commands (`/tdd`, `/plan`) | Markdown with description frontmatter |
-| `rules/` | Always-follow guidelines | Markdown, one domain per file |
-| `hooks/` | Tool event automations | JSON config + shell scripts |
-| `contexts/` | Dynamic system prompt injection | Markdown |
-| `mcp-configs/` | MCP server configurations | JSON |
-| `examples/` | Sample CLAUDE.md configs and session logs | Markdown/JSON |
+| `skills/` | Workflow definitions, domain knowledge | Markdown |
+| `commands/` | Slash commands | Markdown with description frontmatter |
+| `rules/` | Always-follow guidelines | Markdown |
+| `hooks/` | Tool event automations | JSON + shell scripts |
 
-### File Formats
+## File Formats
 
 **Agents** require frontmatter:
 ```markdown
@@ -42,80 +154,12 @@ description: Brief description
 ---
 ```
 
-**Hooks** in `hooks/hooks.json`:
-```json
-{
-  "matcher": "tool == \"Edit\" && tool_input.file_path matches \"...\"",
-  "hooks": [{"type": "command", "command": "..."}],
-  "description": "What this hook does"
-}
-```
-
-## Context Window Management
-
-**Critical:** Don't enable all MCPs at once. Your 200k context window can shrink to 70k with too many tools enabled.
-
-- Keep under 10 MCPs enabled per project, under 80 tools active
-- Use `disabledMcpServers` in project config to disable unused ones
-
-## Key Design Principles
-
-1. **Agent-first** - Delegate complex tasks to specialized subagents
-2. **Parallel execution** - Launch independent agents simultaneously
-3. **Plan before execute** - Use planner agent for complex features
-4. **Modular rules** - One domain per rule file, not monolithic configs
-5. **Language-agnostic core** - Workflow patterns work across any stack
-
-## Model Selection for Agents
-
-- **opus** - Complex reasoning: planning, architecture, security review
-- **sonnet** - General tasks: code review, documentation, refactoring
-- **haiku** - Quick tasks: formatting, simple lookups, build error resolution
-
-## Adapting to Your Stack
-
-Skills and rules are **modular and composable**. Replace or extend for your technology:
-
-| Domain | Example Skills |
-|--------|----------------|
-| Web Frontend | `frontend-patterns.md` (React, Vue, Svelte) |
-| Web Backend | `backend-patterns.md` (Node, Django, Rails) |
-| Systems | `systems-patterns.md` (Rust, C++, Go) |
-| Mobile | `mobile-patterns.md` (Swift, Kotlin, Flutter) |
-| Data/ML | `data-patterns.md` (Python, SQL, Spark) |
-| DevOps | `devops-patterns.md` (Docker, K8s, Terraform) |
-
-**To add your stack:** Create `skills/your-stack-patterns.md` with domain rules.
-
 ## Conventions
 
-- Filenames: lowercase with hyphens (`code-reviewer.md`, `tdd-workflow.md`)
+- Filenames: lowercase with hyphens
 - No emojis in any files
-- Agent/skill name should match filename
-- API keys use `YOUR_*_HERE` placeholders in examples
-
-## Available Commands
-
-| Command | Purpose |
-|---------|---------|
-| `/tdd` | Test-driven development workflow |
-| `/plan` | Create implementation plan |
-| `/code-review` | Quality and security review |
-| `/build-fix` | Fix build errors |
-| `/e2e` | E2E test generation |
-| `/refactor-clean` | Dead code removal |
-| `/learn` | Extract patterns mid-session |
-| `/test-coverage` | Analyze test coverage |
-| `/update-docs` | Sync documentation |
-| `/update-codemaps` | Update code structure maps |
-
-## Hook Event Types
-
-- `PreToolUse` - Before tool execution (validation, blocking)
-- `PostToolUse` - After tool execution (formatting, warnings)
-- `PreCompact` - Before context compaction (save state)
-- `SessionStart` - New session initialization
-- `Stop` - Session end processing
+- Agent name should match filename
+- API keys use `YOUR_*_HERE` placeholders
 
 ## When Contributing
 
@@ -123,4 +167,3 @@ Skills and rules are **modular and composable**. Replace or extend for your tech
 2. Follow the format for that component type
 3. Test with Claude Code before submitting
 4. Use conventional commits: `feat:`, `fix:`, `docs:`
-5. Keep patterns language-agnostic where possible
