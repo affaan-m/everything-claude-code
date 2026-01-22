@@ -52,7 +52,9 @@ Install oh-my-claude-code:
 https://raw.githubusercontent.com/kekmodel/oh-my-claude-code/master/README.md
 ```
 
-**For Agents**:
+**For Agents** - 아래 순서대로 실행:
+
+### 1. Core Setup
 
 ```bash
 git clone https://github.com/kekmodel/oh-my-claude-code.git /tmp/omcc
@@ -61,6 +63,43 @@ cp /tmp/omcc/agents/*.md ~/.claude/agents/
 cp /tmp/omcc/rules/*.md ~/.claude/rules/
 rm -rf /tmp/omcc
 ```
+
+### 2. LSP Setup (Optional but Recommended)
+
+LSP 활성화 - 쉘 프로필에 추가:
+
+```bash
+echo 'export ENABLE_LSP_TOOL=1' >> ~/.bashrc  # or ~/.zshrc
+```
+
+LSP 플러그인 설치:
+
+```bash
+claude plugin install pyright@claude-code-lsps       # Python
+claude plugin install vtsls@claude-code-lsps         # TypeScript/JavaScript
+claude plugin install gopls@claude-code-lsps         # Go
+claude plugin install rust-analyzer@claude-code-lsps # Rust
+```
+
+Language Server 설치 (프로젝트 언어에 맞게):
+
+```bash
+# Python
+npm install -g pyright
+
+# TypeScript
+npm install -g typescript-language-server typescript
+
+# Go
+go install golang.org/x/tools/gopls@latest
+
+# Rust
+rustup component add rust-analyzer
+```
+
+### 3. Restart Claude Code
+
+설정 적용을 위해 Claude Code 재시작.
 
 ---
 
