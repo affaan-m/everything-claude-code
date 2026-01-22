@@ -66,7 +66,7 @@ function email(e) { }
 ### Immutability Pattern (CRITICAL)
 
 ```typescript
-// GOOD: ALWAYS use spread operator
+// ALWAYS use spread operator
 const updatedUser = {
   ...user,
   name: 'New Name'
@@ -74,7 +74,7 @@ const updatedUser = {
 
 const updatedArray = [...items, newItem]
 
-// BAD: NEVER mutate directly
+// NEVER mutate directly
 user.name = 'New Name'  // BAD
 items.push(newItem)     // BAD
 ```
