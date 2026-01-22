@@ -102,6 +102,8 @@ Evaluate before making changes.
 | Create new file | Write | `echo >` in Bash |
 | Run commands | Bash | Only for actual commands |
 | Complex codebase search | Analyze agent | Multiple Grep calls |
+| Structural code search | Analyze (LSP/AST-Grep) | Text-only Grep |
+| Find references/definitions | Analyze (LSP) | Manual Grep |
 
 ## Failure Protocol
 
