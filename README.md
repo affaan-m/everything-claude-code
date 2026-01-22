@@ -115,7 +115,7 @@ npm install -g @ast-grep/cli
 
 ### 4. Restart Claude Code
 
-설정 적용을 위해 Claude Code 재시작.
+**사용자 액션 필요**: 설정 적용을 위해 Claude Code를 종료하고 다시 시작해주세요.
 
 ---
 
