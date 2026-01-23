@@ -361,7 +361,7 @@ test('authenticated user can create market', async ({ page }) => {
   // 2. Fill market form
   await page.locator('[data-testid="market-name"]').fill('Test Market')
   await page.locator('[data-testid="market-description"]').fill('This is a test market')
-  await page.locator('[data-testid="market-end-date"]').fill('2025-12-31')
+  await page.locator('[data-testid="market-end-date"]').fill('2026-12-31')
 
   // 3. Submit form
   await page.locator('[data-testid="submit-market"]').click()

@@ -215,7 +215,7 @@ test('user can create a new market', async ({ page }) => {
   // Fill market creation form
   await page.fill('input[name="name"]', 'Test Market')
   await page.fill('textarea[name="description"]', 'Test description')
-  await page.fill('input[name="endDate"]', '2025-12-31')
+  await page.fill('input[name="endDate"]', '2026-12-31')
 
   // Submit form
   await page.click('button[type="submit"]')
