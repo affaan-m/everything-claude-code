@@ -46,6 +46,41 @@ This repo is the raw code only. The guides explain everything.
 
 ---
 
+## Cross-Platform Support
+
+This plugin now fully supports **Windows, macOS, and Linux**. All hooks and scripts have been rewritten in Node.js for maximum compatibility.
+
+### Package Manager Detection
+
+The plugin automatically detects your preferred package manager (npm, pnpm, yarn, or bun) with the following priority:
+
+1. **Environment variable**: `CLAUDE_PACKAGE_MANAGER`
+2. **Project config**: `.claude/package-manager.json`
+3. **package.json**: `packageManager` field
+4. **Lock file**: Detection from package-lock.json, yarn.lock, pnpm-lock.yaml, or bun.lockb
+5. **Global config**: `~/.claude/package-manager.json`
+6. **Fallback**: First available package manager
+
+To set your preferred package manager:
+
+```bash
+# Via environment variable
+export CLAUDE_PACKAGE_MANAGER=pnpm
+
+# Via global config
+node scripts/setup-package-manager.js --global pnpm
+
+# Via project config
+node scripts/setup-package-manager.js --project bun
+
+# Detect current setting
+node scripts/setup-package-manager.js --detect
+```
+
+Or use the `/setup-pm` command in Claude Code.
+
+---
+
 ## What's Inside
 
 This repo is a **Claude Code plugin** - install it directly or copy components manually.
@@ -88,6 +123,7 @@ everything-claude-code/
 |   |-- learn.md            # /learn - Extract patterns mid-session (Longform Guide)
 |   |-- checkpoint.md       # /checkpoint - Save verification state (Longform Guide)
 |   |-- verify.md           # /verify - Run verification loop (Longform Guide)
+|   |-- setup-pm.md         # /setup-pm - Configure package manager (NEW)
 |
 |-- rules/            # Always-follow guidelines (copy to ~/.claude/rules/)
 |   |-- security.md         # Mandatory security checks
@@ -101,6 +137,23 @@ everything-claude-code/
 |   |-- hooks.json                # All hooks config (PreToolUse, PostToolUse, Stop, etc.)
 |   |-- memory-persistence/       # Session lifecycle hooks (Longform Guide)
 |   |-- strategic-compact/        # Compaction suggestions (Longform Guide)
+|
+|-- scripts/          # Cross-platform Node.js scripts (NEW)
+|   |-- lib/                     # Shared utilities
+|   |   |-- utils.js             # Cross-platform file/path/system utilities
+|   |   |-- package-manager.js   # Package manager detection and selection
+|   |-- hooks/                   # Hook implementations
+|   |   |-- session-start.js     # Load context on session start
+|   |   |-- session-end.js       # Save state on session end
+|   |   |-- pre-compact.js       # Pre-compaction state saving
+|   |   |-- suggest-compact.js   # Strategic compaction suggestions
+|   |   |-- evaluate-session.js  # Extract patterns from sessions
+|   |-- setup-package-manager.js # Interactive PM setup
+|
+|-- tests/            # Test suite (NEW)
+|   |-- lib/                     # Library tests
+|   |-- hooks/                   # Hook tests
+|   |-- run-all.js               # Run all tests
 |
 |-- contexts/         # Dynamic system prompt injection contexts (Longform Guide)
 |   |-- dev.md              # Development mode context
@@ -242,6 +295,22 @@ Rules are always-follow guidelines. Keep them modular:
   security.md      # No hardcoded secrets
   coding-style.md  # Immutability, file limits
   testing.md       # TDD, coverage requirements
+```
+
+---
+
+## Running Tests
+
+The plugin includes a comprehensive test suite:
+
+```bash
+# Run all tests
+node tests/run-all.js
+
+# Run individual test files
+node tests/lib/utils.test.js
+node tests/lib/package-manager.test.js
+node tests/hooks/hooks.test.js
 ```
 
 ---
