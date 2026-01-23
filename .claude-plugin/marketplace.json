@@ -5,15 +5,13 @@
     "email": "affaan@example.com"
   },
   "metadata": {
-    "description": "Battle-tested Claude Code configurations from an Anthropic hackathon winner",
-    "version": "1.0.0"
+    "description": "Battle-tested Claude Code configurations from an Anthropic hackathon winner"
   },
   "plugins": [
     {
       "name": "everything-claude-code",
       "source": "./",
       "description": "Complete collection of agents, skills, hooks, commands, and rules evolved over 10+ months of intensive daily use",
-      "version": "1.0.0",
       "author": {
         "name": "Affaan Mustafa"
       },
