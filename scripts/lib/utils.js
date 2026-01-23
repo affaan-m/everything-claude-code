@@ -223,22 +223,54 @@ function appendFile(filePath, content) {
 
 /**
  * Check if a command exists in PATH
+ * Uses spawnSync with array arguments to prevent command injection
  */
 function commandExists(cmd) {
+  // Validate command name - only allow alphanumeric, dash, underscore, dot
+  if (!/^[\w.-]+$/.test(cmd)) {
+    return false;
+  }
+
   try {
-    if (isWindows) {
-      execSync(`where ${cmd}`, { stdio: 'pipe' });
-    } else {
-      execSync(`which ${cmd}`, { stdio: 'pipe' });
-    }
-    return true;
+    const result = isWindows
+      ? spawnSync('where', [cmd], { stdio: 'pipe' })
+      : spawnSync('which', [cmd], { stdio: 'pipe' });
+    return result.status === 0;
   } catch {
     return false;
   }
 }
 
 /**
+ * Run a command safely using spawnSync with separate command and arguments
+ * This prevents shell injection attacks by not using shell interpolation
+ * @param {string} command - The command to run (e.g., 'git', 'npm')
+ * @param {string[]} args - Array of arguments (e.g., ['status', '--short'])
+ * @param {object} options - spawnSync options
+ */
+function runCommandSafe(command, args = [], options = {}) {
+  try {
+    const result = spawnSync(command, args, {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+      ...options
+    });
+
+    if (result.status === 0) {
+      return { success: true, output: (result.stdout || '').trim() };
+    } else {
+      return { success: false, output: (result.stderr || result.stdout || '').trim() };
+    }
+  } catch (err) {
+    return { success: false, output: err.message };
+  }
+}
+
+/**
  * Run a command and return output
+ * @deprecated Use runCommandSafe() instead to prevent command injection.
+ * This function is kept for backward compatibility but should only be used
+ * with hardcoded command strings, never with user input.
  */
 function runCommand(cmd, options = {}) {
   try {
@@ -257,7 +289,7 @@ function runCommand(cmd, options = {}) {
  * Check if current directory is a git repository
  */
 function isGitRepo() {
-  return runCommand('git rev-parse --git-dir').success;
+  return runCommandSafe('git', ['rev-parse', '--git-dir']).success;
 }
 
 /**
@@ -266,7 +298,7 @@ function isGitRepo() {
 function getGitModifiedFiles(patterns = []) {
   if (!isGitRepo()) return [];
 
-  const result = runCommand('git diff --name-only HEAD');
+  const result = runCommandSafe('git', ['diff', '--name-only', 'HEAD']);
   if (!result.success) return [];
 
   let files = result.output.split('\n').filter(Boolean);
@@ -363,6 +395,7 @@ module.exports = {
   // System
   commandExists,
   runCommand,
+  runCommandSafe,
   isGitRepo,
   getGitModifiedFiles
 };

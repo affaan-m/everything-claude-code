@@ -224,6 +224,38 @@ function runTests() {
     assert.strictEqual(result.success, false);
   })) passed++; else failed++;
 
+  if (test('runCommandSafe executes command with args', () => {
+    const result = utils.runCommandSafe('node', ['--version']);
+    assert.strictEqual(result.success, true);
+    assert.ok(result.output.startsWith('v'), 'Should start with v');
+  })) passed++; else failed++;
+
+  if (test('runCommandSafe handles failed command', () => {
+    const result = utils.runCommandSafe('node', ['--invalid-flag-12345']);
+    assert.strictEqual(result.success, false);
+  })) passed++; else failed++;
+
+  // Security tests
+  console.log('\nSecurity (Command Injection Prevention):');
+
+  if (test('commandExists rejects shell metacharacters', () => {
+    // These should all return false due to input validation
+    assert.strictEqual(utils.commandExists('ls; rm -rf /'), false);
+    assert.strictEqual(utils.commandExists('node && echo pwned'), false);
+    assert.strictEqual(utils.commandExists('$(whoami)'), false);
+    assert.strictEqual(utils.commandExists('`whoami`'), false);
+    assert.strictEqual(utils.commandExists('node|cat'), false);
+  })) passed++; else failed++;
+
+  if (test('commandExists allows valid command names', () => {
+    assert.strictEqual(utils.commandExists('node'), true);
+    assert.strictEqual(utils.commandExists('npm'), true);
+    // These are valid command name patterns
+    assert.strictEqual(typeof utils.commandExists('my-command'), 'boolean');
+    assert.strictEqual(typeof utils.commandExists('my_command'), 'boolean');
+    assert.strictEqual(typeof utils.commandExists('cmd.exe'), 'boolean');
+  })) passed++; else failed++;
+
   // Summary
   console.log('\n=== Test Results ===');
   console.log(`Passed: ${passed}`);
