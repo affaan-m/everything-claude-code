@@ -1,0 +1,4 @@
+# Ensure consistent line endings across all platforms
+*.sh text eol=lf
+*.md text eol=lf
+*.json text eol=lf
