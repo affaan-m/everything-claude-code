@@ -64,6 +64,9 @@ Located in `~/.claude/agents/`:
 - Many small files over few large files
 - 200-400 lines typical, 800 max per file
 
+### Privacy
+- Always redact logs; never paste secrets (API keys/tokens/passwords/JWTs).
+
 ### Git
 - Conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `test:`
 - Always test locally before committing
