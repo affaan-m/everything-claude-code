@@ -1,27 +1,27 @@
-# Test Coverage
+# 测试覆盖率
 
-Analyze test coverage and generate missing tests:
+分析测试覆盖率并生成缺失的测试：
 
-1. Run tests with coverage: npm test --coverage or pnpm test --coverage
+1. 运行带覆盖率的测试：npm test --coverage 或 pnpm test --coverage
 
-2. Analyze coverage report (coverage/coverage-summary.json)
+2. 分析覆盖率报告（coverage/coverage-summary.json）
 
-3. Identify files below 80% coverage threshold
+3. 识别低于 80% 覆盖率阈值的文件
 
-4. For each under-covered file:
-   - Analyze untested code paths
-   - Generate unit tests for functions
-   - Generate integration tests for APIs
-   - Generate E2E tests for critical flows
+4. 对于每个覆盖率不足的文件：
+   - 分析未测试的代码路径
+   - 为函数生成单元测试
+   - 为 API 生成集成测试
+   - 为关键流程生成 E2E 测试
 
-5. Verify new tests pass
+5. 验证新测试通过
 
-6. Show before/after coverage metrics
+6. 显示前后覆盖率指标
 
-7. Ensure project reaches 80%+ overall coverage
+7. 确保项目达到 80%+ 整体覆盖率
 
-Focus on:
-- Happy path scenarios
-- Error handling
-- Edge cases (null, undefined, empty)
-- Boundary conditions
+重点关注：
+- 正常路径场景
+- 错误处理
+- 边缘情况（null、undefined、空值）
+- 边界条件

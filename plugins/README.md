@@ -1,26 +1,26 @@
-# Plugins and Marketplaces
+# 插件和市场
 
-Plugins extend Claude Code with new tools and capabilities. This guide covers installation only - see the [full article](https://x.com/affaanmustafa/status/2012378465664745795) for when and why to use them.
+插件为 Claude Code 扩展新的工具和功能。本指南仅涵盖安装 - 关于何时以及为何使用它们，请参阅[完整文章](https://x.com/affaanmustafa/status/2012378465664745795)。
 
 ---
 
-## Marketplaces
+## 市场
 
-Marketplaces are repositories of installable plugins.
+市场是可安装插件的仓库。
 
-### Adding a Marketplace
+### 添加市场
 
 ```bash
-# Add official Anthropic marketplace
+# 添加官方 Anthropic 市场
 claude plugin marketplace add https://github.com/anthropics/claude-plugins-official
 
-# Add community marketplaces
+# 添加社区市场
 claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 ```
 
-### Recommended Marketplaces
+### 推荐市场
 
-| Marketplace | Source |
+| 市场 | 来源 |
 |-------------|--------|
 | claude-plugins-official | `anthropics/claude-plugins-official` |
 | claude-code-plugins | `anthropics/claude-code` |
@@ -28,58 +28,58 @@ claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 
 ---
 
-## Installing Plugins
+## 安装插件
 
 ```bash
-# Open plugins browser
+# 打开插件浏览器
 /plugins
 
-# Or install directly
+# 或直接安装
 claude plugin install typescript-lsp@claude-plugins-official
 ```
 
-### Recommended Plugins
+### 推荐插件
 
-**Development:**
-- `typescript-lsp` - TypeScript intelligence
-- `pyright-lsp` - Python type checking
-- `hookify` - Create hooks conversationally
-- `code-simplifier` - Refactor code
+**开发：**
+- `typescript-lsp` - TypeScript 智能
+- `pyright-lsp` - Python 类型检查
+- `hookify` - 对话式创建 hooks
+- `code-simplifier` - 重构代码
 
-**Code Quality:**
-- `code-review` - Code review
-- `pr-review-toolkit` - PR automation
-- `security-guidance` - Security checks
+**代码质量：**
+- `code-review` - 代码审查
+- `pr-review-toolkit` - PR 自动化
+- `security-guidance` - 安全检查
 
-**Search:**
-- `mgrep` - Enhanced search (better than ripgrep)
-- `context7` - Live documentation lookup
+**搜索：**
+- `mgrep` - 增强搜索（比 ripgrep 更好）
+- `context7` - 实时文档查询
 
-**Workflow:**
-- `commit-commands` - Git workflow
-- `frontend-design` - UI patterns
-- `feature-dev` - Feature development
+**工作流：**
+- `commit-commands` - Git 工作流
+- `frontend-design` - UI 模式
+- `feature-dev` - 功能开发
 
 ---
 
-## Quick Setup
+## 快速设置
 
 ```bash
-# Add marketplaces
+# 添加市场
 claude plugin marketplace add https://github.com/anthropics/claude-plugins-official
 claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 
-# Open /plugins and install what you need
+# 打开 /plugins 安装你需要的
 ```
 
 ---
 
-## Plugin Files Location
+## 插件文件位置
 
 ```
 ~/.claude/plugins/
-|-- cache/                    # Downloaded plugins
-|-- installed_plugins.json    # Installed list
-|-- known_marketplaces.json   # Added marketplaces
-|-- marketplaces/             # Marketplace data
+|-- cache/                    # 下载的插件
+|-- installed_plugins.json    # 已安装列表
+|-- known_marketplaces.json   # 已添加的市场
+|-- marketplaces/             # 市场数据
 ```

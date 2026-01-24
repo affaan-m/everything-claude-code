@@ -1,95 +1,95 @@
-# Project Guidelines Skill (Example)
+# 项目指南技能（示例）
 
-This is an example of a project-specific skill. Use this as a template for your own projects.
+这是项目特定技能的示例。使用此作为你自己项目的模板。
 
-Based on a real production application: [Zenith](https://zenith.chat) - AI-powered customer discovery platform.
-
----
-
-## When to Use
-
-Reference this skill when working on the specific project it's designed for. Project skills contain:
-- Architecture overview
-- File structure
-- Code patterns
-- Testing requirements
-- Deployment workflow
+基于真实生产应用：[Zenith](https://zenith.chat) - AI 驱动的客户发现平台。
 
 ---
 
-## Architecture Overview
+## 使用场景
 
-**Tech Stack:**
-- **Frontend**: Next.js 15 (App Router), TypeScript, React
-- **Backend**: FastAPI (Python), Pydantic models
-- **Database**: Supabase (PostgreSQL)
-- **AI**: Claude API with tool calling and structured output
-- **Deployment**: Google Cloud Run
-- **Testing**: Playwright (E2E), pytest (backend), React Testing Library
+在处理其设计目标的特定项目时参考此技能。项目技能包含：
+- 架构概述
+- 文件结构
+- 代码模式
+- 测试要求
+- 部署工作流
 
-**Services:**
+---
+
+## 架构概述
+
+**技术栈：**
+- **前端**：Next.js 15（App Router）、TypeScript、React
+- **后端**：FastAPI（Python）、Pydantic 模型
+- **数据库**：Supabase（PostgreSQL）
+- **AI**：Claude API，带工具调用和结构化输出
+- **部署**：Google Cloud Run
+- **测试**：Playwright（E2E）、pytest（后端）、React Testing Library
+
+**服务：**
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                         Frontend                            │
-│  Next.js 15 + TypeScript + TailwindCSS                     │
-│  Deployed: Vercel / Cloud Run                              │
+│                         前端                                 │
+│  Next.js 15 + TypeScript + TailwindCSS                      │
+│  部署：Vercel / Cloud Run                                   │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                         Backend                             │
-│  FastAPI + Python 3.11 + Pydantic                          │
-│  Deployed: Cloud Run                                       │
+│                         后端                                 │
+│  FastAPI + Python 3.11 + Pydantic                           │
+│  部署：Cloud Run                                            │
 └─────────────────────────────────────────────────────────────┘
                               │
               ┌───────────────┼───────────────┐
               ▼               ▼               ▼
         ┌──────────┐   ┌──────────┐   ┌──────────┐
         │ Supabase │   │  Claude  │   │  Redis   │
-        │ Database │   │   API    │   │  Cache   │
+        │  数据库  │   │   API    │   │   缓存   │
         └──────────┘   └──────────┘   └──────────┘
 ```
 
 ---
 
-## File Structure
+## 文件结构
 
 ```
 project/
 ├── frontend/
 │   └── src/
-│       ├── app/              # Next.js app router pages
-│       │   ├── api/          # API routes
-│       │   ├── (auth)/       # Auth-protected routes
-│       │   └── workspace/    # Main app workspace
-│       ├── components/       # React components
-│       │   ├── ui/           # Base UI components
-│       │   ├── forms/        # Form components
-│       │   └── layouts/      # Layout components
-│       ├── hooks/            # Custom React hooks
-│       ├── lib/              # Utilities
-│       ├── types/            # TypeScript definitions
-│       └── config/           # Configuration
+│       ├── app/              # Next.js app router 页面
+│       │   ├── api/          # API 路由
+│       │   ├── (auth)/       # 受认证保护的路由
+│       │   └── workspace/    # 主应用工作区
+│       ├── components/       # React 组件
+│       │   ├── ui/           # 基础 UI 组件
+│       │   ├── forms/        # 表单组件
+│       │   └── layouts/      # 布局组件
+│       ├── hooks/            # 自定义 React hooks
+│       ├── lib/              # 工具库
+│       ├── types/            # TypeScript 定义
+│       └── config/           # 配置
 │
 ├── backend/
-│   ├── routers/              # FastAPI route handlers
-│   ├── models.py             # Pydantic models
-│   ├── main.py               # FastAPI app entry
-│   ├── auth_system.py        # Authentication
-│   ├── database.py           # Database operations
-│   ├── services/             # Business logic
-│   └── tests/                # pytest tests
+│   ├── routers/              # FastAPI 路由处理器
+│   ├── models.py             # Pydantic 模型
+│   ├── main.py               # FastAPI 应用入口
+│   ├── auth_system.py        # 认证
+│   ├── database.py           # 数据库操作
+│   ├── services/             # 业务逻辑
+│   └── tests/                # pytest 测试
 │
-├── deploy/                   # Deployment configs
-├── docs/                     # Documentation
-└── scripts/                  # Utility scripts
+├── deploy/                   # 部署配置
+├── docs/                     # 文档
+└── scripts/                  # 工具脚本
 ```
 
 ---
 
-## Code Patterns
+## 代码模式
 
-### API Response Format (FastAPI)
+### API 响应格式（FastAPI）
 
 ```python
 from pydantic import BaseModel
@@ -111,7 +111,7 @@ class ApiResponse(BaseModel, Generic[T]):
         return cls(success=False, error=error)
 ```
 
-### Frontend API Calls (TypeScript)
+### 前端 API 调用（TypeScript）
 
 ```typescript
 interface ApiResponse<T> {
@@ -144,7 +144,7 @@ async function fetchApi<T>(
 }
 ```
 
-### Claude AI Integration (Structured Output)
+### Claude AI 集成（结构化输出）
 
 ```python
 from anthropic import Anthropic
@@ -164,13 +164,13 @@ async def analyze_with_claude(content: str) -> AnalysisResult:
         messages=[{"role": "user", "content": content}],
         tools=[{
             "name": "provide_analysis",
-            "description": "Provide structured analysis",
+            "description": "提供结构化分析",
             "input_schema": AnalysisResult.model_json_schema()
         }],
         tool_choice={"type": "tool", "name": "provide_analysis"}
     )
 
-    # Extract tool use result
+    # 提取工具使用结果
     tool_use = next(
         block for block in response.content
         if block.type == "tool_use"
@@ -179,7 +179,7 @@ async def analyze_with_claude(content: str) -> AnalysisResult:
     return AnalysisResult(**tool_use.input)
 ```
 
-### Custom Hooks (React)
+### 自定义 Hooks（React）
 
 ```typescript
 import { useState, useCallback } from 'react'
@@ -217,22 +217,22 @@ export function useApi<T>(
 
 ---
 
-## Testing Requirements
+## 测试要求
 
-### Backend (pytest)
+### 后端（pytest）
 
 ```bash
-# Run all tests
+# 运行所有测试
 poetry run pytest tests/
 
-# Run with coverage
+# 带覆盖率运行
 poetry run pytest tests/ --cov=. --cov-report=html
 
-# Run specific test file
+# 运行特定测试文件
 poetry run pytest tests/test_auth.py -v
 ```
 
-**Test structure:**
+**测试结构：**
 ```python
 import pytest
 from httpx import AsyncClient
@@ -250,72 +250,72 @@ async def test_health_check(client: AsyncClient):
     assert response.json()["status"] == "healthy"
 ```
 
-### Frontend (React Testing Library)
+### 前端（React Testing Library）
 
 ```bash
-# Run tests
+# 运行测试
 npm run test
 
-# Run with coverage
+# 带覆盖率运行
 npm run test -- --coverage
 
-# Run E2E tests
+# 运行 E2E 测试
 npm run test:e2e
 ```
 
-**Test structure:**
+**测试结构：**
 ```typescript
 import { render, screen, fireEvent } from '@testing-library/react'
 import { WorkspacePanel } from './WorkspacePanel'
 
 describe('WorkspacePanel', () => {
-  it('renders workspace correctly', () => {
+  it('正确渲染工作区', () => {
     render(<WorkspacePanel />)
     expect(screen.getByRole('main')).toBeInTheDocument()
   })
 
-  it('handles session creation', async () => {
+  it('处理会话创建', async () => {
     render(<WorkspacePanel />)
-    fireEvent.click(screen.getByText('New Session'))
-    expect(await screen.findByText('Session created')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('新建会话'))
+    expect(await screen.findByText('会话已创建')).toBeInTheDocument()
   })
 })
 ```
 
 ---
 
-## Deployment Workflow
+## 部署工作流
 
-### Pre-Deployment Checklist
+### 部署前检查清单
 
-- [ ] All tests passing locally
-- [ ] `npm run build` succeeds (frontend)
-- [ ] `poetry run pytest` passes (backend)
-- [ ] No hardcoded secrets
-- [ ] Environment variables documented
-- [ ] Database migrations ready
+- [ ] 所有测试在本地通过
+- [ ] `npm run build` 成功（前端）
+- [ ] `poetry run pytest` 通过（后端）
+- [ ] 无硬编码密钥
+- [ ] 环境变量已记录
+- [ ] 数据库迁移准备就绪
 
-### Deployment Commands
+### 部署命令
 
 ```bash
-# Build and deploy frontend
+# 构建并部署前端
 cd frontend && npm run build
 gcloud run deploy frontend --source .
 
-# Build and deploy backend
+# 构建并部署后端
 cd backend
 gcloud run deploy backend --source .
 ```
 
-### Environment Variables
+### 环境变量
 
 ```bash
-# Frontend (.env.local)
+# 前端（.env.local）
 NEXT_PUBLIC_API_URL=https://api.example.com
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 
-# Backend (.env)
+# 后端（.env）
 DATABASE_URL=postgresql://...
 ANTHROPIC_API_KEY=sk-ant-...
 SUPABASE_URL=https://xxx.supabase.co
@@ -324,22 +324,22 @@ SUPABASE_KEY=eyJ...
 
 ---
 
-## Critical Rules
+## 关键规则
 
-1. **No emojis** in code, comments, or documentation
-2. **Immutability** - never mutate objects or arrays
-3. **TDD** - write tests before implementation
-4. **80% coverage** minimum
-5. **Many small files** - 200-400 lines typical, 800 max
-6. **No console.log** in production code
-7. **Proper error handling** with try/catch
-8. **Input validation** with Pydantic/Zod
+1. **不使用表情符号** - 代码、注释或文档中
+2. **不可变性** - 绝不修改对象或数组
+3. **TDD** - 在实现之前编写测试
+4. **80% 覆盖率** 最低要求
+5. **多个小文件** - 通常 200-400 行，最多 800 行
+6. **无 console.log** - 生产代码中
+7. **正确的错误处理** - 使用 try/catch
+8. **输入验证** - 使用 Pydantic/Zod
 
 ---
 
-## Related Skills
+## 相关技能
 
-- `coding-standards.md` - General coding best practices
-- `backend-patterns.md` - API and database patterns
-- `frontend-patterns.md` - React and Next.js patterns
-- `tdd-workflow/` - Test-driven development methodology
+- `coding-standards.md` - 通用编码最佳实践
+- `backend-patterns.md` - API 和数据库模式
+- `frontend-patterns.md` - React 和 Next.js 模式
+- `tdd-workflow/` - 测试驱动开发方法论

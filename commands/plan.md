@@ -1,113 +1,113 @@
 ---
-description: Restate requirements, assess risks, and create step-by-step implementation plan. WAIT for user CONFIRM before touching any code.
+description: 重述需求，评估风险，创建分步实现计划。在编写任何代码之前等待用户确认。
 ---
 
-# Plan Command
+# Plan 命令
 
-This command invokes the **planner** agent to create a comprehensive implementation plan before writing any code.
+此命令调用 **planner** 代理，在编写任何代码之前创建全面的实现计划。
 
-## What This Command Does
+## 此命令的功能
 
-1. **Restate Requirements** - Clarify what needs to be built
-2. **Identify Risks** - Surface potential issues and blockers
-3. **Create Step Plan** - Break down implementation into phases
-4. **Wait for Confirmation** - MUST receive user approval before proceeding
+1. **重述需求** - 明确需要构建什么
+2. **识别风险** - 发现潜在问题和阻碍
+3. **创建分步计划** - 将实现分解为多个阶段
+4. **等待确认** - 必须在继续之前获得用户批准
 
-## When to Use
+## 使用场景
 
-Use `/plan` when:
-- Starting a new feature
-- Making significant architectural changes
-- Working on complex refactoring
-- Multiple files/components will be affected
-- Requirements are unclear or ambiguous
+在以下情况使用 `/plan`：
+- 开始新功能开发
+- 进行重大架构变更
+- 处理复杂重构
+- 多个文件/组件将受影响
+- 需求不明确或有歧义
 
-## How It Works
+## 工作原理
 
-The planner agent will:
+planner 代理将会：
 
-1. **Analyze the request** and restate requirements in clear terms
-2. **Break down into phases** with specific, actionable steps
-3. **Identify dependencies** between components
-4. **Assess risks** and potential blockers
-5. **Estimate complexity** (High/Medium/Low)
-6. **Present the plan** and WAIT for your explicit confirmation
+1. **分析请求**并用清晰的术语重述需求
+2. **分解为阶段**，包含具体、可操作的步骤
+3. **识别组件间的依赖关系**
+4. **评估风险**和潜在阻碍
+5. **估算复杂度**（高/中/低）
+6. **展示计划**并等待你的明确确认
 
-## Example Usage
+## 使用示例
 
 ```
-User: /plan I need to add real-time notifications when markets resolve
+用户：/plan 我需要在市场结算时添加实时通知功能
 
-Agent (planner):
-# Implementation Plan: Real-Time Market Resolution Notifications
+代理 (planner)：
+# 实现计划：实时市场结算通知
 
-## Requirements Restatement
-- Send notifications to users when markets they're watching resolve
-- Support multiple notification channels (in-app, email, webhook)
-- Ensure notifications are delivered reliably
-- Include market outcome and user's position result
+## 需求重述
+- 当用户关注的市场结算时向其发送通知
+- 支持多种通知渠道（应用内、邮件、webhook）
+- 确保通知可靠送达
+- 包含市场结果和用户持仓结果
 
-## Implementation Phases
+## 实现阶段
 
-### Phase 1: Database Schema
-- Add notifications table with columns: id, user_id, market_id, type, status, created_at
-- Add user_notification_preferences table for channel preferences
-- Create indexes on user_id and market_id for performance
+### 阶段 1：数据库架构
+- 添加通知表，字段：id、user_id、market_id、type、status、created_at
+- 添加用户通知偏好表用于渠道设置
+- 在 user_id 和 market_id 上创建索引以提升性能
 
-### Phase 2: Notification Service
-- Create notification service in lib/notifications.ts
-- Implement notification queue using BullMQ/Redis
-- Add retry logic for failed deliveries
-- Create notification templates
+### 阶段 2：通知服务
+- 在 lib/notifications.ts 创建通知服务
+- 使用 BullMQ/Redis 实现通知队列
+- 添加失败投递的重试逻辑
+- 创建通知模板
 
-### Phase 3: Integration Points
-- Hook into market resolution logic (when status changes to "resolved")
-- Query all users with positions in market
-- Enqueue notifications for each user
+### 阶段 3：集成点
+- 接入市场结算逻辑（当状态变为"已结算"时）
+- 查询在该市场有持仓的所有用户
+- 为每个用户加入通知队列
 
-### Phase 4: Frontend Components
-- Create NotificationBell component in header
-- Add NotificationList modal
-- Implement real-time updates via Supabase subscriptions
-- Add notification preferences page
+### 阶段 4：前端组件
+- 在页头创建 NotificationBell 组件
+- 添加 NotificationList 模态框
+- 通过 Supabase 订阅实现实时更新
+- 添加通知偏好设置页面
 
-## Dependencies
-- Redis (for queue)
-- Email service (SendGrid/Resend)
-- Supabase real-time subscriptions
+## 依赖
+- Redis（用于队列）
+- 邮件服务（SendGrid/Resend）
+- Supabase 实时订阅
 
-## Risks
-- HIGH: Email deliverability (SPF/DKIM required)
-- MEDIUM: Performance with 1000+ users per market
-- MEDIUM: Notification spam if markets resolve frequently
-- LOW: Real-time subscription overhead
+## 风险
+- 高：邮件送达率（需要 SPF/DKIM）
+- 中：每个市场 1000+ 用户时的性能
+- 中：如果市场频繁结算可能产生通知轰炸
+- 低：实时订阅开销
 
-## Estimated Complexity: MEDIUM
-- Backend: 4-6 hours
-- Frontend: 3-4 hours
-- Testing: 2-3 hours
-- Total: 9-13 hours
+## 预估复杂度：中等
+- 后端：4-6 小时
+- 前端：3-4 小时
+- 测试：2-3 小时
+- 总计：9-13 小时
 
-**WAITING FOR CONFIRMATION**: Proceed with this plan? (yes/no/modify)
+**等待确认**：是否按此计划执行？（是/否/修改）
 ```
 
-## Important Notes
+## 重要说明
 
-**CRITICAL**: The planner agent will **NOT** write any code until you explicitly confirm the plan with "yes" or "proceed" or similar affirmative response.
+**关键**：planner 代理**不会**编写任何代码，直到你用"是"或"继续"或类似肯定回复明确确认计划。
 
-If you want changes, respond with:
-- "modify: [your changes]"
-- "different approach: [alternative]"
-- "skip phase 2 and do phase 3 first"
+如果你想要修改，请回复：
+- "修改：[你的修改]"
+- "不同方案：[替代方案]"
+- "跳过阶段 2，先做阶段 3"
 
-## Integration with Other Commands
+## 与其他命令的集成
 
-After planning:
-- Use `/tdd` to implement with test-driven development
-- Use `/build-and-fix` if build errors occur
-- Use `/code-review` to review completed implementation
+计划完成后：
+- 使用 `/tdd` 以测试驱动开发方式实现
+- 如果出现构建错误使用 `/build-and-fix`
+- 使用 `/code-review` 审查完成的实现
 
-## Related Agents
+## 相关代理
 
-This command invokes the `planner` agent located at:
+此命令调用位于以下位置的 `planner` 代理：
 `~/.claude/agents/planner.md`
