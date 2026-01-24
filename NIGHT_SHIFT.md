@@ -15,9 +15,15 @@ node scripts/night-shift-helper.js check
 
 これにより以下が検証されます：
 - ✓ `main`ブランチにいない
-- ✓ `tasks.md`が存在する
-- ✓ `spec/`フォルダが存在する
+- ✓ `tasks.md`が存在する（kiro構造に対応）
+- ✓ `spec/`フォルダが存在する（kiro構造に対応）
 - ✓ GitHub CLIが認証されている
+
+**Kiro構造のサポート:**
+Night Shiftは自動的に以下の優先順位でファイルを検索します：
+1. `.kiro/specs/[プロジェクト名]/tasks.md` （最優先）
+2. `.kiro/tasks.md`
+3. `tasks.md` （ルート）
 
 ### 2. タスクリストの作成
 
@@ -298,6 +304,25 @@ Night Shiftは停止や確認なしで連続実行します：
 
 ## ファイル構造
 
+### Kiro構造（推奨）
+```
+project/
+├── .kiro/
+│   └── specs/
+│       └── [プロジェクト名]/
+│           ├── tasks.md          # タスクチェックリスト（権限元）
+│           ├── database.md       # DB仕様書
+│           ├── api.md            # API仕様書
+│           └── frontend.md       # UI仕様書
+├── tasks.md.example              # テンプレート
+├── CURRENT_TASK.md               # 一時ファイル（自動作成/削除）
+├── commands/
+│   └── night-shift.md            # コマンドドキュメント
+└── scripts/
+    └── night-shift-helper.js     # ヘルパーユーティリティ
+```
+
+### 標準構造（フォールバック）
 ```
 project/
 ├── tasks.md                    # タスクチェックリスト（あなたが管理）
@@ -312,6 +337,11 @@ project/
 └── scripts/
     └── night-shift-helper.js   # ヘルパーユーティリティ
 ```
+
+**自動検出の優先順位:**
+1. `.kiro/specs/[プロジェクト]/tasks.md` （kiro構造）
+2. `.kiro/tasks.md`
+3. `tasks.md` （ルート）
 
 ## ベストプラクティス
 

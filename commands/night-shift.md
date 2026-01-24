@@ -24,7 +24,11 @@ Night Shift mode operates **completely unsupervised and autonomously**, automati
 ## Prerequisites
 
 1. **tasks.md** exists with ordered task list
+   - Supports kiro structure: `.kiro/specs/[project]/tasks.md`
+   - Falls back to: `.kiro/tasks.md` or `tasks.md` (root)
 2. **spec/** folder contains specification documents
+   - Supports kiro structure: `.kiro/specs/[project]/`
+   - Falls back to: `spec/` (root)
 3. GitHub CLI (`gh`) is authenticated
 4. Currently on a feature branch (not main)
 
@@ -186,6 +190,22 @@ All tests passing ✓
 
 ## File Structure
 
+### Kiro Structure (Recommended)
+```
+project/
+├── .kiro/
+│   └── specs/
+│       └── [project-name]/
+│           ├── tasks.md          # Task checklist (AUTHORITY)
+│           ├── database.md       # DB specifications
+│           ├── api.md            # API specifications
+│           └── frontend.md       # UI specifications
+├── CURRENT_TASK.md               # Temporary task context (auto-deleted)
+└── commands/
+    └── night-shift.md            # This command
+```
+
+### Standard Structure (Fallback)
 ```
 project/
 ├── tasks.md              # Task checklist (AUTHORITY)
@@ -194,6 +214,11 @@ project/
 └── commands/
     └── night-shift.md    # This command
 ```
+
+**Auto-detection priority:**
+1. `.kiro/specs/[project]/tasks.md` (kiro structure)
+2. `.kiro/tasks.md`
+3. `tasks.md` (root)
 
 ## tasks.md Format
 

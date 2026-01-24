@@ -10,11 +10,78 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 /**
+ * Find tasks.md in the following priority:
+ * 1. .kiro/specs/[project name]/tasks.md
+ * 2. .kiro/tasks.md
+ * 3. tasks.md (root)
+ */
+function findTasksFile() {
+  // Check .kiro/specs/[project name]/tasks.md
+  if (fs.existsSync('.kiro/specs')) {
+    const specsDir = '.kiro/specs';
+    const projectDirs = fs.readdirSync(specsDir, { withFileTypes: true })
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => dirent.name);
+
+    for (const projectDir of projectDirs) {
+      const tasksPath = path.join(specsDir, projectDir, 'tasks.md');
+      if (fs.existsSync(tasksPath)) {
+        return tasksPath;
+      }
+    }
+  }
+
+  // Check .kiro/tasks.md
+  if (fs.existsSync('.kiro/tasks.md')) {
+    return '.kiro/tasks.md';
+  }
+
+  // Check root tasks.md
+  if (fs.existsSync('tasks.md')) {
+    return 'tasks.md';
+  }
+
+  return null;
+}
+
+/**
+ * Find spec directory in the following priority:
+ * 1. .kiro/specs/[project name]/
+ * 2. spec/
+ */
+function findSpecDir() {
+  // Check .kiro/specs/[project name]
+  if (fs.existsSync('.kiro/specs')) {
+    const specsDir = '.kiro/specs';
+    const projectDirs = fs.readdirSync(specsDir, { withFileTypes: true })
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => dirent.name);
+
+    if (projectDirs.length > 0) {
+      return path.join(specsDir, projectDirs[0]);
+    }
+  }
+
+  // Check root spec/
+  if (fs.existsSync('spec')) {
+    return 'spec';
+  }
+
+  return null;
+}
+
+/**
  * Parse tasks.md and extract task list
  */
-function parseTasks(tasksPath = 'tasks.md') {
-  if (!fs.existsSync(tasksPath)) {
-    console.error(`Error: ${tasksPath} not found`);
+function parseTasks(tasksPath) {
+  // Auto-detect if not provided
+  if (!tasksPath) {
+    tasksPath = findTasksFile();
+  }
+
+  if (!tasksPath || !fs.existsSync(tasksPath)) {
+    console.error(`Error: ${tasksPath || 'tasks.md'} not found`);
+    console.error('Searched: .kiro/specs/[project]/tasks.md, .kiro/tasks.md, tasks.md');
     process.exit(1);
   }
 
@@ -58,7 +125,10 @@ function parseTasks(tasksPath = 'tasks.md') {
 /**
  * Get the next unchecked task
  */
-function getNextTask(tasksPath = 'tasks.md') {
+function getNextTask(tasksPath) {
+  if (!tasksPath) {
+    tasksPath = findTasksFile();
+  }
   const tasks = parseTasks(tasksPath);
   const nextTask = tasks.find(task => !task.checked && !task.failed);
 
@@ -68,7 +138,10 @@ function getNextTask(tasksPath = 'tasks.md') {
 /**
  * Get all unchecked tasks
  */
-function getUncompletedTasks(tasksPath = 'tasks.md') {
+function getUncompletedTasks(tasksPath) {
+  if (!tasksPath) {
+    tasksPath = findTasksFile();
+  }
   const tasks = parseTasks(tasksPath);
   return tasks.filter(task => !task.checked);
 }
@@ -76,7 +149,10 @@ function getUncompletedTasks(tasksPath = 'tasks.md') {
 /**
  * Get task completion statistics
  */
-function getTaskStats(tasksPath = 'tasks.md') {
+function getTaskStats(tasksPath) {
+  if (!tasksPath) {
+    tasksPath = findTasksFile();
+  }
   const tasks = parseTasks(tasksPath);
   const total = tasks.length;
   const completed = tasks.filter(t => t.checked).length;
@@ -184,10 +260,21 @@ function escapeRegex(str) {
 /**
  * Display task progress
  */
-function displayProgress(tasksPath = 'tasks.md') {
+function displayProgress(tasksPath) {
+  if (!tasksPath) {
+    tasksPath = findTasksFile();
+    if (!tasksPath) {
+      console.error('❌ Error: tasks.md not found');
+      console.log('   Searched: .kiro/specs/[project]/tasks.md, .kiro/tasks.md, tasks.md');
+      return;
+    }
+  }
+
+  console.log(`\n📂 Using: ${tasksPath}\n`);
+
   const stats = getTaskStats(tasksPath);
 
-  console.log('\n🌙 Night Shift Progress Report');
+  console.log('🌙 Night Shift Progress Report');
   console.log('━'.repeat(50));
   console.log(`Total Tasks:     ${stats.total}`);
   console.log(`Completed:       ${stats.completed} ✓`);
@@ -289,25 +376,27 @@ function checkBranch() {
  * Ensure required files exist
  */
 function checkPrerequisites() {
-  const checks = [
-    { file: 'tasks.md', desc: 'Task list' },
-    { file: 'spec', desc: 'Specification folder', isDir: true }
-  ];
-
   let allPassed = true;
 
-  checks.forEach(check => {
-    const exists = check.isDir
-      ? fs.existsSync(check.file) && fs.statSync(check.file).isDirectory()
-      : fs.existsSync(check.file);
+  // Check for tasks.md (auto-detect)
+  const tasksPath = findTasksFile();
+  if (tasksPath) {
+    console.log(`✓ Task list found: ${tasksPath}`);
+  } else {
+    console.log('⚠️  Task list not found');
+    console.log('   Searched: .kiro/specs/[project]/tasks.md, .kiro/tasks.md, tasks.md');
+    allPassed = false;
+  }
 
-    if (exists) {
-      console.log(`✓ ${check.desc} found`);
-    } else {
-      console.log(`⚠️  ${check.desc} not found (${check.file})`);
-      allPassed = false;
-    }
-  });
+  // Check for spec directory (auto-detect)
+  const specDir = findSpecDir();
+  if (specDir) {
+    console.log(`✓ Specification folder found: ${specDir}`);
+  } else {
+    console.log('⚠️  Specification folder not found');
+    console.log('   Searched: .kiro/specs/[project]/, spec/');
+    allPassed = false;
+  }
 
   return allPassed;
 }
@@ -385,6 +474,8 @@ if (require.main === module) {
 
 // Export functions for use as module
 module.exports = {
+  findTasksFile,
+  findSpecDir,
   parseTasks,
   getNextTask,
   getUncompletedTasks,
