@@ -19,7 +19,18 @@ Night Shift mode operates **completely unsupervised and autonomously**, automati
 - Committing and pushing changes
 - Creating PR when complete
 
-**CRITICAL: This mode runs continuously without user intervention. Do NOT ask for confirmation between tasks. Do NOT pause for user input. Execute all tasks sequentially until complete or max-tasks limit is reached.**
+**CRITICAL AUTONOMOUS EXECUTION RULES:**
+
+1. **NEVER STOP BETWEEN TASKS** - After completing a task, IMMEDIATELY proceed to the next unchecked task
+2. **NEVER ASK FOR CONFIRMATION** - Do not wait for user approval, acknowledgment, or any input
+3. **NEVER ANNOUNCE AND WAIT** - If you say "proceeding to next task", you MUST immediately execute it in the same response
+4. **CONTINUOUS LOOP** - Repeat: Complete task → Update tasks.md → Git commit → IMMEDIATELY start next task
+5. **ONLY STOP WHEN**:
+   - All tasks in tasks.md are checked `[x]`
+   - Max-tasks limit reached (if specified)
+   - Unrecoverable error occurs
+
+**THIS IS NIGHT SHIFT MODE - FULL AUTONOMOUS EXECUTION WITHOUT ANY PAUSES**
 
 ## Prerequisites
 
@@ -142,11 +153,20 @@ If tests pass:
    /compact
    ```
 
-5. **AUTOMATICALLY loop back** to step 1
-   - **DO NOT** ask for user confirmation
-   - **DO NOT** pause or wait
-   - Immediately proceed to next unchecked task
-   - Continue until all tasks complete or max-tasks reached
+5. **IMMEDIATELY AND AUTOMATICALLY** execute step 1 again (in the SAME response)
+   - **DO NOT** announce "proceeding to next task" and then stop
+   - **DO NOT** ask "should I continue?"
+   - **DO NOT** wait for any acknowledgment
+   - **IMMEDIATELY** read tasks.md again and start the next unchecked task
+   - This is a CONTINUOUS LOOP - keep executing until stopping condition met
+
+   **EXECUTION PATTERN:**
+   ```
+   Complete Task 1 → Commit → Read tasks.md → Start Task 2 (NO PAUSE)
+   Complete Task 2 → Commit → Read tasks.md → Start Task 3 (NO PAUSE)
+   Complete Task 3 → Commit → Read tasks.md → Start Task 4 (NO PAUSE)
+   ... continue until all done
+   ```
 
 ### 8. FINISH & PR
 When all tasks are checked:
