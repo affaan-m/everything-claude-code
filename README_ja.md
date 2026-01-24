@@ -24,7 +24,7 @@
 
 <img width="609" height="428" alt="image" src="https://github.com/user-attachments/assets/c9ca43bc-b149-427f-b551-af6840c368f0" />
 
-**[The Longform Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2014040193557471352)**
+**[The Longform Guide to Everything Claude Code（日本語版）](longform-guide_ja.md)** | [原文](https://x.com/affaanmustafa/status/2014040193557471352)
 
 上級テクニック編 - トークン最適化、セッション間のメモリ永続化、検証ループと評価、並列化戦略、サブエージェントオーケストレーション、継続的学習。このガイドのすべての内容は、このリポジトリに動作するコードがあります。
 
@@ -186,7 +186,7 @@ cp -r everything-claude-code/skills/* ~/.claude/skills/
 本当に、ガイドを読んでください。これらの設定は文脈があると10倍理解しやすくなります。
 
 1. **[ショートハンドガイド（日本語版）](shorthand-guide_ja.md)** - セットアップと基礎
-2. **[ロングフォームガイド](https://x.com/affaanmustafa/status/2014040193557471352)** - 上級テクニック（トークン最適化、メモリ永続化、評価、並列化）
+2. **[ロングフォームガイド（日本語版）](longform-guide_ja.md)** - 上級テクニック（トークン最適化、メモリ永続化、評価、並列化）
 
 ---
 
@@ -304,7 +304,7 @@ model: opus
 ## リンク
 
 - **ショートハンドガイド（ここから始める）：** [日本語版](shorthand-guide_ja.md) | [原文](https://x.com/affaanmustafa/status/2012378465664745795)
-- **ロングフォームガイド（上級）：** [The Longform Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2014040193557471352)
+- **ロングフォームガイド（上級）：** [日本語版](longform-guide_ja.md) | [原文](https://x.com/affaanmustafa/status/2014040193557471352)
 - **フォロー：** [@affaanmustafa](https://x.com/affaanmustafa)
 - **zenith.chat：** [zenith.chat](https://zenith.chat)
 
