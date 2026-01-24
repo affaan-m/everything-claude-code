@@ -31,7 +31,7 @@
 | `/eval` | 評価管理 | 機能の評価定義・チェック・レポート、pass@k メトリクス | - |
 | `/learn` | パターン抽出 | セッション中の発見をスキルとして保存、継続的学習 | - |
 | `/orchestrate` | エージェント連携 | 複数エージェントを順次/並列実行、ワークフロー自動化 | 複数 |
-| `/plan` | 実装計画 | 要件整理、リスク評価、フェーズ分け、**確認待ちでコードに触らない** | planner |
+| ~~/plan~~ | ~~実装計画~~ | **削除済み** - cc-sdd（仕様駆動開発）を使用 | - |
 | `/refactor-clean` | デッドコード削除 | knip/depcheck/ts-pruneで検出、テスト検証後に削除 | refactor-cleaner |
 | `/tdd` | テスト駆動開発 | RED→GREEN→REFACTORサイクル、80%+カバレッジ目標 | tdd-guide |
 | `/test-coverage` | カバレッジ分析 | 80%未満のファイルを特定、不足テストを生成 | - |
@@ -45,14 +45,25 @@
 
 ### 開発フロー系
 
-#### `/plan` - 実装計画
-```
-/plan ユーザー認証機能を追加したい
-```
-- 要件の再確認
-- フェーズ分けした実装計画
-- リスク評価
-- **ユーザー確認まで待機**（コードに触らない）
+#### `/plan` - 実装計画（削除済み）
+
+> **注意**: `/plan`コマンドは削除されました。
+>
+> 実装計画・仕様策定には **[cc-sdd（仕様駆動開発）](https://github.com/gotalab/cc-sdd)** を使用してください。
+>
+> ```bash
+> # cc-sddのセットアップ
+> npx cc-sdd@latest --claude --lang ja
+>
+> # 仕様駆動開発ワークフロー
+> /kiro:spec-init [要件説明]
+> /kiro:spec-requirements [spec-name]
+> /kiro:spec-design [spec-name]
+> /kiro:spec-tasks [spec-name]
+> /kiro:spec-impl [task-name]
+> ```
+>
+> cc-sddは、要件→設計→タスク→実装を構造化し、`.kiro/specs/`に永続化します。
 
 #### `/tdd` - テスト駆動開発
 ```
@@ -69,7 +80,7 @@
 /orchestrate feature "ユーザー認証を追加"
 ```
 ワークフロータイプ：
-- `feature`: planner → tdd-guide → code-reviewer → security-reviewer
+- `feature`: tdd-guide → code-reviewer → security-reviewer（計画はcc-sddで）
 - `bugfix`: explorer → tdd-guide → code-reviewer
 - `refactor`: architect → code-reviewer → tdd-guide
 - `security`: security-reviewer → code-reviewer → architect
