@@ -14,7 +14,7 @@
 
 <img width="592" height="445" alt="image" src="https://github.com/user-attachments/assets/1a471488-59cc-425b-8345-5245c7efbcef" />
 
-**[The Shorthand Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2012378465664745795)**
+**[The Shorthand Guide to Everything Claude Code（日本語版）](shorthand-guide_ja.md)** | [原文](https://x.com/affaanmustafa/status/2012378465664745795)
 
 基礎編 - 各設定タイプの役割、セットアップの構造化方法、コンテキストウィンドウ管理、そしてこれらの設定の背景にある哲学。**まずこれを読んでください。**
 
@@ -185,7 +185,7 @@ cp -r everything-claude-code/skills/* ~/.claude/skills/
 
 本当に、ガイドを読んでください。これらの設定は文脈があると10倍理解しやすくなります。
 
-1. **[ショートハンドガイド](https://x.com/affaanmustafa/status/2012378465664745795)** - セットアップと基礎
+1. **[ショートハンドガイド（日本語版）](shorthand-guide_ja.md)** - セットアップと基礎
 2. **[ロングフォームガイド](https://x.com/affaanmustafa/status/2014040193557471352)** - 上級テクニック（トークン最適化、メモリ永続化、評価、並列化）
 
 ---
@@ -303,7 +303,7 @@ model: opus
 
 ## リンク
 
-- **ショートハンドガイド（ここから始める）：** [The Shorthand Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2012378465664745795)
+- **ショートハンドガイド（ここから始める）：** [日本語版](shorthand-guide_ja.md) | [原文](https://x.com/affaanmustafa/status/2012378465664745795)
 - **ロングフォームガイド（上級）：** [The Longform Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2014040193557471352)
 - **フォロー：** [@affaanmustafa](https://x.com/affaanmustafa)
 - **zenith.chat：** [zenith.chat](https://zenith.chat)
