@@ -1,6 +1,6 @@
-# Common Patterns
+# 常用模式
 
-## API Response Format
+## API 响应格式
 
 ```typescript
 interface ApiResponse<T> {
@@ -15,7 +15,7 @@ interface ApiResponse<T> {
 }
 ```
 
-## Custom Hooks Pattern
+## 自定义 Hooks 模式
 
 ```typescript
 export function useDebounce<T>(value: T, delay: number): T {
@@ -30,7 +30,7 @@ export function useDebounce<T>(value: T, delay: number): T {
 }
 ```
 
-## Repository Pattern
+## 仓库模式
 
 ```typescript
 interface Repository<T> {
@@ -42,14 +42,14 @@ interface Repository<T> {
 }
 ```
 
-## Skeleton Projects
+## 骨架项目
 
-When implementing new functionality:
-1. Search for battle-tested skeleton projects
-2. Use parallel agents to evaluate options:
-   - Security assessment
-   - Extensibility analysis
-   - Relevance scoring
-   - Implementation planning
-3. Clone best match as foundation
-4. Iterate within proven structure
+实现新功能时：
+1. 搜索经过实战检验的骨架项目
+2. 使用并行代理评估选项：
+   - 安全评估
+   - 可扩展性分析
+   - 相关性评分
+   - 实现规划
+3. 克隆最佳匹配作为基础
+4. 在经过验证的结构内迭代

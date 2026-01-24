@@ -6,187 +6,187 @@
 ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
 ![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown&logoColor=white)
 
-**The complete collection of Claude Code configs from an Anthropic hackathon winner.**
+**来自 Anthropic 黑客马拉松获奖者的 Claude Code 配置完整合集。**
 
-Production-ready agents, skills, hooks, commands, rules, and MCP configurations evolved over 10+ months of intensive daily use building real products.
+经过 10 个多月密集日常使用，在构建真实产品过程中不断演进的生产级代理、技能、钩子、命令、规则和 MCP 配置。
 
 ---
 
-## The Guides
+## 指南
 
-This repo is the raw code only. The guides explain everything.
+本仓库仅包含原始代码。指南中有详细说明。
 
 <table>
 <tr>
 <td width="50%">
 <a href="https://x.com/affaanmustafa/status/2012378465664745795">
-<img src="https://github.com/user-attachments/assets/1a471488-59cc-425b-8345-5245c7efbcef" alt="The Shorthand Guide to Everything Claude Code" />
+<img src="https://github.com/user-attachments/assets/1a471488-59cc-425b-8345-5245c7efbcef" alt="Everything Claude Code 简明指南" />
 </a>
 </td>
 <td width="50%">
 <a href="https://x.com/affaanmustafa/status/2014040193557471352">
-<img src="https://github.com/user-attachments/assets/c9ca43bc-b149-427f-b551-af6840c368f0" alt="The Longform Guide to Everything Claude Code" />
+<img src="https://github.com/user-attachments/assets/c9ca43bc-b149-427f-b551-af6840c368f0" alt="Everything Claude Code 详尽指南" />
 </a>
 </td>
 </tr>
 <tr>
-<td align="center"><b>Shorthand Guide</b><br/>Setup, foundations, philosophy. <b>Read this first.</b></td>
-<td align="center"><b>Longform Guide</b><br/>Token optimization, memory persistence, evals, parallelization.</td>
+<td align="center"><b>简明指南</b><br/>设置、基础、理念。<b>请先阅读此指南。</b></td>
+<td align="center"><b>详尽指南</b><br/>Token 优化、记忆持久化、评估、并行化。</td>
 </tr>
 </table>
 
-| Topic | What You'll Learn |
+| 主题 | 你将学到 |
 |-------|-------------------|
-| Token Optimization | Model selection, system prompt slimming, background processes |
-| Memory Persistence | Hooks that save/load context across sessions automatically |
-| Continuous Learning | Auto-extract patterns from sessions into reusable skills |
-| Verification Loops | Checkpoint vs continuous evals, grader types, pass@k metrics |
-| Parallelization | Git worktrees, cascade method, when to scale instances |
-| Subagent Orchestration | The context problem, iterative retrieval pattern |
+| Token 优化 | 模型选择、系统提示精简、后台进程 |
+| 记忆持久化 | 自动跨会话保存/加载上下文的钩子 |
+| 持续学习 | 从会话中自动提取模式并形成可复用技能 |
+| 验证循环 | 检查点 vs 持续评估、评分器类型、pass@k 指标 |
+| 并行化 | Git worktrees、级联方法、何时扩展实例 |
+| 子代理编排 | 上下文问题、迭代检索模式 |
 
 ---
 
-## Cross-Platform Support
+## 跨平台支持
 
-This plugin now fully supports **Windows, macOS, and Linux**. All hooks and scripts have been rewritten in Node.js for maximum compatibility.
+本插件现已完全支持 **Windows、macOS 和 Linux**。所有钩子和脚本已用 Node.js 重写以实现最大兼容性。
 
-### Package Manager Detection
+### 包管理器检测
 
-The plugin automatically detects your preferred package manager (npm, pnpm, yarn, or bun) with the following priority:
+插件会按以下优先级自动检测你首选的包管理器（npm、pnpm、yarn 或 bun）：
 
-1. **Environment variable**: `CLAUDE_PACKAGE_MANAGER`
-2. **Project config**: `.claude/package-manager.json`
-3. **package.json**: `packageManager` field
-4. **Lock file**: Detection from package-lock.json, yarn.lock, pnpm-lock.yaml, or bun.lockb
-5. **Global config**: `~/.claude/package-manager.json`
-6. **Fallback**: First available package manager
+1. **环境变量**: `CLAUDE_PACKAGE_MANAGER`
+2. **项目配置**: `.claude/package-manager.json`
+3. **package.json**: `packageManager` 字段
+4. **锁文件**: 从 package-lock.json、yarn.lock、pnpm-lock.yaml 或 bun.lockb 检测
+5. **全局配置**: `~/.claude/package-manager.json`
+6. **回退**: 第一个可用的包管理器
 
-To set your preferred package manager:
+设置首选包管理器：
 
 ```bash
-# Via environment variable
+# 通过环境变量
 export CLAUDE_PACKAGE_MANAGER=pnpm
 
-# Via global config
+# 通过全局配置
 node scripts/setup-package-manager.js --global pnpm
 
-# Via project config
+# 通过项目配置
 node scripts/setup-package-manager.js --project bun
 
-# Detect current setting
+# 检测当前设置
 node scripts/setup-package-manager.js --detect
 ```
 
-Or use the `/setup-pm` command in Claude Code.
+或在 Claude Code 中使用 `/setup-pm` 命令。
 
 ---
 
-## What's Inside
+## 内容概览
 
-This repo is a **Claude Code plugin** - install it directly or copy components manually.
+本仓库是一个 **Claude Code 插件** - 可以直接安装或手动复制组件。
 
 ```
 everything-claude-code/
-|-- .claude-plugin/   # Plugin and marketplace manifests
-|   |-- plugin.json         # Plugin metadata and component paths
-|   |-- marketplace.json    # Marketplace catalog for /plugin marketplace add
+|-- .claude-plugin/   # 插件和市场清单
+|   |-- plugin.json         # 插件元数据和组件路径
+|   |-- marketplace.json    # /plugin marketplace add 的市场目录
 |
-|-- agents/           # Specialized subagents for delegation
-|   |-- planner.md           # Feature implementation planning
-|   |-- architect.md         # System design decisions
-|   |-- tdd-guide.md         # Test-driven development
-|   |-- code-reviewer.md     # Quality and security review
-|   |-- security-reviewer.md # Vulnerability analysis
+|-- agents/           # 用于任务委派的专业子代理
+|   |-- planner.md           # 功能实现规划
+|   |-- architect.md         # 系统设计决策
+|   |-- tdd-guide.md         # 测试驱动开发
+|   |-- code-reviewer.md     # 质量和安全审查
+|   |-- security-reviewer.md # 漏洞分析
 |   |-- build-error-resolver.md
-|   |-- e2e-runner.md        # Playwright E2E testing
-|   |-- refactor-cleaner.md  # Dead code cleanup
-|   |-- doc-updater.md       # Documentation sync
+|   |-- e2e-runner.md        # Playwright E2E 测试
+|   |-- refactor-cleaner.md  # 死代码清理
+|   |-- doc-updater.md       # 文档同步
 |
-|-- skills/           # Workflow definitions and domain knowledge
-|   |-- coding-standards/           # Language best practices
-|   |-- backend-patterns/           # API, database, caching patterns
-|   |-- frontend-patterns/          # React, Next.js patterns
-|   |-- continuous-learning/        # Auto-extract patterns from sessions (Longform Guide)
-|   |-- strategic-compact/          # Manual compaction suggestions (Longform Guide)
-|   |-- tdd-workflow/               # TDD methodology
-|   |-- security-review/            # Security checklist
-|   |-- eval-harness/               # Verification loop evaluation (Longform Guide)
-|   |-- verification-loop/          # Continuous verification (Longform Guide)
+|-- skills/           # 工作流定义和领域知识
+|   |-- coding-standards/           # 语言最佳实践
+|   |-- backend-patterns/           # API、数据库、缓存模式
+|   |-- frontend-patterns/          # React、Next.js 模式
+|   |-- continuous-learning/        # 从会话中自动提取模式（详尽指南）
+|   |-- strategic-compact/          # 手动压缩建议（详尽指南）
+|   |-- tdd-workflow/               # TDD 方法论
+|   |-- security-review/            # 安全检查清单
+|   |-- eval-harness/               # 验证循环评估（详尽指南）
+|   |-- verification-loop/          # 持续验证（详尽指南）
 |
-|-- commands/         # Slash commands for quick execution
-|   |-- tdd.md              # /tdd - Test-driven development
-|   |-- plan.md             # /plan - Implementation planning
-|   |-- e2e.md              # /e2e - E2E test generation
-|   |-- code-review.md      # /code-review - Quality review
-|   |-- build-fix.md        # /build-fix - Fix build errors
-|   |-- refactor-clean.md   # /refactor-clean - Dead code removal
-|   |-- learn.md            # /learn - Extract patterns mid-session (Longform Guide)
-|   |-- checkpoint.md       # /checkpoint - Save verification state (Longform Guide)
-|   |-- verify.md           # /verify - Run verification loop (Longform Guide)
-|   |-- setup-pm.md         # /setup-pm - Configure package manager (NEW)
+|-- commands/         # 快速执行的斜杠命令
+|   |-- tdd.md              # /tdd - 测试驱动开发
+|   |-- plan.md             # /plan - 实现规划
+|   |-- e2e.md              # /e2e - E2E 测试生成
+|   |-- code-review.md      # /code-review - 质量审查
+|   |-- build-fix.md        # /build-fix - 修复构建错误
+|   |-- refactor-clean.md   # /refactor-clean - 死代码移除
+|   |-- learn.md            # /learn - 会话中提取模式（详尽指南）
+|   |-- checkpoint.md       # /checkpoint - 保存验证状态（详尽指南）
+|   |-- verify.md           # /verify - 运行验证循环（详尽指南）
+|   |-- setup-pm.md         # /setup-pm - 配置包管理器（新增）
 |
-|-- rules/            # Always-follow guidelines (copy to ~/.claude/rules/)
-|   |-- security.md         # Mandatory security checks
-|   |-- coding-style.md     # Immutability, file organization
-|   |-- testing.md          # TDD, 80% coverage requirement
-|   |-- git-workflow.md     # Commit format, PR process
-|   |-- agents.md           # When to delegate to subagents
-|   |-- performance.md      # Model selection, context management
+|-- rules/            # 始终遵循的准则（复制到 ~/.claude/rules/）
+|   |-- security.md         # 强制安全检查
+|   |-- coding-style.md     # 不可变性、文件组织
+|   |-- testing.md          # TDD、80% 覆盖率要求
+|   |-- git-workflow.md     # 提交格式、PR 流程
+|   |-- agents.md           # 何时委派给子代理
+|   |-- performance.md      # 模型选择、上下文管理
 |
-|-- hooks/            # Trigger-based automations
-|   |-- hooks.json                # All hooks config (PreToolUse, PostToolUse, Stop, etc.)
-|   |-- memory-persistence/       # Session lifecycle hooks (Longform Guide)
-|   |-- strategic-compact/        # Compaction suggestions (Longform Guide)
+|-- hooks/            # 基于触发器的自动化
+|   |-- hooks.json                # 所有钩子配置（PreToolUse、PostToolUse、Stop 等）
+|   |-- memory-persistence/       # 会话生命周期钩子（详尽指南）
+|   |-- strategic-compact/        # 压缩建议（详尽指南）
 |
-|-- scripts/          # Cross-platform Node.js scripts (NEW)
-|   |-- lib/                     # Shared utilities
-|   |   |-- utils.js             # Cross-platform file/path/system utilities
-|   |   |-- package-manager.js   # Package manager detection and selection
-|   |-- hooks/                   # Hook implementations
-|   |   |-- session-start.js     # Load context on session start
-|   |   |-- session-end.js       # Save state on session end
-|   |   |-- pre-compact.js       # Pre-compaction state saving
-|   |   |-- suggest-compact.js   # Strategic compaction suggestions
-|   |   |-- evaluate-session.js  # Extract patterns from sessions
-|   |-- setup-package-manager.js # Interactive PM setup
+|-- scripts/          # 跨平台 Node.js 脚本（新增）
+|   |-- lib/                     # 共享工具
+|   |   |-- utils.js             # 跨平台文件/路径/系统工具
+|   |   |-- package-manager.js   # 包管理器检测和选择
+|   |-- hooks/                   # 钩子实现
+|   |   |-- session-start.js     # 会话开始时加载上下文
+|   |   |-- session-end.js       # 会话结束时保存状态
+|   |   |-- pre-compact.js       # 压缩前状态保存
+|   |   |-- suggest-compact.js   # 策略性压缩建议
+|   |   |-- evaluate-session.js  # 从会话中提取模式
+|   |-- setup-package-manager.js # 交互式包管理器设置
 |
-|-- tests/            # Test suite (NEW)
-|   |-- lib/                     # Library tests
-|   |-- hooks/                   # Hook tests
-|   |-- run-all.js               # Run all tests
+|-- tests/            # 测试套件（新增）
+|   |-- lib/                     # 库测试
+|   |-- hooks/                   # 钩子测试
+|   |-- run-all.js               # 运行所有测试
 |
-|-- contexts/         # Dynamic system prompt injection contexts (Longform Guide)
-|   |-- dev.md              # Development mode context
-|   |-- review.md           # Code review mode context
-|   |-- research.md         # Research/exploration mode context
+|-- contexts/         # 动态系统提示注入上下文（详尽指南）
+|   |-- dev.md              # 开发模式上下文
+|   |-- review.md           # 代码审查模式上下文
+|   |-- research.md         # 研究/探索模式上下文
 |
-|-- examples/         # Example configurations and sessions
-|   |-- CLAUDE.md           # Example project-level config
-|   |-- user-CLAUDE.md      # Example user-level config
+|-- examples/         # 示例配置和会话
+|   |-- CLAUDE.md           # 项目级配置示例
+|   |-- user-CLAUDE.md      # 用户级配置示例
 |
-|-- mcp-configs/      # MCP server configurations
-|   |-- mcp-servers.json    # GitHub, Supabase, Vercel, Railway, etc.
+|-- mcp-configs/      # MCP 服务器配置
+|   |-- mcp-servers.json    # GitHub、Supabase、Vercel、Railway 等
 |
-|-- marketplace.json  # Self-hosted marketplace config (for /plugin marketplace add)
+|-- marketplace.json  # 自托管市场配置（用于 /plugin marketplace add）
 ```
 
 ---
 
-## Installation
+## 安装
 
-### Option 1: Install as Plugin (Recommended)
+### 方式一：作为插件安装（推荐）
 
-The easiest way to use this repo - install as a Claude Code plugin:
+使用本仓库最简单的方式 - 作为 Claude Code 插件安装：
 
 ```bash
-# Add this repo as a marketplace
+# 添加此仓库作为市场
 /plugin marketplace add affaan-m/everything-claude-code
 
-# Install the plugin
+# 安装插件
 /plugin install everything-claude-code@everything-claude-code
 ```
 
-Or add directly to your `~/.claude/settings.json`:
+或直接添加到你的 `~/.claude/settings.json`：
 
 ```json
 {
@@ -204,77 +204,77 @@ Or add directly to your `~/.claude/settings.json`:
 }
 ```
 
-This gives you instant access to all commands, agents, skills, and hooks.
+这将让你即时访问所有命令、代理、技能和钩子。
 
 ---
 
-### Option 2: Manual Installation
+### 方式二：手动安装
 
-If you prefer manual control over what's installed:
+如果你希望手动控制安装内容：
 
 ```bash
-# Clone the repo
+# 克隆仓库
 git clone https://github.com/affaan-m/everything-claude-code.git
 
-# Copy agents to your Claude config
+# 复制代理到你的 Claude 配置
 cp everything-claude-code/agents/*.md ~/.claude/agents/
 
-# Copy rules
+# 复制规则
 cp everything-claude-code/rules/*.md ~/.claude/rules/
 
-# Copy commands
+# 复制命令
 cp everything-claude-code/commands/*.md ~/.claude/commands/
 
-# Copy skills
+# 复制技能
 cp -r everything-claude-code/skills/* ~/.claude/skills/
 ```
 
-#### Add hooks to settings.json
+#### 将钩子添加到 settings.json
 
-Copy the hooks from `hooks/hooks.json` to your `~/.claude/settings.json`.
+将 `hooks/hooks.json` 中的钩子复制到你的 `~/.claude/settings.json`。
 
-#### Configure MCPs
+#### 配置 MCP
 
-Copy desired MCP servers from `mcp-configs/mcp-servers.json` to your `~/.claude.json`.
+将 `mcp-configs/mcp-servers.json` 中需要的 MCP 服务器复制到你的 `~/.claude.json`。
 
-**Important:** Replace `YOUR_*_HERE` placeholders with your actual API keys.
+**重要：** 将 `YOUR_*_HERE` 占位符替换为你的实际 API 密钥。
 
 ---
 
-## Key Concepts
+## 核心概念
 
-### Agents
+### 代理
 
-Subagents handle delegated tasks with limited scope. Example:
+子代理处理具有有限范围的委派任务。示例：
 
 ```markdown
 ---
 name: code-reviewer
-description: Reviews code for quality, security, and maintainability
+description: 审查代码的质量、安全性和可维护性
 tools: Read, Grep, Glob, Bash
 model: opus
 ---
 
-You are a senior code reviewer...
+你是一位资深代码审查员...
 ```
 
-### Skills
+### 技能
 
-Skills are workflow definitions invoked by commands or agents:
+技能是由命令或代理调用的工作流定义：
 
 ```markdown
-# TDD Workflow
+# TDD 工作流
 
-1. Define interfaces first
-2. Write failing tests (RED)
-3. Implement minimal code (GREEN)
-4. Refactor (IMPROVE)
-5. Verify 80%+ coverage
+1. 首先定义接口
+2. 编写失败的测试（红色）
+3. 实现最小代码（绿色）
+4. 重构（改进）
+5. 验证 80%+ 覆盖率
 ```
 
-### Hooks
+### 钩子
 
-Hooks fire on tool events. Example - warn about console.log:
+钩子在工具事件时触发。示例 - 关于 console.log 的警告：
 
 ```json
 {
@@ -286,28 +286,28 @@ Hooks fire on tool events. Example - warn about console.log:
 }
 ```
 
-### Rules
+### 规则
 
-Rules are always-follow guidelines. Keep them modular:
+规则是始终遵循的准则。保持模块化：
 
 ```
 ~/.claude/rules/
-  security.md      # No hardcoded secrets
-  coding-style.md  # Immutability, file limits
-  testing.md       # TDD, coverage requirements
+  security.md      # 禁止硬编码密钥
+  coding-style.md  # 不可变性、文件限制
+  testing.md       # TDD、覆盖率要求
 ```
 
 ---
 
-## Running Tests
+## 运行测试
 
-The plugin includes a comprehensive test suite:
+插件包含完整的测试套件：
 
 ```bash
-# Run all tests
+# 运行所有测试
 node tests/run-all.js
 
-# Run individual test files
+# 运行单个测试文件
 node tests/lib/utils.test.js
 node tests/lib/package-manager.test.js
 node tests/hooks/hooks.test.js
@@ -315,78 +315,78 @@ node tests/hooks/hooks.test.js
 
 ---
 
-## Contributing
+## 贡献
 
-**Contributions are welcome and encouraged.**
+**欢迎并鼓励贡献。**
 
-This repo is meant to be a community resource. If you have:
-- Useful agents or skills
-- Clever hooks
-- Better MCP configurations
-- Improved rules
+本仓库旨在成为社区资源。如果你有：
+- 有用的代理或技能
+- 巧妙的钩子
+- 更好的 MCP 配置
+- 改进的规则
 
-Please contribute! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+请贡献！参见 [CONTRIBUTING.md](CONTRIBUTING.md) 了解指南。
 
-### Ideas for Contributions
+### 贡献想法
 
-- Language-specific skills (Python, Go, Rust patterns)
-- Framework-specific configs (Django, Rails, Laravel)
-- DevOps agents (Kubernetes, Terraform, AWS)
-- Testing strategies (different frameworks)
-- Domain-specific knowledge (ML, data engineering, mobile)
-
----
-
-## Background
-
-I've been using Claude Code since the experimental rollout. Won the Anthropic x Forum Ventures hackathon in Sep 2025 building [zenith.chat](https://zenith.chat) with [@DRodriguezFX](https://x.com/DRodriguezFX) - entirely using Claude Code.
-
-These configs are battle-tested across multiple production applications.
+- 特定语言的技能（Python、Go、Rust 模式）
+- 特定框架的配置（Django、Rails、Laravel）
+- DevOps 代理（Kubernetes、Terraform、AWS）
+- 测试策略（不同框架）
+- 领域特定知识（ML、数据工程、移动端）
 
 ---
 
-## Important Notes
+## 背景
 
-### Context Window Management
+我从实验性发布开始就一直在使用 Claude Code。2025 年 9 月，我与 [@DRodriguezFX](https://x.com/DRodriguezFX) 一起完全使用 Claude Code 构建 [zenith.chat](https://zenith.chat)，赢得了 Anthropic x Forum Ventures 黑客马拉松。
 
-**Critical:** Don't enable all MCPs at once. Your 200k context window can shrink to 70k with too many tools enabled.
-
-Rule of thumb:
-- Have 20-30 MCPs configured
-- Keep under 10 enabled per project
-- Under 80 tools active
-
-Use `disabledMcpServers` in project config to disable unused ones.
-
-### Customization
-
-These configs work for my workflow. You should:
-1. Start with what resonates
-2. Modify for your stack
-3. Remove what you don't use
-4. Add your own patterns
+这些配置已在多个生产应用中经过实战检验。
 
 ---
 
-## Star History
+## 重要说明
+
+### 上下文窗口管理
+
+**关键：** 不要一次启用所有 MCP。启用太多工具可能会使你的 200k 上下文窗口缩减到 70k。
+
+经验法则：
+- 配置 20-30 个 MCP
+- 每个项目保持启用少于 10 个
+- 活跃工具少于 80 个
+
+在项目配置中使用 `disabledMcpServers` 禁用未使用的服务器。
+
+### 自定义
+
+这些配置适合我的工作流程。你应该：
+1. 从与你产生共鸣的内容开始
+2. 根据你的技术栈进行修改
+3. 移除你不使用的内容
+4. 添加你自己的模式
+
+---
+
+## Star 历史
 
 [![Star History Chart](https://api.star-history.com/svg?repos=affaan-m/everything-claude-code&type=Date)](https://star-history.com/#affaan-m/everything-claude-code&Date)
 
 ---
 
-## Links
+## 链接
 
-- **Shorthand Guide (Start Here):** [The Shorthand Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2012378465664745795)
-- **Longform Guide (Advanced):** [The Longform Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2014040193557471352)
-- **Follow:** [@affaanmustafa](https://x.com/affaanmustafa)
-- **zenith.chat:** [zenith.chat](https://zenith.chat)
-
----
-
-## License
-
-MIT - Use freely, modify as needed, contribute back if you can.
+- **简明指南（从这里开始）：** [Everything Claude Code 简明指南](https://x.com/affaanmustafa/status/2012378465664745795)
+- **详尽指南（高级）：** [Everything Claude Code 详尽指南](https://x.com/affaanmustafa/status/2014040193557471352)
+- **关注：** [@affaanmustafa](https://x.com/affaanmustafa)
+- **zenith.chat：** [zenith.chat](https://zenith.chat)
 
 ---
 
-**Star this repo if it helps. Read both guides. Build something great.**
+## 许可证
+
+MIT - 自由使用，按需修改，如果可以请回馈贡献。
+
+---
+
+**如果本仓库对你有帮助，请 Star。阅读两份指南。构建伟大的产品。**
