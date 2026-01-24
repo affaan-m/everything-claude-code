@@ -1,23 +1,23 @@
 ---
 name: continuous-learning
-description: Automatically extract reusable patterns from Claude Code sessions and save them as learned skills for future use.
+description: Claude Codeセッションから再利用可能なパターンを自動的に抽出し、学習したスキルとして将来の使用のために保存する。
 ---
 
-# Continuous Learning Skill
+# 継続学習スキル
 
-Automatically evaluates Claude Code sessions on end to extract reusable patterns that can be saved as learned skills.
+Claude Codeセッションの終了時に自動的に評価し、学習したスキルとして保存できる再利用可能なパターンを抽出します。
 
-## How It Works
+## 動作方法
 
-This skill runs as a **Stop hook** at the end of each session:
+このスキルは各セッションの終了時に**Stopフック**として実行されます:
 
-1. **Session Evaluation**: Checks if session has enough messages (default: 10+)
-2. **Pattern Detection**: Identifies extractable patterns from the session
-3. **Skill Extraction**: Saves useful patterns to `~/.claude/skills/learned/`
+1. **セッション評価**: セッションに十分なメッセージがあるかチェック（デフォルト: 10以上）
+2. **パターン検出**: セッションから抽出可能なパターンを特定
+3. **スキル抽出**: 有用なパターンを`~/.claude/skills/learned/`に保存
 
-## Configuration
+## 設定
 
-Edit `config.json` to customize:
+`config.json`を編集してカスタマイズ:
 
 ```json
 {
@@ -40,19 +40,19 @@ Edit `config.json` to customize:
 }
 ```
 
-## Pattern Types
+## パターンタイプ
 
-| Pattern | Description |
-|---------|-------------|
-| `error_resolution` | How specific errors were resolved |
-| `user_corrections` | Patterns from user corrections |
-| `workarounds` | Solutions to framework/library quirks |
-| `debugging_techniques` | Effective debugging approaches |
-| `project_specific` | Project-specific conventions |
+| パターン | 説明 |
+|---------|------|
+| `error_resolution` | 特定のエラーがどのように解決されたか |
+| `user_corrections` | ユーザーの修正からのパターン |
+| `workarounds` | フレームワーク/ライブラリの癖への対処法 |
+| `debugging_techniques` | 効果的なデバッグアプローチ |
+| `project_specific` | プロジェクト固有の規約 |
 
-## Hook Setup
+## フック設定
 
-Add to your `~/.claude/settings.json`:
+`~/.claude/settings.json`に追加:
 
 ```json
 {
@@ -68,13 +68,12 @@ Add to your `~/.claude/settings.json`:
 }
 ```
 
-## Why Stop Hook?
+## なぜStopフックか？
 
-- **Lightweight**: Runs once at session end
-- **Non-blocking**: Doesn't add latency to every message
-- **Complete context**: Has access to full session transcript
+- **軽量**: セッション終了時に1回だけ実行
+- **ノンブロッキング**: 各メッセージにレイテンシを追加しない
+- **完全なコンテキスト**: 完全なセッショントランスクリプトにアクセス可能
 
-## Related
+## 関連
 
-- [The Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) - Section on continuous learning
-- `/learn` command - Manual pattern extraction mid-session
+- `/learn`コマンド - セッション中の手動パターン抽出

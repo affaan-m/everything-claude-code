@@ -1,35 +1,37 @@
 ---
 name: strategic-compact
-description: Suggests manual context compaction at logical intervals to preserve context through task phases rather than arbitrary auto-compaction.
+description: 任意の自動コンパクションに頼るのではなく、論理的な間隔で手動のコンテキストコンパクションを提案し、タスクフェーズを通じてコンテキストを保持する。
 ---
 
-# Strategic Compact Skill
+# 戦略的コンパクトスキル
 
-Suggests manual `/compact` at strategic points in your workflow rather than relying on arbitrary auto-compaction.
+任意の自動コンパクションに頼るのではなく、ワークフロー内の戦略的なポイントで手動の`/compact`を提案します。
 
-## Why Strategic Compaction?
+## なぜ戦略的コンパクションか？
 
-Auto-compaction triggers at arbitrary points:
-- Often mid-task, losing important context
-- No awareness of logical task boundaries
-- Can interrupt complex multi-step operations
+自動コンパクションは任意のポイントでトリガーされます:
 
-Strategic compaction at logical boundaries:
-- **After exploration, before execution** - Compact research context, keep implementation plan
-- **After completing a milestone** - Fresh start for next phase
-- **Before major context shifts** - Clear exploration context before different task
+- しばしばタスクの途中で、重要なコンテキストを失う
+- 論理的なタスク境界を認識しない
+- 複雑なマルチステップ操作を中断する可能性がある
 
-## How It Works
+論理的な境界での戦略的コンパクション:
 
-The `suggest-compact.sh` script runs on PreToolUse (Edit/Write) and:
+- **探索後、実行前** - リサーチコンテキストをコンパクト化し、実装計画を保持
+- **マイルストーン完了後** - 次のフェーズのためのフレッシュスタート
+- **大きなコンテキスト切り替え前** - 異なるタスクの前に探索コンテキストをクリア
 
-1. **Tracks tool calls** - Counts tool invocations in session
-2. **Threshold detection** - Suggests at configurable threshold (default: 50 calls)
-3. **Periodic reminders** - Reminds every 25 calls after threshold
+## 動作方法
 
-## Hook Setup
+`suggest-compact.sh`スクリプトはPreToolUse（Edit/Write）で実行され:
 
-Add to your `~/.claude/settings.json`:
+1. **ツール呼び出しを追跡** - セッション内のツール呼び出し数をカウント
+2. **閾値検出** - 設定可能な閾値で提案（デフォルト: 50回の呼び出し）
+3. **定期的なリマインダー** - 閾値後、25回の呼び出しごとにリマインド
+
+## フック設定
+
+`~/.claude/settings.json`に追加:
 
 ```json
 {
@@ -45,19 +47,19 @@ Add to your `~/.claude/settings.json`:
 }
 ```
 
-## Configuration
+## 設定
 
-Environment variables:
-- `COMPACT_THRESHOLD` - Tool calls before first suggestion (default: 50)
+環境変数:
 
-## Best Practices
+- `COMPACT_THRESHOLD` - 最初の提案までのツール呼び出し数（デフォルト: 50）
 
-1. **Compact after planning** - Once plan is finalized, compact to start fresh
-2. **Compact after debugging** - Clear error-resolution context before continuing
-3. **Don't compact mid-implementation** - Preserve context for related changes
-4. **Read the suggestion** - The hook tells you *when*, you decide *if*
+## ベストプラクティス
 
-## Related
+1. **計画後にコンパクト** - 計画が確定したら、フレッシュスタートのためにコンパクト
+2. **デバッグ後にコンパクト** - 続行前にエラー解決コンテキストをクリア
+3. **実装途中ではコンパクトしない** - 関連する変更のためにコンテキストを保持
+4. **提案を読む** - フックは*いつ*を教えてくれ、*するかどうか*はあなたが決める
 
-- [The Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) - Token optimization section
-- Memory persistence hooks - For state that survives compaction
+## 関連
+
+- メモリ永続化フック - コンパクションを生き残る状態用

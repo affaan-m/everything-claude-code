@@ -1,40 +1,47 @@
-# Code Review
+---
+description: コミットされていない変更に対する包括的なセキュリティと品質レビュー
+---
 
-Comprehensive security and quality review of uncommitted changes:
+# コードレビュー
 
-1. Get changed files: git diff --name-only HEAD
+コミットされていない変更に対する包括的なセキュリティと品質レビュー:
 
-2. For each changed file, check for:
+1. 変更されたファイルを取得: `git diff --name-only HEAD`
 
-**Security Issues (CRITICAL):**
-- Hardcoded credentials, API keys, tokens
-- SQL injection vulnerabilities
-- XSS vulnerabilities  
-- Missing input validation
-- Insecure dependencies
-- Path traversal risks
+2. 各変更ファイルについて、以下をチェック:
 
-**Code Quality (HIGH):**
-- Functions > 50 lines
-- Files > 800 lines
-- Nesting depth > 4 levels
-- Missing error handling
-- console.log statements
-- TODO/FIXME comments
-- Missing JSDoc for public APIs
+**セキュリティ問題（クリティカル）:**
 
-**Best Practices (MEDIUM):**
-- Mutation patterns (use immutable instead)
-- Emoji usage in code/comments
-- Missing tests for new code
-- Accessibility issues (a11y)
+- ハードコードされた認証情報、APIキー、トークン
+- SQLインジェクション脆弱性
+- XSS脆弱性
+- 入力検証の欠如
+- 安全でない依存関係
+- パストラバーサルリスク
 
-3. Generate report with:
-   - Severity: CRITICAL, HIGH, MEDIUM, LOW
-   - File location and line numbers
-   - Issue description
-   - Suggested fix
+**コード品質（高）:**
 
-4. Block commit if CRITICAL or HIGH issues found
+- 50行を超える関数
+- 800行を超えるファイル
+- 4レベルを超えるネストの深さ
+- エラーハンドリングの欠如
+- console.log文
+- TODO/FIXMEコメント
+- パブリックAPIのJSDocの欠如
 
-Never approve code with security vulnerabilities!
+**ベストプラクティス（中）:**
+
+- ミューテーションパターン（代わりにイミュータブルを使用）
+- コード/コメントでの絵文字の使用
+- 新しいコードのテスト欠如
+- アクセシビリティの問題（a11y）
+
+3. レポートを生成:
+   - 重大度: クリティカル、高、中、低
+   - ファイルの場所と行番号
+   - 問題の説明
+   - 推奨される修正
+
+4. クリティカルまたは高の問題がある場合はコミットをブロック
+
+セキュリティ脆弱性のあるコードは絶対に承認しない！

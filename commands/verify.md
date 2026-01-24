@@ -1,59 +1,64 @@
-# Verification Command
+---
+description: 現在のコードベース状態に対して包括的な検証を実行する
+---
 
-Run comprehensive verification on current codebase state.
+# 検証コマンド
 
-## Instructions
+現在のコードベース状態に対して包括的な検証を実行します。
 
-Execute verification in this exact order:
+## 手順
 
-1. **Build Check**
-   - Run the build command for this project
-   - If it fails, report errors and STOP
+この正確な順序で検証を実行:
 
-2. **Type Check**
-   - Run TypeScript/type checker
-   - Report all errors with file:line
+1. **ビルドチェック**
+   - このプロジェクトのビルドコマンドを実行
+   - 失敗した場合、エラーを報告して停止
 
-3. **Lint Check**
-   - Run linter
-   - Report warnings and errors
+2. **型チェック**
+   - TypeScript/型チェッカーを実行
+   - すべてのエラーをファイル:行で報告
 
-4. **Test Suite**
-   - Run all tests
-   - Report pass/fail count
-   - Report coverage percentage
+3. **リントチェック**
+   - リンターを実行
+   - 警告とエラーを報告
 
-5. **Console.log Audit**
-   - Search for console.log in source files
-   - Report locations
+4. **テストスイート**
+   - すべてのテストを実行
+   - パス/失敗数を報告
+   - カバレッジパーセンテージを報告
 
-6. **Git Status**
-   - Show uncommitted changes
-   - Show files modified since last commit
+5. **console.log監査**
+   - ソースファイル内のconsole.logを検索
+   - 場所を報告
 
-## Output
+6. **Gitステータス**
+   - コミットされていない変更を表示
+   - 最後のコミット以降に変更されたファイルを表示
 
-Produce a concise verification report:
+## 出力
+
+簡潔な検証レポートを生成:
 
 ```
-VERIFICATION: [PASS/FAIL]
+検証: [パス/失敗]
 
-Build:    [OK/FAIL]
-Types:    [OK/X errors]
-Lint:     [OK/X issues]
-Tests:    [X/Y passed, Z% coverage]
-Secrets:  [OK/X found]
-Logs:     [OK/X console.logs]
+ビルド:    [OK/失敗]
+型:        [OK/Xエラー]
+リント:    [OK/X問題]
+テスト:    [X/Yパス、Z%カバレッジ]
+シークレット: [OK/X発見]
+ログ:      [OK/Xconsole.log]
 
-Ready for PR: [YES/NO]
+PRの準備完了: [はい/いいえ]
 ```
 
-If any critical issues, list them with fix suggestions.
+クリティカルな問題がある場合、修正提案とともにリストアップ。
 
-## Arguments
+## 引数
 
-$ARGUMENTS can be:
-- `quick` - Only build + types
-- `full` - All checks (default)
-- `pre-commit` - Checks relevant for commits
-- `pre-pr` - Full checks plus security scan
+$ARGUMENTSは以下が可能:
+
+- `quick` - ビルド + 型のみ
+- `full` - すべてのチェック（デフォルト）
+- `pre-commit` - コミットに関連するチェック
+- `pre-pr` - 完全なチェック + セキュリティスキャン

@@ -1,62 +1,63 @@
 ---
-description: Enforce test-driven development workflow. Scaffold interfaces, generate tests FIRST, then implement minimal code to pass. Ensure 80%+ coverage.
+description: テスト駆動開発ワークフローを強制する。インターフェースをスキャフォールドし、まずテストを生成し、それからパスするための最小限のコードを実装。80%以上のカバレッジを確保。
 ---
 
-# TDD Command
+# TDDコマンド
 
-This command invokes the **tdd-guide** agent to enforce test-driven development methodology.
+このコマンドは**tdd-guide**エージェントを呼び出して、テスト駆動開発の方法論を強制します。
 
-## What This Command Does
+## このコマンドの機能
 
-1. **Scaffold Interfaces** - Define types/interfaces first
-2. **Generate Tests First** - Write failing tests (RED)
-3. **Implement Minimal Code** - Write just enough to pass (GREEN)
-4. **Refactor** - Improve code while keeping tests green (REFACTOR)
-5. **Verify Coverage** - Ensure 80%+ test coverage
+1. **インターフェースをスキャフォールド** - まず型/インターフェースを定義
+2. **まずテストを生成** - 失敗するテストを書く（RED）
+3. **最小限のコードを実装** - パスするのに十分なだけ書く（GREEN）
+4. **リファクタリング** - テストをグリーンに保ちながらコードを改善（REFACTOR）
+5. **カバレッジを確認** - 80%以上のテストカバレッジを確保
 
-## When to Use
+## 使用するタイミング
 
-Use `/tdd` when:
-- Implementing new features
-- Adding new functions/components
-- Fixing bugs (write test that reproduces bug first)
-- Refactoring existing code
-- Building critical business logic
+`/tdd`を使用する場合:
 
-## How It Works
+- 新機能を実装する
+- 新しい関数/コンポーネントを追加する
+- バグを修正する（まずバグを再現するテストを書く）
+- 既存のコードをリファクタリングする
+- 重要なビジネスロジックを構築する
 
-The tdd-guide agent will:
+## 動作方法
 
-1. **Define interfaces** for inputs/outputs
-2. **Write tests that will FAIL** (because code doesn't exist yet)
-3. **Run tests** and verify they fail for the right reason
-4. **Write minimal implementation** to make tests pass
-5. **Run tests** and verify they pass
-6. **Refactor** code while keeping tests green
-7. **Check coverage** and add more tests if below 80%
+tdd-guideエージェントは:
 
-## TDD Cycle
+1. 入力/出力の**インターフェースを定義**
+2. **失敗するテストを書く**（コードがまだ存在しないため）
+3. テストを**実行**し、正しい理由で失敗することを確認
+4. テストをパスさせるための**最小限の実装を書く**
+5. テストを**実行**し、パスすることを確認
+6. テストをグリーンに保ちながら**コードをリファクタリング**
+7. **カバレッジをチェック**し、80%未満ならテストを追加
 
-```
-RED → GREEN → REFACTOR → REPEAT
-
-RED:      Write a failing test
-GREEN:    Write minimal code to pass
-REFACTOR: Improve code, keep tests passing
-REPEAT:   Next feature/scenario
-```
-
-## Example Usage
+## TDDサイクル
 
 ```
-User: /tdd I need a function to calculate market liquidity score
+RED → GREEN → REFACTOR → 繰り返し
 
-Agent (tdd-guide):
-# TDD Session: Market Liquidity Score Calculator
+RED: 失敗するテストを書く
+GREEN: パスするための最小限のコードを書く
+REFACTOR: コードを改善、テストはパスを維持
+繰り返し: 次の機能/シナリオ
+```
 
-## Step 1: Define Interface (SCAFFOLD)
+## 使用例
 
-```typescript
+```
+ユーザー: /tdd マーケット流動性スコアを計算する関数が必要
+
+エージェント（tdd-guide）:
+
+# TDDセッション: マーケット流動性スコア計算機
+
+## ステップ1: インターフェースの定義（スキャフォールド）
+
 // lib/liquidity.ts
 export interface MarketData {
   totalVolume: number
@@ -66,19 +67,17 @@ export interface MarketData {
 }
 
 export function calculateLiquidityScore(market: MarketData): number {
-  // TODO: Implementation
-  throw new Error('Not implemented')
+  // TODO: 実装
+  throw new Error('未実装')
 }
-```
 
-## Step 2: Write Failing Test (RED)
+## ステップ2: 失敗するテストを書く（RED）
 
-```typescript
 // lib/liquidity.test.ts
 import { calculateLiquidityScore } from './liquidity'
 
 describe('calculateLiquidityScore', () => {
-  it('should return high score for liquid market', () => {
+  it('流動性の高いマーケットに対して高いスコアを返す', () => {
     const market = {
       totalVolume: 100000,
       bidAskSpread: 0.01,
@@ -87,26 +86,24 @@ describe('calculateLiquidityScore', () => {
     }
 
     const score = calculateLiquidityScore(market)
-
     expect(score).toBeGreaterThan(80)
     expect(score).toBeLessThanOrEqual(100)
   })
 
-  it('should return low score for illiquid market', () => {
+  it('流動性の低いマーケットに対して低いスコアを返す', () => {
     const market = {
       totalVolume: 100,
       bidAskSpread: 0.5,
       activeTraders: 2,
-      lastTradeTime: new Date(Date.now() - 86400000) // 1 day ago
+      lastTradeTime: new Date(Date.now() - 86400000) // 1日前
     }
 
     const score = calculateLiquidityScore(market)
-
     expect(score).toBeLessThan(30)
     expect(score).toBeGreaterThanOrEqual(0)
   })
 
-  it('should handle edge case: zero volume', () => {
+  it('エッジケースを処理: ゼロボリューム', () => {
     const market = {
       totalVolume: 0,
       bidAskSpread: 0,
@@ -115,46 +112,41 @@ describe('calculateLiquidityScore', () => {
     }
 
     const score = calculateLiquidityScore(market)
-
     expect(score).toBe(0)
   })
 })
-```
 
-## Step 3: Run Tests - Verify FAIL
+## ステップ3: テストを実行 - 失敗を確認
 
-```bash
 npm test lib/liquidity.test.ts
 
-FAIL lib/liquidity.test.ts
-  ✕ should return high score for liquid market (2 ms)
-    Error: Not implemented
+FAIL  lib/liquidity.test.ts
+  ✕ 流動性の高いマーケットに対して高いスコアを返す (2 ms)
+    Error: 未実装
 
-1 test failed, 0 passed
-```
+1テスト失敗、0パス
 
-✅ Tests fail as expected. Ready to implement.
+✅ テストは期待通り失敗。実装の準備完了。
 
-## Step 4: Implement Minimal Code (GREEN)
+## ステップ4: 最小限のコードを実装（GREEN）
 
-```typescript
 // lib/liquidity.ts
 export function calculateLiquidityScore(market: MarketData): number {
-  // Handle zero volume edge case
+  // ゼロボリュームのエッジケースを処理
   if (market.totalVolume === 0) {
     return 0
   }
 
-  // Calculate component scores (0-100 scale)
+  // コンポーネントスコアを計算（0-100スケール）
   const volumeScore = Math.min(market.totalVolume / 1000, 100)
   const spreadScore = Math.max(100 - (market.bidAskSpread * 1000), 0)
   const traderScore = Math.min(market.activeTraders / 10, 100)
 
-  // Recent activity bonus
+  // 最近のアクティビティボーナス
   const hoursSinceLastTrade = (Date.now() - market.lastTradeTime.getTime()) / (1000 * 60 * 60)
   const recencyScore = Math.max(100 - (hoursSinceLastTrade * 10), 0)
 
-  // Weighted average
+  // 加重平均
   const score = (
     volumeScore * 0.4 +
     spreadScore * 0.3 +
@@ -162,165 +154,118 @@ export function calculateLiquidityScore(market: MarketData): number {
     recencyScore * 0.1
   )
 
-  return Math.min(Math.max(score, 0), 100) // Clamp to 0-100
+  return Math.min(Math.max(score, 0), 100) // 0-100にクランプ
 }
-```
 
-## Step 5: Run Tests - Verify PASS
+## ステップ5: テストを実行 - パスを確認
 
-```bash
 npm test lib/liquidity.test.ts
 
-PASS lib/liquidity.test.ts
-  ✓ should return high score for liquid market (3 ms)
-  ✓ should return low score for illiquid market (2 ms)
-  ✓ should handle edge case: zero volume (1 ms)
+PASS  lib/liquidity.test.ts
+  ✓ 流動性の高いマーケットに対して高いスコアを返す (3 ms)
+  ✓ 流動性の低いマーケットに対して低いスコアを返す (2 ms)
+  ✓ エッジケースを処理: ゼロボリューム (1 ms)
 
-3 tests passed
-```
+3テストパス
 
-✅ All tests passing!
+✅ すべてのテストがパス！
 
-## Step 6: Refactor (IMPROVE)
+## ステップ6: リファクタリング（改善）
 
-```typescript
-// lib/liquidity.ts - Refactored with constants and better readability
-const WEIGHTS = {
-  VOLUME: 0.4,
-  SPREAD: 0.3,
-  TRADERS: 0.2,
-  RECENCY: 0.1,
-} as const
+定数とより良い可読性でリファクタリング...
 
-const SCALE_FACTORS = {
-  VOLUME: 1000,
-  SPREAD: 1000,
-  TRADERS: 10,
-  RECENCY_PENALTY: 10,
-} as const
+## ステップ7: テストがまだパスすることを確認
 
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max)
-}
-
-export function calculateLiquidityScore(market: MarketData): number {
-  if (market.totalVolume === 0) return 0
-
-  const volumeScore = Math.min(market.totalVolume / SCALE_FACTORS.VOLUME, 100)
-  const spreadScore = clamp(100 - (market.bidAskSpread * SCALE_FACTORS.SPREAD), 0, 100)
-  const traderScore = Math.min(market.activeTraders / SCALE_FACTORS.TRADERS, 100)
-
-  const hoursSinceLastTrade = (Date.now() - market.lastTradeTime.getTime()) / (1000 * 60 * 60)
-  const recencyScore = clamp(100 - (hoursSinceLastTrade * SCALE_FACTORS.RECENCY_PENALTY), 0, 100)
-
-  const weightedScore =
-    volumeScore * WEIGHTS.VOLUME +
-    spreadScore * WEIGHTS.SPREAD +
-    traderScore * WEIGHTS.TRADERS +
-    recencyScore * WEIGHTS.RECENCY
-
-  return clamp(weightedScore, 0, 100)
-}
-```
-
-## Step 7: Verify Tests Still Pass
-
-```bash
 npm test lib/liquidity.test.ts
 
-PASS lib/liquidity.test.ts
-  ✓ should return high score for liquid market (3 ms)
-  ✓ should return low score for illiquid market (2 ms)
-  ✓ should handle edge case: zero volume (1 ms)
+PASS  lib/liquidity.test.ts
+  ✓ すべてのテストがパス
 
-3 tests passed
-```
+✅ リファクタリング完了、テストはまだパス！
 
-✅ Refactoring complete, tests still passing!
+## ステップ8: カバレッジをチェック
 
-## Step 8: Check Coverage
-
-```bash
 npm test -- --coverage lib/liquidity.test.ts
 
 File           | % Stmts | % Branch | % Funcs | % Lines
 ---------------|---------|----------|---------|--------
 liquidity.ts   |   100   |   100    |   100   |   100
 
-Coverage: 100% ✅ (Target: 80%)
+カバレッジ: 100% ✅（目標: 80%）
+
+✅ TDDセッション完了！
 ```
 
-✅ TDD session complete!
-```
+## TDDベストプラクティス
 
-## TDD Best Practices
+**すべきこと:**
 
-**DO:**
-- ✅ Write the test FIRST, before any implementation
-- ✅ Run tests and verify they FAIL before implementing
-- ✅ Write minimal code to make tests pass
-- ✅ Refactor only after tests are green
-- ✅ Add edge cases and error scenarios
-- ✅ Aim for 80%+ coverage (100% for critical code)
+- ✅ 実装の前にまずテストを書く
+- ✅ 実装前にテストを実行して失敗することを確認
+- ✅ テストをパスさせるための最小限のコードを書く
+- ✅ テストがグリーンになってからのみリファクタリング
+- ✅ エッジケースとエラーシナリオを追加
+- ✅ 80%以上のカバレッジを目指す（重要なコードは100%）
 
-**DON'T:**
-- ❌ Write implementation before tests
-- ❌ Skip running tests after each change
-- ❌ Write too much code at once
-- ❌ Ignore failing tests
-- ❌ Test implementation details (test behavior)
-- ❌ Mock everything (prefer integration tests)
+**してはいけないこと:**
 
-## Test Types to Include
+- ❌ テストの前に実装を書く
+- ❌ 各変更後のテスト実行をスキップ
+- ❌ 一度に多くのコードを書く
+- ❌ 失敗するテストを無視
+- ❌ 実装の詳細をテスト（動作をテスト）
+- ❌ すべてをモック（統合テストを優先）
 
-**Unit Tests** (Function-level):
-- Happy path scenarios
-- Edge cases (empty, null, max values)
-- Error conditions
-- Boundary values
+## 含めるべきテストタイプ
 
-**Integration Tests** (Component-level):
-- API endpoints
-- Database operations
-- External service calls
-- React components with hooks
+**ユニットテスト**（関数レベル）:
 
-**E2E Tests** (use `/e2e` command):
-- Critical user flows
-- Multi-step processes
-- Full stack integration
+- ハッピーパスシナリオ
+- エッジケース（空、null、最大値）
+- エラー条件
+- 境界値
 
-## Coverage Requirements
+**統合テスト**（コンポーネントレベル）:
 
-- **80% minimum** for all code
-- **100% required** for:
-  - Financial calculations
-  - Authentication logic
-  - Security-critical code
-  - Core business logic
+- APIエンドポイント
+- データベース操作
+- 外部サービス呼び出し
+- フック付きReactコンポーネント
 
-## Important Notes
+**E2Eテスト**（`/e2e`コマンドを使用）:
 
-**MANDATORY**: Tests must be written BEFORE implementation. The TDD cycle is:
+- 重要なユーザーフロー
+- マルチステッププロセス
+- フルスタック統合
 
-1. **RED** - Write failing test
-2. **GREEN** - Implement to pass
-3. **REFACTOR** - Improve code
+## カバレッジ要件
 
-Never skip the RED phase. Never write code before tests.
+- すべてのコードに**最低80%**
+- 以下には**100%必須**:
+  - 金融計算
+  - 認証ロジック
+  - セキュリティ重要コード
+  - コアビジネスロジック
 
-## Integration with Other Commands
+## 重要な注意事項
 
-- Use `/plan` first to understand what to build
-- Use `/tdd` to implement with tests
-- Use `/build-and-fix` if build errors occur
-- Use `/code-review` to review implementation
-- Use `/test-coverage` to verify coverage
+**必須**: テストは実装の前に書く必要があります。TDDサイクルは:
 
-## Related Agents
+1. **RED** - 失敗するテストを書く
+2. **GREEN** - パスするよう実装
+3. **REFACTOR** - コードを改善
 
-This command invokes the `tdd-guide` agent located at:
+REDフェーズをスキップしない。テストの前にコードを書かない。
+
+## 他のコマンドとの統合
+
+- まず`/plan`を使用して何を構築するか理解
+- `/tdd`を使用してテスト付きで実装
+- ビルドエラーが発生したら`/build-and-fix`を使用
+- 実装をレビューするには`/code-review`を使用
+- カバレッジを確認するには`/test-coverage`を使用
+
+## 関連エージェント
+
+このコマンドは以下の`tdd-guide`エージェントを呼び出します:
 `~/.claude/agents/tdd-guide.md`
-
-And can reference the `tdd-workflow` skill at:
-`~/.claude/skills/tdd-workflow/`

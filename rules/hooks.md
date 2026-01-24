@@ -1,46 +1,46 @@
-# Hooks System
+# フックシステム
 
-## Hook Types
+## フックの種類
 
-- **PreToolUse**: Before tool execution (validation, parameter modification)
-- **PostToolUse**: After tool execution (auto-format, checks)
-- **Stop**: When session ends (final verification)
+- **PreToolUse**: ツール実行前（バリデーション、パラメータ変更）
+- **PostToolUse**: ツール実行後（自動フォーマット、チェック）
+- **Stop**: セッション終了時（最終確認）
 
-## Current Hooks (in ~/.claude/settings.json)
+## 現在のフック（~/.claude/settings.json内）
 
 ### PreToolUse
-- **tmux reminder**: Suggests tmux for long-running commands (npm, pnpm, yarn, cargo, etc.)
-- **git push review**: Opens Zed for review before push
-- **doc blocker**: Blocks creation of unnecessary .md/.txt files
+- **tmuxリマインダー**: 長時間実行コマンド（npm, pnpm, yarn, cargoなど）にtmux使用を提案
+- **git pushレビュー**: プッシュ前にZedでレビューを開く
+- **docブロッカー**: 不要な.md/.txtファイル作成をブロック
 
 ### PostToolUse
-- **PR creation**: Logs PR URL and GitHub Actions status
-- **Prettier**: Auto-formats JS/TS files after edit
-- **TypeScript check**: Runs tsc after editing .ts/.tsx files
-- **console.log warning**: Warns about console.log in edited files
+- **PR作成**: PR URLとGitHub Actionsステータスをログ
+- **Prettier**: JS/TSファイル編集後に自動フォーマット
+- **TypeScriptチェック**: .ts/.tsx編集後にtscを実行
+- **console.log警告**: 編集ファイル内のconsole.logを警告
 
 ### Stop
-- **console.log audit**: Checks all modified files for console.log before session ends
+- **console.log監査**: セッション終了前に全修正ファイルのconsole.logをチェック
 
-## Auto-Accept Permissions
+## 自動承認権限
 
-Use with caution:
-- Enable for trusted, well-defined plans
-- Disable for exploratory work
-- Never use dangerously-skip-permissions flag
-- Configure `allowedTools` in `~/.claude.json` instead
+慎重に使用:
+- 信頼された明確な計画には有効化
+- 探索的作業には無効化
+- dangerously-skip-permissionsフラグは絶対に使用しない
+- 代わりに `~/.claude.json` で `allowedTools` を設定
 
-## TodoWrite Best Practices
+## TodoWriteベストプラクティス
 
-Use TodoWrite tool to:
-- Track progress on multi-step tasks
-- Verify understanding of instructions
-- Enable real-time steering
-- Show granular implementation steps
+TodoWriteツールの用途:
+- 複数ステップのタスク進捗を追跡
+- 指示の理解を確認
+- リアルタイムでの軌道修正を可能に
+- 詳細な実装ステップを表示
 
-Todo list reveals:
-- Out of order steps
-- Missing items
-- Extra unnecessary items
-- Wrong granularity
-- Misinterpreted requirements
+Todoリストで判明すること:
+- 順序が間違っているステップ
+- 欠落している項目
+- 不要な余分な項目
+- 粒度の問題
+- 誤解された要件
