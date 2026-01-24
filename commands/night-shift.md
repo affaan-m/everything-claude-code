@@ -12,12 +12,14 @@ Autonomous task execution mode that works through `tasks.md` in order, linking t
 
 ## Overview
 
-Night Shift mode operates unsupervised, automatically:
+Night Shift mode operates **completely unsupervised and autonomously**, automatically:
 - Reading tasks from `tasks.md` in order
 - Matching tasks to GitHub Issues
 - Implementing with TDD cycle
 - Committing and pushing changes
 - Creating PR when complete
+
+**CRITICAL: This mode runs continuously without user intervention. Do NOT ask for confirmation between tasks. Do NOT pause for user input. Execute all tasks sequentially until complete or max-tasks limit is reached.**
 
 ## Prerequisites
 
@@ -136,7 +138,11 @@ If tests pass:
    /compact
    ```
 
-5. **Loop back** to step 1
+5. **AUTOMATICALLY loop back** to step 1
+   - **DO NOT** ask for user confirmation
+   - **DO NOT** pause or wait
+   - Immediately proceed to next unchecked task
+   - Continue until all tasks complete or max-tasks reached
 
 ### 8. FINISH & PR
 When all tasks are checked:
@@ -286,11 +292,21 @@ Context > 180K tokens
 → Resume from current task
 ```
 
+## Autonomous Execution
+
+**DEFAULT BEHAVIOR: Fully autonomous, no user intervention**
+
+Night Shift runs continuously without stopping or asking for confirmation:
+- Processes all unchecked tasks in sequence
+- Automatically proceeds to next task after each completion
+- Only stops when: all tasks done, max-tasks reached, or unrecoverable error
+- Never prompts user between tasks
+
 ## Arguments
 
 $ARGUMENTS:
 - `--dry-run` - Show what would be executed without making changes
-- `--max-tasks N` - Stop after N tasks (default: all)
+- `--max-tasks N` - Stop after N tasks (default: all, runs until complete)
 - `--skip-pr` - Don't create PR at the end
 - `--branch NAME` - Use specific branch name
 - `--use-agents` - Use specialized agents (planner, tdd-guide, reviewers) (default: true)
@@ -300,6 +316,7 @@ $ARGUMENTS:
   - `fast`: tdd-guide only
   - `standard`: tdd-guide + code-reviewer (default)
   - `thorough`: planner + tdd-guide + code-reviewer + security-reviewer
+- `--interactive` - Enable confirmation prompts between tasks (NOT RECOMMENDED for night shift)
 
 ## Examples
 
