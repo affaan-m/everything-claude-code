@@ -29,6 +29,7 @@
 | `/code-review` | コードレビュー | セキュリティ・品質チェック、CRITICAL/HIGH/MEDIUM/LOWで分類 | code-reviewer |
 | `/e2e` | E2Eテスト | Playwright テスト生成・実行、Page Object Model、アーティファクト管理 | e2e-runner |
 | `/eval` | 評価管理 | 機能の評価定義・チェック・レポート、pass@k メトリクス | - |
+| **`/impl`** | **スマート実装** | **cc-sddタスクをTDD+レビュー+検証で実装、エージェント自動連携** | tdd-guide, code-reviewer, security-reviewer |
 | `/learn` | パターン抽出 | セッション中の発見をスキルとして保存、継続的学習 | - |
 | `/orchestrate` | エージェント連携 | 複数エージェントを順次/並列実行、ワークフロー自動化 | 複数 |
 | ~~/plan~~ | ~~実装計画~~ | **削除済み** - cc-sdd（仕様駆動開発）を使用 | - |
@@ -45,6 +46,36 @@
 
 ### 開発フロー系
 
+#### `/impl` - スマート実装（cc-sdd連携）
+
+cc-sddで分解されたタスクを、複数のエージェントを自動連携してスマートに実装。
+
+```bash
+# cc-sddタスクファイルを指定
+/impl .kiro/specs/auth-feature/tasks/task-001.md
+
+# タスク名で指定
+/impl task-001
+
+# 直接タスク説明
+/impl "JWTトークン検証ミドルウェアを実装"
+```
+
+**ワークフロー：**
+```
+1. タスク分析 → 実装計画を簡潔に提示
+2. TDD実装 (tdd-guide) → RED→GREEN→REFACTOR
+3. コードレビュー (code-reviewer) → 品質・セキュリティチェック
+4. セキュリティレビュー (security-reviewer) → 認証/決済関連のみ
+5. 検証 (/verify) → ビルド・テスト・カバレッジ
+6. 完了レポート → サマリー、次のタスク提案
+```
+
+**オプション：**
+- `--auto`: 確認なしで進行（CI用）
+- `--loop`: Ralph loop統合（完成まで自動リトライ）
+- `--skip-review`: レビューをスキップ（非推奨）
+
 #### `/plan` - 実装計画（削除済み）
 
 > **注意**: `/plan`コマンドは削除されました。
@@ -60,7 +91,7 @@
 > /kiro:spec-requirements [spec-name]
 > /kiro:spec-design [spec-name]
 > /kiro:spec-tasks [spec-name]
-> /kiro:spec-impl [task-name]
+> /impl [task-name]  # ← /kiro:spec-implの代わり
 > ```
 >
 > cc-sddは、要件→設計→タスク→実装を構造化し、`.kiro/specs/`に永続化します。
