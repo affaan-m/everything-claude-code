@@ -25,12 +25,19 @@ Night Shift mode operates **completely unsupervised and autonomously**, automati
 2. **NEVER ASK FOR CONFIRMATION** - Do not wait for user approval, acknowledgment, or any input
 3. **NEVER ANNOUNCE AND WAIT** - If you say "proceeding to next task", you MUST immediately execute it in the same response
 4. **CONTINUOUS LOOP** - Repeat: Complete task → Update tasks.md → Git commit → IMMEDIATELY start next task
-5. **ONLY STOP WHEN**:
+5. **ALWAYS USE AGENTS** - Unless `--no-agents` is explicitly specified:
+   - **MANDATORY**: Use `tdd-guide` agent for ALL implementations (DO NOT implement manually)
+   - **MANDATORY**: Use `code-reviewer` agent BEFORE every commit (DO NOT skip review)
+   - **RECOMMENDED**: Use `planner` agent for complex tasks (>3 steps or architectural changes)
+   - **RECOMMENDED**: Use `security-reviewer` agent for auth/API/payment/data handling tasks
+   - **Manual implementation is PROHIBITED** - Always delegate to agents
+6. **ONLY STOP WHEN**:
    - All tasks in tasks.md are checked `[x]`
    - Max-tasks limit reached (if specified)
    - Unrecoverable error occurs
 
 **THIS IS NIGHT SHIFT MODE - FULL AUTONOMOUS EXECUTION WITHOUT ANY PAUSES**
+**THIS IS AGENT-DRIVEN MODE - FULL DELEGATION TO SPECIALIZED AGENTS**
 
 ## Prerequisites
 
@@ -68,67 +75,72 @@ gh issue list --state open --limit 50 --json number,title,body
   - Relevant files from `spec/` directory
   - Mini implementation plan
 
-### 4. PLAN (Optional - for complex tasks)
-**Use planner agent for complex tasks:**
-```
-Task: "Implement user authentication"
-→ Delegate to planner agent
-→ Receive detailed implementation plan
-→ Update CURRENT_TASK.md with plan
-```
+### 4. PLAN (MANDATORY for complex tasks)
+**CRITICAL: For tasks with >3 steps or architectural changes, MUST use planner agent**
 
-### 5. EXECUTE (TDD Cycle with Agents)
-**Agent-assisted Test-Driven Development:**
-
-**Option A: Use tdd-guide agent (Recommended)**
+If task is complex (detected by: multi-step, new architecture, refactoring):
 ```
-→ Delegate entire TDD cycle to tdd-guide agent
-→ Agent writes tests, implements code, refactors
-→ Ensures 80%+ test coverage
-→ Returns when all tests pass
+→ MUST delegate to planner agent
+→ Agent creates detailed step-by-step plan
+→ Save plan to CURRENT_TASK.md
+→ Follow plan during implementation
 ```
 
-**Option B: Manual TDD (fallback)**
+**DO NOT skip planning for complex tasks**
 
-1. **Write Tests**
-   - Create test file if needed
-   - Write failing tests for the feature
-   - Run tests to confirm they fail
+### 5. EXECUTE (MANDATORY: Use tdd-guide agent)
+**CRITICAL: DO NOT implement manually. ALWAYS delegate to tdd-guide agent.**
 
-2. **Write Code**
-   - Implement minimum code to pass tests
-   - Follow project coding standards
-   - Keep changes focused on current task
-
-3. **Refactor**
-   - Clean up implementation
-   - Ensure tests still pass
-   - Update documentation if needed
+**MANDATORY Agent-Driven Implementation:**
+```
+→ Delegate ENTIRE TDD cycle to tdd-guide agent
+→ Agent writes tests first (RED phase)
+→ Agent implements code (GREEN phase)
+→ Agent refactors (REFACTOR phase)
+→ Agent ensures 80%+ test coverage
+→ Agent returns when all tests pass
+```
 
 **Error Handling:**
+- If tdd-guide agent fails → Use `build-error-resolver` agent to fix errors
 - Max 3 retry attempts per task
-- If tests fail, use build-error-resolver agent
 - If FAILED after retries:
   - Revert code changes
   - Add comment to `tasks.md`: `<!-- FAILED: [reason] -->`
-  - Skip to next task
+  - Skip to next task and continue
 
-### 6. REVIEW (Optional - for quality assurance)
-**Use review agents before commit:**
+**PROHIBITED ACTIONS:**
+- ❌ DO NOT implement code manually
+- ❌ DO NOT write tests manually
+- ❌ DO NOT skip tdd-guide agent
+- ✅ ALWAYS delegate to tdd-guide agent
 
-**Code Review:**
+### 6. REVIEW (MANDATORY before every commit)
+**CRITICAL: DO NOT commit without review. ALWAYS use review agents.**
+
+**1. Code Review (MANDATORY for ALL commits):**
 ```
-→ Delegate to code-reviewer agent
-→ Check code quality, patterns, edge cases
-→ Fix issues if any found
+→ MUST delegate to code-reviewer agent
+→ Agent checks code quality, patterns, edge cases
+→ Agent provides feedback
+→ Fix ALL issues found
+→ Re-review if significant changes made
 ```
 
-**Security Review (for sensitive tasks):**
+**2. Security Review (MANDATORY for auth/API/payment/data tasks):**
 ```
-→ Delegate to security-reviewer agent
-→ Check for vulnerabilities, SQL injection, XSS, etc.
-→ Fix security issues before commit
+→ MUST delegate to security-reviewer agent
+→ Agent checks for vulnerabilities (SQL injection, XSS, CSRF, etc.)
+→ Agent validates authentication, authorization, input validation
+→ Fix ALL security issues before commit
 ```
+
+**PROHIBITED ACTIONS:**
+- ❌ DO NOT skip code review
+- ❌ DO NOT commit without code-reviewer agent approval
+- ❌ DO NOT skip security review for sensitive tasks
+- ✅ ALWAYS use code-reviewer agent before commit
+- ✅ ALWAYS use security-reviewer agent for auth/API/payment tasks
 
 ### 7. COMPLETE & UPDATE
 If tests pass:
@@ -347,6 +359,40 @@ Night Shift runs continuously without stopping or asking for confirmation:
 - Only stops when: all tasks done, max-tasks reached, or unrecoverable error
 - Never prompts user between tasks
 
+## Default Agent Usage
+
+**CRITICAL: Unless `--no-agents` is explicitly specified, Night Shift operates in AGENT-DRIVEN MODE**
+
+### Standard Quality Mode (Default)
+
+Every task follows this MANDATORY agent workflow:
+
+1. **For Complex Tasks** (auto-detected: >3 steps, architectural changes):
+   - MUST use `planner` agent
+   - Creates detailed implementation plan
+   - Plan saved to CURRENT_TASK.md
+
+2. **For ALL Implementation Tasks** (MANDATORY):
+   - MUST use `tdd-guide` agent
+   - Agent handles complete TDD cycle
+   - Ensures 80%+ test coverage
+   - Manual implementation is PROHIBITED
+
+3. **Before EVERY Commit** (MANDATORY):
+   - MUST use `code-reviewer` agent
+   - Reviews all changes
+   - Ensures code quality and best practices
+
+4. **For Sensitive Tasks** (auto-detected: auth, API, payment, data handling):
+   - MUST use `security-reviewer` agent
+   - Checks for security vulnerabilities
+   - Validates secure coding practices
+
+**This is NOT optional. This is the DEFAULT and MANDATORY behavior.**
+
+**To disable agents**: Use `--no-agents` flag (NOT RECOMMENDED for production)
+**To change quality level**: Use `--quality-mode` flag
+
 ## Arguments
 
 $ARGUMENTS:
@@ -423,29 +469,41 @@ $ARGUMENTS:
 
 ## Integration with Agents
 
-Night Shift can delegate to specialized agents for higher quality:
+**CRITICAL: Night Shift MUST delegate to specialized agents (not optional)**
 
-### Planning Agents
-- **planner** - Create detailed implementation plans for complex tasks
+Night Shift operates in AGENT-DRIVEN MODE by default:
+
+### Planning Agents (RECOMMENDED for complex tasks)
+- **planner** - Create detailed implementation plans
+  - **Usage Level**: MANDATORY for tasks with >3 steps or architectural changes
   - Use for: New features, architectural changes, complex refactoring
+  - Auto-detect: Multi-step tasks, new components, system design changes
   - Output: Step-by-step implementation plan
+  - **DO NOT skip** for complex tasks
 
-### Implementation Agents
-- **tdd-guide** - Test-Driven Development specialist (RECOMMENDED)
-  - Use for: All implementation tasks
+### Implementation Agents (MANDATORY for all tasks)
+- **tdd-guide** - Test-Driven Development specialist
+  - **Usage Level**: MANDATORY for ALL implementation tasks
+  - Use for: Every single task that requires code changes
   - Ensures: 80%+ test coverage, Red-Green-Refactor cycle
   - Output: Tests + Implementation + Passing tests
+  - **Manual implementation is PROHIBITED**
 
-### Quality Assurance Agents
+### Quality Assurance Agents (MANDATORY)
 - **code-reviewer** - Code quality and best practices
-  - Use for: All tasks before commit
-  - Checks: Patterns, edge cases, maintainability
+  - **Usage Level**: MANDATORY before EVERY commit
+  - Use for: All tasks before commit (no exceptions)
+  - Checks: Patterns, edge cases, maintainability, performance
   - Output: Review feedback + fixes
+  - **DO NOT commit without code-reviewer approval**
 
 - **security-reviewer** - Security vulnerability detection
-  - Use for: Auth, payments, data handling, API endpoints
+  - **Usage Level**: MANDATORY for auth/API/payment/data tasks
+  - Use for: Authentication, API endpoints, payments, data handling
+  - Auto-detect: Files with auth, API routes, sensitive data
   - Checks: SQL injection, XSS, CSRF, authentication issues
   - Output: Security report + fixes
+  - **DO NOT skip** for sensitive tasks
 
 ### Support Agents
 - **build-error-resolver** - Fix build and test failures
@@ -463,30 +521,50 @@ Night Shift can delegate to specialized agents for higher quality:
 ```
 Task: "Add user authentication"
 
-1. PLAN
-   → planner agent creates implementation plan
+1. PLAN (MANDATORY - complex task detected)
+   ✓ MUST delegate to planner agent
+   → Agent analyzes task complexity
+   → Agent creates detailed implementation plan
    → Plan saved to CURRENT_TASK.md
+   ❌ DO NOT skip - task is complex
 
-2. IMPLEMENT
-   → tdd-guide agent follows plan
-   → Writes tests first
-   → Implements features
-   → All tests pass ✓
+2. IMPLEMENT (MANDATORY - ALL tasks)
+   ✓ MUST delegate to tdd-guide agent
+   → Agent writes tests first (RED)
+   → Agent implements features (GREEN)
+   → Agent refactors code (REFACTOR)
+   → All tests pass ✓ (80%+ coverage)
+   ❌ DO NOT implement manually
 
-3. REVIEW
-   → code-reviewer agent checks quality
-   → Suggests improvements
+3. CODE REVIEW (MANDATORY - before commit)
+   ✓ MUST delegate to code-reviewer agent
+   → Agent reviews all changes
+   → Agent suggests improvements
    → Fixes applied
+   → Re-review if needed
+   ❌ DO NOT skip review
 
-4. SECURITY
-   → security-reviewer agent checks auth implementation
-   → Validates password hashing, session management
+4. SECURITY REVIEW (MANDATORY - auth task detected)
+   ✓ MUST delegate to security-reviewer agent
+   → Agent detects authentication code
+   → Agent validates password hashing, session management
+   → Agent checks for auth vulnerabilities
    → Security ✓
+   ❌ DO NOT skip - this is auth code
 
 5. COMMIT
-   → All checks passed
+   → All MANDATORY checks passed ✓
+   → All agents approved ✓
    → Commit with "feat(auto): Add user authentication (Fixes #42)"
+   → Push to remote
 ```
+
+**Summary of Agent Usage:**
+- ✓ planner: Used (complex task)
+- ✓ tdd-guide: Used (MANDATORY)
+- ✓ code-reviewer: Used (MANDATORY)
+- ✓ security-reviewer: Used (auth task detected)
+- ✅ Result: High-quality, tested, reviewed, secure implementation
 
 ## Integration with Other Commands
 
