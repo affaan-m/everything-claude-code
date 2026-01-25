@@ -397,7 +397,8 @@ export function hasPermission(user: User, permission: Permission): boolean {
 export function requirePermission(permission: Permission) {
   return (handler: (request: Request, user: User) => Promise<Response>) => {
     return async (request: Request) => {
-      const user = await requireAuth(request)
+      const payload = await requireAuth(request)
+      const user: User = { id: payload.userId, role: payload.role }
 
       if (!hasPermission(user, permission)) {
         throw new ApiError(403, 'Insufficient permissions')
