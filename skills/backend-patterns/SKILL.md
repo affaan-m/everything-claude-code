@@ -395,20 +395,23 @@ export function hasPermission(user: User, permission: Permission): boolean {
 }
 
 export function requirePermission(permission: Permission) {
-  return async (request: Request) => {
-    const user = await requireAuth(request)
+  return (handler: (request: Request, user: User) => Promise<Response>) => {
+    return async (request: Request) => {
+      const user = await requireAuth(request)
 
-    if (!hasPermission(user, permission)) {
-      throw new ApiError(403, 'Insufficient permissions')
+      if (!hasPermission(user, permission)) {
+        throw new ApiError(403, 'Insufficient permissions')
+      }
+
+      return handler(request, user)
     }
-
-    return user
   }
 }
 
 // Usage
-export const DELETE = requirePermission('delete')(async (request: Request) => {
-  // Handler with permission check
+export const DELETE = requirePermission('delete')(async (request, user) => {
+  // Handler receives authenticated user with verified permissions
+  return NextResponse.json({ deleted: true })
 })
 ```
 
