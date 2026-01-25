@@ -38,7 +38,8 @@
 | `/update-codemaps` | コードマップ更新 | アーキテクチャドキュメント自動生成、変更30%超で承認要求 | doc-updater |
 | `/update-docs` | ドキュメント更新 | package.json/.env.exampleからドキュメント生成 | doc-updater |
 | `/verify` | 検証 | ビルド・型・リント・テスト・シークレット・console.logを一括チェック | - |
-| **`/kiro:spec-impl`** | **スマート実装** | **cc-sddタスクをTDD+品質レビュー+PR作成まで一気通貫で実行** | code-reviewer, build-error-resolver |
+| **`/spec-impl`** | **スマート実装** | **cc-sddタスクをTDD+品質レビュー+PR作成まで一気通貫で実行** | code-reviewer, build-error-resolver |
+| `/kiro:spec-impl` | TDD実装 | cc-sddのタスクをTDDで実装（シンプル版） | - |
 
 ---
 
@@ -46,17 +47,17 @@
 
 ### 開発フロー系
 
-#### `/kiro:spec-impl` - スマート実装（cc-sdd連携）
+#### `/spec-impl` - スマート実装（cc-sdd連携）
 
 cc-sddで分解されたタスクを、TDD・品質レビュー・PR作成まで一気通貫で実行。
 
 ```bash
 # 全ての未完了タスクを実行（デフォルト）
-/kiro:spec-impl auth-feature
+/spec-impl auth-feature
 
 # 特定のタスクのみ実行
-/kiro:spec-impl auth-feature 1.1
-/kiro:spec-impl auth-feature 1,2,3
+/spec-impl auth-feature 1.1
+/spec-impl auth-feature 1,2,3
 ```
 
 **ワークフロー：**
@@ -84,6 +85,17 @@ cc-sddで分解されたタスクを、TDD・品質レビュー・PR作成まで
 - 環境エラー（ポート競合、権限不足等）→ 即時停止
 - 同一エラー5回 → 停止、別アプローチ提案
 
+#### `/kiro:spec-impl` - TDD実装（シンプル版）
+
+cc-sddのオリジナルコマンド。TDDでタスクを実装するシンプルなバージョン。
+
+```bash
+/kiro:spec-impl auth-feature        # 全未完了タスク
+/kiro:spec-impl auth-feature 1.1    # 特定タスク
+```
+
+**フロー**：タスク読み込み → TDD（RED→GREEN→REFACTOR） → tasks.md更新
+
 #### `/plan` - 実装計画（削除済み）
 
 > **注意**: `/plan`コマンドは削除されました。
@@ -99,7 +111,9 @@ cc-sddで分解されたタスクを、TDD・品質レビュー・PR作成まで
 > /kiro:spec-requirements [spec-name]
 > /kiro:spec-design [spec-name]
 > /kiro:spec-tasks [spec-name]
-> /kiro:spec-impl [spec-name]  # ← スマート実装
+> /spec-impl [spec-name]       # ← スマート実装（推奨）
+> # または
+> /kiro:spec-impl [spec-name]  # ← シンプル版
 > ```
 >
 > cc-sddは、要件→設計→タスク→実装を構造化し、`.kiro/specs/`に永続化します。
