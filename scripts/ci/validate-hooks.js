@@ -52,6 +52,19 @@ function validateHooks() {
         if (!matcher.hooks || !Array.isArray(matcher.hooks)) {
           console.error(`ERROR: ${eventType}[${i}] missing 'hooks' array`);
           hasErrors = true;
+        } else {
+          // Validate each hook entry
+          for (let j = 0; j < matcher.hooks.length; j++) {
+            const hook = matcher.hooks[j];
+            if (!hook.type || typeof hook.type !== 'string') {
+              console.error(`ERROR: ${eventType}[${i}].hooks[${j}] missing or invalid 'type' field`);
+              hasErrors = true;
+            }
+            if (!hook.command || (typeof hook.command !== 'string' && !Array.isArray(hook.command))) {
+              console.error(`ERROR: ${eventType}[${i}].hooks[${j}] missing or invalid 'command' field`);
+              hasErrors = true;
+            }
+          }
         }
         totalMatchers++;
       }

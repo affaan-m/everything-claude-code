@@ -17,6 +17,7 @@ function validateRules() {
   const files = fs.readdirSync(RULES_DIR, { recursive: true })
     .filter(f => f.endsWith('.md'));
   let hasErrors = false;
+  let validatedCount = 0;
 
   for (const file of files) {
     const filePath = path.join(RULES_DIR, file);
@@ -28,13 +29,14 @@ function validateRules() {
       console.error(`ERROR: ${file} - Empty rule file`);
       hasErrors = true;
     }
+    validatedCount++;
   }
 
   if (hasErrors) {
     process.exit(1);
   }
 
-  console.log(`Validated ${files.length} rule files`);
+  console.log(`Validated ${validatedCount} rule files`);
 }
 
 validateRules();

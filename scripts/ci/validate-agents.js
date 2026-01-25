@@ -10,7 +10,10 @@ const AGENTS_DIR = path.join(__dirname, '../../agents');
 const REQUIRED_FIELDS = ['model', 'tools'];
 
 function extractFrontmatter(content) {
-  const match = content.match(/^---\n([\s\S]*?)\n---/);
+  // Strip BOM if present (UTF-8 BOM: \uFEFF)
+  const cleanContent = content.replace(/^\uFEFF/, '');
+  // Support both LF and CRLF line endings
+  const match = cleanContent.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return null;
 
   const frontmatter = {};

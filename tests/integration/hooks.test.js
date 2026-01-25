@@ -45,7 +45,7 @@ async function asyncTest(name, fn) {
  * @param {object} env - Environment variables
  * @returns {Promise<{code: number, stdout: string, stderr: string}>}
  */
-function runHookWithInput(scriptPath, input = {}, env = {}) {
+function runHookWithInput(scriptPath, input = {}, env = {}, timeoutMs = 10000) {
   return new Promise((resolve, reject) => {
     const proc = spawn('node', [scriptPath], {
       env: { ...process.env, ...env },
@@ -71,11 +71,20 @@ function runHookWithInput(scriptPath, input = {}, env = {}) {
     }
     proc.stdin.end();
 
+    const timer = setTimeout(() => {
+      proc.kill('SIGKILL');
+      reject(new Error(`Hook timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
     proc.on('close', code => {
+      clearTimeout(timer);
       resolve({ code, stdout, stderr });
     });
 
-    proc.on('error', reject);
+    proc.on('error', err => {
+      clearTimeout(timer);
+      reject(err);
+    });
   });
 }
 
@@ -85,7 +94,7 @@ function runHookWithInput(scriptPath, input = {}, env = {}) {
  * @param {object} input - Hook input object
  * @param {object} env - Environment variables
  */
-function runInlineHook(command, input = {}, env = {}) {
+function runInlineHook(command, input = {}, env = {}, timeoutMs = 10000) {
   return new Promise((resolve, reject) => {
     // Extract the code from node -e "..."
     const match = command.match(/^node -e "(.+)"$/s);
@@ -110,11 +119,20 @@ function runInlineHook(command, input = {}, env = {}) {
     }
     proc.stdin.end();
 
+    const timer = setTimeout(() => {
+      proc.kill('SIGKILL');
+      reject(new Error(`Inline hook timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
     proc.on('close', code => {
+      clearTimeout(timer);
       resolve({ code, stdout, stderr });
     });
 
-    proc.on('error', reject);
+    proc.on('error', err => {
+      clearTimeout(timer);
+      reject(err);
+    });
   });
 }
 
