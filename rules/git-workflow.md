@@ -1,45 +1,23 @@
-# Git Workflow
+# Git Workflow (PostgreSQL Focus)
 
-## Commit Message Format
+- Commits must name the PostgreSQL module (e.g., `src/backend/access/` or extension name).
+- Prefer types: `feat`, `fix`, `docs`, `perf`, `refactor`, `test`.
+
+## Recommended Format
 
 ```
-<type>: <description>
-
-<optional body>
+feat: add WAL summary hook for extension
+fix: prevent lock inversion in heap_update
 ```
 
-Types: feat, fix, refactor, docs, test, chore, perf, ci
+## Branch Strategy
 
-Note: Attribution disabled globally via ~/.claude/settings.json.
+- Separate kernel changes from extension changes.
+- Every change must include regression/verification notes.
+- For WAL or catalog changes, include compatibility notes in commit body.
 
-## Pull Request Workflow
+## Pre-merge Checklist
 
-When creating PRs:
-1. Analyze full commit history (not just latest commit)
-2. Use `git diff [base-branch]...HEAD` to see all changes
-3. Draft comprehensive PR summary
-4. Include test plan with TODOs
-5. Push with `-u` flag if new branch
-
-## Feature Implementation Workflow
-
-1. **Plan First**
-   - Use **planner** agent to create implementation plan
-   - Identify dependencies and risks
-   - Break down into phases
-
-2. **TDD Approach**
-   - Use **tdd-guide** agent
-   - Write tests first (RED)
-   - Implement to pass tests (GREEN)
-   - Refactor (IMPROVE)
-   - Verify 80%+ coverage
-
-3. **Code Review**
-   - Use **code-reviewer** agent immediately after writing code
-   - Address CRITICAL and HIGH issues
-   - Fix MEDIUM issues when possible
-
-4. **Commit & Push**
-   - Detailed commit messages
-   - Follow conventional commits format
+- SQL/Schema changes are backward compatible
+- Kernel changes do not break ABI/extension interfaces
+- Documentation is updated

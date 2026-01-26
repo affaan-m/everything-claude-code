@@ -1,36 +1,19 @@
-# Security Guidelines
+# PostgreSQL Security Rules
 
-## Mandatory Security Checks
+## SQL Security
 
-Before ANY commit:
-- [ ] No hardcoded secrets (API keys, passwords, tokens)
-- [ ] All user inputs validated
-- [ ] SQL injection prevention (parameterized queries)
-- [ ] XSS prevention (sanitized HTML)
-- [ ] CSRF protection enabled
-- [ ] Authentication/authorization verified
-- [ ] Rate limiting on all endpoints
-- [ ] Error messages don't leak sensitive data
+- All dynamic SQL must be parameterized.
+- Exposed interfaces require explicit privilege checks and RLS assessment.
+- Use `SECURITY DEFINER` only with strict input validation.
 
-## Secret Management
+## Extension Security
 
-```typescript
-// NEVER: Hardcoded secrets
-const apiKey = "sk-proj-xxxxx"
+- Do not expose dangerous functions outside superuser context.
+- Avoid unsafe C APIs (e.g., direct system calls).
+- Document any extension-level file or network access.
 
-// ALWAYS: Environment variables
-const apiKey = process.env.OPENAI_API_KEY
+## Kernel Security
 
-if (!apiKey) {
-  throw new Error('OPENAI_API_KEY not configured')
-}
-```
-
-## Security Response Protocol
-
-If security issue found:
-1. STOP immediately
-2. Use **security-reviewer** agent
-3. Fix CRITICAL issues before continuing
-4. Rotate any exposed secrets
-5. Review entire codebase for similar issues
+- New GUCs must define explicit privilege scope.
+- WAL/log format changes require compatibility and rollback analysis.
+- Ensure new log lines do not leak sensitive values.

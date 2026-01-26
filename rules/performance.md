@@ -1,47 +1,21 @@
-# Performance Optimization
+# PostgreSQL Performance Rules
 
-## Model Selection Strategy
+## Query Performance
 
-**Haiku 4.5** (90% of Sonnet capability, 3x cost savings):
-- Lightweight agents with frequent invocation
-- Pair programming and code generation
-- Worker agents in multi-agent systems
+- Use `EXPLAIN (ANALYZE, BUFFERS)` to validate index usage and IO behavior.
+- For hot tables, consider covering indexes or partitioning.
+- Avoid `SELECT *` in critical paths.
+- Validate plan stability across data distributions and parameter changes.
 
-**Sonnet 4.5** (Best coding model):
-- Main development work
-- Orchestrating multi-agent workflows
-- Complex coding tasks
+## Kernel Performance
 
-**Opus 4.5** (Deepest reasoning):
-- Complex architectural decisions
-- Maximum reasoning requirements
-- Research and analysis tasks
+- Before modifying executor/planner, understand statistics and cost model.
+- Use `pgbench` or micro-benchmarks for evaluation.
+- Account for cache behavior (shared buffers, local cache, relcache).
+- Profile WAL volume when touching storage or logging paths.
 
-## Context Window Management
+## Extension Performance
 
-Avoid last 20% of context window for:
-- Large-scale refactoring
-- Feature implementation spanning multiple files
-- Debugging complex interactions
-
-Lower context sensitivity tasks:
-- Single-file edits
-- Independent utility creation
-- Documentation updates
-- Simple bug fixes
-
-## Ultrathink + Plan Mode
-
-For complex tasks requiring deep reasoning:
-1. Use `ultrathink` for enhanced thinking
-2. Enable **Plan Mode** for structured approach
-3. "Rev the engine" with multiple critique rounds
-4. Use split role sub-agents for diverse analysis
-
-## Build Troubleshooting
-
-If build fails:
-1. Use **build-error-resolver** agent
-2. Analyze error messages
-3. Fix incrementally
-4. Verify after each fix
+- Avoid expensive per-row callbacks.
+- Provide index support for custom types/operators.
+- Respect memory budgets (`work_mem`, `maintenance_work_mem`).

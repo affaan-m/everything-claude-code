@@ -1,55 +1,40 @@
-# Common Patterns
+# PostgreSQL Common Patterns
 
-## API Response Format
+## Indexing Patterns
 
-```typescript
-interface ApiResponse<T> {
-  success: boolean
-  data?: T
-  error?: string
-  meta?: {
-    total: number
-    page: number
-    limit: number
-  }
-}
+```sql
+-- Equality + range
+CREATE INDEX idx_orders_status_created_at
+ON orders (status, created_at);
+
+-- Covering index
+CREATE INDEX idx_users_email
+ON users (email) INCLUDE (name, created_at);
+
+-- Partial index
+CREATE INDEX idx_active_users
+ON users (email) WHERE deleted_at IS NULL;
 ```
 
-## Custom Hooks Pattern
+## Extension Layout
 
-```typescript
-export function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value)
-
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay)
-    return () => clearTimeout(handler)
-  }, [value, delay])
-
-  return debouncedValue
-}
+```
+my_extension/
+|-- my_extension.control
+|-- my_extension--1.0.sql
+|-- src/
+|   |-- my_extension.c
+|-- Makefile
 ```
 
-## Repository Pattern
+## Kernel Patch Sequencing
 
-```typescript
-interface Repository<T> {
-  findAll(filters?: Filters): Promise<T[]>
-  findById(id: string): Promise<T | null>
-  create(data: CreateDto): Promise<T>
-  update(id: string, data: UpdateDto): Promise<T>
-  delete(id: string): Promise<void>
-}
-```
+- Add **tests/regressions** first
+- Add **functional changes** second
+- Add **performance improvements** last
 
-## Skeleton Projects
+## Locking/Transaction Patterns
 
-When implementing new functionality:
-1. Search for battle-tested skeleton projects
-2. Use parallel agents to evaluate options:
-   - Security assessment
-   - Extensibility analysis
-   - Relevance scoring
-   - Implementation planning
-3. Clone best match as foundation
-4. Iterate within proven structure
+- Declare lock level explicitly (RowExclusive/ShareUpdateExclusive)
+- Avoid heavy locks in long-running transactions
+- Prefer short-lived LWLock usage for shared structures

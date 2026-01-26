@@ -1,30 +1,18 @@
-# Testing Requirements
+# PostgreSQL Testing Rules
 
-## Minimum Test Coverage: 80%
+## Required Tests
 
-Test Types (ALL required):
-1. **Unit Tests** - Individual functions, utilities, components
-2. **Integration Tests** - API endpoints, database operations
-3. **E2E Tests** - Critical user flows (Playwright)
+- Kernel: `src/test/regress` or `src/test/isolation`
+- Extensions: SQL upgrade and rollback tests
+- Performance: `pgbench` or micro-benchmarks on critical paths
 
-## Test-Driven Development
+## Strategy
 
-MANDATORY workflow:
-1. Write test first (RED)
-2. Run test - it should FAIL
-3. Write minimal implementation (GREEN)
-4. Run test - it should PASS
-5. Refactor (IMPROVE)
-6. Verify coverage (80%+)
+1. Write the minimal regression test first
+2. Compile and run core test suites
+3. Validate high-risk changes across supported versions
+4. Add isolation tests for lock or visibility semantics
 
-## Troubleshooting Test Failures
+## Documentation Sync
 
-1. Use **tdd-guide** agent
-2. Check test isolation
-3. Verify mocks are correct
-4. Fix implementation, not tests (unless tests are wrong)
-
-## Agent Support
-
-- **tdd-guide** - Use PROACTIVELY for new features, enforces write-tests-first
-- **e2e-runner** - Playwright E2E testing specialist
+If tests fail, document root cause and mitigation in the PR.

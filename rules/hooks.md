@@ -1,46 +1,16 @@
-# Hooks System
+# Hooks Usage (PostgreSQL Focus)
 
-## Hook Types
+Hooks keep the standard Claude Code scripts, but are configured for PostgreSQL workflows.
 
-- **PreToolUse**: Before tool execution (validation, parameter modification)
-- **PostToolUse**: After tool execution (auto-format, checks)
-- **Stop**: When session ends (final verification)
+## Suggested Hooks
 
-## Current Hooks (in ~/.claude/settings.json)
+1. **PreToolUse**: preload key excerpts from `docs/postgresql-kernel-plugin-best-practices.md`.
+2. **PostToolUse**: log SQL/kernel change summaries.
+3. **Stop**: generate regression checklist (e.g., `src/test/regress` or extension tests).
 
-### PreToolUse
-- **tmux reminder**: Suggests tmux for long-running commands (npm, pnpm, yarn, cargo, etc.)
-- **git push review**: Opens Zed for review before push
-- **doc blocker**: Blocks creation of unnecessary .md/.txt files
+## Current Hook Configuration
 
-### PostToolUse
-- **PR creation**: Logs PR URL and GitHub Actions status
-- **Prettier**: Auto-formats JS/TS files after edit
-- **TypeScript check**: Runs tsc after editing .ts/.tsx files
-- **console.log warning**: Warns about console.log in edited files
-
-### Stop
-- **console.log audit**: Checks all modified files for console.log before session ends
-
-## Auto-Accept Permissions
-
-Use with caution:
-- Enable for trusted, well-defined plans
-- Disable for exploratory work
-- Never use dangerously-skip-permissions flag
-- Configure `allowedTools` in `~/.claude.json` instead
-
-## TodoWrite Best Practices
-
-Use TodoWrite tool to:
-- Track progress on multi-step tasks
-- Verify understanding of instructions
-- Enable real-time steering
-- Show granular implementation steps
-
-Todo list reveals:
-- Out of order steps
-- Missing items
-- Extra unnecessary items
-- Wrong granularity
-- Misinterpreted requirements
+`hooks/hooks.json` can remain unchanged, but project-level settings should include:
+- PostgreSQL documentation index
+- Kernel module mapping (executor, storage, catalogs)
+- Extension directory scan and upgrade scripts

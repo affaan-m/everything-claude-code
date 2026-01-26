@@ -1,70 +1,49 @@
-# Coding Style
+# PostgreSQL Coding Style
 
-## Immutability (CRITICAL)
+Architect-grade conventions for kernel and extension work.
 
-ALWAYS create new objects, NEVER mutate:
+## Memory & Resource Management
 
-```javascript
-// WRONG: Mutation
-function updateUser(user, name) {
-  user.name = name  // MUTATION!
-  return user
-}
+- **Use MemoryContext** for lifecycle control; avoid `malloc/free`.
+- Choose appropriate contexts for long-lived objects (e.g., CacheMemoryContext).
+- Avoid leaks on error paths; when using `PG_TRY()/PG_CATCH()`, always `PG_RE_THROW()`.
+- Document ownership for data stored in relcache or syscache-backed structures.
 
-// CORRECT: Immutability
-function updateUser(user, name) {
-  return {
-    ...user,
-    name
-  }
-}
+```c
+MemoryContext oldctx = MemoryContextSwitchTo(CacheMemoryContext);
+MyStruct *state = palloc0(sizeof(MyStruct));
+MemoryContextSwitchTo(oldctx);
 ```
-
-## File Organization
-
-MANY SMALL FILES > FEW LARGE FILES:
-- High cohesion, low coupling
-- 200-400 lines typical, 800 max
-- Extract utilities from large components
-- Organize by feature/domain, not by type
 
 ## Error Handling
 
-ALWAYS handle errors comprehensively:
+Use `ereport`/`elog` with correct severity and context:
 
-```typescript
-try {
-  const result = await riskyOperation()
-  return result
-} catch (error) {
-  console.error('Operation failed:', error)
-  throw new Error('Detailed user-friendly message')
-}
+```c
+ereport(ERROR,
+        (errcode(ERRCODE_INVALID_PARAMETER_VALUE),
+         errmsg("invalid relfilenode"),
+         errdetail("relfilenode must be positive")));
 ```
 
-## Input Validation
+## Locking & Concurrency
 
-ALWAYS validate user input:
+- Be explicit about lock level and duration.
+- Do not reverse lock ordering.
+- Document concurrency strategy for shared structures.
+- Prefer LWLocks for shared structures; avoid ad hoc spinlock use.
 
-```typescript
-import { z } from 'zod'
+## SQL/Schema Discipline
 
-const schema = z.object({
-  email: z.string().email(),
-  age: z.number().int().min(0).max(150)
-})
+- Migrations must be reversible or explicitly documented.
+- Prefer `timestamptz` over `timestamp`.
+- Prefer `bigint` for identifiers.
 
-const validated = schema.parse(input)
-```
+## Quality Checklist
 
-## Code Quality Checklist
-
-Before marking work complete:
-- [ ] Code is readable and well-named
-- [ ] Functions are small (<50 lines)
-- [ ] Files are focused (<800 lines)
-- [ ] No deep nesting (>4 levels)
-- [ ] Proper error handling
-- [ ] No console.log statements
-- [ ] No hardcoded values
-- [ ] No mutation (immutable patterns used)
+Before completion:
+- [ ] MemoryContext lifecycle is explicit
+- [ ] Lock ordering is stable (no deadlock risk)
+- [ ] Error paths are complete
+- [ ] SQL/Schema aligns with PostgreSQL standards
+- [ ] Code comments and docs reflect behavior
