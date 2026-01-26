@@ -21,34 +21,72 @@ You are an expert end-to-end testing specialist. Your mission is to ensure criti
 
 ### Agent Browser Setup
 ```bash
-# Install agent-browser
-npm install agent-browser
-# or
-pnpm add agent-browser
+# Install agent-browser globally
+npm install -g agent-browser
+
+# Install Chromium (required)
+agent-browser install
 ```
 
-### Agent Browser Usage
+### Agent Browser CLI Usage (Primary)
+
+Agent Browser uses a snapshot + refs system optimized for AI agents:
+
+```bash
+# Open a page and get a snapshot with interactive elements
+agent-browser open https://example.com
+agent-browser snapshot -i  # Returns elements with refs like [ref=e1]
+
+# Interact using element references from snapshot
+agent-browser click @e1                      # Click element by ref
+agent-browser fill @e2 "user@example.com"   # Fill input by ref
+agent-browser fill @e3 "password123"        # Fill password field
+agent-browser click @e4                      # Click submit button
+
+# Wait for conditions
+agent-browser wait visible @e5               # Wait for element
+agent-browser wait navigation                # Wait for page load
+
+# Take screenshots
+agent-browser screenshot after-login.png
+
+# Get text content
+agent-browser get text @e1
+```
+
+### Agent Browser in Scripts
+
+For programmatic control, use the CLI via shell commands:
+
 ```typescript
-import { AgentBrowser } from 'agent-browser'
+import { execSync } from 'child_process'
 
-const browser = new AgentBrowser()
+// Execute agent-browser commands
+const snapshot = execSync('agent-browser snapshot -i --json').toString()
+const elements = JSON.parse(snapshot)
 
-// Semantic navigation - describe what you want
+// Find element ref and interact
+execSync('agent-browser click @e1')
+execSync('agent-browser fill @e2 "test@example.com"')
+```
+
+### Programmatic API (Advanced)
+
+For direct browser control (screencasts, low-level events):
+
+```typescript
+import { BrowserManager } from 'agent-browser'
+
+const browser = new BrowserManager()
+await browser.launch({ headless: true })
 await browser.navigate('https://example.com')
-await browser.click('the login button')
-await browser.fill('email input', 'user@example.com')
-await browser.fill('password field', 'securepassword')
-await browser.click('submit button')
 
-// Wait for semantic conditions
-await browser.waitFor('dashboard to load')
-await browser.waitFor('user avatar to appear')
+// Low-level event injection
+await browser.injectMouseEvent({ type: 'mousePressed', x: 100, y: 200, button: 'left' })
+await browser.injectKeyboardEvent({ type: 'keyDown', key: 'Enter', code: 'Enter' })
 
-// Take screenshots
-await browser.screenshot('after-login.png')
-
-// Extract data semantically
-const username = await browser.getText('the username in the header')
+// Screencast for AI vision
+await browser.startScreencast()  // Stream viewport frames
 ```
 
 ### Agent Browser with Claude Code
