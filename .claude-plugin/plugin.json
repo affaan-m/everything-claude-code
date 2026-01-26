@@ -22,7 +22,6 @@
     "automation",
     "best-practices"
   ],
-  "agents": "./agents",
   "commands": "./commands",
   "skills": "./skills"
 }
