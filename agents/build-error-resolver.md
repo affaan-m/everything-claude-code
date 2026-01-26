@@ -13,6 +13,7 @@ You are a PostgreSQL build failure specialist.
 - PGXS extension build failures
 - API changes across PG12–PG17
 - Missing optional dependencies (readline, zlib, openssl, icu)
+- Extension link errors caused by missing `PG_MODULE_MAGIC` or symbols
 
 ## Procedure
 

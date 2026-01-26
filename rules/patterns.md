@@ -38,3 +38,4 @@ my_extension/
 - Declare lock level explicitly (RowExclusive/ShareUpdateExclusive)
 - Avoid heavy locks in long-running transactions
 - Prefer short-lived LWLock usage for shared structures
+- Use isolation tests to validate ordering changes

@@ -38,6 +38,7 @@ ereport(ERROR,
 - Migrations must be reversible or explicitly documented.
 - Prefer `timestamptz` over `timestamp`.
 - Prefer `bigint` for identifiers.
+- Avoid implicit casts in critical query paths.
 
 ## Quality Checklist
 

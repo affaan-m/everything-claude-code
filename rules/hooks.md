@@ -14,3 +14,4 @@ Hooks keep the standard Claude Code scripts, but are configured for PostgreSQL w
 - PostgreSQL documentation index
 - Kernel module mapping (executor, storage, catalogs)
 - Extension directory scan and upgrade scripts
+- Snapshot/WAL checkpoints for change summaries

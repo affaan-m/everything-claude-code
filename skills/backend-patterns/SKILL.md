@@ -16,3 +16,4 @@ description: PostgreSQL backend patterns (hooks, bgworker, GUC).
 - Use bgworker APIs for background processes
 - Define GUC permission levels and defaults explicitly
 - Persist state with shared memory only via documented APIs
+- Handle SIGHUP reload paths for long-lived workers

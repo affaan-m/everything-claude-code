@@ -12,3 +12,4 @@ Generate verification checklists for PostgreSQL changes.
 - Performance comparison guidance
 - Risk sign-off points
 - WAL/locking/catalog compatibility confirmation
+- Upgrade and downgrade validation notes

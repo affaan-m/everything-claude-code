@@ -1,22 +1,18 @@
 # PostgreSQL Claude Code Kernel & Extension Toolkit
 
-This repository is a **PostgreSQL-first Claude Code configuration set** for engineers working on core internals, extensions, and performance-critical SQL. It codifies an architect-grade workflow for:
+This repository is a PostgreSQL-first Claude Code configuration set for engineers working on core internals, extensions, and performance-critical SQL. It is written for architects who need repeatable, high-assurance workflows that align with PostgreSQL’s invariants: MVCC visibility, WAL durability, lock ordering, and catalog/cache coherence.
 
-- Kernel source navigation, call-chain analysis, and patch design
-- Extension lifecycle management (build, upgrade, compatibility)
-- SQL/Schema reviews and performance diagnostics
-- Security, testing, and release readiness
+## What This Toolkit Optimizes For
 
-The tooling remains Claude Code-native (agents/commands/hooks/scripts), but every guideline and example is tailored to **PostgreSQL kernel and extension engineering** with deeper focus on WAL, locking, catalogs, and MVCC invariants.
-
----
+- **Kernel reasoning**: call-chain reconstruction, subsystem boundaries, and invariants
+- **Extension governance**: ABI safety, upgrade chains, and compatibility envelopes
+- **Operational correctness**: regression safety, WAL replay, and cache invalidation
+- **Claude Code leverage**: structured planning, review gates, and verification loops
 
 ## Core Guide
 
 - **PostgreSQL Kernel & Extension Best Practices**: `docs/postgresql-kernel-plugin-best-practices.md`
 - **Contribution Rules**: `CONTRIBUTING.md`
-
----
 
 ## Layout
 
@@ -35,33 +31,16 @@ pg-claude-code/
 |-- plugins/           # Plugin guidance for PostgreSQL work
 ```
 
----
+## Recommended Workflow
 
-## Recommended Usage
+1. **Plan** with `/plan` to map modules, risks, and tests.
+2. **Test-first** with `/tdd` to define regressions before implementation.
+3. **Review** with `/code-review` for locking, memory contexts, WAL, and compatibility.
+4. **Verify** with `/verify` for performance and release readiness.
 
-1. Read `docs/postgresql-kernel-plugin-best-practices.md` to align on architecture and risk posture.
-2. Copy `rules/`, `agents/`, `commands/`, and `contexts/` into your `~/.claude/`.
-3. Add a project-level `CLAUDE.md` with PostgreSQL scope and constraints (see `examples/`).
-4. Use `/plan`, `/tdd`, and `/verify` to drive kernel or extension work.
+## Why Claude Code for PostgreSQL
 
----
-
-## Why a PostgreSQL-first Toolkit?
-
-PostgreSQL kernel and extension work has non-negotiable constraints:
-
-- C-level memory contexts, lock ordering, and WAL semantics
-- Strict version compatibility and upgrade paths
-- Catalog and cache consistency rules (syscache/relcache)
-- Schema design directly controls latency and operational risk
-
-This toolkit ensures Claude Code behavior matches those realities with:
-
-- PostgreSQL-specific agents and review checklists
-- Kernel/extension testing and release gates
-- Structured SQL/Schema review patterns
-
----
+Claude Code is most effective when constraints are explicit and review gates are codified. This repository encodes PostgreSQL-specific invariants and audit checklists so that Claude Code’s planning and verification steps mirror the reality of kernel and extension work.
 
 ## Maintenance
 

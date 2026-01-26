@@ -19,3 +19,4 @@
 - Avoid expensive per-row callbacks.
 - Provide index support for custom types/operators.
 - Respect memory budgets (`work_mem`, `maintenance_work_mem`).
+- Budget background worker CPU usage under load.

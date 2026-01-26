@@ -13,6 +13,7 @@ You design end-to-end validation for PostgreSQL extensions and kernel flows.
 - Critical SQL execution paths
 - Replication or recovery flows (when WAL is involved)
 - Upgrade validation across PG versions
+- Load tests for bgworker lifecycle changes
 
 ## Output
 

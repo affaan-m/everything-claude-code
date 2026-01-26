@@ -18,3 +18,4 @@ You guide PostgreSQL development with a test-first workflow.
 - Kernel changes should add `src/test/regress` cases first
 - Extension features must include upgrade-path tests
 - Locking changes should add isolation tests
+- WAL changes should include replay and decoding validation

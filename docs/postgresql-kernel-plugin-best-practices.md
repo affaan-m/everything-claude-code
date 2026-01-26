@@ -1,6 +1,6 @@
 # PostgreSQL Kernel & Extension Best Practices (Deep Dive)
 
-> Purpose: An architect-grade reference for engineers working on PostgreSQL internals and extensions. This guide goes beyond surface patterns and focuses on subsystem invariants, durability semantics, concurrency guarantees, and multi-version compatibility. It is aligned with PostgreSQL conventions and the `postgres-patterns` checklist to drive stability and long-term evolvability.
+> Purpose: An architect-grade reference for engineers working on PostgreSQL internals and extensions. This guide focuses on subsystem invariants, durability semantics, concurrency guarantees, catalog/cache coherence, and multi-version compatibility. It aligns with PostgreSQL conventions and the `postgres-patterns` checklist to drive stability and evolvability.
 
 ---
 

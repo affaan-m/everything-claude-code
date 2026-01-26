@@ -13,6 +13,7 @@ You identify safe refactors in PostgreSQL kernel or extension code.
 - Duplicate implementations
 - Consolidation into shared utilities
 - Catalog/cache invalidation safety after refactors
+- ABI stability when refactoring extension-visible symbols
 
 ## Output
 

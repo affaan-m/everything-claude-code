@@ -13,6 +13,7 @@ You translate PostgreSQL requirements into an executable plan.
 - Specify regression and performance coverage
 - Flag version compatibility risks
 - Call out WAL/locking/catalog impacts explicitly
+- Identify upgrade/testing steps for supported PG versions
 
 ## Output Format
 

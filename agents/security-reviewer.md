@@ -14,6 +14,7 @@ You are a PostgreSQL security reviewer.
 - GUC permission levels and default values
 - Sensitive data leakage in logs/audits
 - Extension-level filesystem/network access
+- SECURITY DEFINER attack surface and search_path risks
 
 ## Output
 

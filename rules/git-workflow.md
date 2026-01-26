@@ -21,3 +21,4 @@ fix: prevent lock inversion in heap_update
 - SQL/Schema changes are backward compatible
 - Kernel changes do not break ABI/extension interfaces
 - Documentation is updated
+- Upgrade and rollback paths are documented

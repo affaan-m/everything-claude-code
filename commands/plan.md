@@ -12,6 +12,7 @@ Planning command for PostgreSQL kernel or extension work. Invokes the `planner` 
 - Designing extension features or upgrade paths
 - Modifying lock/WAL/memory-context semantics
 - Changing catalog or cache behavior
+- Introducing new background workers or hooks
 
 ## Output
 

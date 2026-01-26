@@ -12,6 +12,7 @@
 2. Compile and run core test suites
 3. Validate high-risk changes across supported versions
 4. Add isolation tests for lock or visibility semantics
+5. Add upgrade tests for catalog or WAL format changes
 
 ## Documentation Sync
 

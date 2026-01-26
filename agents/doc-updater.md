@@ -13,6 +13,7 @@ You keep PostgreSQL kernel/extension documentation aligned with code changes.
 - Extension upgrade paths and version notes
 - Behavioral changes (locks, WAL, performance)
 - Compatibility notes for supported versions
+- Notes on catalog/cache invalidation impacts
 
 ## Output
 

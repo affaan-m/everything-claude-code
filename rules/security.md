@@ -11,6 +11,7 @@
 - Do not expose dangerous functions outside superuser context.
 - Avoid unsafe C APIs (e.g., direct system calls).
 - Document any extension-level file or network access.
+- Use restricted `search_path` in security-definer functions.
 
 ## Kernel Security
 

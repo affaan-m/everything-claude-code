@@ -84,5 +84,6 @@ SELECT * FROM products WHERE id > $last_id ORDER BY id LIMIT 20;
 - Use `VACUUM (ANALYZE)` proactively after bulk changes.
 - Monitor bloat and tune autovacuum thresholds.
 - Validate query plans after statistics changes.
+- Watch `work_mem` and `shared_buffers` for plan shifts.
 
 *Maintain this checklist for PostgreSQL kernel/extension teams.*
