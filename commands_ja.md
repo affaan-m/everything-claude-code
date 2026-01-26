@@ -38,7 +38,7 @@
 | `/update-codemaps` | コードマップ更新 | アーキテクチャドキュメント自動生成、変更30%超で承認要求 | doc-updater |
 | `/update-docs` | ドキュメント更新 | package.json/.env.exampleからドキュメント生成 | doc-updater |
 | `/verify` | 検証 | ビルド・型・リント・テスト・シークレット・console.logを一括チェック | - |
-| **`/spec-impl`** | **スマート実装** | **cc-sddタスクをTDD+品質レビュー+PR作成まで一気通貫で実行** | code-reviewer, build-error-resolver |
+| **`/my:spec-impl`** | **スマート実装** | **cc-sddタスクをTDD+品質レビュー+PR作成まで一気通貫で実行** | code-reviewer, build-error-resolver |
 | `/kiro:spec-impl` | TDD実装 | cc-sddのタスクをTDDで実装（シンプル版） | - |
 
 ---
@@ -47,17 +47,17 @@
 
 ### 開発フロー系
 
-#### `/spec-impl` - スマート実装（cc-sdd連携）
+#### `/my:spec-impl` - スマート実装（cc-sdd連携）
 
 cc-sddで分解されたタスクを、TDD・品質レビュー・PR作成まで一気通貫で実行。
 
 ```bash
 # 全ての未完了タスクを実行（デフォルト）
-/spec-impl auth-feature
+/my:spec-impl auth-feature
 
 # 特定のタスクのみ実行
-/spec-impl auth-feature 1.1
-/spec-impl auth-feature 1,2,3
+/my:spec-impl auth-feature 1.1
+/my:spec-impl auth-feature 1,2,3
 ```
 
 **ワークフロー：**
@@ -111,7 +111,7 @@ cc-sddのオリジナルコマンド。TDDでタスクを実装するシンプ�
 > /kiro:spec-requirements [spec-name]
 > /kiro:spec-design [spec-name]
 > /kiro:spec-tasks [spec-name]
-> /spec-impl [spec-name]       # ← スマート実装（推奨）
+> /my:spec-impl [spec-name]    # ← スマート実装（推奨）
 > # または
 > /kiro:spec-impl [spec-name]  # ← シンプル版
 > ```

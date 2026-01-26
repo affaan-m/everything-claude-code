@@ -21,7 +21,7 @@ argument-hint: <feature-name> [task-numbers]
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    /spec-impl workflow                           │
+│                    /my:spec-impl workflow                        │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
 │  PHASE 1: タスク実装（順次処理）                                  │
@@ -253,11 +253,11 @@ EOF
 ### Task Execution Examples
 
 **Execute specific task(s)**:
-- `/spec-impl feature-name 1.1` - Single task
-- `/spec-impl feature-name 1,2,3` - Multiple tasks
+- `/my:spec-impl feature-name 1.1` - Single task
+- `/my:spec-impl feature-name 1,2,3` - Multiple tasks
 
 **Execute all pending (default)**:
-- `/spec-impl feature-name` - All unchecked tasks
+- `/my:spec-impl feature-name` - All unchecked tasks
 
 ## Output Description
 
