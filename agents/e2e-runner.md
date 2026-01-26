@@ -22,14 +22,14 @@ You are an expert end-to-end testing specialist. Your mission is to ensure criti
 ### Agent Browser Setup
 ```bash
 # Install agent-browser
-npm install @anthropic-ai/agent-browser
+npm install agent-browser
 # or
-pnpm add @anthropic-ai/agent-browser
+pnpm add agent-browser
 ```
 
 ### Agent Browser Usage
 ```typescript
-import { AgentBrowser } from '@anthropic-ai/agent-browser'
+import { AgentBrowser } from 'agent-browser'
 
 const browser = new AgentBrowser()
 
