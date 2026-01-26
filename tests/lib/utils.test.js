@@ -1,7 +1,7 @@
 /**
- * Tests for scripts/lib/utils.js
+ * scripts/lib/utils.js のテスト
  *
- * Run with: node tests/lib/utils.test.js
+ * 実行方法: node tests/lib/utils.test.js
  */
 
 const assert = require('assert');
@@ -9,10 +9,10 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 
-// Import the module
+// モジュールをインポート
 const utils = require('../../scripts/lib/utils');
 
-// Test helper
+// テストヘルパー
 function test(name, fn) {
   try {
     fn();
@@ -25,14 +25,14 @@ function test(name, fn) {
   }
 }
 
-// Test suite
+// テストスイート
 function runTests() {
   console.log('\n=== Testing utils.js ===\n');
 
   let passed = 0;
   let failed = 0;
 
-  // Platform detection tests
+  // プラットフォーム検出テスト
   console.log('Platform Detection:');
 
   if (test('isWindows/isMacOS/isLinux are booleans', () => {
@@ -44,11 +44,11 @@ function runTests() {
   if (test('exactly one platform should be true', () => {
     const platforms = [utils.isWindows, utils.isMacOS, utils.isLinux];
     const trueCount = platforms.filter(p => p).length;
-    // Note: Could be 0 on other platforms like FreeBSD
+    // 注意: FreeBSD などの他のプラットフォームでは0になる可能性がある
     assert.ok(trueCount <= 1, 'More than one platform is true');
   })) passed++; else failed++;
 
-  // Directory functions tests
+  // ディレクトリ関数テスト
   console.log('\nDirectory Functions:');
 
   if (test('getHomeDir returns valid path', () => {
@@ -88,7 +88,7 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  // Date/Time functions tests
+  // 日付/時刻関数テスト
   console.log('\nDate/Time Functions:');
 
   if (test('getDateString returns YYYY-MM-DD format', () => {
@@ -106,7 +106,7 @@ function runTests() {
     assert.ok(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(dt), `Expected YYYY-MM-DD HH:MM:SS, got ${dt}`);
   })) passed++; else failed++;
 
-  // Session ID tests
+  // セッションIDテスト
   console.log('\nSession ID Functions:');
 
   if (test('getSessionIdShort returns default when no env var', () => {
@@ -161,7 +161,7 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  // File operations tests
+  // ファイル操作テスト
   console.log('\nFile Operations:');
 
   if (test('readFile returns null for non-existent file', () => {
@@ -229,7 +229,7 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  // findFiles tests
+  // findFiles テスト
   console.log('\nfindFiles:');
 
   if (test('findFiles returns empty for non-existent directory', () => {
@@ -255,7 +255,7 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  // System functions tests
+  // システム関数テスト
   console.log('\nSystem Functions:');
 
   if (test('commandExists finds node', () => {
@@ -279,7 +279,7 @@ function runTests() {
     assert.strictEqual(result.success, false);
   })) passed++; else failed++;
 
-  // Summary
+  // サマリー
   console.log('\n=== Test Results ===');
   console.log(`Passed: ${passed}`);
   console.log(`Failed: ${failed}`);

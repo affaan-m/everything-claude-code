@@ -1,15 +1,15 @@
 /**
- * Package Manager Detection and Selection
- * Automatically detects the preferred package manager or lets user choose
+ * パッケージマネージャーの検出と選択
+ * 優先パッケージマネージャーを自動検出するか、ユーザーに選択させます
  *
- * Supports: npm, pnpm, yarn, bun
+ * 対応: npm, pnpm, yarn, bun
  */
 
 const fs = require('fs');
 const path = require('path');
 const { commandExists, getClaudeDir, readFile, writeFile, log, runCommand } = require('./utils');
 
-// Package manager definitions
+// パッケージマネージャーの定義
 const PACKAGE_MANAGERS = {
   npm: {
     name: 'npm',
@@ -53,16 +53,16 @@ const PACKAGE_MANAGERS = {
   }
 };
 
-// Priority order for detection
+// 検出の優先順位
 const DETECTION_PRIORITY = ['pnpm', 'bun', 'yarn', 'npm'];
 
-// Config file path
+// 設定ファイルのパス
 function getConfigPath() {
   return path.join(getClaudeDir(), 'package-manager.json');
 }
 
 /**
- * Load saved package manager configuration
+ * 保存されたパッケージマネージャー設定を読み込む
  */
 function loadConfig() {
   const configPath = getConfigPath();
@@ -79,7 +79,7 @@ function loadConfig() {
 }
 
 /**
- * Save package manager configuration
+ * パッケージマネージャー設定を保存する
  */
 function saveConfig(config) {
   const configPath = getConfigPath();
@@ -87,7 +87,7 @@ function saveConfig(config) {
 }
 
 /**
- * Detect package manager from lock file in project directory
+ * プロジェクトディレクトリのロックファイルからパッケージマネージャーを検出する
  */
 function detectFromLockFile(projectDir = process.cwd()) {
   for (const pmName of DETECTION_PRIORITY) {
@@ -102,7 +102,7 @@ function detectFromLockFile(projectDir = process.cwd()) {
 }
 
 /**
- * Detect package manager from package.json packageManager field
+ * package.jsonのpackageManagerフィールドからパッケージマネージャーを検出する
  */
 function detectFromPackageJson(projectDir = process.cwd()) {
   const packageJsonPath = path.join(projectDir, 'package.json');
@@ -112,21 +112,21 @@ function detectFromPackageJson(projectDir = process.cwd()) {
     try {
       const pkg = JSON.parse(content);
       if (pkg.packageManager) {
-        // Format: "pnpm@8.6.0" or just "pnpm"
+        // 形式: "pnpm@8.6.0" または単に "pnpm"
         const pmName = pkg.packageManager.split('@')[0];
         if (PACKAGE_MANAGERS[pmName]) {
           return pmName;
         }
       }
     } catch {
-      // Invalid package.json
+      // 無効なpackage.json
     }
   }
   return null;
 }
 
 /**
- * Get available package managers (installed on system)
+ * 利用可能なパッケージマネージャーを取得する（システムにインストール済みのもの）
  */
 function getAvailablePackageManagers() {
   const available = [];
@@ -141,15 +141,15 @@ function getAvailablePackageManagers() {
 }
 
 /**
- * Get the package manager to use for current project
+ * 現在のプロジェクトで使用するパッケージマネージャーを取得する
  *
- * Detection priority:
- * 1. Environment variable CLAUDE_PACKAGE_MANAGER
- * 2. Project-specific config (in .claude/package-manager.json)
- * 3. package.json packageManager field
- * 4. Lock file detection
- * 5. Global user preference (in ~/.claude/package-manager.json)
- * 6. First available package manager (by priority)
+ * 検出の優先順位:
+ * 1. 環境変数 CLAUDE_PACKAGE_MANAGER
+ * 2. プロジェクト固有の設定（.claude/package-manager.json内）
+ * 3. package.jsonのpackageManagerフィールド
+ * 4. ロックファイルの検出
+ * 5. グローバルユーザー設定（~/.claude/package-manager.json内）
+ * 6. 最初に利用可能なパッケージマネージャー（優先順位順）
  *
  * @param {object} options - { projectDir, fallbackOrder }
  * @returns {object} - { name, config, source }
@@ -157,7 +157,7 @@ function getAvailablePackageManagers() {
 function getPackageManager(options = {}) {
   const { projectDir = process.cwd(), fallbackOrder = DETECTION_PRIORITY } = options;
 
-  // 1. Check environment variable
+  // 1. 環境変数をチェック
   const envPm = process.env.CLAUDE_PACKAGE_MANAGER;
   if (envPm && PACKAGE_MANAGERS[envPm]) {
     return {
@@ -167,7 +167,7 @@ function getPackageManager(options = {}) {
     };
   }
 
-  // 2. Check project-specific config
+  // 2. プロジェクト固有の設定をチェック
   const projectConfigPath = path.join(projectDir, '.claude', 'package-manager.json');
   const projectConfig = readFile(projectConfigPath);
   if (projectConfig) {
@@ -181,11 +181,11 @@ function getPackageManager(options = {}) {
         };
       }
     } catch {
-      // Invalid config
+      // 無効な設定
     }
   }
 
-  // 3. Check package.json packageManager field
+  // 3. package.jsonのpackageManagerフィールドをチェック
   const fromPackageJson = detectFromPackageJson(projectDir);
   if (fromPackageJson) {
     return {
@@ -195,7 +195,7 @@ function getPackageManager(options = {}) {
     };
   }
 
-  // 4. Check lock file
+  // 4. ロックファイルをチェック
   const fromLockFile = detectFromLockFile(projectDir);
   if (fromLockFile) {
     return {
@@ -205,7 +205,7 @@ function getPackageManager(options = {}) {
     };
   }
 
-  // 5. Check global user preference
+  // 5. グローバルユーザー設定をチェック
   const globalConfig = loadConfig();
   if (globalConfig && globalConfig.packageManager && PACKAGE_MANAGERS[globalConfig.packageManager]) {
     return {
@@ -215,7 +215,7 @@ function getPackageManager(options = {}) {
     };
   }
 
-  // 6. Use first available package manager
+  // 6. 最初に利用可能なパッケージマネージャーを使用
   const available = getAvailablePackageManagers();
   for (const pmName of fallbackOrder) {
     if (available.includes(pmName)) {
@@ -227,7 +227,7 @@ function getPackageManager(options = {}) {
     }
   }
 
-  // Default to npm (always available with Node.js)
+  // デフォルトはnpm（Node.jsで常に利用可能）
   return {
     name: 'npm',
     config: PACKAGE_MANAGERS.npm,
@@ -236,7 +236,7 @@ function getPackageManager(options = {}) {
 }
 
 /**
- * Set user's preferred package manager (global)
+ * ユーザーの優先パッケージマネージャーを設定する（グローバル）
  */
 function setPreferredPackageManager(pmName) {
   if (!PACKAGE_MANAGERS[pmName]) {
@@ -252,7 +252,7 @@ function setPreferredPackageManager(pmName) {
 }
 
 /**
- * Set project's preferred package manager
+ * プロジェクトの優先パッケージマネージャーを設定する
  */
 function setProjectPackageManager(pmName, projectDir = process.cwd()) {
   if (!PACKAGE_MANAGERS[pmName]) {
@@ -272,8 +272,8 @@ function setProjectPackageManager(pmName, projectDir = process.cwd()) {
 }
 
 /**
- * Get the command to run a script
- * @param {string} script - Script name (e.g., "dev", "build", "test")
+ * スクリプトを実行するコマンドを取得する
+ * @param {string} script - スクリプト名（例: "dev", "build", "test"）
  * @param {object} options - { projectDir }
  */
 function getRunCommand(script, options = {}) {
@@ -294,9 +294,9 @@ function getRunCommand(script, options = {}) {
 }
 
 /**
- * Get the command to execute a package binary
- * @param {string} binary - Binary name (e.g., "prettier", "eslint")
- * @param {string} args - Arguments to pass
+ * パッケージバイナリを実行するコマンドを取得する
+ * @param {string} binary - バイナリ名（例: "prettier", "eslint"）
+ * @param {string} args - 渡す引数
  */
 function getExecCommand(binary, args = '', options = {}) {
   const pm = getPackageManager(options);
@@ -304,8 +304,8 @@ function getExecCommand(binary, args = '', options = {}) {
 }
 
 /**
- * Interactive prompt for package manager selection
- * Returns a message for Claude to show to user
+ * パッケージマネージャー選択のインタラクティブプロンプト
+ * Claudeがユーザーに表示するメッセージを返す
  */
 function getSelectionPrompt() {
   const available = getAvailablePackageManagers();
@@ -327,8 +327,8 @@ function getSelectionPrompt() {
 }
 
 /**
- * Generate a regex pattern that matches commands for all package managers
- * @param {string} action - Action pattern (e.g., "run dev", "install", "test")
+ * すべてのパッケージマネージャーのコマンドにマッチする正規表現パターンを生成する
+ * @param {string} action - アクションパターン（例: "run dev", "install", "test"）
  */
 function getCommandPattern(action) {
   const patterns = [];
@@ -362,7 +362,7 @@ function getCommandPattern(action) {
       'bun run build'
     );
   } else {
-    // Generic run command
+    // 汎用のrunコマンド
     patterns.push(
       `npm run ${action}`,
       `pnpm( run)? ${action}`,

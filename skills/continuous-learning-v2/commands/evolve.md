@@ -1,141 +1,141 @@
 ---
 name: evolve
-description: Cluster related instincts into skills, commands, or agents
+description: 関連するinstinctをskill、command、またはagentにクラスタリングする
 command: /evolve
 implementation: python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py evolve
 ---
 
 # Evolve Command
 
-## Implementation
+## 実装
 
 ```bash
 python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py evolve [--generate]
 ```
 
-Analyzes instincts and clusters related ones into higher-level structures:
-- **Commands**: When instincts describe user-invoked actions
-- **Skills**: When instincts describe auto-triggered behaviors
-- **Agents**: When instincts describe complex, multi-step processes
+instinctを分析し、関連するものをより高レベルの構造にクラスタリングします：
+- **Commands**: instinctがユーザーが呼び出すアクションを記述する場合
+- **Skills**: instinctが自動的にトリガーされる動作を記述する場合
+- **Agents**: instinctが複雑な複数ステップのプロセスを記述する場合
 
-## Usage
-
-```
-/evolve                    # Analyze all instincts and suggest evolutions
-/evolve --domain testing   # Only evolve instincts in testing domain
-/evolve --dry-run          # Show what would be created without creating
-/evolve --threshold 5      # Require 5+ related instincts to cluster
-```
-
-## Evolution Rules
-
-### → Command (User-Invoked)
-When instincts describe actions a user would explicitly request:
-- Multiple instincts about "when user asks to..."
-- Instincts with triggers like "when creating a new X"
-- Instincts that follow a repeatable sequence
-
-Example:
-- `new-table-step1`: "when adding a database table, create migration"
-- `new-table-step2`: "when adding a database table, update schema"
-- `new-table-step3`: "when adding a database table, regenerate types"
-
-→ Creates: `/new-table` command
-
-### → Skill (Auto-Triggered)
-When instincts describe behaviors that should happen automatically:
-- Pattern-matching triggers
-- Error handling responses
-- Code style enforcement
-
-Example:
-- `prefer-functional`: "when writing functions, prefer functional style"
-- `use-immutable`: "when modifying state, use immutable patterns"
-- `avoid-classes`: "when designing modules, avoid class-based design"
-
-→ Creates: `functional-patterns` skill
-
-### → Agent (Needs Depth/Isolation)
-When instincts describe complex, multi-step processes that benefit from isolation:
-- Debugging workflows
-- Refactoring sequences
-- Research tasks
-
-Example:
-- `debug-step1`: "when debugging, first check logs"
-- `debug-step2`: "when debugging, isolate the failing component"
-- `debug-step3`: "when debugging, create minimal reproduction"
-- `debug-step4`: "when debugging, verify fix with test"
-
-→ Creates: `debugger` agent
-
-## What to Do
-
-1. Read all instincts from `~/.claude/homunculus/instincts/`
-2. Group instincts by:
-   - Domain similarity
-   - Trigger pattern overlap
-   - Action sequence relationship
-3. For each cluster of 3+ related instincts:
-   - Determine evolution type (command/skill/agent)
-   - Generate the appropriate file
-   - Save to `~/.claude/homunculus/evolved/{commands,skills,agents}/`
-4. Link evolved structure back to source instincts
-
-## Output Format
+## 使用方法
 
 ```
-🧬 Evolve Analysis
+/evolve                    # すべてのinstinctを分析し、進化を提案する
+/evolve --domain testing   # testingドメインのinstinctのみを進化させる
+/evolve --dry-run          # 作成せずに何が作成されるかを表示する
+/evolve --threshold 5      # クラスタリングに5つ以上の関連instinctを必要とする
+```
+
+## 進化ルール
+
+### → Command（ユーザー呼び出し）
+instinctがユーザーが明示的にリクエストするアクションを記述する場合：
+- 「ユーザーが...を依頼したとき」に関する複数のinstinct
+- 「新しいXを作成するとき」のようなトリガーを持つinstinct
+- 繰り返し可能なシーケンスに従うinstinct
+
+例：
+- `new-table-step1`: 「データベーステーブルを追加するとき、マイグレーションを作成する」
+- `new-table-step2`: 「データベーステーブルを追加するとき、スキーマを更新する」
+- `new-table-step3`: 「データベーステーブルを追加するとき、型を再生成する」
+
+→ 作成されるもの: `/new-table` command
+
+### → Skill（自動トリガー）
+instinctが自動的に発生すべき動作を記述する場合：
+- パターンマッチングトリガー
+- エラーハンドリング応答
+- コードスタイルの強制
+
+例：
+- `prefer-functional`: 「関数を書くとき、関数型スタイルを優先する」
+- `use-immutable`: 「状態を変更するとき、不変パターンを使用する」
+- `avoid-classes`: 「モジュールを設計するとき、クラスベースの設計を避ける」
+
+→ 作成されるもの: `functional-patterns` skill
+
+### → Agent（深さ/分離が必要）
+instinctが分離の恩恵を受ける複雑な複数ステップのプロセスを記述する場合：
+- デバッグワークフロー
+- リファクタリングシーケンス
+- リサーチタスク
+
+例：
+- `debug-step1`: 「デバッグするとき、まずログを確認する」
+- `debug-step2`: 「デバッグするとき、失敗しているコンポーネントを分離する」
+- `debug-step3`: 「デバッグするとき、最小の再現を作成する」
+- `debug-step4`: 「デバッグするとき、テストで修正を検証する」
+
+→ 作成されるもの: `debugger` agent
+
+## 実行内容
+
+1. `~/.claude/homunculus/instincts/`からすべてのinstinctを読み込む
+2. instinctを以下でグループ化：
+   - ドメインの類似性
+   - トリガーパターンの重複
+   - アクションシーケンスの関係
+3. 3つ以上の関連instinctの各クラスタに対して：
+   - 進化タイプ（command/skill/agent）を決定
+   - 適切なファイルを生成
+   - `~/.claude/homunculus/evolved/{commands,skills,agents}/`に保存
+4. 進化した構造をソースinstinctにリンク
+
+## 出力フォーマット
+
+```
+🧬 Evolve分析
 ==================
 
-Found 3 clusters ready for evolution:
+進化準備が整った3つのクラスタが見つかりました：
 
-## Cluster 1: Database Migration Workflow
+## クラスタ1: データベースマイグレーションワークフロー
 Instincts: new-table-migration, update-schema, regenerate-types
 Type: Command
-Confidence: 85% (based on 12 observations)
+Confidence: 85%（12回の観察に基づく）
 
-Would create: /new-table command
-Files:
+作成されるもの: /new-table command
+ファイル:
   - ~/.claude/homunculus/evolved/commands/new-table.md
 
-## Cluster 2: Functional Code Style
+## クラスタ2: 関数型コードスタイル
 Instincts: prefer-functional, use-immutable, avoid-classes, pure-functions
 Type: Skill
-Confidence: 78% (based on 8 observations)
+Confidence: 78%（8回の観察に基づく）
 
-Would create: functional-patterns skill
-Files:
+作成されるもの: functional-patterns skill
+ファイル:
   - ~/.claude/homunculus/evolved/skills/functional-patterns.md
 
-## Cluster 3: Debugging Process
+## クラスタ3: デバッグプロセス
 Instincts: debug-check-logs, debug-isolate, debug-reproduce, debug-verify
 Type: Agent
-Confidence: 72% (based on 6 observations)
+Confidence: 72%（6回の観察に基づく）
 
-Would create: debugger agent
-Files:
+作成されるもの: debugger agent
+ファイル:
   - ~/.claude/homunculus/evolved/agents/debugger.md
 
 ---
-Run `/evolve --execute` to create these files.
+これらのファイルを作成するには `/evolve --execute` を実行してください。
 ```
 
-## Flags
+## フラグ
 
-- `--execute`: Actually create the evolved structures (default is preview)
-- `--dry-run`: Preview without creating
-- `--domain <name>`: Only evolve instincts in specified domain
-- `--threshold <n>`: Minimum instincts required to form cluster (default: 3)
-- `--type <command|skill|agent>`: Only create specified type
+- `--execute`: 実際に進化した構造を作成する（デフォルトはプレビュー）
+- `--dry-run`: 作成せずにプレビュー
+- `--domain <name>`: 指定したドメインのinstinctのみを進化させる
+- `--threshold <n>`: クラスタを形成するために必要な最小instinct数（デフォルト: 3）
+- `--type <command|skill|agent>`: 指定したタイプのみを作成
 
-## Generated File Format
+## 生成されるファイルフォーマット
 
 ### Command
 ```markdown
 ---
 name: new-table
-description: Create a new database table with migration, schema update, and type generation
+description: マイグレーション、スキーマ更新、型生成を含む新しいデータベーステーブルを作成する
 command: /new-table
 evolved_from:
   - new-table-migration
@@ -145,9 +145,9 @@ evolved_from:
 
 # New Table Command
 
-[Generated content based on clustered instincts]
+[クラスタリングされたinstinctに基づいて生成されたコンテンツ]
 
-## Steps
+## ステップ
 1. ...
 2. ...
 ```
@@ -156,7 +156,7 @@ evolved_from:
 ```markdown
 ---
 name: functional-patterns
-description: Enforce functional programming patterns
+description: 関数型プログラミングパターンを強制する
 evolved_from:
   - prefer-functional
   - use-immutable
@@ -165,14 +165,14 @@ evolved_from:
 
 # Functional Patterns Skill
 
-[Generated content based on clustered instincts]
+[クラスタリングされたinstinctに基づいて生成されたコンテンツ]
 ```
 
 ### Agent
 ```markdown
 ---
 name: debugger
-description: Systematic debugging agent
+description: 体系的なデバッグagent
 model: sonnet
 evolved_from:
   - debug-check-logs
@@ -182,5 +182,5 @@ evolved_from:
 
 # Debugger Agent
 
-[Generated content based on clustered instincts]
+[クラスタリングされたinstinctに基づいて生成されたコンテンツ]
 ```

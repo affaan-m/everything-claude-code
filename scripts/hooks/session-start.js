@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * SessionStart Hook - Load previous context on new session
+ * SessionStart Hook - 新しいセッション開始時に以前の context を読み込む
  *
- * Cross-platform (Windows, macOS, Linux)
+ * クロスプラットフォーム対応（Windows、macOS、Linux）
  *
- * Runs when a new Claude session starts. Checks for recent session
- * files and notifies Claude of available context to load.
+ * 新しい Claude セッション開始時に実行されます。最近のセッション
+ * ファイルをチェックし、読み込み可能な context を Claude に通知します。
  */
 
 const path = require('path');
@@ -22,12 +22,12 @@ async function main() {
   const sessionsDir = getSessionsDir();
   const learnedDir = getLearnedSkillsDir();
 
-  // Ensure directories exist
+  // ディレクトリの存在を確認
   ensureDir(sessionsDir);
   ensureDir(learnedDir);
 
-  // Check for recent session files (last 7 days)
-  // Match both old format (YYYY-MM-DD-session.tmp) and new format (YYYY-MM-DD-shortid-session.tmp)
+  // 最近のセッションファイルをチェック（過去7日間）
+  // 旧形式（YYYY-MM-DD-session.tmp）と新形式（YYYY-MM-DD-shortid-session.tmp）の両方にマッチ
   const recentSessions = findFiles(sessionsDir, '*-session.tmp', { maxAge: 7 });
 
   if (recentSessions.length > 0) {
@@ -36,18 +36,18 @@ async function main() {
     log(`[SessionStart] Latest: ${latest.path}`);
   }
 
-  // Check for learned skills
+  // 学習済み skill をチェック
   const learnedSkills = findFiles(learnedDir, '*.md');
 
   if (learnedSkills.length > 0) {
     log(`[SessionStart] ${learnedSkills.length} learned skill(s) available in ${learnedDir}`);
   }
 
-  // Detect and report package manager
+  // パッケージマネージャーを検出して報告
   const pm = getPackageManager();
   log(`[SessionStart] Package manager: ${pm.name} (${pm.source})`);
 
-  // If package manager was detected via fallback, show selection prompt
+  // パッケージマネージャーがフォールバックで検出された場合、選択プロンプトを表示
   if (pm.source === 'fallback' || pm.source === 'default') {
     log('[SessionStart] No package manager preference found.');
     log(getSelectionPrompt());
@@ -58,5 +58,5 @@ async function main() {
 
 main().catch(err => {
   console.error('[SessionStart] Error:', err.message);
-  process.exit(0); // Don't block on errors
+  process.exit(0); // エラーでブロックしない
 });

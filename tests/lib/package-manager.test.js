@@ -1,7 +1,7 @@
 /**
- * Tests for scripts/lib/package-manager.js
+ * scripts/lib/package-manager.js のテスト
  *
- * Run with: node tests/lib/package-manager.test.js
+ * 実行方法: node tests/lib/package-manager.test.js
  */
 
 const assert = require('assert');
@@ -9,11 +9,11 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 
-// Import the modules
+// モジュールをインポート
 const pm = require('../../scripts/lib/package-manager');
 const utils = require('../../scripts/lib/utils');
 
-// Test helper
+// テストヘルパー
 function test(name, fn) {
   try {
     fn();
@@ -26,26 +26,26 @@ function test(name, fn) {
   }
 }
 
-// Create a temporary test directory
+// 一時テストディレクトリを作成する
 function createTestDir() {
   const testDir = path.join(os.tmpdir(), `pm-test-${Date.now()}`);
   fs.mkdirSync(testDir, { recursive: true });
   return testDir;
 }
 
-// Clean up test directory
+// テストディレクトリをクリーンアップする
 function cleanupTestDir(testDir) {
   fs.rmSync(testDir, { recursive: true, force: true });
 }
 
-// Test suite
+// テストスイート
 function runTests() {
   console.log('\n=== Testing package-manager.js ===\n');
 
   let passed = 0;
   let failed = 0;
 
-  // PACKAGE_MANAGERS constant tests
+  // PACKAGE_MANAGERS 定数テスト
   console.log('PACKAGE_MANAGERS Constant:');
 
   if (test('PACKAGE_MANAGERS has all expected managers', () => {
@@ -64,7 +64,7 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  // detectFromLockFile tests
+  // detectFromLockFile テスト
   console.log('\ndetectFromLockFile:');
 
   if (test('detects npm from package-lock.json', () => {
@@ -124,18 +124,18 @@ function runTests() {
   if (test('respects detection priority (pnpm > npm)', () => {
     const testDir = createTestDir();
     try {
-      // Create both lock files
+      // 両方のロックファイルを作成
       fs.writeFileSync(path.join(testDir, 'package-lock.json'), '{}');
       fs.writeFileSync(path.join(testDir, 'pnpm-lock.yaml'), '');
       const result = pm.detectFromLockFile(testDir);
-      // pnpm has higher priority in DETECTION_PRIORITY
+      // DETECTION_PRIORITY では pnpm の優先度が高い
       assert.strictEqual(result, 'pnpm');
     } finally {
       cleanupTestDir(testDir);
     }
   })) passed++; else failed++;
 
-  // detectFromPackageJson tests
+  // detectFromPackageJson テスト
   console.log('\ndetectFromPackageJson:');
 
   if (test('detects package manager from packageManager field', () => {
@@ -189,17 +189,17 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  // getAvailablePackageManagers tests
+  // getAvailablePackageManagers テスト
   console.log('\ngetAvailablePackageManagers:');
 
   if (test('returns array of available managers', () => {
     const available = pm.getAvailablePackageManagers();
     assert.ok(Array.isArray(available), 'Should return array');
-    // npm should always be available with Node.js
+    // npm は Node.js と一緒に常に利用可能であるべき
     assert.ok(available.includes('npm'), 'npm should be available');
   })) passed++; else failed++;
 
-  // getPackageManager tests
+  // getPackageManager テスト
   console.log('\ngetPackageManager:');
 
   if (test('returns object with name, config, and source', () => {
@@ -243,7 +243,7 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  // getRunCommand tests
+  // getRunCommand テスト
   console.log('\ngetRunCommand:');
 
   if (test('returns correct install command', () => {
@@ -276,7 +276,7 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  // getExecCommand tests
+  // getExecCommand テスト
   console.log('\ngetExecCommand:');
 
   if (test('returns correct exec command for npm', () => {
@@ -309,7 +309,7 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  // getCommandPattern tests
+  // getCommandPattern テスト
   console.log('\ngetCommandPattern:');
 
   if (test('generates pattern for dev command', () => {
@@ -331,7 +331,7 @@ function runTests() {
     assert.ok(!regex.test('cargo test'), 'Should not match cargo test');
   })) passed++; else failed++;
 
-  // getSelectionPrompt tests
+  // getSelectionPrompt テスト
   console.log('\ngetSelectionPrompt:');
 
   if (test('returns informative prompt', () => {
@@ -340,7 +340,7 @@ function runTests() {
     assert.ok(prompt.includes('CLAUDE_PACKAGE_MANAGER'), 'Should mention env var');
   })) passed++; else failed++;
 
-  // Summary
+  // サマリー
   console.log('\n=== Test Results ===');
   console.log(`Passed: ${passed}`);
   console.log(`Failed: ${failed}`);

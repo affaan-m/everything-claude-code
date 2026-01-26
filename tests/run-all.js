@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * Run all tests
+ * 全テストを実行する
  *
- * Usage: node tests/run-all.js
+ * 使用方法: node tests/run-all.js
  */
 
 const { execSync } = require('child_process');
@@ -42,7 +42,7 @@ for (const testFile of testFiles) {
     });
     console.log(output);
 
-    // Parse results from output
+    // 出力から結果を解析
     const passedMatch = output.match(/Passed:\s*(\d+)/);
     const failedMatch = output.match(/Failed:\s*(\d+)/);
 
@@ -53,7 +53,7 @@ for (const testFile of testFiles) {
     console.log(err.stdout || '');
     console.log(err.stderr || '');
 
-    // Parse results even on failure
+    // 失敗時でも結果を解析
     const output = (err.stdout || '') + (err.stderr || '');
     const passedMatch = output.match(/Passed:\s*(\d+)/);
     const failedMatch = output.match(/Failed:\s*(\d+)/);

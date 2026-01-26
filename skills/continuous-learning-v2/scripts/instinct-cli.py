@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Instinct CLI - Manage instincts for Continuous Learning v2
+instinct CLI - Continuous Learning v2のinstinctを管理する
 
-Commands:
-  status   - Show all instincts and their status
-  import   - Import instincts from file or URL
-  export   - Export instincts to file
-  evolve   - Cluster instincts into skills/commands/agents
+command:
+  status   - すべてのinstinctとそのステータスを表示
+  import   - ファイルまたはURLからinstinctをインポート
+  export   - instinctをファイルにエクスポート
+  evolve   - instinctをskill/command/agentにクラスタリング
 """
 
 import argparse
@@ -21,7 +21,7 @@ from collections import defaultdict
 from typing import Optional
 
 # ─────────────────────────────────────────────
-# Configuration
+# 設定
 # ─────────────────────────────────────────────
 
 HOMUNCULUS_DIR = Path.home() / ".claude" / "homunculus"
@@ -31,17 +31,17 @@ INHERITED_DIR = INSTINCTS_DIR / "inherited"
 EVOLVED_DIR = HOMUNCULUS_DIR / "evolved"
 OBSERVATIONS_FILE = HOMUNCULUS_DIR / "observations.jsonl"
 
-# Ensure directories exist
+# ディレクトリが存在することを確認
 for d in [PERSONAL_DIR, INHERITED_DIR, EVOLVED_DIR / "skills", EVOLVED_DIR / "commands", EVOLVED_DIR / "agents"]:
     d.mkdir(parents=True, exist_ok=True)
 
 
 # ─────────────────────────────────────────────
-# Instinct Parser
+# instinctパーサー
 # ─────────────────────────────────────────────
 
 def parse_instinct_file(content: str) -> list[dict]:
-    """Parse YAML-like instinct file format."""
+    """YAMLライクなinstinctファイル形式をパースする。"""
     instincts = []
     current = {}
     in_frontmatter = False
@@ -50,7 +50,7 @@ def parse_instinct_file(content: str) -> list[dict]:
     for line in content.split('\n'):
         if line.strip() == '---':
             if in_frontmatter:
-                # End of frontmatter
+                # フロントマターの終わり
                 in_frontmatter = False
                 if current:
                     current['content'] = '\n'.join(content_lines).strip()
@@ -58,7 +58,7 @@ def parse_instinct_file(content: str) -> list[dict]:
                     current = {}
                     content_lines = []
             else:
-                # Start of frontmatter
+                # フロントマターの始まり
                 in_frontmatter = True
                 if current:
                     current['content'] = '\n'.join(content_lines).strip()
@@ -66,7 +66,7 @@ def parse_instinct_file(content: str) -> list[dict]:
                 current = {}
                 content_lines = []
         elif in_frontmatter:
-            # Parse YAML-like frontmatter
+            # YAMLライクなフロントマターをパース
             if ':' in line:
                 key, value = line.split(':', 1)
                 key = key.strip()
@@ -78,7 +78,7 @@ def parse_instinct_file(content: str) -> list[dict]:
         else:
             content_lines.append(line)
 
-    # Don't forget the last instinct
+    # 最後のinstinctを忘れずに処理
     if current:
         current['content'] = '\n'.join(content_lines).strip()
         instincts.append(current)
@@ -87,7 +87,7 @@ def parse_instinct_file(content: str) -> list[dict]:
 
 
 def load_all_instincts() -> list[dict]:
-    """Load all instincts from personal and inherited directories."""
+    """personalディレクトリとinheritedディレクトリからすべてのinstinctを読み込む。"""
     instincts = []
 
     for directory in [PERSONAL_DIR, INHERITED_DIR]:
@@ -108,11 +108,11 @@ def load_all_instincts() -> list[dict]:
 
 
 # ─────────────────────────────────────────────
-# Status Command
+# Status command
 # ─────────────────────────────────────────────
 
 def cmd_status(args):
-    """Show status of all instincts."""
+    """すべてのinstinctのステータスを表示する。"""
     instincts = load_all_instincts()
 
     if not instincts:
@@ -122,25 +122,25 @@ def cmd_status(args):
         print(f"  Inherited: {INHERITED_DIR}")
         return
 
-    # Group by domain
+    # ドメインごとにグループ化
     by_domain = defaultdict(list)
     for inst in instincts:
         domain = inst.get('domain', 'general')
         by_domain[domain].append(inst)
 
-    # Print header
+    # ヘッダーを表示
     print(f"\n{'='*60}")
     print(f"  INSTINCT STATUS - {len(instincts)} total")
     print(f"{'='*60}\n")
 
-    # Summary by source
+    # ソース別のサマリー
     personal = [i for i in instincts if i.get('_source_type') == 'personal']
     inherited = [i for i in instincts if i.get('_source_type') == 'inherited']
     print(f"  Personal:  {len(personal)}")
     print(f"  Inherited: {len(inherited)}")
     print()
 
-    # Print by domain
+    # ドメインごとに表示
     for domain in sorted(by_domain.keys()):
         domain_instincts = by_domain[domain]
         print(f"## {domain.upper()} ({len(domain_instincts)})")
@@ -155,7 +155,7 @@ def cmd_status(args):
             print(f"  {conf_bar} {int(conf*100):3d}%  {inst.get('id', 'unnamed')}")
             print(f"            trigger: {trigger}")
 
-            # Extract action from content
+            # コンテンツからアクションを抽出
             content = inst.get('content', '')
             action_match = re.search(r'## Action\s*\n\s*(.+?)(?:\n\n|\n##|$)', content, re.DOTALL)
             if action_match:
@@ -164,7 +164,7 @@ def cmd_status(args):
 
             print()
 
-    # Observations stats
+    # 観測データの統計
     if OBSERVATIONS_FILE.exists():
         obs_count = sum(1 for _ in open(OBSERVATIONS_FILE))
         print(f"─────────────────────────────────────────────────────────")
@@ -175,14 +175,14 @@ def cmd_status(args):
 
 
 # ─────────────────────────────────────────────
-# Import Command
+# Import command
 # ─────────────────────────────────────────────
 
 def cmd_import(args):
-    """Import instincts from file or URL."""
+    """ファイルまたはURLからinstinctをインポートする。"""
     source = args.source
 
-    # Fetch content
+    # コンテンツを取得
     if source.startswith('http://') or source.startswith('https://'):
         print(f"Fetching from URL: {source}")
         try:
@@ -198,7 +198,7 @@ def cmd_import(args):
             return 1
         content = path.read_text()
 
-    # Parse instincts
+    # instinctをパース
     new_instincts = parse_instinct_file(content)
     if not new_instincts:
         print("No valid instincts found in source.")
@@ -206,11 +206,11 @@ def cmd_import(args):
 
     print(f"\nFound {len(new_instincts)} instincts to import.\n")
 
-    # Load existing
+    # 既存のinstinctを読み込む
     existing = load_all_instincts()
     existing_ids = {i.get('id') for i in existing}
 
-    # Categorize
+    # 分類
     to_add = []
     duplicates = []
     to_update = []
@@ -218,7 +218,7 @@ def cmd_import(args):
     for inst in new_instincts:
         inst_id = inst.get('id')
         if inst_id in existing_ids:
-            # Check if we should update
+            # 更新すべきかどうかを確認
             existing_inst = next((e for e in existing if e.get('id') == inst_id), None)
             if existing_inst:
                 if inst.get('confidence', 0) > existing_inst.get('confidence', 0):
@@ -228,12 +228,12 @@ def cmd_import(args):
         else:
             to_add.append(inst)
 
-    # Filter by minimum confidence
+    # 最小信頼度でフィルタリング
     min_conf = args.min_confidence or 0.0
     to_add = [i for i in to_add if i.get('confidence', 0.5) >= min_conf]
     to_update = [i for i in to_update if i.get('confidence', 0.5) >= min_conf]
 
-    # Display summary
+    # サマリーを表示
     if to_add:
         print(f"NEW ({len(to_add)}):")
         for inst in to_add:
@@ -259,14 +259,14 @@ def cmd_import(args):
         print("\nNothing to import.")
         return 0
 
-    # Confirm
+    # 確認
     if not args.force:
         response = input(f"\nImport {len(to_add)} new, update {len(to_update)}? [y/N] ")
         if response.lower() != 'y':
             print("Cancelled.")
             return 0
 
-    # Write to inherited directory
+    # inheritedディレクトリに書き込む
     timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
     source_name = Path(source).stem if not source.startswith('http') else 'web-import'
     output_file = INHERITED_DIR / f"{source_name}-{timestamp}.yaml"
@@ -298,22 +298,22 @@ def cmd_import(args):
 
 
 # ─────────────────────────────────────────────
-# Export Command
+# Export command
 # ─────────────────────────────────────────────
 
 def cmd_export(args):
-    """Export instincts to file."""
+    """instinctをファイルにエクスポートする。"""
     instincts = load_all_instincts()
 
     if not instincts:
         print("No instincts to export.")
         return 1
 
-    # Filter by domain if specified
+    # ドメインが指定されている場合はフィルタリング
     if args.domain:
         instincts = [i for i in instincts if i.get('domain') == args.domain]
 
-    # Filter by minimum confidence
+    # 最小信頼度でフィルタリング
     if args.min_confidence:
         instincts = [i for i in instincts if i.get('confidence', 0.5) >= args.min_confidence]
 
@@ -321,7 +321,7 @@ def cmd_export(args):
         print("No instincts match the criteria.")
         return 1
 
-    # Generate output
+    # 出力を生成
     output = f"# Instincts export\n# Date: {datetime.now().isoformat()}\n# Total: {len(instincts)}\n\n"
 
     for inst in instincts:
@@ -336,7 +336,7 @@ def cmd_export(args):
         output += "---\n\n"
         output += inst.get('content', '') + "\n\n"
 
-    # Write to file or stdout
+    # ファイルまたは標準出力に書き込む
     if args.output:
         Path(args.output).write_text(output)
         print(f"Exported {len(instincts)} instincts to {args.output}")
@@ -347,11 +347,11 @@ def cmd_export(args):
 
 
 # ─────────────────────────────────────────────
-# Evolve Command
+# Evolve command
 # ─────────────────────────────────────────────
 
 def cmd_evolve(args):
-    """Analyze instincts and suggest evolutions to skills/commands/agents."""
+    """instinctを分析し、skill/command/agentへの進化を提案する。"""
     instincts = load_all_instincts()
 
     if len(instincts) < 3:
@@ -363,27 +363,27 @@ def cmd_evolve(args):
     print(f"  EVOLVE ANALYSIS - {len(instincts)} instincts")
     print(f"{'='*60}\n")
 
-    # Group by domain
+    # ドメインごとにグループ化
     by_domain = defaultdict(list)
     for inst in instincts:
         domain = inst.get('domain', 'general')
         by_domain[domain].append(inst)
 
-    # High-confidence instincts by domain (candidates for skills)
+    # ドメイン別の高信頼度instinct（skillの候補）
     high_conf = [i for i in instincts if i.get('confidence', 0) >= 0.8]
     print(f"High confidence instincts (>=80%): {len(high_conf)}")
 
-    # Find clusters (instincts with similar triggers)
+    # クラスターを検出（類似したトリガーを持つinstinct）
     trigger_clusters = defaultdict(list)
     for inst in instincts:
         trigger = inst.get('trigger', '')
-        # Normalize trigger
+        # トリガーを正規化
         trigger_key = trigger.lower()
         for keyword in ['when', 'creating', 'writing', 'adding', 'implementing', 'testing']:
             trigger_key = trigger_key.replace(keyword, '').strip()
         trigger_clusters[trigger_key].append(inst)
 
-    # Find clusters with 3+ instincts (good skill candidates)
+    # 3つ以上のinstinctを持つクラスターを検出（良いskillの候補）
     skill_candidates = []
     for trigger, cluster in trigger_clusters.items():
         if len(cluster) >= 2:
@@ -395,7 +395,7 @@ def cmd_evolve(args):
                 'domains': list(set(i.get('domain', 'general') for i in cluster))
             })
 
-    # Sort by cluster size and confidence
+    # クラスターサイズと信頼度でソート
     skill_candidates.sort(key=lambda x: (-len(x['instincts']), -x['avg_confidence']))
 
     print(f"\nPotential skill clusters found: {len(skill_candidates)}")
@@ -412,13 +412,13 @@ def cmd_evolve(args):
                 print(f"     - {inst.get('id')}")
             print()
 
-    # Command candidates (workflow instincts with high confidence)
+    # commandの候補（高信頼度のワークフローinstinct）
     workflow_instincts = [i for i in instincts if i.get('domain') == 'workflow' and i.get('confidence', 0) >= 0.7]
     if workflow_instincts:
         print(f"\n## COMMAND CANDIDATES ({len(workflow_instincts)})\n")
         for inst in workflow_instincts[:5]:
             trigger = inst.get('trigger', 'unknown')
-            # Suggest command name
+            # command名を提案
             cmd_name = trigger.replace('when ', '').replace('implementing ', '').replace('a ', '')
             cmd_name = cmd_name.replace(' ', '-')[:20]
             print(f"  /{cmd_name}")
@@ -426,7 +426,7 @@ def cmd_evolve(args):
             print(f"    Confidence: {inst.get('confidence', 0.5):.0%}")
             print()
 
-    # Agent candidates (complex multi-step patterns)
+    # agentの候補（複雑なマルチステップパターン）
     agent_candidates = [c for c in skill_candidates if len(c['instincts']) >= 3 and c['avg_confidence'] >= 0.75]
     if agent_candidates:
         print(f"\n## AGENT CANDIDATES ({len(agent_candidates)})\n")
@@ -448,32 +448,32 @@ def cmd_evolve(args):
 
 
 # ─────────────────────────────────────────────
-# Main
+# メイン
 # ─────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description='Instinct CLI for Continuous Learning v2')
-    subparsers = parser.add_subparsers(dest='command', help='Available commands')
+    parser = argparse.ArgumentParser(description='Continuous Learning v2のためのinstinct CLI')
+    subparsers = parser.add_subparsers(dest='command', help='利用可能なcommand')
 
     # Status
-    status_parser = subparsers.add_parser('status', help='Show instinct status')
+    status_parser = subparsers.add_parser('status', help='instinctのステータスを表示')
 
     # Import
-    import_parser = subparsers.add_parser('import', help='Import instincts')
-    import_parser.add_argument('source', help='File path or URL')
-    import_parser.add_argument('--dry-run', action='store_true', help='Preview without importing')
-    import_parser.add_argument('--force', action='store_true', help='Skip confirmation')
-    import_parser.add_argument('--min-confidence', type=float, help='Minimum confidence threshold')
+    import_parser = subparsers.add_parser('import', help='instinctをインポート')
+    import_parser.add_argument('source', help='ファイルパスまたはURL')
+    import_parser.add_argument('--dry-run', action='store_true', help='インポートせずにプレビュー')
+    import_parser.add_argument('--force', action='store_true', help='確認をスキップ')
+    import_parser.add_argument('--min-confidence', type=float, help='最小信頼度のしきい値')
 
     # Export
-    export_parser = subparsers.add_parser('export', help='Export instincts')
-    export_parser.add_argument('--output', '-o', help='Output file')
-    export_parser.add_argument('--domain', help='Filter by domain')
-    export_parser.add_argument('--min-confidence', type=float, help='Minimum confidence')
+    export_parser = subparsers.add_parser('export', help='instinctをエクスポート')
+    export_parser.add_argument('--output', '-o', help='出力ファイル')
+    export_parser.add_argument('--domain', help='ドメインでフィルタリング')
+    export_parser.add_argument('--min-confidence', type=float, help='最小信頼度')
 
     # Evolve
-    evolve_parser = subparsers.add_parser('evolve', help='Analyze and evolve instincts')
-    evolve_parser.add_argument('--generate', action='store_true', help='Generate evolved structures')
+    evolve_parser = subparsers.add_parser('evolve', help='instinctを分析して進化させる')
+    evolve_parser.add_argument('--generate', action='store_true', help='進化した構造を生成')
 
     args = parser.parse_args()
 

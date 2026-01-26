@@ -1,21 +1,21 @@
 ---
 name: instinct-status
-description: Show all learned instincts with their confidence levels
+description: 学習した全ての instinct を confidence レベルと共に表示します
 command: /instinct-status
 implementation: python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py status
 ---
 
 # Instinct Status Command
 
-Shows all learned instincts with their confidence scores, grouped by domain.
+全ての学習した instinct を confidence スコアと共にドメイン別にグループ化して表示します。
 
-## Implementation
+## 実装
 
 ```bash
 python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py status
 ```
 
-## Usage
+## 使用方法
 
 ```
 /instinct-status
@@ -23,57 +23,57 @@ python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py status
 /instinct-status --low-confidence
 ```
 
-## What to Do
+## 実行内容
 
-1. Read all instinct files from `~/.claude/homunculus/instincts/personal/`
-2. Read inherited instincts from `~/.claude/homunculus/instincts/inherited/`
-3. Display them grouped by domain with confidence bars
+1. `~/.claude/homunculus/instincts/personal/` から全ての instinct ファイルを読み込み
+2. `~/.claude/homunculus/instincts/inherited/` から継承された instinct を読み込み
+3. ドメイン別にグループ化し confidence バーと共に表示
 
-## Output Format
+## 出力フォーマット
 
 ```
-📊 Instinct Status
+Instinct ステータス
 ==================
 
-## Code Style (4 instincts)
+## Code Style（4 instinct）
 
 ### prefer-functional-style
-Trigger: when writing new functions
-Action: Use functional patterns over classes
+トリガー: 新しい関数を書くとき
+アクション: クラスよりも関数型パターンを使用
 Confidence: ████████░░ 80%
-Source: session-observation | Last updated: 2025-01-22
+ソース: session-observation | 最終更新: 2025-01-22
 
 ### use-path-aliases
-Trigger: when importing modules
-Action: Use @/ path aliases instead of relative imports
+トリガー: モジュールをインポートするとき
+アクション: 相対インポートの代わりに @/ パスエイリアスを使用
 Confidence: ██████░░░░ 60%
-Source: repo-analysis (github.com/acme/webapp)
+ソース: repo-analysis (github.com/acme/webapp)
 
-## Testing (2 instincts)
+## Testing（2 instinct）
 
 ### test-first-workflow
-Trigger: when adding new functionality
-Action: Write test first, then implementation
+トリガー: 新しい機能を追加するとき
+アクション: 実装より先にテストを書く
 Confidence: █████████░ 90%
-Source: session-observation
+ソース: session-observation
 
-## Workflow (3 instincts)
+## Workflow（3 instinct）
 
 ### grep-before-edit
-Trigger: when modifying code
-Action: Search with Grep, confirm with Read, then Edit
+トリガー: コードを修正するとき
+アクション: Grep で検索、Read で確認、その後 Edit
 Confidence: ███████░░░ 70%
-Source: session-observation
+ソース: session-observation
 
 ---
-Total: 9 instincts (4 personal, 5 inherited)
-Observer: Running (last analysis: 5 min ago)
+合計: 9 instinct（4 パーソナル、5 継承）
+Observer: 実行中（最終分析: 5分前）
 ```
 
-## Flags
+## フラグ
 
-- `--domain <name>`: Filter by domain (code-style, testing, git, etc.)
-- `--low-confidence`: Show only instincts with confidence < 0.5
-- `--high-confidence`: Show only instincts with confidence >= 0.7
-- `--source <type>`: Filter by source (session-observation, repo-analysis, inherited)
-- `--json`: Output as JSON for programmatic use
+- `--domain <name>`: ドメインでフィルター（code-style、testing、git など）
+- `--low-confidence`: confidence が0.5未満の instinct のみ表示
+- `--high-confidence`: confidence が0.7以上の instinct のみ表示
+- `--source <type>`: ソースでフィルター（session-observation、repo-analysis、inherited）
+- `--json`: プログラムで使用するためにJSONで出力

@@ -1,17 +1,17 @@
-# Coding Style
+# コーディングスタイル
 
-## Immutability (CRITICAL)
+## イミュータビリティ（重要）
 
-ALWAYS create new objects, NEVER mutate:
+常に新しいオブジェクトを作成し、決してミューテートしない：
 
 ```javascript
-// WRONG: Mutation
+// 悪い例: ミューテーション
 function updateUser(user, name) {
-  user.name = name  // MUTATION!
+  user.name = name  // ミューテーション！
   return user
 }
 
-// CORRECT: Immutability
+// 良い例: イミュータビリティ
 function updateUser(user, name) {
   return {
     ...user,
@@ -20,31 +20,31 @@ function updateUser(user, name) {
 }
 ```
 
-## File Organization
+## ファイル構成
 
-MANY SMALL FILES > FEW LARGE FILES:
-- High cohesion, low coupling
-- 200-400 lines typical, 800 max
-- Extract utilities from large components
-- Organize by feature/domain, not by type
+少数の大きなファイルより多数の小さなファイル：
+- 高凝集、低結合
+- 200-400行が標準、最大800行
+- 大きなコンポーネントからユーティリティを抽出
+- タイプではなく機能/ドメインで整理
 
-## Error Handling
+## エラーハンドリング
 
-ALWAYS handle errors comprehensively:
+常にエラーを包括的に処理する：
 
 ```typescript
 try {
   const result = await riskyOperation()
   return result
 } catch (error) {
-  console.error('Operation failed:', error)
-  throw new Error('Detailed user-friendly message')
+  console.error('操作に失敗しました:', error)
+  throw new Error('詳細なユーザー向けメッセージ')
 }
 ```
 
-## Input Validation
+## 入力バリデーション
 
-ALWAYS validate user input:
+常にユーザー入力をバリデートする：
 
 ```typescript
 import { z } from 'zod'
@@ -57,14 +57,14 @@ const schema = z.object({
 const validated = schema.parse(input)
 ```
 
-## Code Quality Checklist
+## コード品質チェックリスト
 
-Before marking work complete:
-- [ ] Code is readable and well-named
-- [ ] Functions are small (<50 lines)
-- [ ] Files are focused (<800 lines)
-- [ ] No deep nesting (>4 levels)
-- [ ] Proper error handling
-- [ ] No console.log statements
-- [ ] No hardcoded values
-- [ ] No mutation (immutable patterns used)
+作業完了前に確認：
+- [ ] コードが読みやすく適切に命名されている
+- [ ] 関数が小さい（50行未満）
+- [ ] ファイルがフォーカスされている（800行未満）
+- [ ] 深いネストがない（4レベル以上）
+- [ ] 適切なエラーハンドリング
+- [ ] console.log 文がない
+- [ ] ハードコードされた値がない
+- [ ] ミューテーションがない（イミュータブルパターンを使用）
