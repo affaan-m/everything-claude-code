@@ -67,7 +67,7 @@ c) リスクで優先順位付け
    - 適切なロケーターを使用（data-testid 推奨）
    - 動的コンテンツの待機を追加
    - 競合状態を処理
-   - リトライロジックを実装
+   - 再試行ロジックを実装
 
 3. アーティファクトキャプチャを追加
    - 失敗時のスクリーンショット
@@ -130,7 +130,7 @@ export class MarketsPage {
 # 安定性をチェックするために複数回テストを実行
 npx playwright test tests/markets/search.spec.ts --repeat-each=10
 
-# リトライ付きで特定のテストを実行
+# 再試行付きで特定のテストを実行
 npx playwright test tests/markets/search.spec.ts --retries=3
 ```
 

@@ -302,7 +302,7 @@ export async function GET(request: Request) {
 }
 ```
 
-### 指数バックオフ付きリトライ
+### 指数バックオフ付き再試行
 
 ```typescript
 async function fetchWithRetry<T>(

@@ -72,7 +72,7 @@ Generated: $(date)
 CAPABILITY EVALS
 ----------------
 [eval-1]: PASS (pass@1)
-[eval-2]: PASS (pass@2) - リトライが必要でした
+[eval-2]: PASS (pass@2) - 再試行が必要でした
 [eval-3]: FAIL - 備考参照
 
 REGRESSION EVALS
