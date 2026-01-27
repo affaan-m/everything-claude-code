@@ -199,7 +199,7 @@ Running 3 tests using 3 workers
 レポートを表示: npx playwright show-report
 ```
 
-✅ E2Eテストスイートがci/cd統合の準備完了！
+✅ E2Eテストスイートが CI/CD 統合の準備完了！
 ```
 
 ## テスト成果物
