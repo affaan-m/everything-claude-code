@@ -110,6 +110,7 @@ function _runInlineHook(command, input = {}, env = {}, timeoutMs = 10000) {
 
     let stdout = '';
     let stderr = '';
+    let timer;
 
     proc.stdout.on('data', data => stdout += data);
     proc.stderr.on('data', data => stderr += data);
@@ -117,7 +118,7 @@ function _runInlineHook(command, input = {}, env = {}, timeoutMs = 10000) {
     // Ignore EPIPE errors (process may exit before we finish writing)
     proc.stdin.on('error', (err) => {
       if (err.code !== 'EPIPE') {
-        clearTimeout(timer);
+        if (timer) clearTimeout(timer);
         reject(err);
       }
     });
@@ -127,7 +128,7 @@ function _runInlineHook(command, input = {}, env = {}, timeoutMs = 10000) {
     }
     proc.stdin.end();
 
-    const timer = setTimeout(() => {
+    timer = setTimeout(() => {
       proc.kill('SIGKILL');
       reject(new Error(`Inline hook timed out after ${timeoutMs}ms`));
     }, timeoutMs);
@@ -296,16 +297,18 @@ async function runTests() {
     const testDir = createTestDir();
     const transcriptPath = path.join(testDir, 'nonexistent.jsonl');
 
-    const result = await runHookWithInput(
-      path.join(scriptsDir, 'evaluate-session.js'),
-      {},
-      { CLAUDE_TRANSCRIPT_PATH: transcriptPath }
-    );
+    try {
+      const result = await runHookWithInput(
+        path.join(scriptsDir, 'evaluate-session.js'),
+        {},
+        { CLAUDE_TRANSCRIPT_PATH: transcriptPath }
+      );
 
-    // Should not crash, just skip processing
-    assert.strictEqual(result.code, 0, 'Should exit 0 for missing file');
-
-    cleanupTestDir(testDir);
+      // Should not crash, just skip processing
+      assert.strictEqual(result.code, 0, 'Should exit 0 for missing file');
+    } finally {
+      cleanupTestDir(testDir);
+    }
   })) passed++; else failed++;
 
   // ==========================================
@@ -351,15 +354,17 @@ async function runTests() {
       messages.map(m => JSON.stringify(m)).join('\n')
     );
 
-    const result = await runHookWithInput(
-      path.join(scriptsDir, 'evaluate-session.js'),
-      {},
-      { CLAUDE_TRANSCRIPT_PATH: transcriptPath }
-    );
+    try {
+      const result = await runHookWithInput(
+        path.join(scriptsDir, 'evaluate-session.js'),
+        {},
+        { CLAUDE_TRANSCRIPT_PATH: transcriptPath }
+      );
 
-    assert.ok(result.stderr.includes('15 messages'), 'Should process session');
-
-    cleanupTestDir(testDir);
+      assert.ok(result.stderr.includes('15 messages'), 'Should process session');
+    } finally {
+      cleanupTestDir(testDir);
+    }
   })) passed++; else failed++;
 
   if (await asyncTest('PostToolUse PR hook extracts PR URL', async () => {

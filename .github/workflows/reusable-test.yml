@@ -78,7 +78,13 @@ jobs:
         if: inputs.package-manager == 'yarn'
         id: yarn-cache-dir
         shell: bash
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+        run: |
+          # Try Yarn Berry first, fall back to Yarn v1
+          if yarn config get cacheFolder >/dev/null 2>&1; then
+            echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+          else
+            echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+          fi
 
       - name: Cache yarn
         if: inputs.package-manager == 'yarn'

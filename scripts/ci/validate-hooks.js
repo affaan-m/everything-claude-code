@@ -82,6 +82,23 @@ function validateHooks() {
         console.error(`ERROR: Hook ${i} missing 'matcher' field`);
         hasErrors = true;
       }
+      if (!hook.hooks || !Array.isArray(hook.hooks)) {
+        console.error(`ERROR: Hook ${i} missing 'hooks' array`);
+        hasErrors = true;
+      } else {
+        // Validate each hook entry
+        for (let j = 0; j < hook.hooks.length; j++) {
+          const h = hook.hooks[j];
+          if (!h.type || typeof h.type !== 'string') {
+            console.error(`ERROR: Hook ${i}.hooks[${j}] missing or invalid 'type' field`);
+            hasErrors = true;
+          }
+          if (!h.command || (typeof h.command !== 'string' && !Array.isArray(h.command))) {
+            console.error(`ERROR: Hook ${i}.hooks[${j}] missing or invalid 'command' field`);
+            hasErrors = true;
+          }
+        }
+      }
       totalMatchers++;
     }
   } else {
