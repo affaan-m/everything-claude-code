@@ -31,7 +31,7 @@ This repo is the raw code only. The guides explain everything.
 </td>
 </tr>
 <tr>
-<td align="center"><b>Shorthand Guide</b><br/>Setup, foundations, philosophy. <b>Read this first.</b></td>
+<td align="center"><b>Shortform Guide</b><br/>Setup, foundations, philosophy. <b>Read this first.</b></td>
 <td align="center"><b>Longform Guide</b><br/>Token optimization, memory persistence, evals, parallelization.</td>
 </tr>
 </table>
@@ -455,7 +455,7 @@ These configs work for my workflow. You should:
 
 ## Links
 
-- **Shorthand Guide (Start Here):** [The Shorthand Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2012378465664745795)
+- **Shortform Guide (Start Here):** [The Shortform Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2012378465664745795)
 - **Longform Guide (Advanced):** [The Longform Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2014040193557471352)
 - **Follow:** [@affaanmustafa](https://x.com/affaanmustafa)
 - **zenith.chat:** [zenith.chat](https://zenith.chat)
