@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Claude Plugin Configuration",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "author": { "type": "string" },
+    "repository": { "type": "string" },
+    "license": { "type": "string" }
+  }
+}
