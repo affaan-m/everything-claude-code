@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "eslint": "^9.39.2",
+    "globals": "^17.1.0",
+    "markdownlint-cli": "^0.47.0"
+  }
+}
