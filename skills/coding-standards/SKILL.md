@@ -63,7 +63,7 @@ function similarity(a, b) { }
 function email(e) { }
 ```
 
-### イミュータビリティパターン（重要）
+### 不変パターン（重要）
 
 ```typescript
 // 常にスプレッド演算子を使用
@@ -342,7 +342,7 @@ types/market.types.ts         # 型はcamelCaseと.typesサフィックス
 // 障害時にAPIを圧倒しないよう指数バックオフを使用
 const delay = Math.min(1000 * Math.pow(2, retryCount), 30000)
 
-// 大きな配列でのパフォーマンスのため、意図的にここでミューテーションを使用
+// 大きな配列でのパフォーマンスのため、意図的にここで直接変更を使用
 items.push(newItem)
 
 // 悪い例：自明なことを述べる

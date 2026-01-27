@@ -129,7 +129,7 @@ everything-claude-code/
 |
 |-- rules/            # 常に従うガイドライン（~/.claude/rules/ にコピー）
 |   |-- security.md         # 必須セキュリティチェック
-|   |-- coding-style.md     # イミュータビリティ、ファイル構成
+|   |-- coding-style.md     # 不変性、ファイル構成
 |   |-- testing.md          # TDD、80% カバレッジ要件
 |   |-- git-workflow.md     # コミット形式、PR プロセス
 |   |-- agents.md           # サブエージェントに委譲するタイミング
@@ -317,7 +317,7 @@ rule は常に従うガイドラインです。モジュラーに保ちましょ
 ```
 ~/.claude/rules/
   security.md      # シークレットのハードコード禁止
-  coding-style.md  # イミュータビリティ、ファイル制限
+  coding-style.md  # 不変性、ファイル制限
   testing.md       # TDD、カバレッジ要件
 ```
 

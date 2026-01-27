@@ -1,17 +1,17 @@
 # コーディングスタイル
 
-## イミュータビリティ（重要）
+## 不変性（重要）
 
-常に新しいオブジェクトを作成し、決してミューテートしない：
+常に新しいオブジェクトを作成し、決して直接変更しない：
 
 ```javascript
-// 悪い例: ミューテーション
+// 悪い例: 直接変更
 function updateUser(user, name) {
-  user.name = name  // ミューテーション！
+  user.name = name  // 直接変更！
   return user
 }
 
-// 良い例: イミュータビリティ
+// 良い例: 不変性
 function updateUser(user, name) {
   return {
     ...user,
@@ -67,4 +67,4 @@ const validated = schema.parse(input)
 - [ ] 適切なエラーハンドリング
 - [ ] console.log 文がない
 - [ ] ハードコードされた値がない
-- [ ] ミューテーションがない（イミュータブルパターンを使用）
+- [ ] 直接変更がない（不変パターンを使用）
