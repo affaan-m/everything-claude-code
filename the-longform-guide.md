@@ -4,18 +4,18 @@
 
 ---
 
-> **Prerequisite**: This guide builds on [The Shorthand Guide to Everything Claude Code](./the-shortform-guide.md). Read that first if you haven't set up skills, hooks, subagents, MCPs, and plugins.
+> **Prerequisite**: This guide builds on [The Shortform Guide to Everything Claude Code](./the-shortform-guide.md). Read that first if you haven't set up skills, hooks, subagents, MCPs, and plugins.
 
-![Reference to Shorthand Guide](./assets/images/longform/02-shortform-reference.png)
-*The Shorthand Guide - read it first*
+![Reference to Shortform Guide](./assets/images/longform/02-shortform-reference.png)
+*The Shortform Guide - read it first*
 
-In the shorthand guide, I covered the foundational setup: skills and commands, hooks, subagents, MCPs, plugins, and the configuration patterns that form the backbone of an effective Claude Code workflow. That was the setup guide and the base infrastructure.
+In the shortform guide, I covered the foundational setup: skills and commands, hooks, subagents, MCPs, plugins, and the configuration patterns that form the backbone of an effective Claude Code workflow. That was the setup guide and the base infrastructure.
 
-This longform guide goes into the techniques that separate productive sessions from wasteful ones. If you haven't read the shorthand guide, go back and set up your configs first. What follows assumes you have skills, agents, hooks, and MCPs already configured and working.
+This longform guide goes into the techniques that separate productive sessions from wasteful ones. If you haven't read the shortform guide, go back and set up your configs first. What follows assumes you have skills, agents, hooks, and MCPs already configured and working.
 
 The themes here: token economics, memory persistence, verification patterns, parallelization strategies, and the compound effects of building reusable workflows. These are the patterns I've refined over 10+ months of daily use that make the difference between being plagued by context rot within the first hour, versus maintaining productive sessions for hours.
 
-Everything covered in the shorthand and longform guides is available on GitHub: `github.com/affaan-m/everything-claude-code`
+Everything covered in the shortform and longform guides is available on GitHub: `github.com/affaan-m/everything-claude-code`
 
 ---
 
