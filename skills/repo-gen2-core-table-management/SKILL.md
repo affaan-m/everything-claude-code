@@ -14,73 +14,76 @@ Qashier 的桌台管理服务，处理餐厅桌台状态、座位分配、预约
 ## Service Info
 
 - **Parent Repo:** gen2 (qashier-cloud-function-gen2)
-- **Path:** `functions/src/services/core/table-management/` _(待确认)_
-- **Service Name:** core-table-management
+- **Path:** `functions/src/services/core/table-management/`
 
-## Architecture
+---
 
-_从 transcript 自动提取的架构信息：_
+## 1. Domain Model Pattern
+
+**Pattern Applied:** _待学习 (Yes/No)_
+
+> Domain Model Pattern 要求分离 API Model / Domain Model / DB Model
+
+### Key Domain Models
+
+| Model | Description | Layer |
+|-------|-------------|-------|
+| _待学习_ | | api / domain / db |
+
+### Model Relationships
+
+```
+[待从 transcript 学习]
+
+Example:
+Table (domain)
+  ├── has many → Seat (domain)
+  ├── belongs to → Floor (domain)
+  └── maps to → table_record (db)
+```
 
 ### Data Flow
 
 ```
-[待从 transcript 学习]
+[Request → API Model → Domain Model → DB Model → Response]
+待学习
 ```
 
-### Key Entities
+---
 
-| Entity | Description |
-|--------|-------------|
-| Table | _待学习_ |
-| Seat | _待学习_ |
-| Reservation | _待学习_ |
+## 2. API Endpoints
 
-### Database Tables
+### Endpoint Pattern
 
-| Table | Purpose |
-|-------|---------|
+| Pattern | Example |
+|---------|---------|
 | _待学习_ | |
 
-### API Endpoints
+### Endpoints List
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
+| Method | Endpoint | Description |
+|--------|----------|-------------|
 | _待学习_ | | |
 
-## Patterns & Conventions
+---
 
-_从 transcript 学习到的模式：_
+## 3. Third-Party Libraries
 
-### Code Patterns
+| Library | Version | Purpose |
+|---------|---------|---------|
+| _待学习_ | | |
 
-- _待学习_
-
-### State Machine
-
-```
-[桌台状态流转 - 待学习]
-```
-
-### Real-time Updates
-
-- _待学习_
-
-## Dependencies
-
-### Internal Services
-
-- _待学习_
-
-### External Services
-
-- _待学习_
+---
 
 ## Learned Insights
 
-_每次 /auto-learn 运行时，架构相关的 insights 会追加到这里：_
+_每次 /auto-learn 运行时自动追加：_
+
+<!-- AUTO-LEARN-START -->
+<!-- AUTO-LEARN-END -->
 
 ---
 
 ## Notes
 
-_手动添加的笔记_
+_手动笔记_

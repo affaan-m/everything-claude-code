@@ -1,20 +1,20 @@
 ---
-name: gen2-core-transaction
-description: Qashier 交易服务 - 处理 POS 交易、订单、支付流程
-repo: qashierpos/qashier-cloud-function-gen2
-service: core/transaction
+name: {{ALIAS}}
+description: {{DESCRIPTION}}
+repo: {{ORG}}/{{REPO}}
+service: {{SERVICE_PATH}}
 auto_generated: true
-created: 2026-01-28
+created: {{DATE}}
 ---
 
-# Core Transaction Service
+# {{SERVICE_NAME}}
 
-Qashier 的核心交易服务，处理 POS 交易、订单创建、支付流程等。
+{{BRIEF_DESCRIPTION}}
 
 ## Service Info
 
-- **Parent Repo:** gen2 (qashier-cloud-function-gen2)
-- **Path:** `functions/src/services/core/transaction/`
+- **Parent Repo:** {{REPO_ALIAS}} ({{REPO}})
+- **Path:** `{{FULL_PATH}}/`
 
 ---
 
@@ -34,12 +34,6 @@ Qashier 的核心交易服务，处理 POS 交易、订单创建、支付流程�
 
 ```
 [待从 transcript 学习]
-
-Example:
-Transaction (domain)
-  ├── has many → LineItem (domain)
-  ├── belongs to → Store (domain)
-  └── maps to → transaction_record (db)
 ```
 
 ### Data Flow

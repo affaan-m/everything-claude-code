@@ -154,7 +154,64 @@ For repos with `services` configured (like gen2), detect which service the trans
 
 ### 2. For Each Transcript File
 
-Read the transcript and analyze for extractable patterns:
+Read the transcript and analyze for:
+- **Architecture insights** → Update service/repo SKILL.md
+- **Behavioral patterns** → Create instincts
+
+---
+
+## Architecture Extraction (for Service Skills)
+
+Analyze transcript for these three categories and update the service SKILL.md:
+
+### 2.1 Domain Model Pattern
+
+**Signals to detect:**
+- File paths containing `/models/`, `/domain/`, `/entities/`, `/dto/`
+- Class/interface definitions with names like `*Model`, `*Entity`, `*Dto`, `*Request`, `*Response`
+- Discussions about "api model", "domain model", "db model" separation
+- Mapper functions between layers
+
+**Extract:**
+1. Is Domain Model Pattern applied? (Yes/No)
+2. Key models and their layer (api/domain/db)
+3. Model relationships (has many, belongs to, maps to)
+4. Data flow diagram
+
+**Update section:** `## 1. Domain Model Pattern`
+
+### 2.2 API Endpoints
+
+**Signals to detect:**
+- Route definitions (Express, Fastify, etc.)
+- File paths containing `/routes/`, `/controllers/`, `/handlers/`
+- HTTP method mentions (GET, POST, PUT, DELETE, PATCH)
+- URL patterns in code or discussions
+
+**Extract:**
+1. Endpoint naming pattern (RESTful? RPC-style?)
+2. List of endpoints with method, path, description
+
+**Update section:** `## 2. API Endpoints`
+
+### 2.3 Third-Party Libraries
+
+**Signals to detect:**
+- `import` or `require` statements for external packages
+- package.json modifications
+- Discussions about library choices
+- Error messages mentioning library names
+
+**Extract:**
+1. Library name
+2. Version (if mentioned)
+3. Purpose in this service
+
+**Update section:** `## 3. Third-Party Libraries`
+
+---
+
+## Behavioral Pattern Extraction (for Instincts)
 
 **Pattern Types to Detect:**
 
