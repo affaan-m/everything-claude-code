@@ -80,16 +80,33 @@ function getTimeString() {
 }
 
 /**
+ * Get the git repository name
+ */
+function getGitRepoName() {
+  const result = runCommand('git rev-parse --show-toplevel');
+  if (!result.success) return null;
+  return path.basename(result.output);
+}
+
+/**
+ * Get project name from git repo or current directory
+ */
+function getProjectName() {
+  const repoName = getGitRepoName();
+  if (repoName) return repoName;
+  return path.basename(process.cwd()) || null;
+}
+
+/**
  * Get short session ID from CLAUDE_SESSION_ID environment variable
- * Returns the last 8 characters for uniqueness with brevity
- * @param {string} fallback - Fallback value if no session ID (default: 'default')
+ * Returns last 8 characters, falls back to project name then 'default'
  */
 function getSessionIdShort(fallback = 'default') {
   const sessionId = process.env.CLAUDE_SESSION_ID;
-  if (!sessionId || sessionId.length === 0) {
-    return fallback;
+  if (sessionId && sessionId.length > 0) {
+    return sessionId.slice(-8);
   }
-  return sessionId.slice(-8);
+  return getProjectName() || fallback;
 }
 
 /**
@@ -373,7 +390,11 @@ module.exports = {
   getDateString,
   getTimeString,
   getDateTimeString,
+
+  // Session/Project
   getSessionIdShort,
+  getGitRepoName,
+  getProjectName,
 
   // File operations
   findFiles,
