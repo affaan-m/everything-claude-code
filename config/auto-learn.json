@@ -1,0 +1,84 @@
+{
+  "$schema": "./auto-learn.schema.json",
+  "version": "1.0",
+  "description": "Auto-learn configuration - controls which repos to learn from",
+
+  "whitelist": {
+    "enabled": true,
+    "repos": [
+      {
+        "alias": "gen2",
+        "org": "qashierpos",
+        "repo": "qashier-cloud-function-gen2",
+        "description": "Qashier Backend"
+      },
+      {
+        "alias": "hq",
+        "org": "qashierpos",
+        "repo": "qashier-hq-firebase",
+        "description": "Qashier HQ"
+      },
+      {
+        "alias": "ip",
+        "org": "qashierpos",
+        "repo": "internal-account-manager",
+        "description": "Internal Account Manager"
+      },
+      {
+        "alias": "gateway",
+        "org": "qashierpos",
+        "repo": "qashier-gateway",
+        "description": "Qashier Gateway"
+      },
+      {
+        "alias": "type",
+        "org": "qashierpos",
+        "repo": "qashier-types",
+        "description": "Qashier Types (TS submodule)"
+      },
+      {
+        "alias": "gen1",
+        "org": "qashierpos",
+        "repo": "qashier-cloud-function",
+        "description": "Qashier Gen1 Backend"
+      },
+      {
+        "alias": "qpay",
+        "org": "qashierpos",
+        "repo": "qashier-pay",
+        "description": "QashierPay"
+      },
+      {
+        "alias": "pos",
+        "org": "qashierpos",
+        "repo": "qashier-pos-coordinate",
+        "description": "POS Coordinate"
+      },
+      {
+        "alias": "everything",
+        "org": "chunrui-qashier",
+        "repo": "everything-claude-code",
+        "description": "Claude Code 插件和学习系统"
+      }
+    ]
+  },
+
+  "learning": {
+    "min_messages": 8,
+    "min_confidence": 0.3,
+    "auto_approve_threshold": 0.7,
+    "patterns_to_detect": [
+      "user_correction",
+      "error_resolution",
+      "repeated_workflow",
+      "explicit_preference",
+      "tool_preference"
+    ]
+  },
+
+  "instincts": {
+    "personal_path": "~/.claude/homunculus/instincts/personal/",
+    "repos_path": "~/.claude/homunculus/instincts/repos/",
+    "confidence_decay_rate": 0.05
+  }
+}

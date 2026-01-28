@@ -25,7 +25,31 @@ ls -la "$QUEUE_DIR"/*.meta.json 2>/dev/null
 
 If no files found, report "No transcripts pending" and exit.
 
-### 1.5 Group by Repository
+### 1.5 Load Config and Check Whitelist
+
+Read config from `${CLAUDE_PLUGIN_ROOT}/config/auto-learn.json`:
+
+```bash
+CONFIG_FILE="${CLAUDE_PLUGIN_ROOT}/config/auto-learn.json"
+cat "$CONFIG_FILE"
+```
+
+If `whitelist.enabled` is true, only process repos in the whitelist.
+
+**Current whitelist:**
+| Alias | Org | Repo |
+|-------|-----|------|
+| gen2 | qashierpos | qashier-cloud-function-gen2 |
+| hq | qashierpos | qashier-hq-firebase |
+| ip | qashierpos | internal-account-manager |
+| gateway | qashierpos | qashier-gateway |
+| type | qashierpos | qashier-types |
+| gen1 | qashierpos | qashier-cloud-function |
+| qpay | qashierpos | qashier-pay |
+| pos | qashierpos | qashier-pos-coordinate |
+| everything | chunrui-qashier | everything-claude-code |
+
+### 1.6 Group by Repository
 
 Read `.meta.json` files to group transcripts by repo:
 
