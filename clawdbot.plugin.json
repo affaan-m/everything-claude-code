@@ -1,0 +1,41 @@
+{
+  "id": "everything-claude-code",
+  "name": "Everything Claude Code",
+  "description": "Complete collection of battle-tested skills, commands, and rules from an Anthropic hackathon winner. Includes TDD workflow, continuous learning, planning patterns, and quant research tools.",
+  "version": "2.0.0",
+  "skills": [
+    "./skills/tdd-workflow",
+    "./skills/continuous-learning-v2",
+    "./skills/verification-loop",
+    "./skills/strategic-compact",
+    "./skills/coding-standards",
+    "./skills/backend-patterns",
+    "./skills/frontend-patterns",
+    "./skills/golang-patterns",
+    "./skills/golang-testing",
+    "./skills/postgres-patterns",
+    "./skills/security-review",
+    "./skills/planning-with-files",
+    "./skills/beads-task-tracker",
+    "./skills/multi-agent-swarm",
+    "./skills/quant-research",
+    "./skills/deep-research"
+  ],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabledSkills": {
+        "type": "array",
+        "description": "List of skill names to enable (empty = all)",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "uiHints": {
+    "enabledSkills": {
+      "label": "Enabled Skills",
+      "placeholder": "Leave empty to enable all skills"
+    }
+  }
+}

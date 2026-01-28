@@ -1,6 +1,7 @@
 ---
 name: iterative-retrieval
 description: Pattern for progressively refining context retrieval to solve the subagent context problem
+metadata: {"clawdbot":{"emoji":"🔄","os":["darwin","linux","win32"]}}
 ---
 
 # Iterative Retrieval Pattern

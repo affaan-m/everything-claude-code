@@ -1,6 +1,7 @@
 ---
 name: golang-patterns
 description: Idiomatic Go patterns, best practices, and conventions for building robust, efficient, and maintainable Go applications.
+metadata: {"clawdbot":{"emoji":"🐹","os":["darwin","linux","win32"]}}
 ---
 
 # Go Development Patterns

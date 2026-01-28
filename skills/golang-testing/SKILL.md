@@ -1,6 +1,7 @@
 ---
 name: golang-testing
 description: Go testing patterns including table-driven tests, subtests, benchmarks, fuzzing, and test coverage. Follows TDD methodology with idiomatic Go practices.
+metadata: {"clawdbot":{"emoji":"🧪","os":["darwin","linux","win32"]}}
 ---
 
 # Go Testing Patterns

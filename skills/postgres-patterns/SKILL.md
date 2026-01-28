@@ -1,6 +1,7 @@
 ---
 name: postgres-patterns
 description: PostgreSQL database patterns for query optimization, schema design, indexing, and security. Based on Supabase best practices.
+metadata: {"clawdbot":{"emoji":"🐘","os":["darwin","linux","win32"]}}
 ---
 
 # PostgreSQL Patterns

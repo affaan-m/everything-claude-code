@@ -1,6 +1,7 @@
 ---
 name: continuous-learning
 description: Automatically extract reusable patterns from Claude Code sessions and save them as learned skills for future use.
+metadata: {"clawdbot":{"emoji":"📚","os":["darwin","linux","win32"]}}
 ---
 
 # Continuous Learning Skill

@@ -1,3 +1,9 @@
+---
+name: verification-loop
+description: Comprehensive verification system for code sessions. Runs build, type check, lint, test, and security scans before PR.
+metadata: {"clawdbot":{"emoji":"✅","os":["darwin","linux","win32"]}}
+---
+
 # Verification Loop Skill
 
 A comprehensive verification system for Claude Code sessions.
