@@ -124,14 +124,33 @@ _Add manual notes about this codebase here._
 
 **Example:**
 ```
-skills/repo-
-├── gen2/
-│   └── SKILL.md    # Qashier Backend (gen2)
-├── gateway/
-│   └── SKILL.md    # Qashier Gateway
-└── everything/
-    └── SKILL.md    # Claude Code plugin system
+skills/
+├── repo-gen2/
+│   └── SKILL.md                    # gen2 整体
+├── repo-gen2-core-transaction/
+│   └── SKILL.md                    # gen2 的 core-transaction 服务
+├── repo-gen2-core-table-management/
+│   └── SKILL.md                    # gen2 的 core-table-management 服务
+├── repo-gateway/
+│   └── SKILL.md
+└── repo-everything/
+    └── SKILL.md
 ```
+
+### 1.8 Detect Service from File Paths
+
+For repos with `services` configured (like gen2), detect which service the transcript belongs to:
+
+1. Read file paths from transcript (tool_input.file_path in Edit/Write/Read calls)
+2. Match against service paths in config:
+   ```json
+   "services": [
+     { "alias": "gen2-core-transaction", "path": "functions/src/services/core/transaction" },
+     { "alias": "gen2-core-table-management", "path": "functions/src/services/core/table-management" }
+   ]
+   ```
+3. If >50% of file operations are in a service path → tag transcript with that service
+4. Architecture-related insights go to service skill, general patterns go to repo skill
 
 ### 2. For Each Transcript File
 

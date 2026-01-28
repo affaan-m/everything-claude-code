@@ -10,7 +10,19 @@
         "alias": "gen2",
         "org": "qashierpos",
         "repo": "qashier-cloud-function-gen2",
-        "description": "Qashier Backend"
+        "description": "Qashier Backend",
+        "services": [
+          {
+            "alias": "gen2-core-transaction",
+            "path": "functions/src/services/core/transaction",
+            "description": "交易服务 - POS交易、订单、支付流程"
+          },
+          {
+            "alias": "gen2-core-table-management",
+            "path": "functions/src/services/core/table-management",
+            "description": "桌台管理服务 - 桌台状态、座位、预约"
+          }
+        ]
       },
       {
         "alias": "hq",
