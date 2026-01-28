@@ -1,0 +1,25 @@
+{
+  "name": "@chunrui/everything-claude-code",
+  "version": "2.0.0",
+  "description": "Complete collection of battle-tested skills from an Anthropic hackathon winner",
+  "clawdbot": {
+    "skills": [
+      "./skills/tdd-workflow",
+      "./skills/continuous-learning-v2",
+      "./skills/verification-loop",
+      "./skills/strategic-compact",
+      "./skills/coding-standards",
+      "./skills/backend-patterns",
+      "./skills/frontend-patterns",
+      "./skills/golang-patterns",
+      "./skills/golang-testing",
+      "./skills/postgres-patterns",
+      "./skills/security-review",
+      "./skills/planning-with-files",
+      "./skills/beads-task-tracker",
+      "./skills/multi-agent-swarm",
+      "./skills/quant-research",
+      "./skills/deep-research"
+    ]
+  }
+}
