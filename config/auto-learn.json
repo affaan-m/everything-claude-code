@@ -15,12 +15,12 @@
           {
             "alias": "gen2-core-transaction",
             "path": "functions/src/services/core/transaction",
-            "description": "交易服务 - POS交易、订单、支付流程"
+            "description": "Transaction service - POS transactions, orders, payment flows"
           },
           {
             "alias": "gen2-core-table-management",
             "path": "functions/src/services/core/table-management",
-            "description": "桌台管理服务 - 桌台状态、座位、预约"
+            "description": "Table management service - table status, seating, reservations"
           }
         ]
       },
@@ -70,7 +70,7 @@
         "alias": "everything",
         "org": "chunrui-qashier",
         "repo": "everything-claude-code",
-        "description": "Claude Code 插件和学习系统"
+        "description": "Claude Code plugin and learning system"
       }
     ]
   },

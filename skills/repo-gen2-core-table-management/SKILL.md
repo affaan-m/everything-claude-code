@@ -1,6 +1,6 @@
 ---
 name: gen2-core-table-management
-description: Qashier 桌台管理服务 - 处理餐厅桌台、座位、预约管理
+description: Qashier Table Management Service - handles restaurant tables, seating, reservations
 repo: qashierpos/qashier-cloud-function-gen2
 service: core/table-management
 auto_generated: true
@@ -9,7 +9,7 @@ created: 2026-01-28
 
 # Core Table Management Service
 
-Qashier 的桌台管理服务，处理餐厅桌台状态、座位分配、预约管理等。
+Table management service for Qashier, handling restaurant table status, seat allocation, and reservations.
 
 ## Service Info
 
@@ -20,20 +20,20 @@ Qashier 的桌台管理服务，处理餐厅桌台状态、座位分配、预约
 
 ## 1. Domain Model Pattern
 
-**Pattern Applied:** _待学习 (Yes/No)_
+**Pattern Applied:** _To be learned (Yes/No)_
 
-> Domain Model Pattern 要求分离 API Model / Domain Model / DB Model
+> Domain Model Pattern requires separation of API Model / Domain Model / DB Model
 
 ### Key Domain Models
 
 | Model | Description | Layer |
 |-------|-------------|-------|
-| _待学习_ | | api / domain / db |
+| _To be learned_ | | api / domain / db |
 
 ### Model Relationships
 
 ```
-[待从 transcript 学习]
+[To be learned from transcript]
 
 Example:
 Table (domain)
@@ -46,7 +46,7 @@ Table (domain)
 
 ```
 [Request → API Model → Domain Model → DB Model → Response]
-待学习
+To be learned
 ```
 
 ---
@@ -57,13 +57,13 @@ Table (domain)
 
 | Pattern | Example |
 |---------|---------|
-| _待学习_ | |
+| _To be learned_ | |
 
 ### Endpoints List
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| _待学习_ | | |
+| _To be learned_ | | |
 
 ---
 
@@ -71,13 +71,13 @@ Table (domain)
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| _待学习_ | | |
+| _To be learned_ | | |
 
 ---
 
 ## Learned Insights
 
-_每次 /auto-learn 运行时自动追加：_
+_Auto-appended on each /auto-learn run:_
 
 <!-- AUTO-LEARN-START -->
 <!-- AUTO-LEARN-END -->
@@ -86,4 +86,4 @@ _每次 /auto-learn 运行时自动追加：_
 
 ## Notes
 
-_手动笔记_
+_Manual notes_

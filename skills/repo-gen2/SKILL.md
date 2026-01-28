@@ -61,4 +61,4 @@ _No patterns learned yet._
 
 ## Architecture Notes
 
-_从 transcript 自动提取的架构笔记会更新到这里_
+_Architecture notes extracted from transcripts will be updated here._

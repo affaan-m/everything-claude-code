@@ -20,27 +20,27 @@ created: {{DATE}}
 
 ## 1. Domain Model Pattern
 
-**Pattern Applied:** _待学习 (Yes/No)_
+**Pattern Applied:** _To be learned (Yes/No)_
 
-> Domain Model Pattern 要求分离 API Model / Domain Model / DB Model
+> Domain Model Pattern requires separation of API Model / Domain Model / DB Model
 
 ### Key Domain Models
 
 | Model | Description | Layer |
 |-------|-------------|-------|
-| _待学习_ | | api / domain / db |
+| _To be learned_ | | api / domain / db |
 
 ### Model Relationships
 
 ```
-[待从 transcript 学习]
+[To be learned from transcript]
 ```
 
 ### Data Flow
 
 ```
 [Request → API Model → Domain Model → DB Model → Response]
-待学习
+To be learned
 ```
 
 ---
@@ -51,13 +51,13 @@ created: {{DATE}}
 
 | Pattern | Example |
 |---------|---------|
-| _待学习_ | |
+| _To be learned_ | |
 
 ### Endpoints List
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| _待学习_ | | |
+| _To be learned_ | | |
 
 ---
 
@@ -65,13 +65,13 @@ created: {{DATE}}
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| _待学习_ | | |
+| _To be learned_ | | |
 
 ---
 
 ## Learned Insights
 
-_每次 /auto-learn 运行时自动追加：_
+_Auto-appended on each /auto-learn run:_
 
 <!-- AUTO-LEARN-START -->
 <!-- AUTO-LEARN-END -->
@@ -80,4 +80,4 @@ _每次 /auto-learn 运行时自动追加：_
 
 ## Notes
 
-_手动笔记_
+_Manual notes_

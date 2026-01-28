@@ -1,6 +1,6 @@
 ---
 name: gen2-core-transaction
-description: Qashier 交易服务 - 处理 POS 交易、订单、支付流程
+description: Qashier Transaction Service - handles POS transactions, orders, payment flows
 repo: qashierpos/qashier-cloud-function-gen2
 service: core/transaction
 auto_generated: true
@@ -9,7 +9,7 @@ created: 2026-01-28
 
 # Core Transaction Service
 
-Qashier 的核心交易服务，处理 POS 交易、订单创建、支付流程等。
+Core transaction service for Qashier, handling POS transactions, order creation, and payment flows.
 
 ## Service Info
 
@@ -20,20 +20,20 @@ Qashier 的核心交易服务，处理 POS 交易、订单创建、支付流程�
 
 ## 1. Domain Model Pattern
 
-**Pattern Applied:** _待学习 (Yes/No)_
+**Pattern Applied:** _To be learned (Yes/No)_
 
-> Domain Model Pattern 要求分离 API Model / Domain Model / DB Model
+> Domain Model Pattern requires separation of API Model / Domain Model / DB Model
 
 ### Key Domain Models
 
 | Model | Description | Layer |
 |-------|-------------|-------|
-| _待学习_ | | api / domain / db |
+| _To be learned_ | | api / domain / db |
 
 ### Model Relationships
 
 ```
-[待从 transcript 学习]
+[To be learned from transcript]
 
 Example:
 Transaction (domain)
@@ -46,7 +46,7 @@ Transaction (domain)
 
 ```
 [Request → API Model → Domain Model → DB Model → Response]
-待学习
+To be learned
 ```
 
 ---
@@ -57,13 +57,13 @@ Transaction (domain)
 
 | Pattern | Example |
 |---------|---------|
-| _待学习_ | |
+| _To be learned_ | |
 
 ### Endpoints List
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| _待学习_ | | |
+| _To be learned_ | | |
 
 ---
 
@@ -71,13 +71,13 @@ Transaction (domain)
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| _待学习_ | | |
+| _To be learned_ | | |
 
 ---
 
 ## Learned Insights
 
-_每次 /auto-learn 运行时自动追加：_
+_Auto-appended on each /auto-learn run:_
 
 <!-- AUTO-LEARN-START -->
 <!-- AUTO-LEARN-END -->
@@ -86,4 +86,4 @@ _每次 /auto-learn 运行时自动追加：_
 
 ## Notes
 
-_手动笔记_
+_Manual notes_
