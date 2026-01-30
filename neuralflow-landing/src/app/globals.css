@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-blue-500 text-white px-6 py-3 rounded-full font-medium hover:bg-blue-600 transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25 transform hover:scale-105;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-black px-6 py-3 rounded-full font-medium hover:bg-gray-100 transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-gray-900/50 border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-all duration-300;
+  }
+}
