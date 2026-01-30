@@ -1,0 +1,40 @@
+name: Reusable Validation Workflow
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node.js version'
+        required: false
+        type: string
+        default: '20.x'
+
+jobs:
+  validate:
+    name: Validate Components
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Validate agents
+        run: node scripts/ci/validate-agents.js
+
+      - name: Validate hooks
+        run: node scripts/ci/validate-hooks.js
+
+      - name: Validate commands
+        run: node scripts/ci/validate-commands.js
+
+      - name: Validate skills
+        run: node scripts/ci/validate-skills.js
+
+      - name: Validate rules
+        run: node scripts/ci/validate-rules.js

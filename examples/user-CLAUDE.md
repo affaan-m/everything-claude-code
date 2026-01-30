@@ -35,6 +35,7 @@ Detailed guidelines are in `~/.claude/rules/`:
 | agents.md | Agent orchestration, when to use which agent |
 | patterns.md | API response, repository patterns |
 | performance.md | Model selection, context management |
+| hooks.md | Hooks System |
 
 ---
 
@@ -57,6 +58,10 @@ Located in `~/.claude/agents/`:
 ---
 
 ## Personal Preferences
+
+### Privacy
+- Always redact logs; never paste secrets (API keys/tokens/passwords/JWTs)
+- Review output before sharing - remove any sensitive data
 
 ### Code Style
 - No emojis in code, comments, or documentation

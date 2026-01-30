@@ -1,0 +1,44 @@
+{
+  "name": "everything-claude-code",
+  "owner": {
+    "name": "Affaan Mustafa",
+    "email": "affaan@example.com"
+  },
+  "metadata": {
+    "description": "Battle-tested Claude Code configurations from an Anthropic hackathon winner"
+  },
+  "plugins": [
+    {
+      "name": "everything-claude-code",
+      "source": "./",
+      "description": "Complete collection of agents, skills, hooks, commands, and rules evolved over 10+ months of intensive daily use",
+      "author": {
+        "name": "Affaan Mustafa"
+      },
+      "homepage": "https://github.com/affaan-m/everything-claude-code",
+      "repository": "https://github.com/affaan-m/everything-claude-code",
+      "license": "MIT",
+      "keywords": [
+        "agents",
+        "skills",
+        "hooks",
+        "commands",
+        "tdd",
+        "code-review",
+        "security",
+        "best-practices"
+      ],
+      "category": "workflow",
+      "tags": [
+        "agents",
+        "skills",
+        "hooks",
+        "commands",
+        "tdd",
+        "code-review",
+        "security",
+        "best-practices"
+      ]
+    }
+  ]
+}

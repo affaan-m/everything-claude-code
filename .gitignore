@@ -24,3 +24,9 @@ node_modules/
 # Personal configs (if any)
 personal/
 private/
+
+# Session templates (not committed)
+examples/sessions/*.tmp
+
+# Local drafts
+marketing/

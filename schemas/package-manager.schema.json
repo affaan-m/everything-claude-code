@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Package Manager Configuration",
+  "type": "object",
+  "properties": {
+    "packageManager": {
+      "type": "string",
+      "enum": [
+        "npm",
+        "pnpm",
+        "yarn",
+        "bun"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

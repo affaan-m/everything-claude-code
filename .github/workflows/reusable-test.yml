@@ -1,0 +1,130 @@
+name: Reusable Test Workflow
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        description: 'Operating system'
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+      node-version:
+        description: 'Node.js version'
+        required: false
+        type: string
+        default: '20.x'
+      package-manager:
+        description: 'Package manager to use'
+        required: false
+        type: string
+        default: 'npm'
+
+jobs:
+  test:
+    name: Test
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Setup pnpm
+        if: inputs.package-manager == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Bun
+        if: inputs.package-manager == 'bun'
+        uses: oven-sh/setup-bun@v2
+
+      - name: Get npm cache directory
+        if: inputs.package-manager == 'npm'
+        id: npm-cache-dir
+        shell: bash
+        run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+
+      - name: Cache npm
+        if: inputs.package-manager == 'npm'
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ inputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ inputs.node-version }}-npm-
+
+      - name: Get pnpm store directory
+        if: inputs.package-manager == 'pnpm'
+        id: pnpm-cache-dir
+        shell: bash
+        run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm
+        if: inputs.package-manager == 'pnpm'
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ inputs.node-version }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ inputs.node-version }}-pnpm-
+
+      - name: Get yarn cache directory
+        if: inputs.package-manager == 'yarn'
+        id: yarn-cache-dir
+        shell: bash
+        run: |
+          # Try Yarn Berry first, fall back to Yarn v1
+          if yarn config get cacheFolder >/dev/null 2>&1; then
+            echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+          else
+            echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Cache yarn
+        if: inputs.package-manager == 'yarn'
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ inputs.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ inputs.node-version }}-yarn-
+
+      - name: Cache bun
+        if: inputs.package-manager == 'bun'
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          case "${{ inputs.package-manager }}" in
+            npm) npm ci ;;
+            pnpm) pnpm install ;;
+            yarn) yarn install --ignore-engines ;;
+            bun) bun install ;;
+            *) echo "Unsupported package manager: ${{ inputs.package-manager }}" && exit 1 ;;
+          esac
+
+      - name: Run tests
+        run: node tests/run-all.js
+        env:
+          CLAUDE_CODE_PACKAGE_MANAGER: ${{ inputs.package-manager }}
+
+      - name: Upload test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ inputs.os }}-node${{ inputs.node-version }}-${{ inputs.package-manager }}
+          path: |
+            tests/
+            !tests/node_modules/
