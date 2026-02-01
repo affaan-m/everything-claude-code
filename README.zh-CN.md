@@ -7,10 +7,17 @@
 ![Go](https://img.shields.io/badge/-Go-00ADD8?logo=go&logoColor=white)
 ![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown&logoColor=white)
 
-<p align="left">
-  <a href="README.md">English</a> |
-  <span>简体中文</span>
-</p>
+---
+
+<div align="center">
+
+**🌐 Language / 语言 / 語言**
+
+[**English**](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](docs/zh-TW/README.md)
+
+</div>
+
+---
 
 **来自 Anthropic 黑客马拉松获胜者的完整 Claude Code 配置集合。**
 
@@ -52,7 +59,47 @@
 
 ---
 
-## 跨平台支持
+## 🚀 快速开始
+
+在 2 分钟内快速上手：
+
+### 第一步：安装插件
+
+```bash
+# 添加市场
+/plugin marketplace add affaan-m/everything-claude-code
+
+# 安装插件
+/plugin install everything-claude-code@everything-claude-code
+```
+
+### 第二步：安装规则（必需）
+
+> ⚠️ **重要提示：** Claude Code 插件无法自动分发 `rules`，需要手动安装：
+
+```bash
+# 首先克隆仓库
+git clone https://github.com/affaan-m/everything-claude-code.git
+
+# 复制规则（应用于所有项目）
+cp -r everything-claude-code/rules/* ~/.claude/rules/
+```
+
+### 第三步：开始使用
+
+```bash
+# 尝试一个命令
+/plan "添加用户认证"
+
+# 查看可用命令
+/plugin list everything-claude-code@everything-claude-code
+```
+
+✨ **完成！** 你现在可以使用 15+ 代理、30+ 技能和 20+ 命令。
+
+---
+
+## 🌐 跨平台支持
 
 此插件现在完全支持 **Windows、macOS 和 Linux**。所有钩子和脚本都已用 Node.js 重写，以实现最大的兼容性。
 
@@ -87,7 +134,7 @@ node scripts/setup-package-manager.js --detect
 
 ---
 
-## 里面有什么
+## 📦 里面有什么
 
 这个仓库是一个 **Claude Code 插件** - 直接安装或手动复制组件。
 
@@ -192,7 +239,7 @@ everything-claude-code/
 
 ---
 
-## 生态系统工具
+## 🛠️ 生态系统工具
 
 ### 技能创建器
 
@@ -227,7 +274,7 @@ everything-claude-code/
 - **直觉集合** - 用于 continuous-learning-v2
 - **模式提取** - 从你的提交历史中学习
 
-### 持续学习 v2
+### 🧠 持续学习 v2
 
 基于直觉的学习系统自动学习你的模式：
 
@@ -242,7 +289,7 @@ everything-claude-code/
 
 ---
 
-## 安装
+## 📥 安装
 
 ### 选项 1：作为插件安装（推荐）
 
@@ -292,7 +339,7 @@ everything-claude-code/
 
 ---
 
-### 选项 2：手动安装
+### 🔧 选项 2：手动安装
 
 如果你希望对安装的内容进行手动控制：
 
@@ -325,7 +372,7 @@ cp -r everything-claude-code/skills/* ~/.claude/skills/
 
 ---
 
-## 关键概念
+## 🎯 关键概念
 
 ### 代理
 
@@ -383,7 +430,7 @@ model: opus
 
 ---
 
-## 运行测试
+## 🧪 运行测试
 
 插件包含一个全面的测试套件：
 
@@ -399,7 +446,7 @@ node tests/hooks/hooks.test.js
 
 ---
 
-## 贡献
+## 🤝 贡献
 
 **欢迎并鼓励贡献。**
 
@@ -421,7 +468,7 @@ node tests/hooks/hooks.test.js
 
 ---
 
-## 背景
+## 📖 背景
 
 自实验性推出以来，我一直在使用 Claude Code。2025 年 9 月，与 [@DRodriguezFX](https://x.com/DRodriguezFX) 一起使用 Claude Code 构建 [zenith.chat](https://zenith.chat)，赢得了 Anthropic x Forum Ventures 黑客马拉松。
 
@@ -429,7 +476,7 @@ node tests/hooks/hooks.test.js
 
 ---
 
-## 重要说明
+## ⚠️ 重要说明
 
 ### 上下文窗口管理
 
@@ -452,13 +499,13 @@ node tests/hooks/hooks.test.js
 
 ---
 
-## Star 历史
+## 🌟 Star 历史
 
 [![Star History Chart](https://api.star-history.com/svg?repos=affaan-m/everything-claude-code&type=Date)](https://star-history.com/#affaan-m/everything-claude-code&Date)
 
 ---
 
-## 链接
+## 🔗 链接
 
 - **精简指南（从这里开始）：** [The Shorthand Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2012378465664745795)
 - **详细指南（高级）：** [The Longform Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2014040193557471352)
@@ -467,7 +514,7 @@ node tests/hooks/hooks.test.js
 
 ---
 
-## 许可证
+## 📄 许可证
 
 MIT - 自由使用，根据需要修改，如果可以请回馈。
 

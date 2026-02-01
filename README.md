@@ -9,10 +9,17 @@
 ![Go](https://img.shields.io/badge/-Go-00ADD8?logo=go&logoColor=white)
 ![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown&logoColor=white)
 
-<p align="left">
-  <span>English</span> |
-  <a href="README.zh-CN.md">简体中文</a>
-</p>
+---
+
+<div align="center">
+
+**🌐 Language / 语言 / 語言**
+
+[**English**](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](docs/zh-TW/README.md)
+
+</div>
+
+---
 
 **The complete collection of Claude Code configs from an Anthropic hackathon winner.**
 
@@ -54,7 +61,47 @@ This repo is the raw code only. The guides explain everything.
 
 ---
 
-## Cross-Platform Support
+## 🚀 Quick Start
+
+Get up and running in under 2 minutes:
+
+### Step 1: Install the Plugin
+
+```bash
+# Add marketplace
+/plugin marketplace add affaan-m/everything-claude-code
+
+# Install plugin
+/plugin install everything-claude-code@everything-claude-code
+```
+
+### Step 2: Install Rules (Required)
+
+> ⚠️ **Important:** Claude Code plugins cannot distribute `rules` automatically. Install them manually:
+
+```bash
+# Clone the repo first
+git clone https://github.com/affaan-m/everything-claude-code.git
+
+# Copy rules (applies to all projects)
+cp -r everything-claude-code/rules/* ~/.claude/rules/
+```
+
+### Step 3: Start Using
+
+```bash
+# Try a command
+/plan "Add user authentication"
+
+# Check available commands
+/plugin list everything-claude-code@everything-claude-code
+```
+
+✨ **That's it!** You now have access to 15+ agents, 30+ skills, and 20+ commands.
+
+---
+
+## 🌐 Cross-Platform Support
 
 This plugin now fully supports **Windows, macOS, and Linux**. All hooks and scripts have been rewritten in Node.js for maximum compatibility.
 
@@ -89,7 +136,7 @@ Or use the `/setup-pm` command in Claude Code.
 
 ---
 
-## What's Inside
+## 📦 What's Inside
 
 This repo is a **Claude Code plugin** - install it directly or copy components manually.
 
@@ -194,7 +241,7 @@ everything-claude-code/
 
 ---
 
-## Ecosystem Tools
+## 🛠️ Ecosystem Tools
 
 ### Skill Creator
 
@@ -229,7 +276,7 @@ Both options create:
 - **Instinct collections** - For continuous-learning-v2
 - **Pattern extraction** - Learns from your commit history
 
-### Continuous Learning v2
+### 🧠 Continuous Learning v2
 
 The instinct-based learning system automatically learns your patterns:
 
@@ -244,7 +291,7 @@ See `skills/continuous-learning-v2/` for full documentation.
 
 ---
 
-## Requirements
+## 📋 Requirements
 
 ### Claude Code CLI Version
 
@@ -271,7 +318,7 @@ Duplicate hooks file detected: ./hooks/hooks.json resolves to already-loaded fil
 
 ---
 
-## Installation
+## 📥 Installation
 
 ### Option 1: Install as Plugin (Recommended)
 
@@ -321,7 +368,7 @@ This gives you instant access to all commands, agents, skills, and hooks.
 
 ---
 
-### Option 2: Manual Installation
+### 🔧 Option 2: Manual Installation
 
 If you prefer manual control over what's installed:
 
@@ -354,7 +401,7 @@ Copy desired MCP servers from `mcp-configs/mcp-servers.json` to your `~/.claude.
 
 ---
 
-## Key Concepts
+## 🎯 Key Concepts
 
 ### Agents
 
@@ -412,7 +459,7 @@ Rules are always-follow guidelines. Keep them modular:
 
 ---
 
-## Running Tests
+## 🧪 Running Tests
 
 The plugin includes a comprehensive test suite:
 
@@ -428,7 +475,7 @@ node tests/hooks/hooks.test.js
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
 **Contributions are welcome and encouraged.**
 
@@ -450,7 +497,7 @@ Please contribute! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
-## Background
+## 📖 Background
 
 I've been using Claude Code since the experimental rollout. Won the Anthropic x Forum Ventures hackathon in Sep 2025 building [zenith.chat](https://zenith.chat) with [@DRodriguezFX](https://x.com/DRodriguezFX) - entirely using Claude Code.
 
@@ -458,7 +505,7 @@ These configs are battle-tested across multiple production applications.
 
 ---
 
-## Important Notes
+## ⚠️ Important Notes
 
 ### Context Window Management
 
@@ -481,13 +528,13 @@ These configs work for my workflow. You should:
 
 ---
 
-## Star History
+## 🌟 Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=affaan-m/everything-claude-code&type=Date)](https://star-history.com/#affaan-m/everything-claude-code&Date)
 
 ---
 
-## Links
+## 🔗 Links
 
 - **Shorthand Guide (Start Here):** [The Shorthand Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2012378465664745795)
 - **Longform Guide (Advanced):** [The Longform Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2014040193557471352)
@@ -496,7 +543,7 @@ These configs work for my workflow. You should:
 
 ---
 
-## License
+## 📄 License
 
 MIT - Use freely, modify as needed, contribute back if you can.
 
