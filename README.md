@@ -83,8 +83,13 @@ Get up and running in under 2 minutes:
 # Clone the repo first
 git clone https://github.com/affaan-m/everything-claude-code.git
 
-# Copy rules (applies to all projects)
-cp -r everything-claude-code/rules/* ~/.claude/rules/
+# Install common rules (required)
+cp -r everything-claude-code/rules/common/* ~/.claude/rules/
+
+# Install language-specific rules (pick your stack)
+cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/
+cp -r everything-claude-code/rules/python/* ~/.claude/rules/
+cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
 ```
 
 ### Step 3: Start Using
@@ -195,12 +200,19 @@ everything-claude-code/
 |   |-- evolve.md           # /evolve - Cluster instincts into skills (NEW)
 |
 |-- rules/            # Always-follow guidelines (copy to ~/.claude/rules/)
-|   |-- security.md         # Mandatory security checks
-|   |-- coding-style.md     # Immutability, file organization
-|   |-- testing.md          # TDD, 80% coverage requirement
-|   |-- git-workflow.md     # Commit format, PR process
-|   |-- agents.md           # When to delegate to subagents
-|   |-- performance.md      # Model selection, context management
+|   |-- README.md            # Structure overview and installation guide
+|   |-- common/              # Language-agnostic principles
+|   |   |-- coding-style.md    # Immutability, file organization
+|   |   |-- git-workflow.md    # Commit format, PR process
+|   |   |-- testing.md         # TDD, 80% coverage requirement
+|   |   |-- performance.md     # Model selection, context management
+|   |   |-- patterns.md        # Design patterns, skeleton projects
+|   |   |-- hooks.md           # Hook architecture, TodoWrite
+|   |   |-- agents.md          # When to delegate to subagents
+|   |   |-- security.md        # Mandatory security checks
+|   |-- typescript/          # TypeScript/JavaScript specific
+|   |-- python/              # Python specific
+|   |-- golang/              # Go specific
 |
 |-- hooks/            # Trigger-based automations
 |   |-- hooks.json                # All hooks config (PreToolUse, PostToolUse, Stop, etc.)
@@ -359,11 +371,15 @@ This gives you instant access to all commands, agents, skills, and hooks.
 > git clone https://github.com/affaan-m/everything-claude-code.git
 >
 > # Option A: User-level rules (applies to all projects)
-> cp -r everything-claude-code/rules/* ~/.claude/rules/
+> cp -r everything-claude-code/rules/common/* ~/.claude/rules/
+> cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/   # pick your stack
+> cp -r everything-claude-code/rules/python/* ~/.claude/rules/
+> cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
 >
 > # Option B: Project-level rules (applies to current project only)
 > mkdir -p .claude/rules
-> cp -r everything-claude-code/rules/* .claude/rules/
+> cp -r everything-claude-code/rules/common/* .claude/rules/
+> cp -r everything-claude-code/rules/typescript/* .claude/rules/     # pick your stack
 > ```
 
 ---
@@ -379,8 +395,11 @@ git clone https://github.com/affaan-m/everything-claude-code.git
 # Copy agents to your Claude config
 cp everything-claude-code/agents/*.md ~/.claude/agents/
 
-# Copy rules
-cp everything-claude-code/rules/*.md ~/.claude/rules/
+# Copy rules (common + language-specific)
+cp -r everything-claude-code/rules/common/* ~/.claude/rules/
+cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/   # pick your stack
+cp -r everything-claude-code/rules/python/* ~/.claude/rules/
+cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
 
 # Copy commands
 cp everything-claude-code/commands/*.md ~/.claude/commands/
@@ -448,14 +467,17 @@ Hooks fire on tool events. Example - warn about console.log:
 
 ### Rules
 
-Rules are always-follow guidelines. Keep them modular:
+Rules are always-follow guidelines, organized into `common/` (language-agnostic) + language-specific directories:
 
 ```
-~/.claude/rules/
-  security.md      # No hardcoded secrets
-  coding-style.md  # Immutability, file limits
-  testing.md       # TDD, coverage requirements
+rules/
+  common/          # Universal principles (always install)
+  typescript/      # TS/JS specific patterns and tools
+  python/          # Python specific patterns and tools
+  golang/          # Go specific patterns and tools
 ```
+
+See [`rules/README.md`](rules/README.md) for installation and structure details.
 
 ---
 
