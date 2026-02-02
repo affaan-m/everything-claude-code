@@ -1,4 +1,6 @@
-# Common Patterns
+# TypeScript/JavaScript Patterns
+
+> This file extends [common/patterns.md](../common/patterns.md) with TypeScript/JavaScript specific content.
 
 ## API Response Format
 
@@ -41,15 +43,3 @@ interface Repository<T> {
   delete(id: string): Promise<void>
 }
 ```
-
-## Skeleton Projects
-
-When implementing new functionality:
-1. Search for battle-tested skeleton projects
-2. Use parallel agents to evaluate options:
-   - Security assessment
-   - Extensibility analysis
-   - Relevance scoring
-   - Implementation planning
-3. Clone best match as foundation
-4. Iterate within proven structure

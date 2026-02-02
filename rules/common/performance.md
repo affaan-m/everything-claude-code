@@ -30,13 +30,21 @@ Lower context sensitivity tasks:
 - Documentation updates
 - Simple bug fixes
 
-## Ultrathink + Plan Mode
+## Extended Thinking + Plan Mode
+
+Extended thinking is enabled by default, reserving up to 31,999 tokens for internal reasoning.
+
+Control extended thinking via:
+- **Toggle**: Option+T (macOS) / Alt+T (Windows/Linux)
+- **Config**: Set `alwaysThinkingEnabled` in `~/.claude/settings.json`
+- **Budget cap**: `export MAX_THINKING_TOKENS=10000`
+- **Verbose mode**: Ctrl+O to see thinking output
 
 For complex tasks requiring deep reasoning:
-1. Use `ultrathink` for enhanced thinking
+1. Ensure extended thinking is enabled (on by default)
 2. Enable **Plan Mode** for structured approach
-3. "Rev the engine" with multiple critique rounds
-4. Use split role sub-agents for diverse analysis
+3. Use multiple critique rounds for thorough analysis
+4. Use split role sub-agents for diverse perspectives
 
 ## Build Troubleshooting
 
