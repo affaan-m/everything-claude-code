@@ -1,8 +1,6 @@
----
+# Instinct Status Command
+
 name: instinct-status
-description: Show all learned instincts with their confidence levels
-command: true
----
 
 # Instinct Status Command
 

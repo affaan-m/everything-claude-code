@@ -1,8 +1,6 @@
----
-description: Restate requirements, assess risks, and create step-by-step implementation plan. WAIT for user CONFIRM before touching any code.
----
-
 # Plan Command
+
+Restate requirements, assess risks, and create step-by-step implementation plan. WAIT for user CONFIRM before touching any code.
 
 This command invokes the **planner** agent to create a comprehensive implementation plan before writing any code.
 

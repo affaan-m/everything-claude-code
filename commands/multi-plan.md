@@ -1,8 +1,6 @@
----
-description: '多模型协作规划 - 上下文检索 + 双模型分析 → 生成 Step-by-step 实施计划'
----
-
 # Plan - 多模型协作规划
+
+多模型协作规划 - 上下文检索 + 双模型分析 → 生成 Step-by-step 实施计划
 
 $ARGUMENTS
 
