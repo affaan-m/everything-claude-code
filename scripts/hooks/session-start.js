@@ -16,6 +16,7 @@ const {
   log
 } = require('../lib/utils');
 const { getPackageManager, getSelectionPrompt } = require('../lib/package-manager');
+const { listAliases } = require('../lib/session-aliases');
 
 async function main() {
   const sessionsDir = getSessionsDir();
@@ -40,6 +41,15 @@ async function main() {
 
   if (learnedSkills.length > 0) {
     log(`[SessionStart] ${learnedSkills.length} learned skill(s) available in ${learnedDir}`);
+  }
+
+  // Check for available session aliases
+  const aliases = listAliases({ limit: 5 });
+
+  if (aliases.length > 0) {
+    const aliasNames = aliases.map(a => a.name).join(', ');
+    log(`[SessionStart] ${aliases.length} session alias(es) available: ${aliasNames}`);
+    log(`[SessionStart] Use /sessions load <alias> to continue a previous session`);
   }
 
   // Detect and report package manager
