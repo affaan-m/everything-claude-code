@@ -8,7 +8,7 @@ const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const { execSync, spawn } = require('child_process');
+const { spawn } = require('child_process');
 
 // Test helper
 function test(name, fn) {
@@ -114,11 +114,37 @@ async function runTests() {
     await runScript(path.join(scriptsDir, 'session-end.js'));
 
     // Check if session file was created
+    // Note: Without CLAUDE_SESSION_ID, falls back to project name (not 'default')
+    // Use local time to match the script's getDateString() function
     const sessionsDir = path.join(os.homedir(), '.claude', 'sessions');
-    const today = new Date().toISOString().split('T')[0];
-    const sessionFile = path.join(sessionsDir, `${today}-session.tmp`);
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-    assert.ok(fs.existsSync(sessionFile), 'Session file should exist');
+    // Get the expected session ID (project name fallback)
+    const utils = require('../../scripts/lib/utils');
+    const expectedId = utils.getSessionIdShort();
+    const sessionFile = path.join(sessionsDir, `${today}-${expectedId}-session.tmp`);
+
+    assert.ok(fs.existsSync(sessionFile), `Session file should exist: ${sessionFile}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('includes session ID in filename', async () => {
+    const testSessionId = 'test-session-abc12345';
+    const expectedShortId = 'abc12345'; // Last 8 chars
+
+    // Run with custom session ID
+    await runScript(path.join(scriptsDir, 'session-end.js'), '', {
+      CLAUDE_SESSION_ID: testSessionId
+    });
+
+    // Check if session file was created with session ID
+    // Use local time to match the script's getDateString() function
+    const sessionsDir = path.join(os.homedir(), '.claude', 'sessions');
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const sessionFile = path.join(sessionsDir, `${today}-${expectedShortId}-session.tmp`);
+
+    assert.ok(fs.existsSync(sessionFile), `Session file should exist: ${sessionFile}`);
   })) passed++; else failed++;
 
   // pre-compact.js tests
@@ -275,7 +301,7 @@ async function runTests() {
       }
     };
 
-    for (const [eventType, hookArray] of Object.entries(hooks.hooks)) {
+    for (const [, hookArray] of Object.entries(hooks.hooks)) {
       checkHooks(hookArray);
     }
   })) passed++; else failed++;
@@ -299,9 +325,25 @@ async function runTests() {
       }
     };
 
-    for (const [eventType, hookArray] of Object.entries(hooks.hooks)) {
+    for (const [, hookArray] of Object.entries(hooks.hooks)) {
       checkHooks(hookArray);
     }
+  })) passed++; else failed++;
+
+  // plugin.json validation
+  console.log('\nplugin.json Validation:');
+
+  if (test('plugin.json does NOT have explicit hooks declaration', () => {
+    // Claude Code automatically loads hooks/hooks.json by convention.
+    // Explicitly declaring it in plugin.json causes a duplicate detection error.
+    // See: https://github.com/affaan-m/everything-claude-code/issues/103
+    const pluginPath = path.join(__dirname, '..', '..', '.claude-plugin', 'plugin.json');
+    const plugin = JSON.parse(fs.readFileSync(pluginPath, 'utf8'));
+
+    assert.ok(
+      !plugin.hooks,
+      'plugin.json should NOT have "hooks" field - Claude Code auto-loads hooks/hooks.json'
+    );
   })) passed++; else failed++;
 
   // Summary

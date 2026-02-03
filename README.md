@@ -1,10 +1,25 @@
+**Language:** English | [繁體中文](docs/zh-TW/README.md)
+
 # Everything Claude Code
 
 [![Stars](https://img.shields.io/github/stars/twebdevemt/ecc?style=flat)](https://github.com/twebdevemt/ecc/stargazers)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Shell](https://img.shields.io/badge/-Shell-4EAA25?logo=gnu-bash&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
+![Go](https://img.shields.io/badge/-Go-00ADD8?logo=go&logoColor=white)
 ![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown&logoColor=white)
+
+---
+
+<div align="center">
+
+**🌐 Language / 语言 / 語言**
+
+[**English**](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](docs/zh-TW/README.md)
+
+</div>
+
+---
 
 **The complete collection of Claude Code configs from an Anthropic hackathon winner.**
 
@@ -46,7 +61,47 @@ This repo is the raw code only. The guides explain everything.
 
 ---
 
-## Cross-Platform Support
+## 🚀 Quick Start
+
+Get up and running in under 2 minutes:
+
+### Step 1: Install the Plugin
+
+```bash
+# Add marketplace
+/plugin marketplace add affaan-m/everything-claude-code
+
+# Install plugin
+/plugin install everything-claude-code@everything-claude-code
+```
+
+### Step 2: Install Rules (Required)
+
+> ⚠️ **Important:** Claude Code plugins cannot distribute `rules` automatically. Install them manually:
+
+```bash
+# Clone the repo first
+git clone https://github.com/affaan-m/everything-claude-code.git
+
+# Copy rules (applies to all projects)
+cp -r everything-claude-code/rules/* ~/.claude/rules/
+```
+
+### Step 3: Start Using
+
+```bash
+# Try a command
+/plan "Add user authentication"
+
+# Check available commands
+/plugin list everything-claude-code@everything-claude-code
+```
+
+✨ **That's it!** You now have access to 15+ agents, 30+ skills, and 20+ commands.
+
+---
+
+## 🌐 Cross-Platform Support
 
 This plugin now fully supports **Windows, macOS, and Linux**. All hooks and scripts have been rewritten in Node.js for maximum compatibility.
 
@@ -81,7 +136,7 @@ Or use the `/setup-pm` command in Claude Code.
 
 ---
 
-## What's Inside
+## 📦 What's Inside
 
 This repo is a **Claude Code plugin** - install it directly or copy components manually.
 
@@ -101,17 +156,23 @@ ecc/
 |   |-- e2e-runner.md        # Playwright E2E testing
 |   |-- refactor-cleaner.md  # Dead code cleanup
 |   |-- doc-updater.md       # Documentation sync
+|   |-- go-reviewer.md       # Go code review (NEW)
+|   |-- go-build-resolver.md # Go build error resolution (NEW)
 |
 |-- skills/           # Workflow definitions and domain knowledge
 |   |-- coding-standards/           # Language best practices
 |   |-- backend-patterns/           # API, database, caching patterns
 |   |-- frontend-patterns/          # React, Next.js patterns
 |   |-- continuous-learning/        # Auto-extract patterns from sessions (Longform Guide)
+|   |-- continuous-learning-v2/     # Instinct-based learning with confidence scoring
+|   |-- iterative-retrieval/        # Progressive context refinement for subagents
 |   |-- strategic-compact/          # Manual compaction suggestions (Longform Guide)
 |   |-- tdd-workflow/               # TDD methodology
 |   |-- security-review/            # Security checklist
 |   |-- eval-harness/               # Verification loop evaluation (Longform Guide)
 |   |-- verification-loop/          # Continuous verification (Longform Guide)
+|   |-- golang-patterns/            # Go idioms and best practices (NEW)
+|   |-- golang-testing/             # Go testing patterns, TDD, benchmarks (NEW)
 |
 |-- commands/         # Slash commands for quick execution
 |   |-- tdd.md              # /tdd - Test-driven development
@@ -123,7 +184,15 @@ ecc/
 |   |-- learn.md            # /learn - Extract patterns mid-session (Longform Guide)
 |   |-- checkpoint.md       # /checkpoint - Save verification state (Longform Guide)
 |   |-- verify.md           # /verify - Run verification loop (Longform Guide)
-|   |-- setup-pm.md         # /setup-pm - Configure package manager (NEW)
+|   |-- setup-pm.md         # /setup-pm - Configure package manager
+|   |-- go-review.md        # /go-review - Go code review (NEW)
+|   |-- go-test.md          # /go-test - Go TDD workflow (NEW)
+|   |-- go-build.md         # /go-build - Fix Go build errors (NEW)
+|   |-- skill-create.md     # /skill-create - Generate skills from git history (NEW)
+|   |-- instinct-status.md  # /instinct-status - View learned instincts (NEW)
+|   |-- instinct-import.md  # /instinct-import - Import instincts (NEW)
+|   |-- instinct-export.md  # /instinct-export - Export instincts (NEW)
+|   |-- evolve.md           # /evolve - Cluster instincts into skills (NEW)
 |
 |-- rules/            # Always-follow guidelines (copy to ~/.claude/rules/)
 |   |-- security.md         # Mandatory security checks
@@ -172,7 +241,84 @@ ecc/
 
 ---
 
-## Installation
+## 🛠️ Ecosystem Tools
+
+### Skill Creator
+
+Two ways to generate Claude Code skills from your repository:
+
+#### Option A: Local Analysis (Built-in)
+
+Use the `/skill-create` command for local analysis without external services:
+
+```bash
+/skill-create                    # Analyze current repo
+/skill-create --instincts        # Also generate instincts for continuous-learning
+```
+
+This analyzes your git history locally and generates SKILL.md files.
+
+#### Option B: GitHub App (Advanced)
+
+For advanced features (10k+ commits, auto-PRs, team sharing):
+
+[Install GitHub App](https://github.com/apps/skill-creator) | [ecc.tools](https://ecc.tools)
+
+```bash
+# Comment on any issue:
+/skill-creator analyze
+
+# Or auto-triggers on push to default branch
+```
+
+Both options create:
+- **SKILL.md files** - Ready-to-use skills for Claude Code
+- **Instinct collections** - For continuous-learning-v2
+- **Pattern extraction** - Learns from your commit history
+
+### 🧠 Continuous Learning v2
+
+The instinct-based learning system automatically learns your patterns:
+
+```bash
+/instinct-status        # Show learned instincts with confidence
+/instinct-import <file> # Import instincts from others
+/instinct-export        # Export your instincts for sharing
+/evolve                 # Cluster related instincts into skills
+```
+
+See `skills/continuous-learning-v2/` for full documentation.
+
+---
+
+## 📋 Requirements
+
+### Claude Code CLI Version
+
+**Minimum version: v2.1.0 or later**
+
+This plugin requires Claude Code CLI v2.1.0+ due to changes in how the plugin system handles hooks.
+
+Check your version:
+```bash
+claude --version
+```
+
+### Important: Hooks Auto-Loading Behavior
+
+> ⚠️ **For Contributors:** Do NOT add a `"hooks"` field to `.claude-plugin/plugin.json`. This is enforced by a regression test.
+
+Claude Code v2.1+ **automatically loads** `hooks/hooks.json` from any installed plugin by convention. Explicitly declaring it in `plugin.json` causes a duplicate detection error:
+
+```
+Duplicate hooks file detected: ./hooks/hooks.json resolves to already-loaded file
+```
+
+**History:** This has caused repeated fix/revert cycles in this repo ([#29](https://github.com/affaan-m/everything-claude-code/issues/29), [#52](https://github.com/affaan-m/everything-claude-code/issues/52), [#103](https://github.com/affaan-m/everything-claude-code/issues/103)). The behavior changed between Claude Code versions, leading to confusion. We now have a regression test to prevent this from being reintroduced.
+
+---
+
+## 📥 Installation
 
 ### Option 1: Install as Plugin (Recommended)
 
@@ -206,9 +352,23 @@ Or add directly to your `~/.claude/settings.json`:
 
 This gives you instant access to all commands, agents, skills, and hooks.
 
+> **Note:** The Claude Code plugin system does not support distributing `rules` via plugins ([upstream limitation](https://code.claude.com/docs/en/plugins-reference)). You need to install rules manually:
+>
+> ```bash
+> # Clone the repo first
+> git clone https://github.com/affaan-m/everything-claude-code.git
+>
+> # Option A: User-level rules (applies to all projects)
+> cp -r everything-claude-code/rules/* ~/.claude/rules/
+>
+> # Option B: Project-level rules (applies to current project only)
+> mkdir -p .claude/rules
+> cp -r everything-claude-code/rules/* .claude/rules/
+> ```
+
 ---
 
-### Option 2: Manual Installation
+### 🔧 Option 2: Manual Installation
 
 If you prefer manual control over what's installed:
 
@@ -241,7 +401,7 @@ Copy desired MCP servers from `mcp-configs/mcp-servers.json` to your `~/.claude.
 
 ---
 
-## Key Concepts
+## 🎯 Key Concepts
 
 ### Agents
 
@@ -251,7 +411,7 @@ Subagents handle delegated tasks with limited scope. Example:
 ---
 name: code-reviewer
 description: Reviews code for quality, security, and maintainability
-tools: Read, Grep, Glob, Bash
+tools: ["Read", "Grep", "Glob", "Bash"]
 model: opus
 ---
 
@@ -301,7 +461,7 @@ Rules are always-follow guidelines. Keep them modular:
 
 ---
 
-## Running Tests
+## 🧪 Running Tests
 
 The plugin includes a comprehensive test suite:
 
@@ -317,7 +477,7 @@ node tests/hooks/hooks.test.js
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
 **Contributions are welcome and encouraged.**
 
@@ -332,7 +492,7 @@ Please contribute! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ### Ideas for Contributions
 
-- Language-specific skills (Python, Go, Rust patterns)
+- Language-specific skills (Python, Rust patterns) - Go now included!
 - Framework-specific configs (Django, Rails, Laravel)
 - DevOps agents (Kubernetes, Terraform, AWS)
 - Testing strategies (different frameworks)
@@ -340,7 +500,7 @@ Please contribute! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
-## Background
+## 📖 Background
 
 I've been using Claude Code since the experimental rollout. Won the Anthropic x Forum Ventures hackathon in Sep 2025 building [zenith.chat](https://zenith.chat) with [@DRodriguezFX](https://x.com/DRodriguezFX) - entirely using Claude Code.
 
@@ -348,7 +508,7 @@ These configs are battle-tested across multiple production applications.
 
 ---
 
-## Important Notes
+## ⚠️ Important Notes
 
 ### Context Window Management
 
@@ -373,13 +533,13 @@ These configs work for my workflow. You should:
 
 ---
 
-## Star History
+## 🌟 Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=twebdevemt/ecc&type=Date)](https://star-history.com/#twebdevemt/ecc&Date)
 
 ---
 
-## Links
+## 🔗 Links
 
 - **Shorthand Guide (Start Here):** [The Shorthand Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2012378465664745795)
 - **Longform Guide (Advanced):** [The Longform Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2014040193557471352)
@@ -388,7 +548,7 @@ These configs work for my workflow. You should:
 
 ---
 
-## License
+## 📄 License
 
 MIT - Use freely, modify as needed, contribute back if you can.
 

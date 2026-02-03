@@ -19,10 +19,8 @@ const {
   setProjectPackageManager,
   getAvailablePackageManagers,
   detectFromLockFile,
-  detectFromPackageJson,
-  getSelectionPrompt
+  detectFromPackageJson
 } = require('./lib/package-manager');
-const { log } = require('./lib/utils');
 
 function showHelp() {
   console.log(`
@@ -89,8 +87,8 @@ function detectAndShow() {
   console.log('');
   console.log('Commands:');
   console.log(`  Install: ${pm.config.installCmd}`);
-  console.log(`  Run script: ${pm.config.runCmd} <script>`);
-  console.log(`  Execute binary: ${pm.config.execCmd} <binary>`);
+  console.log(`  Run script: ${pm.config.runCmd} [script-name]`);
+  console.log(`  Execute binary: ${pm.config.execCmd} [binary-name]`);
   console.log('');
 }
 

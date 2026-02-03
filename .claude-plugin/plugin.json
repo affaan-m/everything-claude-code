@@ -1,5 +1,6 @@
 {
     "name": "ecc",
+    "version": "1.2.0",
     "description": "Complete collection of battle-tested Claude Code configs from an Anthropic hackathon winner - agents, skills, hooks, commands, and rules evolved over 10+ months of intensive daily use",
     "author": {
         "name": "twebdevemt",
@@ -10,5 +11,16 @@
     "license": "MIT",
     "keywords": ["claude-code", "agents", "skills", "hooks", "commands", "rules", "tdd", "code-review", "security", "workflow", "automation", "best-practices"],
     "commands": "./commands",
-    "skills": "./skills"
+    "skills": "./skills",
+    "agents": [
+      "./agents/architect.md",
+      "./agents/build-error-resolver.md",
+      "./agents/code-reviewer.md",
+      "./agents/doc-updater.md",
+      "./agents/e2e-runner.md",
+      "./agents/planner.md",
+      "./agents/refactor-cleaner.md",
+      "./agents/security-reviewer.md",
+      "./agents/tdd-guide.md"
+    ]
 }

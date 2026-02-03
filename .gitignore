@@ -27,3 +27,6 @@ private/
 
 # Session templates (not committed)
 examples/sessions/*.tmp
+
+# Local drafts
+marketing/

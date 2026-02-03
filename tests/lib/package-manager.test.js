@@ -11,7 +11,6 @@ const os = require('os');
 
 // Import the modules
 const pm = require('../../scripts/lib/package-manager');
-const utils = require('../../scripts/lib/utils');
 
 // Test helper
 function test(name, fn) {

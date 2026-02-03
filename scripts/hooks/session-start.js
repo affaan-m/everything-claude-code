@@ -8,7 +8,6 @@
  * files and notifies Claude of available context to load.
  */
 
-const path = require('path');
 const {
   getSessionsDir,
   getLearnedSkillsDir,
@@ -17,6 +16,7 @@ const {
   log
 } = require('../lib/utils');
 const { getPackageManager, getSelectionPrompt } = require('../lib/package-manager');
+const { listAliases } = require('../lib/session-aliases');
 
 async function main() {
   const sessionsDir = getSessionsDir();
@@ -27,7 +27,8 @@ async function main() {
   ensureDir(learnedDir);
 
   // Check for recent session files (last 7 days)
-  const recentSessions = findFiles(sessionsDir, '*.tmp', { maxAge: 7 });
+  // Match both old format (YYYY-MM-DD-session.tmp) and new format (YYYY-MM-DD-shortid-session.tmp)
+  const recentSessions = findFiles(sessionsDir, '*-session.tmp', { maxAge: 7 });
 
   if (recentSessions.length > 0) {
     const latest = recentSessions[0];
@@ -40,6 +41,15 @@ async function main() {
 
   if (learnedSkills.length > 0) {
     log(`[SessionStart] ${learnedSkills.length} learned skill(s) available in ${learnedDir}`);
+  }
+
+  // Check for available session aliases
+  const aliases = listAliases({ limit: 5 });
+
+  if (aliases.length > 0) {
+    const aliasNames = aliases.map(a => a.name).join(', ');
+    log(`[SessionStart] ${aliases.length} session alias(es) available: ${aliasNames}`);
+    log(`[SessionStart] Use /sessions load <alias> to continue a previous session`);
   }
 
   // Detect and report package manager

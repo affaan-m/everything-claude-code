@@ -7,7 +7,6 @@
 const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
-const os = require('os');
 
 // Import the module
 const utils = require('../../scripts/lib/utils');
@@ -104,6 +103,55 @@ function runTests() {
   if (test('getDateTimeString returns full datetime format', () => {
     const dt = utils.getDateTimeString();
     assert.ok(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(dt), `Expected YYYY-MM-DD HH:MM:SS, got ${dt}`);
+  })) passed++; else failed++;
+
+  // Project name tests
+  console.log('\nProject Name Functions:');
+
+  if (test('getGitRepoName returns string or null', () => {
+    const repoName = utils.getGitRepoName();
+    assert.ok(repoName === null || typeof repoName === 'string');
+  })) passed++; else failed++;
+
+  if (test('getProjectName returns non-empty string', () => {
+    const name = utils.getProjectName();
+    assert.ok(name && name.length > 0);
+  })) passed++; else failed++;
+
+  // Session ID tests
+  console.log('\nSession ID Functions:');
+
+  if (test('getSessionIdShort falls back to project name', () => {
+    const original = process.env.CLAUDE_SESSION_ID;
+    delete process.env.CLAUDE_SESSION_ID;
+    try {
+      const shortId = utils.getSessionIdShort();
+      assert.strictEqual(shortId, utils.getProjectName());
+    } finally {
+      if (original) process.env.CLAUDE_SESSION_ID = original;
+    }
+  })) passed++; else failed++;
+
+  if (test('getSessionIdShort returns last 8 characters', () => {
+    const original = process.env.CLAUDE_SESSION_ID;
+    process.env.CLAUDE_SESSION_ID = 'test-session-abc12345';
+    try {
+      assert.strictEqual(utils.getSessionIdShort(), 'abc12345');
+    } finally {
+      if (original) process.env.CLAUDE_SESSION_ID = original;
+      else delete process.env.CLAUDE_SESSION_ID;
+    }
+  })) passed++; else failed++;
+
+  if (test('getSessionIdShort handles short session IDs', () => {
+    const original = process.env.CLAUDE_SESSION_ID;
+    process.env.CLAUDE_SESSION_ID = 'short';
+    try {
+      assert.strictEqual(utils.getSessionIdShort(), 'short');
+    } finally {
+      if (original) process.env.CLAUDE_SESSION_ID = original;
+      else delete process.env.CLAUDE_SESSION_ID;
+    }
   })) passed++; else failed++;
 
   // File operations tests
