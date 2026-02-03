@@ -7,10 +7,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"console.error('[Hook] BLOCKED: Dev server must run in tmux for log access');console.error('[Hook] Use: tmux new-session -d -s dev \\\"npm run dev\\\"');console.error('[Hook] Then: tmux attach -t dev');process.exit(1)\""
+            "command": "node -e \"const os=require('os');const fs=require('fs');const path=require('path');const isWin=os.platform()==='win32';if(isWin){const cwd=process.cwd();const ecoPath=path.join(cwd,'ecosystem.config.cjs');if(fs.existsSync(ecoPath)){console.error('[Hook] BLOCKED: Use PM2 instead');console.error('[Hook] Run: pm2 start ecosystem.config.cjs');console.error('[Hook] Or run: pm2 list (to check if already running)');process.exit(1)}else{console.error('[Hook] BLOCKED: PM2 not configured');console.error('[Hook] Run /everything-claude-code:pm2 init first');process.exit(1)}}else if(!process.env.TMUX){console.error('[Hook] BLOCKED: Use tmux instead');console.error('[Hook] Run: tmux new-session -d -s dev \\\"pnpm dev\\\"');process.exit(1)}\""
           }
         ],
-        "description": "Block dev servers outside tmux - ensures you can access logs"
+        "description": "Block dev servers - use PM2 (Windows) or tmux (Linux/macOS)"
       },
       {
         "matcher": "tool == \"Bash\" && tool_input.command matches \"(npm (install|test)|pnpm (install|test)|yarn (install|test)?|bun (install|test)|cargo build|make|docker|pytest|vitest|playwright)\"",
