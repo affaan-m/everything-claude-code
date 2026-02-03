@@ -1,0 +1,17 @@
+{
+  "name": "backend-log",
+  "version": "1.0.0",
+  "description": "Query backend service logs from Google Cloud Platform. Supports K8s (GKE), Cloud Run, and Cloud Functions with dev tag suffixes for staging deployments.",
+  "author": {
+    "name": "Qashier"
+  },
+  "keywords": [
+    "gcp",
+    "gcloud",
+    "logging",
+    "kubernetes",
+    "cloud-run",
+    "debugging"
+  ],
+  "skills": ["./skills/"]
+}

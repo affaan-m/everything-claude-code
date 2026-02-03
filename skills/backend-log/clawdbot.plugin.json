@@ -1,0 +1,7 @@
+{
+  "id": "backend-log",
+  "name": "backend-log",
+  "description": "Query backend service logs from Google Cloud Platform. Supports K8s (GKE), Cloud Run, and Cloud Functions. Handles dev tag suffixes for staging deployments.",
+  "version": "1.0.0",
+  "skills": ["."]
+}
