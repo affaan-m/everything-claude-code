@@ -4,11 +4,21 @@
   "hooks": {
     "PreToolUse": [
       {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.js\" pre"
+          }
+        ],
+        "description": "Continuous Learning v2 - observe tool use for pattern detection"
+      },
+      {
         "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"const os=require('os');const fs=require('fs');const path=require('path');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const i=JSON.parse(d);const cmd=i.tool_input?.command||'';if(!/(npm run dev|pnpm( run)? dev|yarn dev|bun run dev)/.test(cmd)){process.exit(0)}const isWin=os.platform()==='win32';if(isWin){const cwd=process.cwd();const ecoPath=path.join(cwd,'ecosystem.config.cjs');if(fs.existsSync(ecoPath)){console.error('[Hook] BLOCKED: Use PM2 instead');console.error('[Hook] Run: pm2 start ecosystem.config.cjs');process.exit(2)}else{console.error('[Hook] BLOCKED: PM2 not configured');console.error('[Hook] Run /everything-claude-code:pm2 init first');process.exit(2)}}else if(!process.env.TMUX){console.error('[Hook] BLOCKED: Use tmux instead');console.error('[Hook] Run: tmux new-session -d -s dev \\\"pnpm dev\\\"');process.exit(2)}}catch(e){process.exit(0)}})\""
+            "command": "node -e \"const os=require('os');const fs=require('fs');const path=require('path');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const i=JSON.parse(d);const cmd=i.tool_input?.command||'';if(!/(npm run dev|pnpm( run)? dev|yarn dev|bun run dev)/.test(cmd)){process.exit(0)}const isWin=os.platform()==='win32';if(isWin){const cwd=process.cwd();const ecoPath=path.join(cwd,'ecosystem.config.cjs');if(fs.existsSync(ecoPath)){console.error('[Hook] BLOCKED: Use PM2 instead');console.error('[Hook] Run: pm2 start ecosystem.config.cjs');process.exit(2)}else{console.error('[Hook] TIP: Consider using PM2 for better process management');console.error('[Hook] Run /everything-claude-code:pm2 to initialize');process.exit(0)}}else if(!process.env.TMUX){console.error('[Hook] TIP: Consider using tmux for session persistence');console.error('[Hook] Run: tmux new-session -d -s dev \\\"pnpm dev\\\"');process.exit(0)}}catch(e){process.exit(0)}})\""
           }
         ],
         "description": "Block dev servers - use PM2 (Windows) or tmux (Linux/macOS)"
@@ -38,7 +48,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const i=JSON.parse(d);const p=i.tool_input?.file_path||'';if(/\\.(md|txt)$/.test(p)&&!/(README|CLAUDE|AGENTS|CONTRIBUTING)\\.md$/.test(p)){console.error('[Hook] BLOCKED: Unnecessary documentation file creation');console.error('[Hook] File: '+p);console.error('[Hook] Use README.md for documentation instead');process.exit(2)}}catch(e){}process.exit(0)})\""
+            "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const i=JSON.parse(d);const p=i.tool_input?.file_path||'';if(/\\.(md|txt)$/.test(p)&&!/(README|CLAUDE|AGENTS|CONTRIBUTING)\\.md$/.test(p)&&!/[\\\\\\/]docs[\\\\\\/]/.test(p)){console.error('[Hook] BLOCKED: Unnecessary documentation file creation');console.error('[Hook] File: '+p);console.error('[Hook] Use README.md for documentation instead');process.exit(2)}}catch(e){}console.error('[Hook] TIP: For large files, split into batches of 500-800 lines');process.exit(0)})\""
           }
         ],
         "description": "Block creation of random .md files - keeps docs consolidated"
@@ -79,6 +89,16 @@
       }
     ],
     "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.js\" post"
+          }
+        ],
+        "description": "Continuous Learning v2 - observe tool results for pattern detection"
+      },
       {
         "matcher": "Bash",
         "hooks": [
