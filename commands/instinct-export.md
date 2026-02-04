@@ -1,8 +1,6 @@
----
+# Instinct Export Command
+
 name: instinct-export
-description: Export instincts for sharing with teammates or other projects
-command: /instinct-export
----
 
 # Instinct Export Command
 

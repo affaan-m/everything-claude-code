@@ -23,9 +23,13 @@ const {
 
 async function main() {
   // Track tool call count (increment in a temp file)
-  // Use a session-specific counter file based on PID from parent process
-  // or session ID from environment
-  const sessionId = process.env.CLAUDE_SESSION_ID || process.ppid || 'default';
+  // Use date + cwd hash as session identifier for stability
+  // - Same project on same day shares counter
+  // - Resets daily
+  const crypto = require('crypto');
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const cwdHash = crypto.createHash('md5').update(process.cwd()).digest('hex').slice(0, 8);
+  const sessionId = `${today}-${cwdHash}`;
   const counterFile = path.join(getTempDir(), `claude-tool-count-${sessionId}`);
   const threshold = parseInt(process.env.COMPACT_THRESHOLD || '50', 10);
 

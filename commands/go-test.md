@@ -1,8 +1,6 @@
----
-description: Enforce TDD workflow for Go. Write table-driven tests first, then implement. Verify 80%+ coverage with go test -cover.
----
-
 # Go TDD Command
+
+Enforce TDD workflow for Go. Write table-driven tests first, then implement. Verify 80%+ coverage with go test -cover.
 
 This command enforces test-driven development methodology for Go code using idiomatic Go testing patterns.
 

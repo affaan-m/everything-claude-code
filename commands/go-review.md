@@ -1,8 +1,6 @@
----
-description: Comprehensive Go code review for idiomatic patterns, concurrency safety, error handling, and security. Invokes the go-reviewer agent.
----
-
 # Go Code Review
+
+Comprehensive Go code review for idiomatic patterns, concurrency safety, error handling, and security. Invokes the go-reviewer agent.
 
 This command invokes the **go-reviewer** agent for comprehensive Go-specific code review.
 

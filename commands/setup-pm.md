@@ -1,8 +1,6 @@
----
-description: Configure your preferred package manager (npm/pnpm/yarn/bun)
-disable-model-invocation: true
----
+# Package Manager Setup
 
+Configure your preferred package manager (npm/pnpm/yarn/bun)
 # Package Manager Setup
 
 Configure your preferred package manager for this project or globally.
