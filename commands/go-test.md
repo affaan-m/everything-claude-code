@@ -35,7 +35,7 @@ REPEAT  → Next test case
 
 ## Example Session
 
-````md
+````
 User: /go-test I need a function to validate email addresses
 
 Agent:
