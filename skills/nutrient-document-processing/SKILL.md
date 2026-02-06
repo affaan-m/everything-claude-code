@@ -44,7 +44,7 @@ curl -X POST https://api.nutrient.io/build \
   -o output.pdf
 ```
 
-Supported inputs: PDF, DOCX, XLSX, PPTX, DOC, XLS, PPT, ODT, ODS, ODP, RTF, HTML, JPG, PNG, TIFF, BMP, GIF, WebP.
+Supported inputs: PDF, DOCX, XLSX, PPTX, DOC, XLS, PPT, PPS, PPSX, ODT, RTF, HTML, JPG, PNG, TIFF, HEIC, GIF, WebP, SVG, TGA, EPS.
 
 ### Extract Text and Data
 
@@ -67,7 +67,7 @@ curl -X POST https://api.nutrient.io/build \
 ### OCR Scanned Documents
 
 ```bash
-# OCR to searchable PDF (supports 25+ languages)
+# OCR to searchable PDF (supports 100+ languages)
 curl -X POST https://api.nutrient.io/build \
   -H "Authorization: Bearer $NUTRIENT_API_KEY" \
   -F "scanned.pdf=@scanned.pdf" \
@@ -75,7 +75,7 @@ curl -X POST https://api.nutrient.io/build \
   -o searchable.pdf
 ```
 
-Languages: english, german, french, spanish, italian, portuguese, dutch, swedish, danish, norwegian, finnish, polish, czech, turkish, japanese, korean, chinese-simplified, chinese-traditional, arabic, hebrew, thai, hindi, russian.
+Languages: Supports 100+ languages via ISO 639-2 codes (e.g., `eng`, `deu`, `fra`, `spa`, `jpn`, `kor`, `chi_sim`, `chi_tra`, `ara`, `hin`, `rus`). Full language names like `english` or `german` also work. See the [complete OCR language table](https://www.nutrient.io/guides/document-engine/ocr/language-support/) for all supported codes.
 
 ### Redact Sensitive Information
 
@@ -95,7 +95,7 @@ curl -X POST https://api.nutrient.io/build \
   -o redacted.pdf
 ```
 
-Presets: `social-security-number`, `email-address`, `credit-card-number`, `phone-number`, `date`, `url`, `ipv4-address`.
+Presets: `social-security-number`, `email-address`, `credit-card-number`, `international-phone-number`, `north-american-phone-number`, `date`, `time`, `url`, `ipv4`, `ipv6`, `mac-address`, `us-zip-code`, `vin`.
 
 ### Add Watermarks
 
