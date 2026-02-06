@@ -8,7 +8,7 @@ const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const { execSync, spawn } = require('child_process');
+const { spawn } = require('child_process');
 
 // テストヘルパー
 function test(name, fn) {
@@ -113,14 +113,19 @@ async function runTests() {
     // スクリプトを実行
     await runScript(path.join(scriptsDir, 'session-end.js'));
 
-    // セッションファイルが作成されたか確認（デフォルトセッションID）
+    // セッションファイルが作成されたか確認
+    // 注意: CLAUDE_SESSION_IDがない場合、プロジェクト名にフォールバック（'default'ではない）
     // スクリプトの getDateString() 関数に合わせてローカル時間を使用
     const sessionsDir = path.join(os.homedir(), '.claude', 'sessions');
     const now = new Date();
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    const sessionFile = path.join(sessionsDir, `${today}-default-session.tmp`);
 
-    assert.ok(fs.existsSync(sessionFile), 'Session file should exist');
+    // Get the expected session ID (project name fallback)
+    const utils = require('../../scripts/lib/utils');
+    const expectedId = utils.getSessionIdShort();
+    const sessionFile = path.join(sessionsDir, `${today}-${expectedId}-session.tmp`);
+
+    assert.ok(fs.existsSync(sessionFile), `Session file should exist: ${sessionFile}`);
   })) passed++; else failed++;
 
   if (await asyncTest('includes session ID in filename', async () => {
@@ -296,7 +301,7 @@ async function runTests() {
       }
     };
 
-    for (const [eventType, hookArray] of Object.entries(hooks.hooks)) {
+    for (const [, hookArray] of Object.entries(hooks.hooks)) {
       checkHooks(hookArray);
     }
   })) passed++; else failed++;
@@ -320,9 +325,25 @@ async function runTests() {
       }
     };
 
-    for (const [eventType, hookArray] of Object.entries(hooks.hooks)) {
+    for (const [, hookArray] of Object.entries(hooks.hooks)) {
       checkHooks(hookArray);
     }
+  })) passed++; else failed++;
+
+  // plugin.json の検証
+  console.log('\nplugin.json Validation:');
+
+  if (test('plugin.json does NOT have explicit hooks declaration', () => {
+    // Claude Code は規約により hooks/hooks.json を自動的に読み込みます。
+    // plugin.json で明示的に宣言すると重複検出エラーが発生します。
+    // 参照: https://github.com/affaan-m/everything-claude-code/issues/103
+    const pluginPath = path.join(__dirname, '..', '..', '.claude-plugin', 'plugin.json');
+    const plugin = JSON.parse(fs.readFileSync(pluginPath, 'utf8'));
+
+    assert.ok(
+      !plugin.hooks,
+      'plugin.json should NOT have "hooks" field - Claude Code auto-loads hooks/hooks.json'
+    );
   })) passed++; else failed++;
 
   // サマリー

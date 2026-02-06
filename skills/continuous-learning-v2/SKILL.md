@@ -92,7 +92,32 @@ source: "session-observation"
 
 ### 1. 観察hookの有効化
 
-`~/.claude/settings.json`に追加：
+`~/.claude/settings.json`に追加してください。
+
+**プラグインとしてインストールした場合**（推奨）：
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "*",
+      "hooks": [{
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre"
+      }]
+    }],
+    "PostToolUse": [{
+      "matcher": "*",
+      "hooks": [{
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post"
+      }]
+    }]
+  }
+}
+```
+
+**手動で `~/.claude/skills` にインストールした場合**：
 
 ```json
 {
@@ -117,18 +142,20 @@ source: "session-observation"
 
 ### 2. ディレクトリ構造の初期化
 
+The Python CLI will create these automatically, but you can also create them manually:
+
 ```bash
 mkdir -p ~/.claude/homunculus/{instincts/{personal,inherited},evolved/{agents,skills,commands}}
 touch ~/.claude/homunculus/observations.jsonl
 ```
 
-### 3. Observer Agentの実行（オプション）
-
-オブザーバーはバックグラウンドで観察を分析できます：
+### 3. Instinct コマンドの使用
 
 ```bash
-# バックグラウンドオブザーバーを開始
-~/.claude/skills/continuous-learning-v2/agents/start-observer.sh
+/instinct-status     # 信頼度スコア付きで学習済みinstinctを表示
+/evolve              # 関連するinstinctをskill/commandにクラスタリング
+/instinct-export     # 共有用にinstinctをエクスポート
+/instinct-import     # 他の人からinstinctをインポート
 ```
 
 ## コマンド

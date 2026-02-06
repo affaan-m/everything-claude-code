@@ -2,6 +2,18 @@
 
 コントリビュートに興味を持っていただきありがとうございます。このリポジトリは Claude Code ユーザーのためのコミュニティリソースとなることを目的としています。
 
+## Table of Contents
+
+- [What We're Looking For](#what-were-looking-for)
+- [Quick Start](#quick-start)
+- [Contributing Skills](#contributing-skills)
+- [Contributing Agents](#contributing-agents)
+- [Contributing Hooks](#contributing-hooks)
+- [Contributing Commands](#contributing-commands)
+- [Pull Request Process](#pull-request-process)
+
+---
+
 ## 求めているもの
 
 ### Agents
@@ -57,100 +69,345 @@
 
 ## コントリビュート方法
 
-### 1. リポジトリをフォーク
-
 ```bash
-git clone https://github.com/YOUR_USERNAME/everything-claude-code.git
+# 1. Fork and clone
+gh repo fork affaan-m/everything-claude-code --clone
 cd everything-claude-code
+
+# 2. Create a branch
+git checkout -b feat/my-contribution
+
+# 3. Add your contribution (see sections below)
+
+# 4. Test locally
+cp -r skills/my-skill ~/.claude/skills/  # for skills
+# Then test with Claude Code
+
+# 5. Submit PR
+git add . && git commit -m "feat: add my-skill" && git push
 ```
 
-### 2. ブランチを作成
+---
 
-```bash
-git checkout -b add-python-reviewer
+## Contributing Skills
+
+Skills are knowledge modules that Claude Code loads based on context.
+
+### Directory Structure
+
+```
+skills/
+└── your-skill-name/
+    └── SKILL.md
 ```
 
-### 3. コントリビュートを追加
-
-適切なディレクトリにファイルを配置：
-- `agents/` - 新しい agent
-- `skills/` - skill（単一の .md またはディレクトリ）
-- `commands/` - スラッシュ command
-- `rules/` - rule ファイル
-- `hooks/` - hook 設定
-- `mcp-configs/` - MCP サーバー設定
-
-### 4. フォーマットに従う
-
-**Agents** には frontmatter が必要：
+### SKILL.md Template
 
 ```markdown
 ---
-name: agent-name
-description: 何をするか
-tools: Read, Grep, Glob, Bash
-model: sonnet
+name: your-skill-name
+description: Brief description shown in skill list
 ---
 
-ここに指示...
-```
+# Your Skill Title
 
-**Skills** は明確で実行可能に：
+Brief overview of what this skill covers.
 
-```markdown
-# Skill 名
+## Core Concepts
+
+Explain key patterns and guidelines.
+
+## Code Examples
+
+\`\`\`typescript
+// Include practical, tested examples
+function example() {
+  // Well-commented code
+}
+\`\`\`
+
+## Best Practices
+
+- Actionable guidelines
+- Do's and don'ts
+- Common pitfalls to avoid
 
 ## 使用するタイミング
 
-...
-
-## 動作方法
-
-...
-
-## 例
-
-...
+Describe scenarios where this skill applies.
 ```
 
-**Commands** は何をするか説明：
+### Skill Checklist
+
+- [ ] Focused on one domain/technology
+- [ ] Includes practical code examples
+- [ ] Under 500 lines
+- [ ] Uses clear section headers
+- [ ] Tested with Claude Code
+
+### Example Skills
+
+| Skill | Purpose |
+|-------|---------|
+| `coding-standards/` | TypeScript/JavaScript patterns |
+| `frontend-patterns/` | React and Next.js best practices |
+| `backend-patterns/` | API and database patterns |
+| `security-review/` | Security checklist |
+
+---
+
+## Contributing Agents
+
+Agents are specialized assistants invoked via the Task tool.
+
+### File Location
+
+```
+agents/your-agent-name.md
+```
+
+### Agent Template
 
 ```markdown
 ---
-description: command の簡単な説明
+name: your-agent-name
+description: What this agent does and when Claude should invoke it. Be specific!
+tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
+model: sonnet
+---
+
+You are a [role] specialist.
+
+## Your Role
+
+- Primary responsibility
+- Secondary responsibility
+- What you DO NOT do (boundaries)
+
+## Workflow
+
+### Step 1: Understand
+How you approach the task.
+
+### Step 2: Execute
+How you perform the work.
+
+### Step 3: Verify
+How you validate results.
+
+## Output Format
+
+What you return to the user.
+
+## Examples
+
+### Example: [Scenario]
+Input: [what user provides]
+Action: [what you do]
+Output: [what you return]
+```
+
+### Agent Fields
+
+| Field | Description | Options |
+|-------|-------------|---------|
+| `name` | Lowercase, hyphenated | `code-reviewer` |
+| `description` | Used to decide when to invoke | Be specific! |
+| `tools` | Only what's needed | `Read, Write, Edit, Bash, Grep, Glob, WebFetch, Task` |
+| `model` | Complexity level | `haiku` (simple), `sonnet` (coding), `opus` (complex) |
+
+### Example Agents
+
+| Agent | Purpose |
+|-------|---------|
+| `tdd-guide.md` | Test-driven development |
+| `code-reviewer.md` | Code review |
+| `security-reviewer.md` | Security scanning |
+| `build-error-resolver.md` | Fix build errors |
+
+---
+
+## Contributing Hooks
+
+Hooks are automatic behaviors triggered by Claude Code events.
+
+### File Location
+
+```
+hooks/hooks.json
+```
+
+### Hook Types
+
+| Type | Trigger | Use Case |
+|------|---------|----------|
+| `PreToolUse` | Before tool runs | Validate, warn, block |
+| `PostToolUse` | After tool runs | Format, check, notify |
+| `SessionStart` | Session begins | Load context |
+| `Stop` | Session ends | Cleanup, audit |
+
+### Hook Format
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"rm -rf /\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] BLOCKED: Dangerous command' && exit 1"
+          }
+        ],
+        "description": "Block dangerous rm commands"
+      }
+    ]
+  }
+}
+```
+
+### Matcher Syntax
+
+```javascript
+// Match specific tools
+tool == "Bash"
+tool == "Edit"
+tool == "Write"
+
+// Match input patterns
+tool_input.command matches "npm install"
+tool_input.file_path matches "\\.tsx?$"
+
+// Combine conditions
+tool == "Bash" && tool_input.command matches "git push"
+```
+
+### Hook Examples
+
+```json
+// Block dev servers outside tmux
+{
+  "matcher": "tool == \"Bash\" && tool_input.command matches \"npm run dev\"",
+  "hooks": [{"type": "command", "command": "echo 'Use tmux for dev servers' && exit 1"}],
+  "description": "Ensure dev servers run in tmux"
+}
+
+// Auto-format after editing TypeScript
+{
+  "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\.tsx?$\"",
+  "hooks": [{"type": "command", "command": "npx prettier --write \"$file_path\""}],
+  "description": "Format TypeScript files after edit"
+}
+
+// Warn before git push
+{
+  "matcher": "tool == \"Bash\" && tool_input.command matches \"git push\"",
+  "hooks": [{"type": "command", "command": "echo '[Hook] Review changes before pushing'"}],
+  "description": "Reminder to review before push"
+}
+```
+
+### Hook Checklist
+
+- [ ] Matcher is specific (not overly broad)
+- [ ] Includes clear error/info messages
+- [ ] Uses correct exit codes (`exit 1` blocks, `exit 0` allows)
+- [ ] Tested thoroughly
+- [ ] Has description
+
+---
+
+## Contributing Commands
+
+Commands are user-invoked actions with `/command-name`.
+
+### File Location
+
+```
+commands/your-command.md
+```
+
+### Command Template
+
+```markdown
+---
+description: Brief description shown in /help
 ---
 
 # Command 名
 
-詳細な指示...
+## Purpose
+
+What this command does.
+
+## Usage
+
+\`\`\`
+/your-command [args]
+\`\`\`
+
+## Workflow
+
+1. First step
+2. Second step
+3. Final step
+
+## Output
+
+What the user receives.
 ```
 
-**Hooks** には説明を含める：
+### Example Commands
 
-```json
-{
-  "matcher": "...",
-  "hooks": [...],
-  "description": "この hook が何をするか"
-}
+| Command | Purpose |
+|---------|---------|
+| `commit.md` | Create git commits |
+| `code-review.md` | Review code changes |
+| `tdd.md` | TDD workflow |
+| `e2e.md` | E2E testing |
+
+---
+
+## Pull Request Process
+
+### 1. PR Title Format
+
+```
+feat(skills): add rust-patterns skill
+feat(agents): add api-designer agent
+feat(hooks): add auto-format hook
+fix(skills): update React patterns
+docs: improve contributing guide
 ```
 
-### 5. コントリビュートをテスト
+### 2. PR Description
 
-送信前に設定が Claude Code で動作することを確認してください。
+```markdown
+## Summary
+What you're adding and why.
 
-### 6. PR を送信
+## Type
+- [ ] Skill
+- [ ] Agent
+- [ ] Hook
+- [ ] Command
 
-```bash
-git add .
-git commit -m "Add Python code reviewer agent"
-git push origin add-python-reviewer
+## Testing
+How you tested this.
+
+## Checklist
+- [ ] Follows format guidelines
+- [ ] Tested with Claude Code
+- [ ] No sensitive info (API keys, paths)
+- [ ] Clear descriptions
 ```
 
-その後、以下を含む PR を開いてください：
-- 追加したもの
-- なぜ便利か
-- どのようにテストしたか
+### 3. Review Process
+
+1. Maintainers review within 48 hours
+2. Address feedback if requested
+3. Once approved, merged to main
 
 ---
 
@@ -184,7 +441,8 @@ git push origin add-python-reviewer
 
 ## 質問がありますか？
 
-Issue を開くか、X で連絡してください：[@affaanmustafa](https://x.com/affaanmustafa)
+- **Issues:** [github.com/affaan-m/everything-claude-code/issues](https://github.com/affaan-m/everything-claude-code/issues)
+- **X/Twitter:** [@affaanmustafa](https://x.com/affaanmustafa)
 
 ---
 

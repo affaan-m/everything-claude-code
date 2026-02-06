@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { commandExists, getClaudeDir, readFile, writeFile, log, runCommand } = require('./utils');
+const { commandExists, getClaudeDir, readFile, writeFile } = require('./utils');
 
 // パッケージマネージャーの定義
 const PACKAGE_MANAGERS = {

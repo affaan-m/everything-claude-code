@@ -16,7 +16,6 @@ const {
   getTimeString,
   getSessionIdShort,
   ensureDir,
-  readFile,
   writeFile,
   replaceInFile,
   log

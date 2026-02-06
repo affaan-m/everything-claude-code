@@ -19,10 +19,8 @@ const {
   setProjectPackageManager,
   getAvailablePackageManagers,
   detectFromLockFile,
-  detectFromPackageJson,
-  getSelectionPrompt
+  detectFromPackageJson
 } = require('./lib/package-manager');
-const { log } = require('./lib/utils');
 
 function showHelp() {
   console.log(`

@@ -50,13 +50,8 @@ def parse_instinct_file(content: str) -> list[dict]:
     for line in content.split('\n'):
         if line.strip() == '---':
             if in_frontmatter:
-                # フロントマターの終わり
+                # フロントマターの終わり - コンテンツは次に来る、まだ追加しない
                 in_frontmatter = False
-                if current:
-                    current['content'] = '\n'.join(content_lines).strip()
-                    instincts.append(current)
-                    current = {}
-                    content_lines = []
             else:
                 # フロントマターの始まり
                 in_frontmatter = True

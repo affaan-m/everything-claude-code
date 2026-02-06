@@ -35,6 +35,13 @@ function getSessionsDir() {
 }
 
 /**
+ * セッションエイリアスファイルのパスを取得する
+ */
+function getAliasesPath() {
+  return path.join(getClaudeDir(), 'session-aliases.json');
+}
+
+/**
  * 学習済みskillディレクトリを取得する
  */
 function getLearnedSkillsDir() {
@@ -80,16 +87,34 @@ function getTimeString() {
 }
 
 /**
+ * gitリポジトリ名を取得する
+ */
+function getGitRepoName() {
+  const result = runCommand('git rev-parse --show-toplevel');
+  if (!result.success) return null;
+  return path.basename(result.output);
+}
+
+/**
+ * gitリポジトリまたはカレントディレクトリからプロジェクト名を取得する
+ */
+function getProjectName() {
+  const repoName = getGitRepoName();
+  if (repoName) return repoName;
+  return path.basename(process.cwd()) || null;
+}
+
+/**
  * CLAUDE_SESSION_ID環境変数から短縮セッションIDを取得する
- * 簡潔さと一意性のために末尾8文字を返す
+ * 末尾8文字を返し、プロジェクト名、次に'default'にフォールバック
  * @param {string} fallback - セッションIDがない場合のフォールバック値（デフォルト: 'default'）
  */
 function getSessionIdShort(fallback = 'default') {
   const sessionId = process.env.CLAUDE_SESSION_ID;
-  if (!sessionId || sessionId.length === 0) {
-    return fallback;
+  if (sessionId && sessionId.length > 0) {
+    return sessionId.slice(-8);
   }
-  return sessionId.slice(-8);
+  return getProjectName() || fallback;
 }
 
 /**
@@ -148,7 +173,7 @@ function findFiles(dir, pattern, options = {}) {
           searchDir(fullPath);
         }
       }
-    } catch (err) {
+    } catch (_err) {
       // 権限エラーを無視
     }
   }
@@ -366,6 +391,7 @@ module.exports = {
   getHomeDir,
   getClaudeDir,
   getSessionsDir,
+  getAliasesPath,
   getLearnedSkillsDir,
   getTempDir,
   ensureDir,
@@ -374,7 +400,11 @@ module.exports = {
   getDateString,
   getTimeString,
   getDateTimeString,
+
+  // Session/Project
   getSessionIdShort,
+  getGitRepoName,
+  getProjectName,
 
   // ファイル操作
   findFiles,

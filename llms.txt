@@ -1,0 +1,642 @@
+# OpenCode Documentation for LLMs
+
+> OpenCode is an open-source AI coding agent available as a terminal interface, desktop application, or IDE extension. It helps developers write code, add features, and understand codebases through conversational interactions.
+
+## Installation
+
+Multiple installation methods are available:
+
+```bash
+# curl script (recommended)
+curl -fsSL https://opencode.ai/install | bash
+
+# Node.js package managers
+npm install -g opencode
+bun install -g opencode
+pnpm add -g opencode
+yarn global add opencode
+
+# Homebrew (macOS/Linux)
+brew install anomalyco/tap/opencode
+
+# Arch Linux
+paru -S opencode
+
+# Windows
+choco install opencode    # Chocolatey
+scoop install opencode    # Scoop
+# Or use Docker/WSL (recommended for Windows)
+```
+
+## Configuration
+
+Configuration file: `opencode.json` or `opencode.jsonc` (with comments)
+
+Schema: `https://opencode.ai/config.json`
+
+### Core Settings
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "anthropic/claude-sonnet-4-5",
+  "small_model": "anthropic/claude-haiku-4-5",
+  "default_agent": "build",
+  "instructions": [
+    "CONTRIBUTING.md",
+    "docs/guidelines.md"
+  ],
+  "plugin": [
+    "opencode-helicone-session",
+    "./.opencode/plugins"
+  ],
+  "agent": { /* agent definitions */ },
+  "command": { /* command definitions */ },
+  "permission": {
+    "edit": "ask",
+    "bash": "ask",
+    "mcp_*": "ask"
+  },
+  "tools": {
+    "write": true,
+    "bash": true
+  }
+}
+```
+
+### Environment Variables
+
+Use `{env:VAR_NAME}` for environment variables and `{file:path}` for file contents in configuration values.
+
+## Agents
+
+OpenCode supports two agent types:
+
+### Primary Agents
+Main assistants you interact with directly. Switch between them using Tab or configured keybinds.
+
+### Subagents
+Specialized assistants that primary agents invoke automatically or through `@` mentions (e.g., `@general help me search`).
+
+### Built-in Agents
+
+| Agent | Type | Description |
+|-------|------|-------------|
+| build | primary | Default agent with full tool access for development work |
+| plan | primary | Restricted agent for analysis; file edits and bash set to "ask" |
+| general | subagent | Full tool access for multi-step research tasks |
+| explore | subagent | Read-only agent for rapid codebase exploration |
+| compaction | system | Hidden agent for context compaction |
+| title | system | Hidden agent for title generation |
+| summary | system | Hidden agent for summarization |
+
+### Agent Configuration
+
+JSON format in `opencode.json`:
+
+```json
+{
+  "agent": {
+    "code-reviewer": {
+      "description": "Reviews code for best practices",
+      "mode": "subagent",
+      "model": "anthropic/claude-opus-4-5",
+      "prompt": "{file:.opencode/prompts/agents/code-reviewer.txt}",
+      "temperature": 0.3,
+      "tools": {
+        "write": false,
+        "edit": false,
+        "read": true,
+        "bash": true
+      },
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "git status": "allow"
+        }
+      },
+      "steps": 10
+    }
+  }
+}
+```
+
+Markdown format in `~/.config/opencode/agents/` or `.opencode/agents/`:
+
+```markdown
+---
+description: Expert code review specialist
+mode: subagent
+model: anthropic/claude-opus-4-5
+temperature: 0.3
+tools:
+  write: false
+  read: true
+  bash: true
+permission:
+  edit: deny
+steps: 10
+---
+
+You are an expert code reviewer. Review code for quality, security, and maintainability...
+```
+
+### Agent Configuration Options
+
+| Option | Purpose | Values |
+|--------|---------|--------|
+| description | Required field explaining agent purpose | string |
+| mode | Agent type | "primary", "subagent", or "all" |
+| model | Override default model | "provider/model-id" |
+| temperature | Control randomness | 0.0-1.0 (lower = focused) |
+| tools | Enable/disable specific tools | object or wildcards |
+| permission | Set tool permissions | "ask", "allow", or "deny" |
+| steps | Limit agentic iterations | number |
+| prompt | Reference custom prompt file | "{file:./path}" |
+| top_p | Alternative randomness control | 0.0-1.0 |
+
+## Commands
+
+### Built-in Commands
+
+- `/init` - Initialize project analysis (creates AGENTS.md)
+- `/undo` - Undo last change
+- `/redo` - Redo undone change
+- `/share` - Generate shareable conversation link
+- `/help` - Show help
+- `/connect` - Configure API providers
+
+### Custom Commands
+
+**Markdown files** in `~/.config/opencode/commands/` (global) or `.opencode/commands/` (project):
+
+```markdown
+---
+description: Create implementation plan
+agent: planner
+subtask: true
+---
+
+Create a detailed implementation plan for: $ARGUMENTS
+
+Include:
+- Requirements analysis
+- Architecture review
+- Step breakdown
+- Testing strategy
+```
+
+**JSON configuration** in `opencode.json`:
+
+```json
+{
+  "command": {
+    "plan": {
+      "description": "Create implementation plan",
+      "template": "Create a detailed implementation plan for: $ARGUMENTS",
+      "agent": "planner",
+      "subtask": true
+    },
+    "test": {
+      "template": "Run tests with coverage for: $ARGUMENTS\n\nOutput:\n!`npm test`",
+      "description": "Run tests with coverage",
+      "agent": "build"
+    }
+  }
+}
+```
+
+### Template Variables
+
+| Variable | Description |
+|----------|-------------|
+| `$ARGUMENTS` | All command arguments |
+| `$1`, `$2`, `$3` | Positional arguments |
+| `!`command`` | Include shell command output |
+| `@filepath` | Include file contents |
+
+### Command Options
+
+| Option | Purpose | Required |
+|--------|---------|----------|
+| template | Prompt text sent to LLM | Yes |
+| description | UI display text | No |
+| agent | Target agent for execution | No |
+| model | Override default LLM | No |
+| subtask | Force subagent invocation | No |
+
+## Tools
+
+### Built-in Tools
+
+| Tool | Purpose | Permission Key |
+|------|---------|---------------|
+| bash | Execute shell commands | "bash" |
+| edit | Modify existing files using exact string replacements | "edit" |
+| write | Create new files or overwrite existing ones | "edit" |
+| read | Read file contents from codebase | "read" |
+| grep | Search file contents using regular expressions | "grep" |
+| glob | Find files by pattern matching | "glob" |
+| list | List files and directories | "list" |
+| lsp | Access code intelligence (experimental) | "lsp" |
+| patch | Apply patches to files | "edit" |
+| skill | Load skill files (SKILL.md) | "skill" |
+| todowrite | Manage todo lists during sessions | "todowrite" |
+| todoread | Read existing todo lists | "todoread" |
+| webfetch | Fetch and read web pages | "webfetch" |
+| question | Ask user questions during execution | "question" |
+
+### Tool Permissions
+
+```json
+{
+  "permission": {
+    "edit": "ask",
+    "bash": "allow",
+    "webfetch": "deny",
+    "mcp_*": "ask"
+  }
+}
+```
+
+Permission levels:
+- `"allow"` - Tool executes without restriction
+- `"deny"` - Tool cannot be used
+- `"ask"` - Requires user approval before execution
+
+## Custom Tools
+
+Location: `.opencode/tools/` (project) or `~/.config/opencode/tools/` (global)
+
+### Tool Definition
+
+```typescript
+import { tool } from "@opencode-ai/plugin"
+
+export default tool({
+  description: "Execute SQL query on the database",
+  args: {
+    query: tool.schema.string().describe("SQL query to execute"),
+    database: tool.schema.string().optional().describe("Target database")
+  },
+  async execute(args, context) {
+    // context.worktree - git repository root
+    // context.directory - current working directory
+    // context.sessionID - current session ID
+    // context.agent - active agent identifier
+
+    const result = await someDbQuery(args.query)
+    return { result }
+  }
+})
+```
+
+### Multiple Tools Per File
+
+```typescript
+// math.ts - creates math_add and math_multiply tools
+export const add = tool({
+  description: "Add two numbers",
+  args: {
+    a: tool.schema.number(),
+    b: tool.schema.number()
+  },
+  async execute({ a, b }) {
+    return { result: a + b }
+  }
+})
+
+export const multiply = tool({
+  description: "Multiply two numbers",
+  args: {
+    a: tool.schema.number(),
+    b: tool.schema.number()
+  },
+  async execute({ a, b }) {
+    return { result: a * b }
+  }
+})
+```
+
+### Schema Types (Zod)
+
+```typescript
+tool.schema.string()
+tool.schema.number()
+tool.schema.boolean()
+tool.schema.array(tool.schema.string())
+tool.schema.object({ key: tool.schema.string() })
+tool.schema.enum(["option1", "option2"])
+tool.schema.optional()
+tool.schema.describe("Description for LLM")
+```
+
+## Plugins
+
+Plugins extend OpenCode with custom hooks, tools, and behaviors.
+
+### Plugin Structure
+
+```typescript
+import { tool } from "@opencode-ai/plugin"
+
+export const MyPlugin = async ({ project, client, $, directory, worktree }) => {
+  // project - Current project information
+  // client - OpenCode SDK client for AI interaction
+  // $ - Bun's shell API for command execution
+  // directory - Current working directory
+  // worktree - Git worktree path
+
+  return {
+    // Hook implementations
+    "file.edited": async (event) => {
+      // Handle file edit event
+    },
+
+    "tool.execute.before": async (input, output) => {
+      // Intercept before tool execution
+    },
+
+    "session.idle": async (event) => {
+      // Handle session idle
+    }
+  }
+}
+```
+
+### Loading Plugins
+
+1. **Local files**: Place in `.opencode/plugins/` (project) or `~/.config/opencode/plugins/` (global)
+2. **npm packages**: Specify in `opencode.json`:
+
+```json
+{
+  "plugin": [
+    "opencode-helicone-session",
+    "@my-org/custom-plugin",
+    "./.opencode/plugins"
+  ]
+}
+```
+
+### Available Hook Events
+
+**Command Events:**
+- `command.executed` - After a command is executed
+
+**File Events:**
+- `file.edited` - After a file is edited
+- `file.watcher.updated` - When file watcher detects changes
+
+**Tool Events:**
+- `tool.execute.before` - Before tool execution (can modify input)
+- `tool.execute.after` - After tool execution (can modify output)
+
+**Session Events:**
+- `session.created` - When session starts
+- `session.compacted` - After context compaction
+- `session.deleted` - When session ends
+- `session.idle` - When session becomes idle
+- `session.updated` - When session is updated
+- `session.status` - Session status changes
+
+**Message Events:**
+- `message.updated` - When message is updated
+- `message.removed` - When message is removed
+- `message.part.updated` - When message part is updated
+
+**LSP Events:**
+- `lsp.client.diagnostics` - LSP diagnostic updates
+- `lsp.updated` - LSP state updates
+
+**Shell Events:**
+- `shell.env` - Modify shell environment variables
+
+**TUI Events:**
+- `tui.prompt.append` - Append to TUI prompt
+- `tui.command.execute` - Execute TUI command
+- `tui.toast.show` - Show toast notification
+
+**Other Events:**
+- `installation.updated` - Installation updates
+- `permission.asked` - Permission request
+- `server.connected` - Server connection
+- `todo.updated` - Todo list updates
+
+### Hook Event Mapping (Claude Code → OpenCode)
+
+| Claude Code Hook | OpenCode Plugin Event |
+|-----------------|----------------------|
+| PreToolUse | `tool.execute.before` |
+| PostToolUse | `tool.execute.after` |
+| Stop | `session.idle` or `session.status` |
+| SessionStart | `session.created` |
+| SessionEnd | `session.deleted` |
+| N/A | `file.edited`, `file.watcher.updated` |
+| N/A | `message.*`, `permission.*`, `lsp.*` |
+
+### Plugin Example: Auto-Format
+
+```typescript
+export const AutoFormatPlugin = async ({ $, directory }) => {
+  return {
+    "file.edited": async (event) => {
+      if (event.path.match(/\.(ts|tsx|js|jsx)$/)) {
+        await $`prettier --write ${event.path}`
+      }
+    }
+  }
+}
+```
+
+### Plugin Example: TypeScript Check
+
+```typescript
+export const TypeCheckPlugin = async ({ $, client }) => {
+  return {
+    "tool.execute.after": async (input, output) => {
+      if (input.tool === "edit" && input.args.filePath?.match(/\.tsx?$/)) {
+        const result = await $`npx tsc --noEmit`.catch(e => e)
+        if (result.exitCode !== 0) {
+          client.app.log("warn", "TypeScript errors detected")
+        }
+      }
+    }
+  }
+}
+```
+
+## Providers
+
+OpenCode integrates 75+ LLM providers via AI SDK and Models.dev.
+
+### Supported Providers
+
+- OpenCode Zen (recommended for beginners)
+- Anthropic (Claude)
+- OpenAI (GPT)
+- Google (Gemini)
+- Amazon Bedrock
+- Azure OpenAI
+- GitHub Copilot
+- Ollama (local)
+- And 70+ more
+
+### Provider Configuration
+
+```json
+{
+  "provider": {
+    "anthropic": {
+      "options": {
+        "baseURL": "https://api.anthropic.com/v1"
+      }
+    },
+    "custom-provider": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Display Name",
+      "options": {
+        "baseURL": "https://api.example.com/v1",
+        "apiKey": "{env:CUSTOM_API_KEY}"
+      },
+      "models": {
+        "model-id": { "name": "Model Name" }
+      }
+    }
+  }
+}
+```
+
+### Model Naming Convention
+
+Format: `provider/model-id`
+
+Examples:
+- `anthropic/claude-sonnet-4-5`
+- `anthropic/claude-opus-4-5`
+- `anthropic/claude-haiku-4-5`
+- `openai/gpt-4o`
+- `google/gemini-2.0-flash`
+
+### API Key Setup
+
+```bash
+# Interactive setup
+opencode
+/connect
+
+# Environment variables
+export ANTHROPIC_API_KEY=sk-...
+export OPENAI_API_KEY=sk-...
+```
+
+Keys stored in: `~/.local/share/opencode/auth.json`
+
+## MCP (Model Context Protocol)
+
+Configure MCP servers in `opencode.json`:
+
+```json
+{
+  "mcp": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_TOKEN}"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/dir"]
+    }
+  }
+}
+```
+
+MCP tool permissions use `mcp_*` wildcard:
+
+```json
+{
+  "permission": {
+    "mcp_*": "ask"
+  }
+}
+```
+
+## Ecosystem Plugins
+
+### Authentication & Provider Plugins
+- Alternative model access (ChatGPT Plus, Gemini, Antigravity)
+- Session tracking (Helicone headers)
+- OAuth integrations
+
+### Development Tools
+- Sandbox isolation (Daytona integration)
+- Type injection for TypeScript/Svelte
+- DevContainer multi-branch support
+- Git worktree management
+
+### Enhancement Plugins
+- Web search with citations
+- Markdown table formatting
+- Dynamic context token pruning
+- Desktop notifications
+- Persistent memory (Supermemory)
+- Background process management
+
+### Plugin Discovery
+
+- opencode.cafe - Community plugin registry
+- awesome-opencode - Curated list
+- GitHub search for "opencode-plugin"
+
+## Quick Reference
+
+### Key Shortcuts
+
+| Key | Action |
+|-----|--------|
+| Tab | Toggle between Plan and Build modes |
+| @ | Reference files or mention agents |
+| / | Execute commands |
+
+### Common Commands
+
+```bash
+/init          # Initialize project
+/connect       # Configure API providers
+/share         # Share conversation
+/undo          # Undo last change
+/redo          # Redo undone change
+/help          # Show help
+```
+
+### File Locations
+
+| Purpose | Project | Global |
+|---------|---------|--------|
+| Configuration | `opencode.json` | `~/.config/opencode/config.json` |
+| Agents | `.opencode/agents/` | `~/.config/opencode/agents/` |
+| Commands | `.opencode/commands/` | `~/.config/opencode/commands/` |
+| Plugins | `.opencode/plugins/` | `~/.config/opencode/plugins/` |
+| Tools | `.opencode/tools/` | `~/.config/opencode/tools/` |
+| Auth | - | `~/.local/share/opencode/auth.json` |
+
+### Troubleshooting
+
+```bash
+# Verify credentials
+opencode auth list
+
+# Check configuration
+cat opencode.json | jq .
+
+# Test provider connection
+/connect
+```
+
+---
+
+For more information: https://opencode.ai/docs/

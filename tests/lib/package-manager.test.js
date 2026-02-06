@@ -11,7 +11,6 @@ const os = require('os');
 
 // モジュールをインポート
 const pm = require('../../scripts/lib/package-manager');
-const utils = require('../../scripts/lib/utils');
 
 // テストヘルパー
 function test(name, fn) {
