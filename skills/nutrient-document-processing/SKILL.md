@@ -80,7 +80,7 @@ Languages: Supports 100+ languages via ISO 639-2 codes (e.g., `eng`, `deu`, `fra
 ### Redact Sensitive Information
 
 ```bash
-# Pattern-based (SSN, email, credit card, phone, date)
+# Pattern-based (SSN, email)
 curl -X POST https://api.nutrient.io/build \
   -H "Authorization: Bearer $NUTRIENT_API_KEY" \
   -F "document.pdf=@document.pdf" \
