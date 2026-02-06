@@ -176,7 +176,7 @@ npm run build
 
 ## コントリビュート
 
-[CONTRIBUTING.md](CONTRIBUTING.md) を参照
+プロジェクトのコントリビューションガイドラインを参照
 ```
 
 ## メンテナンススケジュール
