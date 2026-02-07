@@ -25,17 +25,36 @@ rules/
 
 ## Installation
 
+### Option 1: Install Script (Recommended)
+
+```bash
+# Install common + one or more language-specific rule sets
+./install.sh typescript
+./install.sh python
+./install.sh golang
+
+# Install multiple languages at once
+./install.sh typescript python
+```
+
+### Option 2: Manual Installation
+
+> **Important:** Copy entire directories — do NOT flatten with `/*`.
+> Common and language-specific directories contain files with the same names.
+> Flattening them into one directory causes language-specific files to overwrite
+> common rules, and breaks the relative `../common/` references used by
+> language-specific files.
+
 ```bash
 # Install common rules (required for all projects)
-cp -r rules/common/* ~/.claude/rules/
+cp -r rules/common ~/.claude/rules/common
 
 # Install language-specific rules based on your project's tech stack
-cp -r rules/typescript/* ~/.claude/rules/
-cp -r rules/python/* ~/.claude/rules/
-cp -r rules/golang/* ~/.claude/rules/
+cp -r rules/typescript ~/.claude/rules/typescript
+cp -r rules/python ~/.claude/rules/python
+cp -r rules/golang ~/.claude/rules/golang
 
 # Attention ! ! ! Configure according to your actual project requirements; the configuration here is for reference only.
-
 ```
 
 ## Rules vs Skills
