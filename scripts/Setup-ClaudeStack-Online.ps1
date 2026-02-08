@@ -323,14 +323,14 @@ try {
     
     # Final summary
     Write-Status "=== SETUP COMPLETE ===" "SUCCESS"
-    Write-Status ""
+    Write-Host ""
     Write-Status "Configuration written to: $($result.ConfigPath)" "SUCCESS"
-    Write-Status ""
+    Write-Host ""
     Write-Status "Configured MCP Servers:" "INFO"
     foreach ($server in $result.Servers) {
         Write-Status "  - $server" "SUCCESS"
     }
-    Write-Status ""
+    Write-Host ""
     Write-Status "Please restart Claude Desktop for changes to take effect." "INFO"
     
     exit 0
