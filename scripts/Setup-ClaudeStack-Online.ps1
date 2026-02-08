@@ -54,56 +54,12 @@ function Test-CommandExists {
     return $null -ne (Get-Command $Command -ErrorAction SilentlyContinue)
 }
 
-function Convert-PathsToForwardSlashes {
-    param([Parameter(ValueFromPipeline=$true)]$Object)
-    
-    if ($null -eq $Object) {
-        return $null
-    }
-    
-    if ($Object -is [string]) {
-        # Convert backslashes to forward slashes
-        return $Object -replace '\\', '/'
-    }
-    elseif ($Object -is [array]) {
-        return @($Object | ForEach-Object { Convert-PathsToForwardSlashes $_ })
-    }
-    elseif ($Object -is [hashtable]) {
-        $newHash = @{}
-        foreach ($key in $Object.Keys) {
-            $newHash[$key] = Convert-PathsToForwardSlashes $Object[$key]
-        }
-        return $newHash
-    }
-    
-    return $Object
-}
-
 #endregion
 
 #region Phase 1: Prerequisites Check
 
 function Test-Prerequisites {
     Write-Status "=== PHASE 1: PREREQUISITES CHECK ===" "INFO"
-    
-    # Check Claude Desktop
-    Write-Status "Checking for Claude Desktop..."
-    try {
-        $claudeInstalled = winget list --id Anthropic.Claude --exact 2>&1 | Select-String "Anthropic.Claude"
-        if ($claudeInstalled) {
-            Write-Status "Claude Desktop found" "SUCCESS"
-        }
-        else {
-            Write-Status "Claude Desktop not found. Installing via winget..." "WARN"
-            winget install Anthropic.Claude --accept-package-agreements --accept-source-agreements
-            Write-Status "Claude Desktop installed successfully" "SUCCESS"
-        }
-    }
-    catch {
-        Write-Status "Claude Desktop not found. Installing via winget..." "WARN"
-        winget install Anthropic.Claude --accept-package-agreements --accept-source-agreements
-        Write-Status "Claude Desktop installed successfully" "SUCCESS"
-    }
     
     # Check Node.js
     Write-Status "Checking for Node.js..."
@@ -142,59 +98,19 @@ function Test-Prerequisites {
     # Check Docker daemon
     Write-Status "Checking for Docker daemon..."
     if (-not (Test-CommandExists "docker")) {
-        Write-Status "Docker not found. Installing via winget..." "WARN"
-        try {
-            winget install Docker.DockerDesktop --accept-package-agreements --accept-source-agreements
-            
-            # Refresh PATH
-            $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-            
-            if (-not (Test-CommandExists "docker")) {
-                throw "Docker installation failed or not in PATH. Please restart your shell and try again."
-            }
-            Write-Status "Docker installed successfully" "SUCCESS"
-            
-            # Try to start Docker Desktop
-            Write-Status "Starting Docker Desktop..."
-            $dockerDesktopPath = "${env:ProgramFiles}\Docker\Docker\Docker Desktop.exe"
-            if (Test-Path $dockerDesktopPath) {
-                Start-Process $dockerDesktopPath
-            }
-        }
-        catch {
-            throw "Failed to install Docker: $_"
-        }
+        throw "Docker not found. Please install Docker Desktop and ensure it is running."
     }
     
-    # Wait up to 180 seconds for Docker daemon to be ready
-    Write-Status "Waiting for Docker daemon to start (up to 180 seconds)..."
-    $maxWaitSeconds = 180
-    $waitInterval = 5
-    $elapsedSeconds = 0
-    $dockerReady = $false
-    
-    while ($elapsedSeconds -lt $maxWaitSeconds) {
-        try {
-            $dockerInfo = docker info 2>&1
-            if ($LASTEXITCODE -eq 0) {
-                $dockerReady = $true
-                break
-            }
+    try {
+        $dockerInfo = docker info 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            throw "Docker daemon is not running. Please start Docker Desktop."
         }
-        catch {
-            # Ignore errors during wait loop
-        }
-        
-        Start-Sleep -Seconds $waitInterval
-        $elapsedSeconds += $waitInterval
-        Write-Status "Waiting for Docker... ($elapsedSeconds/$maxWaitSeconds seconds)"
+        Write-Status "Docker daemon is running" "SUCCESS"
     }
-    
-    if (-not $dockerReady) {
-        throw "Docker daemon failed to start within $maxWaitSeconds seconds. Please start Docker Desktop manually and try again."
+    catch {
+        throw "Docker daemon check failed: $_. Please ensure Docker Desktop is running."
     }
-    
-    Write-Status "Docker daemon is running" "SUCCESS"
     
     # Install PowerShell.MCP module
     Write-Status "Installing PowerShell.MCP module..."
@@ -222,13 +138,7 @@ function Test-Prerequisites {
     }
     
     if ([string]::IsNullOrWhiteSpace($pat)) {
-        Write-Status "GitHub Personal Access Token not found" "WARN"
-        $securePat = Read-Host "Please enter your GitHub PAT" -AsSecureString
-        $pat = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePat))
-        
-        if ([string]::IsNullOrWhiteSpace($pat)) {
-            throw "GitHub Personal Access Token is required to continue."
-        }
+        throw "GitHub Personal Access Token required. Provide via -GitHubPat parameter or GITHUB_PAT environment variable."
     }
     
     Write-Status "GitHub PAT provided" "SUCCESS"
@@ -284,7 +194,6 @@ function Update-ClaudeDesktopConfig {
     # Create workspace directories
     $workspaceRoot = Join-Path $env:USERPROFILE "ClaudeStack\workspace"
     $downloadsRoot = Join-Path $env:USERPROFILE "Downloads"
-    $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
     
     if (-not (Test-Path $workspaceRoot)) {
         New-Item -ItemType Directory -Path $workspaceRoot -Force | Out-Null
@@ -299,7 +208,7 @@ function Update-ClaudeDesktopConfig {
             "-y",
             "@modelcontextprotocol/server-filesystem",
             $workspaceRoot,
-            $repoRoot
+            $downloadsRoot
         )
     }
     
@@ -366,10 +275,7 @@ function Update-ClaudeDesktopConfig {
     
     # Validate and write config
     try {
-        # Normalize all Windows paths to forward slashes
-        $normalizedConfig = Convert-PathsToForwardSlashes $config
-        
-        $jsonText = $normalizedConfig | ConvertTo-Json -Depth 10
+        $jsonText = $config | ConvertTo-Json -Depth 10
         # Validate JSON can be parsed back
         $null = $jsonText | ConvertFrom-Json
         
@@ -416,15 +322,16 @@ try {
     $result = Update-ClaudeDesktopConfig -GitHubToken $githubToken
     
     # Final summary
-    Write-Status "=== DONE ===" "SUCCESS"
+    Write-Status "=== SETUP COMPLETE ===" "SUCCESS"
     Write-Host ""
-    Write-Status "Config path: $($result.ConfigPath)" "INFO"
+    Write-Status "Configuration written to: $($result.ConfigPath)" "SUCCESS"
     Write-Host ""
-    Write-Status "Configured servers:" "INFO"
+    Write-Status "Configured MCP Servers:" "INFO"
     foreach ($server in $result.Servers) {
-        Write-Status "  - $server" "INFO"
+        Write-Status "  - $server" "SUCCESS"
     }
     Write-Host ""
+    Write-Status "Please restart Claude Desktop for changes to take effect." "INFO"
     
     exit 0
 }
