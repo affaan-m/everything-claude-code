@@ -46,7 +46,7 @@ if [[ ! -f "$PLUGIN_JSON" ]]; then
 fi
 
 # Read current version
-OLD_VERSION=$(grep -o '"version": *"[^"]*"' "$PLUGIN_JSON" | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
+OLD_VERSION=$(grep -oE '"version": *"[^"]*"' "$PLUGIN_JSON" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
 echo "Bumping version: $OLD_VERSION -> $VERSION"
 
 # Update version in plugin.json (cross-platform sed)

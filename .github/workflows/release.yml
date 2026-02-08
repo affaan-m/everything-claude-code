@@ -30,7 +30,7 @@ jobs:
           TAG_NAME: ${{ github.ref_name }}
         run: |
           TAG_VERSION="${TAG_NAME#v}"
-          PLUGIN_VERSION=$(grep -o '"version": *"[^"]*"' .claude-plugin/plugin.json | grep -o '[0-9][0-9.]*')
+          PLUGIN_VERSION=$(grep -oE '"version": *"[^"]*"' .claude-plugin/plugin.json | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
           if [ "$TAG_VERSION" != "$PLUGIN_VERSION" ]; then
             echo "::error::Tag version ($TAG_VERSION) does not match plugin.json version ($PLUGIN_VERSION)"
             echo "Run: ./scripts/release.sh $TAG_VERSION"
