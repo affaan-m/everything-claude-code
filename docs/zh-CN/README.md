@@ -21,7 +21,7 @@
 
 **🌐 语言 / 语言 / 語言**
 
-[**English**](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](docs/zh-TW/README.md)
+[**English**](../../README.md) | [简体中文](../../README.zh-CN.md) | [繁體中文](../../docs/zh-TW/README.md)
 
 </div>
 

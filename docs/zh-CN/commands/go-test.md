@@ -126,45 +126,7 @@ import (
     "regexp"
 )
 
-var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}---
-description: 强制执行 Go 的 TDD 工作流程。先编写表格驱动测试，然后实现。使用 go test -cover 验证 80%+ 覆盖率。
----
-
-# Go TDD 命令
-
-此命令使用惯用的 Go 测试模式，为 Go 代码强制执行测试驱动开发方法。
-
-## 此命令的作用
-
-1.  **定义类型/接口**：首先搭建函数签名
-2.  **编写表驱动测试**：创建全面的测试用例（红）
-3.  **运行测试**：验证测试因正确的原因而失败
-4.  **实现代码**：编写最少的代码以通过测试（绿）
-5.  **重构**：在保持测试通过的同时进行改进
-6.  **检查覆盖率**：确保 80% 以上的覆盖率
-
-## 何时使用
-
-在以下情况下使用 `/go-test`：
-
-*   实现新的 Go 函数
-*   为现有代码添加测试覆盖
-*   修复错误（先编写失败的测试）
-*   构建关键业务逻辑
-*   学习 Go 中的 TDD 工作流程
-
-## TDD 循环
-
-```
-RED     → Write failing table-driven test
-GREEN   → Implement minimal code to pass
-REFACTOR → Improve code, tests stay green
-REPEAT  → Next test case
-```
-
-## 示例会话
-
-)
+var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})
 
 var (
     ErrEmailEmpty   = errors.New("email cannot be empty")
