@@ -110,11 +110,9 @@ proc.on('close', (code) => process.exit(code));
 
 ```markdown
 启动所有服务并打开 PM2 监控器。
-`​`​`bash
-
+\`\`\`bash
 cd "{PROJECT_ROOT}" && pm2 start ecosystem.config.cjs && start wt.exe -d "{PROJECT_ROOT}" pwsh -NoExit -c "pm2 monit"
-`​`​`
-
+\`\`\`
 
 ```
 
@@ -122,11 +120,9 @@ cd "{PROJECT_ROOT}" && pm2 start ecosystem.config.cjs && start wt.exe -d "{PROJE
 
 ```markdown
 停止所有服务。
-`​`​`bash
-
+\`\`\`bash
 cd "{PROJECT_ROOT}" && pm2 stop all
-`​`​`
-
+\`\`\`
 
 ```
 
@@ -134,11 +130,9 @@ cd "{PROJECT_ROOT}" && pm2 stop all
 
 ```markdown
 重启所有服务。
-`​`​`bash
-
+\`\`\`bash
 cd "{PROJECT_ROOT}" && pm2 restart all
-`​`​`
-
+\`\`\`
 
 ```
 
@@ -146,11 +140,9 @@ cd "{PROJECT_ROOT}" && pm2 restart all
 
 ```markdown
 启动 {name} ({port}) 并打开日志。
-`​`​`bash
-
+\`\`\`bash
 cd "{PROJECT_ROOT}" && pm2 start ecosystem.config.cjs --only {name} && start wt.exe -d "{PROJECT_ROOT}" pwsh -NoExit -c "pm2 logs {name}"
-`​`​`
-
+\`\`\`
 
 ```
 
@@ -168,11 +160,9 @@ cd "{PROJECT_ROOT}" && pm2 stop {name}
 
 ```markdown
 重启 {name} ({port})。
-`​`​`bash
-
+\`\`\`bash
 cd "{PROJECT_ROOT}" && pm2 restart {name}
-`​`​`
-
+\`\`\`
 
 ```
 
@@ -180,11 +170,9 @@ cd "{PROJECT_ROOT}" && pm2 restart {name}
 
 ```markdown
 查看所有 PM2 日志。
-`​`​`bash
-
+\`\`\`bash
 cd "{PROJECT_ROOT}" && pm2 logs
-`​`​`
-
+\`\`\`
 
 ```
 
@@ -192,11 +180,9 @@ cd "{PROJECT_ROOT}" && pm2 logs
 
 ```markdown
 查看 PM2 状态。
-`​`​`bash
-
+\`\`\`bash
 cd "{PROJECT_ROOT}" && pm2 status
-`​`​`
-
+\`\`\`
 
 ```
 
@@ -262,9 +248,6 @@ pm2 start {name} / pm2 stop {name}
 pm2 logs / pm2 status / pm2 monit
 pm2 save                         # 保存进程列表
 pm2 resurrect                    # 恢复已保存的列表
-`​`​`
-
-
 ```
 
 ```
