@@ -116,6 +116,7 @@
 git clone https://github.com/affaan-m/everything-claude-code.git
 
 # 安装通用规则（必需）
+mkdir -p ~/.claude/rules
 cp -r everything-claude-code/rules/common/* ~/.claude/rules/
 
 # 安装特定语言规则（选择你的技术栈）
