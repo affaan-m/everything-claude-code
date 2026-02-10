@@ -134,7 +134,7 @@ cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-✨ **完成！** 你现在可以使用 15+ 代理、30+ 技能和 30+ 命令。
+✨ **完成！** 你现在可以使用 14 个代理、28 个技能和 30 个命令。
 
 ---
 
