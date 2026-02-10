@@ -9,8 +9,6 @@
 ![Java](https://img.shields.io/badge/-Java-ED8B00?logo=openjdk&logoColor=white)
 ![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown&logoColor=white)
 
-> **42K+ stars** | **5K+ forks** | **24 contributors** | **支持 6 种语言**
-
 ---
 
 <div align="center">
@@ -371,9 +369,9 @@ claude --version
 
 ### 重要：钩子自动加载行为
 
-> ⚠️ **贡献者注意：** 请不要在 `.claude-plugin/plugin.json` 中添加 `"hooks"` 字段。这由回归测试强制执行。
+> ⚠️ **贡献者注意：** 当钩子文件位于默认位置 `hooks/hooks.json` 时，请不要在 `.claude-plugin/plugin.json` 中添加 `"hooks"` 字段。
 
-Claude Code v2.1+ 会**自动加载**任何已安装插件中的 `hooks/hooks.json`。在 `plugin.json` 中显式声明它会导致重复检测错误：
+Claude Code v2.1+ 会**自动加载**任何已安装插件中的 `hooks/hooks.json`。如果 `plugin.json` 中的 `hooks` 字段指向默认位置，会导致重复检测错误：
 
 ```
 Duplicate hooks file detected: ./hooks/hooks.json resolves to already-loaded file

@@ -36,7 +36,7 @@
 ```
 # 新会话调用
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
+  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> - \"$PWD\" <<'EOF'
 ROLE_FILE: <角色提示路径>
 <TASK>
 需求: <增强的需求（或未增强的 $ARGUMENTS）>
@@ -51,7 +51,7 @@ EOF",
 
 # 恢复会话调用
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
+  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> resume <SESSION_ID> - \"$PWD\" <<'EOF'
 ROLE_FILE: <角色提示路径>
 <TASK>
 需求: <增强的需求（或未增强的 $ARGUMENTS）>
@@ -65,8 +65,7 @@ EOF",
 })
 ```
 
-**模型参数说明**:
-- `{{GEMINI_MODEL_FLAG}}`: 使用 `--backend gemini` 时，替换为 `--gemini-model gemini-3-pro-preview `（注意末尾空格）；codex 使用空字符串
+**注意**: Gemini 模型选择通过 Gemini CLI 的 `--model` 标志或 `GEMINI_MODEL` 环境变量配置，不通过 codeagent-wrapper。
 
 **角色提示**:
 

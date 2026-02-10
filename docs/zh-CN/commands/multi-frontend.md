@@ -40,7 +40,7 @@ ROLE_FILE: <角色提示路径>
 </TASK>
 输出: 预期输出格式
 EOF",
-  run_in_background: false,
+  run_in_background: true,
   timeout: 3600000,
   description: "简短描述"
 })
@@ -55,7 +55,7 @@ ROLE_FILE: <角色提示路径>
 </TASK>
 输出: 预期输出格式
 EOF",
-  run_in_background: false,
+  run_in_background: true,
   timeout: 3600000,
   description: "简短描述"
 })

@@ -192,8 +192,8 @@ mcp__ace-tool__search_context({
 
 **`/ccg:plan` 责任到此结束，必须执行以下操作**：
 
-1. 向用户呈现完整的实施计划（包括伪代码）
-2. 将计划保存到 `.claude/plan/<feature-name>.md`（从需求中提取功能名称，例如 `user-auth`、`payment-module`）
+1. 将计划保存到 `.claude/plan/<feature-name>.md`（从需求中提取功能名称，例如 `user-auth`、`payment-module`）
+2. 向用户呈现完整的实施计划（包括伪代码）
 3. 以**粗体文本**输出提示（必须使用实际保存的文件路径）：
 
    ---

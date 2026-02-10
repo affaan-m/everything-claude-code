@@ -68,7 +68,7 @@ module.exports = {
       cwd: './packages/web',
       script: 'node_modules/vite/bin/vite.js',
       args: '--port 3000',
-      interpreter: 'C:/Program Files/nodejs/node.exe',
+      interpreter: '<Node.js 可执行文件路径>', // 例如: 'C:/Program Files/nodejs/node.exe'
       env: { NODE_ENV: 'development' }
     },
     // Python
@@ -76,7 +76,7 @@ module.exports = {
       name: 'project-8000',
       cwd: './backend',
       script: 'start.cjs',
-      interpreter: 'C:/Program Files/nodejs/node.exe',
+      interpreter: '<Node.js 可执行文件路径>', // 例如: 'C:/Program Files/nodejs/node.exe'
       env: { PYTHONUNBUFFERED: '1' }
     }
   ]
@@ -110,7 +110,7 @@ proc.on('close', (code) => process.exit(code));
 ```markdown
 启动所有服务并打开 PM2 监控器。
 \`\`\`bash
-cd "{PROJECT_ROOT}" && pm2 start ecosystem.config.cjs && start wt.exe -d "{PROJECT_ROOT}" pwsh -NoExit -c "pm2 monit"
+cd "{PROJECT_ROOT}" && pm2 start ecosystem.config.cjs && (start wt.exe -d "{PROJECT_ROOT}" pwsh -NoExit -c "pm2 monit" || start powershell -NoExit -Command "cd '{PROJECT_ROOT}'; pm2 monit")
 \`\`\`
 ```
 
@@ -134,7 +134,7 @@ cd "{PROJECT_ROOT}" && pm2 restart all
 ```markdown
 启动 {name} ({port}) 并打开日志。
 \`\`\`bash
-cd "{PROJECT_ROOT}" && pm2 start ecosystem.config.cjs --only {name} && start wt.exe -d "{PROJECT_ROOT}" pwsh -NoExit -c "pm2 logs {name}"
+cd "{PROJECT_ROOT}" && pm2 start ecosystem.config.cjs --only {name} && (start wt.exe -d "{PROJECT_ROOT}" pwsh -NoExit -c "pm2 logs {name}" || start powershell -NoExit -Command "cd '{PROJECT_ROOT}'; pm2 logs {name}")
 \`\`\`
 ```
 
