@@ -4,8 +4,12 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Shell](https://img.shields.io/badge/-Shell-4EAA25?logo=gnu-bash&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
+![Python](https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=white)
 ![Go](https://img.shields.io/badge/-Go-00ADD8?logo=go&logoColor=white)
+![Java](https://img.shields.io/badge/-Java-ED8B00?logo=openjdk&logoColor=white)
 ![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown&logoColor=white)
+
+> **42K+ stars** | **5K+ forks** | **24 contributors** | **支持 6 种语言**
 
 ---
 
@@ -59,6 +63,38 @@
 
 ---
 
+## What's New
+
+### v1.4.1 — Bug Fix (2026年2月)
+
+- **修复直觉导入内容丢失** — `parse_instinct_file()` 在 `/instinct-import` 期间静默删除了 frontmatter 之后的所有内容（Action、Evidence、Examples 部分）。由社区贡献者 @ericcai0814 修复 ([#148](https://github.com/affaan-m/everything-claude-code/issues/148), [#161](https://github.com/affaan-m/everything-claude-code/pull/161))
+
+### v1.4.0 — 多语言规则、安装向导 & PM2 (2026年2月)
+
+- **交互式安装向导** — 新增 `configure-ecc` 技能提供引导式设置，支持合并/覆盖检测
+- **PM2 & 多代理编排** — 6 个新命令 (`/pm2`、`/multi-plan`、`/multi-execute`、`/multi-backend`、`/multi-frontend`、`/multi-workflow`) 用于管理复杂的多服务工作流
+- **多语言规则架构** — 规则从扁平文件重构为 `common/` + `typescript/` + `python/` + `golang/` 目录结构。仅安装你需要的语言规则
+- **中文翻译** — 完整翻译所有代理、命令、技能和规则（80+ 文件）
+- **GitHub Sponsors 支持** — 通过 GitHub Sponsors 赞助项目
+- **增强的 CONTRIBUTING.md** — 每种贡献类型的详细 PR 模板
+
+### v1.3.0 — OpenCode 插件支持 (2026年2月)
+
+- **完整的 OpenCode 集成** — 通过 OpenCode 的插件系统（20+ 事件类型）支持 12 个代理、24 个命令、16 个技能和钩子
+- **3 个原生自定义工具** — run-tests、check-coverage、security-audit
+- **LLM 文档** — 用于全面 OpenCode 文档的 `llms.txt`
+
+### v1.2.0 — 统一命令与技能 (2026年2月)
+
+- **Python/Django 支持** — Django 模式、安全、TDD 和验证技能
+- **Java Spring Boot 技能** — Spring Boot 的模式、安全、TDD 和验证
+- **会话管理** — `/sessions` 命令用于会话历史
+- **持续学习 v2** — 基于直觉的学习，具有置信度评分、导入/导出、演化
+
+完整更新日志请参阅 [Releases](https://github.com/affaan-m/everything-claude-code/releases)。
+
+---
+
 ## 🚀 快速开始
 
 在 2 分钟内快速上手：
@@ -81,8 +117,13 @@
 # 首先克隆仓库
 git clone https://github.com/affaan-m/everything-claude-code.git
 
-# 复制规则（应用于所有项目）
-cp -r everything-claude-code/rules/* ~/.claude/rules/
+# 安装通用规则（必需）
+cp -r everything-claude-code/rules/common/* ~/.claude/rules/
+
+# 安装特定语言规则（选择你的技术栈）
+cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/
+cp -r everything-claude-code/rules/python/* ~/.claude/rules/
+cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
 ```
 
 ### 第三步：开始使用
@@ -95,7 +136,7 @@ cp -r everything-claude-code/rules/* ~/.claude/rules/
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-✨ **完成！** 你现在可以使用 15+ 代理、30+ 技能和 20+ 命令。
+✨ **完成！** 你现在可以使用 15+ 代理、30+ 技能和 30+ 命令。
 
 ---
 
@@ -154,8 +195,10 @@ everything-claude-code/
 |   |-- e2e-runner.md        # Playwright E2E 测试
 |   |-- refactor-cleaner.md  # 死代码清理
 |   |-- doc-updater.md       # 文档同步
-|   |-- go-reviewer.md       # Go 代码审查（新增）
-|   |-- go-build-resolver.md # Go 构建错误解决（新增）
+|   |-- go-reviewer.md       # Go 代码审查
+|   |-- go-build-resolver.md # Go 构建错误解决
+|   |-- python-reviewer.md   # Python 代码审查（新增）
+|   |-- database-reviewer.md # 数据库/Supabase 审查（新增）
 |
 |-- skills/           # 工作流定义和领域知识
 |   |-- coding-standards/           # 语言最佳实践
@@ -169,8 +212,19 @@ everything-claude-code/
 |   |-- security-review/            # 安全检查清单
 |   |-- eval-harness/               # 验证循环评估（详细指南）
 |   |-- verification-loop/          # 持续验证（详细指南）
-|   |-- golang-patterns/            # Go 惯用语和最佳实践（新增）
-|   |-- golang-testing/             # Go 测试模式、TDD、基准测试（新增）
+|   |-- golang-patterns/            # Go 惯用语和最佳实践
+|   |-- golang-testing/             # Go 测试模式、TDD、基准测试
+|   |-- django-patterns/            # Django 模式、模型、视图（新增）
+|   |-- django-security/            # Django 安全最佳实践（新增）
+|   |-- django-tdd/                 # Django TDD 工作流（新增）
+|   |-- django-verification/        # Django 验证循环（新增）
+|   |-- python-patterns/            # Python 惯用语和最佳实践（新增）
+|   |-- python-testing/             # Python pytest 测试（新增）
+|   |-- springboot-patterns/        # Java Spring Boot 模式（新增）
+|   |-- springboot-security/        # Spring Boot 安全（新增）
+|   |-- springboot-tdd/             # Spring Boot TDD（新增）
+|   |-- springboot-verification/    # Spring Boot 验证（新增）
+|   |-- configure-ecc/              # 交互式安装向导（新增）
 |
 |-- commands/         # 用于快速执行的斜杠命令
 |   |-- tdd.md              # /tdd - 测试驱动开发
@@ -183,29 +237,42 @@ everything-claude-code/
 |   |-- checkpoint.md       # /checkpoint - 保存验证状态（详细指南）
 |   |-- verify.md           # /verify - 运行验证循环（详细指南）
 |   |-- setup-pm.md         # /setup-pm - 配置包管理器
-|   |-- go-review.md        # /go-review - Go 代码审查（新增）
-|   |-- go-test.md          # /go-test - Go TDD 工作流（新增）
-|   |-- go-build.md         # /go-build - 修复 Go 构建错误（新增）
-|   |-- skill-create.md     # /skill-create - 从 git 历史生成技能（新增）
-|   |-- instinct-status.md  # /instinct-status - 查看学习的直觉（新增）
-|   |-- instinct-import.md  # /instinct-import - 导入直觉（新增）
-|   |-- instinct-export.md  # /instinct-export - 导出直觉（新增）
-|   |-- evolve.md           # /evolve - 将直觉聚类到技能中（新增）
+|   |-- go-review.md        # /go-review - Go 代码审查
+|   |-- go-test.md          # /go-test - Go TDD 工作流
+|   |-- go-build.md         # /go-build - 修复 Go 构建错误
+|   |-- skill-create.md     # /skill-create - 从 git 历史生成技能
+|   |-- instinct-status.md  # /instinct-status - 查看学习的直觉
+|   |-- instinct-import.md  # /instinct-import - 导入直觉
+|   |-- instinct-export.md  # /instinct-export - 导出直觉
+|   |-- evolve.md           # /evolve - 将直觉聚类到技能中
+|   |-- pm2.md              # /pm2 - PM2 服务生命周期管理（新增）
+|   |-- multi-plan.md       # /multi-plan - 多代理任务分解（新增）
+|   |-- multi-execute.md    # /multi-execute - 编排的多代理工作流（新增）
+|   |-- multi-backend.md    # /multi-backend - 后端多服务编排（新增）
+|   |-- multi-frontend.md   # /multi-frontend - 前端多服务编排（新增）
+|   |-- multi-workflow.md   # /multi-workflow - 通用多服务工作流（新增）
 |
 |-- rules/            # 始终遵循的指南（复制到 ~/.claude/rules/）
-|   |-- security.md         # 强制性安全检查
-|   |-- coding-style.md     # 不可变性、文件组织
-|   |-- testing.md          # TDD、80% 覆盖率要求
-|   |-- git-workflow.md     # 提交格式、PR 流程
-|   |-- agents.md           # 何时委托给子代理
-|   |-- performance.md      # 模型选择、上下文管理
+|   |-- README.md            # 结构概述和安装指南
+|   |-- common/              # 语言无关的原则
+|   |   |-- coding-style.md    # 不可变性、文件组织
+|   |   |-- git-workflow.md    # 提交格式、PR 流程
+|   |   |-- testing.md         # TDD、80% 覆盖率要求
+|   |   |-- performance.md     # 模型选择、上下文管理
+|   |   |-- patterns.md        # 设计模式、骨架项目
+|   |   |-- hooks.md           # 钩子架构、TodoWrite
+|   |   |-- agents.md          # 何时委托给子代理
+|   |   |-- security.md        # 强制性安全检查
+|   |-- typescript/          # TypeScript/JavaScript 专用
+|   |-- python/              # Python 专用
+|   |-- golang/              # Go 专用
 |
 |-- hooks/            # 基于触发器的自动化
 |   |-- hooks.json                # 所有钩子配置（PreToolUse、PostToolUse、Stop 等）
 |   |-- memory-persistence/       # 会话生命周期钩子（详细指南）
 |   |-- strategic-compact/        # 压缩建议（详细指南）
 |
-|-- scripts/          # 跨平台 Node.js 脚本（新增）
+|-- scripts/          # 跨平台 Node.js 脚本
 |   |-- lib/                     # 共享工具
 |   |   |-- utils.js             # 跨平台文件/路径/系统工具
 |   |   |-- package-manager.js   # 包管理器检测和选择
@@ -217,7 +284,7 @@ everything-claude-code/
 |   |   |-- evaluate-session.js  # 从会话中提取模式
 |   |-- setup-package-manager.js # 交互式 PM 设置
 |
-|-- tests/            # 测试套件（新增）
+|-- tests/            # 测试套件
 |   |-- lib/                     # 库测试
 |   |-- hooks/                   # 钩子测试
 |   |-- run-all.js               # 运行所有测试
@@ -289,6 +356,33 @@ everything-claude-code/
 
 ---
 
+## 📋 系统要求
+
+### Claude Code CLI 版本
+
+**最低版本：v2.1.0 或更高版本**
+
+此插件需要 Claude Code CLI v2.1.0+，因为插件系统处理钩子的方式发生了变化。
+
+检查你的版本：
+```bash
+claude --version
+```
+
+### 重要：钩子自动加载行为
+
+> ⚠️ **贡献者注意：** 请不要在 `.claude-plugin/plugin.json` 中添加 `"hooks"` 字段。这由回归测试强制执行。
+
+Claude Code v2.1+ 会**自动加载**任何已安装插件中的 `hooks/hooks.json`。在 `plugin.json` 中显式声明它会导致重复检测错误：
+
+```
+Duplicate hooks file detected: ./hooks/hooks.json resolves to already-loaded file
+```
+
+**历史记录：** 这在此仓库中导致了多次修复/回退循环 ([#29](https://github.com/affaan-m/everything-claude-code/issues/29), [#52](https://github.com/affaan-m/everything-claude-code/issues/52), [#103](https://github.com/affaan-m/everything-claude-code/issues/103))。该行为在 Claude Code 版本之间发生了变化，导致混淆。我们现在有回归测试来防止这种情况被重新引入。
+
+---
+
 ## 📥 安装
 
 ### 选项 1：作为插件安装（推荐）
@@ -330,11 +424,15 @@ everything-claude-code/
 > git clone https://github.com/affaan-m/everything-claude-code.git
 >
 > # 选项 A：用户级规则（应用于所有项目）
-> cp -r everything-claude-code/rules/* ~/.claude/rules/
+> cp -r everything-claude-code/rules/common/* ~/.claude/rules/
+> cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/   # 选择你的技术栈
+> cp -r everything-claude-code/rules/python/* ~/.claude/rules/
+> cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
 >
 > # 选项 B：项目级规则（仅应用于当前项目）
 > mkdir -p .claude/rules
-> cp -r everything-claude-code/rules/* .claude/rules/
+> cp -r everything-claude-code/rules/common/* .claude/rules/
+> cp -r everything-claude-code/rules/typescript/* .claude/rules/     # 选择你的技术栈
 > ```
 
 ---
@@ -350,8 +448,11 @@ git clone https://github.com/affaan-m/everything-claude-code.git
 # 将代理复制到你的 Claude 配置
 cp everything-claude-code/agents/*.md ~/.claude/agents/
 
-# 复制规则
-cp everything-claude-code/rules/*.md ~/.claude/rules/
+# 复制规则（通用 + 特定语言）
+cp -r everything-claude-code/rules/common/* ~/.claude/rules/
+cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/   # 选择你的技术栈
+cp -r everything-claude-code/rules/python/* ~/.claude/rules/
+cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
 
 # 复制命令
 cp everything-claude-code/commands/*.md ~/.claude/commands/
@@ -419,14 +520,17 @@ model: opus
 
 ### 规则
 
-规则是始终遵循的指南。保持模块化：
+规则是始终遵循的指南，组织为 `common/`（语言无关）+ 特定语言目录：
 
 ```
-~/.claude/rules/
-  security.md      # 无硬编码秘密
-  coding-style.md  # 不可变性、文件限制
-  testing.md       # TDD、覆盖率要求
+rules/
+  common/          # 通用原则（始终安装）
+  typescript/      # TS/JS 特定模式和工具
+  python/          # Python 特定模式和工具
+  golang/          # Go 特定模式和工具
 ```
+
+详见 [`rules/README.md`](rules/README.md) 了解安装和结构详情。
 
 ---
 
@@ -460,11 +564,111 @@ node tests/hooks/hooks.test.js
 
 ### 贡献想法
 
-- 特定语言的技能（Python、Rust 模式）- 现已包含 Go！
-- 特定框架的配置（Django、Rails、Laravel）
-- DevOps 代理（Kubernetes、Terraform、AWS）
-- 测试策略（不同框架）
+- 特定语言的技能（Rust、C#、Swift、Kotlin）- Go、Python、Java 已包含
+- 特定框架的配置（Rails、Laravel、FastAPI、NestJS）- Django、Spring Boot 已包含
+- DevOps 代理（Kubernetes、Terraform、AWS、Docker）
+- 测试策略（不同框架、视觉回归）
 - 特定领域的知识（ML、数据工程、移动）
+
+---
+
+## 🔌 OpenCode 支持
+
+ECC 提供**完整的 OpenCode 支持**，包括插件和钩子。
+
+### 快速开始
+
+```bash
+# 安装 OpenCode
+npm install -g opencode
+
+# 在仓库根目录运行
+opencode
+```
+
+配置会从 `.opencode/opencode.json` 自动检测。
+
+### 功能对等
+
+| 功能 | Claude Code | OpenCode | 状态 |
+|---------|-------------|----------|--------|
+| 代理 | ✅ 14 个代理 | ✅ 12 个代理 | **Claude Code 领先** |
+| 命令 | ✅ 30 个命令 | ✅ 24 个命令 | **Claude Code 领先** |
+| 技能 | ✅ 28 个技能 | ✅ 16 个技能 | **Claude Code 领先** |
+| 钩子 | ✅ 3 个阶段 | ✅ 20+ 事件 | **OpenCode 更多！** |
+| 规则 | ✅ 8 条规则 | ✅ 8 条规则 | **完全对等** |
+| MCP 服务器 | ✅ 完整 | ✅ 完整 | **完全对等** |
+| 自定义工具 | ✅ 通过钩子 | ✅ 原生支持 | **OpenCode 更好** |
+
+### 通过插件支持钩子
+
+OpenCode 的插件系统比 Claude Code 更复杂，有 20+ 事件类型：
+
+| Claude Code 钩子 | OpenCode 插件事件 |
+|-----------------|----------------------|
+| PreToolUse | `tool.execute.before` |
+| PostToolUse | `tool.execute.after` |
+| Stop | `session.idle` |
+| SessionStart | `session.created` |
+| SessionEnd | `session.deleted` |
+
+**额外的 OpenCode 事件**：`file.edited`、`file.watcher.updated`、`message.updated`、`lsp.client.diagnostics`、`tui.toast.show` 等。
+
+### 可用命令（24 个）
+
+| 命令 | 描述 |
+|---------|-------------|
+| `/plan` | 创建实现计划 |
+| `/tdd` | 强制执行 TDD 工作流 |
+| `/code-review` | 审查代码更改 |
+| `/security` | 运行安全审查 |
+| `/build-fix` | 修复构建错误 |
+| `/e2e` | 生成 E2E 测试 |
+| `/refactor-clean` | 移除死代码 |
+| `/orchestrate` | 多代理工作流 |
+| `/learn` | 从会话中提取模式 |
+| `/checkpoint` | 保存验证状态 |
+| `/verify` | 运行验证循环 |
+| `/eval` | 根据标准评估 |
+| `/update-docs` | 更新文档 |
+| `/update-codemaps` | 更新代码地图 |
+| `/test-coverage` | 分析覆盖率 |
+| `/go-review` | Go 代码审查 |
+| `/go-test` | Go TDD 工作流 |
+| `/go-build` | 修复 Go 构建错误 |
+| `/skill-create` | 从 git 生成技能 |
+| `/instinct-status` | 查看学习的直觉 |
+| `/instinct-import` | 导入直觉 |
+| `/instinct-export` | 导出直觉 |
+| `/evolve` | 将直觉聚类到技能中 |
+| `/setup-pm` | 配置包管理器 |
+
+### 插件安装
+
+**选项 1：直接使用**
+```bash
+cd everything-claude-code
+opencode
+```
+
+**选项 2：作为 npm 包安装**
+```bash
+npm install opencode-ecc
+```
+
+然后添加到你的 `opencode.json`：
+```json
+{
+  "plugin": ["opencode-ecc"]
+}
+```
+
+### 文档
+
+- **迁移指南**：`.opencode/MIGRATION.md`
+- **OpenCode 插件 README**：`.opencode/README.md`
+- **合并的规则**：`.opencode/instructions/INSTRUCTIONS.md`
+- **LLM 文档**：`llms.txt`（完整的 OpenCode 文档供 LLM 使用）
 
 ---
 
