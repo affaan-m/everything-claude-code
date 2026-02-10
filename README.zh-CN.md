@@ -369,9 +369,15 @@ claude --version
 
 ### 重要：钩子自动加载行为
 
-> ⚠️ **贡献者注意：** 当钩子文件位于默认位置 `hooks/hooks.json` 时，请不要在 `.claude-plugin/plugin.json` 中添加 `"hooks"` 字段。
+> ⚠️ **贡献者注意：** 当钩子文件位于默认位置 `hooks/hooks.json` 时，请不要在 `.claude-plugin/plugin.json` 中添加指向该位置的 `"hooks"` 字段。
 
-Claude Code v2.1+ 会**自动加载**任何已安装插件中的 `hooks/hooks.json`。如果 `plugin.json` 中的 `hooks` 字段指向默认位置，会导致重复检测错误：
+Claude Code v2.1+ 会**自动加载**任何已安装插件中的 `hooks/hooks.json`。
+
+**注意事项：**
+- 如果 `hooks` 字段指向默认位置 `hooks/hooks.json`，会导致重复检测错误
+- `hooks` 字段对于**自定义路径**（字符串/数组）或**内联钩子配置**（对象）仍然有效
+
+重复检测错误示例：
 
 ```
 Duplicate hooks file detected: ./hooks/hooks.json resolves to already-loaded file
