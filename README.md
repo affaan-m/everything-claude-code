@@ -657,13 +657,13 @@ opencode
 
 **Option 2: Install as npm package**
 ```bash
-npm install opencode-ecc
+⚠️ Note: opencode-ecc is referenced here but is not published on npm and cannot be installed.
 ```
 
 Then add to your `opencode.json`:
 ```json
 {
-  "plugin": ["opencode-ecc"]
+  // "plugin": ["opencode-ecc"]
 }
 ```
 
