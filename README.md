@@ -117,18 +117,21 @@ Get up and running in under 2 minutes:
 
 > ⚠️ **Important:** Claude Code plugins cannot distribute `rules` automatically. Install them manually:
 
+
 ```bash
 # Clone the repo first
 git clone https://github.com/affaan-m/everything-claude-code.git
+cd everything-claude-code
 
-# Install common rules (required)
-cp -r everything-claude-code/rules/common/* ~/.claude/rules/
-
-# Install language-specific rules (pick your stack)
-cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/
-cp -r everything-claude-code/rules/python/* ~/.claude/rules/
-cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
+# Recommended: use the installer (handles common + language rules safely)
+./install.sh typescript    # or python or golang
+# You can pass multiple languages:
+# ./install.sh typescript python golang
+# or target cursor:
+# ./install.sh --target cursor typescript
 ```
+
+For manual install instructions see the README in the `rules/` folder.
 
 ### Step 3: Start Using
 
