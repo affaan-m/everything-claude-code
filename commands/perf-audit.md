@@ -1,3 +1,7 @@
+---
+description: Analyze application performance across bundle, API, database, and frontend layers. Generate A-F graded report with prioritized action items.
+---
+
 # Performance Audit
 
 Analyze application performance across bundle, API, database, and frontend layers:

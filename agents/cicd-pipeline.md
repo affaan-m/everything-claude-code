@@ -48,6 +48,9 @@ gh secret list --env production
 
 ## Workflow Templates
 
+> **Note**: Templates use tag versions (`@v4`) for readability. For production,
+> pin to SHA per the Security Checklist: `actions/checkout@b4ffde65f...  # v4`
+
 ### Basic CI (Test + Lint + Type Check)
 
 ```yaml
@@ -58,6 +61,9 @@ on:
     branches: [main]
   push:
     branches: [main]
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -103,6 +109,10 @@ on:
     branches: [main]
   push:
     branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   deploy-preview:
