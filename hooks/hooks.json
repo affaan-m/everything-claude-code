@@ -43,6 +43,16 @@
         "description": "Block creation of random .md files - keeps docs consolidated"
       },
       {
+        "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\\\.env\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\n# Block writing real secrets to .env files\ninput=$(cat)\nfile_path=$(echo \"$input\" | jq -r '.tool_input.file_path // \"\"')\ncontent=$(echo \"$input\" | jq -r '.tool_input.content // \"\"')\n\n# Check for real secret patterns\nif echo \"$content\" | grep -qE '(sk-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{36}|AKIA[A-Z0-9]{16}|eyJ[a-zA-Z0-9._-]{50,})'; then\n  echo \"[Hook] BLOCKED: Real secret pattern detected in $file_path\" >&2\n  echo \"[Hook] Detected patterns: sk-*, ghp_*, AKIA*, eyJ* (JWT)\" >&2\n  echo \"[Hook] Use placeholder values or reference env vars from your secret manager\" >&2\n  exit 1\nfi\n\n# Warn if .env file is not in .gitignore\nif [ -f .gitignore ]; then\n  basename_env=$(basename \"$file_path\")\n  if ! grep -qE \"(\\.env|$basename_env)\" .gitignore 2>/dev/null; then\n    echo \"[Hook] WARNING: $basename_env may not be in .gitignore\" >&2\n    echo \"[Hook] Ensure .env files are gitignored to prevent secret leaks\" >&2\n  fi\nfi\n\necho \"$input\""
+          }
+        ],
+        "description": "Block real secrets in .env files and warn about .gitignore"
+      },
+      {
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -129,6 +139,56 @@
           }
         ],
         "description": "Warn about console.log statements after edits"
+      },
+      {
+        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\n# Warn when files exceed size thresholds (coding-style rule: 800 max)\ninput=$(cat)\nfile_path=$(echo \"$input\" | jq -r '.tool_input.file_path // \"\"')\n\nif [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then\n  line_count=$(wc -l < \"$file_path\" | tr -d ' ')\n  \n  if [ \"$line_count\" -gt 800 ]; then\n    echo \"[Hook] WARNING: $file_path is $line_count lines (max: 800)\" >&2\n    echo \"[Hook] Split this file into smaller modules immediately\" >&2\n    echo \"[Hook] Use refactor-cleaner agent to help decompose\" >&2\n  elif [ \"$line_count\" -gt 600 ]; then\n    echo \"[Hook] NOTICE: $file_path is $line_count lines (approaching 800 limit)\" >&2\n    echo \"[Hook] Consider splitting before it grows further\" >&2\n  fi\nfi\n\necho \"$input\""
+          }
+        ],
+        "description": "Warn when JS/TS files exceed 600/800 line thresholds"
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"(npm install|pnpm add|yarn add)\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\n# Warn about packages with excessive transitive dependencies\ninput=$(cat)\ncmd=$(echo \"$input\" | jq -r '.tool_input.command // \"\"')\n\n# Extract package names from the command\npkgs=$(echo \"$cmd\" | grep -oE '(npm install|pnpm add|yarn add)\\s+(.+)' | sed -E 's/(npm install|pnpm add|yarn add)\\s+//' | tr ' ' '\\n' | grep -v '^-')\n\nif [ -n \"$pkgs\" ]; then\n  while IFS= read -r pkg; do\n    [ -z \"$pkg\" ] && continue\n    # Check if package exists in node_modules and count dependencies\n    pkg_dir=\"node_modules/$pkg\"\n    if [ -d \"$pkg_dir\" ] && [ -f \"$pkg_dir/package.json\" ]; then\n      dep_count=$(jq -r '[.dependencies // {} | keys[], .peerDependencies // {} | keys[]] | length' \"$pkg_dir/package.json\" 2>/dev/null || echo 0)\n      if [ \"$dep_count\" -gt 20 ]; then\n        echo \"[Hook] WARNING: $pkg has $dep_count direct dependencies\" >&2\n        echo \"[Hook] Consider lighter alternatives to avoid dependency bloat\" >&2\n      fi\n    fi\n  done <<< \"$pkgs\"\nfi\n\necho \"$input\""
+          }
+        ],
+        "description": "Warn about packages with excessive dependencies after install"
+      },
+      {
+        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(tsx|jsx)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\n# Check for <img> tags missing alt attributes in JSX/TSX\ninput=$(cat)\nfile_path=$(echo \"$input\" | jq -r '.tool_input.file_path // \"\"')\n\nif [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then\n  missing_alt=$(grep -n '<img ' \"$file_path\" 2>/dev/null | grep -v 'alt=' || true)\n  \n  if [ -n \"$missing_alt\" ]; then\n    echo \"[Hook] WARNING: <img> tag without alt attribute in $file_path\" >&2\n    echo \"$missing_alt\" | head -5 >&2\n    echo \"[Hook] Add alt=\\\"description\\\" for accessibility (WCAG 2.1 AA)\" >&2\n    echo \"[Hook] See rules/accessibility.md for patterns\" >&2\n  fi\nfi\n\necho \"$input\""
+          }
+        ],
+        "description": "Check for missing alt attributes on img tags in JSX/TSX files"
+      },
+      {
+        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\n# Warn when TODO/FIXME comments accumulate (tech debt signal)\ninput=$(cat)\nfile_path=$(echo \"$input\" | jq -r '.tool_input.file_path // \"\"')\n\nif [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then\n  todo_count=$(grep -cE '(TODO|FIXME):' \"$file_path\" 2>/dev/null) || todo_count=0\n  \n  if [ \"$todo_count\" -gt 5 ]; then\n    echo \"[Hook] WARNING: $file_path has $todo_count TODO/FIXME comments\" >&2\n    echo \"[Hook] Tech debt accumulating — resolve existing TODOs before adding more\" >&2\n    grep -n -E '(TODO|FIXME):' \"$file_path\" 2>/dev/null | head -5 >&2\n  fi\nfi\n\necho \"$input\""
+          }
+        ],
+        "description": "Warn when TODO/FIXME comments exceed threshold (>5 per file)"
+      },
+      {
+        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\n# Warn about TypeScript 'any' type usage\ninput=$(cat)\nfile_path=$(echo \"$input\" | jq -r '.tool_input.file_path // \"\"')\n\nif [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then\n  any_usage=$(grep -nE ': any([^A-Za-z0-9_]|$)' \"$file_path\" 2>/dev/null || true)\n  \n  if [ -n \"$any_usage\" ]; then\n    any_count=$(echo \"$any_usage\" | wc -l | tr -d ' ')\n    echo \"[Hook] WARNING: $any_count instance(s) of ': any' in $file_path\" >&2\n    echo \"$any_usage\" | head -5 >&2\n    echo \"[Hook] Replace with 'unknown', generics, or specific types\" >&2\n    echo \"[Hook] See rules/coding-style.md for type safety guidelines\" >&2\n  fi\nfi\n\necho \"$input\""
+          }
+        ],
+        "description": "Warn about TypeScript 'any' type usage — prefer unknown or generics"
       }
     ],
     "Stop": [
