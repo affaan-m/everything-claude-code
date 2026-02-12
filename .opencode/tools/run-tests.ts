@@ -34,6 +34,13 @@ export default tool({
     const { pattern, coverage, watch, updateSnapshots } = args
     const cwd = context.worktree || context.directory
 
+    // Detect if this is a Python project
+    const isPython = await detectPythonProject(cwd)
+
+    if (isPython) {
+      return buildPythonTestCommand(cwd, { pattern, coverage, watch })
+    }
+
     // Detect package manager
     const packageManager = await detectPackageManager(cwd)
 
@@ -136,4 +143,135 @@ async function detectTestFramework(cwd: string): Promise<string> {
   }
 
   return "unknown"
+}
+
+/**
+ * 
+ * @param cwd 
+ * @returns 
+ */
+async function detectPythonProject(cwd: string): Promise<boolean> {
+  // Check for common Python project indicators
+  const pythonIndicators = [
+    "pyproject.toml",
+    "setup.py",
+    "requirements.txt",
+    "Pipfile",
+    "pytest.ini",
+    "setup.cfg",
+    "tox.ini",
+  ]
+
+  for (const indicator of pythonIndicators) {
+    if (fs.existsSync(path.join(cwd, indicator))) {
+      return true
+    }
+  }
+
+  // Check for tests directory with Python files
+  const testsDir = path.join(cwd, "tests")
+  if (fs.existsSync(testsDir)) {
+    try {
+      const files = fs.readdirSync(testsDir)
+      if (files.some((f) => f.endsWith(".py"))) {
+        return true
+      }
+    } catch {
+      // Ignore errors
+    }
+  }
+
+  return false
+}
+
+/**
+ * 
+ * @param cwd 
+ * @param options 
+ * @returns 
+ */
+async function buildPythonTestCommand(
+  cwd: string,
+  options: { pattern?: string; coverage?: boolean; watch?: boolean }
+): Promise<string> {
+  const { pattern, coverage, watch } = options
+
+  // Detect Python runner (uv, poetry, or direct pytest)
+  const runner = await detectPythonRunner(cwd)
+
+  let cmd: string[] = []
+
+  if (runner === "uv") {
+    cmd.push("uv", "run", "pytest")
+  } else if (runner === "poetry") {
+    cmd.push("poetry", "run", "pytest")
+  } else {
+    cmd.push("pytest")
+  }
+
+  // Add verbose flag for better output
+  cmd.push("-v")
+
+  if (coverage) {
+    cmd.push("--cov", "--cov-report=term-missing")
+  }
+
+  if (watch) {
+    // pytest-watch or pytest-xdist with --looponfail
+    cmd.push("--looponfail")
+  }
+
+  if (pattern) {
+    // Support both file patterns and -k expression
+    if (pattern.includes("/") || pattern.endsWith(".py")) {
+      cmd.push(pattern)
+    } else {
+      cmd.push("-k", pattern)
+    }
+  }
+
+  const command = cmd.join(" ")
+
+  return JSON.stringify({
+    command,
+    packageManager: runner,
+    testFramework: "pytest",
+    options: {
+      pattern: pattern || "all tests",
+      coverage: coverage || false,
+      watch: watch || false,
+      updateSnapshots: false,
+    },
+    instructions: `Run this command to execute tests:\n\n${command}`,
+  })
+}
+
+async function detectPythonRunner(cwd: string): Promise<string> {
+  // Check for uv
+  if (fs.existsSync(path.join(cwd, "uv.lock"))) {
+    return "uv"
+  }
+
+  // Check for poetry
+  if (fs.existsSync(path.join(cwd, "poetry.lock"))) {
+    return "poetry"
+  }
+
+  // Check pyproject.toml for build system hints
+  const pyprojectPath = path.join(cwd, "pyproject.toml")
+  if (fs.existsSync(pyprojectPath)) {
+    try {
+      const content = fs.readFileSync(pyprojectPath, "utf-8")
+      if (content.includes("[tool.poetry]")) {
+        return "poetry"
+      }
+      if (content.includes("[tool.uv]") || content.includes("uv")) {
+        return "uv"
+      }
+    } catch {
+      // Ignore errors
+    }
+  }
+
+  return "direct"
 }
