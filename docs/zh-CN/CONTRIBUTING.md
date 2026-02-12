@@ -1,6 +1,18 @@
 # 为 Everything Claude Code 做贡献
 
-感谢您希望做出贡献。这个仓库旨在成为 Claude Code 用户的社区资源。
+感谢您想要贡献！这个仓库是 Claude Code 用户的社区资源。
+
+## 目录
+
+* [我们正在寻找的内容](#我们寻找什么)
+* [快速开始](#快速开始)
+* [贡献技能](#贡献技能)
+* [贡献智能体](#贡献智能体)
+* [贡献钩子](#贡献钩子)
+* [贡献命令](#贡献命令)
+* [拉取请求流程](#拉取请求流程)
+
+***
 
 ## 我们寻找什么
 
@@ -21,16 +33,6 @@
 * 框架模式
 * 测试策略
 * 架构指南
-* 领域特定知识
-
-### 命令
-
-调用有用工作流的斜杠命令：
-
-* 部署命令
-* 测试命令
-* 文档命令
-* 代码生成命令
 
 ### 钩子
 
@@ -41,124 +43,365 @@
 * 验证钩子
 * 通知钩子
 
-### 规则
+### 命令
 
-始终遵循的指导原则：
+调用有用工作流的斜杠命令：
 
-* 安全规则
-* 代码风格规则
-* 测试要求
-* 命名约定
-
-### MCP 配置
-
-新的或改进的 MCP 服务器配置：
-
-* 数据库集成
-* 云提供商 MCP
-* 监控工具
-* 通讯工具
+* 部署命令
+* 测试命令
+* 代码生成命令
 
 ***
 
-## 如何贡献
-
-### 1. Fork 仓库
+## 快速开始
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/everything-claude-code.git
+# 1. Fork and clone
+gh repo fork affaan-m/everything-claude-code --clone
 cd everything-claude-code
+
+# 2. Create a branch
+git checkout -b feat/my-contribution
+
+# 3. Add your contribution (see sections below)
+
+# 4. Test locally
+cp -r skills/my-skill ~/.claude/skills/  # for skills
+# Then test with Claude Code
+
+# 5. Submit PR
+git add . && git commit -m "feat: add my-skill" && git push
 ```
 
-### 2. 创建一个分支
+***
 
-```bash
-git checkout -b add-python-reviewer
+## 贡献技能
+
+技能是 Claude Code 根据上下文加载的知识模块。
+
+### 目录结构
+
+```
+skills/
+└── your-skill-name/
+    └── SKILL.md
 ```
 
-### 3. 添加您的贡献
-
-将文件放在适当的目录中：
-
-* `agents/` 用于新的智能体
-* `skills/` 用于技能（可以是单个 .md 文件或目录）
-* `commands/` 用于斜杠命令
-* `rules/` 用于规则文件
-* `hooks/` 用于钩子配置
-* `mcp-configs/` 用于 MCP 服务器配置
-
-### 4. 遵循格式
-
-**智能体** 应包含 frontmatter：
+### SKILL.md 模板
 
 ```markdown
 ---
-name: agent-name
-description: What it does
-tools: Read, Grep, Glob, Bash
+name: your-skill-name
+description: Brief description shown in skill list
+---
+
+# 你的技能标题
+
+简要概述此技能涵盖的内容。
+
+## 核心概念
+
+解释关键模式和准则。
+
+## 代码示例
+
+`​`​`typescript
+
+// 包含实用、经过测试的示例
+function example() {
+  // 注释良好的代码
+}
+`​`​`
+
+
+## 最佳实践
+
+- 可操作的指导原则
+- 该做与不该做的事项
+- 需要避免的常见陷阱
+
+## 适用场景
+
+描述此技能适用的场景。
+
+```
+
+### 技能清单
+
+* \[ ] 专注于一个领域/技术
+* \[ ] 包含实用的代码示例
+* \[ ] 少于 500 行
+* \[ ] 使用清晰的章节标题
+* \[ ] 已通过 Claude Code 测试
+
+### 技能示例
+
+| 技能 | 目的 |
+|-------|---------|
+| `coding-standards/` | TypeScript/JavaScript 模式 |
+| `frontend-patterns/` | React 和 Next.js 最佳实践 |
+| `backend-patterns/` | API 和数据库模式 |
+| `security-review/` | 安全检查清单 |
+
+***
+
+## 贡献智能体
+
+智能体是通过任务工具调用的专业助手。
+
+### 文件位置
+
+```
+agents/your-agent-name.md
+```
+
+### 智能体模板
+
+```markdown
+---
+name: 你的代理名称
+description: 该代理的作用以及 Claude 应在何时调用它。请具体说明！
+tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
 model: sonnet
 ---
 
-Instructions here...
+你是一名 [角色] 专家。
+
+## 你的角色
+
+-   主要职责
+-   次要职责
+-   你不做的事情（界限）
+
+## 工作流程
+
+### 步骤 1：理解
+你如何着手处理任务。
+
+### 步骤 2：执行
+你如何开展工作。
+
+### 步骤 3：验证
+你如何验证结果。
+
+## 输出格式
+
+你返回给用户的内容。
+
+## 示例
+
+### 示例：[场景]
+输入：[用户提供的内容]
+操作：[你做了什么]
+输出：[你返回的内容]
+
 ```
 
-**技能** 应清晰且可操作：
+### 智能体字段
 
-```markdown
-# Skill Name
+| 字段 | 描述 | 选项 |
+|-------|-------------|---------|
+| `name` | 小写，用连字符连接 | `code-reviewer` |
+| `description` | 用于决定何时调用 | 要具体！ |
+| `tools` | 仅包含必要的内容 | `Read, Write, Edit, Bash, Grep, Glob, WebFetch, Task` |
+| `model` | 复杂度级别 | `haiku` (简单), `sonnet` (编码), `opus` (复杂) |
 
-## When to Use
+### 智能体示例
 
-...
+| 智能体 | 目的 |
+|-------|---------|
+| `tdd-guide.md` | 测试驱动开发 |
+| `code-reviewer.md` | 代码审查 |
+| `security-reviewer.md` | 安全扫描 |
+| `build-error-resolver.md` | 修复构建错误 |
 
-## How It Works
+***
 
-...
+## 贡献钩子
 
-## Examples
+钩子是由 Claude Code 事件触发的自动行为。
 
-...
+### 文件位置
+
+```
+hooks/hooks.json
 ```
 
-**命令** 应解释其功能：
+### 钩子类型
 
-```markdown
----
-description: Brief description of command
----
+| 类型 | 触发条件 | 用例 |
+|------|---------|----------|
+| `PreToolUse` | 工具运行前 | 验证、警告、阻止 |
+| `PostToolUse` | 工具运行后 | 格式化、检查、通知 |
+| `SessionStart` | 会话开始时 | 加载上下文 |
+| `Stop` | 会话结束时 | 清理、审计 |
 
-# Command Name
-
-Detailed instructions...
-```
-
-**钩子** 应包含描述：
+### 钩子格式
 
 ```json
 {
-  "matcher": "...",
-  "hooks": [...],
-  "description": "What this hook does"
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"rm -rf /\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] BLOCKED: Dangerous command' && exit 1"
+          }
+        ],
+        "description": "Block dangerous rm commands"
+      }
+    ]
+  }
 }
 ```
 
-### 5. 测试您的贡献
+### 匹配器语法
 
-在提交之前，请确保您的配置能在 Claude Code 中正常工作。
+```javascript
+// Match specific tools
+tool == "Bash"
+tool == "Edit"
+tool == "Write"
 
-### 6. 提交 PR
+// Match input patterns
+tool_input.command matches "npm install"
+tool_input.file_path matches "\\.tsx?$"
 
-```bash
-git add .
-git commit -m "Add Python code reviewer agent"
-git push origin add-python-reviewer
+// Combine conditions
+tool == "Bash" && tool_input.command matches "git push"
 ```
 
-然后提交一个 PR，包含以下内容：
+### 钩子示例
 
-* 您添加了什么
-* 为什么它有用
-* 您是如何测试的
+```json
+// Block dev servers outside tmux
+{
+  "matcher": "tool == \"Bash\" && tool_input.command matches \"npm run dev\"",
+  "hooks": [{"type": "command", "command": "echo 'Use tmux for dev servers' && exit 1"}],
+  "description": "Ensure dev servers run in tmux"
+}
+
+// Auto-format after editing TypeScript
+{
+  "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\.tsx?$\"",
+  "hooks": [{"type": "command", "command": "npx prettier --write \"$file_path\""}],
+  "description": "Format TypeScript files after edit"
+}
+
+// Warn before git push
+{
+  "matcher": "tool == \"Bash\" && tool_input.command matches \"git push\"",
+  "hooks": [{"type": "command", "command": "echo '[Hook] Review changes before pushing'"}],
+  "description": "Reminder to review before push"
+}
+```
+
+### 钩子清单
+
+* \[ ] 匹配器具体（不过于宽泛）
+* \[ ] 包含清晰的错误/信息消息
+* \[ ] 使用正确的退出代码 (`exit 1` 阻止, `exit 0` 允许)
+* \[ ] 经过充分测试
+* \[ ] 有描述
+
+***
+
+## 贡献命令
+
+命令是用户通过 `/command-name` 调用的操作。
+
+### 文件位置
+
+```
+commands/your-command.md
+```
+
+### 命令模板
+
+```markdown
+---
+description: 在 /help 中显示的简要描述
+---
+
+# 命令名称
+
+## 目的
+
+此命令的功能。
+
+## 用法
+
+`​`​`
+
+/your-command [args]
+`​`​`
+
+
+## 工作流程
+
+1.  第一步
+2.  第二步
+3.  最后一步
+
+## 输出
+
+用户将收到的内容。
+
+```
+
+### 命令示例
+
+| 命令 | 目的 |
+|---------|---------|
+| `commit.md` | 创建 git 提交 |
+| `code-review.md` | 审查代码变更 |
+| `tdd.md` | TDD 工作流 |
+| `e2e.md` | E2E 测试 |
+
+***
+
+## 拉取请求流程
+
+### 1. PR 标题格式
+
+```
+feat(skills): add rust-patterns skill
+feat(agents): add api-designer agent
+feat(hooks): add auto-format hook
+fix(skills): update React patterns
+docs: improve contributing guide
+```
+
+### 2. PR 描述
+
+```markdown
+## 摘要
+你正在添加什么以及为什么添加。
+
+## 类型
+- [ ] 技能
+- [ ] 代理
+- [ ] 钩子
+- [ ] 命令
+
+## 测试
+你是如何测试这个的。
+
+## 检查清单
+- [ ] 遵循格式指南
+- [ ] 已使用 Claude Code 进行测试
+- [ ] 无敏感信息（API 密钥、路径）
+- [ ] 描述清晰
+
+```
+
+### 3. 审查流程
+
+1. 维护者在 48 小时内审查
+2. 如有要求，请处理反馈
+3. 一旦批准，合并到主分支
 
 ***
 
@@ -166,34 +409,34 @@ git push origin add-python-reviewer
 
 ### 应该做的
 
-* 保持配置专注且模块化
+* 保持贡献内容专注和模块化
 * 包含清晰的描述
 * 提交前进行测试
 * 遵循现有模式
-* 记录任何依赖项
+* 记录依赖项
 
 ### 不应该做的
 
 * 包含敏感数据（API 密钥、令牌、路径）
 * 添加过于复杂或小众的配置
-* 提交未经测试的配置
-* 创建重复的功能
-* 添加需要特定付费服务且没有替代方案的配置
+* 提交未经测试的贡献
+* 创建现有功能的重复项
 
 ***
 
 ## 文件命名
 
-* 使用小写字母和连字符：`python-reviewer.md`
-* 要有描述性：`tdd-workflow.md` 而不是 `workflow.md`
-* 确保智能体/技能名称与文件名匹配
+* 使用小写和连字符：`python-reviewer.md`
+* 描述性要强：`tdd-workflow.md` 而不是 `workflow.md`
+* 名称与文件名匹配
 
 ***
 
 ## 有问题吗？
 
-请提出问题或在 X 上联系我们：[@affaanmustafa](https://x.com/affaanmustafa)
+* **问题：** [github.com/affaan-m/everything-claude-code/issues](https://github.com/affaan-m/everything-claude-code/issues)
+* **X/Twitter：** [@affaanmustafa](https://x.com/affaanmustafa)
 
 ***
 
-感谢您的贡献。让我们共同构建一个优秀的资源。
+感谢您的贡献！让我们共同构建一个出色的资源。
