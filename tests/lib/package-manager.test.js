@@ -1306,6 +1306,31 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  // ── Round 72: setProjectPackageManager save failure wraps error ──
+  console.log('\nRound 72: setProjectPackageManager (save failure):');
+
+  if (test('setProjectPackageManager throws wrapped error when write fails', () => {
+    if (process.platform === 'win32' || process.getuid?.() === 0) {
+      console.log('    (skipped — chmod ineffective on Windows/root)');
+      return;
+    }
+    const isoProject = path.join(os.tmpdir(), `ecc-pm-proj-r72-${Date.now()}`);
+    const claudeDir = path.join(isoProject, '.claude');
+    fs.mkdirSync(claudeDir, { recursive: true });
+
+    // Make .claude directory read-only — can't create new files
+    fs.chmodSync(claudeDir, 0o555);
+
+    try {
+      assert.throws(() => {
+        pm.setProjectPackageManager('npm', isoProject);
+      }, /Failed to save package manager config/);
+    } finally {
+      fs.chmodSync(claudeDir, 0o755);
+      fs.rmSync(isoProject, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
   // Summary
   console.log('\n=== Test Results ===');
   console.log(`Passed: ${passed}`);

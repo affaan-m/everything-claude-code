@@ -1917,6 +1917,49 @@ function runTests() {
     cleanupTestDir(testDir); cleanupTestDir(agentsDir); cleanupTestDir(skillsDir);
   })) passed++; else failed++;
 
+  // ── Round 72: validate-hooks.js async/timeout type validation ──
+  console.log('\nRound 72: validate-hooks.js (async and timeout type validation):');
+
+  if (test('rejects hook with non-boolean async field', () => {
+    const testDir = createTestDir();
+    const hooksFile = path.join(testDir, 'hooks.json');
+    fs.writeFileSync(hooksFile, JSON.stringify({
+      PreToolUse: [{
+        matcher: 'Write',
+        hooks: [{
+          type: 'intercept',
+          command: 'echo test',
+          async: 'yes'  // Should be boolean, not string
+        }]
+      }]
+    }));
+    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    assert.strictEqual(result.code, 1, 'Should fail on non-boolean async');
+    assert.ok(result.stderr.includes('async'), 'Should mention async in error');
+    assert.ok(result.stderr.includes('boolean'), 'Should mention boolean type');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('rejects hook with negative timeout value', () => {
+    const testDir = createTestDir();
+    const hooksFile = path.join(testDir, 'hooks.json');
+    fs.writeFileSync(hooksFile, JSON.stringify({
+      PostToolUse: [{
+        matcher: 'Edit',
+        hooks: [{
+          type: 'intercept',
+          command: 'echo test',
+          timeout: -5  // Must be non-negative
+        }]
+      }]
+    }));
+    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    assert.strictEqual(result.code, 1, 'Should fail on negative timeout');
+    assert.ok(result.stderr.includes('timeout'), 'Should mention timeout in error');
+    assert.ok(result.stderr.includes('non-negative'), 'Should mention non-negative');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
   // Summary
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
