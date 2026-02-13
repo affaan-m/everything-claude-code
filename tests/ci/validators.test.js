@@ -1638,6 +1638,57 @@ function runTests() {
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
+  // ── Round 52: command inline backtick refs, workflow whitespace, code-only rules ──
+  console.log('\nRound 52: validate-commands (inline backtick refs):');
+
+  if (test('validates command refs inside inline backticks (not stripped by code block removal)', () => {
+    const testDir = createTestDir();
+    const agentsDir = createTestDir();
+    const skillsDir = createTestDir();
+    fs.writeFileSync(path.join(testDir, 'deploy.md'), '# Deploy\nDeploy the app.');
+    // Inline backtick ref `/deploy` should be validated (only fenced blocks stripped)
+    fs.writeFileSync(path.join(testDir, 'workflow.md'),
+      '# Workflow\nFirst run `/deploy` to deploy the app.');
+
+    const result = runValidatorWithDirs('validate-commands', {
+      COMMANDS_DIR: testDir, AGENTS_DIR: agentsDir, SKILLS_DIR: skillsDir
+    });
+    assert.strictEqual(result.code, 0, 'Inline backtick command refs should be validated');
+    cleanupTestDir(testDir); cleanupTestDir(agentsDir); cleanupTestDir(skillsDir);
+  })) passed++; else failed++;
+
+  console.log('\nRound 52: validate-commands (workflow whitespace):');
+
+  if (test('validates workflow arrows with irregular whitespace', () => {
+    const testDir = createTestDir();
+    const agentsDir = createTestDir();
+    const skillsDir = createTestDir();
+    fs.writeFileSync(path.join(agentsDir, 'planner.md'), '# Planner');
+    fs.writeFileSync(path.join(agentsDir, 'reviewer.md'), '# Reviewer');
+    // Three workflow lines: no spaces, double spaces, tab-separated
+    fs.writeFileSync(path.join(testDir, 'flow.md'),
+      '# Workflow\n\nplanner->reviewer\nplanner  ->  reviewer');
+
+    const result = runValidatorWithDirs('validate-commands', {
+      COMMANDS_DIR: testDir, AGENTS_DIR: agentsDir, SKILLS_DIR: skillsDir
+    });
+    assert.strictEqual(result.code, 0, 'Workflow arrows with irregular whitespace should be valid');
+    cleanupTestDir(testDir); cleanupTestDir(agentsDir); cleanupTestDir(skillsDir);
+  })) passed++; else failed++;
+
+  console.log('\nRound 52: validate-rules (code-only content):');
+
+  if (test('passes rule file containing only a fenced code block', () => {
+    const testDir = createTestDir();
+    fs.writeFileSync(path.join(testDir, 'code-only.md'),
+      '```javascript\nfunction example() {\n  return true;\n}\n```');
+
+    const result = runValidatorWithDir('validate-rules', 'RULES_DIR', testDir);
+    assert.strictEqual(result.code, 0, 'Rule with only code block should pass (non-empty)');
+    assert.ok(result.stdout.includes('Validated 1'), 'Should count the code-only file');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
   // Summary
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
