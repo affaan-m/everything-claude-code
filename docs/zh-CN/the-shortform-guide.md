@@ -1,6 +1,6 @@
 # Claude Code 简明指南
 
-![Header: Anthropic Hackathon Winner - Tips & Tricks for Claude Code](./assets/images/shortform/00-header.png)
+![Header: Anthropic Hackathon Winner - Tips & Tricks for Claude Code](../../assets/images/shortform/00-header.png)
 
 ***
 
@@ -16,7 +16,7 @@
 
 在使用 Opus 4.5 长时间编码后，你想清理死代码和松散的 .md 文件吗？运行 `/refactor-clean`。需要测试吗？`/tdd`、`/e2e`、`/test-coverage`。技能也可以包含代码地图——一种让 Claude 快速浏览你的代码库而无需消耗上下文进行探索的方式。
 
-![显示链式命令的终端](./assets/images/shortform/02-chaining-commands.jpeg)
+![显示链式命令的终端](../../assets/images/shortform/02-chaining-commands.jpeg)
 *将命令链接在一起*
 
 命令是通过斜杠命令执行的技能。它们有重叠但存储方式不同：
@@ -66,8 +66,8 @@
 }
 ```
 
-![PostToolUse 钩子反馈](./assets/images/shortform/03-posttooluse-hook.png)
-*在运行 PostToolUse 钩子时，你在 Claude Code 中获得的反馈示例*
+![PostToolUse 钩子反馈](../../assets/images/shortform/03-posttooluse-hook.png)
+*在 Claude Code 中运行 PostToolUse 钩子时获得的反馈示例*
 
 **专业提示：** 使用 `hookify` 插件以对话方式创建钩子，而不是手动编写 JSON。运行 `/hookify` 并描述你想要什么。
 
@@ -129,8 +129,8 @@ MCP 将 Claude 直接连接到外部服务。它不是 API 的替代品——而
 
 **示例：** Supabase MCP 允许 Claude 提取特定数据，直接在上游运行 SQL 而无需复制粘贴。数据库、部署平台等也是如此。
 
-![Supabase MCP 列出表](./assets/images/shortform/04-supabase-mcp.jpeg)
-*Supabase MCP 列出公共模式中表的示例*
+![Supabase MCP 列出表格](../../assets/images/shortform/04-supabase-mcp.jpeg)
+*Supabase MCP 列出公共模式内表格的示例*
 
 **Claude 中的 Chrome：** 是一个内置的插件 MCP，允许 Claude 自主控制你的浏览器——点击查看事物如何工作。
 
@@ -138,8 +138,8 @@ MCP 将 Claude 直接连接到外部服务。它不是 API 的替代品——而
 
 对 MCP 要挑剔。我将所有 MCP 保存在用户配置中，但**禁用所有未使用的**。导航到 `/plugins` 并向下滚动，或运行 `/mcp`。
 
-![插件界面](./assets/images/shortform/05-plugins-interface.jpeg)
-*使用 /plugins 导航到 MCP，查看当前安装了哪些以及它们的状态*
+![/plugins 界面](../../assets/images/shortform/05-plugins-interface.jpeg)
+*使用 /plugins 导航到 MCP 以查看当前安装的插件及其状态*
 
 在压缩之前，你的 200k 上下文窗口如果启用了太多工具，可能只有 70k。性能会显著下降。
 
@@ -167,7 +167,7 @@ claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 # Open Claude, run /plugins, find new marketplace, install from there
 ```
 
-![显示 mgrep 的市场标签页](./assets/images/shortform/06-marketplaces-mgrep.jpeg)
+![显示 mgrep 的市场标签页](../../assets/images/shortform/06-marketplaces-mgrep.jpeg)
 *显示新安装的 Mixedbread-Grep 市场*
 
 **LSP 插件** 如果你经常在编辑器之外运行 Claude Code，则特别有用。语言服务器协议为 Claude 提供实时类型检查、跳转到定义和智能补全，而无需打开 IDE。
@@ -238,7 +238,7 @@ mgrep --web "Next.js 15 app router changes"  # Web search
 
 使用 GitHub Actions 在你的 PR 上设置代码审查。配置后，Claude 可以自动审查 PR。
 
-![Claude 机器人批准 PR](./assets/images/shortform/08-github-pr-review.jpeg)
+![Claude 机器人批准 PR](../../assets/images/shortform/08-github-pr-review.jpeg)
 *Claude 批准一个错误修复 PR*
 
 ### 沙盒化
@@ -263,8 +263,8 @@ mgrep --web "Next.js 15 app router changes"  # Web search
 * **最小的资源使用** - 在繁重操作期间不会与 Claude 竞争 RAM/CPU。运行 Opus 时很重要
 * **Vim 模式** - 完整的 vim 键绑定，如果你喜欢的话
 
-![带自定义命令的 Zed 编辑器](./assets/images/shortform/09-zed-editor.jpeg)
-*使用 CMD+Shift+R 自定义命令下拉菜单的 Zed 编辑器。跟随模式显示为右下角的靶心。*
+![带有自定义命令的 Zed 编辑器](../../assets/images/shortform/09-zed-editor.jpeg)
+*使用 CMD+Shift+R 显示自定义命令下拉菜单的 Zed 编辑器。右下角的靶心图标表示跟随模式。*
 
 **编辑器无关提示：**
 
@@ -278,8 +278,8 @@ mgrep --web "Next.js 15 app router changes"  # Web search
 
 这也是一个可行的选择，并且与 Claude Code 配合良好。你可以使用终端格式，通过 `\ide` 与你的编辑器自动同步以启用 LSP 功能（现在与插件有些冗余）。或者你可以选择扩展，它更集成于编辑器并具有匹配的 UI。
 
-![VS Code Claude Code 扩展](./assets/images/shortform/10-vscode-extension.jpeg)
-*VS Code 扩展为 Claude Code 提供了原生图形界面，直接集成到你的 IDE 中。*
+![VS Code Claude Code 扩展](../../assets/images/shortform/10-vscode-extension.jpeg)
+*VS Code 扩展为 Claude Code 提供了原生图形界面，直接集成到您的 IDE 中。*
 
 ***
 
@@ -363,7 +363,7 @@ mgrep@Mixedbread-Grep                  # 更好的搜索
 
 显示用户、目录、带脏标记的 git 分支、剩余上下文百分比、模型、时间和待办事项计数：
 
-![自定义状态行](./assets/images/shortform/11-statusline.jpeg)
+![自定义状态行](../../assets/images/shortform/11-statusline.jpeg)
 *我的 Mac 根目录中的状态行示例*
 
 ```
