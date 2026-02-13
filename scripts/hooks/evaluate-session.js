@@ -81,8 +81,8 @@ async function main() {
     process.exit(0);
   }
 
-  // Count user messages in session
-  const messageCount = countInFile(transcriptPath, /"type":"user"/g);
+  // Count user messages in session (allow optional whitespace around colon)
+  const messageCount = countInFile(transcriptPath, /"type"\s*:\s*"user"/g);
 
   // Skip short sessions
   if (messageCount < minSessionLength) {

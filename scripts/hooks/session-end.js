@@ -49,7 +49,7 @@ function extractSessionSummary(transcriptPath) {
         const text = typeof entry.content === 'string'
           ? entry.content
           : Array.isArray(entry.content)
-            ? entry.content.map(c => c.text || '').join(' ')
+            ? entry.content.map(c => (c && c.text) || '').join(' ')
             : '';
         if (text.trim()) {
           userMessages.push(text.trim().slice(0, 200));

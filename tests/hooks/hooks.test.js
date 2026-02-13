@@ -262,6 +262,155 @@ async function runTests() {
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
+  // evaluate-session.js: whitespace tolerance regression test
+  if (await asyncTest('counts user messages with whitespace in JSON (regression)', async () => {
+    const testDir = createTestDir();
+    const transcriptPath = path.join(testDir, 'transcript.jsonl');
+
+    // Create transcript with whitespace around colons (pretty-printed style)
+    const lines = [];
+    for (let i = 0; i < 15; i++) {
+      lines.push('{ "type" : "user", "content": "message ' + i + '" }');
+    }
+    fs.writeFileSync(transcriptPath, lines.join('\n'));
+
+    const stdinJson = JSON.stringify({ transcript_path: transcriptPath });
+    const result = await runScript(path.join(scriptsDir, 'evaluate-session.js'), stdinJson);
+
+    assert.ok(
+      result.stderr.includes('15 messages'),
+      'Should count user messages with whitespace in JSON, got: ' + result.stderr.trim()
+    );
+
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  // session-end.js: content array with null elements regression test
+  if (await asyncTest('handles transcript with null content array elements (regression)', async () => {
+    const testDir = createTestDir();
+    const transcriptPath = path.join(testDir, 'transcript.jsonl');
+
+    // Create transcript with null elements in content array
+    const lines = [
+      '{"type":"user","content":[null,{"text":"hello"},null,{"text":"world"}]}',
+      '{"type":"user","content":"simple string message"}',
+      '{"type":"user","content":[{"text":"normal"},{"text":"array"}]}',
+      '{"type":"tool_use","tool_name":"Edit","tool_input":{"file_path":"/test.js"}}',
+    ];
+    fs.writeFileSync(transcriptPath, lines.join('\n'));
+
+    const stdinJson = JSON.stringify({ transcript_path: transcriptPath });
+    const result = await runScript(path.join(scriptsDir, 'session-end.js'), stdinJson);
+
+    // Should not crash (exit 0)
+    assert.strictEqual(result.code, 0, 'Should handle null content elements without crash');
+  })) passed++; else failed++;
+
+  // post-edit-console-warn.js tests
+  console.log('\npost-edit-console-warn.js:');
+
+  if (await asyncTest('warns about console.log in JS files', async () => {
+    const testDir = createTestDir();
+    const testFile = path.join(testDir, 'test.js');
+    fs.writeFileSync(testFile, 'const x = 1;\nconsole.log(x);\nreturn x;');
+
+    const stdinJson = JSON.stringify({ tool_input: { file_path: testFile } });
+    const result = await runScript(path.join(scriptsDir, 'post-edit-console-warn.js'), stdinJson);
+
+    assert.ok(result.stderr.includes('console.log'), 'Should warn about console.log');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (await asyncTest('does not warn for non-JS files', async () => {
+    const testDir = createTestDir();
+    const testFile = path.join(testDir, 'test.md');
+    fs.writeFileSync(testFile, 'Use console.log for debugging');
+
+    const stdinJson = JSON.stringify({ tool_input: { file_path: testFile } });
+    const result = await runScript(path.join(scriptsDir, 'post-edit-console-warn.js'), stdinJson);
+
+    assert.ok(!result.stderr.includes('console.log'), 'Should not warn for non-JS files');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (await asyncTest('does not warn for clean JS files', async () => {
+    const testDir = createTestDir();
+    const testFile = path.join(testDir, 'clean.ts');
+    fs.writeFileSync(testFile, 'const x = 1;\nreturn x;');
+
+    const stdinJson = JSON.stringify({ tool_input: { file_path: testFile } });
+    const result = await runScript(path.join(scriptsDir, 'post-edit-console-warn.js'), stdinJson);
+
+    assert.ok(!result.stderr.includes('WARNING'), 'Should not warn for clean files');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (await asyncTest('handles missing file gracefully', async () => {
+    const stdinJson = JSON.stringify({ tool_input: { file_path: '/nonexistent/file.ts' } });
+    const result = await runScript(path.join(scriptsDir, 'post-edit-console-warn.js'), stdinJson);
+
+    assert.strictEqual(result.code, 0, 'Should not crash on missing file');
+  })) passed++; else failed++;
+
+  if (await asyncTest('passes through original data on stdout', async () => {
+    const stdinJson = JSON.stringify({ tool_input: { file_path: '/test.py' } });
+    const result = await runScript(path.join(scriptsDir, 'post-edit-console-warn.js'), stdinJson);
+
+    assert.ok(result.stdout.includes('tool_input'), 'Should pass through stdin data');
+  })) passed++; else failed++;
+
+  // post-edit-format.js tests
+  console.log('\npost-edit-format.js:');
+
+  if (await asyncTest('runs without error on empty stdin', async () => {
+    const result = await runScript(path.join(scriptsDir, 'post-edit-format.js'));
+    assert.strictEqual(result.code, 0, 'Should exit 0 on empty stdin');
+  })) passed++; else failed++;
+
+  if (await asyncTest('skips non-JS/TS files', async () => {
+    const stdinJson = JSON.stringify({ tool_input: { file_path: '/test.py' } });
+    const result = await runScript(path.join(scriptsDir, 'post-edit-format.js'), stdinJson);
+    assert.strictEqual(result.code, 0, 'Should exit 0 for non-JS files');
+    assert.ok(result.stdout.includes('tool_input'), 'Should pass through stdin data');
+  })) passed++; else failed++;
+
+  if (await asyncTest('passes through data for invalid JSON', async () => {
+    const result = await runScript(path.join(scriptsDir, 'post-edit-format.js'), 'not json');
+    assert.strictEqual(result.code, 0, 'Should exit 0 for invalid JSON');
+  })) passed++; else failed++;
+
+  // post-edit-typecheck.js tests
+  console.log('\npost-edit-typecheck.js:');
+
+  if (await asyncTest('runs without error on empty stdin', async () => {
+    const result = await runScript(path.join(scriptsDir, 'post-edit-typecheck.js'));
+    assert.strictEqual(result.code, 0, 'Should exit 0 on empty stdin');
+  })) passed++; else failed++;
+
+  if (await asyncTest('skips non-TypeScript files', async () => {
+    const stdinJson = JSON.stringify({ tool_input: { file_path: '/test.js' } });
+    const result = await runScript(path.join(scriptsDir, 'post-edit-typecheck.js'), stdinJson);
+    assert.strictEqual(result.code, 0, 'Should exit 0 for non-TS files');
+    assert.ok(result.stdout.includes('tool_input'), 'Should pass through stdin data');
+  })) passed++; else failed++;
+
+  if (await asyncTest('handles nonexistent TS file gracefully', async () => {
+    const stdinJson = JSON.stringify({ tool_input: { file_path: '/nonexistent/file.ts' } });
+    const result = await runScript(path.join(scriptsDir, 'post-edit-typecheck.js'), stdinJson);
+    assert.strictEqual(result.code, 0, 'Should exit 0 for missing file');
+  })) passed++; else failed++;
+
+  if (await asyncTest('handles TS file with no tsconfig gracefully', async () => {
+    const testDir = createTestDir();
+    const testFile = path.join(testDir, 'test.ts');
+    fs.writeFileSync(testFile, 'const x: number = 1;');
+
+    const stdinJson = JSON.stringify({ tool_input: { file_path: testFile } });
+    const result = await runScript(path.join(scriptsDir, 'post-edit-typecheck.js'), stdinJson);
+    assert.strictEqual(result.code, 0, 'Should exit 0 when no tsconfig found');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
   // hooks.json validation
   console.log('\nhooks.json Validation:');
 
