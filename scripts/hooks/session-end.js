@@ -45,18 +45,20 @@ function extractSessionSummary(transcriptPath) {
       const entry = JSON.parse(line);
 
       // Collect user messages (first 200 chars each)
-      if (entry.type === 'user' || entry.role === 'user') {
-        const text = typeof entry.content === 'string'
-          ? entry.content
-          : Array.isArray(entry.content)
-            ? entry.content.map(c => (c && c.text) || '').join(' ')
+      if (entry.type === 'user' || entry.role === 'user' || entry.message?.role === 'user') {
+        // Support both direct content and nested message.content (Claude Code JSONL format)
+        const rawContent = entry.message?.content ?? entry.content;
+        const text = typeof rawContent === 'string'
+          ? rawContent
+          : Array.isArray(rawContent)
+            ? rawContent.map(c => (c && c.text) || '').join(' ')
             : '';
         if (text.trim()) {
           userMessages.push(text.trim().slice(0, 200));
         }
       }
 
-      // Collect tool names and modified files
+      // Collect tool names and modified files (direct tool_use entries)
       if (entry.type === 'tool_use' || entry.tool_name) {
         const toolName = entry.tool_name || entry.name || '';
         if (toolName) toolsUsed.add(toolName);
@@ -64,6 +66,21 @@ function extractSessionSummary(transcriptPath) {
         const filePath = entry.tool_input?.file_path || entry.input?.file_path || '';
         if (filePath && (toolName === 'Edit' || toolName === 'Write')) {
           filesModified.add(filePath);
+        }
+      }
+
+      // Extract tool uses from assistant message content blocks (Claude Code JSONL format)
+      if (entry.type === 'assistant' && Array.isArray(entry.message?.content)) {
+        for (const block of entry.message.content) {
+          if (block.type === 'tool_use') {
+            const toolName = block.name || '';
+            if (toolName) toolsUsed.add(toolName);
+
+            const filePath = block.input?.file_path || '';
+            if (filePath && (toolName === 'Edit' || toolName === 'Write')) {
+              filesModified.add(filePath);
+            }
+          }
         }
       }
     } catch {
