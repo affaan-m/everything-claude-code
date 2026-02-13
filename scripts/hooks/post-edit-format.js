@@ -29,7 +29,8 @@ process.stdin.on('end', () => {
       try {
         execFileSync('npx', ['prettier', '--write', filePath], {
           stdio: ['pipe', 'pipe', 'pipe'],
-          timeout: 15000
+          timeout: 15000,
+          shell: process.platform === 'win32'
         });
       } catch {
         // Prettier not installed, file missing, or failed — non-blocking
