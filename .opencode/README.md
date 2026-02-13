@@ -36,6 +36,7 @@ After installation, the `ecc-install` CLI becomes available:
 
 ```bash
 npx ecc-install typescript
+```
 
 ### Option 2: Direct Use
 
