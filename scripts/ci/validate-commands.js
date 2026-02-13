@@ -74,14 +74,17 @@ function validateCommands() {
 
     // Check cross-references to other commands (e.g., `/build-fix`)
     // Skip lines that describe hypothetical output (e.g., "→ Creates: `/new-table`")
-    const cmdRefs = contentNoCodeBlocks.matchAll(/^.*`\/([a-z][-a-z0-9]*)`.*$/gm);
-    for (const match of cmdRefs) {
-      const line = match[0];
+    // Process line-by-line so ALL command refs per line are captured
+    // (previous anchored regex /^.*`\/...`.*$/gm only matched the last ref per line)
+    for (const line of contentNoCodeBlocks.split('\n')) {
       if (/creates:|would create:/i.test(line)) continue;
-      const refName = match[1];
-      if (!validCommands.has(refName)) {
-        console.error(`ERROR: ${file} - references non-existent command /${refName}`);
-        hasErrors = true;
+      const lineRefs = line.matchAll(/`\/([a-z][-a-z0-9]*)`/g);
+      for (const match of lineRefs) {
+        const refName = match[1];
+        if (!validCommands.has(refName)) {
+          console.error(`ERROR: ${file} - references non-existent command /${refName}`);
+          hasErrors = true;
+        }
       }
     }
 

@@ -543,6 +543,82 @@ function runTests() {
     assert.ok(data.metadata.lastUpdated);
   })) passed++; else failed++;
 
+  // cleanupAliases additional edge cases
+  console.log('\ncleanupAliases (edge cases):');
+
+  if (test('returns correct totalChecked when all removed', () => {
+    resetAliases();
+    aliases.setAlias('dead-1', '/dead/1');
+    aliases.setAlias('dead-2', '/dead/2');
+    aliases.setAlias('dead-3', '/dead/3');
+
+    const result = aliases.cleanupAliases(() => false); // none exist
+    assert.strictEqual(result.removed, 3);
+    assert.strictEqual(result.totalChecked, 3); // 0 remaining + 3 removed
+    assert.strictEqual(result.removedAliases.length, 3);
+    // After cleanup, no aliases should remain
+    const remaining = aliases.listAliases();
+    assert.strictEqual(remaining.length, 0);
+  })) passed++; else failed++;
+
+  if (test('cleanupAliases with empty aliases file does nothing', () => {
+    resetAliases();
+    const result = aliases.cleanupAliases(() => true);
+    assert.strictEqual(result.removed, 0);
+    assert.strictEqual(result.totalChecked, 0);
+    assert.strictEqual(result.removedAliases.length, 0);
+  })) passed++; else failed++;
+
+  if (test('cleanupAliases preserves aliases where sessionExists returns true', () => {
+    resetAliases();
+    aliases.setAlias('keep-me', '/sessions/real');
+    aliases.setAlias('remove-me', '/sessions/gone');
+
+    const result = aliases.cleanupAliases((p) => p === '/sessions/real');
+    assert.strictEqual(result.removed, 1);
+    assert.strictEqual(result.removedAliases[0].name, 'remove-me');
+    // keep-me should survive
+    const kept = aliases.resolveAlias('keep-me');
+    assert.ok(kept, 'keep-me should still exist');
+    assert.strictEqual(kept.sessionPath, '/sessions/real');
+  })) passed++; else failed++;
+
+  // renameAlias edge cases
+  console.log('\nrenameAlias (edge cases):');
+
+  if (test('rename preserves session path and title', () => {
+    resetAliases();
+    aliases.setAlias('src', '/my/session', 'My Feature');
+    const result = aliases.renameAlias('src', 'dst');
+    assert.strictEqual(result.success, true);
+    const resolved = aliases.resolveAlias('dst');
+    assert.ok(resolved);
+    assert.strictEqual(resolved.sessionPath, '/my/session');
+    assert.strictEqual(resolved.title, 'My Feature');
+  })) passed++; else failed++;
+
+  if (test('rename preserves original createdAt timestamp', () => {
+    resetAliases();
+    aliases.setAlias('orig', '/path', 'T');
+    const before = aliases.loadAliases().aliases['orig'].createdAt;
+    aliases.renameAlias('orig', 'renamed');
+    const after = aliases.loadAliases().aliases['renamed'].createdAt;
+    assert.strictEqual(after, before, 'createdAt should be preserved across rename');
+  })) passed++; else failed++;
+
+  // getAliasesForSession edge cases
+  console.log('\ngetAliasesForSession (edge cases):');
+
+  if (test('does not match partial session paths', () => {
+    resetAliases();
+    aliases.setAlias('full', '/sessions/abc123');
+    aliases.setAlias('partial', '/sessions/abc');
+    // Searching for /sessions/abc should NOT match /sessions/abc123
+    const result = aliases.getAliasesForSession('/sessions/abc');
+    assert.strictEqual(result.length, 1);
+    assert.strictEqual(result[0].name, 'partial');
+  })) passed++; else failed++;
+
   // Cleanup — restore both HOME and USERPROFILE (Windows)
   process.env.HOME = origHome;
   if (origUserProfile !== undefined) {

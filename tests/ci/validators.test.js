@@ -634,6 +634,75 @@ function runTests() {
     cleanupTestDir(testDir); cleanupTestDir(agentsDir); cleanupTestDir(skillsDir);
   })) passed++; else failed++;
 
+  if (test('captures ALL command references on a single line (multi-ref)', () => {
+    const testDir = createTestDir();
+    const agentsDir = createTestDir();
+    const skillsDir = createTestDir();
+    // Line with two command references — both should be detected
+    fs.writeFileSync(path.join(testDir, 'multi.md'),
+      '# Multi\nUse `/ghost-a` and `/ghost-b` together.');
+
+    const result = runValidatorWithDirs('validate-commands', {
+      COMMANDS_DIR: testDir, AGENTS_DIR: agentsDir, SKILLS_DIR: skillsDir
+    });
+    assert.strictEqual(result.code, 1, 'Should fail on broken refs');
+    // BOTH ghost-a AND ghost-b must be reported (this was the greedy regex bug)
+    assert.ok(result.stderr.includes('ghost-a'), 'Should report first ref /ghost-a');
+    assert.ok(result.stderr.includes('ghost-b'), 'Should report second ref /ghost-b');
+    cleanupTestDir(testDir); cleanupTestDir(agentsDir); cleanupTestDir(skillsDir);
+  })) passed++; else failed++;
+
+  if (test('captures three command refs on one line', () => {
+    const testDir = createTestDir();
+    const agentsDir = createTestDir();
+    const skillsDir = createTestDir();
+    fs.writeFileSync(path.join(testDir, 'triple.md'),
+      '# Triple\nChain `/alpha`, `/beta`, and `/gamma` in order.');
+
+    const result = runValidatorWithDirs('validate-commands', {
+      COMMANDS_DIR: testDir, AGENTS_DIR: agentsDir, SKILLS_DIR: skillsDir
+    });
+    assert.strictEqual(result.code, 1, 'Should fail on all three broken refs');
+    assert.ok(result.stderr.includes('alpha'), 'Should report /alpha');
+    assert.ok(result.stderr.includes('beta'), 'Should report /beta');
+    assert.ok(result.stderr.includes('gamma'), 'Should report /gamma');
+    cleanupTestDir(testDir); cleanupTestDir(agentsDir); cleanupTestDir(skillsDir);
+  })) passed++; else failed++;
+
+  if (test('multi-ref line with one valid and one invalid ref', () => {
+    const testDir = createTestDir();
+    const agentsDir = createTestDir();
+    const skillsDir = createTestDir();
+    // "real-cmd" exists, "fake-cmd" does not
+    fs.writeFileSync(path.join(testDir, 'real-cmd.md'), '# Real\nA real command.');
+    fs.writeFileSync(path.join(testDir, 'mixed.md'),
+      '# Mixed\nRun `/real-cmd` then `/fake-cmd`.');
+
+    const result = runValidatorWithDirs('validate-commands', {
+      COMMANDS_DIR: testDir, AGENTS_DIR: agentsDir, SKILLS_DIR: skillsDir
+    });
+    assert.strictEqual(result.code, 1, 'Should fail for the fake ref');
+    assert.ok(result.stderr.includes('fake-cmd'), 'Should report /fake-cmd');
+    // real-cmd should NOT appear in errors
+    assert.ok(!result.stderr.includes('real-cmd'), 'Should not report valid /real-cmd');
+    cleanupTestDir(testDir); cleanupTestDir(agentsDir); cleanupTestDir(skillsDir);
+  })) passed++; else failed++;
+
+  if (test('creates: line with multiple refs skips entire line', () => {
+    const testDir = createTestDir();
+    const agentsDir = createTestDir();
+    const skillsDir = createTestDir();
+    // Both refs on a "Creates:" line should be skipped entirely
+    fs.writeFileSync(path.join(testDir, 'gen.md'),
+      '# Generator\nCreates: `/new-a` and `/new-b`');
+
+    const result = runValidatorWithDirs('validate-commands', {
+      COMMANDS_DIR: testDir, AGENTS_DIR: agentsDir, SKILLS_DIR: skillsDir
+    });
+    assert.strictEqual(result.code, 0, 'Should skip all refs on creates: line');
+    cleanupTestDir(testDir); cleanupTestDir(agentsDir); cleanupTestDir(skillsDir);
+  })) passed++; else failed++;
+
   if (test('validates valid workflow diagram with known agents', () => {
     const testDir = createTestDir();
     const agentsDir = createTestDir();
