@@ -51,6 +51,18 @@
           }
         ],
         "description": "Suggest manual compaction at logical intervals"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh",
+            "async": true,
+            "timeout": 10
+          }
+        ],
+        "description": "Capture tool use observations for continuous learning"
       }
     ],
     "PreCompact": [
@@ -129,6 +141,18 @@
           }
         ],
         "description": "Warn about console.log statements after edits"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh",
+            "async": true,
+            "timeout": 10
+          }
+        ],
+        "description": "Capture tool use results for continuous learning"
       }
     ],
     "Stop": [
