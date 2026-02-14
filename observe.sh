@@ -8,32 +8,31 @@
 #
 # If installed as a plugin, use ${CLAUDE_PLUGIN_ROOT}:
 # {
-# "hooks": {
-# "PreToolUse": [{
-# "matcher": "*",
-# "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre" }]
-# }],
-# "PostToolUse": [{
-# "matcher": "*",
-# "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post" }]
-# }]
-# }
+#   "hooks": {
+#     "PreToolUse": [{
+#       "matcher": "*",
+#       "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre" }]
+#     }],
+#     "PostToolUse": [{
+#       "matcher": "*",
+#       "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post" }]
+#     }]
+#   }
 # }
 #
 # If installed manually to ~/.claude/skills:
 # {
-# "hooks": {
-# "PreToolUse": [{
-# "matcher": "*",
-# "hooks": [{ "type": "command", "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh pre" }]
-# }],
-# "PostToolUse": [{
-# "matcher": "*",
-# "hooks": [{ "type": "command", "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh post" }]
-# }]
+#   "hooks": {
+#     "PreToolUse": [{
+#       "matcher": "*",
+#       "hooks": [{ "type": "command", "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh pre" }]
+#     }],
+#     "PostToolUse": [{
+#       "matcher": "*",
+#       "hooks": [{ "type": "command", "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh post" }]
+#     }]
+#   }
 # }
-# }
-#
 set -e
 
 CONFIG_DIR="${HOME}/.claude/homunculus"
@@ -115,7 +114,7 @@ fi
 # Archive if file too large
 if [ -f "$OBSERVATIONS_FILE" ]; then
   file_size_mb=$(du -m "$OBSERVATIONS_FILE" 2>/dev/null | cut -f1)
-  if [ "${file_size_mb:-0}" -ge "$MAX_FILE_SIZE_MB" ]; then
+  if [ "");"${file_size_mb:-0}" -ge "$MAX_FILE_SIZE_MB" ]; then
     archive_dir="${CONFIG_DIR}/observations.archive"
     mkdir -p "$archive_dir"
     mv "$OBSERVATIONS_FILE" "$archive_dir/observations-$(date +%Y%m%d-%H%M%S).jsonl"
