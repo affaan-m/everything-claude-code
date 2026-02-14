@@ -8,32 +8,32 @@
 #
 # If installed as a plugin, use ${CLAUDE_PLUGIN_ROOT}:
 # {
-#   "hooks": {
-#     "PreToolUse": [{
-#       "matcher": "*",
-#       "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre" }]
-#     }],
-#     "PostToolUse": [{
-#       "matcher": "*",
-#       "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post" }]
-#     }]
-#   }
+# "hooks": {
+# "PreToolUse": [{
+# "matcher": "*",
+# "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre" }]
+# }],
+# "PostToolUse": [{
+# "matcher": "*",
+# "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post" }]
+# }]
+# }
 # }
 #
 # If installed manually to ~/.claude/skills:
 # {
-#   "hooks": {
-#     "PreToolUse": [{
-#       "matcher": "*",
-#       "hooks": [{ "type": "command", "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh pre" }]
-#     }],
-#     "PostToolUse": [{
-#       "matcher": "*",
-#       "hooks": [{ "type": "command", "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh post" }]
-#     }]
-#   }
+# "hooks": {
+# "PreToolUse": [{
+# "matcher": "*",
+# "hooks": [{ "type": "command", "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh pre" }]
+# }],
+# "PostToolUse": [{
+# "matcher": "*",
+# "hooks": [{ "type": "command", "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh post" }]
+# }]
 # }
-
+# }
+#
 set -e
 
 CONFIG_DIR="${HOME}/.claude/homunculus"
@@ -103,10 +103,11 @@ PARSED_OK=$(echo "$PARSED" | python3 -c "import json,sys; print(json.load(sys.st
 if [ "$PARSED_OK" != "True" ]; then
   # Fallback: log raw input for debugging
   timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  TIMESTAMP="$timestamp" echo "$INPUT_JSON" | python3 -c "
-import json, sys, os
+  echo "$INPUT_JSON" | python3 -c "
+import json, sys
+timestamp = '$timestamp'
 raw = sys.stdin.read()[:2000]
-print(json.dumps({'timestamp': os.environ['TIMESTAMP'], 'event': 'parse_error', 'raw': raw}))
+print(json.dumps({'timestamp': timestamp, 'event': 'parse_error', 'raw': raw}))
 " >> "$OBSERVATIONS_FILE"
   exit 0
 fi
@@ -124,12 +125,13 @@ fi
 # Build and write observation
 timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-TIMESTAMP="$timestamp" echo "$PARSED" | python3 -c "
-import json, sys, os
+echo "$PARSED" | python3 -c "
+import json, sys
 
+timestamp = '$timestamp'
 parsed = json.load(sys.stdin)
 observation = {
-    'timestamp': os.environ['TIMESTAMP'],
+    'timestamp': timestamp,
     'event': parsed['event'],
     'tool': parsed['tool'],
     'session': parsed['session']
