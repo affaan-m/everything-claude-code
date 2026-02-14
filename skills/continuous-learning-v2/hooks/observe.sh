@@ -103,7 +103,8 @@ PARSED_OK=$(echo "$PARSED" | python3 -c "import json,sys; print(json.load(sys.st
 if [ "$PARSED_OK" != "True" ]; then
   # Fallback: log raw input for debugging
   timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  TIMESTAMP="$timestamp" echo "$INPUT_JSON" | python3 -c "
+  export TIMESTAMP="$timestamp"
+  echo "$INPUT_JSON" | python3 -c "
 import json, sys, os
 raw = sys.stdin.read()[:2000]
 print(json.dumps({'timestamp': os.environ['TIMESTAMP'], 'event': 'parse_error', 'raw': raw}))
@@ -124,7 +125,8 @@ fi
 # Build and write observation
 timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-TIMESTAMP="$timestamp" echo "$PARSED" | python3 -c "
+export TIMESTAMP="$timestamp"
+echo "$PARSED" | python3 -c "
 import json, sys, os
 
 parsed = json.load(sys.stdin)
