@@ -50,8 +50,9 @@ User request → Claude picks a tool → PreToolUse hook runs → Tool executes 
 
 ### Disabling a Hook
 
-Remove or comment out the hook entry in `hooks.json`. If installed as a plugin, override in your `~/.claude/settings.json`:
+Remove or comment out the hook entry in `hooks.json`. 
 
+> **Note:** Hook override via `~/.claude/settings.json` is **not currently supported** due to how Claude Code merges configuration files. The documented override mechanism (adding an entry with empty `hooks: []` array) does not work because configurations are merged rather than replaced. This is a limitation in Claude Code's core configuration system. See [Issue #226](https://github.com/affaan-m/everything-claude-code/issues/226) for details.
 ```json
 {
   "hooks": {
