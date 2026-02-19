@@ -137,8 +137,8 @@ This mode is opt-in and recommended for apps, scripts, and other executable targ
 When you need actual parallelism, explicitly offload with `@concurrent`:
 
 ```swift
-nonisolated struct PhotoProcessor {
-    var cachedStickers: [String: Sticker]
+nonisolated final class PhotoProcessor {
+    private var cachedStickers: [String: Sticker] = [:]
 
     func extractSticker(data: Data, with id: String) async -> Sticker {
         if let sticker = cachedStickers[id] {
@@ -156,7 +156,8 @@ nonisolated struct PhotoProcessor {
 }
 
 // Callers must await
-processedPhotos[item.id] = await PhotoProcessor().process(data: data)
+let processor = PhotoProcessor()
+processedPhotos[item.id] = await processor.extractSticker(data: data, with: item.id)
 ```
 
 To use `@concurrent`:

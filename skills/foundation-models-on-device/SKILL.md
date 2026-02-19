@@ -113,7 +113,11 @@ Let the model invoke custom code for domain-specific tasks:
 
 ```swift
 struct RecipeSearchTool: Tool {
-    struct Arguments: Codable {
+    let name = "recipe_search"
+    let description = "Search for recipes matching a given term and return a list of results."
+
+    @Generable
+    struct Arguments {
         var searchTerm: String
         var numberOfResults: Int
     }
@@ -139,7 +143,7 @@ let response = try await session.respond(to: "Find me some pasta recipes")
 
 ```swift
 do {
-    let answer = try await session.respond("Find a recipe for tomato soup.")
+    let answer = try await session.respond(to: "Find a recipe for tomato soup.")
 } catch let error as LanguageModelSession.ToolCallError {
     print(error.tool.name)
     if case .databaseIsEmpty = error.underlyingError as? RecipeSearchToolError {

@@ -124,13 +124,9 @@ Button("Toggle") {
 .buttonStyle(.glass)
 ```
 
-### Scroll and Sidebar Extensions
+### Extending Horizontal Scrolling Under Sidebar
 
-```swift
-// Extend horizontal scroll under sidebar
-ScrollView(.horizontal) { /* content */ }
-    .scrollExtensionMode(.underSidebar)
-```
+To allow horizontal scroll content to extend under a sidebar or inspector, ensure the `ScrollView` content reaches the leading/trailing edges of the container. The system automatically handles the under-sidebar scrolling behavior when the layout extends to the edges — no additional modifier is needed.
 
 ## Core Pattern — UIKit
 
