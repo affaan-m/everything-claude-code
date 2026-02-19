@@ -137,6 +137,9 @@ This mode is opt-in and recommended for apps, scripts, and other executable targ
 When you need actual parallelism, explicitly offload with `@concurrent`:
 
 ```swift
+// Assumes Approachable Concurrency build settings are enabled:
+// SE-0466 (MainActor default isolation) and SE-0461 (NonisolatedNonsendingByDefault).
+// Safe mutation of cachedStickers via await depends on these compiler options.
 nonisolated final class PhotoProcessor {
     private var cachedStickers: [String: Sticker] = [:]
 
