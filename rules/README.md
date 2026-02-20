@@ -17,7 +17,8 @@ rules/
 │   └── security.md
 ├── typescript/      # TypeScript/JavaScript specific
 ├── python/          # Python specific
-└── golang/          # Go specific
+├── golang/          # Go specific
+└── swift/           # Swift specific
 ```
 
 - **common/** contains universal principles — no language-specific code examples.
@@ -32,6 +33,7 @@ rules/
 ./install.sh typescript
 ./install.sh python
 ./install.sh golang
+./install.sh swift
 
 # Install multiple languages at once
 ./install.sh typescript python
@@ -53,6 +55,7 @@ cp -r rules/common ~/.claude/rules/common
 cp -r rules/typescript ~/.claude/rules/typescript
 cp -r rules/python ~/.claude/rules/python
 cp -r rules/golang ~/.claude/rules/golang
+cp -r rules/swift ~/.claude/rules/swift
 
 # Attention ! ! ! Configure according to your actual project requirements; the configuration here is for reference only.
 ```
