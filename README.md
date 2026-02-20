@@ -117,7 +117,6 @@ Get up and running in under 2 minutes:
 
 > ⚠️ **Important:** Claude Code plugins cannot distribute `rules` automatically. Install them manually:
 
-
 ```bash
 # Clone the repo first
 git clone https://github.com/affaan-m/everything-claude-code.git
@@ -129,6 +128,8 @@ cd everything-claude-code
 # ./install.sh typescript python golang
 # or target cursor:
 # ./install.sh --target cursor typescript
+# or target codex:
+# ./install.sh --target codex typescript
 ```
 
 For manual install instructions see the README in the `rules/` folder.
@@ -191,6 +192,11 @@ everything-claude-code/
 |-- .claude-plugin/   # Plugin and marketplace manifests
 |   |-- plugin.json         # Plugin metadata and component paths
 |   |-- marketplace.json    # Marketplace catalog for /plugin marketplace add
+|
+|-- .codex/          # Codex adapter docs and installed rule/MCP outputs
+|   |-- README.md          # Codex setup and install target behavior
+|
+|-- AGENTS.md        # Codex app/CLI workspace instructions
 |
 |-- agents/           # Specialized subagents for delegation
 |   |-- planner.md           # Feature implementation planning
@@ -698,11 +704,12 @@ Each component is fully independent.
 </details>
 
 <details>
-<summary><b>Does this work with Cursor / OpenCode?</b></summary>
+<summary><b>Does this work with Cursor / OpenCode / Codex?</b></summary>
 
 Yes. ECC is cross-platform:
 - **Cursor**: Pre-translated configs in `.cursor/`. See [Cursor IDE Support](#cursor-ide-support).
 - **OpenCode**: Full plugin support in `.opencode/`. See [OpenCode Support](#-opencode-support).
+- **Codex (macOS app + CLI)**: Direct workspace support via `AGENTS.md` and `.codex/`. See [Codex Support](#-codex-support-macos-app--cli).
 - **Claude Code**: Native — this is the primary target.
 </details>
 
@@ -783,6 +790,35 @@ npm install ecc-universal
 | Hooks | No equivalent in Cursor | See alternatives |
 
 See [.cursor/README.md](.cursor/README.md) for details and [.cursor/MIGRATION.md](.cursor/MIGRATION.md) for the full migration guide.
+
+---
+
+## 🧭 Codex Support (macOS App + CLI)
+
+ECC includes direct Codex support for both the desktop app and CLI.
+
+### Quick Start (Codex)
+
+```bash
+# Install the package
+npm install ecc-universal
+
+# Install Codex configs for your language(s)
+npx ecc-install --target codex typescript
+npx ecc-install --target codex typescript python golang
+```
+
+### What `--target codex` Sets Up
+
+- `AGENTS.md` in project root (created when absent)
+- `.codex/AGENTS.ecc.md` fallback when an existing `AGENTS.md` should be preserved
+- `.codex/rules/common/*` + requested language rules
+- `.codex/mcp-servers.json` copied from `mcp-configs/mcp-servers.json`
+
+### Documentation
+
+- **Codex README**: `.codex/README.md`
+- **Codex Agent Template**: `AGENTS.md`
 
 ---
 

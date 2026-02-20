@@ -19,7 +19,9 @@
     "best-practices",
     "cursor",
     "cursor-ide",
-    "opencode"
+    "opencode",
+    "codex",
+    "codex-cli"
   ],
   "author": {
     "name": "Affaan Mustafa",
@@ -35,6 +37,7 @@
     "url": "https://github.com/affaan-m/everything-claude-code/issues"
   },
   "files": [
+    ".codex/README.md",
     ".cursor/",
     ".opencode/commands/",
     ".opencode/instructions/",
@@ -67,6 +70,7 @@
     "skills/",
     ".claude-plugin/plugin.json",
     ".claude-plugin/README.md",
+    "AGENTS.md",
     "install.sh",
     "llms.txt"
   ],
