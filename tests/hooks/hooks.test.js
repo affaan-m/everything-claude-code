@@ -1205,14 +1205,30 @@ async function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('script references use CLAUDE_PLUGIN_ROOT variable', () => {
+  if (test('script references use CLAUDE_PLUGIN_ROOT (or SessionStart fallback resolver)', () => {
     const hooksPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
     const hooks = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
 
     const checkHooks = (hookArray) => {
       for (const entry of hookArray) {
         for (const hook of entry.hooks) {
-          if (hook.type === 'command' && hook.command.includes('scripts/hooks/')) {
+          if (
+            hook.type === 'command' &&
+            (hook.command.includes('scripts/hooks/') || hook.command.includes('session-start.js'))
+          ) {
+            const isSessionStartResolver =
+              hook.command.includes('session-start.js') &&
+              hook.command.startsWith('node -e');
+
+            if (isSessionStartResolver) {
+              assert.ok(
+                hook.command.includes('CLAUDE_PLUGIN_ROOT') &&
+                hook.command.includes('process.cwd()'),
+                `SessionStart resolver should include CLAUDE_PLUGIN_ROOT and cwd fallback: ${hook.command.substring(0, 120)}...`
+              );
+              continue;
+            }
+
             // Check for the literal string "${CLAUDE_PLUGIN_ROOT}" in the command
             const hasPluginRoot = hook.command.includes('${CLAUDE_PLUGIN_ROOT}');
             assert.ok(
