@@ -19,7 +19,9 @@
     "best-practices",
     "cursor",
     "cursor-ide",
-    "opencode"
+    "opencode",
+    "codex",
+    "codex-cli"
   ],
   "author": {
     "name": "Affaan Mustafa",
@@ -35,6 +37,7 @@
     "url": "https://github.com/affaan-m/everything-claude-code/issues"
   },
   "files": [
+    ".codex/README.md",
     ".cursor/",
     ".opencode/commands/",
     ".opencode/instructions/",
@@ -61,11 +64,13 @@
     "scripts/ci/",
     "scripts/hooks/",
     "scripts/lib/",
+    "scripts/sync/",
     "scripts/setup-package-manager.js",
     "scripts/skill-create-output.js",
     "skills/",
     ".claude-plugin/plugin.json",
     ".claude-plugin/README.md",
+    "AGENTS.md",
     "install.sh",
     "llms.txt"
   ],
@@ -75,7 +80,11 @@
   "scripts": {
     "postinstall": "echo '\\n  ecc-universal installed!\\n  Run: npx ecc-install typescript\\n  Docs: https://github.com/affaan-m/everything-claude-code\\n'",
     "lint": "eslint . && markdownlint '**/*.md' --ignore node_modules",
-    "test": "node scripts/ci/validate-agents.js && node scripts/ci/validate-commands.js && node scripts/ci/validate-rules.js && node scripts/ci/validate-skills.js && node scripts/ci/validate-hooks.js && node tests/run-all.js"
+    "test": "node scripts/ci/check-adapter-drift.js && node scripts/ci/validate-agents.js && node scripts/ci/validate-commands.js && node scripts/ci/validate-rules.js && node scripts/ci/validate-skills.js && node scripts/ci/validate-hooks.js && node tests/run-all.js",
+    "sync:commands": "node scripts/sync/sync-commands.js",
+    "sync:rules-skills": "node scripts/sync/sync-rules-skills.js",
+    "sync:adapters": "npm run sync:commands && npm run sync:rules-skills",
+    "sync:check": "node scripts/ci/check-adapter-drift.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

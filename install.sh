@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
-# install.sh — Install claude rules while preserving directory structure.
+# install.sh — Install ECC rules/adapters while preserving directory structure.
 #
 # Usage:
-#   ./install.sh [--target <claude|cursor>] <language> [<language> ...]
+#   ./install.sh [--target <claude|cursor|codex>] <language> [<language> ...]
 #
 # Examples:
 #   ./install.sh typescript
 #   ./install.sh typescript python golang
 #   ./install.sh --target cursor typescript
 #   ./install.sh --target cursor typescript python golang
+#   ./install.sh --target codex typescript
+#   ./install.sh --target codex typescript python golang
 #
 # Targets:
 #   claude  (default) — Install rules to ~/.claude/rules/
 #   cursor  — Install rules, agents, skills, commands, and MCP to ./.cursor/
+#   codex   — Install rules + Codex bootstrap files to ./.codex/ and AGENTS.md
 #
 # This script copies rules into the target directory keeping the common/ and
 # language-specific subdirectories intact so that:
@@ -37,25 +40,26 @@ RULES_DIR="$SCRIPT_DIR/rules"
 TARGET="claude"
 if [[ "${1:-}" == "--target" ]]; then
     if [[ -z "${2:-}" ]]; then
-        echo "Error: --target requires a value (claude or cursor)" >&2
+        echo "Error: --target requires a value (claude, cursor, or codex)" >&2
         exit 1
     fi
     TARGET="$2"
     shift 2
 fi
 
-if [[ "$TARGET" != "claude" && "$TARGET" != "cursor" ]]; then
-    echo "Error: unknown target '$TARGET'. Must be 'claude' or 'cursor'." >&2
+if [[ "$TARGET" != "claude" && "$TARGET" != "cursor" && "$TARGET" != "codex" ]]; then
+    echo "Error: unknown target '$TARGET'. Must be 'claude', 'cursor', or 'codex'." >&2
     exit 1
 fi
 
 # --- Usage ---
 if [[ $# -eq 0 ]]; then
-    echo "Usage: $0 [--target <claude|cursor>] <language> [<language> ...]"
+    echo "Usage: $0 [--target <claude|cursor|codex>] <language> [<language> ...]"
     echo ""
     echo "Targets:"
     echo "  claude  (default) — Install rules to ~/.claude/rules/"
     echo "  cursor  — Install rules, agents, skills, commands, and MCP to ./.cursor/"
+    echo "  codex   — Install rules + Codex bootstrap files to ./.codex/ and AGENTS.md"
     echo ""
     echo "Available languages:"
     for dir in "$RULES_DIR"/*/; do
@@ -169,4 +173,70 @@ if [[ "$TARGET" == "cursor" ]]; then
     fi
 
     echo "Done. Cursor configs installed to $DEST_DIR/"
+fi
+
+# --- Codex target ---
+if [[ "$TARGET" == "codex" ]]; then
+    DEST_DIR=".codex"
+    CODEX_RULES_DIR="$DEST_DIR/rules"
+    CODEX_MCP_SRC="$SCRIPT_DIR/mcp-configs/mcp-servers.json"
+    CODEX_MCP_DEST="$DEST_DIR/mcp-servers.json"
+    CODEX_AGENTS_TEMPLATE="$SCRIPT_DIR/AGENTS.md"
+    CODEX_AGENTS_FILE="AGENTS.md"
+    CODEX_AGENTS_FALLBACK="$DEST_DIR/AGENTS.ecc.md"
+    CODEX_TEMPLATE_MARKER="ECC_CODEX_AGENTS_TEMPLATE"
+
+    echo "Installing Codex configs to $DEST_DIR/"
+
+    # --- Rules ---
+    echo "Installing common rules -> $CODEX_RULES_DIR/common/"
+    mkdir -p "$CODEX_RULES_DIR/common"
+    cp -r "$RULES_DIR/common/." "$CODEX_RULES_DIR/common/"
+
+    # Install each requested language
+    for lang in "$@"; do
+        # Validate language name to prevent path traversal
+        if [[ ! "$lang" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+            echo "Error: invalid language name '$lang'. Only alphanumeric, dash, and underscore allowed." >&2
+            continue
+        fi
+        lang_dir="$RULES_DIR/$lang"
+        if [[ ! -d "$lang_dir" ]]; then
+            echo "Warning: rules/$lang/ does not exist, skipping." >&2
+            continue
+        fi
+        echo "Installing $lang rules -> $CODEX_RULES_DIR/$lang/"
+        mkdir -p "$CODEX_RULES_DIR/$lang"
+        cp -r "$lang_dir/." "$CODEX_RULES_DIR/$lang/"
+    done
+
+    # --- MCP Reference ---
+    mkdir -p "$DEST_DIR"
+    if [[ -f "$CODEX_MCP_SRC" ]]; then
+        echo "Installing MCP reference -> $CODEX_MCP_DEST"
+        cp "$CODEX_MCP_SRC" "$CODEX_MCP_DEST"
+    else
+        echo "Warning: MCP config source not found at $CODEX_MCP_SRC, skipping." >&2
+    fi
+
+    # --- AGENTS bootstrap ---
+    if [[ -f "$CODEX_AGENTS_TEMPLATE" ]]; then
+        if [[ -f "$CODEX_AGENTS_FILE" ]]; then
+            if grep -q "$CODEX_TEMPLATE_MARKER" "$CODEX_AGENTS_FILE"; then
+                echo "Refreshing existing ECC-managed AGENTS.md"
+                cp "$CODEX_AGENTS_TEMPLATE" "$CODEX_AGENTS_FILE"
+            else
+                echo "Detected existing AGENTS.md, preserving it."
+                echo "Writing ECC Codex adapter to $CODEX_AGENTS_FALLBACK"
+                cp "$CODEX_AGENTS_TEMPLATE" "$CODEX_AGENTS_FALLBACK"
+            fi
+        else
+            echo "Installing Codex adapter -> $CODEX_AGENTS_FILE"
+            cp "$CODEX_AGENTS_TEMPLATE" "$CODEX_AGENTS_FILE"
+        fi
+    else
+        echo "Warning: AGENTS template not found at $CODEX_AGENTS_TEMPLATE, skipping." >&2
+    fi
+
+    echo "Done. Codex configs installed to $DEST_DIR/"
 fi
