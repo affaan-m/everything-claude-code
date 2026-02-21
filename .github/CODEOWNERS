@@ -1,0 +1,23 @@
+# CODEOWNERS — Review Authority Model
+#
+# Each line is a file pattern followed by one or more owners.
+# The last matching pattern takes precedence.
+# Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default: repo owner reviews everything
+*                                   @alfraido86-jpg
+
+# CI/CD workflows — require explicit owner review
+.github/workflows/                  @alfraido86-jpg
+
+# Governance files — require explicit owner review
+.github/CODEOWNERS                  @alfraido86-jpg
+Makefile                            @alfraido86-jpg
+VERSION                             @alfraido86-jpg
+
+# Copilot branch automation — owner reviews all automation scripts
+scripts/                            @alfraido86-jpg
+
+# Documentation — owner reviews all docs
+WORKFLOW.md                         @alfraido86-jpg
+README.md                           @alfraido86-jpg

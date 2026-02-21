@@ -58,12 +58,14 @@ private/
 examples/sessions/*.tmp
 # Local drafts
 marketing/
+
 # Temporary files
 tmp/
 temp/
 *.tmp
 *.bak
 *.backup
+
 # Bootstrap pipeline outputs
 # Generated lock files in tool subdirectories
 .opencode/package-lock.json

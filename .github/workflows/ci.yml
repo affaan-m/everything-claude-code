@@ -2,9 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - 'copilot/**'
   pull_request:
-    branches: [main]
+    branches:
+      - main
+      - 'copilot/**'
 
 # Prevent duplicate runs
 concurrency:
