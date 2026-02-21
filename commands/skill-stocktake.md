@@ -28,6 +28,7 @@ Score each skill using the rubric below. Apply full scoring to `learned/` skills
 ### Rubric
 
 **Specificity**
+
 | Score | Criteria |
 |-------|----------|
 | 1 | Abstract principles only — no code examples, commands, or config samples |
@@ -37,6 +38,7 @@ Score each skill using the rubric below. Apply full scoring to `learned/` skills
 | 5 | Rich examples covering virtually all usage patterns |
 
 **Actionability**
+
 | Score | Criteria |
 |-------|----------|
 | 1 | Unclear what to do after reading |
@@ -46,6 +48,7 @@ Score each skill using the rubric below. Apply full scoring to `learned/` skills
 | 5 | Immediately actionable; edge cases and pitfalls covered |
 
 **Scope Fit**
+
 | Score | Criteria |
 |-------|----------|
 | 1 | Too broad (no focus) or too narrow (rarely triggered) |
@@ -55,6 +58,7 @@ Score each skill using the rubric below. Apply full scoring to `learned/` skills
 | 5 | Scope perfectly defined; name, trigger, and content fully aligned |
 
 **Non-redundancy**
+
 | Score | Criteria |
 |-------|----------|
 | 1 | Nearly identical to another skill — no reason to exist separately |
@@ -64,6 +68,7 @@ Score each skill using the rubric below. Apply full scoring to `learned/` skills
 | 5 | Completely unique value |
 
 **Coverage**
+
 | Score | Criteria |
 |-------|----------|
 | 1 | Covers only a small fraction of the target task |
@@ -73,6 +78,7 @@ Score each skill using the rubric below. Apply full scoring to `learned/` skills
 | 5 | Main cases, edge cases, and pitfalls all covered |
 
 **Freshness** — verify with WebSearch
+
 | Score | Criteria |
 |-------|----------|
 | 1 | Most referenced tools/APIs are deprecated or removed |
