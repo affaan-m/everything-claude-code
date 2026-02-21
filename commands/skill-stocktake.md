@@ -97,13 +97,13 @@ Output the scores table:
 |-----------|-------------------|
 | origin: `ECC` | **Keep** if Freshness ≥ 3; **Update** if Freshness ≤ 2 — do not modify other content |
 | origin: `auto-extracted` AND duplicates content in MEMORY.md | **Delete** — remove immediately |
-| Total ≥ 20 AND usage present | **Keep** — maintain as-is |
-| Total ≥ 20 AND zero usage | **Watch** — monitor until next audit |
+| Total ≥ 20 AND Freshness ≥ 3 AND usage present | **Keep** — maintain as-is |
+| Total ≥ 20 AND Freshness ≥ 3 AND zero usage | **Watch** — monitor until next audit |
 | Freshness ≤ 2 | **Update** — refresh outdated content (takes priority over Improve/Retire) |
 | Total 15–19 | **Improve** — address lowest-scoring dimensions |
 | Total < 15 OR Non-redundancy ≤ 2 | **Retire/Merge** — delete or merge into existing skill |
 
-> **Note — Freshness = N/A:** When a skill has no technical elements and Freshness is scored N/A, treat N/A as 5 for threshold calculations (maximum Total remains 25).
+> **Freshness = N/A handling:** When a skill has no technical elements (Freshness = N/A), display `N/A` in the Fresh column and calculate Total from the remaining 5 dimensions only (max 25). Skip the Freshness ≤ 2 and Freshness ≥ 3 conditions. Use adjusted thresholds: Keep ≥ 17, Improve 13–16, Retire/Merge < 13.
 
 ## Phase 4: Consolidation
 
@@ -115,5 +115,6 @@ Output the scores table:
 ## Notes
 
 - ECC-sourced skills (`origin: ECC`) — check Freshness only; do not modify content
+- Skills from external repositories (`origin: {org/repo}`) receive full scoring like `origin: original`
 - Always confirm with the user before deleting or merging any skill
 - Keep total skill count in mind: beyond ~60 skills, descriptions may be truncated in Claude's context window
