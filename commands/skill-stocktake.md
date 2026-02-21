@@ -102,14 +102,19 @@ Output the scores table:
 | Condition | Recommended Action |
 |-----------|-------------------|
 | origin: `ECC` | **Keep** if Freshness ≥ 3 or N/A; **Update** if Freshness ≤ 2 — do not modify other content |
-| origin: `auto-extracted` AND duplicates content in MEMORY.md | **Delete** — remove immediately |
+| origin: `auto-extracted` AND duplicates content in MEMORY.md | **Delete** — confirm with user, then remove |
+| Non-redundancy ≤ 2 | **Retire/Merge** — near-duplicate; delete or merge into existing skill |
+| Freshness = N/A AND 5-dim Total ≥ 17 AND usage present | **Keep** — maintain as-is |
+| Freshness = N/A AND 5-dim Total ≥ 17 AND zero usage | **Watch** — monitor until next audit |
+| Freshness = N/A AND 5-dim Total 13–16 | **Improve** — address lowest-scoring dimensions |
+| Freshness = N/A AND 5-dim Total < 13 | **Retire/Merge** — delete or merge into existing skill |
 | Total ≥ 20 AND Freshness ≥ 3 AND usage present | **Keep** — maintain as-is |
 | Total ≥ 20 AND Freshness ≥ 3 AND zero usage | **Watch** — monitor until next audit |
 | Freshness ≤ 2 | **Update** — refresh outdated content (takes priority over Improve/Retire) |
 | Total 15–19 | **Improve** — address lowest-scoring dimensions |
-| Total < 15 OR Non-redundancy ≤ 2 | **Retire/Merge** — delete or merge into existing skill |
+| Total < 15 | **Retire/Merge** — delete or merge into existing skill |
 
-> **Freshness = N/A handling:** When a skill has no technical elements (Freshness = N/A), display `N/A` in the Fresh column and calculate Total from the remaining 5 dimensions only (max 25). Skip the Freshness ≤ 2 and Freshness ≥ 3 conditions. Use adjusted thresholds: Keep ≥ 17 (with usage) / Watch ≥ 17 (zero usage), Improve 13–16, Retire/Merge < 13.
+> **Freshness = N/A:** When a skill has no technical elements, display `N/A` in the Fresh column and calculate Total from the remaining 5 dimensions only (max 25). The N/A-specific rows above use this 5-dimension total.
 
 ## Phase 4: Consolidation
 
