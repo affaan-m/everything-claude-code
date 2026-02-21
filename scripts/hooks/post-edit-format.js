@@ -1,14 +1,17 @@
 #!/usr/bin/env node
 /**
- * PostToolUse Hook: Auto-format JS/TS files with Prettier after edits
+ * PostToolUse Hook: Auto-format JS/TS files after edits
  *
  * Cross-platform (Windows, macOS, Linux)
  *
  * Runs after Edit tool use. If the edited file is a JS/TS file,
- * formats it with Prettier. Fails silently if Prettier isn't installed.
+ * auto-detects the project formatter (Biome or Prettier) by looking
+ * for config files, then formats accordingly.
+ * Fails silently if no formatter is found or installed.
  */
 
 const { execFileSync } = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
 const MAX_STDIN = 1024 * 1024; // 1MB limit
@@ -22,6 +25,52 @@ process.stdin.on('data', chunk => {
   }
 });
 
+function findProjectRoot(startDir) {
+  let dir = startDir;
+  while (dir !== path.dirname(dir)) {
+    if (fs.existsSync(path.join(dir, 'package.json'))) return dir;
+    dir = path.dirname(dir);
+  }
+  return startDir;
+}
+
+function detectFormatter(projectRoot) {
+  const biomeConfigs = ['biome.json', 'biome.jsonc'];
+  for (const cfg of biomeConfigs) {
+    if (fs.existsSync(path.join(projectRoot, cfg))) return 'biome';
+  }
+
+  const prettierConfigs = [
+    '.prettierrc',
+    '.prettierrc.json',
+    '.prettierrc.js',
+    '.prettierrc.cjs',
+    '.prettierrc.mjs',
+    '.prettierrc.yml',
+    '.prettierrc.yaml',
+    '.prettierrc.toml',
+    'prettier.config.js',
+    'prettier.config.cjs',
+    'prettier.config.mjs',
+  ];
+  for (const cfg of prettierConfigs) {
+    if (fs.existsSync(path.join(projectRoot, cfg))) return 'prettier';
+  }
+
+  return null;
+}
+
+function getFormatterCommand(formatter, filePath) {
+  const npxBin = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+  if (formatter === 'biome') {
+    return { bin: npxBin, args: ['@biomejs/biome', 'format', '--write', filePath] };
+  }
+  if (formatter === 'prettier') {
+    return { bin: npxBin, args: ['prettier', '--write', filePath] };
+  }
+  return null;
+}
+
 process.stdin.on('end', () => {
   try {
     const input = JSON.parse(data);
@@ -29,15 +78,19 @@ process.stdin.on('end', () => {
 
     if (filePath && /\.(ts|tsx|js|jsx)$/.test(filePath)) {
       try {
-        // Use npx.cmd on Windows to avoid shell: true which enables command injection
-        const npxBin = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-        execFileSync(npxBin, ['prettier', '--write', filePath], {
-          cwd: path.dirname(path.resolve(filePath)),
-          stdio: ['pipe', 'pipe', 'pipe'],
-          timeout: 15000
-        });
+        const projectRoot = findProjectRoot(path.dirname(path.resolve(filePath)));
+        const formatter = detectFormatter(projectRoot);
+        const cmd = getFormatterCommand(formatter, filePath);
+
+        if (cmd) {
+          execFileSync(cmd.bin, cmd.args, {
+            cwd: projectRoot,
+            stdio: ['pipe', 'pipe', 'pipe'],
+            timeout: 15000
+          });
+        }
       } catch {
-        // Prettier not installed, file missing, or failed — non-blocking
+        // Formatter not installed, file missing, or failed — non-blocking
       }
     }
   } catch {

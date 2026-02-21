@@ -108,7 +108,7 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-edit-format.js\""
           }
         ],
-        "description": "Auto-format JS/TS files with Prettier after edits"
+        "description": "Auto-format JS/TS files after edits (auto-detects Biome or Prettier)"
       },
       {
         "matcher": "Edit",
