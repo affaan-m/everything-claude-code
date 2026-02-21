@@ -9,12 +9,11 @@ Audit all installed skills by quality scoring while taking inventory. Uses score
 ## Scope
 
 - `~/.claude/skills/` — Global skills (SKILL.md + learned/)
-- `~/.claude/commands/` — Global commands
 - `{current_project}/.claude/skills/` — Project-level skills (if present)
 
 ## Phase 1: Inventory & Usage Stats
 
-1. Read all skill files under `~/.claude/skills/` using the `**/*.md` glob pattern
+1. Read all skill files under `~/.claude/skills/` using the `**/*.md` glob pattern. If `{current_project}/.claude/skills/` exists, include those files as well.
 2. Extract `name`, `origin`, and `description` from each file's frontmatter
 3. **Optional:** If using Claude Code observability tools (e.g., `~/.claude/homunculus/observations.jsonl`), extract usage counts per skill by filtering entries where `tool == "Read"` and the input path contains the skill path. Count references over the last 7 and 30 days. Otherwise, skip and proceed to quality evaluation.
 4. Output an inventory table:
@@ -24,7 +23,7 @@ Audit all installed skills by quality scoring while taking inventory. Uses score
 
 ## Phase 2: Quality Evaluation (6 Dimensions)
 
-Score each skill using the rubric below. Apply full scoring to `learned/` skills and to top-level skills with `origin: original` or `origin: skill-create`. For ECC-sourced skills (`origin: ECC`), check Freshness only.
+Score each skill using the rubric below. Apply full scoring to `learned/` skills and to top-level skills with `origin: original` or `origin: skill-create`. For ECC-sourced skills (`origin: ECC`), check Freshness only. Skills with an absent or unrecognized `origin` value receive full scoring (treat as `origin: original`).
 
 ### Rubric
 
@@ -92,16 +91,19 @@ Output the scores table:
 | Skill | Spec | Act | Scope | NonRed | Cov | Fresh | Total | Used 7d | Decision |
 |-------|------|-----|-------|--------|-----|-------|-------|---------|----------|
 
-**Decision criteria:**
+**Decision criteria** (apply the first matching row):
 
 | Condition | Recommended Action |
 |-----------|-------------------|
+| origin: `ECC` | **Keep** if Freshness ≥ 3; **Update** if Freshness ≤ 2 — do not modify other content |
+| origin: `auto-extracted` AND duplicates content in MEMORY.md | **Delete** — remove immediately |
 | Total ≥ 20 AND usage present | **Keep** — maintain as-is |
 | Total ≥ 20 AND zero usage | **Watch** — monitor until next audit |
+| Freshness ≤ 2 | **Update** — refresh outdated content (takes priority over Improve/Retire) |
 | Total 15–19 | **Improve** — address lowest-scoring dimensions |
 | Total < 15 OR Non-redundancy ≤ 2 | **Retire/Merge** — delete or merge into existing skill |
-| Freshness ≤ 2 | **Update** — refresh outdated content |
-| origin: `auto-extracted` AND duplicates content in MEMORY.md | **Delete** — remove immediately |
+
+> **Note — Freshness = N/A:** When a skill has no technical elements and Freshness is scored N/A, treat N/A as 5 for threshold calculations (maximum Total remains 25).
 
 ## Phase 4: Consolidation
 
