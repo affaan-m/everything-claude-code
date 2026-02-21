@@ -1,0 +1,29 @@
+name: Shellcheck (Scoped)
+
+on:
+  pull_request:
+    paths:
+      - '**/*.sh'
+
+jobs:
+  shellcheck:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install shellcheck
+        run: brew install shellcheck
+
+      - name: Run shellcheck on changed files
+        run: |
+          set -euo pipefail
+          CHANGED=$(git diff --name-only "origin/$GITHUB_BASE_REF"...HEAD | grep '\.sh$' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "No .sh files changed in this PR. Skipping."
+            exit 0
+          fi
+          echo "Checking files:"
+          echo "$CHANGED"
+          echo "$CHANGED" | xargs -r shellcheck

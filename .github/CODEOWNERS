@@ -10,10 +10,17 @@
 # CI/CD workflows — require explicit owner review
 .github/workflows/                  @alfraido86-jpg
 
+# Dependency management — require explicit owner review
+/package.json                       @alfraido86-jpg
+/package-lock.json                  @alfraido86-jpg
+
 # Governance files — require explicit owner review
 .github/CODEOWNERS                  @alfraido86-jpg
 Makefile                            @alfraido86-jpg
 VERSION                             @alfraido86-jpg
+
+# Configuration and Security — require explicit owner review
+/session-start.sh                   @alfraido86-jpg
 
 # Copilot branch automation — owner reviews all automation scripts
 scripts/                            @alfraido86-jpg

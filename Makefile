@@ -55,3 +55,43 @@ logs: ## List recent bootstrap log files
 
 bootstrap: ## Run the full bootstrap pipeline
 	@bash bootstrap.sh
+
+# ===== Post-Migration Verification Targets (v1.0.0) =====
+
+.PHONY: verify clean-hardening test-security validate-artifact lint-shell
+
+# Remove stale build outputs before verification
+# NOTE: Named clean-hardening to avoid conflict with existing clean target above.
+clean-hardening:
+	rm -rf build/ *.zip dist/
+
+# Run all pre-flight checks locally before pushing
+verify: clean-hardening test-security lint-shell
+	@echo "All verification checks passed."
+
+# Validate session-start.sh security config generation
+test-security:
+	@echo "=== Running Security Configuration Test ==="
+	./test/test_session_start.sh
+
+# Validate release artifact for banned files (requires zip to exist)
+validate-artifact:
+	@echo "=== Running Release Artifact Validation ==="
+	@if ls *.zip 1>/dev/null 2>&1; then \
+		for f in *.zip; do ./.github/scripts/validate-artifact.sh "$$f"; done; \
+	else \
+		echo "No zip artifacts found. Run 'make build' first (or skip)."; \
+	fi
+
+# Run shellcheck: scoped on branches, full scan on main
+lint-shell:
+	@echo "=== Running Shellcheck ==="
+	@CHANGED=$$(git diff --name-only main 2>/dev/null | grep '\.sh$$'); \
+	if [ -z "$$CHANGED" ]; then \
+		echo "No changed .sh files vs main — running full repo scan"; \
+		find . -name '*.sh' -not -path './node_modules/*' -not -path './.git/*' | xargs -r shellcheck; \
+	else \
+		echo "Checking changed files only:"; \
+		echo "$$CHANGED"; \
+		echo "$$CHANGED" | xargs -r shellcheck; \
+	fi

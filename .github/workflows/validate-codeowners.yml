@@ -1,0 +1,25 @@
+name: Validate CODEOWNERS
+
+on:
+  pull_request:
+    paths:
+      - '.github/CODEOWNERS'
+
+jobs:
+  validate:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate CODEOWNERS syntax
+        run: |
+          set -euo pipefail
+          echo "Validating .github/CODEOWNERS..."
+          while IFS= read -r line; do
+            [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
+            if ! echo "$line" | grep -qE '\s(@[a-zA-Z0-9._-]+(/[a-zA-Z0-9._-]+)?|\*)'; then
+              echo "::error::Invalid CODEOWNERS line or missing owner: $line"
+              exit 1
+            fi
+          done < .github/CODEOWNERS
+          echo "CODEOWNERS syntax is valid."
