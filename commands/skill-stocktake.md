@@ -101,7 +101,7 @@ Output the scores table:
 
 | Condition | Recommended Action |
 |-----------|-------------------|
-| origin: `ECC` | **Keep** if Freshness ≥ 3; **Update** if Freshness ≤ 2 — do not modify other content |
+| origin: `ECC` | **Keep** if Freshness ≥ 3 or N/A; **Update** if Freshness ≤ 2 — do not modify other content |
 | origin: `auto-extracted` AND duplicates content in MEMORY.md | **Delete** — remove immediately |
 | Total ≥ 20 AND Freshness ≥ 3 AND usage present | **Keep** — maintain as-is |
 | Total ≥ 20 AND Freshness ≥ 3 AND zero usage | **Watch** — monitor until next audit |
@@ -109,11 +109,11 @@ Output the scores table:
 | Total 15–19 | **Improve** — address lowest-scoring dimensions |
 | Total < 15 OR Non-redundancy ≤ 2 | **Retire/Merge** — delete or merge into existing skill |
 
-> **Freshness = N/A handling:** When a skill has no technical elements (Freshness = N/A), display `N/A` in the Fresh column and calculate Total from the remaining 5 dimensions only (max 25). Skip the Freshness ≤ 2 and Freshness ≥ 3 conditions. Use adjusted thresholds: Keep ≥ 17, Improve 13–16, Retire/Merge < 13.
+> **Freshness = N/A handling:** When a skill has no technical elements (Freshness = N/A), display `N/A` in the Fresh column and calculate Total from the remaining 5 dimensions only (max 25). Skip the Freshness ≤ 2 and Freshness ≥ 3 conditions. Use adjusted thresholds: Keep ≥ 17 (with usage) / Watch ≥ 17 (zero usage), Improve 13–16, Retire/Merge < 13.
 
 ## Phase 4: Consolidation
 
-1. Execute Retire/Merge actions: archive or merge flagged skills
+1. **Confirm with the user** before executing any Retire/Merge action, then archive or merge flagged skills
 2. For Improve candidates: propose specific improvements and ask user to confirm before editing
 3. For Update candidates: present updated content for review
 4. Check line count of MEMORY.md; if over 100 lines, suggest compaction
