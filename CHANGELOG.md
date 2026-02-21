@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.0] — 2026-02-XX (Post-Migration Baseline)
+## [1.0.0] — 2026-02-22 (Post-Migration Baseline)
 
 This release marks the finalization of the macOS-only migration and includes critical security and CI hygiene fixes. It establishes a clean baseline for future development.
 
