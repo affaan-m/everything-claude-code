@@ -247,6 +247,7 @@ After all files generated, output:
 ## PM2 Init Complete
 
 **Services:**
+
 | Port | Name | Type |
 |------|------|------|
 | {port} | {name} | {type} |
@@ -254,6 +255,8 @@ After all files generated, output:
 **Claude Commands:** /pm2-all, /pm2-all-stop, /pm2-{port}, /pm2-{port}-stop, /pm2-logs, /pm2-status
 
 **Terminal Commands:**
+
+```bash
 # First time (with config file)
 pm2 start ecosystem.config.cjs && pm2 save
 
@@ -266,6 +269,7 @@ pm2 stop {name}        # Stop single
 pm2 logs               # View logs
 pm2 monit              # Monitor panel
 pm2 resurrect          # Restore saved processes
+```
 
 **Tip:** Run `pm2 save` after first start to enable simplified commands.
 ```

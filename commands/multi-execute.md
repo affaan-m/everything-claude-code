@@ -78,7 +78,7 @@ EOF",
 ```
 
 **Model Parameter Notes**:
-- `{{GEMINI_MODEL_FLAG}}`: When using `--backend gemini`, replace with `--gemini-model gemini-3-pro-preview ` (note trailing space); use empty string for codex
+- `{{GEMINI_MODEL_FLAG}}`: When using `--backend gemini`, replace with `--gemini-model gemini-3-pro-preview` + a trailing space (note: append a space after the flag); use empty string for codex
 
 **Role Prompts**:
 

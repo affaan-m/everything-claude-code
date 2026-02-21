@@ -110,7 +110,7 @@ else
     echo "3. Open the .dmg file and drag Claude to Applications"
     echo ""
     echo "Note: Check official Claude documentation for current download links"
-    read -p "Press Enter when installation is complete (or Ctrl+C to exit)..."
+    read -rp "Press Enter when installation is complete (or Ctrl+C to exit)..."
 fi
 echo ""
 
@@ -127,7 +127,7 @@ else
     echo "3. Verify installation with: claude --version"
     echo ""
     echo "Note: Check official Claude Code documentation for current installation method"
-    read -p "Press Enter when installation is complete (or Ctrl+C to exit)..."
+    read -rp "Press Enter when installation is complete (or Ctrl+C to exit)..."
 fi
 echo ""
 

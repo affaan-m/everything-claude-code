@@ -10,7 +10,6 @@ const {
   getClaudeDir,
   ensureDir,
   readFile,
-  writeFile,
   log
 } = require('./utils');
 
