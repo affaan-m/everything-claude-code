@@ -164,6 +164,10 @@ jobs:
         run: node scripts/ci/validate-hooks.js
         continue-on-error: false
 
+      - name: Check adapter drift
+        run: node scripts/ci/check-adapter-drift.js
+        continue-on-error: false
+
       - name: Validate commands
         run: node scripts/ci/validate-commands.js
         continue-on-error: false

@@ -71,7 +71,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start.js\""
+            "command": "node -e \"const fs=require('fs'),path=require('path'),os=require('os'),cp=require('child_process');const candidates=[process.env.CLAUDE_PLUGIN_ROOT,process.env.CLAUDE_PROJECT_DIR,process.cwd(),path.join(os.homedir(),'.claude','plugins','everything-claude-code'),path.join(os.homedir(),'.claude','plugins','ecc-universal')].filter(Boolean);let script='';for(const base of candidates){const p=path.join(base,'scripts','hooks','session-start.js');if(fs.existsSync(p)){script=p;break}}if(!script){console.error('[Hook] SessionStart resolver: session-start.js not found');process.exit(0)}const r=cp.spawnSync(process.execPath,[script],{stdio:'inherit'});process.exit(r.status??0)\""
           }
         ],
         "description": "Load previous context and detect package manager on new session"
@@ -108,7 +108,7 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-edit-format.js\""
           }
         ],
-        "description": "Auto-format JS/TS files with Prettier after edits"
+        "description": "Auto-format JS/TS files after edits (auto-detects Biome or Prettier)"
       },
       {
         "matcher": "Edit",
