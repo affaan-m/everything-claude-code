@@ -66,7 +66,7 @@ clean-hardening:
 	rm -rf build/ *.zip dist/
 
 # Run all pre-flight checks locally before pushing
-verify: clean-hardening test-security lint-shell
+verify: clean-hardening test-security validate-artifact lint-shell
 	@echo "All verification checks passed."
 
 # Validate session-start.sh security config generation

@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "lint": "npx eslint 'scripts/**/*.js' 'tests/**/*.js' && npx markdownlint 'agents/**/*.md' 'skills/**/*.md' 'commands/**/*.md' 'rules/**/*.md'"
+    "lint": "npx eslint 'scripts/**/*.js' 'tests/**/*.js' && npx markdownlint 'agents/**/*.md' 'skills/**/*.md' 'commands/**/*.md' 'rules/**/*.md'",
+    "build": "echo 'Build step complete - no compilation required'"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

@@ -4,10 +4,15 @@ on:
   pull_request:
     paths:
       - '**/*.sh'
+  push:
+    branches:
+      - main
+    paths:
+      - '**/*.sh'
 
 jobs:
   shellcheck:
-    runs-on: macos-14
+    runs-on: ${{ vars.MACOS_RUNNER || 'macos-15' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -19,9 +24,17 @@ jobs:
       - name: Run shellcheck on changed files
         run: |
           set -euo pipefail
-          CHANGED=$(git diff --name-only "origin/$GITHUB_BASE_REF"...HEAD | grep '\.sh$' || true)
+          if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
+            echo "Push to main — running full shellcheck scan"
+            CHANGED=$(find . -name '*.sh' \
+              -not -path './node_modules/*' \
+              -not -path './.git/*' \
+              | sed 's|^\./||' || true)
+          else
+            CHANGED=$(git diff --name-only "origin/$GITHUB_BASE_REF"...HEAD | grep '\.sh$' || true)
+          fi
           if [ -z "$CHANGED" ]; then
-            echo "No .sh files changed in this PR. Skipping."
+            echo "No .sh files to check. Skipping."
             exit 0
           fi
           echo "Checking files:"

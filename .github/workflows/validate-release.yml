@@ -15,7 +15,7 @@ on:
 
 jobs:
   validate:
-    runs-on: macos-14
+    runs-on: ${{ vars.MACOS_RUNNER || 'macos-15' }}
     steps:
       - uses: actions/checkout@v4
 
