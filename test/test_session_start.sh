@@ -44,6 +44,7 @@ for root in "${PROTECTED_ROOTS[@]}"; do
 done
 
 # Step 4: Verify literal '$HOME' is NOT present (the bug we're fixing)
+# shellcheck disable=SC2016  # Intentional: matching literal $HOME, not expanding
 if grep -q '\$HOME' "$CONFIG_FILE"; then
     echo "FAIL: Literal '\$HOME' string found in config file. Variable was not resolved."
     exit 1
