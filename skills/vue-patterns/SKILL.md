@@ -59,7 +59,7 @@ function increment() {
 }
 
 onMounted(() => {
-  console.log("Component mounted:", props.title);
+  // Initialize component-specific logic here
 });
 </script>
 

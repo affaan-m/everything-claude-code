@@ -97,13 +97,16 @@ async function getWithMutex<T>(
 
   // Another process is refreshing — wait and retry
   await new Promise((r) => setTimeout(r, 100));
-  return getWithMutex(key, fetcher, ttl);
+  const retried = await redis.get(key);
+  if (retried) return JSON.parse(retried);
+  throw new Error(`Cache miss after lock contention for key: ${key}`);
 }
 ```
 
 ### Python Cache-Aside
 
 ```python
+import os
 import json
 import redis
 

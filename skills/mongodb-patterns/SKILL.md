@@ -155,6 +155,7 @@ await users.bulkWrite([
 ### Python (PyMongo)
 
 ```python
+import os
 from pymongo import MongoClient
 from bson import ObjectId
 from datetime import datetime, timezone

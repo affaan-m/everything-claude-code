@@ -362,7 +362,7 @@ import { createHmac, randomBytes } from "node:crypto";
 
 // Generate TOTP secret and provisioning URI
 function setupMFA(userEmail: string) {
-  const secret = randomBytes(20).toString("base32");
+  const secret = randomBytes(20).toString("hex");
   const uri = `otpauth://totp/MyApp:${userEmail}?secret=${secret}&issuer=MyApp&algorithm=SHA1&digits=6&period=30`;
   const backupCodes = Array.from({ length: 10 }, () =>
     randomBytes(4).toString("hex"),
