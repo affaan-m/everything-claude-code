@@ -66,7 +66,7 @@ git diff -- '*.tsx' '*.jsx'
 npx tsc --noEmit
 
 # Run tests with coverage
-npx jest --coverage
+npx vitest run --coverage  # or npx jest --coverage
 
 # Find components
 find . -name "*.tsx" | head -20

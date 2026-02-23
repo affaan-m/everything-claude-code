@@ -391,8 +391,10 @@ Context:\n${ctx}\n\nAnswer:\n${answer}
 Respond in JSON: {"faithful": bool, "unsupported_claims": string[], "confidence": float 0-1}`,
     }],
   });
-  const text = response.content[0].type === "text" ? response.content[0].text : "";
-  return JSON.parse(text);
+  const block = response.content.find((b) => b.type === "text");
+  if (!block) throw new Error("Faithfulness check returned no text content");
+  const cleaned = block.text.replace(/^```(?:json)?\n?|\n?```$/g, "").trim();
+  return JSON.parse(cleaned) as FaithfulnessResult;
 }
 ```
 

@@ -86,7 +86,6 @@ function CustomerId(value: string): CustomerId {
   if (!value?.trim()) throw new Error("CustomerId cannot be empty");
   return value as CustomerId;
 }
-// Compiler prevents mixing: chargeCustomer("cust-42", 99.99) is a compile error
 ```
 
 ### Java Records
@@ -231,8 +230,13 @@ class OutboxPublisher {
   async pollAndPublish(): Promise<void> {
     const pending = await this.prisma.outboxEvent.findMany({ where: { publishedAt: null }, orderBy: { createdAt: "asc" }, take: 50 });
     for (const entry of pending) {
-      await this.broker.publish(entry.eventType, entry.payload);
-      await this.prisma.outboxEvent.update({ where: { id: entry.id }, data: { publishedAt: new Date() } });
+      try {
+        await this.broker.publish(entry.eventType, entry.payload);
+        await this.prisma.outboxEvent.update({ where: { id: entry.id }, data: { publishedAt: new Date() } });
+      } catch (err) {
+        console.error(`Outbox publish failed for event ${entry.id}`, err);
+        // Continue — this entry will be retried on next poll
+      }
     }
   }
 }
@@ -306,7 +310,6 @@ class AndSpec<T> implements Specification<T> {
   constructor(private specs: Specification<T>[]) {}
   toPrismaWhere() { return { AND: this.specs.map(s => s.toPrismaWhere()) }; }
 }
-// Composable: new AndSpec([new OrdersByStatus("placed"), new OrdersAfter(cutoff)])
 ```
 
 ---
@@ -495,4 +498,3 @@ class OrderRepositoryIntegrationTest {
 - [ ] Anti-corruption layers wrap all third-party integrations
 - [ ] Aggregate behavior tested with unit tests (no DB)
 - [ ] Repository reconstitution tested with integration tests
-```

@@ -17,6 +17,7 @@ Production-grade patterns for fault-tolerant, real-time applications with Elixir
 3. **Pattern match everything** — function heads, case, with — replace conditionals with clauses
 4. **Small, focused processes** — one GenServer per concern; supervise as a tree
 5. **Contracts via behaviours** — define callbacks, implement in modules, swap in tests
+
 ---
 ## 1. Elixir Fundamentals
 ### Pattern Matching in Function Heads
@@ -60,6 +61,7 @@ defmodule Cart do
   def item_count(%Cart{items: items}), do: length(items)
 end
 ```
+
 ---
 ## 2. OTP -- GenServer
 ### Basic GenServer (init, call, cast, info)
@@ -130,6 +132,7 @@ defmodule MyApp.Session do
 end
 # Children: {Registry, keys: :unique, name: MyApp.SessionRegistry}
 ```
+
 ---
 ## 3. OTP -- Supervision
 ### Supervisor Strategies
@@ -179,6 +182,7 @@ defmodule MyApp.Application do
   end
 end
 ```
+
 ---
 ## 4. Phoenix Channels
 ### Channel with Auth, Messaging, and Presence
@@ -206,14 +210,11 @@ defmodule MyAppWeb.RoomChannel do
     broadcast!(socket, "new_msg", %{body: body, user_id: socket.assigns.user_id})
     {:noreply, socket}
   end
+  @impl true
   def handle_in("typing", _payload, socket) do
     broadcast_from!(socket, "typing", %{user_id: socket.assigns.user_id})
     {:noreply, socket}
   end
-end
-
-defmodule MyAppWeb.Presence do
-  use Phoenix.Presence, otp_app: :my_app, pubsub_server: MyApp.PubSub
 end
 ```
 ### Client-Side Socket (JavaScript)
@@ -230,6 +231,7 @@ channel.join()
   .receive("ok", () => console.log("Joined"))
   .receive("error", (r) => console.error("Join failed", r));
 ```
+
 ---
 ## 5. Phoenix LiveView
 ### Mount, Events, and Render
@@ -319,7 +321,6 @@ defmodule MyAppWeb.NotificationComponent do
     """
   end
 end
-# <.live_component module={NotificationComponent} id="n1" message="Saved!" level="info" />
 ```
 ### JavaScript Hooks (phx-hook)
 ```javascript
@@ -337,6 +338,7 @@ export default Hooks;
 // app.js: let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks })
 // HEEx:  <div id="sentinel" phx-hook="InfiniteScroll"></div>
 ```
+
 ---
 ## 6. Ecto
 ### Schema and Changeset with Validations
@@ -402,12 +404,8 @@ def list_orders_with_items do
 end
 # Separate-query preload
 def get_order!(id), do: Order |> Repo.get!(id) |> Repo.preload([:user, line_items: :product])
-# Custom preload query — filter associated records
-def list_users_with_recent_orders do
-  recent = from(o in Order, where: o.inserted_at > ago(30, "day"))
-  User |> Repo.all() |> Repo.preload(orders: recent)
-end
 ```
+
 ---
 ## 7. Testing
 ### ExUnit Setup
@@ -482,7 +480,9 @@ defmodule MyApp.AccountsTest do
   end
 end
 ```
+
 ---
+
 ## 8. Checklist
 - [ ] Functions use pattern matching in heads instead of internal conditionals
 - [ ] Data transforms use pipe chains; no nested function calls

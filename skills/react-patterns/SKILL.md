@@ -35,7 +35,7 @@ Deep React patterns for production apps. Focuses on React itself -- hooks, concu
 function SearchPage({ onNavigate }: { onNavigate: (id: string) => void }) {
   const [query, setQuery] = useState('')
   const handleSelect = useCallback((id: string) => onNavigate(id), [onNavigate])
-  const filtered = useMemo(() => items.filter((i) => i.name.includes(query)), [items, query])
+  const filtered = useMemo(() => allItems.filter((i) => i.name.includes(query)), [query])
   return <ResultList items={filtered} onSelect={handleSelect} />
 }
 ```
@@ -63,7 +63,7 @@ function UserList() {
     dispatch({ type: 'FETCH' })
     fetchUsers()
       .then((data) => dispatch({ type: 'SUCCESS', data }))
-      .catch((e) => dispatch({ type: 'ERROR', error: e.message }))
+      .catch((e) => dispatch({ type: 'ERROR', error: e instanceof Error ? e.message : String(e) }))
   }, [])
   if (state.status === 'loading') return <Spinner />
   if (state.status === 'error') return <Alert message={state.error} />
@@ -75,7 +75,7 @@ function UserList() {
 ### Custom Hooks: useAsync and useDebounce
 
 ```tsx
-// useAsync: wraps a promise with loading/error/success state (reuses reducer above)
+// useAsync: wraps a promise with loading/error/success state (simplified — production should use a generic reducer)
 function useAsync<T>(fn: () => Promise<T>, deps: unknown[] = []) {
   const [state, dispatch] = useReducer(reducer, { status: 'idle' } as State)
   useEffect(() => {
@@ -83,7 +83,7 @@ function useAsync<T>(fn: () => Promise<T>, deps: unknown[] = []) {
     dispatch({ type: 'FETCH' })
     fn().then(
       (data) => { if (!cancelled) dispatch({ type: 'SUCCESS', data }) },
-      (err) => { if (!cancelled) dispatch({ type: 'ERROR', error: err.message }) }
+      (err) => { if (!cancelled) dispatch({ type: 'ERROR', error: err instanceof Error ? err.message : String(err) }) }
     )
     return () => { cancelled = true }
   }, deps) // eslint-disable-line react-hooks/exhaustive-deps
@@ -99,7 +99,6 @@ function useDebounce<T>(value: T, delayMs: number): T {
   }, [value, delayMs])
   return debounced
 }
-// const query = useDebounce(rawInput, 300)
 ```
 
 ### useId for Accessible Labels
@@ -109,7 +108,6 @@ function FormField({ label, children }: { label: string; children: (id: string) 
   const id = useId()
   return (<div><label htmlFor={id}>{label}</label>{children(id)}</div>)
 }
-// <FormField label="Email">{(id) => <input id={id} type="email" />}</FormField>
 ```
 
 ---
@@ -157,7 +155,7 @@ function TodoList({ todos }: { todos: Todo[] }) {
   async function handleAdd(formData: FormData) {
     const text = formData.get('text') as string
     addOptimistic({ id: crypto.randomUUID(), text, pending: true })
-    await createTodoOnServer(text)
+    await createTodoOnServer(text) // React 19 auto-reverts optimistic state on throw
   }
   return (
     <form action={handleAdd}>
@@ -191,9 +189,7 @@ function Dashboard() {
 ```
 
 ---
-
 ## 3. Server Components (RSC)
-
 ### Server vs Client Decision
 
 | Server Component                 | Client Component (`'use client'`)  |
@@ -257,8 +253,7 @@ export const useAppStore = create<AuthSlice & UISlice>()(
       set((s) => ({ sidebarOpen: !s.sidebarOpen }), false, 'ui/toggle'),
   }))
 )
-// Granular selectors prevent unnecessary re-renders
-// const open = useAppStore((s) => s.sidebarOpen)
+// Granular selector: const open = useAppStore((s) => s.sidebarOpen)
 ```
 
 ### React Query v5: Queries + Optimistic Mutations
@@ -269,7 +264,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 function useTodos() {
   return useQuery({
     queryKey: ['todos'],
-    queryFn: () => fetch('/api/todos').then((r) => r.json() as Promise<Todo[]>),
+    queryFn: async () => {
+      const r = await fetch('/api/todos')
+      if (!r.ok) throw new Error(`Failed to fetch todos: ${r.status}`)
+      return r.json() as Promise<Todo[]>
+    },
     staleTime: 5 * 60_000,
   })
 }
@@ -277,9 +276,11 @@ function useTodos() {
 function useAddTodo() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (text: string) =>
-      fetch('/api/todos', { method: 'POST', body: JSON.stringify({ text }) })
-        .then((r) => r.json() as Promise<Todo>),
+    mutationFn: async (text: string) => {
+      const r = await fetch('/api/todos', { method: 'POST', body: JSON.stringify({ text }) })
+      if (!r.ok) throw new Error(`Failed to add todo: ${r.status}`)
+      return r.json() as Promise<Todo>
+    },
     onMutate: async (text) => {
       await qc.cancelQueries({ queryKey: ['todos'] })
       const prev = qc.getQueryData<Todo[]>(['todos'])
@@ -308,7 +309,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   )
   return <ThemeCtx.Provider value={value}>{children}</ThemeCtx.Provider>
 }
-export const useTheme = () => { const c = useContext(ThemeCtx); if (!c) throw new Error('Missing ThemeProvider'); return c }
+export function useTheme() {
+  const c = useContext(ThemeCtx)
+  if (!c) throw new Error('Missing ThemeProvider')
+  return c
+}
 ```
 
 ---
@@ -348,14 +353,12 @@ function List<T>({ items, renderItem, keyExtractor, emptyState }: ListProps<T>) 
     <li key={keyExtractor(item)}>{renderItem(item, i)}</li>
   ))}</ul>
 }
-// Full inference: <List items={users} keyExtractor={u => u.id} renderItem={u => <span>{u.name}</span>} />
 ```
 
 ### forwardRef + useImperativeHandle
 
 ```tsx
-interface InputHandle { focus: () => void; clear: () => void }
-
+// React 19: ref is a regular prop; forwardRef no longer required
 const FancyInput = forwardRef<InputHandle, InputHTMLAttributes<HTMLInputElement>>(
   (props, ref) => {
     const inputRef = useRef<HTMLInputElement>(null)
@@ -366,7 +369,6 @@ const FancyInput = forwardRef<InputHandle, InputHTMLAttributes<HTMLInputElement>
     return <input ref={inputRef} {...props} />
   }
 )
-// const ref = useRef<InputHandle>(null); ref.current?.focus()
 ```
 
 ---
@@ -419,7 +421,6 @@ function VirtualList({ items }: { items: Item[] }) {
 
 ```tsx
 const Chart = lazy(() => import('./Chart'))
-// Conditionally render with Suspense fallback
 // {showChart && <Suspense fallback={<ChartSkeleton />}><Chart /></Suspense>}
 ```
 
@@ -473,11 +474,9 @@ test('useDebounce delays value update', () => {
 ### Mock RSC
 
 ```tsx
-vi.mock('@/lib/db', () => ({
-  getUser: vi.fn().mockResolvedValue({ id: '1', name: 'Alice' }),
-}))
+vi.mock('@/lib/db', () => ({ getUser: vi.fn().mockResolvedValue({ id: '1', name: 'Alice' }) }))
 test('UserProfile renders user name', async () => {
-  const jsx = await UserProfile({ userId: '1' }) // call async SC directly
+  const jsx = await UserProfile({ userId: '1' })
   expect(render(jsx).getByText('Alice')).toBeInTheDocument()
 })
 ```
@@ -490,7 +489,7 @@ test('UserProfile renders user name', async () => {
 - [ ] **Memoization** -- useCallback/useMemo only where profiling shows benefit
 - [ ] **State** -- colocated; no unnecessary lifting or globals
 - [ ] **Derived state** -- computed in render/useMemo, never synced via useEffect
-- [ ] **Error boundaries** -- every Suspense has a sibling ErrorBoundary
+- [ ] **Error boundaries** -- every Suspense is wrapped by an ErrorBoundary
 - [ ] **Loading** -- Suspense fallbacks provide meaningful skeletons
 - [ ] **A11y** -- semantic HTML; useId for label-input links
 - [ ] **TypeScript** -- no `any`; generics propagate through components/hooks

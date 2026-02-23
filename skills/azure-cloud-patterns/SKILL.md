@@ -34,8 +34,9 @@ description: Azure service patterns — Azure Functions, Cosmos DB, Blob Storage
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { CosmosClient } from "@azure/cosmos";
 
-const container = new CosmosClient(process.env.COSMOS_CONNECTION!)
-  .database("appdb").container("orders");
+const cosmosConn = process.env.COSMOS_CONNECTION;
+if (!cosmosConn) throw new Error("COSMOS_CONNECTION env var is required");
+const container = new CosmosClient(cosmosConn).database("appdb").container("orders");
 
 async function getOrder(req: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
   const orderId = req.params.orderId;
@@ -69,13 +70,10 @@ df.app.orchestration("processOrders", function* (ctx) {
 });
 
 df.app.activity("processOneOrder", { handler: async (id: string) => { /* idempotent */ return true; } });
-
 app.http("startOrchestration", {
   route: "orchestrations/process-orders",
-  handler: df.app.durableClient(async (req, client) => {
-    const instanceId = await client.startNew("processOrders");
-    return client.createCheckStatusResponse(req, instanceId);
-  }),
+  handler: df.app.durableClient(async (req, client) =>
+    client.createCheckStatusResponse(req, await client.startNew("processOrders"))),
 });
 ```
 
@@ -117,7 +115,7 @@ app.timer("dailyCleanup", {
 
 ```typescript
 import { CosmosClient, PatchOperation } from "@azure/cosmos";
-const container = new CosmosClient(process.env.COSMOS_CONNECTION!)
+const container = new CosmosClient(process.env.COSMOS_CONNECTION!) // validated at startup
   .database("appdb").container("orders");
 
 // Create
@@ -151,7 +149,10 @@ app.cosmosDB("orderChangeFeed", {
   connection: "COSMOS_CONNECTION", databaseName: "appdb",
   containerName: "orders", createLeaseContainerIfNotExists: true,
   handler: async (documents: unknown[], context: InvocationContext) => {
-    for (const doc of documents) await projectToReadModel(doc);
+    for (const doc of documents) {
+      try { await projectToReadModel(doc); }
+      catch (err) { context.error("Failed to project document", { doc, error: err }); }
+    }
   },
 });
 ```
@@ -169,7 +170,6 @@ app.cosmosDB("orderChangeFeed", {
 *Within the same session token.
 
 ---
-
 ## 3. Azure Blob Storage
 
 ### SAS Token Generation
@@ -242,8 +242,13 @@ await sender.sendMessages({
 // Subscriber
 const receiver = sbClient.createReceiver("order-events", "analytics-sub");
 for (const msg of await receiver.receiveMessages(10, { maxWaitTimeInMs: 5000 })) {
-  try { await handleEvent(msg.body); await receiver.completeMessage(msg); }
-  catch { await receiver.abandonMessage(msg); }
+  try {
+    await handleEvent(msg.body);
+    await receiver.completeMessage(msg);
+  } catch (err) {
+    console.error("Failed to process message", { messageId: msg.messageId, error: err });
+    await receiver.abandonMessage(msg);
+  }
 }
 ```
 
@@ -338,7 +343,9 @@ const cca = new ConfidentialClientApplication({ auth: {
   clientId: process.env.AZURE_CLIENT_ID!, clientSecret: process.env.AZURE_CLIENT_SECRET!,
   authority: `https://login.microsoftonline.com/${process.env.AZURE_TENANT_ID}`,
 }});
-const { accessToken } = (await cca.acquireTokenByClientCredential({ scopes: ["https://graph.microsoft.com/.default"] }))!;
+const result = await cca.acquireTokenByClientCredential({ scopes: ["https://graph.microsoft.com/.default"] });
+if (!result) throw new Error("Failed to acquire token via client credentials");
+const { accessToken } = result;
 ```
 
 ### On-Behalf-Of Flow
@@ -348,7 +355,8 @@ async function getOnBehalfOfToken(userToken: string): Promise<string> {
   const r = await cca.acquireTokenOnBehalfOf({
     oboAssertion: userToken, scopes: ["api://downstream-api/.default"],
   });
-  return r!.accessToken;
+  if (!r) throw new Error("Failed to acquire on-behalf-of token");
+  return r.accessToken;
 }
 ```
 
@@ -357,7 +365,6 @@ async function getOnBehalfOfToken(userToken: string): Promise<string> {
 ```typescript
 import { DefaultAzureCredential } from "@azure/identity";
 const credential = new DefaultAzureCredential(); // Managed Identity on Azure, CLI creds locally
-// Pass credential to any Azure SDK client — no secrets to manage
 ```
 
 ---
@@ -386,13 +393,8 @@ import { DefaultAzureCredential } from "@azure/identity";
 import { SecretClient } from "@azure/keyvault-secrets";
 const kv = new SecretClient("https://my-vault.vault.azure.net", new DefaultAzureCredential());
 
-const secret = await kv.getSecret("cosmos-connection");                              // Read
-await kv.setSecret("api-key", newValue, {                                            // Set with expiry
-  expiresOn: new Date(Date.now() + 90 * 24 * 3600_000), tags: { env: "prod" },
-});
-for await (const v of kv.listPropertiesOfSecretVersions("api-key")) {                // Audit
-  console.log(`${v.version} created ${v.createdOn}`);
-}
+const secret = await kv.getSecret("cosmos-connection");
+await kv.setSecret("api-key", newValue, { expiresOn: new Date(Date.now() + 90 * 24 * 3600_000) });
 ```
 
 ---
@@ -451,10 +453,8 @@ module cosmos 'modules/cosmos.bicep' = {
 ### Deployment Commands
 
 ```bash
-az deployment group validate --resource-group rg-app-prod -f main.bicep -p parameters/prod.bicepparam
-az deployment group what-if  --resource-group rg-app-prod -f main.bicep -p parameters/prod.bicepparam
-az deployment group create   --resource-group rg-app-prod -f main.bicep -p parameters/prod.bicepparam \
-  --name "release-$(date +%Y%m%d-%H%M%S)"
+az deployment group what-if --resource-group rg-app-prod -f main.bicep -p parameters/prod.bicepparam
+az deployment group create  --resource-group rg-app-prod -f main.bicep -p parameters/prod.bicepparam
 ```
 
 ---

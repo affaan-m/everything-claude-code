@@ -21,6 +21,7 @@ Low-latency bidirectional communication for live dashboards, chat, collaboration
 3. **Authenticate on upgrade, authorize on every message** — the HTTP handshake is your gate; room checks happen per event
 4. **Backpressure before you need it** — a single slow client must not stall the server; buffer, drop, or disconnect
 5. **Idempotent handlers** — duplicate delivery is inevitable after reconnect; guard with message IDs
+
 ---
 ## 1. Protocol Fundamentals
 | | WebSocket | SSE (EventSource) | Long-Polling |
@@ -33,6 +34,7 @@ Low-latency bidirectional communication for live dashboards, chat, collaboration
 | Best for | Chat, games, collab | Live feeds, dashboards | Legacy/firewall envs |
 
 **Rule of thumb**: SSE when you only push from server. WebSocket when the client sends frequently. Long-polling only as fallback.
+
 ---
 ## 2. Native WebSocket
 ### Browser Client with Reconnect (TypeScript)
@@ -52,14 +54,18 @@ class ReconnectingSocket {
       this.pending = [];
     };
     this.ws.onmessage = (ev) => {
-      const { type, payload } = JSON.parse(ev.data);
-      this.handlers.get(type)?.forEach((fn) => fn(payload));
+      let parsed: { type: string; payload: unknown };
+      try { parsed = JSON.parse(ev.data); } catch { return; }
+      this.handlers.get(parsed.type)?.forEach((fn) => fn(parsed.payload));
     };
     this.ws.onclose = (ev) => { if (ev.code !== 1000) this.scheduleReconnect(); };
     this.ws.onerror = () => this.ws?.close();
   }
   private scheduleReconnect() {
-    if (this.attempt >= this.maxAttempt) return;
+    if (this.attempt >= this.maxAttempt) {
+      this.handlers.get("__connection_lost")?.forEach((fn) => fn({ attempts: this.maxAttempt }));
+      return;
+    }
     // Exponential backoff with jitter: 1s, 2s, 4s ... capped at 30s
     const base = Math.min(30_000, 1000 * 2 ** this.attempt);
     setTimeout(() => this.connect(), base + base * 0.3 * Math.random());
@@ -90,8 +96,11 @@ wss.on("connection", (ws: WebSocket) => {
       const msgType = new DataView(buf.buffer, buf.byteOffset).getUint8(0);
       handleBinaryMessage(ws, msgType, buf.subarray(1));
     } else {
-      const { type, payload } = JSON.parse(raw.toString());
-      handleTextMessage(ws, type, payload);
+      let parsed: { type: string; payload: unknown };
+      try { parsed = JSON.parse(raw.toString()); } catch {
+        ws.send(JSON.stringify({ type: "error", payload: "invalid_json" })); return;
+      }
+      handleTextMessage(ws, parsed.type, parsed.payload);
     }
   });
   const aliveSock = ws as WebSocket & { isAlive: boolean };
@@ -104,10 +113,11 @@ const hb = setInterval(() => {
     const a = ws as WebSocket & { isAlive: boolean };
     if (!a.isAlive) { ws.terminate(); continue; }
     a.isAlive = false; ws.ping();
-  });
+  }
 }, 30_000);
 wss.on("close", () => clearInterval(hb));
 ```
+
 ---
 ## 3. Socket.io
 ### CORS + JWT Auth Middleware
@@ -131,7 +141,10 @@ io.use((socket, next) => {
     socket.data.userId = user.sub;
     socket.data.role = user.role;
     next();
-  } catch { next(new Error("invalid token")); }
+  } catch (err) {
+    const isTokenError = err instanceof jwt.JsonWebTokenError || err instanceof jwt.TokenExpiredError;
+    next(new Error(isTokenError ? "invalid token" : "auth service unavailable"));
+  }
 });
 ```
 ### Namespaces, Rooms, and Acknowledgements
@@ -177,6 +190,7 @@ await Promise.all([pubClient.connect(), subClient.connect()]);
 io.adapter(createAdapter(pubClient, subClient));
 // All emit/broadcast calls now fan out across nodes
 ```
+
 ---
 ## 4. Phoenix Channels
 > For full Elixir/OTP context (GenServer, Supervision, Ecto), see `elixir-phoenix-patterns`.
@@ -218,7 +232,9 @@ defmodule MyAppWeb.Presence do
   use Phoenix.Presence, otp_app: :my_app, pubsub_server: MyApp.PubSub
 end
 ```
+
 ---
+
 ## 5. Managed Services (Pusher / Ably)
 ### Server Auth Endpoint (TypeScript)
 ```typescript
@@ -255,6 +271,7 @@ await pusher.trigger("private-room-42", "new-message", { userId: "abc", text: "H
 | Binary messages | Limited | Full support |
 | Vendor lock-in | Yes | No |
 | Best for | MVPs, <100k conn | High-volume, custom protocols |
+
 ---
 ## 6. Backpressure & Rate Limiting
 ### Token Bucket Per Connection (TypeScript)
@@ -323,7 +340,9 @@ defmodule MyApp.ConnectionMonitor do
   end
 end
 ```
+
 ---
+
 ## 7. Security
 ### JWT Validation on WebSocket Upgrade
 ```typescript
@@ -346,7 +365,9 @@ httpServer.on("upgrade", (req: IncomingMessage, socket, head) => {
       (ws as any).userId = user.sub;
       wss.emit("connection", ws, req);
     });
-  } catch {
+  } catch (err) {
+    const isTokenError = err instanceof jwt.JsonWebTokenError || err instanceof jwt.TokenExpiredError;
+    if (!isTokenError) console.error("WebSocket upgrade auth error", err);
     socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n"); socket.destroy();
   }
 });
@@ -358,7 +379,9 @@ wss.on("connection", (ws) => {
   const joinedRooms = new Set<string>();
   ws.on("message", (raw) => {
     if (Buffer.byteLength(raw as Buffer) > MAX_PAYLOAD) { ws.close(1009, "too large"); return; }
-    const { type, roomId, payload } = JSON.parse(raw.toString());
+    let parsed: { type: string; roomId?: string; payload: unknown };
+    try { parsed = JSON.parse(raw.toString()); } catch { ws.close(1003, "invalid json"); return; }
+    const { type, roomId, payload } = parsed;
     if (type === "room:message" && !joinedRooms.has(roomId)) {
       ws.send(JSON.stringify({ type: "error", payload: "not_in_room" })); return;
     }
@@ -366,6 +389,7 @@ wss.on("connection", (ws) => {
   });
 });
 ```
+
 ---
 ## 8. Testing
 ### ws Integration Test (TypeScript / Vitest)
@@ -450,7 +474,9 @@ describe("Socket.io chat namespace", () => {
   });
 });
 ```
+
 ---
+
 ## 9. Checklist
 - [ ] Protocol chosen based on direction (full-duplex vs server-push) and proxy constraints
 - [ ] Client reconnects automatically with exponential backoff and jitter

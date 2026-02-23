@@ -143,7 +143,6 @@ export const adminProcedure = publicProcedure.use(hasRole("admin"));
 
 ```typescript
 // server/context.ts — auth session + db in context
-import { type inferAsyncReturnType } from "@trpc/server";
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { getServerSession } from "./auth";
 import { db } from "./db";
@@ -152,7 +151,7 @@ export async function createTRPCContext(opts: FetchCreateContextFnOptions) {
   const session = await getServerSession(opts.req);
   return { db, session, req: opts.req };
 }
-export type Context = inferAsyncReturnType<typeof createTRPCContext>;
+export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
 
 // Logging middleware
 const logger = middleware(async ({ path, type, next }) => {
