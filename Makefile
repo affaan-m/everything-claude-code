@@ -74,13 +74,13 @@ test-security:
 	@echo "=== Running Security Configuration Test ==="
 	./test/test_session_start.sh
 
-# Validate release artifact for banned files (requires zip to exist)
+# Validate release artifact for banned files (requires zip to exist in dist/)
 validate-artifact:
 	@echo "=== Running Release Artifact Validation ==="
-	@if ls *.zip 1>/dev/null 2>&1; then \
-		for f in *.zip; do ./.github/scripts/validate-artifact.sh "$$f"; done; \
+	@if ls dist/*.zip 1>/dev/null 2>&1; then \
+		for f in dist/*.zip; do ./.github/scripts/validate-artifact.sh "$$f"; done; \
 	else \
-		echo "No zip artifacts found. Run 'make build' first (or skip)."; \
+		echo "No zip artifacts found in dist/. Run 'make build' first (or skip)."; \
 	fi
 
 # Run shellcheck: scoped on branches, full scan on main

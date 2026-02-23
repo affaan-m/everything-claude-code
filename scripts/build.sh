@@ -160,7 +160,7 @@ ARTIFACT_PATH="${DIST_DIR}/${ARTIFACT_NAME}"
 zip -r "${ARTIFACT_PATH}" . \
   -x "*.git*" \
   -x "*/node_modules/*" \
-  -x "*/.env*" \
+  -x ".env" -x ".env.*" -x "*/.env" -x "*/.env.*" \
   -x "*/dist/*" \
   -x "*/logs/*" \
   -x "*/.DS_Store" \

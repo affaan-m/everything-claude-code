@@ -19,6 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download release artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+
       - name: Validate artifact for banned files
         run: |
           chmod +x .github/scripts/validate-artifact.sh
