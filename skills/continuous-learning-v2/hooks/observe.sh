@@ -56,20 +56,20 @@ if [ -z "$INPUT_JSON" ]; then
   exit 0
 fi
 
-# Parse using python (more reliable than jq for complex JSON)
-PARSED=$(python3 << EOF
+# Parse using python via stdin pipe (safe for all JSON payloads)
+PARSED=$(echo "$INPUT_JSON" | python3 -c '
 import json
 import sys
 
 try:
-    data = json.loads('''$INPUT_JSON''')
+    data = json.load(sys.stdin)
 
     # Extract fields - Claude Code hook format
-    hook_type = data.get('hook_type', 'unknown')  # PreToolUse or PostToolUse
-    tool_name = data.get('tool_name', data.get('tool', 'unknown'))
-    tool_input = data.get('tool_input', data.get('input', {}))
-    tool_output = data.get('tool_output', data.get('output', ''))
-    session_id = data.get('session_id', 'unknown')
+    hook_type = data.get("hook_type", "unknown")  # PreToolUse or PostToolUse
+    tool_name = data.get("tool_name", data.get("tool", "unknown"))
+    tool_input = data.get("tool_input", data.get("input", {}))
+    tool_output = data.get("tool_output", data.get("output", ""))
+    session_id = data.get("session_id", "unknown")
 
     # Truncate large inputs/outputs
     if isinstance(tool_input, dict):
@@ -83,20 +83,19 @@ try:
         tool_output_str = str(tool_output)[:5000]
 
     # Determine event type
-    event = 'tool_start' if 'Pre' in hook_type else 'tool_complete'
+    event = "tool_start" if "Pre" in hook_type else "tool_complete"
 
     print(json.dumps({
-        'parsed': True,
-        'event': event,
-        'tool': tool_name,
-        'input': tool_input_str if event == 'tool_start' else None,
-        'output': tool_output_str if event == 'tool_complete' else None,
-        'session': session_id
+        "parsed": True,
+        "event": event,
+        "tool": tool_name,
+        "input": tool_input_str if event == "tool_start" else None,
+        "output": tool_output_str if event == "tool_complete" else None,
+        "session": session_id
     }))
 except Exception as e:
-    print(json.dumps({'parsed': False, 'error': str(e)}))
-EOF
-)
+    print(json.dumps({"parsed": False, "error": str(e)}))
+')
 
 # Check if parsing succeeded
 PARSED_OK=$(echo "$PARSED" | python3 -c "import json,sys; print(json.load(sys.stdin).get('parsed', False))")
@@ -104,7 +103,12 @@ PARSED_OK=$(echo "$PARSED" | python3 -c "import json,sys; print(json.load(sys.st
 if [ "$PARSED_OK" != "True" ]; then
   # Fallback: log raw input for debugging
   timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  echo "{\"timestamp\":\"$timestamp\",\"event\":\"parse_error\",\"raw\":$(echo "$INPUT_JSON" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()[:1000]))')}" >> "$OBSERVATIONS_FILE"
+  export TIMESTAMP="$timestamp"
+  echo "$INPUT_JSON" | python3 -c "
+import json, sys, os
+raw = sys.stdin.read()[:2000]
+print(json.dumps({'timestamp': os.environ['TIMESTAMP'], 'event': 'parse_error', 'raw': raw}))
+" >> "$OBSERVATIONS_FILE"
   exit 0
 fi
 
@@ -121,12 +125,13 @@ fi
 # Build and write observation
 timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-python3 << EOF
-import json
+export TIMESTAMP="$timestamp"
+echo "$PARSED" | python3 -c "
+import json, sys, os
 
-parsed = json.loads('''$PARSED''')
+parsed = json.load(sys.stdin)
 observation = {
-    'timestamp': '$timestamp',
+    'timestamp': os.environ['TIMESTAMP'],
     'event': parsed['event'],
     'tool': parsed['tool'],
     'session': parsed['session']
@@ -137,9 +142,8 @@ if parsed['input']:
 if parsed['output']:
     observation['output'] = parsed['output']
 
-with open('$OBSERVATIONS_FILE', 'a') as f:
-    f.write(json.dumps(observation) + '\n')
-EOF
+print(json.dumps(observation))
+" >> "$OBSERVATIONS_FILE"
 
 # Signal observer if running
 OBSERVER_PID_FILE="${CONFIG_DIR}/.observer.pid"

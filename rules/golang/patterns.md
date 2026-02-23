@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/*.go"
+  - "**/go.mod"
+  - "**/go.sum"
+---
 # Go Patterns
 
 > This file extends [common/patterns.md](../common/patterns.md) with Go specific content.

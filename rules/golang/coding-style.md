@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/*.go"
+  - "**/go.mod"
+  - "**/go.sum"
+---
 # Go Coding Style
 
 > This file extends [common/coding-style.md](../common/coding-style.md) with Go specific content.

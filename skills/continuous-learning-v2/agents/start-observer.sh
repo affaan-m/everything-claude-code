@@ -74,7 +74,10 @@ case "${1:-start}" in
       trap 'rm -f "$PID_FILE"; exit 0' TERM INT
 
       analyze_observations() {
-        # Only analyze if we have enough observations
+        # Only analyze if observations file exists and has enough entries
+        if [ ! -f "$OBSERVATIONS_FILE" ]; then
+          return
+        fi
         obs_count=$(wc -l < "$OBSERVATIONS_FILE" 2>/dev/null || echo 0)
         if [ "$obs_count" -lt 10 ]; then
           return
@@ -85,16 +88,22 @@ case "${1:-start}" in
         # Use Claude Code with Haiku to analyze observations
         # This spawns a quick analysis session
         if command -v claude &> /dev/null; then
+          exit_code=0
           claude --model haiku --max-turns 3 --print \
             "Read $OBSERVATIONS_FILE and identify patterns. If you find 3+ occurrences of the same pattern, create an instinct file in $CONFIG_DIR/instincts/personal/ following the format in the observer agent spec. Be conservative - only create instincts for clear patterns." \
-            >> "$LOG_FILE" 2>&1 || true
+            >> "$LOG_FILE" 2>&1 || exit_code=$?
+          if [ "$exit_code" -ne 0 ]; then
+            echo "[$(date)] Claude analysis failed (exit $exit_code)" >> "$LOG_FILE"
+          fi
+        else
+          echo "[$(date)] claude CLI not found, skipping analysis" >> "$LOG_FILE"
         fi
 
         # Archive processed observations
         if [ -f "$OBSERVATIONS_FILE" ]; then
           archive_dir="${CONFIG_DIR}/observations.archive"
           mkdir -p "$archive_dir"
-          mv "$OBSERVATIONS_FILE" "$archive_dir/processed-$(date +%Y%m%d-%H%M%S).jsonl"
+          mv "$OBSERVATIONS_FILE" "$archive_dir/processed-$(date +%Y%m%d-%H%M%S).jsonl" 2>/dev/null || true
           touch "$OBSERVATIONS_FILE"
         fi
       }

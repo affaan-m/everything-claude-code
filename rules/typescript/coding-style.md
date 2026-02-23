@@ -1,3 +1,10 @@
+---
+paths:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.js"
+  - "**/*.jsx"
+---
 # TypeScript/JavaScript Coding Style
 
 > This file extends [common/coding-style.md](../common/coding-style.md) with TypeScript/JavaScript specific content.

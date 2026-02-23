@@ -7,7 +7,7 @@
 - Pair programming and code generation
 - Worker agents in multi-agent systems
 
-**Sonnet 4.5** (Best coding model):
+**Sonnet 4.6** (Best coding model):
 - Main development work
 - Orchestrating multi-agent workflows
 - Complex coding tasks

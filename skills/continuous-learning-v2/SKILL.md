@@ -8,6 +8,14 @@ version: 2.0.0
 
 An advanced learning system that turns your Claude Code sessions into reusable knowledge through atomic "instincts" - small learned behaviors with confidence scoring.
 
+## When to Activate
+
+- Setting up automatic learning from Claude Code sessions
+- Configuring instinct-based behavior extraction via hooks
+- Tuning confidence thresholds for learned behaviors
+- Reviewing, exporting, or importing instinct libraries
+- Evolving instincts into full skills, commands, or agents
+
 ## What's New in v2
 
 | Feature | v1 | v2 |
