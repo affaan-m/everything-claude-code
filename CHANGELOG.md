@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] — 2026-02-23 (Ecosystem Sync)
+
+### Maintenance
+- **SYNCED:** Git repository updated from 6 commits behind origin/main to current (commit 64964f5). Fast-forward merge completed successfully.
+- **SYNCED:** Upstream remote (`affaan-m/everything-claude-code`) added and fetched. Ready for upstream-based development workflow.
+- **ACTION:** Code CLI git sync completed as part of cross-surface ecosystem repair (ACTION 1/3).
+
+---
+
 ## [1.0.0] — 2026-02-22 (Post-Migration Baseline)
 
 This release marks the finalization of the macOS-only migration and includes critical security and CI hygiene fixes. It establishes a clean baseline for future development.
