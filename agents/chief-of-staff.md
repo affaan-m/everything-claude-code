@@ -55,14 +55,16 @@ Fetch all channels simultaneously:
 # Email (via Gmail CLI)
 gog gmail search "is:unread -category:promotions -category:social" --max 20 --json
 
-# Slack (via MCP)
-conversations_search_messages(search_query: "YOUR_NAME", filter_date_during: "Today")
-channels_list(channel_types: "im,mpim") → conversations_history(limit: "4h")
-
 # Calendar
 gog calendar events --today --all --max 30
 
 # LINE/Messenger via channel-specific scripts
+```
+
+```text
+# Slack (via MCP)
+conversations_search_messages(search_query: "YOUR_NAME", filter_date_during: "Today")
+channels_list(channel_types: "im,mpim") → conversations_history(limit: "4h")
 ```
 
 ### Step 2: Classify
