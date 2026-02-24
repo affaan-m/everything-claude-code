@@ -96,9 +96,9 @@ For each action_required message:
 2. **Relationships** — Append interaction to sender's section in `relationships.md`
 3. **Todo** — Update upcoming events table, mark completed items
 4. **Pending responses** — Set follow-up deadlines, remove resolved items
-5. **Git commit & push** — Version-control all knowledge file changes
-6. **Archive** — Remove processed message from inbox
-7. **Triage files** — Update LINE/Messenger draft status
+5. **Archive** — Remove processed message from inbox
+6. **Triage files** — Update LINE/Messenger draft status
+7. **Git commit & push** — Version-control all knowledge file changes
 
 This checklist is enforced by a `PostToolUse` hook that blocks completion until all steps are done. The hook intercepts `gmail send` / `conversations_add_message` and injects the checklist as a system reminder.
 
