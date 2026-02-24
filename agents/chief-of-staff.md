@@ -67,7 +67,7 @@ gog calendar events --today --all --max 30
 
 ### Step 2: Classify
 
-Apply the 4-tier system to each message. Priority order: skip → meeting_info → action_required → info_only.
+Apply the 4-tier system to each message. Priority order: skip → info_only → meeting_info → action_required.
 
 ### Step 3: Execute
 
