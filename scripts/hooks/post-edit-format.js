@@ -5,9 +5,9 @@
  * Cross-platform (Windows, macOS, Linux)
  *
  * Runs after Edit tool use. If the edited file is a JS/TS file,
- * auto-detects the project formatter (Biome or Prettier) by looking
- * for config files, then formats accordingly.
- * Fails silently if no formatter is found or installed.
+ * detects Biome or Prettier and formats accordingly.
+ * Honors CLAUDE_PACKAGE_MANAGER env var for the exec runner.
+ * Fails silently if no formatter is installed.
  */
 
 const { execFileSync } = require('child_process');
@@ -15,6 +15,25 @@ const fs = require('fs');
 const path = require('path');
 
 const MAX_STDIN = 1024 * 1024; // 1MB limit
+const JS_TS_EXT = /\.(ts|tsx|js|jsx)$/;
+const BIOME_CONFIGS = ['biome.json', 'biome.jsonc'];
+
+const RUNNERS = {
+  npm:  { bin: 'npx',  args: [] },
+  pnpm: { bin: 'pnpm', args: ['dlx'] },
+  yarn: { bin: 'yarn', args: ['dlx'] },
+  bun:  { bin: 'bunx', args: [] },
+};
+
+function getRunner() {
+  const pm = process.env.CLAUDE_PACKAGE_MANAGER;
+  const runner = pm && RUNNERS[pm] ? RUNNERS[pm] : RUNNERS.npm;
+  const bin = process.platform === 'win32' && !runner.bin.endsWith('.cmd')
+    ? `${runner.bin}.cmd`
+    : runner.bin;
+  return { bin, prefixArgs: runner.args };
+}
+
 let data = '';
 process.stdin.setEncoding('utf8');
 
@@ -25,70 +44,26 @@ process.stdin.on('data', chunk => {
   }
 });
 
-function findProjectRoot(startDir) {
-  let dir = startDir;
-  while (dir !== path.dirname(dir)) {
-    if (fs.existsSync(path.join(dir, 'package.json'))) return dir;
-    dir = path.dirname(dir);
-  }
-  return startDir;
-}
-
-function detectFormatter(projectRoot) {
-  const biomeConfigs = ['biome.json', 'biome.jsonc'];
-  for (const cfg of biomeConfigs) {
-    if (fs.existsSync(path.join(projectRoot, cfg))) return 'biome';
-  }
-
-  const prettierConfigs = [
-    '.prettierrc',
-    '.prettierrc.json',
-    '.prettierrc.js',
-    '.prettierrc.cjs',
-    '.prettierrc.mjs',
-    '.prettierrc.yml',
-    '.prettierrc.yaml',
-    '.prettierrc.toml',
-    'prettier.config.js',
-    'prettier.config.cjs',
-    'prettier.config.mjs',
-  ];
-  for (const cfg of prettierConfigs) {
-    if (fs.existsSync(path.join(projectRoot, cfg))) return 'prettier';
-  }
-
-  return null;
-}
-
-function getFormatterCommand(formatter, filePath) {
-  const npxBin = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-  if (formatter === 'biome') {
-    return { bin: npxBin, args: ['@biomejs/biome', 'format', '--write', filePath] };
-  }
-  if (formatter === 'prettier') {
-    return { bin: npxBin, args: ['prettier', '--write', filePath] };
-  }
-  return null;
-}
-
 process.stdin.on('end', () => {
   try {
-    const input = JSON.parse(data);
-    const filePath = input.tool_input?.file_path;
+    const { tool_input } = JSON.parse(data);
+    const filePath = tool_input?.file_path;
 
-    if (filePath && /\.(ts|tsx|js|jsx)$/.test(filePath)) {
+    if (filePath && JS_TS_EXT.test(filePath)) {
+      const cwd = process.cwd();
+      const hasBiome = BIOME_CONFIGS.some((f) => fs.existsSync(path.join(cwd, f)));
+
       try {
-        const projectRoot = findProjectRoot(path.dirname(path.resolve(filePath)));
-        const formatter = detectFormatter(projectRoot);
-        const cmd = getFormatterCommand(formatter, filePath);
+        const { bin, prefixArgs } = getRunner();
+        const args = hasBiome
+          ? [...prefixArgs, '@biomejs/biome', 'check', '--write', filePath]
+          : [...prefixArgs, 'prettier', '--write', filePath];
 
-        if (cmd) {
-          execFileSync(cmd.bin, cmd.args, {
-            cwd: projectRoot,
-            stdio: ['pipe', 'pipe', 'pipe'],
-            timeout: 15000
-          });
-        }
+        execFileSync(bin, args, {
+          cwd,
+          stdio: ['pipe', 'pipe', 'pipe'],
+          timeout: 15000,
+        });
       } catch {
         // Formatter not installed, file missing, or failed — non-blocking
       }
