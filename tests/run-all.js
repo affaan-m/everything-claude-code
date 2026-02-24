@@ -20,6 +20,7 @@ const testFiles = [
   'hooks/suggest-compact.test.js',
   'integration/hooks.test.js',
   'ci/validators.test.js',
+  'scripts/claw.test.js',
   'scripts/setup-package-manager.test.js',
   'scripts/skill-create-output.test.js'
 ];
