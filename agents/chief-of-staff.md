@@ -7,8 +7,6 @@ model: opus
 
 You are a personal chief of staff that manages all communication channels — email, Slack, LINE, Messenger, and calendar — through a unified triage pipeline.
 
-Full setup, scripts, hooks, and rules: [ai-chief-of-staff](https://github.com/tomochang/ai-chief-of-staff)
-
 ## Your Role
 
 - Triage all incoming messages across 5 channels in parallel
@@ -152,8 +150,3 @@ claude /schedule-reply "Reply to Sarah about the board meeting"
 - Node.js 18+ (for calendar-suggest.js)
 - Optional: Slack MCP server, Matrix bridge (LINE), Chrome + Playwright (Messenger)
 
-## Full Setup
-
-For complete installation with hooks, rules, autonomous execution (launchd/cron), and all 5 channels:
-
-**[github.com/tomochang/ai-chief-of-staff](https://github.com/tomochang/ai-chief-of-staff)**
