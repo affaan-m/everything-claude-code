@@ -37,8 +37,8 @@ process.stdin.on('end', () => {
     if (filePath && JS_TS_EXT.test(filePath)) {
       const cwd = process.cwd();
 
-      // Walk up from cwd (max 4 levels) for monorepo support
-      const dirs = Array.from({ length: 5 }).reduce((acc) => {
+      // Walk up from cwd checking up to 4 ancestor levels for monorepo support
+      const dirs = Array.from({ length: 4 }).reduce((acc) => {
         const parent = path.dirname(acc.at(-1));
         return parent === acc.at(-1) ? acc : [...acc, parent];
       }, [cwd]);
