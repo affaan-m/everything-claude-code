@@ -36,8 +36,15 @@ process.stdin.on('end', () => {
 
     if (filePath && JS_TS_EXT.test(filePath)) {
       const cwd = process.cwd();
-      const hasBiome = BIOME_CONFIGS.some((f) =>
-        fs.existsSync(path.join(cwd, f)),
+
+      // Walk up from cwd (max 4 levels) for monorepo support
+      const dirs = Array.from({ length: 5 }).reduce((acc) => {
+        const parent = path.dirname(acc.at(-1));
+        return parent === acc.at(-1) ? acc : [...acc, parent];
+      }, [cwd]);
+
+      const hasBiome = dirs.some((d) =>
+        BIOME_CONFIGS.some((f) => fs.existsSync(path.join(d, f)))
       );
 
       try {
