@@ -10,58 +10,62 @@
  * Fails silently if no formatter is installed.
  */
 
-const { execFileSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+const { execFileSync } = require("child_process");
+const fs = require("fs");
+const path = require("path");
 
 const MAX_STDIN = 1024 * 1024; // 1MB limit
 const JS_TS_EXT = /\.(ts|tsx|js|jsx)$/;
-const BIOME_CONFIGS = ['biome.json', 'biome.jsonc'];
+const BIOME_CONFIGS = ["biome.json", "biome.jsonc"];
 
+// Use local-first runners (not dlx/download) since this hook runs on every edit
 const RUNNERS = {
-  npm:  { bin: 'npx',  args: [] },
-  pnpm: { bin: 'pnpm', args: ['dlx'] },
-  yarn: { bin: 'yarn', args: ['dlx'] },
-  bun:  { bin: 'bunx', args: [] },
+  npm: { bin: "npx", args: [] },
+  pnpm: { bin: "pnpm", args: ["exec"] },
+  yarn: { bin: "yarn", args: ["exec"] },
+  bun: { bin: "bunx", args: [] },
 };
 
 function getRunner() {
   const pm = process.env.CLAUDE_PACKAGE_MANAGER;
   const runner = pm && RUNNERS[pm] ? RUNNERS[pm] : RUNNERS.npm;
-  const bin = process.platform === 'win32' && !runner.bin.endsWith('.cmd')
-    ? `${runner.bin}.cmd`
-    : runner.bin;
+  const bin =
+    process.platform === "win32" && !runner.bin.endsWith(".cmd")
+      ? `${runner.bin}.cmd`
+      : runner.bin;
   return { bin, prefixArgs: runner.args };
 }
 
-let data = '';
-process.stdin.setEncoding('utf8');
+let data = "";
+process.stdin.setEncoding("utf8");
 
-process.stdin.on('data', chunk => {
+process.stdin.on("data", (chunk) => {
   if (data.length < MAX_STDIN) {
     const remaining = MAX_STDIN - data.length;
     data += chunk.substring(0, remaining);
   }
 });
 
-process.stdin.on('end', () => {
+process.stdin.on("end", () => {
   try {
     const { tool_input } = JSON.parse(data);
     const filePath = tool_input?.file_path;
 
     if (filePath && JS_TS_EXT.test(filePath)) {
       const cwd = process.cwd();
-      const hasBiome = BIOME_CONFIGS.some((f) => fs.existsSync(path.join(cwd, f)));
+      const hasBiome = BIOME_CONFIGS.some((f) =>
+        fs.existsSync(path.join(cwd, f)),
+      );
 
       try {
         const { bin, prefixArgs } = getRunner();
         const args = hasBiome
-          ? [...prefixArgs, '@biomejs/biome', 'check', '--write', filePath]
-          : [...prefixArgs, 'prettier', '--write', filePath];
+          ? [...prefixArgs, "@biomejs/biome", "check", "--write", filePath]
+          : [...prefixArgs, "prettier", "--write", filePath];
 
         execFileSync(bin, args, {
           cwd,
-          stdio: ['pipe', 'pipe', 'pipe'],
+          stdio: ["pipe", "pipe", "pipe"],
           timeout: 15000,
         });
       } catch {
