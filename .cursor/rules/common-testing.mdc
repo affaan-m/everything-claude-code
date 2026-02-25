@@ -1,0 +1,57 @@
+---
+description: Testing standards: TDD workflow, test coverage requirements, and test quality rules
+alwaysApply: true
+---
+
+# Testing Standards
+
+## Test-Driven Development
+
+FOR NEW FUNCTIONALITY: Always write tests before implementation.
+
+TDD Cycle:
+1. Write a failing test
+2. Write minimal code to pass
+3. Refactor while keeping tests green
+
+## Test Quality
+
+- Tests are first-class code — no lower quality standards
+- Never skip tests to save time — they ARE the development
+- Make tests readable: name them like documentation
+- Test behavior, not implementation details
+- Prefer integration tests over unit tests for business logic
+
+## Coverage Requirements
+
+- All public APIs: 100% coverage
+- Business logic: 90%+ coverage
+- Edge cases and error paths must be tested
+- Happy path is the minimum — test unhappy paths too
+
+## Test Structure
+
+```
+Describe: <feature or class>
+  Context: <condition/scenario>
+    It: <expected behavior>
+      Arrange: setup test data
+      Act: perform the action
+      Assert: verify the result
+```
+
+## What to Test
+
+- Error conditions and edge cases
+- Boundary values
+- Integration points
+- Async operations and timing
+- State transitions
+
+## Testing Checklist
+
+- [ ] Test names describe behavior, not implementation
+- [ ] No test duplication
+- [ ] Mocks are minimal and necessary
+- [ ] Tests are independent (no shared state)
+- [ ] CI passes before merging
