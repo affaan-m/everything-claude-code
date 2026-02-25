@@ -10,6 +10,7 @@ description: >
 license: Apache-2.0
 version: 1.0.0
 homepage: https://github.com/evos-ai/evos-capabilities
+origin: ECC
 metadata:
   author: evos
   clawdbot:
