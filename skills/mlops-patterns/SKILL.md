@@ -984,7 +984,7 @@ from datetime import datetime, timedelta
 class PredictionMonitor:
     def __init__(self, window_size: int = 1000) -> None:
         self._predictions: deque = deque(maxlen=window_size)
-        self._paired: list[tuple[float, float]] = []
+        self._paired: deque[tuple[float, float]] = deque(maxlen=window_size)
         self._latencies: deque = deque(maxlen=window_size)
         self._errors: deque = deque(maxlen=window_size)
 
