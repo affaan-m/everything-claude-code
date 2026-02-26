@@ -97,7 +97,7 @@ Every pipeline must include security checks before deployment.
 security-scan:
   runs-on: ubuntu-latest
   steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
 
     - name: Run SAST
       uses: github/codeql-action/analyze@v3
@@ -111,7 +111,7 @@ security-scan:
         extra_args: --only-verified
 
     - name: Container scanning
-      uses: aquasecurity/trivy-action@0.29.0
+      uses: aquasecurity/trivy-action@18f2510ee396bbf400402947b394f2dd8c87dbb0  # v0.29.0
       with:
         image-ref: '${{ env.IMAGE_NAME }}:${{ github.sha }}'
         severity: 'CRITICAL,HIGH'
@@ -1085,14 +1085,19 @@ build-and-push:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    # NOTE: Prefer OIDC authentication over static AWS credentials.
-    # See the "OIDC Authentication" section in this file for the recommended pattern
-    # using aws-actions/configure-aws-credentials with role-to-assume.
-    - uses: docker/login-action@v3
+    # WRONG: Static AWS credentials (use OIDC instead)
+    # - uses: docker/login-action@v3
+    #   with:
+    #     registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+    #     username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    # CORRECT: Use OIDC authentication (see "OIDC Authentication" section)
+    - uses: aws-actions/configure-aws-credentials@v4
       with:
-        registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
-        username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-ecr
+        aws-region: us-east-1
+    - uses: aws-actions/amazon-ecr-login@v2
 
     - name: Docker meta
       id: meta

@@ -238,7 +238,7 @@ def init_wandb_experiment(
     config: ExperimentConfig,
     group: str | None = None,
     tags: list[str] | None = None,
-) -> wandb.run:
+) -> wandb.Run:
     run = wandb.init(
         project=project,
         config=asdict(config),
@@ -799,6 +799,8 @@ def run_batch_inference(config: BatchInferenceConfig) -> dict:
     parquet_file = pq.ParquetFile(config.input_path)
     for batch in parquet_file.iter_batches(batch_size=config.batch_size, columns=list(config.feature_columns)):
         chunk = batch.to_pandas()
+        if chunk.empty:
+            continue
         predictions = model.predict(chunk)
 
         output_chunk = chunk.assign(
@@ -810,6 +812,8 @@ def run_batch_inference(config: BatchInferenceConfig) -> dict:
         total_rows += len(chunk)
         logger.info("Scored %d rows (total: %d)", len(chunk), total_rows)
 
+    if not results:
+        raise ValueError(f"No data found in {config.input_path}")
     output_df = pd.concat(results, ignore_index=True)
     output_df.to_parquet(config.output_path, index=False)
 
@@ -980,7 +984,7 @@ from datetime import datetime, timedelta
 class PredictionMonitor:
     def __init__(self, window_size: int = 1000) -> None:
         self._predictions: deque = deque(maxlen=window_size)
-        self._actuals: deque = deque(maxlen=window_size)
+        self._paired: list[tuple[float, float]] = []
         self._latencies: deque = deque(maxlen=window_size)
         self._errors: deque = deque(maxlen=window_size)
 
@@ -993,7 +997,7 @@ class PredictionMonitor:
         self._predictions.append(prediction)
         self._latencies.append(latency_ms)
         if actual is not None:
-            self._actuals.append(actual)
+            self._paired.append((prediction, actual))
 
     def record_error(self, error: str) -> None:
         self._errors.append({"error": error, "timestamp": datetime.utcnow()})
@@ -1013,11 +1017,12 @@ class PredictionMonitor:
             "error_rate": len(self._errors) / max(len(predictions), 1),
         }
 
-        if len(self._actuals) > 0:
-            actuals = np.array(self._actuals)
-            paired_predictions = np.array(list(self._predictions)[:len(actuals)])
-            metrics["mae"] = float(np.mean(np.abs(actuals - paired_predictions)))
-            metrics["rmse"] = float(np.sqrt(np.mean((actuals - paired_predictions) ** 2)))
+        if self._paired:
+            paired_preds, actuals = zip(*self._paired)
+            paired_preds = np.array(paired_preds)
+            actuals = np.array(actuals)
+            metrics["mae"] = float(np.mean(np.abs(actuals - paired_preds)))
+            metrics["rmse"] = float(np.sqrt(np.mean((actuals - paired_preds) ** 2)))
 
         return metrics
 ```

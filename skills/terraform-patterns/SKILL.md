@@ -856,8 +856,15 @@ jobs:
       - id: changes
         run: |
           environments="[]"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          else
+            BASE_SHA="${{ github.event.before }}"
+            HEAD_SHA="${{ github.sha }}"
+          fi
           for env in dev staging production; do
-            if git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep -q "infrastructure/environments/$env/"; then
+            if git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -q "infrastructure/environments/$env/"; then
               environments=$(echo $environments | jq -c ". + [\"$env\"]")
             fi
           done
@@ -976,15 +983,19 @@ jobs:
       - name: Detect Drift
         id: drift
         run: |
+          set +e
           terraform plan -detailed-exitcode -no-color 2>&1 | tee plan.txt
           exit_code=${PIPESTATUS[0]}
-          if [ $exit_code -eq 2 ]; then
+          set -e
+          if [ $exit_code -eq 1 ]; then
+            echo "::error::Terraform plan failed"
+            exit 1
+          elif [ $exit_code -eq 2 ]; then
             echo "drift_detected=true" >> "$GITHUB_OUTPUT"
           else
             echo "drift_detected=false" >> "$GITHUB_OUTPUT"
           fi
         working-directory: infrastructure/environments/${{ matrix.environment }}
-        continue-on-error: true
 
       - name: Alert on Drift
         if: steps.drift.outputs.drift_detected == 'true'

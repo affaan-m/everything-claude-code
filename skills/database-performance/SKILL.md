@@ -632,8 +632,8 @@ async function paginateOrders(
   }
 }
 
--- Supporting index for cursor-based pagination
--- CREATE INDEX idx_orders_user_cursor ON orders (user_id, created_at DESC, id DESC);
+// Supporting index for cursor-based pagination
+// CREATE INDEX idx_orders_user_cursor ON orders (user_id, created_at DESC, id DESC);
 ```
 
 #### Offset Pagination with Deferred Join
