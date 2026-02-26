@@ -51,7 +51,7 @@ export default function SettingsPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
-        {[['users','使用者管理'],['profile','個人資料']] as const}.map(([t, l]) => (
+        {([['users','使用者管理'],['profile','個人資料']] as const).map(([t, l]) => (
           <button
             key={t}
             onClick={() => setActiveTab(t)}
