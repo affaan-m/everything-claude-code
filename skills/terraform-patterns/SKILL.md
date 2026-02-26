@@ -898,7 +898,6 @@ jobs:
         id: plan
         run: terraform plan -no-color -out=tfplan
         working-directory: infrastructure/environments/${{ matrix.environment }}
-        continue-on-error: true
 
       - name: Comment Plan on PR
         uses: actions/github-script@v7

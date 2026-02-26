@@ -120,6 +120,9 @@ security-scan:
 
 ## Examples
 
+> **Note:** Examples below use `@v*` tags for readability. In production, always
+> pin actions to full commit SHAs as shown in the "Reproducible Builds" section above.
+
 ### GitHub Actions Patterns
 
 #### Reusable Workflows
