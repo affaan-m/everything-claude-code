@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@layer base {
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .card { @apply bg-white rounded-xl shadow-sm border border-gray-100 p-4; }
+  .btn-primary { @apply bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer; }
+  .btn-secondary { @apply bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer; }
+  .btn-danger { @apply bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer; }
+  .btn-success { @apply bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer; }
+  .btn-warning { @apply bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer; }
+  .input-field { @apply border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full bg-white; }
+  .select-field { @apply border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full bg-white; }
+  .table-wrap { @apply overflow-x-auto rounded-xl border border-gray-200; }
+  .data-table { @apply w-full text-sm; }
+  .data-table thead { @apply bg-gray-50; }
+  .data-table th { @apply px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider; }
+  .data-table td { @apply px-4 py-3 text-gray-700 border-t border-gray-100; }
+  .data-table tr:hover td { @apply bg-blue-50/40; }
+  .badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium; }
+  .badge-blue { @apply badge bg-blue-100 text-blue-700; }
+  .badge-green { @apply badge bg-green-100 text-green-700; }
+  .badge-red { @apply badge bg-red-100 text-red-700; }
+  .badge-yellow { @apply badge bg-yellow-100 text-yellow-700; }
+  .badge-gray { @apply badge bg-gray-100 text-gray-600; }
+  .sidebar-link { @apply flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer; }
+  .sidebar-link.active { @apply bg-blue-600 text-white shadow-sm; }
+  .sidebar-link:not(.active) { @apply text-gray-600 hover:bg-gray-100 hover:text-gray-900; }
+  .modal-overlay { @apply fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4; }
+  .modal-box { @apply bg-white rounded-2xl shadow-2xl w-full max-h-[90vh] overflow-y-auto; }
+  .form-label { @apply block text-xs font-semibold text-gray-600 mb-1; }
+  .section-title { @apply text-lg font-bold text-gray-800 mb-4; }
+  .stat-card { @apply card flex items-center gap-4; }
+}
+
+@media (pointer: coarse) {
+  button { min-height: 44px; }
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; }
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
