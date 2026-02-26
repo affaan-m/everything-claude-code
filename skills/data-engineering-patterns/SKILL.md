@@ -32,6 +32,8 @@ def load_data(df: pd.DataFrame, table: str) -> None:
     df.to_sql(table, engine, if_exists="append")
 
 # CORRECT: Idempotent upsert pattern
+# WARNING: This example omits table/column validation for brevity.
+# In production, validate table names against an allowlist before use.
 def load_data(df: pd.DataFrame, table: str, key_columns: list[str]) -> None:
     staging_table = f"{table}_staging"
     df.to_sql(staging_table, engine, if_exists="replace")
@@ -117,9 +119,9 @@ class UserEvent(BaseModel):
 
 ## Examples
 
-## Pipeline Patterns
+### Pipeline Patterns
 
-### Extract-Load-Transform (ELT)
+#### Extract-Load-Transform (ELT)
 
 Modern ELT pattern: load raw data first, transform in the warehouse.
 
@@ -127,7 +129,9 @@ Modern ELT pattern: load raw data first, transform in the warehouse.
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
+from datetime import datetime
 import logging
+import pandas as pd
 
 T = TypeVar("T")
 
@@ -189,12 +193,14 @@ class APIExtractor(Extractor):
         return response.json()
 ```
 
-### Incremental Processing
+#### Incremental Processing
 
 Process only new or changed records to minimize compute and latency.
 
 ```python
 from psycopg2 import sql
+from datetime import datetime
+from typing import Any
 
 ALLOWED_TABLES = frozenset({"orders", "customers", "products"})
 
@@ -271,12 +277,15 @@ class IncrementalLoader:
             ))
 ```
 
-### Backfill Strategies
+#### Backfill Strategies
 
 Partition backfills by date range to control resource usage and enable restartability.
 
 ```python
 from datetime import date, timedelta
+import logging
+
+logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
 class BackfillConfig:
@@ -331,9 +340,9 @@ def run_backfill(
     return results
 ```
 
-## Data Validation
+### Data Validation
 
-### Great Expectations Integration
+#### Great Expectations Integration
 
 ```python
 import great_expectations as gx
@@ -384,7 +393,7 @@ def validate_dataframe(
     }
 ```
 
-### Pandera Schema Validation
+#### Pandera Schema Validation
 
 ```python
 import pandera as pa
@@ -413,7 +422,7 @@ def process_orders(orders: DataFrame[OrderSchema]) -> DataFrame[OrderSchema]:
     )
 ```
 
-### Pydantic for Data Models
+#### Pydantic for Data Models
 
 ```python
 from pydantic import BaseModel, Field, field_validator
@@ -454,9 +463,9 @@ def validate_batch(records: list[dict]) -> tuple[list[SalesRecord], list[dict]]:
     return valid_records, invalid_records
 ```
 
-## pandas Best Practices
+### pandas Best Practices
 
-### Vectorized Operations
+#### Vectorized Operations
 
 Always prefer vectorized operations over loops. Never use `iterrows()`.
 
@@ -495,7 +504,7 @@ def categorize(df: pd.DataFrame) -> pd.DataFrame:
     return df.assign(tier=np.select(conditions, choices, default="low"))
 ```
 
-### Method Chaining
+#### Method Chaining
 
 Use method chaining for readable, functional-style transformations.
 
@@ -519,7 +528,7 @@ def transform_sales_data(raw_df: pd.DataFrame) -> pd.DataFrame:
     )
 ```
 
-### Memory Optimization
+#### Memory Optimization
 
 Downcast types and use categorical columns to reduce memory usage.
 
@@ -561,9 +570,9 @@ def read_large_csv_chunked(
     return pd.concat(chunks, ignore_index=True)
 ```
 
-## Polars Patterns
+### Polars Patterns
 
-### Lazy Evaluation
+#### Lazy Evaluation
 
 Use lazy frames to let the query optimizer plan execution.
 
@@ -590,7 +599,7 @@ def transform_with_polars(filepath: str) -> pl.DataFrame:
     )
 ```
 
-### Expression API
+#### Expression API
 
 Polars expressions are composable and highly performant.
 
@@ -624,7 +633,7 @@ def advanced_polars_transforms(df: pl.LazyFrame) -> pl.LazyFrame:
     )
 ```
 
-### Parallel Execution
+#### Parallel Execution
 
 Polars automatically parallelizes operations across CPU cores.
 
@@ -661,9 +670,9 @@ def parallel_aggregation(data_dir: str) -> pl.DataFrame:
     )
 ```
 
-## dbt Patterns
+### dbt Patterns
 
-### Models
+#### Models
 
 Organize dbt models into staging, intermediate, and marts layers.
 
@@ -721,7 +730,7 @@ daily_agg as (
 select * from daily_agg
 ```
 
-### dbt Tests and Macros
+#### dbt Tests and Macros
 
 ```sql
 -- tests/assert_revenue_positive.sql
@@ -742,9 +751,9 @@ where total_revenue < 0
 {% endmacro %}
 ```
 
-## Apache Spark Patterns
+### Apache Spark Patterns
 
-### Partitioning
+#### Partitioning
 
 Choose partition columns that match common query predicates.
 
@@ -778,7 +787,7 @@ def read_with_partition_pruning(
     )
 ```
 
-### Broadcast Joins
+#### Broadcast Joins
 
 Broadcast smaller tables to avoid expensive shuffle joins.
 
@@ -805,7 +814,7 @@ def enrich_events_with_dimensions(
     )
 ```
 
-### Caching and Checkpointing
+#### Caching and Checkpointing
 
 ```python
 def multi_step_pipeline(spark: SparkSession, input_path: str) -> DataFrame:
@@ -814,7 +823,7 @@ def multi_step_pipeline(spark: SparkSession, input_path: str) -> DataFrame:
     # Cache intermediate results used multiple times
     cleaned = (
         raw
-        .filter(F.col("is_valid") == True)
+        .filter(F.col("is_valid"))
         .dropDuplicates(["event_id"])
         .withColumn("processed_at", F.current_timestamp())
     )
@@ -841,9 +850,9 @@ def multi_step_pipeline(spark: SparkSession, input_path: str) -> DataFrame:
     return enriched
 ```
 
-## Data Quality
+### Data Quality
 
-### Null Handling Strategies
+#### Null Handling Strategies
 
 ```python
 @dataclass(frozen=True)
@@ -872,7 +881,7 @@ def apply_null_strategies(
     return result
 ```
 
-### Deduplication
+#### Deduplication
 
 ```python
 def deduplicate_events(
@@ -900,7 +909,7 @@ def deduplicate_events(
         raise ValueError(f"Unknown deduplication strategy: {strategy}")
 ```
 
-### Schema Evolution
+#### Schema Evolution
 
 Handle schema changes gracefully across pipeline versions.
 
@@ -936,9 +945,9 @@ def reconcile_schemas(
     return result[list(expected_columns.keys())]
 ```
 
-## Testing Data Pipelines
+### Testing Data Pipelines
 
-### Fixture Data
+#### Fixture Data
 
 ```python
 import pytest
@@ -964,7 +973,7 @@ def sample_orders_with_nulls(sample_orders: pd.DataFrame) -> pd.DataFrame:
     return df
 ```
 
-### Snapshot Testing
+#### Snapshot Testing
 
 ```python
 def test_transformation_snapshot(sample_orders: pd.DataFrame, snapshot):
@@ -987,7 +996,7 @@ def test_aggregation_output(sample_orders: pd.DataFrame):
     )
 ```
 
-### Data Assertions
+#### Data Assertions
 
 ```python
 def assert_no_duplicates(df: pd.DataFrame, key_columns: list[str]) -> None:

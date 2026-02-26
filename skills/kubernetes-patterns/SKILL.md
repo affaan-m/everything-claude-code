@@ -120,9 +120,9 @@ containers:
 
 ## Examples
 
-## Pod Design Patterns
+### Pod Design Patterns
 
-### Sidecar Pattern
+#### Sidecar Pattern
 
 Add auxiliary functionality alongside the main container.
 
@@ -171,7 +171,7 @@ spec:
               key: elasticsearch-host
 ```
 
-### Init Container Pattern
+#### Init Container Pattern
 
 Run setup tasks before the main container starts.
 
@@ -236,7 +236,7 @@ spec:
           memory: 512Mi
 ```
 
-### Ambassador Pattern
+#### Ambassador Pattern
 
 Proxy network connections for the main container.
 
@@ -282,7 +282,7 @@ spec:
           memory: 128Mi
 ```
 
-### Adapter Pattern
+#### Adapter Pattern
 
 Transform output from the main container into a standardized format.
 
@@ -333,9 +333,9 @@ spec:
         name: nginx-status-config
 ```
 
-## Deployment Strategies
+### Deployment Strategies
 
-### Rolling Update
+#### Rolling Update
 
 Default strategy with zero-downtime deployments.
 
@@ -386,7 +386,7 @@ spec:
               memory: 1Gi
 ```
 
-### Blue-Green Deployment
+#### Blue-Green Deployment
 
 Switch traffic between two identical environments.
 
@@ -478,7 +478,7 @@ spec:
       targetPort: 8080
 ```
 
-### Canary Deployment with Argo Rollouts
+#### Canary Deployment with Argo Rollouts
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -563,9 +563,9 @@ spec:
             }[5m]))
 ```
 
-## Service Mesh
+### Service Mesh
 
-### Istio Traffic Management
+#### Istio Traffic Management
 
 ```yaml
 # Virtual Service for traffic splitting
@@ -630,7 +630,7 @@ spec:
         version: v2.1.0
 ```
 
-### Circuit Breaking
+#### Circuit Breaking
 
 ```yaml
 apiVersion: networking.istio.io/v1beta1
@@ -656,9 +656,9 @@ spec:
       simple: LEAST_REQUEST
 ```
 
-## Autoscaling
+### Autoscaling
 
-### Horizontal Pod Autoscaler (HPA)
+#### Horizontal Pod Autoscaler (HPA)
 
 ```yaml
 apiVersion: autoscaling/v2
@@ -713,7 +713,7 @@ spec:
           averageValue: "1000"
 ```
 
-### Vertical Pod Autoscaler (VPA)
+#### Vertical Pod Autoscaler (VPA)
 
 ```yaml
 apiVersion: autoscaling.k8s.io/v1
@@ -742,7 +742,7 @@ spec:
           - memory
 ```
 
-### KEDA Event-Driven Autoscaling
+#### KEDA Event-Driven Autoscaling
 
 ```yaml
 apiVersion: keda.sh/v1alpha1
@@ -773,9 +773,9 @@ spec:
         threshold: "5"  # Scale up when avg processing > 5s
 ```
 
-## Secrets Management
+### Secrets Management
 
-### Sealed Secrets
+#### Sealed Secrets
 
 Encrypt secrets for safe storage in Git.
 
@@ -801,7 +801,7 @@ spec:
     type: Opaque
 ```
 
-### External Secrets Operator
+#### External Secrets Operator
 
 Sync secrets from external providers (AWS Secrets Manager, Vault, GCP).
 
@@ -854,7 +854,7 @@ spec:
         property: password
 ```
 
-### Vault Integration
+#### Vault Integration
 
 ```yaml
 # Vault Agent injector annotations
@@ -895,9 +895,9 @@ spec:
               memory: 1Gi
 ```
 
-## Observability
+### Observability
 
-### Prometheus Metrics
+#### Prometheus Metrics
 
 ```yaml
 # ServiceMonitor for Prometheus Operator
@@ -964,7 +964,7 @@ spec:
             summary: "Pod {{ $labels.pod }} is crash looping"
 ```
 
-### Distributed Tracing
+#### Distributed Tracing
 
 ```yaml
 # OpenTelemetry Collector configuration
@@ -1012,9 +1012,9 @@ data:
           exporters: [prometheus]
 ```
 
-## Security
+### Security
 
-### Pod Security Standards
+#### Pod Security Standards
 
 ```yaml
 # Namespace-level Pod Security Standards
@@ -1062,7 +1062,7 @@ spec:
             sizeLimit: 100Mi
 ```
 
-### NetworkPolicy
+#### NetworkPolicy
 
 ```yaml
 # Default deny all ingress and egress
@@ -1129,7 +1129,7 @@ spec:
           protocol: TCP
 ```
 
-### RBAC
+#### RBAC
 
 ```yaml
 # Service account for the application
@@ -1173,9 +1173,9 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-## Helm Chart Patterns
+### Helm Chart Patterns
 
-### Values Templating
+#### Values Templating
 
 ```yaml
 # values.yaml (defaults)
@@ -1253,7 +1253,7 @@ podDisruptionBudget:
   minAvailable: "60%"
 ```
 
-### Deployment Template
+#### Deployment Template
 
 ```yaml
 # templates/deployment.yaml
@@ -1323,7 +1323,7 @@ spec:
                 - ALL
 ```
 
-### Helm Hooks
+#### Helm Hooks
 
 ```yaml
 # templates/pre-upgrade-job.yaml

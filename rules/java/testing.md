@@ -65,10 +65,14 @@ class OrderServiceTest {
 ## Parameterized Tests
 
 ```java
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.Arguments;
+import java.util.stream.Stream;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class EmailValidatorTest {
 
@@ -176,6 +180,9 @@ class UserServiceTest {
 ## Testcontainers for Integration Tests
 
 ```java
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;

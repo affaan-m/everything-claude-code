@@ -31,9 +31,9 @@ Optimize APIs by layering caching (HTTP headers, Redis, CDN), efficient paginati
 
 ## Examples
 
-## Caching Strategies
+### Caching Strategies
 
-### HTTP Caching Headers
+#### HTTP Caching Headers
 
 ```typescript
 // middleware/cache-headers.ts
@@ -84,7 +84,7 @@ app.get('/api/user/profile',
 )
 ```
 
-### ETag / If-None-Match
+#### ETag / If-None-Match
 
 ```typescript
 import crypto from 'node:crypto'
@@ -112,7 +112,7 @@ async function getProductsHandler(req: Request, res: Response): Promise<void> {
 }
 ```
 
-### CDN Cache with Surrogate Keys
+#### CDN Cache with Surrogate Keys
 
 ```typescript
 // Fastly/Varnish-style surrogate key caching
@@ -153,11 +153,12 @@ async function purgeProductCache(productId: string, category: string): Promise<v
 }
 ```
 
-### Application-Level Redis Cache
+#### Application-Level Redis Cache
 
 ```typescript
 // lib/cache.ts
 import Redis from 'ioredis'
+import crypto from 'node:crypto'
 
 const redis = new Redis(process.env.REDIS_URL)
 
@@ -255,9 +256,9 @@ export async function invalidatePattern(pattern: string): Promise<number> {
 
 ---
 
-## Pagination
+### Pagination
 
-### Cursor-Based Pagination (REST)
+#### Cursor-Based Pagination (REST)
 
 ```typescript
 import { z } from 'zod'
@@ -327,7 +328,7 @@ async function listProducts(req: Request, res: Response): Promise<void> {
 }
 ```
 
-### GraphQL Relay-Style Pagination
+#### GraphQL Relay-Style Pagination
 
 ```typescript
 // schema/product.ts
@@ -397,9 +398,9 @@ export const productsQuery = queryField('products', {
 
 ---
 
-## Compression
+### Compression
 
-### Response Compression Middleware
+#### Response Compression Middleware
 
 ```typescript
 // TypeScript (Express)
@@ -428,7 +429,7 @@ app = FastAPI()
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 ```
 
-### Brotli Compression for Static Assets
+#### Brotli Compression for Static Assets
 
 ```typescript
 // next.config.ts
@@ -447,7 +448,7 @@ export default nextConfig
 // brotli_types text/plain text/css application/json application/javascript text/xml;
 ```
 
-### Selective Field Responses
+#### Selective Field Responses
 
 ```typescript
 import { z } from 'zod'
@@ -487,9 +488,9 @@ async function listProductsHandler(req: Request, res: Response): Promise<void> {
 
 ---
 
-## Async Processing
+### Async Processing
 
-### Message Queue with BullMQ
+#### Message Queue with BullMQ
 
 ```typescript
 // queues/email.ts
@@ -556,7 +557,7 @@ emailWorker.on('failed', (job, error) => {
 })
 ```
 
-### Webhook Delivery with Retry
+#### Webhook Delivery with Retry
 
 ```typescript
 // services/webhook.ts
@@ -618,7 +619,7 @@ const webhookWorker = new Worker<WebhookPayload>(
 )
 ```
 
-### Event-Driven Architecture
+#### Event-Driven Architecture
 
 ```typescript
 // lib/event-bus.ts
@@ -668,9 +669,9 @@ eventBus.on('product.stock-low', async (payload) => {
 
 ---
 
-## Rate Limiting
+### Rate Limiting
 
-### Token Bucket with Redis
+#### Token Bucket with Redis
 
 ```typescript
 // middleware/rate-limiter.ts
@@ -762,7 +763,7 @@ app.post('/api/auth/login',
 )
 ```
 
-### Sliding Window Rate Limiter
+#### Sliding Window Rate Limiter
 
 ```python
 # Python (FastAPI) with Redis sliding window
@@ -821,9 +822,9 @@ async def rate_limit_middleware(request: Request):
 
 ---
 
-## Connection Management
+### Connection Management
 
-### HTTP Keep-Alive and Connection Pooling
+#### HTTP Keep-Alive and Connection Pooling
 
 ```typescript
 // lib/http-client.ts
@@ -858,7 +859,7 @@ export async function fetchWithPool(url: string, options: RequestInit = {}): Pro
 }
 ```
 
-### Graceful Shutdown
+#### Graceful Shutdown
 
 ```typescript
 // server.ts
@@ -925,9 +926,9 @@ function startServer(app: Express): void {
 
 ---
 
-## Batch APIs
+### Batch APIs
 
-### Bulk Endpoint
+#### Bulk Endpoint
 
 ```typescript
 import { z } from 'zod'
@@ -975,7 +976,7 @@ async function bulkHandler(req: Request, res: Response): Promise<void> {
 app.post('/api/bulk', bulkHandler)
 ```
 
-### GraphQL DataLoader Pattern
+#### GraphQL DataLoader Pattern
 
 ```typescript
 // loaders/index.ts
@@ -1025,9 +1026,9 @@ app.use((req, _res, next) => {
 
 ---
 
-## Load Balancing
+### Load Balancing
 
-### Health Check Endpoint
+#### Health Check Endpoint
 
 ```typescript
 // routes/health.ts
@@ -1072,10 +1073,10 @@ async function healthCheck(_req: Request, res: Response): Promise<void> {
   }
 
   const allPassing = Object.values(checks).every(c => c.status === 'pass')
-  const anyFailing = Object.values(checks).some(c => c.status === 'fail')
+  const failCount = Object.values(checks).filter(c => c.status === 'fail').length
 
   const health: HealthStatus = {
-    status: allPassing ? 'healthy' : anyFailing ? 'unhealthy' : 'degraded',
+    status: allPassing ? 'healthy' : failCount === Object.keys(checks).length ? 'unhealthy' : 'degraded',
     checks,
     uptime: process.uptime(),
     version: process.env.APP_VERSION ?? 'unknown',
@@ -1094,9 +1095,9 @@ app.get('/readyz', healthCheck)
 
 ---
 
-## Monitoring
+### Monitoring
 
-### Latency Percentiles and Throughput
+#### Latency Percentiles and Throughput
 
 ```typescript
 // middleware/metrics.ts
@@ -1145,7 +1146,7 @@ app.get('/metrics', async (_req, res) => {
 })
 ```
 
-### SLO Monitoring
+#### SLO Monitoring
 
 ```typescript
 // lib/slo.ts
@@ -1193,7 +1194,7 @@ function calculateErrorBudget(slo: SLODefinition, currentSLI: number): {
 
 ---
 
-## Quick Reference Checklist
+### Quick Reference Checklist
 
 Before deploying API changes:
 

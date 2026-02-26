@@ -108,9 +108,9 @@ module.exports = {
 
 ## Examples
 
-## Navigation Patterns
+### Navigation Patterns
 
-### React Navigation Stack
+#### React Navigation Stack
 
 ```typescript
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -161,7 +161,7 @@ export function RootNavigator() {
 }
 ```
 
-### Type-Safe Navigation Hook
+#### Type-Safe Navigation Hook
 
 ```typescript
 import { useNavigation, useRoute } from '@react-navigation/native'
@@ -193,7 +193,7 @@ function MarketDetailScreen() {
 }
 ```
 
-### Tab Navigation
+#### Tab Navigation
 
 ```typescript
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -236,7 +236,7 @@ const TAB_ICONS: Record<keyof TabParamList, string> = {
 }
 ```
 
-### Drawer Navigation
+#### Drawer Navigation
 
 ```typescript
 import { createDrawerNavigator } from '@react-navigation/drawer'
@@ -261,9 +261,9 @@ export function DrawerNavigator() {
 }
 ```
 
-## State Management
+### State Management
 
-### Zustand for Mobile
+#### Zustand for Mobile
 
 ```typescript
 import { create } from 'zustand'
@@ -313,7 +313,7 @@ export const useAuthStore = create<AuthState>()(
 )
 ```
 
-### React Query for Mobile Data Fetching
+#### React Query for Mobile Data Fetching
 
 ```typescript
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -363,7 +363,7 @@ export function useCreateMarket() {
 }
 ```
 
-### Redux Toolkit for Complex State
+#### Redux Toolkit for Complex State
 
 ```typescript
 import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit'
@@ -412,9 +412,9 @@ export const store = configureStore({
 })
 ```
 
-## Native Module Integration
+### Native Module Integration
 
-### Turbo Modules (New Architecture)
+#### Turbo Modules (New Architecture)
 
 ```typescript
 // NativeSecureStorage.ts - Turbo Module spec
@@ -431,7 +431,7 @@ export interface Spec extends TurboModule {
 export default TurboModuleRegistry.getEnforcing<Spec>('SecureStorage')
 ```
 
-### Fabric Components (New Architecture)
+#### Fabric Components (New Architecture)
 
 ```typescript
 // NativeMapView.ts - Fabric component spec
@@ -449,7 +449,7 @@ interface NativeMapViewProps extends ViewProps {
 export default codegenNativeComponent<NativeMapViewProps>('MapView') as HostComponent<NativeMapViewProps>
 ```
 
-### Safe Native Module Wrapper
+#### Safe Native Module Wrapper
 
 ```typescript
 import { NativeModules, Platform } from 'react-native'
@@ -494,9 +494,9 @@ export async function authenticateUser(): Promise<boolean> {
 }
 ```
 
-## Performance Patterns
+### Performance Patterns
 
-### FlatList Optimization
+#### FlatList Optimization
 
 ```typescript
 import { FlatList, View, Text } from 'react-native'
@@ -569,7 +569,7 @@ export function MarketList({ markets }: { markets: Market[] }) {
 const ITEM_HEIGHT = 80
 ```
 
-### Image Caching and Optimization
+#### Image Caching and Optimization
 
 ```typescript
 import FastImage from 'react-native-fast-image'
@@ -601,7 +601,7 @@ export function preloadImages(uris: string[]) {
 }
 ```
 
-### Bundle Splitting with Lazy Screens
+#### Bundle Splitting with Lazy Screens
 
 ```typescript
 import { lazy, Suspense } from 'react'
@@ -629,7 +629,7 @@ function LazyAnalyticsScreen(props: AnalyticsScreenProps) {
 }
 ```
 
-### Reanimated for 60fps Animations
+#### Reanimated for 60fps Animations
 
 ```typescript
 import Animated, {
@@ -678,9 +678,9 @@ export function AnimatedCard({ isExpanded }: { isExpanded: boolean }) {
 }
 ```
 
-## Platform-Specific Code
+### Platform-Specific Code
 
-### Platform.select and Platform.OS
+#### Platform.select and Platform.OS
 
 ```typescript
 import { Platform, StatusBar, SafeAreaView } from 'react-native'
@@ -712,7 +712,7 @@ if (Platform.OS === 'android' && Platform.Version >= 33) {
 }
 ```
 
-### Platform-Specific Files
+#### Platform-Specific Files
 
 ```
 // File structure for platform divergence
@@ -731,9 +731,9 @@ export { Camera } from './Camera'
 export type { CameraProps } from './Camera'
 ```
 
-## Testing
+### Testing
 
-### React Native Testing Library
+#### React Native Testing Library
 
 ```typescript
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native'
@@ -803,7 +803,7 @@ describe('LoginScreen', () => {
 })
 ```
 
-### Detox E2E Testing
+#### Detox E2E Testing
 
 ```typescript
 // e2e/login.test.ts
@@ -852,9 +852,9 @@ describe('Login Flow', () => {
 })
 ```
 
-## Common Pitfalls
+### Common Pitfalls
 
-### Memory Leaks
+#### Memory Leaks
 
 ```typescript
 // BAD: Event listener not cleaned up
@@ -890,7 +890,7 @@ useEffect(() => {
 }, [])
 ```
 
-### Excessive Re-renders
+#### Excessive Re-renders
 
 ```typescript
 // BAD: Inline object/function causes child re-render every time
@@ -915,7 +915,7 @@ function Parent() {
 }
 ```
 
-### Large Bundle Size
+#### Large Bundle Size
 
 ```typescript
 // BAD: Import entire library
@@ -940,7 +940,7 @@ const loadDataset = async () => {
 // Check for unexpectedly large dependencies
 ```
 
-### Keyboard Handling
+#### Keyboard Handling
 
 ```typescript
 import { KeyboardAvoidingView, Platform } from 'react-native'
@@ -974,7 +974,7 @@ function LoginForm() {
 }
 ```
 
-### Safe Area Handling
+#### Safe Area Handling
 
 ```typescript
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context'

@@ -22,9 +22,9 @@ Follow the RED-GREEN-REFACTOR cycle: write a failing test, implement minimal cod
 
 ## Examples
 
-## TDD Workflow for Rust
+### TDD Workflow for Rust
 
-### The RED-GREEN-REFACTOR Cycle
+#### The RED-GREEN-REFACTOR Cycle
 
 ```
 RED     -> Write a failing test first
@@ -33,7 +33,7 @@ REFACTOR -> Improve code while keeping tests green
 REPEAT  -> Continue with next requirement
 ```
 
-### Step-by-Step TDD in Rust
+#### Step-by-Step TDD in Rust
 
 ```rust
 // Step 1: Define the function signature
@@ -88,11 +88,11 @@ mod tests {
 }
 ```
 
-## Unit Test Modules
+### Unit Test Modules
 
 Place unit tests in the same file using `#[cfg(test)]` to ensure they are excluded from production builds.
 
-### Basic Structure
+#### Basic Structure
 
 ```rust
 // src/parser.rs
@@ -139,7 +139,7 @@ mod tests {
 }
 ```
 
-### Testing Private Functions
+#### Testing Private Functions
 
 Unit tests in the same module have access to private items:
 
@@ -181,11 +181,11 @@ mod tests {
 }
 ```
 
-## Integration Tests
+### Integration Tests
 
 Integration tests live in the `tests/` directory and can only access the crate's public API.
 
-### Structure
+#### Structure
 
 ```text
 my_crate/
@@ -198,7 +198,7 @@ my_crate/
     storage_tests.rs
 ```
 
-### Shared Test Helpers
+#### Shared Test Helpers
 
 ```rust
 // tests/common/mod.rs
@@ -240,7 +240,7 @@ impl TestServer {
 }
 ```
 
-### Integration Test File
+#### Integration Test File
 
 ```rust
 // tests/api_tests.rs
@@ -286,9 +286,9 @@ async fn test_create_and_get_user() {
 }
 ```
 
-## Mock Traits
+### Mock Traits
 
-### Manual Mocking with Trait Implementations
+#### Manual Mocking with Trait Implementations
 
 ```rust
 // Define the trait
@@ -391,7 +391,7 @@ mod tests {
 }
 ```
 
-### Using `mockall` Crate
+#### Using `mockall` Crate
 
 ```rust
 use mockall::automock;
@@ -438,9 +438,9 @@ mod tests {
 }
 ```
 
-## Property-Based Testing with `proptest`
+### Property-Based Testing with `proptest`
 
-### Basic Property Tests
+#### Basic Property Tests
 
 ```rust
 use proptest::prelude::*;
@@ -470,7 +470,7 @@ proptest! {
 }
 ```
 
-### Custom Strategies
+#### Custom Strategies
 
 ```rust
 use proptest::prelude::*;
@@ -508,7 +508,7 @@ proptest! {
 }
 ```
 
-### Shrinking and Debugging
+#### Shrinking and Debugging
 
 ```rust
 proptest! {
@@ -530,11 +530,11 @@ proptest! {
 }
 ```
 
-## Doc Tests
+### Doc Tests
 
 Documentation examples that are automatically compiled and tested.
 
-### Basic Doc Tests
+#### Basic Doc Tests
 
 ```rust
 /// Splits a string by a delimiter and returns the parts.
@@ -561,7 +561,7 @@ pub fn split(input: &str, delimiter: char) -> Vec<&str> {
 }
 ```
 
-### Doc Tests Showing Error Handling
+#### Doc Tests Showing Error Handling
 
 ```rust
 /// Parses a configuration string in `KEY=VALUE` format.
@@ -592,7 +592,7 @@ pub fn parse_kv(input: &str) -> Result<(&str, &str), ParseError> {
 }
 ```
 
-### Hiding Setup Code in Doc Tests
+#### Hiding Setup Code in Doc Tests
 
 ```rust
 /// Processes a batch of records.
@@ -617,9 +617,9 @@ pub fn process_batch(records: &[Record]) -> Result<BatchResult, ProcessError> {
 }
 ```
 
-## Criterion Benchmarks
+### Criterion Benchmarks
 
-### Setup
+#### Setup
 
 ```toml
 # Cargo.toml
@@ -631,7 +631,7 @@ name = "my_benchmark"
 harness = false
 ```
 
-### Basic Benchmark
+#### Basic Benchmark
 
 ```rust
 // benches/my_benchmark.rs
@@ -650,7 +650,7 @@ criterion_group!(benches, bench_process);
 criterion_main!(benches);
 ```
 
-### Benchmark Groups with Different Sizes
+#### Benchmark Groups with Different Sizes
 
 ```rust
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
@@ -679,7 +679,7 @@ criterion_group!(benches, bench_sort);
 criterion_main!(benches);
 ```
 
-### Comparing Implementations
+#### Comparing Implementations
 
 ```rust
 fn bench_string_building(c: &mut Criterion) {
@@ -715,9 +715,9 @@ fn bench_string_building(c: &mut Criterion) {
 }
 ```
 
-## Coverage with `cargo-tarpaulin`
+### Coverage with `cargo-tarpaulin`
 
-### Running Coverage
+#### Running Coverage
 
 ```bash
 # Install
@@ -745,7 +745,7 @@ cargo tarpaulin --exclude-files "src/generated/*"
 cargo tarpaulin -p my_core_crate
 ```
 
-### Coverage Targets
+#### Coverage Targets
 
 | Code Type | Target |
 |-----------|--------|
@@ -755,9 +755,9 @@ cargo tarpaulin -p my_core_crate
 | Generated code | Exclude |
 | Test helpers | Exclude |
 
-## Async Testing
+### Async Testing
 
-### With Tokio
+#### With Tokio
 
 ```rust
 #[cfg(test)]
@@ -798,7 +798,7 @@ mod tests {
 }
 ```
 
-### Timeout Tests
+#### Timeout Tests
 
 ```rust
 #[cfg(test)]
@@ -814,9 +814,9 @@ mod tests {
 }
 ```
 
-## Test Utilities
+### Test Utilities
 
-### Custom Assertion Macros
+#### Custom Assertion Macros
 
 ```rust
 #[cfg(test)]
@@ -858,7 +858,7 @@ mod tests {
 }
 ```
 
-### Test Fixtures with `rstest`
+#### Test Fixtures with `rstest`
 
 ```rust
 use rstest::rstest;
@@ -878,7 +878,7 @@ fn test_with_fixture(#[values(1, 2, 3, 4, 5)] n: i32) {
 }
 ```
 
-## Testing Commands
+### Testing Commands
 
 ```bash
 # Run all tests
@@ -924,7 +924,7 @@ cargo tarpaulin --out Html
 PROPTEST_CASES=10000 cargo test
 ```
 
-## Best Practices
+### Best Practices
 
 **DO:**
 - Write tests FIRST (TDD)
@@ -946,7 +946,7 @@ PROPTEST_CASES=10000 cargo test
 - Test private implementation details through public API when possible
 - Commit with failing tests
 
-## CI Integration
+### CI Integration
 
 ```yaml
 # GitHub Actions example

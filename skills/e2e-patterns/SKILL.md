@@ -72,9 +72,9 @@ export default defineConfig({
 
 ## Examples
 
-## Page Object Model
+### Page Object Model
 
-### Base Page Object
+#### Base Page Object
 
 ```typescript
 // e2e/pages/base.page.ts
@@ -132,7 +132,7 @@ export abstract class BasePage {
 }
 ```
 
-### Login Page Object
+#### Login Page Object
 
 ```typescript
 // e2e/pages/login.page.ts
@@ -193,7 +193,7 @@ export class LoginPage extends BasePage {
 }
 ```
 
-### Dashboard Page Object
+#### Dashboard Page Object
 
 ```typescript
 // e2e/pages/dashboard.page.ts
@@ -258,9 +258,9 @@ export class DashboardPage extends BasePage {
 
 ---
 
-## Test Fixtures
+### Test Fixtures
 
-### Authentication Fixture
+#### Authentication Fixture
 
 ```typescript
 // e2e/fixtures/auth.fixture.ts
@@ -318,7 +318,7 @@ export const test = base.extend<AuthFixtures>({
 export { expect } from '@playwright/test'
 ```
 
-### Storage State for Session Reuse
+#### Storage State for Session Reuse
 
 ```typescript
 // e2e/global-setup.ts
@@ -360,7 +360,7 @@ export default globalSetup
 // ]
 ```
 
-### Database Seeding Fixture
+#### Database Seeding Fixture
 
 ```typescript
 // e2e/fixtures/database.fixture.ts
@@ -411,9 +411,9 @@ export { expect } from '@playwright/test'
 
 ---
 
-## Common Test Scenarios
+### Common Test Scenarios
 
-### Authentication Flow
+#### Authentication Flow
 
 ```typescript
 // e2e/tests/auth.spec.ts
@@ -498,7 +498,7 @@ test.describe('Authentication', () => {
 })
 ```
 
-### Form Submission and Validation
+#### Form Submission and Validation
 
 ```typescript
 // e2e/tests/product-form.spec.ts
@@ -593,7 +593,7 @@ test.describe('Product Form', () => {
 })
 ```
 
-### Navigation and Routing
+#### Navigation and Routing
 
 ```typescript
 // e2e/tests/navigation.spec.ts
@@ -662,7 +662,7 @@ test.describe('Navigation', () => {
 })
 ```
 
-### Data Table Interaction
+#### Data Table Interaction
 
 ```typescript
 // e2e/tests/data-table.spec.ts
@@ -764,7 +764,7 @@ test.describe('Data Table', () => {
 })
 ```
 
-### Modal and Dialog Interactions
+#### Modal and Dialog Interactions
 
 ```typescript
 // e2e/tests/modal.spec.ts
@@ -852,7 +852,7 @@ test.describe('Modal Interactions', () => {
 })
 ```
 
-### File Upload
+#### File Upload
 
 ```typescript
 // e2e/tests/file-upload.spec.ts
@@ -926,7 +926,7 @@ test.describe('File Upload', () => {
 })
 ```
 
-### Drag and Drop
+#### Drag and Drop
 
 ```typescript
 // e2e/tests/drag-and-drop.spec.ts
@@ -1009,9 +1009,9 @@ test.describe('Drag and Drop', () => {
 
 ---
 
-## API Mocking
+### API Mocking
 
-### Route Interception
+#### Route Interception
 
 ```typescript
 // e2e/tests/api-mocking.spec.ts
@@ -1132,9 +1132,9 @@ test.describe('API Mocking', () => {
 
 ---
 
-## Visual Regression
+### Visual Regression
 
-### Screenshot Comparison
+#### Screenshot Comparison
 
 ```typescript
 // e2e/tests/visual.spec.ts
@@ -1199,18 +1199,18 @@ test.describe('Visual Regression', () => {
 
     // Tablet
     await page.setViewportSize({ width: 768, height: 1024 })
-    await page.waitForTimeout(300)  // Wait for responsive layout to settle
+    await page.waitForLoadState('networkidle')
     await expect(page).toHaveScreenshot('products-tablet.png')
 
     // Mobile
     await page.setViewportSize({ width: 375, height: 667 })
-    await page.waitForTimeout(300)
+    await page.waitForLoadState('networkidle')
     await expect(page).toHaveScreenshot('products-mobile.png')
   })
 })
 ```
 
-### Visual Regression Configuration
+#### Visual Regression Configuration
 
 ```typescript
 // playwright.config.ts - visual regression settings
@@ -1229,9 +1229,9 @@ export default defineConfig({
 
 ---
 
-## Mobile Testing
+### Mobile Testing
 
-### Viewport Emulation and Touch Events
+#### Viewport Emulation and Touch Events
 
 ```typescript
 // e2e/tests/mobile.spec.ts
@@ -1337,9 +1337,9 @@ test.describe('Mobile Experience', () => {
 
 ---
 
-## CI Integration
+### CI Integration
 
-### GitHub Actions Workflow
+#### GitHub Actions Workflow
 
 ```yaml
 # .github/workflows/e2e.yml
@@ -1435,7 +1435,7 @@ jobs:
           retention-days: 7
 ```
 
-### Sharded Parallel Execution
+#### Sharded Parallel Execution
 
 ```yaml
 # .github/workflows/e2e-sharded.yml
@@ -1504,9 +1504,9 @@ jobs:
 
 ---
 
-## Debugging
+### Debugging
 
-### Trace Viewer
+#### Trace Viewer
 
 ```typescript
 // Enable traces for debugging
@@ -1524,7 +1524,7 @@ export default defineConfig({
 // npx playwright show-trace test-results/test-name/trace.zip
 ```
 
-### Step-by-Step Debugging
+#### Step-by-Step Debugging
 
 ```typescript
 // e2e/tests/debug-example.spec.ts
@@ -1570,7 +1570,7 @@ test('debug complex flow', async ({ page }) => {
 })
 ```
 
-### Screenshot on Failure Helper
+#### Screenshot on Failure Helper
 
 ```typescript
 // e2e/helpers/screenshot.ts
@@ -1596,7 +1596,7 @@ test.afterEach(async ({ page }, testInfo) => {
 })
 ```
 
-### Debugging Commands
+#### Debugging Commands
 
 ```bash
 # Run in headed mode to watch the test
@@ -1629,7 +1629,7 @@ npx playwright test --list
 
 ---
 
-## Quick Reference Checklist
+### Quick Reference Checklist
 
 Before merging E2E tests:
 

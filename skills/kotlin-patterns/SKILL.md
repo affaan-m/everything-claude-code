@@ -113,9 +113,9 @@ fun <T> List<T>.partitionBySize(size: Int): List<List<T>> =
 
 ## Examples
 
-## Coroutine Patterns
+### Coroutine Patterns
 
-### Structured Concurrency
+#### Structured Concurrency
 
 Every coroutine must have a clearly defined scope and lifetime.
 
@@ -165,7 +165,7 @@ try {
 }
 ```
 
-### Flow Patterns
+#### Flow Patterns
 
 ```kotlin
 // GOOD: Cold stream with Flow
@@ -217,7 +217,7 @@ sealed class UiState {
 }
 ```
 
-### Channels
+#### Channels
 
 ```kotlin
 // GOOD: Channel for fan-out pattern
@@ -254,7 +254,7 @@ fun <T> Flow<T>.throttleFirst(windowDuration: Duration): Flow<T> = channelFlow {
 }
 ```
 
-## Sealed Classes and When Expressions
+### Sealed Classes and When Expressions
 
 ```kotlin
 // Exhaustive type hierarchies
@@ -299,7 +299,7 @@ fun OrderState.canCancel(): Boolean = when (this) {
 }
 ```
 
-## DSL Builders
+### DSL Builders
 
 ```kotlin
 // Type-safe builder using @DslMarker
@@ -377,7 +377,7 @@ val config = server {
 }
 ```
 
-## Kotlin Multiplatform Patterns
+### Kotlin Multiplatform Patterns
 
 ```kotlin
 // Common module: shared business logic
@@ -416,7 +416,7 @@ actual fun createHttpClient(): HttpClient = HttpClient(Darwin) {
 // jsMain/     -- JS-specific implementations (fetch, localStorage)
 ```
 
-## Data Classes and Value Classes
+### Data Classes and Value Classes
 
 ```kotlin
 // Data class for domain entities
@@ -460,7 +460,7 @@ value class Money(val cents: Long) {
 fun getOrder(orderId: OrderId): Order // cannot accidentally pass CustomerId
 ```
 
-## Scope Functions
+### Scope Functions
 
 ```kotlin
 // let: Transform nullable values or introduce scoped variables
@@ -510,7 +510,7 @@ fun renderUser(user: User): String = with(user) {
 // +-----------+----------+------------------+----------------------------+
 ```
 
-## Error Handling Patterns
+### Error Handling Patterns
 
 ```kotlin
 // Result type for recoverable operations
@@ -545,7 +545,7 @@ sealed class Outcome<out T> {
 }
 ```
 
-## Testing Patterns
+### Testing Patterns
 
 ```kotlin
 // Kotlin-specific testing with MockK and kotest assertions
@@ -585,7 +585,7 @@ class UserViewModelTest {
 }
 ```
 
-## Reference
+### Reference
 
 For Java interop patterns, see skill: `java-coding-standards`.
 For Spring Boot integration, see skills: `springboot-patterns`, `springboot-tdd`.

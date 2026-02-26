@@ -31,9 +31,9 @@ Identify bottlenecks with EXPLAIN ANALYZE, add targeted indexes (composite, part
 
 ## Examples
 
-## Query Optimization
+### Query Optimization
 
-### Using EXPLAIN ANALYZE
+#### Using EXPLAIN ANALYZE
 
 ```sql
 -- Always use EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT) for real execution stats
@@ -59,7 +59,7 @@ LIMIT 50;
 -- 5. Buffers: shared hit vs read (cache effectiveness)
 ```
 
-### Index Selection Strategies
+#### Index Selection Strategies
 
 ```sql
 -- B-tree index: Default, good for equality and range queries
@@ -99,7 +99,7 @@ CREATE INDEX idx_users_email_lower ON users (LOWER(email));
 -- Query MUST use same expression: WHERE LOWER(email) = 'user@example.com'
 ```
 
-### Identifying Missing Indexes
+#### Identifying Missing Indexes
 
 ```sql
 -- PostgreSQL: Find sequential scans on large tables
@@ -136,9 +136,9 @@ ORDER BY pg_relation_size(indexrelid) DESC;
 
 ---
 
-## N+1 Problem
+### N+1 Problem
 
-### Detection
+#### Detection
 
 ```typescript
 // PROBLEM: This generates N+1 queries
@@ -162,7 +162,7 @@ async function getOrdersWithProducts(userId: string): Promise<readonly OrderWith
 }
 ```
 
-### Solution: JOIN-based Query
+#### Solution: JOIN-based Query
 
 ```typescript
 // FIXED: Single query with JOIN
@@ -191,7 +191,7 @@ async function getOrdersWithProducts(userId: string): Promise<readonly OrderWith
 }
 ```
 
-### Solution: DataLoader Pattern
+#### Solution: DataLoader Pattern
 
 ```typescript
 import DataLoader from 'dataloader'
@@ -219,7 +219,7 @@ const products = await Promise.all(
 )
 ```
 
-### Solution: ORM Eager Loading
+#### Solution: ORM Eager Loading
 
 ```typescript
 // Prisma: Use include for eager loading
@@ -262,9 +262,9 @@ orders = (
 
 ---
 
-## Indexing Strategy
+### Indexing Strategy
 
-### Composite Index Column Ordering
+#### Composite Index Column Ordering
 
 ```sql
 -- Rule: Equality columns first, range/sort columns last
@@ -277,7 +277,7 @@ CREATE INDEX idx_optimal ON orders (status, category, created_at DESC);
 CREATE INDEX idx_suboptimal ON orders (status, created_at DESC, category);
 ```
 
-### Index-Only Scans
+#### Index-Only Scans
 
 ```sql
 -- Covering index eliminates table lookups entirely
@@ -296,7 +296,7 @@ EXPLAIN (ANALYZE) SELECT id, email, name FROM users WHERE email = 'user@example.
 --   Heap Fetches: 0    <-- This means no table access needed
 ```
 
-### Avoiding Over-Indexing
+#### Avoiding Over-Indexing
 
 ```sql
 -- Signs of over-indexing:
@@ -325,9 +325,9 @@ ORDER BY pg_relation_size(i.indexrelid) DESC;
 
 ---
 
-## Connection Pooling
+### Connection Pooling
 
-### PgBouncer Configuration
+#### PgBouncer Configuration
 
 ```ini
 ; pgbouncer.ini
@@ -356,7 +356,7 @@ log_disconnections = 0
 stats_period = 60
 ```
 
-### Application-Level Pool Sizing
+#### Application-Level Pool Sizing
 
 ```typescript
 // lib/database.ts
@@ -432,9 +432,9 @@ export async function withTransaction<T>(
 
 ---
 
-## Caching Layers
+### Caching Layers
 
-### Redis Cache-Aside Pattern
+#### Redis Cache-Aside Pattern
 
 ```typescript
 import Redis from 'ioredis'
@@ -489,17 +489,21 @@ async function updateProduct(id: string, data: UpdateProductDto): Promise<Produc
   // Invalidate cache
   await redis.del(`product:${id}`)
 
-  // Also invalidate any list caches that might contain this product
-  const listKeys = await redis.keys('products:list:*')
-  if (listKeys.length > 0) {
-    await redis.del(...listKeys)
-  }
+  // Invalidate list caches using SCAN (avoids blocking on large keyspaces)
+  let scanCursor = '0'
+  do {
+    const [nextCursor, keys] = await redis.scan(scanCursor, 'MATCH', 'products:list:*', 'COUNT', 100)
+    scanCursor = nextCursor
+    if (keys.length > 0) {
+      await redis.del(...keys)
+    }
+  } while (scanCursor !== '0')
 
   return result.rows[0]
 }
 ```
 
-### Materialized Views
+#### Materialized Views
 
 ```sql
 -- Create a materialized view for expensive aggregation queries
@@ -542,9 +546,9 @@ cron.schedule('*/15 * * * *', async () => {
 
 ---
 
-## Pagination
+### Pagination
 
-### Cursor-Based Pagination
+#### Cursor-Based Pagination
 
 ```typescript
 import { z } from 'zod'
@@ -632,7 +636,7 @@ async function paginateOrders(
 -- CREATE INDEX idx_orders_user_cursor ON orders (user_id, created_at DESC, id DESC);
 ```
 
-### Offset Pagination with Deferred Join
+#### Offset Pagination with Deferred Join
 
 ```sql
 -- SLOW: Traditional OFFSET (scans and discards rows)
@@ -656,9 +660,9 @@ ORDER BY p.created_at DESC;
 
 ---
 
-## Partitioning
+### Partitioning
 
-### Range Partitioning
+#### Range Partitioning
 
 ```sql
 -- Partition orders by month for time-series data
@@ -703,7 +707,7 @@ CREATE INDEX idx_orders_2025_01_user ON orders_2025_01 (user_id, created_at DESC
 CREATE INDEX idx_orders_2025_02_user ON orders_2025_02 (user_id, created_at DESC);
 ```
 
-### Partition Pruning
+#### Partition Pruning
 
 ```sql
 -- PostgreSQL automatically prunes partitions when the query filter matches the partition key
@@ -719,9 +723,9 @@ SHOW enable_partition_pruning;  -- Should be 'on'
 
 ---
 
-## ORM Best Practices
+### ORM Best Practices
 
-### Prisma Performance Patterns
+#### Prisma Performance Patterns
 
 ```typescript
 // WRONG: Fetching all fields when you only need a few
@@ -783,7 +787,7 @@ const stats = await prisma.$queryRaw<readonly ProductStat[]>`
 `
 ```
 
-### Drizzle Performance Patterns
+#### Drizzle Performance Patterns
 
 ```typescript
 import { eq, desc, sql, and, gt } from 'drizzle-orm'
@@ -839,9 +843,9 @@ const topProducts = await db
 
 ---
 
-## Monitoring
+### Monitoring
 
-### pg_stat_statements
+#### pg_stat_statements
 
 ```sql
 -- Enable pg_stat_statements (must be in shared_preload_libraries)
@@ -879,7 +883,7 @@ LIMIT 20;
 SELECT pg_stat_statements_reset();
 ```
 
-### Lock Monitoring
+#### Lock Monitoring
 
 ```sql
 -- Find blocking queries
@@ -913,7 +917,7 @@ SET statement_timeout = '30s';
 SET lock_timeout = '5s';
 ```
 
-### Slow Query Log Configuration
+#### Slow Query Log Configuration
 
 ```sql
 -- postgresql.conf settings for slow query logging
@@ -923,7 +927,7 @@ SET lock_timeout = '5s';
 -- auto_explain.log_min_duration = '500ms'  -- Auto-explain slow queries
 ```
 
-### Application-Level Query Monitoring
+#### Application-Level Query Monitoring
 
 ```typescript
 // middleware/query-logger.ts
@@ -983,7 +987,7 @@ function reportQueryError(args: unknown[], duration: number, error: unknown): vo
 
 ---
 
-## Quick Reference Checklist
+### Quick Reference Checklist
 
 Before deploying database changes:
 

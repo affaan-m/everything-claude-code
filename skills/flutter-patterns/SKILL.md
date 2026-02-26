@@ -139,9 +139,9 @@ Widget build(BuildContext context) {
 
 ## Examples
 
-## Widget Patterns
+### Widget Patterns
 
-### Stateless vs Stateful
+#### Stateless vs Stateful
 
 ```dart
 // Use StatelessWidget when the widget has no mutable state
@@ -246,7 +246,7 @@ class _ExpandableSectionState extends State<ExpandableSection>
 }
 ```
 
-### InheritedWidget and Extensions
+#### InheritedWidget and Extensions
 
 ```dart
 // InheritedWidget for efficient data propagation down the tree
@@ -282,7 +282,7 @@ final config = AppConfig.of(context);
 final url = '${config.apiBaseUrl}/markets';
 ```
 
-### Composition Over Inheritance
+#### Composition Over Inheritance
 
 ```dart
 // BAD: Widget inheritance hierarchy
@@ -341,9 +341,9 @@ AppCard(
 )
 ```
 
-## State Management
+### State Management
 
-### Riverpod
+#### Riverpod
 
 ```dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -436,7 +436,7 @@ class MarketsScreen extends ConsumerWidget {
 }
 ```
 
-### BLoC Pattern
+#### BLoC Pattern
 
 ```dart
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -544,7 +544,7 @@ class LoginScreen extends StatelessWidget {
 }
 ```
 
-### Provider Pattern
+#### Provider Pattern
 
 ```dart
 import 'package:provider/provider.dart';
@@ -584,9 +584,9 @@ final theme = context.watch<ThemeNotifier>();
 final auth = context.read<AuthNotifier>();  // No rebuild on change
 ```
 
-## Navigation
+### Navigation
 
-### GoRouter
+#### GoRouter
 
 ```dart
 import 'package:go_router/go_router.dart';
@@ -652,7 +652,7 @@ context.push('/markets/abc123');  // Pushes onto stack
 context.pop();
 ```
 
-### Deep Linking Configuration
+#### Deep Linking Configuration
 
 ```dart
 // android/app/src/main/AndroidManifest.xml
@@ -681,9 +681,9 @@ GoRouter(
 )
 ```
 
-## Platform Channels
+### Platform Channels
 
-### MethodChannel
+#### MethodChannel
 
 ```dart
 import 'package:flutter/services.dart';
@@ -731,7 +731,7 @@ class StorageException implements Exception {
 }
 ```
 
-### EventChannel for Streams
+#### EventChannel for Streams
 
 ```dart
 class LocationService {
@@ -785,9 +785,9 @@ class LocationData {
 }
 ```
 
-## Performance
+### Performance
 
-### Const Widgets
+#### Const Widgets
 
 ```dart
 // BAD: Rebuilt every time parent rebuilds
@@ -823,7 +823,7 @@ class MyScreen extends StatelessWidget {
 }
 ```
 
-### RepaintBoundary
+#### RepaintBoundary
 
 ```dart
 // Isolate expensive painting operations
@@ -850,7 +850,7 @@ class MarketChart extends StatelessWidget {
 // - Any subtree that repaints independently
 ```
 
-### Lazy Loading and Pagination
+#### Lazy Loading and Pagination
 
 ```dart
 class PaginatedMarketList extends StatefulWidget {
@@ -930,7 +930,7 @@ class _PaginatedMarketListState extends State<PaginatedMarketList> {
 }
 ```
 
-### Image Caching
+#### Image Caching
 
 ```dart
 import 'package:cached_network_image/cached_network_image.dart';
@@ -972,9 +972,9 @@ class UserAvatar extends StatelessWidget {
 }
 ```
 
-## Testing
+### Testing
 
-### Widget Tests
+#### Widget Tests
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -1034,7 +1034,7 @@ void main() {
 }
 ```
 
-### Golden Tests
+#### Golden Tests
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -1102,7 +1102,7 @@ void main() {
 }
 ```
 
-### Integration Tests
+#### Integration Tests
 
 ```dart
 // integration_test/login_flow_test.dart
@@ -1157,7 +1157,7 @@ void main() {
 }
 ```
 
-### BLoC Testing
+#### BLoC Testing
 
 ```dart
 import 'package:bloc_test/bloc_test.dart';
@@ -1215,9 +1215,9 @@ void main() {
 }
 ```
 
-## Architecture Patterns
+### Architecture Patterns
 
-### Clean Architecture / Feature-First Structure
+#### Clean Architecture / Feature-First Structure
 
 ```
 lib/
@@ -1290,7 +1290,7 @@ lib/
   main.dart
 ```
 
-### Repository Pattern
+#### Repository Pattern
 
 ```dart
 // Domain layer - abstract contract

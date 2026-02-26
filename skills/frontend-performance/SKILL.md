@@ -30,9 +30,9 @@ Reduce bundle size with code splitting and tree shaking, optimize rendering with
 
 ## Examples
 
-## Core Web Vitals
+### Core Web Vitals
 
-### Largest Contentful Paint (LCP)
+#### Largest Contentful Paint (LCP)
 
 LCP measures the render time of the largest visible content element. Target: under 2.5 seconds.
 
@@ -88,7 +88,7 @@ const nextConfig: NextConfig = {
 export default nextConfig
 ```
 
-### Interaction to Next Paint (INP)
+#### Interaction to Next Paint (INP)
 
 INP measures responsiveness to user interactions. Target: under 200ms.
 
@@ -151,7 +151,7 @@ export function SearchableList({ items }: { items: readonly ListItem[] }) {
 }
 ```
 
-### Cumulative Layout Shift (CLS)
+#### Cumulative Layout Shift (CLS)
 
 CLS measures visual stability. Target: under 0.1.
 
@@ -195,9 +195,9 @@ export function AdSlot({ width, height }: { width: number; height: number }) {
 
 ---
 
-## React Rendering Optimization
+### React Rendering Optimization
 
-### Preventing Unnecessary Re-renders
+#### Preventing Unnecessary Re-renders
 
 ```typescript
 import { memo, useMemo, useCallback, useState } from 'react'
@@ -258,7 +258,7 @@ export function ProductList({ products, selectedCategory }: ProductListProps) {
 }
 ```
 
-### State Colocation
+#### State Colocation
 
 ```typescript
 // WRONG: Lifting state too high causes unnecessary re-renders in siblings
@@ -288,7 +288,7 @@ function ParentGood() {
 }
 ```
 
-### Context Optimization
+#### Context Optimization
 
 ```typescript
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
@@ -344,9 +344,9 @@ export function useThemeActions(): ThemeActionsContextValue {
 
 ---
 
-## Bundle Optimization
+### Bundle Optimization
 
-### Code Splitting with Dynamic Imports
+#### Code Splitting with Dynamic Imports
 
 ```typescript
 import { lazy, Suspense } from 'react'
@@ -396,7 +396,7 @@ export function PostEditor({ showPreview }: { showPreview: boolean }) {
 }
 ```
 
-### Next.js Dynamic Imports
+#### Next.js Dynamic Imports
 
 ```typescript
 import dynamic from 'next/dynamic'
@@ -413,7 +413,7 @@ const RichTextEditor = dynamic(() => import('./RichTextEditor'), {
 })
 ```
 
-### Analyzing Bundle Size
+#### Analyzing Bundle Size
 
 ```typescript
 // next.config.ts
@@ -430,7 +430,7 @@ export default config
 // Run: ANALYZE=true npm run build
 ```
 
-### Tree Shaking Best Practices
+#### Tree Shaking Best Practices
 
 ```typescript
 // WRONG: Imports entire library
@@ -456,9 +456,9 @@ const sorted = [...items].sort((a, b) => a.name.localeCompare(b.name))
 
 ---
 
-## Image Optimization
+### Image Optimization
 
-### Next.js Image Component
+#### Next.js Image Component
 
 ```typescript
 import Image from 'next/image'
@@ -503,7 +503,7 @@ export function ProductGrid({ products }: { products: readonly Product[] }) {
 }
 ```
 
-### Generating Blur Placeholders
+#### Generating Blur Placeholders
 
 ```typescript
 // lib/image-utils.ts
@@ -530,7 +530,7 @@ export async function getBlurPlaceholder(imagePath: string): Promise<BlurPlaceho
 }
 ```
 
-### Modern Formats with Fallback
+#### Modern Formats with Fallback
 
 ```html
 <picture>
@@ -549,9 +549,9 @@ export async function getBlurPlaceholder(imagePath: string): Promise<BlurPlaceho
 
 ---
 
-## Virtualization
+### Virtualization
 
-### Virtualizing Long Lists with TanStack Virtual
+#### Virtualizing Long Lists with TanStack Virtual
 
 ```typescript
 import { useVirtualizer } from '@tanstack/react-virtual'
@@ -601,7 +601,7 @@ export function VirtualList({ items, estimateSize = 50 }: VirtualListProps) {
 }
 ```
 
-### Virtualized Data Table
+#### Virtualized Data Table
 
 ```typescript
 import { useVirtualizer } from '@tanstack/react-virtual'
@@ -693,9 +693,9 @@ export function VirtualTable<T extends { id: string }>({
 
 ---
 
-## SSR / SSG Patterns
+### SSR / SSG Patterns
 
-### When to Use Each Strategy
+#### When to Use Each Strategy
 
 | Strategy | Use When | Example |
 |----------|----------|---------|
@@ -704,7 +704,7 @@ export function VirtualTable<T extends { id: string }>({
 | **SSR** (Server-Side Rendering) | Content changes per request or per user | Dashboards, search results |
 | **CSR** (Client-Side Rendering) | Highly interactive, no SEO requirements | Admin panels, internal tools |
 
-### Next.js App Router Patterns
+#### Next.js App Router Patterns
 
 ```typescript
 // Static generation (default in App Router)
@@ -738,7 +738,7 @@ export default async function DashboardPage() {
 }
 ```
 
-### Streaming SSR with Suspense
+#### Streaming SSR with Suspense
 
 ```typescript
 // app/dashboard/page.tsx
@@ -784,9 +784,9 @@ async function MetricsPanel() {
 
 ---
 
-## Font Loading
+### Font Loading
 
-### Optimal Font Loading with Next.js
+#### Optimal Font Loading with Next.js
 
 ```typescript
 // app/layout.tsx
@@ -815,7 +815,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-### Self-Hosted Font Optimization
+#### Self-Hosted Font Optimization
 
 ```typescript
 // app/layout.tsx
@@ -836,9 +836,9 @@ const customFont = localFont({
 
 ---
 
-## Caching Strategies
+### Caching Strategies
 
-### SWR (Stale-While-Revalidate)
+#### SWR (Stale-While-Revalidate)
 
 ```typescript
 import useSWR from 'swr'
@@ -879,7 +879,7 @@ export function useProducts(category: string) {
 }
 ```
 
-### Service Worker Caching
+#### Service Worker Caching
 
 ```typescript
 // service-worker.ts
@@ -929,7 +929,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 })
 ```
 
-### HTTP Cache Headers in Next.js API Routes
+#### HTTP Cache Headers in Next.js API Routes
 
 ```typescript
 // app/api/products/route.ts
@@ -950,9 +950,9 @@ export async function GET(request: Request) {
 
 ---
 
-## Measuring Performance
+### Measuring Performance
 
-### Web Vitals Reporting
+#### Web Vitals Reporting
 
 ```typescript
 // app/components/WebVitals.tsx
@@ -998,7 +998,7 @@ export function WebVitals() {
 }
 ```
 
-### Performance Marks and Measures
+#### Performance Marks and Measures
 
 ```typescript
 // lib/performance.ts
@@ -1040,7 +1040,7 @@ export function DataGrid({ fetchData }: { fetchData: () => Promise<readonly Row[
 }
 ```
 
-### Lighthouse CI Configuration
+#### Lighthouse CI Configuration
 
 ```typescript
 // lighthouserc.ts
@@ -1075,7 +1075,7 @@ export default {
 
 ---
 
-## Quick Reference Checklist
+### Quick Reference Checklist
 
 Before shipping, verify:
 

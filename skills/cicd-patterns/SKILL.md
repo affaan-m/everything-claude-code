@@ -111,7 +111,7 @@ security-scan:
         extra_args: --only-verified
 
     - name: Container scanning
-      uses: aquasecurity/trivy-action@master
+      uses: aquasecurity/trivy-action@0.29.0
       with:
         image-ref: '${{ env.IMAGE_NAME }}:${{ github.sha }}'
         severity: 'CRITICAL,HIGH'
@@ -120,9 +120,9 @@ security-scan:
 
 ## Examples
 
-## GitHub Actions Patterns
+### GitHub Actions Patterns
 
-### Reusable Workflows
+#### Reusable Workflows
 
 Define workflows that can be called from other workflows.
 
@@ -238,7 +238,7 @@ jobs:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 ```
 
-### Composite Actions
+#### Composite Actions
 
 Create reusable action steps for common patterns.
 
@@ -296,7 +296,7 @@ jobs:
       - run: npm test
 ```
 
-### Matrix Builds
+#### Matrix Builds
 
 Test across multiple configurations in parallel.
 
@@ -342,9 +342,9 @@ jobs:
           files: ./coverage/lcov.info
 ```
 
-## Pipeline Stages
+### Pipeline Stages
 
-### Complete Pipeline Example
+#### Complete Pipeline Example
 
 ```yaml
 # .github/workflows/ci.yml
@@ -491,7 +491,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.29.0
         with:
           image-ref: ghcr.io/${{ github.repository }}:${{ needs.build.outputs.image-tag }}
           format: 'sarif'
@@ -545,9 +545,9 @@ jobs:
     secrets: inherit
 ```
 
-## Deployment Strategies
+### Deployment Strategies
 
-### Environment Promotion
+#### Environment Promotion
 
 ```yaml
 # Promote through environments with manual approval
@@ -570,7 +570,7 @@ deploy-production:
       run: ./deploy.sh production ${{ needs.build.outputs.image-tag }}
 ```
 
-### Feature Flags
+#### Feature Flags
 
 ```yaml
 # Deploy with feature flags for gradual rollout
@@ -596,7 +596,7 @@ deploy-with-flags:
         echo "Monitor error rates at: https://grafana.example.com/d/feature-rollout"
 ```
 
-### Rollback Automation
+#### Rollback Automation
 
 ```yaml
 # .github/workflows/rollback.yml
@@ -663,9 +663,9 @@ jobs:
             }"
 ```
 
-## Security in CI/CD
+### Security in CI/CD
 
-### SAST/DAST
+#### SAST/DAST
 
 ```yaml
 security:
@@ -698,7 +698,7 @@ security:
         extra_args: --only-verified --results=verified
 ```
 
-### OIDC Authentication
+#### OIDC Authentication
 
 Use OpenID Connect for keyless cloud authentication. No long-lived secrets.
 
@@ -734,7 +734,7 @@ jobs:
           # No client secret needed
 ```
 
-### Dependency Scanning
+#### Dependency Scanning
 
 ```yaml
 # .github/workflows/dependency-scan.yml
@@ -787,9 +787,9 @@ jobs:
             });
 ```
 
-## Caching Strategies
+### Caching Strategies
 
-### Dependency Cache
+#### Dependency Cache
 
 ```yaml
 # Node.js caching
@@ -822,7 +822,7 @@ jobs:
       deps-${{ runner.os }}-
 ```
 
-### Build Cache
+#### Build Cache
 
 ```yaml
 # Next.js build cache
@@ -844,7 +844,7 @@ jobs:
       turbo-${{ runner.os }}-
 ```
 
-### Docker Layer Cache
+#### Docker Layer Cache
 
 ```yaml
 # Using GitHub Actions cache backend
@@ -890,9 +890,9 @@ jobs:
 # CMD ["node", "dist/main.js"]
 ```
 
-## Monorepo CI
+### Monorepo CI
 
-### Path Filters
+#### Path Filters
 
 Only run jobs when relevant files change.
 
@@ -952,7 +952,7 @@ jobs:
       - run: npx turbo run test --filter=shared
 ```
 
-### Affected Detection with Nx/Turbo
+#### Affected Detection with Nx/Turbo
 
 ```yaml
 # Using Turborepo for affected detection
@@ -983,7 +983,7 @@ affected-test:
       run: npx turbo run lint --filter='...[origin/main...HEAD]'
 ```
 
-### Parallel Jobs for Monorepo Packages
+#### Parallel Jobs for Monorepo Packages
 
 ```yaml
 # Dynamic matrix from workspace packages
@@ -1016,9 +1016,9 @@ jobs:
       - run: npm run test --workspace=packages/${{ matrix.package }}
 ```
 
-## Artifacts and Releases
+### Artifacts and Releases
 
-### Semantic Versioning
+#### Semantic Versioning
 
 ```yaml
 # .github/workflows/release.yml
@@ -1068,7 +1068,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
 
-### Container Registry
+#### Container Registry
 
 ```yaml
 # Build and push to multiple registries
@@ -1085,6 +1085,9 @@ build-and-push:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    # NOTE: Prefer OIDC authentication over static AWS credentials.
+    # See the "OIDC Authentication" section in this file for the recommended pattern
+    # using aws-actions/configure-aws-credentials with role-to-assume.
     - uses: docker/login-action@v3
       with:
         registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
@@ -1123,7 +1126,7 @@ build-and-push:
         COSIGN_EXPERIMENTAL: "1"
 ```
 
-### Changelog Generation
+#### Changelog Generation
 
 ```yaml
 # .github/workflows/changelog.yml
@@ -1175,7 +1178,7 @@ jobs:
           append_body: true
 ```
 
-## GitLab CI Reference
+### GitLab CI Reference
 
 For teams using GitLab CI, here is the equivalent pattern structure.
 

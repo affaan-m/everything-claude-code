@@ -146,9 +146,9 @@ resource "aws_iam_role_policy" "app_policy" {
 
 ## Examples
 
-## Module Design
+### Module Design
 
-### Input Variables
+#### Input Variables
 
 Define clear, validated input variables with sensible defaults.
 
@@ -215,7 +215,7 @@ variable "common_tags" {
 }
 ```
 
-### Outputs
+#### Outputs
 
 Expose only the values that downstream modules need.
 
@@ -253,7 +253,7 @@ output "nat_gateway_ips" {
 }
 ```
 
-### Module Composition
+#### Module Composition
 
 Compose small, focused modules into larger infrastructure.
 
@@ -320,7 +320,7 @@ module "ecs_cluster" {
 }
 ```
 
-### Module Versioning
+#### Module Versioning
 
 Pin module versions for reproducibility.
 
@@ -348,9 +348,9 @@ module "internal_module" {
 }
 ```
 
-## State Management
+### State Management
 
-### Remote State Data Sources
+#### Remote State Data Sources
 
 Reference state from other configurations without tight coupling.
 
@@ -382,7 +382,7 @@ resource "aws_security_group" "app" {
 }
 ```
 
-### State Import
+#### State Import
 
 Import existing resources into Terraform management.
 
@@ -405,7 +405,7 @@ import {
 # terraform plan (should show no changes)
 ```
 
-### Workspace Management
+#### Workspace Management
 
 Use workspaces for lightweight environment separation, or separate state files for full isolation.
 
@@ -442,9 +442,9 @@ resource "aws_instance" "app" {
 }
 ```
 
-## Multi-Environment Deployment
+### Multi-Environment Deployment
 
-### Directory Structure
+#### Directory Structure
 
 ```
 infrastructure/
@@ -482,7 +482,7 @@ infrastructure/
       backend.tf
 ```
 
-### Environment-Specific Variables
+#### Environment-Specific Variables
 
 ```hcl
 # environments/dev/terraform.tfvars
@@ -528,7 +528,7 @@ db_backup_retention_days = 30
 db_deletion_protection   = true
 ```
 
-### Shared Configuration with Locals
+#### Shared Configuration with Locals
 
 ```hcl
 # environments/production/locals.tf
@@ -556,9 +556,9 @@ locals {
 }
 ```
 
-## Security Patterns
+### Security Patterns
 
-### Secrets Management with AWS Secrets Manager
+#### Secrets Management with AWS Secrets Manager
 
 ```hcl
 # Store secrets externally, reference them in Terraform
@@ -607,7 +607,7 @@ resource "aws_secretsmanager_secret_version" "api_key" {
 }
 ```
 
-### Encryption at Rest
+#### Encryption at Rest
 
 ```hcl
 # KMS key for encryption
@@ -672,9 +672,9 @@ resource "aws_s3_bucket_public_access_block" "data" {
 }
 ```
 
-## Testing
+### Testing
 
-### Terraform Validate and Lint
+#### Terraform Validate and Lint
 
 ```yaml
 # .github/workflows/terraform-validate.yml
@@ -723,7 +723,7 @@ jobs:
         working-directory: infrastructure/
 ```
 
-### Terratest Integration Tests
+#### Terratest Integration Tests
 
 ```go
 // tests/vpc_test.go
@@ -788,7 +788,7 @@ func TestVPCModuleValidation(t *testing.T) {
 }
 ```
 
-### Plan Review
+#### Plan Review
 
 ```hcl
 # Sentinel policy for plan review (HashiCorp Sentinel or OPA)
@@ -824,9 +824,9 @@ main = rule {
 }
 ```
 
-## CI/CD for Infrastructure
+### CI/CD for Infrastructure
 
-### Plan on PR, Apply on Merge
+#### Plan on PR, Apply on Merge
 
 ```yaml
 # .github/workflows/terraform-deploy.yml
@@ -857,7 +857,7 @@ jobs:
         run: |
           environments="[]"
           for env in dev staging production; do
-            if git diff --name-only ${{ github.event.before }} HEAD | grep -q "infrastructure/environments/$env/"; then
+            if git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep -q "infrastructure/environments/$env/"; then
               environments=$(echo $environments | jq -c ". + [\"$env\"]")
             fi
           done
@@ -940,7 +940,7 @@ jobs:
         working-directory: infrastructure/environments/${{ matrix.environment }}
 ```
 
-### Drift Detection
+#### Drift Detection
 
 ```yaml
 # .github/workflows/drift-detection.yml

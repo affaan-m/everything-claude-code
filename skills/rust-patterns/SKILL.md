@@ -124,9 +124,9 @@ impl Connection {
 
 ## Examples
 
-## Error Handling Patterns
+### Error Handling Patterns
 
-### Library Errors with `thiserror`
+#### Library Errors with `thiserror`
 
 ```rust
 use thiserror::Error;
@@ -150,7 +150,7 @@ pub enum StorageError {
 }
 ```
 
-### Application Errors with `anyhow`
+#### Application Errors with `anyhow`
 
 ```rust
 use anyhow::{bail, ensure, Context, Result};
@@ -175,7 +175,7 @@ fn process_order(order_id: &str) -> Result<Receipt> {
 }
 ```
 
-### Custom Error Type Without Dependencies
+#### Custom Error Type Without Dependencies
 
 ```rust
 use std::fmt;
@@ -206,7 +206,7 @@ impl From<std::io::Error> for AppError {
 }
 ```
 
-### The `?` Operator Chain
+#### The `?` Operator Chain
 
 ```rust
 fn load_user_config(user_id: &str) -> Result<UserConfig, AppError> {
@@ -218,9 +218,9 @@ fn load_user_config(user_id: &str) -> Result<UserConfig, AppError> {
 }
 ```
 
-## Concurrency Patterns
+### Concurrency Patterns
 
-### Channels for Message Passing
+#### Channels for Message Passing
 
 ```rust
 use std::sync::mpsc;
@@ -250,7 +250,7 @@ fn spawn_worker() -> mpsc::Sender<Command> {
 }
 ```
 
-### Arc/Mutex for Shared State
+#### Arc/Mutex for Shared State
 
 ```rust
 use std::sync::{Arc, Mutex};
@@ -279,7 +279,7 @@ impl SharedCache {
 }
 ```
 
-### RwLock for Read-Heavy Workloads
+#### RwLock for Read-Heavy Workloads
 
 ```rust
 use std::sync::{Arc, RwLock};
@@ -300,7 +300,7 @@ impl ConfigStore {
 }
 ```
 
-### Rayon for Data Parallelism
+#### Rayon for Data Parallelism
 
 ```rust
 use rayon::prelude::*;
@@ -317,7 +317,7 @@ fn parallel_sort(data: &mut [i32]) {
 }
 ```
 
-### Async/Await with Tokio
+#### Async/Await with Tokio
 
 ```rust
 use tokio::sync::Semaphore;
@@ -344,9 +344,9 @@ async fn fetch_all(urls: Vec<String>, max_concurrent: usize) -> Vec<Result<Respo
 }
 ```
 
-## Builder Pattern
+### Builder Pattern
 
-### Standard Builder
+#### Standard Builder
 
 ```rust
 #[derive(Debug)]
@@ -418,7 +418,7 @@ let request = HttpRequestBuilder::new("https://api.example.com/data")
     .build();
 ```
 
-### Derive-Based Builder with `derive_builder`
+#### Derive-Based Builder with `derive_builder`
 
 ```rust
 use derive_builder::Builder;
@@ -442,9 +442,9 @@ let config = ConfigBuilder::default()
     .build()?;
 ```
 
-## Newtype Pattern
+### Newtype Pattern
 
-### For Type Safety
+#### For Type Safety
 
 ```rust
 pub struct Meters(f64);
@@ -462,7 +462,7 @@ impl Meters {
 let speed = Meters(100.0).per(Seconds(10.0));     // Correct
 ```
 
-### For Validation
+#### For Validation
 
 ```rust
 pub struct NonEmptyString(String);
@@ -488,9 +488,9 @@ impl std::fmt::Display for NonEmptyString {
 }
 ```
 
-## Trait Design
+### Trait Design
 
-### Sealed Traits
+#### Sealed Traits
 
 Prevent external implementations of a trait:
 
@@ -510,7 +510,7 @@ impl MyExtension for MyType {
 }
 ```
 
-### Extension Traits
+#### Extension Traits
 
 Add methods to foreign types:
 
@@ -533,7 +533,7 @@ impl StringExt for str {
 let short = "Hello, world!".truncate_to(5); // "Hello"
 ```
 
-### Marker Traits
+#### Marker Traits
 
 Convey properties without methods:
 
@@ -548,7 +548,7 @@ where
 {}
 ```
 
-### Trait Objects vs Generics Decision Guide
+#### Trait Objects vs Generics Decision Guide
 
 | Use Case | Prefer |
 |----------|--------|
@@ -559,9 +559,9 @@ where
 | Reduce binary size | Trait objects |
 | Compile-time guarantees | Generics |
 
-## Performance Patterns
+### Performance Patterns
 
-### Zero-Copy with Borrowing
+#### Zero-Copy with Borrowing
 
 ```rust
 // Good: Returns a slice of the original data
@@ -581,7 +581,7 @@ fn normalize(input: &str) -> Cow<'_, str> {
 }
 ```
 
-### String vs &str
+#### String vs &str
 
 ```rust
 // Good: Accept &str or anything that can be referenced as a string
@@ -600,7 +600,7 @@ fn greet(name: String) -> String {
 }
 ```
 
-### Stack vs Heap Allocation
+#### Stack vs Heap Allocation
 
 ```rust
 // Good: Stack-allocated array for small, fixed-size data
@@ -622,7 +622,7 @@ fn compute_hash(data: &[u8]) -> Vec<u8> {
 }
 ```
 
-### Avoiding Unnecessary Collect
+#### Avoiding Unnecessary Collect
 
 ```rust
 // Bad: Collects into Vec just to iterate again
@@ -642,9 +642,9 @@ let upper: Vec<String> = users
     .collect();
 ```
 
-## Crate Organization
+### Crate Organization
 
-### Standard Layout
+#### Standard Layout
 
 ```text
 my_crate/
@@ -679,7 +679,7 @@ my_crate/
   clippy.toml
 ```
 
-### Re-exports for Clean Public API
+#### Re-exports for Clean Public API
 
 ```rust
 // src/lib.rs
@@ -699,9 +699,9 @@ pub fn run(config: Config) -> Result<(), AppError> {
 }
 ```
 
-## Tooling Integration
+### Tooling Integration
 
-### Essential Commands
+#### Essential Commands
 
 ```bash
 # Build
@@ -734,7 +734,7 @@ cargo bench
 cargo machete
 ```
 
-### Recommended Clippy Configuration (clippy.toml)
+#### Recommended Clippy Configuration (clippy.toml)
 
 ```toml
 cognitive-complexity-threshold = 25
@@ -742,7 +742,7 @@ too-many-arguments-threshold = 7
 type-complexity-threshold = 250
 ```
 
-## Quick Reference: Rust Idioms
+### Quick Reference: Rust Idioms
 
 | Idiom | Description |
 |-------|-------------|
@@ -755,7 +755,7 @@ type-complexity-threshold = 250
 | Use `impl Trait` in argument position | For simple, single-use trait bounds |
 | Avoid `unwrap` in production code | Use `?`, `unwrap_or`, `unwrap_or_else`, or `expect` with a message |
 
-## Anti-Patterns to Avoid
+### Anti-Patterns to Avoid
 
 ```rust
 // Bad: Clone to satisfy the borrow checker

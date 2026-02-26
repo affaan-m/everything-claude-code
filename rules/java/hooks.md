@@ -29,11 +29,11 @@ Configure in `~/.claude/settings.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "if echo $TOOL_INPUT | grep -q '\\.java'; then cd $(git rev-parse --show-toplevel) && mvn spotless:apply -q 2>/dev/null || gradle spotlessApply -q 2>/dev/null; fi"
+            "command": "if echo \"$TOOL_INPUT\" | grep -q '\\.java'; then cd \"$(git rev-parse --show-toplevel)\" && mvn spotless:apply -q 2>/dev/null || gradle spotlessApply -q 2>/dev/null; fi"
           },
           {
             "type": "command",
-            "command": "if echo $TOOL_INPUT | grep -q '\\.kt'; then cd $(git rev-parse --show-toplevel) && ktlint --format $(echo $TOOL_INPUT | grep -o '[^ ]*\\.kt') 2>/dev/null; fi"
+            "command": "if echo \"$TOOL_INPUT\" | grep -q '\\.kt'; then cd \"$(git rev-parse --show-toplevel)\" && ktlint --format $(echo \"$TOOL_INPUT\" | grep -o '[^ ]*\\.kt') 2>/dev/null; fi"
           }
         ]
       }
@@ -44,7 +44,7 @@ Configure in `~/.claude/settings.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "if echo $TOOL_INPUT | grep -qE '(mvn|gradle|./gradlew).*?(install|build|test|verify|package)'; then echo 'Consider using tmux for long-running build commands'; fi"
+            "command": "if echo \"$TOOL_INPUT\" | grep -qE '(mvn|gradle|./gradlew).*?(install|build|test|verify|package)'; then echo 'Consider using tmux for long-running build commands'; fi"
           }
         ]
       }

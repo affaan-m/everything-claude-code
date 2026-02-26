@@ -167,9 +167,9 @@ class MonitoringAlert:
 
 ## Examples
 
-## Experiment Tracking
+### Experiment Tracking
 
-### MLflow Integration
+#### MLflow Integration
 
 ```python
 import mlflow
@@ -227,7 +227,7 @@ def log_model_artifact(
     )
 ```
 
-### Weights & Biases Integration
+#### Weights & Biases Integration
 
 ```python
 import wandb
@@ -278,7 +278,7 @@ class WandbCallback:
         })
 ```
 
-### Experiment Comparison
+#### Experiment Comparison
 
 ```python
 from dataclasses import dataclass
@@ -325,9 +325,9 @@ def compare_experiments(results: list[ExperimentResult]) -> dict:
     return summary
 ```
 
-## Model Training Patterns
+### Model Training Patterns
 
-### Hyperparameter Tuning
+#### Hyperparameter Tuning
 
 ```python
 from sklearn.model_selection import cross_val_score
@@ -387,7 +387,7 @@ def run_hyperparameter_search(
     }
 ```
 
-### Cross-Validation with Stratification
+#### Cross-Validation with Stratification
 
 ```python
 from sklearn.model_selection import StratifiedKFold
@@ -438,7 +438,7 @@ def run_stratified_cv(
     )
 ```
 
-### Early Stopping
+#### Early Stopping
 
 ```python
 class EarlyStopping:
@@ -518,9 +518,9 @@ def train_with_early_stopping(
     }
 ```
 
-## Feature Engineering
+### Feature Engineering
 
-### Feature Store Pattern
+#### Feature Store Pattern
 
 ```python
 from abc import ABC, abstractmethod
@@ -614,7 +614,7 @@ class RedisFeatureStore(FeatureStore):
         raise NotImplementedError("Use a data warehouse for offline features")
 ```
 
-### Feature Pipeline
+#### Feature Pipeline
 
 ```python
 from abc import ABC, abstractmethod
@@ -676,9 +676,9 @@ class FeaturePipeline:
         return current
 ```
 
-## Model Serving
+### Model Serving
 
-### FastAPI Model Endpoint
+#### FastAPI Model Endpoint
 
 ```python
 from fastapi import FastAPI, HTTPException
@@ -771,10 +771,11 @@ def create_app(model_server: ModelServer) -> FastAPI:
     return app
 ```
 
-### Batch Inference
+#### Batch Inference
 
 ```python
 import pandas as pd
+import pyarrow.parquet as pq
 from pathlib import Path
 import logging
 
@@ -795,9 +796,10 @@ def run_batch_inference(config: BatchInferenceConfig) -> dict:
     results: list[pd.DataFrame] = []
     total_rows = 0
 
-    for chunk in pd.read_parquet(config.input_path, chunksize=config.batch_size):
-        features = chunk[list(config.feature_columns)]
-        predictions = model.predict(features)
+    parquet_file = pq.ParquetFile(config.input_path)
+    for batch in parquet_file.iter_batches(batch_size=config.batch_size, columns=list(config.feature_columns)):
+        chunk = batch.to_pandas()
+        predictions = model.predict(chunk)
 
         output_chunk = chunk.assign(
             prediction=predictions,
@@ -823,7 +825,7 @@ def run_batch_inference(config: BatchInferenceConfig) -> dict:
     }
 ```
 
-### A/B Testing and Canary Deployment
+#### A/B Testing and Canary Deployment
 
 ```python
 import random
@@ -866,9 +868,9 @@ class ABRouter:
         return int(hash_value[:8], 16) / 0xFFFFFFFF
 ```
 
-## Monitoring
+### Monitoring
 
-### Data Drift Detection
+#### Data Drift Detection
 
 ```python
 import pandas as pd
@@ -969,7 +971,7 @@ class DriftMonitor:
         return results
 ```
 
-### Prediction Quality Monitoring
+#### Prediction Quality Monitoring
 
 ```python
 from collections import deque
@@ -1020,9 +1022,9 @@ class PredictionMonitor:
         return metrics
 ```
 
-## CI/CD for ML
+### CI/CD for ML
 
-### Model Validation Gates
+#### Model Validation Gates
 
 ```python
 @dataclass(frozen=True)
@@ -1069,9 +1071,9 @@ PRODUCTION_GATES = [
 ]
 ```
 
-## Testing ML Code
+### Testing ML Code
 
-### Unit Tests for Transforms
+#### Unit Tests for Transforms
 
 ```python
 import pytest
@@ -1109,7 +1111,7 @@ class TestFeatureTransforms:
         assert len(result) == len(sample_data)
 ```
 
-### Integration Tests for Pipelines
+#### Integration Tests for Pipelines
 
 ```python
 class TestTrainingPipeline:
@@ -1159,7 +1161,7 @@ class TestTrainingPipeline:
         assert training_config.to_hash() != different_config.to_hash()
 ```
 
-### Model Quality Tests
+#### Model Quality Tests
 
 ```python
 class TestModelQuality:
