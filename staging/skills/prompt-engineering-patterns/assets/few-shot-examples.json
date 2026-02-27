@@ -1,0 +1,106 @@
+{
+  "sentiment_analysis": [
+    {
+      "input": "This product exceeded my expectations! The quality is outstanding.",
+      "output": "Positive"
+    },
+    {
+      "input": "Terrible experience. The item arrived damaged and customer service was unhelpful.",
+      "output": "Negative"
+    },
+    {
+      "input": "The product works as described. Nothing special, but does the job.",
+      "output": "Neutral"
+    }
+  ],
+  "entity_extraction": [
+    {
+      "input": "Apple CEO Tim Cook announced the new iPhone at an event in Cupertino on September 12th.",
+      "output": {
+        "persons": ["Tim Cook"],
+        "organizations": ["Apple"],
+        "products": ["iPhone"],
+        "locations": ["Cupertino"],
+        "dates": ["September 12th"]
+      }
+    },
+    {
+      "input": "Microsoft acquired GitHub for $7.5 billion in 2018.",
+      "output": {
+        "persons": [],
+        "organizations": ["Microsoft", "GitHub"],
+        "products": [],
+        "locations": [],
+        "dates": ["2018"],
+        "monetary_values": ["$7.5 billion"]
+      }
+    }
+  ],
+  "code_generation": [
+    {
+      "input": "Write a Python function to check if a string is a palindrome",
+      "output": "def is_palindrome(s: str) -> bool:\n    \"\"\"Check if string is palindrome, ignoring case and spaces.\"\"\"\n    # Remove spaces and convert to lowercase\n    cleaned = s.replace(' ', '').lower()\n    # Compare with reversed string\n    return cleaned == cleaned[::-1]"
+    }
+  ],
+  "text_classification": [
+    {
+      "input": "How do I reset my password?",
+      "output": "account_management"
+    },
+    {
+      "input": "My order hasn't arrived yet. Where is it?",
+      "output": "shipping_inquiry"
+    },
+    {
+      "input": "I'd like to cancel my subscription.",
+      "output": "subscription_cancellation"
+    },
+    {
+      "input": "The app keeps crashing when I try to log in.",
+      "output": "technical_support"
+    }
+  ],
+  "data_transformation": [
+    {
+      "input": "John Smith, john@email.com, (555) 123-4567",
+      "output": {
+        "name": "John Smith",
+        "email": "john@email.com",
+        "phone": "(555) 123-4567"
+      }
+    },
+    {
+      "input": "Jane Doe | jane.doe@company.com | +1-555-987-6543",
+      "output": {
+        "name": "Jane Doe",
+        "email": "jane.doe@company.com",
+        "phone": "+1-555-987-6543"
+      }
+    }
+  ],
+  "question_answering": [
+    {
+      "context": "The Eiffel Tower is a wrought-iron lattice tower in Paris, France. It was constructed from 1887 to 1889 and stands 324 meters (1,063 ft) tall.",
+      "question": "When was the Eiffel Tower built?",
+      "answer": "The Eiffel Tower was constructed from 1887 to 1889."
+    },
+    {
+      "context": "Python 3.11 was released on October 24, 2022. It includes performance improvements and new features like exception groups and improved error messages.",
+      "question": "What are the new features in Python 3.11?",
+      "answer": "Python 3.11 includes exception groups, improved error messages, and performance improvements."
+    }
+  ],
+  "summarization": [
+    {
+      "input": "Climate change refers to long-term shifts in global temperatures and weather patterns. While climate change is natural, human activities have been the main driver since the 1800s, primarily due to the burning of fossil fuels like coal, oil and gas which produces heat-trapping greenhouse gases. The consequences include rising sea levels, more extreme weather events, and threats to biodiversity.",
+      "output": "Climate change involves long-term alterations in global temperatures and weather patterns, primarily driven by human fossil fuel consumption since the 1800s, resulting in rising sea levels, extreme weather, and biodiversity threats."
+    }
+  ],
+  "sql_generation": [
+    {
+      "schema": "users (id, name, email, created_at)\norders (id, user_id, total, order_date)",
+      "request": "Find all users who have placed orders totaling more than $1000",
+      "output": "SELECT u.id, u.name, u.email, SUM(o.total) as total_spent\nFROM users u\nJOIN orders o ON u.id = o.user_id\nGROUP BY u.id, u.name, u.email\nHAVING SUM(o.total) > 1000;"
+    }
+  ]
+}
