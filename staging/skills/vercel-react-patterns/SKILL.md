@@ -4,10 +4,6 @@ description: >
   React performance and composition patterns from Vercel Engineering. Use when
   optimizing component re-renders, eliminating boolean prop proliferation,
   parallelizing server-side data fetching, or reducing bundle size.
-license: MIT
-metadata:
-  author: vercel
-  version: '2.0.0'
 ---
 
 # Vercel React Patterns

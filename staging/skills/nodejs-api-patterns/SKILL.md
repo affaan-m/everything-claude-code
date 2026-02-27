@@ -316,6 +316,7 @@ export class CircuitBreaker {
       if (Date.now() - this.lastFailureTime > this.timeoutMs) {
         this.state = "half-open";
         this.successCount = 0;
+        this.failureCount = 0;
       } else {
         throw new ExternalServiceError("Circuit breaker is OPEN", "upstream");
       }
@@ -363,7 +364,7 @@ export const pool = new Pool({
   database: process.env.DB_NAME, user: process.env.DB_USER, password: process.env.DB_PASSWORD,
   max: 20, idleTimeoutMillis: 30_000, connectionTimeoutMillis: 2_000,
 });
-pool.on("error", (err) => { console.error("Unexpected pool error", err); process.exit(1); });
+pool.on("error", (err) => { logger.error({ err }, "Unexpected pool error"); process.exit(1); });
 export const closeDatabase = () => pool.end();
 ```
 

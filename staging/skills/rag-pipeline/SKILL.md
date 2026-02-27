@@ -119,7 +119,6 @@ graph.add_edge(START, "retrieve")
 graph.add_edge("retrieve", "generate")
 graph.add_edge("generate", END)
 rag_chain = graph.compile()
-# result = await rag_chain.ainvoke({"question": "What are the main features?"})
 ```
 
 ## Hybrid Search with RRF
@@ -180,6 +179,8 @@ class PostgresHybridSearch:
 
     def __init__(self, pool: asyncpg.Pool):
         self.pool = pool
+        from sentence_transformers import CrossEncoder
+        self.reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
 
     async def setup_schema(self):
         async with self.pool.acquire() as conn:
@@ -200,10 +201,11 @@ class PostgresHybridSearch:
     ) -> List[Dict]:
         async with self.pool.acquire() as conn:
             where = "1=1"
-            params = [query_embedding, query, limit * 3]
+            params = [query_embedding, query, limit * 3, vector_weight]
             if filter_metadata:
                 for key, val in filter_metadata.items():
                     params.append(val)
+                    # WARNING: key must be a trusted, application-controlled value — never user input
                     where += f" AND metadata->>'{key}' = ${len(params)}"
             results = await conn.fetch(f"""
                 WITH vs AS (
@@ -223,18 +225,16 @@ class PostgresHybridSearch:
                     COALESCE(1.0/(60+v.v_rank),0)*$4::float + COALESCE(1.0/(60+k.k_rank),0)*(1-$4::float) rrf_score
                 FROM vs v FULL OUTER JOIN ks k ON v.id = k.id
                 ORDER BY rrf_score DESC LIMIT $3/3
-            """, *params, vector_weight)
+            """, *params)
             return [dict(r) for r in results]
 
     async def search_with_rerank(
         self, query: str, query_embedding: List[float], limit: int = 10, candidates: int = 50
     ) -> List[Dict]:
-        from sentence_transformers import CrossEncoder
         cands = await self.hybrid_search(query, query_embedding, limit=candidates)
         if not cands:
             return []
-        model = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
-        scores = model.predict([(query, c["content"]) for c in cands])
+        scores = self.reranker.predict([(query, c["content"]) for c in cands])
         for c, s in zip(cands, scores):
             c["rerank_score"] = float(s)
         return sorted(cands, key=lambda x: x["rerank_score"], reverse=True)[:limit]

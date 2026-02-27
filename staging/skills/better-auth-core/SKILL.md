@@ -245,7 +245,7 @@ Three layers, all enabled by default:
 2. **Fetch Metadata** - Blocks `Sec-Fetch-Site: cross-site` + `navigate` + `document`
 3. **First-login protection** - Validates even without cookies on cross-site navigation
 
-Never disable: `advanced.disableCSRFCheck: false` (default).
+CSRF protection is enabled by default. Never set `advanced: { disableCSRFCheck: true }`.
 
 ### Trusted Origins
 
@@ -359,6 +359,7 @@ databaseHooks: {
       after: async ({ data, ctx }) => {
         await auditLog("session.created", {
           userId: data.userId,
+          // Only trustworthy behind a reverse proxy with trustedProxyHeaders configured
           ip: ctx?.request?.headers.get("x-forwarded-for"),
           userAgent: ctx?.request?.headers.get("user-agent"),
         });
