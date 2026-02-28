@@ -303,6 +303,14 @@
     "evolve": {
       "description": "Cluster instincts into skills",
       "template": "{file:.opencode/commands/evolve.md}\n\n$ARGUMENTS"
+    },
+    "promote": {
+      "description": "Promote project instincts to global scope",
+      "template": "{file:.opencode/commands/promote.md}\n\n$ARGUMENTS"
+    },
+    "projects": {
+      "description": "List known projects and instinct stats",
+      "template": "{file:.opencode/commands/projects.md}\n\n$ARGUMENTS"
     }
   },
   "permission": {

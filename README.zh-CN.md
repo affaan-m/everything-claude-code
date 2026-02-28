@@ -287,6 +287,8 @@ everything-claude-code/
 /instinct-import <file> # 从他人导入直觉
 /instinct-export        # 导出你的直觉以供分享
 /evolve                 # 将相关直觉聚类到技能中
+/promote                # 将项目级直觉提升为全局直觉
+/projects               # 查看已识别项目与直觉统计
 ```
 
 完整文档见 `skills/continuous-learning-v2/`。

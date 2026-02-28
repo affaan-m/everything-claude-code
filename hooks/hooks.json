@@ -37,7 +37,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-write-doc-warn.js\""
+            "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const i=JSON.parse(d);const p=i.tool_input?.file_path||'';if(/\\.(md|txt)$/.test(p)&&!/(README|CLAUDE|AGENTS|CONTRIBUTING|CHANGELOG|LICENSE|SKILL)\\.md$/i.test(p)&&!/\\.claude[\\/\\\\]plans[\\/\\\\]/.test(p)&&!/(^|[\\/\\\\])(docs|skills)[\\/\\\\]/.test(p)){console.error('[Hook] WARNING: Non-standard documentation file detected');console.error('[Hook] File: '+p);console.error('[Hook] Consider consolidating into README.md or docs/ directory')}}catch{}console.log(d)})\""
           }
         ],
         "description": "Doc file warning: warn about non-standard documentation files (exit code 0; warns only)"
@@ -51,6 +51,18 @@
           }
         ],
         "description": "Suggest manual compaction at logical intervals"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh",
+            "async": true,
+            "timeout": 10
+          }
+        ],
+        "description": "Capture tool use observations for continuous learning"
       }
     ],
     "PreCompact": [
@@ -129,6 +141,18 @@
           }
         ],
         "description": "Warn about console.log statements after edits"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh",
+            "async": true,
+            "timeout": 10
+          }
+        ],
+        "description": "Capture tool use results for continuous learning"
       }
     ],
     "Stop": [

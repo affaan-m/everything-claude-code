@@ -258,6 +258,8 @@ After migration, ALL 23 commands are available:
 | `/instinct-import` | Import instincts |
 | `/instinct-export` | Export instincts |
 | `/evolve` | Cluster instincts into skills |
+| `/promote` | Promote project instincts to global scope |
+| `/projects` | List known projects and instinct stats |
 
 ## Available Agents
 

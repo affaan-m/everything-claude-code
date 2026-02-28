@@ -95,6 +95,8 @@ opencode
 | `/instinct-import` | Import instincts |
 | `/instinct-export` | Export instincts |
 | `/evolve` | Cluster instincts |
+| `/promote` | Promote project instincts |
+| `/projects` | List known projects |
 
 ### Plugin Hooks
 

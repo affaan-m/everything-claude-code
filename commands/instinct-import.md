@@ -1,6 +1,6 @@
 ---
 name: instinct-import
-description: Import instincts from teammates, Skill Creator, or other sources
+description: Import instincts from file or URL into project/global scope
 command: true
 ---
 
@@ -11,7 +11,7 @@ command: true
 Run the instinct CLI using the plugin root path:
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/scripts/instinct-cli.py" import <file-or-url> [--dry-run] [--force] [--min-confidence 0.7]
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/scripts/instinct-cli.py" import <file-or-url> [--dry-run] [--force] [--min-confidence 0.7] [--scope project|global]
 ```
 
 Or if `CLAUDE_PLUGIN_ROOT` is not set (manual installation):
@@ -20,18 +20,15 @@ Or if `CLAUDE_PLUGIN_ROOT` is not set (manual installation):
 python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py import <file-or-url>
 ```
 
-Import instincts from:
-- Teammates' exports
-- Skill Creator (repo analysis)
-- Community collections
-- Previous machine backups
+Import instincts from local file paths or HTTP(S) URLs.
 
 ## Usage
 
 ```
 /instinct-import team-instincts.yaml
 /instinct-import https://github.com/org/repo/instincts.yaml
-/instinct-import --from-skill-creator acme/webapp
+/instinct-import team-instincts.yaml --dry-run
+/instinct-import team-instincts.yaml --scope global --force
 ```
 
 ## What to Do
@@ -40,7 +37,9 @@ Import instincts from:
 2. Parse and validate the format
 3. Check for duplicates with existing instincts
 4. Merge or add new instincts
-5. Save to `~/.claude/homunculus/instincts/inherited/`
+5. Save to inherited instincts directory:
+   - Project scope: `~/.claude/homunculus/projects/<project-id>/instincts/inherited/`
+   - Global scope: `~/.claude/homunculus/instincts/inherited/`
 
 ## Import Process
 
@@ -71,60 +70,33 @@ Already have similar instincts:
      Import: 0.9 confidence
      → Update to import (higher confidence)
 
-## Conflicting Instincts (1)
-These contradict local instincts:
-  ❌ use-classes-for-services
-     Conflicts with: avoid-classes
-     → Skip (requires manual resolution)
-
----
-Import 8 new, update 1, skip 3?
+Import 8 new, update 1?
 ```
 
-## Merge Strategies
+## Merge Behavior
 
-### For Duplicates
-When importing an instinct that matches an existing one:
-- **Higher confidence wins**: Keep the one with higher confidence
-- **Merge evidence**: Combine observation counts
-- **Update timestamp**: Mark as recently validated
-
-### For Conflicts
-When importing an instinct that contradicts an existing one:
-- **Skip by default**: Don't import conflicting instincts
-- **Flag for review**: Mark both as needing attention
-- **Manual resolution**: User decides which to keep
+When importing an instinct with an existing ID:
+- Higher-confidence import becomes an update candidate
+- Equal/lower-confidence import is skipped
+- User confirms unless `--force` is used
 
 ## Source Tracking
 
 Imported instincts are marked with:
 ```yaml
-source: "inherited"
+source: inherited
+scope: project
 imported_from: "team-instincts.yaml"
-imported_at: "2025-01-22T10:30:00Z"
-original_source: "session-observation"  # or "repo-analysis"
+project_id: "a1b2c3d4e5f6"
+project_name: "my-project"
 ```
-
-## Skill Creator Integration
-
-When importing from Skill Creator:
-
-```
-/instinct-import --from-skill-creator acme/webapp
-```
-
-This fetches instincts generated from repo analysis:
-- Source: `repo-analysis`
-- Higher initial confidence (0.7+)
-- Linked to source repository
 
 ## Flags
 
 - `--dry-run`: Preview without importing
-- `--force`: Import even if conflicts exist
-- `--merge-strategy <higher|local|import>`: How to handle duplicates
-- `--from-skill-creator <owner/repo>`: Import from Skill Creator analysis
+- `--force`: Skip confirmation prompt
 - `--min-confidence <n>`: Only import instincts above threshold
+- `--scope <project|global>`: Select target scope (default: `project`)
 
 ## Output
 
@@ -134,7 +106,7 @@ After import:
 
 Added: 8 instincts
 Updated: 1 instinct
-Skipped: 3 instincts (2 duplicates, 1 conflict)
+Skipped: 3 instincts (equal/higher confidence already exists)
 
 New instincts saved to: ~/.claude/homunculus/instincts/inherited/
 

@@ -1,6 +1,6 @@
 ---
 name: evolve
-description: Cluster related instincts into skills, commands, or agents
+description: Analyze instincts and suggest or generate evolved structures
 command: true
 ---
 
@@ -29,9 +29,7 @@ Analyzes instincts and clusters related ones into higher-level structures:
 
 ```
 /evolve                    # Analyze all instincts and suggest evolutions
-/evolve --domain testing   # Only evolve instincts in testing domain
-/evolve --dry-run          # Show what would be created without creating
-/evolve --threshold 5      # Require 5+ related instincts to cluster
+/evolve --generate         # Also generate files under evolved/{skills,commands,agents}
 ```
 
 ## Evolution Rules
@@ -78,63 +76,50 @@ Example:
 
 ## What to Do
 
-1. Read all instincts from `~/.claude/homunculus/instincts/`
-2. Group instincts by:
-   - Domain similarity
-   - Trigger pattern overlap
-   - Action sequence relationship
-3. For each cluster of 3+ related instincts:
-   - Determine evolution type (command/skill/agent)
-   - Generate the appropriate file
-   - Save to `~/.claude/homunculus/evolved/{commands,skills,agents}/`
-4. Link evolved structure back to source instincts
+1. Detect current project context
+2. Read project + global instincts (project takes precedence on ID conflicts)
+3. Group instincts by trigger/domain patterns
+4. Identify:
+   - Skill candidates (trigger clusters with 2+ instincts)
+   - Command candidates (high-confidence workflow instincts)
+   - Agent candidates (larger, high-confidence clusters)
+5. Show promotion candidates (project -> global) when applicable
+6. If `--generate` is passed, write files to:
+   - Project scope: `~/.claude/homunculus/projects/<project-id>/evolved/`
+   - Global fallback: `~/.claude/homunculus/evolved/`
 
 ## Output Format
 
 ```
-🧬 Evolve Analysis
-==================
+============================================================
+  EVOLVE ANALYSIS - 12 instincts
+  Project: my-app (a1b2c3d4e5f6)
+  Project-scoped: 8 | Global: 4
+============================================================
 
-Found 3 clusters ready for evolution:
+High confidence instincts (>=80%): 5
 
-## Cluster 1: Database Migration Workflow
-Instincts: new-table-migration, update-schema, regenerate-types
-Type: Command
-Confidence: 85% (based on 12 observations)
+## SKILL CANDIDATES
+1. Cluster: "adding tests"
+   Instincts: 3
+   Avg confidence: 82%
+   Domains: testing
+   Scopes: project
 
-Would create: /new-table command
-Files:
-  - ~/.claude/homunculus/evolved/commands/new-table.md
+## COMMAND CANDIDATES (2)
+  /adding-tests
+    From: test-first-workflow [project]
+    Confidence: 84%
 
-## Cluster 2: Functional Code Style
-Instincts: prefer-functional, use-immutable, avoid-classes, pure-functions
-Type: Skill
-Confidence: 78% (based on 8 observations)
-
-Would create: functional-patterns skill
-Files:
-  - ~/.claude/homunculus/evolved/skills/functional-patterns.md
-
-## Cluster 3: Debugging Process
-Instincts: debug-check-logs, debug-isolate, debug-reproduce, debug-verify
-Type: Agent
-Confidence: 72% (based on 6 observations)
-
-Would create: debugger agent
-Files:
-  - ~/.claude/homunculus/evolved/agents/debugger.md
-
----
-Run `/evolve --execute` to create these files.
+## AGENT CANDIDATES (1)
+  adding-tests-agent
+    Covers 3 instincts
+    Avg confidence: 82%
 ```
 
 ## Flags
 
-- `--execute`: Actually create the evolved structures (default is preview)
-- `--dry-run`: Preview without creating
-- `--domain <name>`: Only evolve instincts in specified domain
-- `--threshold <n>`: Minimum instincts required to form cluster (default: 3)
-- `--type <command|skill|agent>`: Only create specified type
+- `--generate`: Generate evolved files in addition to analysis output
 
 ## Generated File Format
 

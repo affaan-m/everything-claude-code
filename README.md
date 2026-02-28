@@ -972,6 +972,8 @@ OpenCode's plugin system is MORE sophisticated than Claude Code with 20+ event t
 | `/instinct-import` | Import instincts |
 | `/instinct-export` | Export instincts |
 | `/evolve` | Cluster instincts into skills |
+| `/promote` | Promote project instincts to global scope |
+| `/projects` | List known projects and instinct stats |
 | `/learn-eval` | Extract and evaluate patterns before saving |
 | `/setup-pm` | Configure package manager |
 

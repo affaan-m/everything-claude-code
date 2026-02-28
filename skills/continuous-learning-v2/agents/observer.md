@@ -1,8 +1,7 @@
 ---
 name: observer
-description: Background agent that analyzes session observations to detect patterns and create instincts. Uses Haiku for cost-efficiency.
+description: Background agent that analyzes session observations to detect patterns and create instincts. Uses Haiku for cost-efficiency. v2.1 adds project-scoped instincts.
 model: haiku
-run_mode: background
 ---
 
 # Observer Agent
@@ -11,20 +10,21 @@ A background agent that analyzes observations from Claude Code sessions to detec
 
 ## When to Run
 
-- After significant session activity (20+ tool calls)
-- When user runs `/analyze-patterns`
+- After enough observations accumulate (configurable, default 20)
 - On a scheduled interval (configurable, default 5 minutes)
-- When triggered by observation hook (SIGUSR1)
+- When triggered on demand via SIGUSR1 to the observer process
 
 ## Input
 
-Reads observations from `~/.claude/homunculus/observations.jsonl`:
+Reads observations from the **project-scoped** observations file:
+- Project: `~/.claude/homunculus/projects/<project-hash>/observations.jsonl`
+- Global fallback: `~/.claude/homunculus/observations.jsonl`
 
 ```jsonl
-{"timestamp":"2025-01-22T10:30:00Z","event":"tool_start","session":"abc123","tool":"Edit","input":"..."}
-{"timestamp":"2025-01-22T10:30:01Z","event":"tool_complete","session":"abc123","tool":"Edit","output":"..."}
-{"timestamp":"2025-01-22T10:30:05Z","event":"tool_start","session":"abc123","tool":"Bash","input":"npm test"}
-{"timestamp":"2025-01-22T10:30:10Z","event":"tool_complete","session":"abc123","tool":"Bash","output":"All tests pass"}
+{"timestamp":"2025-01-22T10:30:00Z","event":"tool_start","session":"abc123","tool":"Edit","input":"...","project_id":"a1b2c3d4e5f6","project_name":"my-react-app"}
+{"timestamp":"2025-01-22T10:30:01Z","event":"tool_complete","session":"abc123","tool":"Edit","output":"...","project_id":"a1b2c3d4e5f6","project_name":"my-react-app"}
+{"timestamp":"2025-01-22T10:30:05Z","event":"tool_start","session":"abc123","tool":"Bash","input":"npm test","project_id":"a1b2c3d4e5f6","project_name":"my-react-app"}
+{"timestamp":"2025-01-22T10:30:10Z","event":"tool_complete","session":"abc123","tool":"Bash","output":"All tests pass","project_id":"a1b2c3d4e5f6","project_name":"my-react-app"}
 ```
 
 ## Pattern Detection
@@ -65,27 +65,74 @@ When certain tools are consistently preferred:
 
 ## Output
 
-Creates/updates instincts in `~/.claude/homunculus/instincts/personal/`:
+Creates/updates instincts in the **project-scoped** instincts directory:
+- Project: `~/.claude/homunculus/projects/<project-hash>/instincts/personal/`
+- Global: `~/.claude/homunculus/instincts/personal/` (for universal patterns)
+
+### Project-Scoped Instinct (default)
 
 ```yaml
 ---
-id: prefer-grep-before-edit
-trigger: "when searching for code to modify"
+id: use-react-hooks-pattern
+trigger: "when creating React components"
 confidence: 0.65
-domain: "workflow"
+domain: "code-style"
 source: "session-observation"
+scope: project
+project_id: "a1b2c3d4e5f6"
+project_name: "my-react-app"
 ---
 
-# Prefer Grep Before Edit
+# Use React Hooks Pattern
 
 ## Action
-Always use Grep to find the exact location before using Edit.
+Always use functional components with hooks instead of class components.
 
 ## Evidence
 - Observed 8 times in session abc123
-- Pattern: Grep → Read → Edit sequence
+- Pattern: All new components use useState/useEffect
 - Last observed: 2025-01-22
 ```
+
+### Global Instinct (universal patterns)
+
+```yaml
+---
+id: always-validate-user-input
+trigger: "when handling user input"
+confidence: 0.75
+domain: "security"
+source: "session-observation"
+scope: global
+---
+
+# Always Validate User Input
+
+## Action
+Validate and sanitize all user input before processing.
+
+## Evidence
+- Observed across 3 different projects
+- Pattern: User consistently adds input validation
+- Last observed: 2025-01-22
+```
+
+## Scope Decision Guide
+
+When creating instincts, determine scope based on these heuristics:
+
+| Pattern Type | Scope | Examples |
+|-------------|-------|---------|
+| Language/framework conventions | **project** | "Use React hooks", "Follow Django REST patterns" |
+| File structure preferences | **project** | "Tests in __tests__/", "Components in src/components/" |
+| Code style | **project** | "Use functional style", "Prefer dataclasses" |
+| Error handling strategies | **project** (usually) | "Use Result type for errors" |
+| Security practices | **global** | "Validate user input", "Sanitize SQL" |
+| General best practices | **global** | "Write tests first", "Always handle errors" |
+| Tool workflow preferences | **global** | "Grep before Edit", "Read before Write" |
+| Git practices | **global** | "Conventional commits", "Small focused commits" |
+
+**When in doubt, default to `scope: project`** — it's safer to be project-specific and promote later than to contaminate the global space.
 
 ## Confidence Calculation
 
@@ -100,6 +147,15 @@ Confidence adjusts over time:
 - -0.1 for each contradicting observation
 - -0.02 per week without observation (decay)
 
+## Instinct Promotion (Project → Global)
+
+An instinct should be promoted from project-scoped to global when:
+1. The **same pattern** (by id or similar trigger) exists in **2+ different projects**
+2. Each instance has confidence **>= 0.8**
+3. The domain is in the global-friendly list (security, general-best-practices, workflow)
+
+Promotion is handled by the `instinct-cli.py promote` command or the `/evolve` analysis.
+
 ## Important Guidelines
 
 1. **Be Conservative**: Only create instincts for clear patterns (3+ observations)
@@ -107,31 +163,36 @@ Confidence adjusts over time:
 3. **Track Evidence**: Always include what observations led to the instinct
 4. **Respect Privacy**: Never include actual code snippets, only patterns
 5. **Merge Similar**: If a new instinct is similar to existing, update rather than duplicate
+6. **Default to Project Scope**: Unless the pattern is clearly universal, make it project-scoped
+7. **Include Project Context**: Always set `project_id` and `project_name` for project-scoped instincts
 
 ## Example Analysis Session
 
 Given observations:
 ```jsonl
-{"event":"tool_start","tool":"Grep","input":"pattern: useState"}
-{"event":"tool_complete","tool":"Grep","output":"Found in 3 files"}
-{"event":"tool_start","tool":"Read","input":"src/hooks/useAuth.ts"}
-{"event":"tool_complete","tool":"Read","output":"[file content]"}
-{"event":"tool_start","tool":"Edit","input":"src/hooks/useAuth.ts..."}
+{"event":"tool_start","tool":"Grep","input":"pattern: useState","project_id":"a1b2c3","project_name":"my-app"}
+{"event":"tool_complete","tool":"Grep","output":"Found in 3 files","project_id":"a1b2c3","project_name":"my-app"}
+{"event":"tool_start","tool":"Read","input":"src/hooks/useAuth.ts","project_id":"a1b2c3","project_name":"my-app"}
+{"event":"tool_complete","tool":"Read","output":"[file content]","project_id":"a1b2c3","project_name":"my-app"}
+{"event":"tool_start","tool":"Edit","input":"src/hooks/useAuth.ts...","project_id":"a1b2c3","project_name":"my-app"}
 ```
 
 Analysis:
 - Detected workflow: Grep → Read → Edit
 - Frequency: Seen 5 times this session
+- **Scope decision**: This is a general workflow pattern (not project-specific) → **global**
 - Create instinct:
   - trigger: "when modifying code"
   - action: "Search with Grep, confirm with Read, then Edit"
   - confidence: 0.6
   - domain: "workflow"
+  - scope: "global"
 
 ## Integration with Skill Creator
 
 When instincts are imported from Skill Creator (repo analysis), they have:
 - `source: "repo-analysis"`
 - `source_repo: "https://github.com/..."`
+- `scope: "project"` (since they come from a specific repo)
 
 These should be treated as team/project conventions with higher initial confidence (0.7+).
