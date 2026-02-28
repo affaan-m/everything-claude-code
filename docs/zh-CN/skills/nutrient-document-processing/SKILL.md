@@ -161,5 +161,4 @@ curl -X POST https://api.nutrient.io/build \
 
 * [API 演练场](https://dashboard.nutrient.io/processor-api/playground/)
 * [完整 API 文档](https://www.nutrient.io/guides/dws-processor/)
-* [代理技能仓库](https://github.com/PSPDFKit-labs/nutrient-agent-skill)
 * [npm MCP 服务器](https://www.npmjs.com/package/@nutrient-sdk/dws-mcp-server)

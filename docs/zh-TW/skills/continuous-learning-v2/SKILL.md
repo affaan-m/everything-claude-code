@@ -249,7 +249,7 @@ v2 完全相容 v1：
 ## 相關
 
 - [Skill Creator](https://skill-creator.app) - 從倉庫歷史產生本能
-- [Homunculus](https://github.com/humanplane/homunculus) - v2 架構靈感
+- Homunculus - 啟發 v2 架構的社區專案（原子觀察、信心評分、本能演化管線）
 - [Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) - 持續學習章節
 
 ---

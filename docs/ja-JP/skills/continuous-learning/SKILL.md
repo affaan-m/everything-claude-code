@@ -83,7 +83,7 @@ Claude Codeセッションを終了時に自動的に評価し、学習済みス
 
 ## 比較ノート (調査: 2025年1月)
 
-### vs Homunculus (github.com/humanplane/homunculus)
+### vs Homunculus
 
 Homunculus v2はより洗練されたアプローチを採用:
 

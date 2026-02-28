@@ -1,0 +1,7 @@
+interface:
+  display_name: "Market Research"
+  short_description: "Source-attributed market, competitor, and investor research"
+  brand_color: "#2563EB"
+  default_prompt: "Research this market and summarize the decision-relevant findings"
+policy:
+  allow_implicit_invocation: true

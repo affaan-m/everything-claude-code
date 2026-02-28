@@ -4,8 +4,8 @@
  * This package provides a complete OpenCode plugin with:
  * - 13 specialized agents (planner, architect, code-reviewer, etc.)
  * - 31 commands (/plan, /tdd, /code-review, etc.)
- * - Plugin hooks (auto-format, TypeScript check, console.log warning, etc.)
- * - Custom tools (run-tests, check-coverage, security-audit)
+ * - Plugin hooks (auto-format, TypeScript check, console.log warning, env injection, etc.)
+ * - Custom tools (run-tests, check-coverage, security-audit, format-code, lint-check, git-summary)
  * - 37 skills (coding-standards, security-review, tdd-workflow, etc.)
  *
  * Usage:
@@ -39,7 +39,7 @@ export { ECCHooksPlugin, default } from "./plugins/index.js"
 export * from "./plugins/index.js"
 
 // Version export
-export const VERSION = "1.4.1"
+export const VERSION = "1.6.0"
 
 // Plugin metadata
 export const metadata = {
@@ -59,13 +59,18 @@ export const metadata = {
       "session.idle",
       "session.deleted",
       "file.watcher.updated",
-      "permission.asked",
+      "permission.ask",
       "todo.updated",
+      "shell.env",
+      "experimental.session.compacting",
     ],
     customTools: [
       "run-tests",
       "check-coverage",
       "security-audit",
+      "format-code",
+      "lint-check",
+      "git-summary",
     ],
   },
 }

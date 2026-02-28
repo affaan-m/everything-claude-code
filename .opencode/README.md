@@ -130,23 +130,27 @@ OpenCode has 20+ additional events not available in Claude Code.
 
 ## Skills
 
-All 16 ECC skills are available via the `instructions` array:
+The default OpenCode config loads 11 curated ECC skills via the `instructions` array:
 
 - coding-standards
 - backend-patterns
 - frontend-patterns
+- frontend-slides
 - security-review
 - tdd-workflow
-- continuous-learning
-- continuous-learning-v2
-- iterative-retrieval
 - strategic-compact
 - eval-harness
 - verification-loop
-- golang-patterns
-- golang-testing
-- clickhouse-io
-- pmx-guidelines
+- api-design
+- e2e-testing
+
+Additional specialized skills are shipped in `skills/` but not loaded by default to keep OpenCode sessions lean:
+
+- article-writing
+- content-engine
+- market-research
+- investor-materials
+- investor-outreach
 
 ## Configuration
 

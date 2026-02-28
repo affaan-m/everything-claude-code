@@ -162,6 +162,17 @@ if [[ "$TARGET" == "cursor" ]]; then
         cp -r "$CURSOR_SRC/commands/." "$DEST_DIR/commands/"
     fi
 
+    # --- Hooks ---
+    if [[ -f "$CURSOR_SRC/hooks.json" ]]; then
+        echo "Installing hooks config -> $DEST_DIR/hooks.json"
+        cp "$CURSOR_SRC/hooks.json" "$DEST_DIR/hooks.json"
+    fi
+    if [[ -d "$CURSOR_SRC/hooks" ]]; then
+        echo "Installing hook scripts -> $DEST_DIR/hooks/"
+        mkdir -p "$DEST_DIR/hooks"
+        cp -r "$CURSOR_SRC/hooks/." "$DEST_DIR/hooks/"
+    fi
+
     # --- MCP Config ---
     if [[ -f "$CURSOR_SRC/mcp.json" ]]; then
         echo "Installing MCP config -> $DEST_DIR/mcp.json"

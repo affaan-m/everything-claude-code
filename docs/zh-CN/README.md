@@ -785,7 +785,7 @@ npm install ecc-universal
 * **详细指南 (进阶):** [Claude Code 万事详细指南](https://x.com/affaanmustafa/status/2014040193557471352)
 * **关注:** [@affaanmustafa](https://x.com/affaanmustafa)
 * **zenith.chat:** [zenith.chat](https://zenith.chat)
-* **技能目录:** [awesome-agent-skills](https://github.com/JackyST0/awesome-agent-skills)
+* **技能目录:** awesome-agent-skills（社区维护的智能体技能目录）
 
 ***
 

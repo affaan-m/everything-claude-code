@@ -83,7 +83,7 @@ description: 自动从Claude Code会话中提取可重用模式，并将其保�
 
 ## 对比说明（研究：2025年1月）
 
-### 与 Homunculus (github.com/humanplane/homunculus) 对比
+### 与 Homunculus 对比
 
 Homunculus v2 采用了更复杂的方法：
 

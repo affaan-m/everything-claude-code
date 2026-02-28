@@ -92,7 +92,7 @@ Add to your `~/.claude/settings.json`:
 
 ## Comparison Notes (Research: Jan 2025)
 
-### vs Homunculus (github.com/humanplane/homunculus)
+### vs Homunculus
 
 Homunculus v2 takes a more sophisticated approach:
 

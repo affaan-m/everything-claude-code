@@ -282,7 +282,7 @@ v2 与 v1 完全兼容：
 ## 相关链接
 
 * [技能创建器](https://skill-creator.app) - 从仓库历史生成本能
-* [Homunculus](https://github.com/humanplane/homunculus) - v2 架构的灵感来源
+* Homunculus - 启发 v2 架构的社区项目（原子观察、置信度评分、本能演化管线）
 * [长文指南](https://x.com/affaanmustafa/status/2014040193557471352) - 持续学习部分
 
 ***

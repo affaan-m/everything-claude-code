@@ -5,7 +5,10 @@ set -euo pipefail
 # Usage: ./scripts/release.sh VERSION
 
 VERSION="${1:-}"
+ROOT_PACKAGE_JSON="package.json"
 PLUGIN_JSON=".claude-plugin/plugin.json"
+MARKETPLACE_JSON=".claude-plugin/marketplace.json"
+OPENCODE_PACKAGE_JSON=".opencode/package.json"
 
 # Function to show usage
 usage() {
@@ -39,31 +42,40 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
   exit 1
 fi
 
-# Verify plugin.json exists
-if [[ ! -f "$PLUGIN_JSON" ]]; then
-  echo "Error: $PLUGIN_JSON not found"
-  exit 1
-fi
+# Verify versioned manifests exist
+for FILE in "$ROOT_PACKAGE_JSON" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$OPENCODE_PACKAGE_JSON"; do
+  if [[ ! -f "$FILE" ]]; then
+    echo "Error: $FILE not found"
+    exit 1
+  fi
+done
 
-# Read current version
-OLD_VERSION=$(grep -oE '"version": *"[^"]*"' "$PLUGIN_JSON" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+# Read current version from plugin.json
+OLD_VERSION=$(grep -oE '"version": *"[^"]*"' "$PLUGIN_JSON" | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
 if [[ -z "$OLD_VERSION" ]]; then
   echo "Error: Could not extract current version from $PLUGIN_JSON"
   exit 1
 fi
 echo "Bumping version: $OLD_VERSION -> $VERSION"
 
-# Update version in plugin.json (cross-platform sed, pipe-delimiter avoids issues with slashes)
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  # macOS
-  sed -i '' "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|" "$PLUGIN_JSON"
-else
-  # Linux
-  sed -i "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|" "$PLUGIN_JSON"
-fi
+update_version() {
+  local file="$1"
+  local pattern="$2"
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "$pattern" "$file"
+  else
+    sed -i "$pattern" "$file"
+  fi
+}
+
+# Update all shipped package/plugin manifests
+update_version "$ROOT_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
+update_version "$PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
+update_version "$MARKETPLACE_JSON" "0,/\"version\": *\"[^\"]*\"/s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
+update_version "$OPENCODE_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 
 # Stage, commit, tag, and push
-git add "$PLUGIN_JSON"
+git add "$ROOT_PACKAGE_JSON" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$OPENCODE_PACKAGE_JSON"
 git commit -m "chore: bump plugin version to $VERSION"
 git tag "v$VERSION"
 git push origin main "v$VERSION"

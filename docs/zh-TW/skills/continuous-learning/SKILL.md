@@ -83,7 +83,7 @@ description: Automatically extract reusable patterns from Claude Code sessions a
 
 ## 比較筆記（研究：2025 年 1 月）
 
-### vs Homunculus (github.com/humanplane/homunculus)
+### vs Homunculus
 
 Homunculus v2 採用更複雜的方法：
 

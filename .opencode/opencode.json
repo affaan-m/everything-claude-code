@@ -4,11 +4,20 @@
   "small_model": "anthropic/claude-haiku-4-5",
   "default_agent": "build",
   "instructions": [
+    "AGENTS.md",
     "CONTRIBUTING.md",
     ".opencode/instructions/INSTRUCTIONS.md",
     "skills/tdd-workflow/SKILL.md",
     "skills/security-review/SKILL.md",
-    "skills/coding-standards/SKILL.md"
+    "skills/coding-standards/SKILL.md",
+    "skills/frontend-patterns/SKILL.md",
+    "skills/frontend-slides/SKILL.md",
+    "skills/backend-patterns/SKILL.md",
+    "skills/e2e-testing/SKILL.md",
+    "skills/verification-loop/SKILL.md",
+    "skills/api-design/SKILL.md",
+    "skills/strategic-compact/SKILL.md",
+    "skills/eval-harness/SKILL.md"
   ],
   "plugin": [
     "./.opencode/plugins"

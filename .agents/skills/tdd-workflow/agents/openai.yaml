@@ -1,0 +1,7 @@
+interface:
+  display_name: "TDD Workflow"
+  short_description: "Test-driven development with 80%+ coverage"
+  brand_color: "#22C55E"
+  default_prompt: "Follow TDD: write tests first, implement, verify 80%+ coverage"
+policy:
+  allow_implicit_invocation: true

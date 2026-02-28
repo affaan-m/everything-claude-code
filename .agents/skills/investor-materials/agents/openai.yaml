@@ -1,0 +1,7 @@
+interface:
+  display_name: "Investor Materials"
+  short_description: "Create decks, memos, and financial materials from one source of truth"
+  brand_color: "#7C3AED"
+  default_prompt: "Draft investor materials that stay numerically consistent across assets"
+policy:
+  allow_implicit_invocation: true

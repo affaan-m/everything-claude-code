@@ -88,8 +88,11 @@ cp -r everything-claude-code/rules/* ~/.claude/rules/
 ### 第三步：开始使用
 
 ```bash
-# 尝试一个命令
-/plan "添加用户认证"
+# 尝试一个命令（插件安装使用命名空间形式）
+/everything-claude-code:plan "添加用户认证"
+
+# 手动安装（选项2）使用简短形式：
+# /plan "添加用户认证"
 
 # 查看可用命令
 /plugin list everything-claude-code@everything-claude-code
@@ -512,7 +515,7 @@ node tests/hooks/hooks.test.js
 - **详细指南（高级）：** [The Longform Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2014040193557471352)
 - **关注：** [@affaanmustafa](https://x.com/affaanmustafa)
 - **zenith.chat:** [zenith.chat](https://zenith.chat)
-- **技能目录：** [awesome-agent-skills](https://github.com/JackyST0/awesome-agent-skills)
+- **技能目录：** awesome-agent-skills（社区维护的智能体技能目录）
 
 ---
 

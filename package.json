@@ -1,6 +1,6 @@
 {
   "name": "ecc-universal",
-  "version": "1.4.1",
+  "version": "1.7.0",
   "description": "Complete collection of battle-tested Claude Code configs — agents, skills, hooks, commands, and rules evolved over 10+ months of intensive daily use by an Anthropic hackathon winner",
   "keywords": [
     "claude-code",
@@ -19,7 +19,10 @@
     "best-practices",
     "cursor",
     "cursor-ide",
-    "opencode"
+    "opencode",
+    "codex",
+    "presentations",
+    "slides"
   ],
   "author": {
     "name": "Affaan Mustafa",
@@ -35,6 +38,8 @@
     "url": "https://github.com/affaan-m/everything-claude-code/issues"
   },
   "files": [
+    ".agents/",
+    ".codex/",
     ".cursor/",
     ".opencode/commands/",
     ".opencode/instructions/",
@@ -65,6 +70,7 @@
     "scripts/setup-package-manager.js",
     "scripts/skill-create-output.js",
     "skills/",
+    "AGENTS.md",
     ".claude-plugin/plugin.json",
     ".claude-plugin/README.md",
     "install.sh",

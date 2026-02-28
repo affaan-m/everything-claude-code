@@ -1,0 +1,7 @@
+interface:
+  display_name: "API Design"
+  short_description: "REST API design patterns and best practices"
+  brand_color: "#F97316"
+  default_prompt: "Design REST API: resources, status codes, pagination"
+policy:
+  allow_implicit_invocation: true

@@ -88,8 +88,11 @@ cp -r everything-claude-code/rules/* ~/.claude/rules/
 ### 第三步：開始使用
 
 ```bash
-# 嘗試一個指令
-/plan "新增使用者認證"
+# 嘗試一個指令（外掛安裝使用命名空間形式）
+/everything-claude-code:plan "新增使用者認證"
+
+# 手動安裝（選項2）使用簡短形式：
+# /plan "新增使用者認證"
 
 # 查看可用指令
 /plugin list everything-claude-code@everything-claude-code
@@ -464,7 +467,7 @@ node tests/hooks/hooks.test.js
 - **完整指南（進階）：** [Everything Claude Code 完整指南](https://x.com/affaanmustafa/status/2014040193557471352)
 - **追蹤：** [@affaanmustafa](https://x.com/affaanmustafa)
 - **zenith.chat：** [zenith.chat](https://zenith.chat)
-- **技能目錄：** [awesome-agent-skills](https://github.com/JackyST0/awesome-agent-skills)
+- **技能目錄：** awesome-agent-skills（社區維護的智能體技能目錄）
 
 ---
 

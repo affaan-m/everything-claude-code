@@ -262,17 +262,6 @@ export const ECCHooksPlugin = async ({
     },
 
     /**
-     * Permission Asked Hook
-     * OpenCode-only feature
-     *
-     * Triggers: When permission is requested
-     * Action: Logs for audit trail
-     */
-    "permission.asked": async (event: { tool: string; args: unknown }) => {
-      log("info", `[ECC] Permission requested for: ${event.tool}`)
-    },
-
-    /**
      * Todo Updated Hook
      * OpenCode-only feature
      *
@@ -285,6 +274,131 @@ export const ECCHooksPlugin = async ({
       if (total > 0) {
         log("info", `[ECC] Progress: ${completed}/${total} tasks completed`)
       }
+    },
+
+    /**
+     * Shell Environment Hook
+     * OpenCode-specific: Inject environment variables into shell commands
+     *
+     * Triggers: Before shell command execution
+     * Action: Sets PROJECT_ROOT, PACKAGE_MANAGER, DETECTED_LANGUAGES, ECC_VERSION
+     */
+    "shell.env": async () => {
+      const env: Record<string, string> = {
+        ECC_VERSION: "1.6.0",
+        ECC_PLUGIN: "true",
+        PROJECT_ROOT: worktree || directory,
+      }
+
+      // Detect package manager
+      const lockfiles: Record<string, string> = {
+        "bun.lockb": "bun",
+        "pnpm-lock.yaml": "pnpm",
+        "yarn.lock": "yarn",
+        "package-lock.json": "npm",
+      }
+      for (const [lockfile, pm] of Object.entries(lockfiles)) {
+        try {
+          await $`test -f ${worktree}/${lockfile}`
+          env.PACKAGE_MANAGER = pm
+          break
+        } catch {
+          // Not found, try next
+        }
+      }
+
+      // Detect languages
+      const langDetectors: Record<string, string> = {
+        "tsconfig.json": "typescript",
+        "go.mod": "go",
+        "pyproject.toml": "python",
+        "Cargo.toml": "rust",
+        "Package.swift": "swift",
+      }
+      const detected: string[] = []
+      for (const [file, lang] of Object.entries(langDetectors)) {
+        try {
+          await $`test -f ${worktree}/${file}`
+          detected.push(lang)
+        } catch {
+          // Not found
+        }
+      }
+      if (detected.length > 0) {
+        env.DETECTED_LANGUAGES = detected.join(",")
+        env.PRIMARY_LANGUAGE = detected[0]
+      }
+
+      return env
+    },
+
+    /**
+     * Session Compacting Hook
+     * OpenCode-specific: Control context compaction behavior
+     *
+     * Triggers: Before context compaction
+     * Action: Push ECC context block and custom compaction prompt
+     */
+    "experimental.session.compacting": async () => {
+      const contextBlock = [
+        "# ECC Context (preserve across compaction)",
+        "",
+        "## Active Plugin: Everything Claude Code v1.6.0",
+        "- Hooks: file.edited, tool.execute.before/after, session.created/idle/deleted, shell.env, compacting, permission.ask",
+        "- Tools: run-tests, check-coverage, security-audit, format-code, lint-check, git-summary",
+        "- Agents: 13 specialized (planner, architect, tdd-guide, code-reviewer, security-reviewer, build-error-resolver, e2e-runner, refactor-cleaner, doc-updater, go-reviewer, go-build-resolver, database-reviewer, python-reviewer)",
+        "",
+        "## Key Principles",
+        "- TDD: write tests first, 80%+ coverage",
+        "- Immutability: never mutate, always return new copies",
+        "- Security: validate inputs, no hardcoded secrets",
+        "",
+      ]
+
+      // Include recently edited files
+      if (editedFiles.size > 0) {
+        contextBlock.push("## Recently Edited Files")
+        for (const f of editedFiles) {
+          contextBlock.push(`- ${f}`)
+        }
+        contextBlock.push("")
+      }
+
+      return {
+        context: contextBlock.join("\n"),
+        compaction_prompt: "Focus on preserving: 1) Current task status and progress, 2) Key decisions made, 3) Files created/modified, 4) Remaining work items, 5) Any security concerns flagged. Discard: verbose tool outputs, intermediate exploration, redundant file listings.",
+      }
+    },
+
+    /**
+     * Permission Auto-Approve Hook
+     * OpenCode-specific: Auto-approve safe operations
+     *
+     * Triggers: When permission is requested
+     * Action: Auto-approve reads, formatters, and test commands; log all for audit
+     */
+    "permission.ask": async (event: { tool: string; args: unknown }) => {
+      log("info", `[ECC] Permission requested for: ${event.tool}`)
+
+      const cmd = String((event.args as Record<string, unknown>)?.command || event.args || "")
+
+      // Auto-approve: read/search tools
+      if (["read", "glob", "grep", "search", "list"].includes(event.tool)) {
+        return { approved: true, reason: "Read-only operation" }
+      }
+
+      // Auto-approve: formatters
+      if (event.tool === "bash" && /^(npx )?(prettier|biome|black|gofmt|rustfmt|swift-format)/.test(cmd)) {
+        return { approved: true, reason: "Formatter execution" }
+      }
+
+      // Auto-approve: test execution
+      if (event.tool === "bash" && /^(npm test|npx vitest|npx jest|pytest|go test|cargo test)/.test(cmd)) {
+        return { approved: true, reason: "Test execution" }
+      }
+
+      // Everything else: let user decide
+      return { approved: undefined }
     },
   }
 }

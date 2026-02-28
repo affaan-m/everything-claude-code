@@ -161,5 +161,4 @@ curl -X POST https://api.nutrient.io/build \
 
 - [API Playground](https://dashboard.nutrient.io/processor-api/playground/)
 - [完全な API ドキュメント](https://www.nutrient.io/guides/dws-processor/)
-- [Agent Skill リポジトリ](https://github.com/PSPDFKit-labs/nutrient-agent-skill)
 - [npm MCP サーバー](https://www.npmjs.com/package/@nutrient-sdk/dws-mcp-server)

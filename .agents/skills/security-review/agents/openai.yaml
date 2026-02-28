@@ -1,0 +1,7 @@
+interface:
+  display_name: "Security Review"
+  short_description: "Comprehensive security checklist and vulnerability detection"
+  brand_color: "#EF4444"
+  default_prompt: "Run security checklist: secrets, input validation, injection prevention"
+policy:
+  allow_implicit_invocation: true
