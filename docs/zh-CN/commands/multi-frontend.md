@@ -86,13 +86,13 @@ EOF",
 
 ### 阶段 0: 提示词增强（可选）
 
-`[Mode: Prepare]` - 如果 ace-tool MCP 可用，调用 `mcp__ace-tool__enhance_prompt`，**将原始的 $ARGUMENTS 替换为增强后的结果，用于后续的 Gemini 调用**
+`[Mode: Prepare]` - 如果 ace-tool MCP 可用，调用 `mcp__ace-tool__enhance_prompt`，**将原始的 $ARGUMENTS 替换为增强后的结果，用于后续的 Gemini 调用**。不可用时，直接使用 `$ARGUMENTS`。
 
 ### 阶段 1: 研究
 
 `[Mode: Research]` - 理解需求并收集上下文
 
-1. **代码检索**（如果 ace-tool MCP 可用）: 调用 `mcp__ace-tool__search_context` 来检索现有的组件、样式、设计系统
+1. **代码检索**（如果 ace-tool MCP 可用）: 调用 `mcp__ace-tool__search_context` 来检索现有的组件、样式、设计系统。不可用时，使用内置工具：`Glob` 进行文件发现，`Grep` 进行组件/样式搜索，`Read` 进行上下文收集，`Task`（Explore 代理）进行更深入的探索。
 2. 需求完整性评分（0-10）: >=7 继续，<7 停止并补充
 
 ### 阶段 2: 构思

@@ -71,7 +71,7 @@ TaskOutput({ task_id: "<task_id>", block: true, timeout: 600000 })
 
 #### 1.1 プロンプト強化(最初に実行する必要があります)
 
-**`mcp__ace-tool__enhance_prompt`ツールを呼び出す必要があります**:
+**ace-tool MCPが利用可能な場合**、`mcp__ace-tool__enhance_prompt`ツールを呼び出す:
 
 ```
 mcp__ace-tool__enhance_prompt({
@@ -83,9 +83,11 @@ mcp__ace-tool__enhance_prompt({
 
 強化されたプロンプトを待ち、**後続のすべてのフェーズのために元の$ARGUMENTSを強化結果で置き換える**。
 
+**ace-tool MCPが利用できない場合**: このステップをスキップし、後続のすべてのフェーズで元の`$ARGUMENTS`をそのまま使用する。
+
 #### 1.2 コンテキスト取得
 
-**`mcp__ace-tool__search_context`ツールを呼び出す**:
+**ace-tool MCPが利用可能な場合**、`mcp__ace-tool__search_context`ツールを呼び出す:
 
 ```
 mcp__ace-tool__search_context({
@@ -96,7 +98,12 @@ mcp__ace-tool__search_context({
 
 - 自然言語を使用してセマンティッククエリを構築(Where/What/How)
 - **仮定に基づいて回答しない**
-- MCPが利用できない場合: Glob + Grepにフォールバックしてファイル検出とキーシンボル位置を特定
+
+**ace-tool MCPが利用できない場合**、Claude Code組み込みツールでフォールバック:
+1. **Glob**: パターンで関連ファイルを検索 (例: `Glob("**/*.ts")`, `Glob("src/**/*.py")`)
+2. **Grep**: キーシンボル、関数名、クラス定義を検索 (例: `Grep("className|functionName")`)
+3. **Read**: 発見したファイルを読み取り、完全なコンテキストを収集
+4. **Task (Explore エージェント)**: より深い探索が必要な場合、`Task` を `subagent_type: "Explore"` で使用
 
 #### 1.3 完全性チェック
 
