@@ -51,7 +51,7 @@ python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py evolve [
 * `new-table-step2`: "当添加数据库表时，更新模式"
 * `new-table-step3`: "当添加数据库表时，重新生成类型"
 
-→ 创建：`/new-table` 命令
+→ 创建：**new-table** 命令
 
 ### → 技能（自动触发）
 
@@ -84,7 +84,7 @@ python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py evolve [
 * `debug-step3`: "当调试时，创建最小复现"
 * `debug-step4`: "当调试时，用测试验证修复"
 
-→ 创建：`debugger` 代理
+→ 创建：**debugger** 代理
 
 ## 操作步骤
 

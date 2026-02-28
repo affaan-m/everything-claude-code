@@ -1,3 +1,9 @@
+---
+name: verification-loop
+description: "Claude Code 会话的全面验证系统。"
+origin: ECC
+---
+
 # 验证循环技能
 
 一个全面的 Claude Code 会话验证系统。

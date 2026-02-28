@@ -1,3 +1,10 @@
+---
+paths:
+  - "**/*.go"
+  - "**/go.mod"
+  - "**/go.sum"
+---
+
 # Go 安全
 
 > 此文件基于 [common/security.md](../common/security.md) 扩展了 Go 特定内容。

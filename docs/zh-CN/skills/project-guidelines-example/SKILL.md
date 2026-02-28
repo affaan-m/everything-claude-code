@@ -1,10 +1,14 @@
+---
+name: project-guidelines-example
+description: "基于真实生产应用的示例项目特定技能模板。"
+origin: ECC
+---
+
 # 项目指南技能（示例）
 
 这是一个项目特定技能的示例。将其用作您自己项目的模板。
 
 基于一个真实的生产应用程序：[Zenith](https://zenith.chat) - 由 AI 驱动的客户发现平台。
-
-***
 
 ## 何时使用
 

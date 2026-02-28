@@ -1,3 +1,11 @@
+---
+paths:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.js"
+  - "**/*.jsx"
+---
+
 # TypeScript/JavaScript 测试
 
 > 本文档基于 [common/testing.md](../common/testing.md) 扩展，补充了 TypeScript/JavaScript 特定的内容。

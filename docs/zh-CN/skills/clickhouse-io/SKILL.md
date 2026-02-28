@@ -1,11 +1,21 @@
 ---
 name: clickhouse-io
-description: ClickHouse数据库模式、查询优化、分析和数据工程最佳实践，适用于高性能分析工作负载。
+description: ClickHouse数据库模式、查询优化、分析以及高性能分析工作负载的数据工程最佳实践。
+origin: ECC
 ---
 
 # ClickHouse 分析模式
 
 用于高性能分析和数据工程的 ClickHouse 特定模式。
+
+## 何时激活
+
+* 设计 ClickHouse 表架构（MergeTree 引擎选择）
+* 编写分析查询（聚合、窗口函数、连接）
+* 优化查询性能（分区裁剪、投影、物化视图）
+* 摄取大量数据（批量插入、Kafka 集成）
+* 为分析目的从 PostgreSQL/MySQL 迁移到 ClickHouse
+* 实现实时仪表板或时间序列分析
 
 ## 概述
 

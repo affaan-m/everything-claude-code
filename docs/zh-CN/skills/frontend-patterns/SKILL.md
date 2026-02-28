@@ -1,11 +1,22 @@
 ---
 name: frontend-patterns
 description: React、Next.js、状态管理、性能优化和UI最佳实践的前端开发模式。
+origin: ECC
 ---
 
 # 前端开发模式
 
 适用于 React、Next.js 和高性能用户界面的现代前端模式。
+
+## 何时激活
+
+* 构建 React 组件（组合、属性、渲染）
+* 管理状态（useState、useReducer、Zustand、Context）
+* 实现数据获取（SWR、React Query、服务器组件）
+* 优化性能（记忆化、虚拟化、代码分割）
+* 处理表单（验证、受控输入、Zod 模式）
+* 处理客户端路由和导航
+* 构建可访问、响应式的 UI 模式
 
 ## 组件模式
 

@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/*.py"
+  - "**/*.pyi"
+---
+
 # Python 钩子
 
 > 本文档扩展了 [common/hooks.md](../common/hooks.md) 中关于 Python 的特定内容。

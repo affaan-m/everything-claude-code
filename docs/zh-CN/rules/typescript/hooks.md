@@ -1,3 +1,11 @@
+---
+paths:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.js"
+  - "**/*.jsx"
+---
+
 # TypeScript/JavaScript 钩子
 
 > 此文件扩展了 [common/hooks.md](../common/hooks.md)，并添加了 TypeScript/JavaScript 特有的内容。

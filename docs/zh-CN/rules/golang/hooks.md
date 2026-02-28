@@ -1,3 +1,10 @@
+---
+paths:
+  - "**/*.go"
+  - "**/go.mod"
+  - "**/go.sum"
+---
+
 # Go 钩子
 
 > 本文件通过 Go 特定内容扩展了 [common/hooks.md](../common/hooks.md)。

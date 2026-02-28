@@ -1,11 +1,21 @@
 ---
 name: springboot-patterns
-description: Spring Boot 架构模式、REST API 设计、分层服务、数据访问、缓存、异步处理和日志记录。适用于 Java Spring Boot 后端工作。
+description: Spring Boot架构模式、REST API设计、分层服务、数据访问、缓存、异步处理和日志记录。用于Java Spring Boot后端工作。
+origin: ECC
 ---
 
 # Spring Boot 开发模式
 
 用于可扩展、生产级服务的 Spring Boot 架构和 API 模式。
+
+## 何时激活
+
+* 使用 Spring MVC 或 WebFlux 构建 REST API
+* 构建控制器 → 服务 → 仓库层结构
+* 配置 Spring Data JPA、缓存或异步处理
+* 添加验证、异常处理或分页
+* 为开发/预发布/生产环境设置配置文件
+* 使用 Spring Events 或 Kafka 实现事件驱动模式
 
 ## REST API 结构
 

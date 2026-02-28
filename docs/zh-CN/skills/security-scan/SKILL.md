@@ -1,6 +1,7 @@
 ---
 name: security-scan
-description: 使用AgentShield扫描您的Claude Code配置（.claude/目录），检测安全漏洞、错误配置和注入风险。检查CLAUDE.md、settings.json、MCP服务器、钩子和代理定义。
+description: 使用AgentShield扫描您的Claude代码配置（.claude/目录），以发现安全漏洞、配置错误和注入风险。检查CLAUDE.md、settings.json、MCP服务器、钩子和代理定义。
+origin: ECC
 ---
 
 # 安全扫描技能
