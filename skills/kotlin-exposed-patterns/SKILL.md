@@ -417,7 +417,7 @@ suspend fun updateUser(id: UUID, request: UpdateUserRequest): User? =
         UserEntity.findById(id)?.apply {
             request.name?.let { name = it }
             request.email?.let { email = it }
-            updatedAt = CurrentTimestampWithTimeZone
+            updatedAt = OffsetDateTime.now(ZoneOffset.UTC)
         }?.toModel()
     }
 ```
