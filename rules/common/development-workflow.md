@@ -2,16 +2,20 @@
 
 > This file extends [common/git-workflow.md](./git-workflow.md) with the full feature development process that happens before git operations.
 
-The Feature Implementation Workflow describes the development pipeline: planning, TDD, code review, and then committing to git.
+The Feature Implementation Workflow describes the development pipeline: research, planning, TDD, code review, and then committing to git.
 
 ## Feature Implementation Workflow
 
-0. **Research & Reuse**
-   - Run the **search-first** skill or researcher agent to scan the existing codebase and GitHub open-source repos for implementations/templates before planning work.
+0. **Research & Reuse** _(mandatory before any new implementation)_
+   - **GitHub code search first:** Run `gh search repos` and `gh search code` to find existing implementations, templates, and patterns before writing anything new.
+   - **Exa MCP for research:** Use `exa-web-search` MCP during the planning phase for broader research, data ingestion, and discovering prior art.
+   - **Check package registries:** Search npm, PyPI, crates.io, and other registries before writing utility code. Prefer battle-tested libraries over hand-rolled solutions.
+   - **Search for adaptable implementations:** Look for open-source projects that solve 80%+ of the problem and can be forked, ported, or wrapped.
    - Prefer adopting or porting a proven approach over writing net-new code when it meets the requirement.
 
 1. **Plan First**
    - Use **planner** agent to create implementation plan
+   - Generate planning docs before coding: PRD, architecture, system_design, tech_doc, task_list
    - Identify dependencies and risks
    - Break down into phases
 
