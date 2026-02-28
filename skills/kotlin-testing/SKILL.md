@@ -417,7 +417,10 @@ class CoroutineServiceTest : FunSpec({
 
 ```kotlin
 import io.kotest.matchers.collections.shouldContainInOrder
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 
 class FlowServiceTest : FunSpec({
@@ -492,6 +495,12 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.*
 import io.kotest.property.forAll
 import io.kotest.property.checkAll
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.decodeFromString
+
+// Note: The serialization roundtrip test below requires the User data class
+// to be annotated with @Serializable (from kotlinx.serialization).
 
 class PropertyTest : FunSpec({
     test("string reverse is involutory") {
