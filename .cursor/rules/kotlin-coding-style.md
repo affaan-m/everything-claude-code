@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # Kotlin Coding Style
 
-> This file extends the common coding style rule with Kotlin specific content.
+> This file extends the common coding style rule with Kotlin-specific content.
 
 ## Formatting
 

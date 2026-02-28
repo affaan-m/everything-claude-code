@@ -6,7 +6,7 @@ paths:
 ---
 # Kotlin Testing
 
-> This file extends [common/testing.md](../common/testing.md) with Kotlin specific content.
+> This file extends [common/testing.md](../common/testing.md) with Kotlin-specific content.
 
 ## Framework
 

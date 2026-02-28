@@ -6,7 +6,7 @@ paths:
 ---
 # Kotlin Security
 
-> This file extends [common/security.md](../common/security.md) with Kotlin specific content.
+> This file extends [common/security.md](../common/security.md) with Kotlin-specific content.
 
 ## Secret Management
 
@@ -34,8 +34,20 @@ Use Ktor's Auth plugin with JWT:
 ```kotlin
 install(Authentication) {
     jwt("jwt") {
-        verifier(JWT.require(Algorithm.HMAC256(secret)).build())
-        validate { credential -> JWTPrincipal(credential.payload) }
+        verifier(
+            JWT.require(Algorithm.HMAC256(secret))
+                .withAudience(audience)
+                .withIssuer(issuer)
+                .build()
+        )
+        validate { credential ->
+            val payload = credential.payload
+            if (payload.audience.contains(audience) && payload.subject != null) {
+                JWTPrincipal(payload)
+            } else {
+                null
+            }
+        }
     }
 }
 ```

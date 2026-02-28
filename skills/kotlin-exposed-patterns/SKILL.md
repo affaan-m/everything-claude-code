@@ -32,7 +32,7 @@ object DatabaseFactory {
             password = config.password
             maximumPoolSize = config.maxPoolSize
             isAutoCommit = false
-            transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+            transactionIsolation = "TRANSACTION_READ_COMMITTED"
             validate()
         }
 
@@ -236,13 +236,17 @@ suspend fun findUsersWithOrders(): List<UserRow> =
             .map { it.toUser() }
     }
 
-// LIKE and pattern matching
+// LIKE and pattern matching — always escape user input to prevent wildcard injection
+private fun escapeLikePattern(input: String): String =
+    input.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
 suspend fun searchUsers(query: String): List<UserRow> =
     newSuspendedTransaction {
+        val sanitized = escapeLikePattern(query.lowercase())
         UsersTable.selectAll()
             .where {
-                (UsersTable.name.lowerCase() like "%${query.lowercase()}%") or
-                    (UsersTable.email.lowerCase() like "%${query.lowercase()}%")
+                (UsersTable.name.lowerCase() like "%${sanitized}%") or
+                    (UsersTable.email.lowerCase() like "%${sanitized}%")
             }
             .map { it.toUser() }
     }
@@ -367,7 +371,7 @@ suspend fun updateUser(id: UUID, request: UpdateUserRequest): User? =
         UserEntity.findById(id)?.apply {
             request.name?.let { name = it }
             request.email?.let { email = it }
-            updatedAt = CurrentTimestampWithTimeZone
+            updatedAt = Clock.System.now()
         }?.toModel()
     }
 ```
@@ -474,10 +478,11 @@ class ExposedUserRepository(
 
     override suspend fun search(query: String): List<User> =
         newSuspendedTransaction(db = database) {
+            val sanitized = escapeLikePattern(query.lowercase())
             UsersTable.selectAll()
                 .where {
-                    (UsersTable.name.lowerCase() like "%${query.lowercase()}%") or
-                        (UsersTable.email.lowerCase() like "%${query.lowercase()}%")
+                    (UsersTable.name.lowerCase() like "%${sanitized}%") or
+                        (UsersTable.email.lowerCase() like "%${sanitized}%")
                 }
                 .orderBy(UsersTable.name)
                 .map { it.toUser() }

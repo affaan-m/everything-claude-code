@@ -67,7 +67,7 @@ Use `/kotlin-review` when:
 
 ## Example Usage
 
-```text
+````text
 User: /kotlin-review
 
 Agent:
@@ -117,7 +117,7 @@ launch {
 - MEDIUM: 0
 
 Recommendation: ❌ Block merge until CRITICAL issue is fixed
-```
+````
 
 ## Approval Criteria
 
@@ -132,7 +132,7 @@ Recommendation: ❌ Block merge until CRITICAL issue is fixed
 - Use `/kotlin-test` first to ensure tests pass
 - Use `/kotlin-build` if build errors occur
 - Use `/kotlin-review` before committing
-- Use `/code-review` for non-Kotlin specific concerns
+- Use `/code-review` for non-Kotlin-specific concerns
 
 ## Related
 

@@ -6,7 +6,7 @@ paths:
 ---
 # Kotlin Patterns
 
-> This file extends [common/patterns.md](../common/patterns.md) with Kotlin specific content.
+> This file extends [common/patterns.md](../common/patterns.md) with Kotlin-specific content.
 
 ## Sealed Classes
 

@@ -88,23 +88,25 @@ fun Application.configureRouting() {
 
 // routes/UserRoutes.kt
 fun Route.userRoutes() {
+    val userService by inject<UserService>()
+
     route("/users") {
         get {
-            val users = call.inject<UserService>().getAll()
+            val users = userService.getAll()
             call.respond(users)
         }
 
         get("/{id}") {
             val id = call.parameters["id"]
                 ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing id")
-            val user = call.inject<UserService>().getById(id)
+            val user = userService.getById(id)
                 ?: return@get call.respond(HttpStatusCode.NotFound)
             call.respond(user)
         }
 
         post {
             val request = call.receive<CreateUserRequest>()
-            val user = call.inject<UserService>().create(request)
+            val user = userService.create(request)
             call.respond(HttpStatusCode.Created, user)
         }
 
@@ -112,7 +114,7 @@ fun Route.userRoutes() {
             val id = call.parameters["id"]
                 ?: return@put call.respond(HttpStatusCode.BadRequest, "Missing id")
             val request = call.receive<UpdateUserRequest>()
-            val user = call.inject<UserService>().update(id, request)
+            val user = userService.update(id, request)
                 ?: return@put call.respond(HttpStatusCode.NotFound)
             call.respond(user)
         }
@@ -120,7 +122,7 @@ fun Route.userRoutes() {
         delete("/{id}") {
             val id = call.parameters["id"]
                 ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing id")
-            val deleted = call.inject<UserService>().delete(id)
+            val deleted = userService.delete(id)
             if (deleted) call.respond(HttpStatusCode.NoContent)
             else call.respond(HttpStatusCode.NotFound)
         }
@@ -451,7 +453,7 @@ fun Route.userRoutes() {
         // Validate
         require(request.name.isNotBlank()) { "Name is required" }
         require(request.name.length <= 100) { "Name must be 100 characters or less" }
-        require('@' in request.email) { "Invalid email format" }
+        require(request.email.matches(Regex(".+@.+\\..+"))) { "Invalid email format" }
 
         val user = userService.create(request)
         call.respond(HttpStatusCode.Created, ApiResponse.ok(user))
@@ -462,7 +464,7 @@ fun Route.userRoutes() {
 fun CreateUserRequest.validate() {
     require(name.isNotBlank()) { "Name is required" }
     require(name.length <= 100) { "Name must be 100 characters or less" }
-    require('@' in email) { "Invalid email format" }
+    require(email.matches(Regex(".+@.+\\..+"))) { "Invalid email format" }
 }
 ```
 
@@ -473,8 +475,8 @@ fun Application.configureWebSockets() {
     install(WebSockets) {
         pingPeriod = 15.seconds
         timeout = 15.seconds
-        maxFrameSize = Long.MAX_VALUE
-        masking = false
+        maxFrameSize = 64 * 1024 // 64 KiB — increase only if your protocol requires larger frames
+        masking = false // Server-to-client frames are unmasked per RFC 6455; client-to-server are always masked by Ktor
     }
 }
 
@@ -493,7 +495,9 @@ fun Route.chatRoutes() {
                 val text = frame.readText()
                 val message = ChatMessage(thisConnection.name, text)
 
-                connections.forEach { conn ->
+                // Snapshot under lock to avoid ConcurrentModificationException
+                val snapshot = synchronized(connections) { connections.toList() }
+                snapshot.forEach { conn ->
                     conn.session.send(Json.encodeToString(message))
                 }
             }

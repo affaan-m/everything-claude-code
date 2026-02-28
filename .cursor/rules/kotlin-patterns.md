@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # Kotlin Patterns
 
-> This file extends the common patterns rule with Kotlin specific content.
+> This file extends the common patterns rule with Kotlin-specific content.
 
 ## Sealed Classes
 

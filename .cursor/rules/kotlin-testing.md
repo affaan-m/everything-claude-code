@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # Kotlin Testing
 
-> This file extends the common testing rule with Kotlin specific content.
+> This file extends the common testing rule with Kotlin-specific content.
 
 ## Framework
 

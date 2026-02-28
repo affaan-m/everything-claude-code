@@ -279,8 +279,8 @@ suspend fun fetchDashboard(userId: String): Dashboard =
 
         Dashboard(
             user = user.await(),
-            notifications = notifications.await().getOrDefault(emptyList()),
-            recommendations = recommendations.await().getOrDefault(emptyList()),
+            notifications = runCatching { notifications.await() }.getOrDefault(emptyList()),
+            recommendations = runCatching { recommendations.await() }.getOrDefault(emptyList()),
         )
     }
 ```
@@ -486,6 +486,7 @@ val first20 = fibonacci.take(20).toList()
 ### build.gradle.kts Configuration
 
 ```kotlin
+// Check for latest versions: https://kotlinlang.org/docs/releases.html
 plugins {
     kotlin("jvm") version "2.3.0"
     kotlin("plugin.serialization") version "2.3.0"

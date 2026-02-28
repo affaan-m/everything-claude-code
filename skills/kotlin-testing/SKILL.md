@@ -16,6 +16,16 @@ Comprehensive Kotlin testing patterns for writing reliable, maintainable tests f
 - Following TDD workflow in Kotlin projects
 - Configuring Kover for code coverage
 
+## How It Works
+
+1. **Identify target code** — Find the function, class, or module to test
+2. **Write a Kotest spec** — Choose a spec style (StringSpec, FunSpec, BehaviorSpec) matching the test scope
+3. **Mock dependencies** — Use MockK to isolate the unit under test
+4. **Run tests (RED)** — Verify the test fails with the expected error
+5. **Implement code (GREEN)** — Write minimal code to pass the test
+6. **Refactor** — Improve the implementation while keeping tests green
+7. **Check coverage** — Run `./gradlew koverHtmlReport` and verify 80%+ coverage
+
 ## TDD Workflow for Kotlin
 
 ### The RED-GREEN-REFACTOR Cycle
@@ -782,9 +792,10 @@ test:
       run: ./gradlew koverVerify
 
     - name: Upload coverage
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
-        file: build/reports/kover/report.xml
+        files: build/reports/kover/report.xml
+        token: ${{ secrets.CODECOV_TOKEN }}
 ```
 
 **Remember**: Tests are documentation. They show how your Kotlin code is meant to be used. Use Kotest's expressive matchers to make tests readable and MockK for clean mocking of dependencies.

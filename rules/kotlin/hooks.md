@@ -6,7 +6,7 @@ paths:
 ---
 # Kotlin Hooks
 
-> This file extends [common/hooks.md](../common/hooks.md) with Kotlin specific content.
+> This file extends [common/hooks.md](../common/hooks.md) with Kotlin-specific content.
 
 ## PostToolUse Hooks
 

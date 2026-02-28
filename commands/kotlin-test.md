@@ -95,8 +95,8 @@ class RegistrationValidatorTest : FunSpec({
 
         val result = validateRegistration(request)
 
-        result.shouldBeInstanceOf<ValidationResult.Invalid>()
-        result.errors shouldBe listOf("Name is required")
+        val invalid = result.shouldBeInstanceOf<ValidationResult.Invalid>()
+        invalid.errors shouldBe listOf("Name is required")
     }
 
     test("invalid email returns Invalid") {
@@ -108,8 +108,8 @@ class RegistrationValidatorTest : FunSpec({
 
         val result = validateRegistration(request)
 
-        result.shouldBeInstanceOf<ValidationResult.Invalid>()
-        result.errors shouldBe listOf("Invalid email format")
+        val invalid = result.shouldBeInstanceOf<ValidationResult.Invalid>()
+        invalid.errors shouldBe listOf("Invalid email format")
     }
 
     test("short password returns Invalid") {
@@ -121,8 +121,8 @@ class RegistrationValidatorTest : FunSpec({
 
         val result = validateRegistration(request)
 
-        result.shouldBeInstanceOf<ValidationResult.Invalid>()
-        result.errors shouldBe listOf("Password must be at least 8 characters")
+        val invalid = result.shouldBeInstanceOf<ValidationResult.Invalid>()
+        invalid.errors shouldBe listOf("Password must be at least 8 characters")
     }
 
     test("multiple errors returns all errors") {
@@ -134,8 +134,8 @@ class RegistrationValidatorTest : FunSpec({
 
         val result = validateRegistration(request)
 
-        result.shouldBeInstanceOf<ValidationResult.Invalid>()
-        result.errors.size shouldBe 3
+        val invalid = result.shouldBeInstanceOf<ValidationResult.Invalid>()
+        invalid.errors.size shouldBe 3
     }
 })
 ```

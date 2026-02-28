@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # Kotlin Hooks
 
-> This file extends the common hooks rule with Kotlin specific content.
+> This file extends the common hooks rule with Kotlin-specific content.
 
 ## PostToolUse Hooks
 
