@@ -1,11 +1,20 @@
 ---
 name: django-verification
-description: Verification loop for Django projects: migrations, linting, tests with coverage, security scans, and deployment readiness checks before release or PR.
+description: "Django项目的验证循环：迁移、代码检查、带覆盖率的测试、安全扫描，以及在发布或PR前的部署就绪检查。"
+origin: ECC
 ---
 
 # Django 验证循环
 
 在发起 PR 之前、进行重大更改之后以及部署之前运行，以确保 Django 应用程序的质量和安全性。
+
+## 何时激活
+
+* 在为一个 Django 项目开启拉取请求之前
+* 在重大模型变更、迁移更新或依赖升级之后
+* 用于暂存或生产环境的预部署验证
+* 运行完整的环境 → 代码检查 → 测试 → 安全 → 部署就绪流水线时
+* 验证迁移安全性和测试覆盖率时
 
 ## 阶段 1: 环境检查
 

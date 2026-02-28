@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/*.py"
+  - "**/*.pyi"
+---
+
 # Python 模式
 
 > 本文档扩展了 [common/patterns.md](../common/patterns.md)，补充了 Python 特定的内容。

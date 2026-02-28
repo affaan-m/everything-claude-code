@@ -1,6 +1,7 @@
 ---
 name: configure-ecc
-description: Everything Claude Code 的交互式安装程序 — 引导用户选择并安装技能和规则到用户级或项目级目录，验证路径，并可选择性地优化已安装的文件。
+description: Everything Claude Code 的交互式安装程序 — 引导用户选择并安装技能和规则到用户级或项目级目录，验证路径，并可选择优化已安装文件。
+origin: ECC
 ---
 
 # 配置 Everything Claude Code (ECC)
@@ -83,25 +84,26 @@ Options:
 
 对于每个选定的类别，打印下面的完整技能列表，并要求用户确认或取消选择特定的技能。如果列表超过 4 项，将列表打印为文本，并使用 `AskUserQuestion`，提供一个 "安装所有列出项" 的选项，以及一个 "其他" 选项供用户粘贴特定名称。
 
-**类别：框架与语言（16 项技能）**
+**类别：框架与语言（17 项技能）**
 
 | 技能 | 描述 |
 |-------|-------------|
 | `backend-patterns` | Node.js/Express/Next.js 的后端架构、API 设计、服务器端最佳实践 |
 | `coding-standards` | TypeScript、JavaScript、React、Node.js 的通用编码标准 |
 | `django-patterns` | Django 架构、使用 DRF 的 REST API、ORM、缓存、信号、中间件 |
-| `django-security` | Django 安全：身份验证、CSRF、SQL 注入、XSS 防护 |
-| `django-tdd` | 使用 pytest-django、factory\_boy、模拟、覆盖率的 Django 测试 |
+| `django-security` | Django 安全性：身份验证、CSRF、SQL 注入、XSS 防护 |
+| `django-tdd` | 使用 pytest-django、factory\_boy、模拟、覆盖率进行 Django 测试 |
 | `django-verification` | Django 验证循环：迁移、代码检查、测试、安全扫描 |
 | `frontend-patterns` | React、Next.js、状态管理、性能、UI 模式 |
-| `golang-patterns` | 地道的 Go 模式、健壮 Go 应用程序的约定 |
-| `golang-testing` | Go 测试：表格驱动测试、子测试、基准测试、模糊测试 |
+| `frontend-slides` | 零依赖的 HTML 演示文稿、样式预览以及 PPTX 到网页的转换 |
+| `golang-patterns` | 地道的 Go 模式、构建健壮 Go 应用程序的约定 |
+| `golang-testing` | Go 测试：表驱动测试、子测试、基准测试、模糊测试 |
 | `java-coding-standards` | Spring Boot 的 Java 编码标准：命名、不可变性、Optional、流 |
 | `python-patterns` | Pythonic 惯用法、PEP 8、类型提示、最佳实践 |
-| `python-testing` | 使用 pytest、TDD、夹具、模拟、参数化的 Python 测试 |
+| `python-testing` | 使用 pytest、TDD、固件、模拟、参数化进行 Python 测试 |
 | `springboot-patterns` | Spring Boot 架构、REST API、分层服务、缓存、异步 |
 | `springboot-security` | Spring Security：身份验证/授权、验证、CSRF、密钥、速率限制 |
-| `springboot-tdd` | 使用 JUnit 5、Mockito、MockMvc、Testcontainers 的 Spring Boot TDD |
+| `springboot-tdd` | 使用 JUnit 5、Mockito、MockMvc、Testcontainers 进行 Spring Boot TDD |
 | `springboot-verification` | Spring Boot 验证：构建、静态分析、测试、安全扫描 |
 
 **类别：数据库（3 项技能）**
@@ -124,6 +126,16 @@ Options:
 | `strategic-compact` | 在逻辑间隔处建议手动上下文压缩 |
 | `tdd-workflow` | 强制要求 TDD，覆盖率 80% 以上：单元测试、集成测试、端到端测试 |
 | `verification-loop` | 验证和质量循环模式 |
+
+**类别：业务与内容（5 项技能）**
+
+| 技能 | 描述 |
+|-------|-------------|
+| `article-writing` | 使用笔记、示例或源文档，以指定的口吻进行长篇写作 |
+| `content-engine` | 多平台社交内容、脚本和内容再利用工作流 |
+| `market-research` | 带有来源标注的市场、竞争对手、基金和技术研究 |
+| `investor-materials` | 宣传文稿、一页简介、投资者备忘录和财务模型 |
+| `investor-outreach` | 个性化的投资者冷邮件、熟人介绍和后续跟进 |
 
 **独立技能**
 

@@ -1,11 +1,20 @@
 ---
 name: continuous-learning
-description: 自动从Claude Code会话中提取可重用模式，并将其保存为学习技能供未来使用。
+description: 自动从Claude Code会话中提取可重复使用的模式，并将其保存为学习到的技能以供将来使用。
+origin: ECC
 ---
 
 # 持续学习技能
 
 自动评估 Claude Code 会话的结尾，以提取可重用的模式，这些模式可以保存为学习到的技能。
+
+## 何时激活
+
+* 设置从 Claude Code 会话中自动提取模式
+* 为会话评估配置停止钩子
+* 在 `~/.claude/skills/learned/` 中审查或整理已学习的技能
+* 调整提取阈值或模式类别
+* 比较 v1（本方法）与 v2（基于本能的方法）
 
 ## 工作原理
 
@@ -83,7 +92,7 @@ description: 自动从Claude Code会话中提取可重用模式，并将其保�
 
 ## 对比说明（研究：2025年1月）
 
-### 与 Homunculus 对比
+### 与 Homunculus 的对比
 
 Homunculus v2 采用了更复杂的方法：
 

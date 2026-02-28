@@ -1,12 +1,21 @@
 ---
 name: eval-harness
 description: 克劳德代码会话的正式评估框架，实施评估驱动开发（EDD）原则
+origin: ECC
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 # Eval Harness 技能
 
 一个用于 Claude Code 会话的正式评估框架，实现了评估驱动开发 (EDD) 原则。
+
+## 何时激活
+
+* 为 AI 辅助工作流程设置评估驱动开发 (EDD)
+* 定义 Claude Code 任务完成的标准（通过/失败）
+* 使用 pass@k 指标衡量代理可靠性
+* 为提示或代理变更创建回归测试套件
+* 跨模型版本对代理性能进行基准测试
 
 ## 理念
 

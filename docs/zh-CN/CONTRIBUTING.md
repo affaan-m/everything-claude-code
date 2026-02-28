@@ -89,10 +89,11 @@ skills/
 
 ### SKILL.md 模板
 
-```markdown
+````markdown
 ---
 name: your-skill-name
 description: Brief description shown in skill list
+origin: ECC
 ---
 
 # 你的技能标题
@@ -101,30 +102,16 @@ description: Brief description shown in skill list
 
 ## 核心概念
 
-解释关键模式和准则。
+解释关键模式和指导原则。
 
 ## 代码示例
 
-`​`​`typescript
-
+```typescript
 // 包含实用、经过测试的示例
 function example() {
   // 注释良好的代码
 }
-`​`​`
-
-
-## 最佳实践
-
-- 可操作的指导原则
-- 该做与不该做的事项
-- 需要避免的常见陷阱
-
-## 适用场景
-
-描述此技能适用的场景。
-
-```
+````
 
 ### 技能清单
 

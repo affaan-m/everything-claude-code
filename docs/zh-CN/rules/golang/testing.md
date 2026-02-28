@@ -1,3 +1,10 @@
+---
+paths:
+  - "**/*.go"
+  - "**/go.mod"
+  - "**/go.sum"
+---
+
 # Go 测试
 
 > 本文档在 [common/testing.md](../common/testing.md) 的基础上扩展了 Go 特定的内容。

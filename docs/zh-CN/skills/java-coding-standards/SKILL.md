@@ -1,11 +1,20 @@
 ---
 name: java-coding-standards
-description: Java coding standards for Spring Boot services: naming, immutability, Optional usage, streams, exceptions, generics, and project layout.
+description: "Spring Boot服务的Java编码标准：命名、不可变性、Optional用法、流、异常、泛型和项目布局。"
+origin: ECC
 ---
 
 # Java 编码规范
 
 适用于 Spring Boot 服务中可读、可维护的 Java (17+) 代码的规范。
+
+## 何时激活
+
+* 在 Spring Boot 项目中编写或审查 Java 代码时
+* 强制执行命名、不可变性或异常处理约定时
+* 使用记录类、密封类或模式匹配（Java 17+）时
+* 审查 Optional、流或泛型的使用时
+* 构建包和项目布局时
 
 ## 核心原则
 

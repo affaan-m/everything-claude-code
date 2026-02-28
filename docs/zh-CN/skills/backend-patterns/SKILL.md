@@ -1,11 +1,22 @@
 ---
 name: backend-patterns
-description: 后端架构模式、API设计、数据库优化以及针对Node.js、Express和Next.js API路由的服务器端最佳实践。
+description: 后端架构模式、API设计、数据库优化以及适用于Node.js、Express和Next.js API路由的服务器端最佳实践。
+origin: ECC
 ---
 
 # 后端开发模式
 
 用于可扩展服务器端应用程序的后端架构模式和最佳实践。
+
+## 何时激活
+
+* 设计 REST 或 GraphQL API 端点时
+* 实现仓储层、服务层或控制器层时
+* 优化数据库查询（N+1问题、索引、连接池）时
+* 添加缓存（Redis、内存缓存、HTTP 缓存头）时
+* 设置后台作业或异步处理时
+* 为 API 构建错误处理和验证结构时
+* 构建中间件（认证、日志记录、速率限制）时
 
 ## API 设计模式
 

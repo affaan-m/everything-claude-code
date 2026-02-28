@@ -1,6 +1,6 @@
 # Claude Code 简明指南
 
-![Header: Anthropic Hackathon Winner - Tips & Tricks for Claude Code](../../assets/images/shortform/00-header.png)
+![标题：Anthropic 黑客马拉松获胜者 - Claude Code 技巧与窍门](../../assets/images/shortform/00-header.png)
 
 ***
 
@@ -129,8 +129,8 @@ MCP 将 Claude 直接连接到外部服务。它不是 API 的替代品——而
 
 **示例：** Supabase MCP 允许 Claude 提取特定数据，直接在上游运行 SQL 而无需复制粘贴。数据库、部署平台等也是如此。
 
-![Supabase MCP 列出表格](../../assets/images/shortform/04-supabase-mcp.jpeg)
-*Supabase MCP 列出公共模式内表格的示例*
+![Supabase MCP 列出表](../../assets/images/shortform/04-supabase-mcp.jpeg)
+*Supabase MCP 列出公共模式内表的示例*
 
 **Claude 中的 Chrome：** 是一个内置的插件 MCP，允许 Claude 自主控制你的浏览器——点击查看事物如何工作。
 
@@ -139,7 +139,7 @@ MCP 将 Claude 直接连接到外部服务。它不是 API 的替代品——而
 对 MCP 要挑剔。我将所有 MCP 保存在用户配置中，但**禁用所有未使用的**。导航到 `/plugins` 并向下滚动，或运行 `/mcp`。
 
 ![/plugins 界面](../../assets/images/shortform/05-plugins-interface.jpeg)
-*使用 /plugins 导航到 MCP 以查看当前安装的插件及其状态*
+*使用 /plugins 导航到 MCP 以查看当前安装了哪些插件及其状态*
 
 在压缩之前，你的 200k 上下文窗口如果启用了太多工具，可能只有 70k。性能会显著下降。
 
@@ -167,7 +167,7 @@ claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 # Open Claude, run /plugins, find new marketplace, install from there
 ```
 
-![显示 mgrep 的市场标签页](../../assets/images/shortform/06-marketplaces-mgrep.jpeg)
+![显示 mgrep 的市场选项卡](../../assets/images/shortform/06-marketplaces-mgrep.jpeg)
 *显示新安装的 Mixedbread-Grep 市场*
 
 **LSP 插件** 如果你经常在编辑器之外运行 Claude Code，则特别有用。语言服务器协议为 Claude 提供实时类型检查、跳转到定义和智能补全，而无需打开 IDE。
@@ -264,7 +264,7 @@ mgrep --web "Next.js 15 app router changes"  # Web search
 * **Vim 模式** - 完整的 vim 键绑定，如果你喜欢的话
 
 ![带有自定义命令的 Zed 编辑器](../../assets/images/shortform/09-zed-editor.jpeg)
-*使用 CMD+Shift+R 显示自定义命令下拉菜单的 Zed 编辑器。右下角的靶心图标表示跟随模式。*
+*使用 CMD+Shift+R 调出带有自定义命令下拉菜单的 Zed 编辑器。右下角的靶心图标表示跟随模式已启用。*
 
 **编辑器无关提示：**
 
@@ -279,7 +279,7 @@ mgrep --web "Next.js 15 app router changes"  # Web search
 这也是一个可行的选择，并且与 Claude Code 配合良好。你可以使用终端格式，通过 `\ide` 与你的编辑器自动同步以启用 LSP 功能（现在与插件有些冗余）。或者你可以选择扩展，它更集成于编辑器并具有匹配的 UI。
 
 ![VS Code Claude Code 扩展](../../assets/images/shortform/10-vscode-extension.jpeg)
-*VS Code 扩展为 Claude Code 提供了原生图形界面，直接集成到您的 IDE 中。*
+*VS Code 扩展为 Claude Code 提供了原生图形界面，直接集成到你的 IDE 中。*
 
 ***
 
@@ -364,7 +364,7 @@ mgrep@Mixedbread-Grep                  # 更好的搜索
 显示用户、目录、带脏标记的 git 分支、剩余上下文百分比、模型、时间和待办事项计数：
 
 ![自定义状态行](../../assets/images/shortform/11-statusline.jpeg)
-*我的 Mac 根目录中的状态行示例*
+*我的 Mac 根目录下的状态行示例*
 
 ```
 affoon:~ ctx:65% Opus 4.5 19:52
@@ -424,7 +424,7 @@ affoon:~ ctx:65% Opus 4.5 19:52
 
 ***
 
-**注意：** 这是细节的一个子集。关于高级模式，请参阅 [长篇指南](./the-longform-guide.md)。
+**注意：** 这是细节的一个子集。关于高级模式，请参阅 [长篇指南](the-longform-guide.md)。
 
 ***
 

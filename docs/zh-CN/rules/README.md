@@ -17,7 +17,8 @@ rules/
 │   └── security.md
 ├── typescript/      # TypeScript/JavaScript specific
 ├── python/          # Python specific
-└── golang/          # Go specific
+├── golang/          # Go specific
+└── swift/           # Swift specific
 ```
 
 * **common/** 包含通用原则 —— 没有语言特定的代码示例。
@@ -32,6 +33,7 @@ rules/
 ./install.sh typescript
 ./install.sh python
 ./install.sh golang
+./install.sh swift
 
 # Install multiple languages at once
 ./install.sh typescript python
@@ -51,6 +53,7 @@ cp -r rules/common ~/.claude/rules/common
 cp -r rules/typescript ~/.claude/rules/typescript
 cp -r rules/python ~/.claude/rules/python
 cp -r rules/golang ~/.claude/rules/golang
+cp -r rules/swift ~/.claude/rules/swift
 
 # Attention ! ! ! Configure according to your actual project requirements; the configuration here is for reference only.
 ```
@@ -78,3 +81,22 @@ cp -r rules/golang ~/.claude/rules/golang
    > 此文件通过 <语言> 特定内容扩展了 [common/xxx.md](../common/xxx.md)。
    ```
 4. 如果现有技能可用，则引用它们，或者在 `skills/` 下创建新的技能。
+
+## 规则优先级
+
+当语言特定规则与通用规则冲突时，**语言特定规则优先**（具体规则覆盖通用规则）。这遵循标准的分层配置模式（类似于 CSS 特异性或 `.gitignore` 优先级）。
+
+* `rules/common/` 定义了适用于所有项目的通用默认值。
+* `rules/golang/`、`rules/python/`、`rules/typescript/` 等在语言习惯用法不同的地方会覆盖这些默认值。
+
+### 示例
+
+`common/coding-style.md` 建议将不可变性作为默认原则。语言特定的 `golang/coding-style.md` 可以覆盖这一点：
+
+> 符合 Go 语言习惯的做法是使用指针接收器进行结构体修改——关于通用原则请参阅 [common/coding-style.md](../../../common/coding-style.md)，但此处更推荐符合 Go 语言习惯的修改方式。
+
+### 带有覆盖说明的通用规则
+
+`rules/common/` 中可能被语言特定文件覆盖的规则会标记为：
+
+> **语言说明**：对于此模式不符合语言习惯的语言，此规则可能会被语言特定规则覆盖。

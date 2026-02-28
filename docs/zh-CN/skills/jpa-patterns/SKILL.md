@@ -1,11 +1,21 @@
 ---
 name: jpa-patterns
-description: Spring Boot中的JPA/Hibernate实体设计、关系、查询优化、事务、审计、索引、分页和连接池模式。
+description: Spring Boot中的JPA/Hibernate模式，用于实体设计、关系处理、查询优化、事务管理、审计、索引、分页和连接池。
+origin: ECC
 ---
 
 # JPA/Hibernate 模式
 
 用于 Spring Boot 中的数据建模、存储库和性能调优。
+
+## 何时激活
+
+* 设计 JPA 实体和表映射时
+* 定义关系时 (@OneToMany, @ManyToOne, @ManyToMany)
+* 优化查询时 (N+1 问题预防、获取策略、投影)
+* 配置事务、审计或软删除时
+* 设置分页、排序或自定义存储库方法时
+* 调整连接池 (HikariCP) 或二级缓存时
 
 ## 实体设计
 
