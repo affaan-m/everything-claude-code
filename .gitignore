@@ -2,41 +2,76 @@
 .env
 .env.local
 .env.*.local
+.env.development
+.env.test
+.env.production
 
-# API keys
+# API keys and secrets
 *.key
 *.pem
 secrets.json
-
+config/secrets.yml
+.secrets
 # OS files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
-
+Desktop.ini
 # Editor files
 .idea/
 .vscode/
 *.swp
 *.swo
-
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
 # Node
 node_modules/
-
-# Build output
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.yarn/
+lerna-debug.log*
+# Build outputs
 dist/
-
+build/
+*.tsbuildinfo
+.cache/
+# Test coverage
+coverage/
+.nyc_output/
+# Logs
+logs/
+*.log
 # Python
 __pycache__/
 *.pyc
-
 # Task files (Claude Code teams)
 tasks/
-
 # Personal configs (if any)
 personal/
 private/
-
 # Session templates (not committed)
 examples/sessions/*.tmp
-
 # Local drafts
 marketing/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+
+# Bootstrap pipeline outputs
+# Generated lock files in tool subdirectories
+.opencode/package-lock.json
+.opencode/node_modules/
