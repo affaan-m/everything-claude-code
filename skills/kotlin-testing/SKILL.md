@@ -28,105 +28,15 @@ Comprehensive Kotlin testing patterns for writing reliable, maintainable tests f
 
 ## Examples
 
-### Kotest StringSpec
+The following sections contain detailed, runnable examples for each testing pattern:
 
-```kotlin
-class CalculatorTest : StringSpec({
-    "add two positive numbers" {
-        Calculator.add(2, 3) shouldBe 5
-    }
+### Quick Reference
 
-    "add negative numbers" {
-        Calculator.add(-1, -2) shouldBe -3
-    }
-
-    "add zero" {
-        Calculator.add(0, 5) shouldBe 5
-    }
-})
-```
-
-### MockK Basic Mocking
-
-```kotlin
-class UserServiceTest : FunSpec({
-    val repository = mockk<UserRepository>()
-    val logger = mockk<Logger>(relaxed = true) // Relaxed: returns defaults
-    val service = UserService(repository, logger)
-
-    beforeTest {
-        clearMocks(repository, logger)
-    }
-
-    test("findUser delegates to repository") {
-        val expected = User(id = "1", name = "Alice")
-        every { repository.findById("1") } returns expected
-
-        val result = service.findUser("1")
-
-        result shouldBe expected
-        verify(exactly = 1) { repository.findById("1") }
-    }
-
-    test("findUser returns null for unknown id") {
-        every { repository.findById(any()) } returns null
-
-        val result = service.findUser("unknown")
-
-        result.shouldBeNull()
-    }
-})
-```
-
-### TDD RED/GREEN Cycle
-
-```kotlin
-// Step 2: Write failing test (RED)
-class EmailValidatorTest : StringSpec({
-    "valid email returns success" {
-        validateEmail("user@example.com").shouldBeSuccess("user@example.com")
-    }
-
-    "empty email returns failure" {
-        validateEmail("").shouldBeFailure()
-    }
-})
-
-// Step 3: Run tests - verify FAIL
-// $ ./gradlew test
-// EmailValidatorTest > valid email returns success FAILED
-//   kotlin.NotImplementedError: An operation is not implemented
-
-// Step 4: Implement minimal code (GREEN)
-fun validateEmail(email: String): Result<String> {
-    if (email.isBlank()) return Result.failure(IllegalArgumentException("Email cannot be blank"))
-    if ('@' !in email) return Result.failure(IllegalArgumentException("Email must contain @"))
-    val regex = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
-    if (!regex.matches(email)) return Result.failure(IllegalArgumentException("Invalid email format"))
-    return Result.success(email)
-}
-
-// Step 5: Run tests - verify PASS
-// $ ./gradlew test
-// EmailValidatorTest > valid email returns success PASSED
-// EmailValidatorTest > empty email returns failure PASSED
-```
-
-### Kover Coverage Commands
-
-```bash
-# Run tests with coverage
-./gradlew koverHtmlReport
-
-# Verify coverage thresholds
-./gradlew koverVerify
-
-# XML report for CI
-./gradlew koverXmlReport
-
-# View HTML report
-open build/reports/kover/html/index.html
-```
+- **Kotest specs** — StringSpec, FunSpec, BehaviorSpec, DescribeSpec examples in [Kotest Spec Styles](#kotest-spec-styles)
+- **Mocking** — MockK setup, coroutine mocking, argument capture in [MockK](#mockk)
+- **TDD walkthrough** — Full RED/GREEN/REFACTOR cycle with EmailValidator in [TDD Workflow for Kotlin](#tdd-workflow-for-kotlin)
+- **Coverage** — Kover configuration and commands in [Kover Coverage](#kover-coverage)
+- **Ktor testing** — testApplication setup in [Ktor testApplication Testing](#ktor-testapplication-testing)
 
 ## TDD Workflow for Kotlin
 
