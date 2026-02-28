@@ -1,273 +1,342 @@
-# Review (Code Audit)
+# Review
 
-**Purpose:** Challenge the code. Find bugs, logic errors, security issues. Don't trust that it works just because it compiles.
+**Purpose:** Find what's wrong. Prove what's right. Trust nothing.
 
----
-
-## Two Modes
-
-| Mode | When to Use | Output |
-|------|-------------|--------|
-| `/review` | Quick issue-finding | Issues listed by severity |
-| `/review --ship` | Before shipping/merging | PASS/FAIL verdict with evidence |
+**Mindset:** Your confidence is not evidence. Compiling is not working. Tests passing is not correct. "Looks fine" is not verified. Assume the code is broken until you prove otherwise.
 
 ---
 
-## Mindset
+## Three Modes
 
-**Assume nothing works.** Prove it does.
-
-- Compiling ≠ working
-- Tests passing ≠ correct
-- "Looks fine" ≠ verified
-- Your confidence is NOT evidence
-
----
-
-## What to Check
-
-### 1. Logic Errors
-- Off-by-one errors
-- Null/undefined handling
-- Edge cases (empty arrays, zero values, negative numbers)
-- Race conditions in async code
-- State mutations where immutability expected
-
-### 2. Security Issues
-- SQL injection (parameterized queries?)
-- XSS (user input escaped?)
-- Command injection (shell commands with user input?)
-- Secrets in code (API keys, passwords?)
-- Authentication bypasses
-- Authorization checks missing
-
-### 3. Code Quality
-- Dead code (unused functions, unreachable branches)
-- Unused variables
-- Duplicate logic that should be extracted
-- Functions doing too many things
-- Error handling that swallows errors silently
-
-### 4. Type Safety
-- Any use of the "any" type
-- Type assertions (as keyword) hiding real issues
-- Non-null assertions (! operator) on potentially null values
-- Generic types that are too loose
-
-### 5. Test Coverage
-- Are the important paths tested?
-- Are edge cases tested?
-- Are error paths tested?
-- Tests actually assert something meaningful?
+| Mode | When | Scope | Agents |
+|------|------|-------|--------|
+| `/review` | After finishing work | Recent changes | You alone |
+| `/review --ship` | Before merging/deploying | Full branch vs main | code-reviewer + security-reviewer |
+| `/review --audit` | Periodic deep sweep | Entire codebase or module | 3-5 parallel agents, forensic intensity |
 
 ---
 
-## Process
+## `/review` — Targeted Review
 
-### Step 1: Identify Scope
-"What code should I review?"
-- Specific files?
-- Recent changes (git diff)?
-- Entire feature/module?
+### Step 1: Auto-Detect Scope
 
-### Step 2: Read the Code
-Actually read it. Line by line. Don't skim.
+Determine what to review without asking:
 
-### Step 3: Challenge Every Assumption
-For each function/block:
-- What happens if inputs are null?
-- What happens if inputs are empty?
-- What happens if this fails?
-- What happens under concurrent access?
-- What happens with malicious input?
-
-### Step 4: Verify Claims
-If code claims to do X, verify it actually does X:
-- Trace the execution path
-- Check all callers
-- Grep for edge cases
-
-### Step 5: Report Findings
-
+```bash
+# Check for staged changes first
+git diff --cached --stat
+# Then unstaged changes
+git diff --stat
+# If no local changes, check branch diff against main
+git log --oneline main..HEAD
+git diff main...HEAD --stat
+# If nothing, check last commit
+git show --stat HEAD
 ```
-## Review: [Scope]
 
-### Critical Issues (Must Fix)
-- **[File:Line]** [Description]
-  - Why it's critical: [impact]
-  - Fix: [suggested fix]
+Pick the first non-empty result. Tell the user what scope you detected.
 
-### Important Issues (Should Fix)
-- **[File:Line]** [Description]
-  - Fix: [suggested fix]
+### Step 2: Read Every Changed File
 
-### Minor Issues (Nice to Fix)
-- **[File:Line]** [Description]
+Read the FULL file, not just the diff. Understand context. Check imports, callers, and call sites.
+
+### Step 3: Hunt for Issues
+
+For each changed function or block, challenge it:
+
+- What happens if inputs are null, undefined, empty, negative, or absurdly large?
+- What happens if this throws? Is the error caught? Does the caller handle it?
+- What happens under concurrent access? Race conditions?
+- What happens with malicious input? SQL injection, XSS, command injection?
+- Does this match what the rest of the codebase does, or is it inconsistent?
+
+### Step 4: Report
+
+```markdown
+## Review: [scope description]
+
+### Critical (must fix)
+- **file:line** — [description]
+  Impact: [what breaks]
+  Fix: [concrete fix]
+
+### Important (should fix)
+- **file:line** — [description]
+  Fix: [concrete fix]
+
+### Minor (nice to fix)
+- **file:line** — [description]
 
 ### Verified Correct
-- [What was checked and found to be correct]
+- [What you checked and confirmed works, with evidence]
 
 ### Not Reviewed
-- [What was out of scope or not checked]
+- [What was out of scope]
 ```
 
 ---
 
-## Red Flags to Hunt
+## `/review --ship` — Formal Quality Gate
 
-```typescript
-// DANGEROUS: Type assertion hiding issues
-const data = response as UserData;
+Use before merging a branch or deploying to production. This is a PASS/FAIL gate with evidence requirements.
 
-// DANGEROUS: Non-null assertion
-const user = getUser()!;
+### Step 1: Gather Full Diff
 
-// DANGEROUS: Swallowing errors
-try { ... } catch (e) { /* ignore */ }
-
-// DANGEROUS: String concatenation for SQL/commands
-query(`SELECT * FROM users WHERE id = ${userId}`);
-
-// DANGEROUS: Any type
-function process(data: any) { ... }
-
-// SUSPICIOUS: Magic numbers
-if (retries > 3) { ... }
-
-// SUSPICIOUS: Comments explaining what code does
-// (code should be self-explanatory)
+```bash
+git diff main...HEAD
+git log --oneline main..HEAD
 ```
 
----
+### Step 2: Dispatch Agents
 
-## --ship Mode (Formal Quality Gate)
+Spawn two parallel agents:
 
-Use --ship when you need a formal PASS/FAIL verdict before shipping.
+1. **code-reviewer agent** — Quality, patterns, correctness (use Task tool with `subagent_type: "code-reviewer"`)
+2. **security-reviewer agent** — Vulnerabilities, secrets, auth issues (use Task tool with `subagent_type: "security-reviewer"`)
 
-### The Three Filters
+Wait for both to complete.
+
+### Step 3: Apply the Three Filters
+
+After agent reports return, synthesize through these filters:
 
 #### FILTER 1: Deep Thought (Fight Laziness)
 
-**Logic Check:**
-- Did we settle for the first solution that "worked," or find the BEST solution?
-- Is this approach robust, or just the path of least resistance?
-- Would a senior engineer approve this code?
-
-**Assumption Check:**
-- Are we assuming "Happy Path" only?
-- Simulate the "Worst Case" - does the logic hold?
-  - What if input is null, undefined, empty?
-  - What if network fails?
-  - What if data is malformed?
-  - What if there are race conditions?
-
-**Quality Score:** Rate 1-10 (6 = mediocre, 8 = solid, 10 = exemplary)
+- **Logic:** Did we settle for the first solution that "worked," or is this the BEST solution?
+- **Assumptions:** Are we assuming happy path only? Brutally simulate the worst case — null inputs, network failures, malformed data, race conditions, malicious input. Does the logic hold?
+- **Quality Score:** Rate 1-10. A 6 is mediocre. An 8 is solid. Demand 8+.
 
 #### FILTER 2: Minimalist (Fight Bloat)
 
-**Code Volume:**
-- Is this the minimum code needed?
-- Could this be simpler while achieving the same result?
-- Are there unnecessary abstractions?
-
-**Scope Discipline:**
-- Was anything built that wasn't explicitly requested?
-- Are there "helpful extras" that weren't approved?
-- Did scope creep occur?
-
-**Dependency Diet:**
-- Were new dependencies added?
-- Could any be replaced with 10 lines of native code?
+- **Code Volume:** Is this the minimum code needed? Could it be simpler?
+- **Scope Discipline:** Was anything built that wasn't requested? Any "helpful extras" that weren't approved?
+- **Dependency Diet:** Were dependencies added? Could any be replaced with 10 lines of native code?
 
 #### FILTER 3: Production Reality (Fight Fragility)
 
-**Hygiene:**
-- No TODOs, no placeholders, no dead code
-- Secrets via env vars only
-- No debugging code left behind
-- No commented-out code
+- **Hygiene:** No TODOs, no placeholders, no dead code, no commented-out code, no console.log, secrets via env vars only.
+- **Stability:** Compiles clean (`npx tsc --noEmit`), lints clean (`npm run lint`), tests pass. Run these — don't assume.
+- **Completeness:** All callers updated if signatures changed. All references removed if files deleted. Error handling in place.
 
-**Stability:**
-- Versions pinned explicitly
-- Compiles clean (npx tsc --noEmit)
-- Lints clean (npm run lint)
-- Tests pass (if applicable)
-
-**Completeness:**
-- All callers updated if signatures changed
-- All references removed if files deleted
-- Error handling in place
-- Edge cases handled
-
-### Evidence Requirements
-
-For every claim, demand proof:
+### Step 4: Demand Evidence
 
 | Claim | Required Evidence |
 |-------|-------------------|
 | "It works" | Show it working or test output |
-| "I tested it" | Show test output |
+| "Tests pass" | Show `npm test` output |
+| "Lint is clean" | Show `npm run lint` output |
+| "It compiles" | Show `npx tsc --noEmit` output |
 | "I fixed X" | Show the before/after diff |
-| "Tests pass" | Show npm test output |
-| "Lint is clean" | Show npm run lint output |
 
-If no evidence exists, mark as **UNVERIFIED**.
+No evidence = **UNVERIFIED**. Unverified claims fail the gate.
 
-### --ship Output Format
+### Step 5: Verdict
 
-```
-## Ship Review: [Scope]
+```markdown
+## Ship Review: [branch/feature name]
 
 ### Files Audited
-- [file1] — [what was changed]
-- [file2] — [what was changed]
+- file1 — [what changed]
+- file2 — [what changed]
+
+### Agent Reports
+- code-reviewer: [summary of findings]
+- security-reviewer: [summary of findings]
 
 ### Filter 1: Deep Thought
 - Logic: [Pass/Fail] — [notes]
-- Assumptions: [Pass/Fail] — [edge cases found]
+- Assumptions: [Pass/Fail] — [worst-case findings]
 - Quality Score: [X/10]
 
 ### Filter 2: Minimalist
-- Code Volume: [Pass/Fail] — [could be simpler?]
-- Scope: [Pass/Fail] — [scope creep detected?]
-- Dependencies: [Pass/Fail] — [unnecessary deps?]
+- Code Volume: [Pass/Fail]
+- Scope: [Pass/Fail]
+- Dependencies: [Pass/Fail]
 
 ### Filter 3: Production
-- Hygiene: [Pass/Fail] — [TODOs, dead code?]
-- Stability: [Pass/Fail] — [build results]
-- Completeness: [Pass/Fail] — [missing pieces?]
+- Hygiene: [Pass/Fail] — [evidence]
+- Stability: [Pass/Fail] — [build/lint/test output]
+- Completeness: [Pass/Fail]
 
-### Verified Claims
-- [x] [Claim] — Evidence: [proof]
-- [ ] [Claim] — UNVERIFIED
+### Evidence Log
+- [x] Compiles — `npx tsc --noEmit` exit 0
+- [x] Lints — `npm run lint` exit 0
+- [ ] Tests — UNVERIFIED (no test runner configured)
 
 ### Issues Found
-1. [Issue] — Severity: [High/Medium/Low]
+1. [CRITICAL] file:line — description
+2. [HIGH] file:line — description
 
-### Verdict
-[PASS / PASS WITH WARNINGS / FAIL]
+### Verdict: [PASS | PASS WITH WARNINGS | FAIL]
 
-### Required Actions
-1. [Action needed before shipping]
+### Required Actions Before Merge
+1. [action]
 
-Or: "No issues found. Ready to ship."
+Or: "Clean. Ready to ship."
+```
+
+**Approval criteria:**
+- **PASS**: No CRITICAL or HIGH issues, all filters pass, evidence verified
+- **PASS WITH WARNINGS**: HIGH issues acknowledged, all CRITICAL resolved
+- **FAIL**: Any CRITICAL issue, or multiple unverified claims
+
+---
+
+## `/review --audit` — Forensic Deep Sweep
+
+The nuclear option. Use for periodic codebase health checks, before major releases, after inheriting a codebase, or when something feels wrong but you can't pinpoint it.
+
+**This mode assumes the code is guilty until proven innocent.**
+
+### Step 1: Define Scope
+
+If the user specifies files/modules, use those. Otherwise, identify the hot zones:
+
+```bash
+# Find largest/most complex files
+find src/ -name "*.ts" -o -name "*.tsx" | xargs wc -l | sort -rn | head -20
+# Find files with most recent churn
+git log --oneline --since="30 days ago" --name-only | grep -E "\.(ts|tsx)$" | sort | uniq -c | sort -rn | head -20
+# Find files with most authors (complexity indicator)
+git log --format="%an" -- src/ | sort -u | wc -l
+```
+
+### Step 2: Dispatch Parallel Agents
+
+Spawn 3-5 specialized agents based on the codebase:
+
+| Agent | Type | Focus |
+|-------|------|-------|
+| Security Auditor | `security-reviewer` | Full OWASP + AI-generated code business logic vulns |
+| Code Quality | `code-reviewer` | Dead code, complexity, patterns, consistency |
+| Architecture | `architect` | Dependency cycles, layering violations, coupling |
+| Test Coverage | `code-reviewer` | Coverage gaps, weak assertions, missing edge cases |
+| Dependency Audit | `general-purpose` | `npm audit`, outdated packages, license issues |
+
+Each agent gets a specific slice of the codebase or a specific concern. They work in parallel.
+
+### Step 3: The Adversarial Mindset
+
+This is not a checkbox exercise. For each module under audit, demand answers to:
+
+**Authorization & Access Control:**
+- Can a regular user access admin endpoints?
+- Can user A read/modify user B's data?
+- Can deactivated/deleted users still authenticate?
+- Are there endpoints that accept a `role` or `isAdmin` field from the client?
+- Do all state-changing operations verify ownership?
+
+**Data Integrity:**
+- Can financial amounts be negative, zero, or absurdly large?
+- Are transactions atomic? What happens if step 3 of 5 fails?
+- Is there a path where data gets partially written?
+- Are there race conditions in read-check-write sequences?
+
+**Information Leakage:**
+- Do API responses include password hashes, internal IDs, or debug info?
+- Do error messages reveal stack traces, file paths, or SQL queries?
+- Are there `SELECT *` queries returning more fields than the client needs?
+
+**Input Boundaries:**
+- What happens with 0-length input? 10MB input? Unicode? Null bytes?
+- Are file uploads validated (type, size, content)?
+- Are pagination parameters bounded (page size of 999999)?
+
+### Step 4: Synthesize
+
+After all agents report back, compile a unified audit:
+
+```markdown
+## Audit Report: [codebase/module name]
+**Date:** YYYY-MM-DD
+**Scope:** [what was audited]
+**Agents:** [how many, what focus areas]
+
+### Executive Summary
+- X critical issues, Y important, Z minor
+- Overall health: [RED / YELLOW / GREEN]
+- Top 3 risks: [one-line each]
+
+### Critical Issues (Fix Immediately)
+1. **[file:line]** — [description]
+   - Impact: [what an attacker/bug could do]
+   - Evidence: [how we confirmed this]
+   - Fix: [concrete remediation]
+
+### Important Issues (Fix This Sprint)
+[same format]
+
+### Minor Issues (Track in Backlog)
+[same format]
+
+### Architecture Concerns
+- [structural issues, coupling, layering violations]
+
+### Dependency Health
+- Vulnerable packages: [list]
+- Outdated packages: [count]
+- License issues: [list]
+
+### What's Solid
+- [things that were verified correct — give credit where due]
+
+### Recommendations
+1. [highest-priority action]
+2. [next action]
+3. [next action]
+```
+
+### Step 5: Follow Up
+
+After presenting the audit:
+1. Ask: "Want me to fix the critical issues now?"
+2. If yes, fix them one by one, re-verifying each fix
+3. Offer to create a tracking issue/TODO list for important and minor items
+
+---
+
+## Red Flags to Hunt (All Modes)
+
+```typescript
+// DANGEROUS: Type assertion hiding real issues
+const data = response as UserData;
+
+// DANGEROUS: Non-null assertion without justification
+const user = getUser()!;
+
+// DANGEROUS: Swallowing errors silently
+try { riskyOp() } catch (e) { /* ignore */ }
+
+// DANGEROUS: String interpolation in queries
+query(`SELECT * FROM users WHERE id = ${userId}`);
+
+// DANGEROUS: Untyped escape hatch
+function process(data: any) { ... }
+
+// DANGEROUS: Mass assignment from request body
+await db.users.update(id, req.body);
+
+// DANGEROUS: Missing ownership check
+const item = await db.items.findById(req.params.id);
+res.json(item); // Any user can read any item
+
+// SUSPICIOUS: Magic numbers without explanation
+if (retries > 3) { ... }
+
+// SUSPICIOUS: setTimeout/setInterval without cleanup
+setTimeout(() => refetch(), 5000);
 ```
 
 ---
 
-## After Review
+## After Any Review
 
 If issues found:
 1. Ask: "Should I fix these now?"
-2. If yes, fix them one by one
-3. Re-run review on fixes to verify
+2. Fix one by one, re-running the relevant check after each fix
+3. Re-run review on the fixes to confirm they don't introduce new issues
 
 If no issues found:
-- State what was verified
+- State what was verified and how
 - Acknowledge what wasn't checked
-
----
-
-## For MyBrain-Specific Review
-
-Use `/review-mybrain` instead - it includes project-specific checks (import boundaries, tool patterns, etc.)
+- Never claim "no issues" without evidence

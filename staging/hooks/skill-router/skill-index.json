@@ -1,48 +1,192 @@
 {
   "skills": [
     {
+      "name": "vercel-react-patterns",
+      "dir": "vercel-react-patterns",
+      "description": ">",
+      "use_when": "",
+      "search": "> ",
+      "path": "/Users/sethkravitz/.claude/skills/vercel-react-patterns/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "responsive-design",
+      "dir": "responsive-design",
+      "description": "Implement modern responsive layouts using container queries, fluid typography, CSS Grid, and mobile-first breakpoint strategies. Use when building adaptive interfaces, implementing fluid layouts, or creating component-level responsive behavior.",
+      "use_when": "",
+      "search": "implement modern responsive layouts using container queries, fluid typography, css grid, and mobile-first breakpoint strategies. use when building adaptive interfaces, implementing fluid layouts, or creating component-level responsive behavior. ",
+      "path": "/Users/sethkravitz/.claude/skills/responsive-design/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "using-git-worktrees",
+      "dir": "using-git-worktrees",
+      "description": "Use when starting feature work that needs isolation from current workspace or before executing implementation plans - creates isolated git worktrees with smart directory selection and safety verification",
+      "use_when": "",
+      "search": "use when starting feature work that needs isolation from current workspace or before executing implementation plans - creates isolated git worktrees with smart directory selection and safety verification ",
+      "path": "/Users/sethkravitz/.claude/skills/using-git-worktrees/SKILL.md",
+      "background": false
+    },
+    {
       "name": "directory-enumeration-reliability",
       "dir": "directory-enumeration-reliability",
       "description": "Glob skips symlinks; use ls -la or ls -d for directory enumeration that includes symlinked entries",
       "use_when": "",
       "search": "glob skips symlinks; use ls -la or ls -d for directory enumeration that includes symlinked entries ",
       "path": "/Users/sethkravitz/.claude/skills/learned/directory-enumeration-reliability/SKILL.md",
-      "background": true
+      "background": false
+    },
+    {
+      "name": "vector-index-tuning",
+      "dir": "vector-index-tuning",
+      "description": "Optimize vector index performance for latency, recall, and memory. Use when tuning HNSW parameters, selecting quantization strategies, or scaling vector search infrastructure.",
+      "use_when": "",
+      "search": "optimize vector index performance for latency, recall, and memory. use when tuning hnsw parameters, selecting quantization strategies, or scaling vector search infrastructure. ",
+      "path": "/Users/sethkravitz/.claude/skills/vector-index-tuning/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "postgresql-table-design",
+      "dir": "postgresql-table-design",
+      "description": "Design a PostgreSQL-specific schema and optimize queries. Covers best-practices, data types, indexing, constraints, performance patterns, query optimization, monitoring, and advanced features",
+      "use_when": "",
+      "search": "design a postgresql-specific schema and optimize queries. covers best-practices, data types, indexing, constraints, performance patterns, query optimization, monitoring, and advanced features ",
+      "path": "/Users/sethkravitz/.claude/skills/postgresql-table-design/SKILL.md",
+      "background": false
     },
     {
       "name": "iterative-retrieval",
       "dir": "iterative-retrieval",
-      "description": "Pattern for progressively refining context retrieval to solve the subagent context problem",
+      "description": "Pattern for progressively refining context retrieval when exploring unfamiliar codebases. Auto-activates when spawning subagents, encountering missing context, or needing to understand code before modifying it.",
       "use_when": "",
-      "search": "pattern for progressively refining context retrieval to solve the subagent context problem ",
+      "search": "pattern for progressively refining context retrieval when exploring unfamiliar codebases. auto-activates when spawning subagents, encountering missing context, or needing to understand code before modifying it. ",
       "path": "/Users/sethkravitz/.claude/skills/iterative-retrieval/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "multi-reviewer-patterns",
+      "dir": "multi-reviewer-patterns",
+      "description": "Coordinate parallel code reviews across multiple quality dimensions with finding deduplication, severity calibration, and consolidated reporting. Use this skill when organizing multi-reviewer code reviews, calibrating finding severity, or consolidating review results.",
+      "use_when": "",
+      "search": "coordinate parallel code reviews across multiple quality dimensions with finding deduplication, severity calibration, and consolidated reporting. use this skill when organizing multi-reviewer code reviews, calibrating finding severity, or consolidating review results. ",
+      "path": "/Users/sethkravitz/.claude/skills/multi-reviewer-patterns/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "javascript-testing-patterns",
+      "dir": "javascript-testing-patterns",
+      "description": "Implement comprehensive testing strategies using Jest, Vitest, and Testing Library for unit tests, integration tests, and end-to-end testing with mocking, fixtures, and test-driven development. Use when writing JavaScript/TypeScript tests, setting up test infrastructure, or implementing TDD/BDD workflows.",
+      "use_when": "",
+      "search": "implement comprehensive testing strategies using jest, vitest, and testing library for unit tests, integration tests, and end-to-end testing with mocking, fixtures, and test-driven development. use when writing javascript/typescript tests, setting up test infrastructure, or implementing tdd/bdd workflows. ",
+      "path": "/Users/sethkravitz/.claude/skills/javascript-testing-patterns/SKILL.md",
       "background": false
     },
     {
       "name": "Coding Standards",
       "dir": "coding-standards",
-      "description": "Concrete patterns for writing high-quality code",
+      "description": "TypeScript and async patterns for writing high-quality code. Use when writing TypeScript, reviewing TypeScript code, fixing async bugs, or refactoring functions. Covers error handling, null safety, type patterns, function design, and async/await best practices.",
       "use_when": "Writing code, reviewing code, fixing bugs, refactoring",
-      "search": "concrete patterns for writing high-quality code writing code, reviewing code, fixing bugs, refactoring",
+      "search": "typescript and async patterns for writing high-quality code. use when writing typescript, reviewing typescript code, fixing async bugs, or refactoring functions. covers error handling, null safety, type patterns, function design, and async/await best practices. writing code, reviewing code, fixing bugs, refactoring",
       "path": "/Users/sethkravitz/.claude/skills/coding-standards/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "openrouter-typescript-sdk",
+      "dir": "openrouter-typescript-sdk",
+      "description": "Complete reference for integrating with 300+ AI models through the OpenRouter TypeScript SDK using the callModel pattern",
+      "use_when": "",
+      "search": "complete reference for integrating with 300+ ai models through the openrouter typescript sdk using the callmodel pattern ",
+      "path": "/Users/sethkravitz/.claude/skills/openrouter-typescript-sdk/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "nodejs-api-patterns",
+      "dir": "nodejs-api-patterns",
+      "description": "Use when building Node.js/Express REST APIs, designing endpoint structure, implementing middleware patterns, or handling errors in TypeScript backends.",
+      "use_when": "",
+      "search": "use when building node.js/express rest apis, designing endpoint structure, implementing middleware patterns, or handling errors in typescript backends. ",
+      "path": "/Users/sethkravitz/.claude/skills/nodejs-api-patterns/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "dispatching-parallel-agents",
+      "dir": "dispatching-parallel-agents",
+      "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies",
+      "use_when": "",
+      "search": "use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies ",
+      "path": "/Users/sethkravitz/.claude/skills/dispatching-parallel-agents/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "react-state-management",
+      "dir": "react-state-management",
+      "description": "Master modern React state management with Redux Toolkit, Zustand, Jotai, and React Query. Use when setting up global state, managing server state, or choosing between state management solutions.",
+      "use_when": "",
+      "search": "master modern react state management with redux toolkit, zustand, jotai, and react query. use when setting up global state, managing server state, or choosing between state management solutions. ",
+      "path": "/Users/sethkravitz/.claude/skills/react-state-management/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "debugging",
+      "dir": "debugging",
+      "description": "Use when encountering any bug, test failure, or unexpected behavior. Enforces root cause investigation before proposing fixes.",
+      "use_when": "",
+      "search": "use when encountering any bug, test failure, or unexpected behavior. enforces root cause investigation before proposing fixes. ",
+      "path": "/Users/sethkravitz/.claude/skills/debugging/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "xlsx",
+      "dir": "xlsx",
+      "description": "Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. Trigger especially when the user references a spreadsheet file by name or path — even casually (like \\\"the xlsx in my downloads\\\") — and wants something done to it or produced from it. Also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. The deliverable must be a spreadsheet file. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration, even if tabular data is involved.",
+      "use_when": "",
+      "search": "use this skill any time a spreadsheet file is the primary input or output. this means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. trigger especially when the user references a spreadsheet file by name or path — even casually (like \\\"the xlsx in my downloads\\\") — and wants something done to it or produced from it. also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. the deliverable must be a spreadsheet file. do not trigger when the primary deliverable is a word document, html report, standalone python script, database pipeline, or google sheets api integration, even if tabular data is involved. ",
+      "path": "/Users/sethkravitz/.claude/skills/xlsx/SKILL.md",
       "background": false
     },
     {
       "name": "pdf",
       "dir": "pdf",
-      "description": "Comprehensive PDF manipulation toolkit for extracting text and tables, creating new PDFs, merging/splitting documents, and handling forms. Use when you need to programmatically process, generate, or analyze PDF documents.",
+      "description": "Use this skill whenever the user wants to do anything with PDF files. This includes reading or extracting text/tables from PDFs, combining or merging multiple PDFs into one, splitting PDFs apart, rotating pages, adding watermarks, creating new PDFs, filling PDF forms, encrypting/decrypting PDFs, extracting images, and OCR on scanned PDFs to make them searchable. If the user mentions a .pdf file or asks to produce one, use this skill.",
       "use_when": "",
-      "search": "comprehensive pdf manipulation toolkit for extracting text and tables, creating new pdfs, merging/splitting documents, and handling forms. use when you need to programmatically process, generate, or analyze pdf documents. ",
+      "search": "use this skill whenever the user wants to do anything with pdf files. this includes reading or extracting text/tables from pdfs, combining or merging multiple pdfs into one, splitting pdfs apart, rotating pages, adding watermarks, creating new pdfs, filling pdf forms, encrypting/decrypting pdfs, extracting images, and ocr on scanned pdfs to make them searchable. if the user mentions a .pdf file or asks to produce one, use this skill. ",
       "path": "/Users/sethkravitz/.claude/skills/pdf/SKILL.md",
       "background": false
     },
     {
-      "name": "find-skills",
-      "dir": "find-skills",
-      "description": "Helps users discover and install agent skills when they ask questions like \"how do I do X\", \"find a skill for X\", \"is there a skill that can...\", or express interest in extending capabilities. This skill should be used when the user is looking for functionality that might exist as an installable skill.",
+      "name": "two-factor-authentication-best-practices",
+      "dir": "two-factor-authentication-best-practices",
+      "description": "This skill provides guidance and enforcement rules for implementing secure two-factor authentication (2FA) using Better Auth's twoFactor plugin.",
       "use_when": "",
-      "search": "helps users discover and install agent skills when they ask questions like \"how do i do x\", \"find a skill for x\", \"is there a skill that can...\", or express interest in extending capabilities. this skill should be used when the user is looking for functionality that might exist as an installable skill. ",
-      "path": "/Users/sethkravitz/.claude/skills/find-skills/SKILL.md",
+      "search": "this skill provides guidance and enforcement rules for implementing secure two-factor authentication (2fa) using better auth's twofactor plugin. ",
+      "path": "/Users/sethkravitz/.claude/skills/two-factor-authentication-best-practices/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "better-auth-core",
+      "dir": "better-auth-core",
+      "description": "Use when setting up Better Auth, configuring core options, implementing email/password auth, or hardening security. For 2FA see two-factor-authentication-best-practices. For organizations see organization-best-practices.",
+      "use_when": "",
+      "search": "use when setting up better auth, configuring core options, implementing email/password auth, or hardening security. for 2fa see two-factor-authentication-best-practices. for organizations see organization-best-practices. ",
+      "path": "/Users/sethkravitz/.claude/skills/better-auth-core/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "executing-plans",
+      "dir": "executing-plans",
+      "description": "Use when you have a written implementation plan to execute, either with human review checkpoints or automated subagent dispatch.",
+      "use_when": "",
+      "search": "use when you have a written implementation plan to execute, either with human review checkpoints or automated subagent dispatch. ",
+      "path": "/Users/sethkravitz/.claude/skills/executing-plans/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "finishing-a-development-branch",
+      "dir": "finishing-a-development-branch",
+      "description": "Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, PR, or cleanup",
+      "use_when": "",
+      "search": "use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, pr, or cleanup ",
+      "path": "/Users/sethkravitz/.claude/skills/finishing-a-development-branch/SKILL.md",
       "background": false
     },
     {
@@ -55,12 +199,147 @@
       "background": false
     },
     {
+      "name": "supabase-postgres-best-practices",
+      "dir": "supabase-postgres-best-practices",
+      "description": "Postgres operational best practices — connection pooling, RLS, locking, concurrency, and monitoring. Use when configuring connection pooling, writing RLS policies, debugging deadlocks/locking, or setting up query monitoring. For schema design, indexing, and data types, see postgresql-table-design skill instead.",
+      "use_when": "",
+      "search": "postgres operational best practices — connection pooling, rls, locking, concurrency, and monitoring. use when configuring connection pooling, writing rls policies, debugging deadlocks/locking, or setting up query monitoring. for schema design, indexing, and data types, see postgresql-table-design skill instead. ",
+      "path": "/Users/sethkravitz/.claude/skills/supabase-postgres-best-practices/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "accessibility-compliance",
+      "dir": "accessibility-compliance",
+      "description": "Implement WCAG 2.2 compliant interfaces with mobile accessibility, inclusive design patterns, and assistive technology support. Use when auditing accessibility, implementing ARIA patterns, building for screen readers, or ensuring inclusive user experiences.",
+      "use_when": "",
+      "search": "implement wcag 2.2 compliant interfaces with mobile accessibility, inclusive design patterns, and assistive technology support. use when auditing accessibility, implementing aria patterns, building for screen readers, or ensuring inclusive user experiences. ",
+      "path": "/Users/sethkravitz/.claude/skills/accessibility-compliance/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "visual-explainer",
+      "dir": "visual-explainer",
+      "description": "Generate beautiful, self-contained HTML pages that visually explain systems, code changes, plans, and data. Use when the user asks for a diagram, architecture overview, diff review, plan review, project recap, comparison table, or any visual explanation of technical concepts. Also use proactively when you are about to render a complex ASCII table (4+ rows or 3+ columns) — present it as a styled HTML page instead.",
+      "use_when": "",
+      "search": "generate beautiful, self-contained html pages that visually explain systems, code changes, plans, and data. use when the user asks for a diagram, architecture overview, diff review, plan review, project recap, comparison table, or any visual explanation of technical concepts. also use proactively when you are about to render a complex ascii table (4+ rows or 3+ columns) — present it as a styled html page instead. ",
+      "path": "/Users/sethkravitz/.claude/skills/visual-explainer/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "rag-pipeline",
+      "dir": "rag-pipeline",
+      "description": "Build RAG pipelines with vector search, hybrid retrieval, and embeddings. Use when implementing document Q&A, semantic search, or knowledge-grounded LLM applications.",
+      "use_when": "",
+      "search": "build rag pipelines with vector search, hybrid retrieval, and embeddings. use when implementing document q&a, semantic search, or knowledge-grounded llm applications. ",
+      "path": "/Users/sethkravitz/.claude/skills/rag-pipeline/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "skill-creator",
+      "dir": "skill-creator",
+      "description": "Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, update or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better triggering accuracy.",
+      "use_when": "",
+      "search": "create new skills, modify and improve existing skills, and measure skill performance. use when users want to create a skill from scratch, update or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better triggering accuracy. ",
+      "path": "/Users/sethkravitz/.claude/skills/skill-creator/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "next-best-practices",
+      "dir": "next-best-practices",
+      "description": "Next.js best practices - file conventions, RSC boundaries, data patterns, async APIs, metadata, error handling, route handlers, image/font optimization, bundling",
+      "use_when": "",
+      "search": "next.js best practices - file conventions, rsc boundaries, data patterns, async apis, metadata, error handling, route handlers, image/font optimization, bundling ",
+      "path": "/Users/sethkravitz/.claude/skills/next-best-practices/SKILL.md",
+      "background": true
+    },
+    {
+      "name": "pptx",
+      "dir": "pptx",
+      "description": "Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates, layouts, speaker notes, or comments. Trigger whenever the user mentions \\\"deck,\\\" \\\"slides,\\\" \\\"presentation,\\\" or references a .pptx filename, regardless of what they plan to do with the content afterward. If a .pptx file needs to be opened, created, or touched, use this skill.",
+      "use_when": "",
+      "search": "use this skill any time a .pptx file is involved in any way — as input, output, or both. this includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates, layouts, speaker notes, or comments. trigger whenever the user mentions \\\"deck,\\\" \\\"slides,\\\" \\\"presentation,\\\" or references a .pptx filename, regardless of what they plan to do with the content afterward. if a .pptx file needs to be opened, created, or touched, use this skill. ",
+      "path": "/Users/sethkravitz/.claude/skills/pptx/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "brainstorming",
+      "dir": "brainstorming",
+      "description": "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation.",
+      "use_when": "",
+      "search": "you must use this before any creative work - creating features, building components, adding functionality, or modifying behavior. explores user intent, requirements and design before implementation. ",
+      "path": "/Users/sethkravitz/.claude/skills/brainstorming/SKILL.md",
+      "background": false
+    },
+    {
       "name": "continuous-learning-v2",
       "dir": "continuous-learning-v2",
       "description": "Instinct-based learning system that observes sessions via hooks, creates atomic instincts with confidence scoring, and evolves them into skills/commands/agents.",
       "use_when": "",
       "search": "instinct-based learning system that observes sessions via hooks, creates atomic instincts with confidence scoring, and evolves them into skills/commands/agents. ",
       "path": "/Users/sethkravitz/.claude/skills/continuous-learning-v2/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "organization-best-practices",
+      "dir": "organization-best-practices",
+      "description": "This skill provides guidance and enforcement rules for implementing multi-tenant organizations, teams, and role-based access control using Better Auth's organization plugin.",
+      "use_when": "",
+      "search": "this skill provides guidance and enforcement rules for implementing multi-tenant organizations, teams, and role-based access control using better auth's organization plugin. ",
+      "path": "/Users/sethkravitz/.claude/skills/organization-best-practices/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "writing-plans",
+      "dir": "writing-plans",
+      "description": "Use when you have a spec or requirements for a multi-step task, before touching code",
+      "use_when": "",
+      "search": "use when you have a spec or requirements for a multi-step task, before touching code ",
+      "path": "/Users/sethkravitz/.claude/skills/writing-plans/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "webapp-testing",
+      "dir": "webapp-testing",
+      "description": "Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing browser screenshots, and viewing browser logs.",
+      "use_when": "",
+      "search": "toolkit for interacting with and testing local web applications using playwright. supports verifying frontend functionality, debugging ui behavior, capturing browser screenshots, and viewing browser logs. ",
+      "path": "/Users/sethkravitz/.claude/skills/webapp-testing/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "next-upgrade",
+      "dir": "next-upgrade",
+      "description": "Upgrade Next.js to the latest version following official migration guides and codemods",
+      "use_when": "",
+      "search": "upgrade next.js to the latest version following official migration guides and codemods ",
+      "path": "/Users/sethkravitz/.claude/skills/next-upgrade/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "github-actions-templates",
+      "dir": "github-actions-templates",
+      "description": "Use when setting up CI/CD with GitHub Actions, creating workflows for testing, building, or deploying applications",
+      "use_when": "",
+      "search": "use when setting up ci/cd with github actions, creating workflows for testing, building, or deploying applications ",
+      "path": "/Users/sethkravitz/.claude/skills/github-actions-templates/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "interaction-design",
+      "dir": "interaction-design",
+      "description": "Design and implement microinteractions, motion design, transitions, and user feedback patterns. Use when adding polish to UI interactions, implementing loading states, or creating delightful user experiences.",
+      "use_when": "",
+      "search": "design and implement microinteractions, motion design, transitions, and user feedback patterns. use when adding polish to ui interactions, implementing loading states, or creating delightful user experiences. ",
+      "path": "/Users/sethkravitz/.claude/skills/interaction-design/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "requesting-code-review",
+      "dir": "requesting-code-review",
+      "description": "Use after completing a task, feature, or bugfix to dispatch the code-reviewer agent before merging or proceeding",
+      "use_when": "",
+      "search": "use after completing a task, feature, or bugfix to dispatch the code-reviewer agent before merging or proceeding ",
+      "path": "/Users/sethkravitz/.claude/skills/requesting-code-review/SKILL.md",
       "background": false
     },
     {
@@ -73,6 +352,24 @@
       "background": false
     },
     {
+      "name": "receiving-code-review",
+      "dir": "receiving-code-review",
+      "description": "Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation",
+      "use_when": "",
+      "search": "use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation ",
+      "path": "/Users/sethkravitz/.claude/skills/receiving-code-review/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "database-migration",
+      "dir": "database-migration",
+      "description": "When migrating database schemas, switching ORMs, or deploying schema changes with zero downtime. Covers Sequelize, TypeORM, and Prisma.",
+      "use_when": "",
+      "search": "when migrating database schemas, switching orms, or deploying schema changes with zero downtime. covers sequelize, typeorm, and prisma. ",
+      "path": "/Users/sethkravitz/.claude/skills/database-migration/SKILL.md",
+      "background": false
+    },
+    {
       "name": "ai-sdk",
       "dir": "ai-sdk",
       "description": "Answer questions about the AI SDK and help build AI-powered features. Use when developers ask about AI SDK functions like generateText, streamText, ToolLoopAgent, embed, or tools; want to build AI agents, chatbots, RAG systems, or text generation features; have questions about AI providers, streaming, tool calling, structured output, or embeddings; or use React hooks like useChat or useCompletion.",
@@ -82,11 +379,29 @@
       "background": false
     },
     {
+      "name": "next-cache-components",
+      "dir": "next-cache-components",
+      "description": "Next.js 16 Cache Components - PPR, use cache directive, cacheLife, cacheTag, updateTag",
+      "use_when": "",
+      "search": "next.js 16 cache components - ppr, use cache directive, cachelife, cachetag, updatetag ",
+      "path": "/Users/sethkravitz/.claude/skills/next-cache-components/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "mcp-builder",
+      "dir": "mcp-builder",
+      "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to integrate external APIs or services, whether in Python (FastMCP) or Node/TypeScript (MCP SDK).",
+      "use_when": "",
+      "search": "guide for creating high-quality mcp (model context protocol) servers that enable llms to interact with external services through well-designed tools. use when building mcp servers to integrate external apis or services, whether in python (fastmcp) or node/typescript (mcp sdk). ",
+      "path": "/Users/sethkravitz/.claude/skills/mcp-builder/SKILL.md",
+      "background": false
+    },
+    {
       "name": "agentation",
       "dir": "agentation",
-      "description": "Add Agentation visual feedback toolbar to a Next.js project",
+      "description": "Set up the Agentation annotation toolbar for click-to-annotate design feedback in a Next.js project. Use when the user wants to add visual annotations, design feedback tools, or the Agentation component to their app.",
       "use_when": "",
-      "search": "add agentation visual feedback toolbar to a next.js project ",
+      "search": "set up the agentation annotation toolbar for click-to-annotate design feedback in a next.js project. use when the user wants to add visual annotations, design feedback tools, or the agentation component to their app. ",
       "path": "/Users/sethkravitz/.claude/skills/agentation/SKILL.md",
       "background": false
     },
@@ -102,13 +417,49 @@
     {
       "name": "search-first",
       "dir": "search-first",
-      "description": "Research-before-coding workflow. Search for existing tools, libraries, and patterns before writing custom code. Invokes the researcher agent.",
+      "description": "Research-before-coding workflow. Search for existing tools, libraries, skills, and patterns before writing custom code.",
       "use_when": "",
-      "search": "research-before-coding workflow. search for existing tools, libraries, and patterns before writing custom code. invokes the researcher agent. ",
+      "search": "research-before-coding workflow. search for existing tools, libraries, skills, and patterns before writing custom code. ",
       "path": "/Users/sethkravitz/.claude/skills/search-first/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "tailwind-design-system",
+      "dir": "tailwind-design-system",
+      "description": "Build scalable design systems with Tailwind CSS v4, design tokens, component libraries, and responsive patterns. Use when creating component libraries, implementing design systems, or standardizing UI patterns.",
+      "use_when": "",
+      "search": "build scalable design systems with tailwind css v4, design tokens, component libraries, and responsive patterns. use when creating component libraries, implementing design systems, or standardizing ui patterns. ",
+      "path": "/Users/sethkravitz/.claude/skills/tailwind-design-system/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "docx",
+      "dir": "docx",
+      "description": "Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx files). Triggers include: any mention of 'Word doc', 'word document', '.docx', or requests to produce professional documents with formatting like tables of contents, headings, page numbers, or letterheads. Also use when extracting or reorganizing content from .docx files, inserting or replacing images in documents, performing find-and-replace in Word files, working with tracked changes or comments, or converting content into a polished Word document. If the user asks for a 'report', 'memo', 'letter', 'template', or similar deliverable as a Word or .docx file, use this skill. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.",
+      "use_when": "",
+      "search": "use this skill whenever the user wants to create, read, edit, or manipulate word documents (.docx files). triggers include: any mention of 'word doc', 'word document', '.docx', or requests to produce professional documents with formatting like tables of contents, headings, page numbers, or letterheads. also use when extracting or reorganizing content from .docx files, inserting or replacing images in documents, performing find-and-replace in word files, working with tracked changes or comments, or converting content into a polished word document. if the user asks for a 'report', 'memo', 'letter', 'template', or similar deliverable as a word or .docx file, use this skill. do not use for pdfs, spreadsheets, google docs, or general coding tasks unrelated to document generation. ",
+      "path": "/Users/sethkravitz/.claude/skills/docx/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "parallel-feature-development",
+      "dir": "parallel-feature-development",
+      "description": "Coordinate parallel feature development with file ownership strategies, conflict avoidance rules, and integration patterns for multi-agent implementation. Use this skill when decomposing features for parallel development, establishing file ownership boundaries, or managing integration between parallel work streams.",
+      "use_when": "",
+      "search": "coordinate parallel feature development with file ownership strategies, conflict avoidance rules, and integration patterns for multi-agent implementation. use this skill when decomposing features for parallel development, establishing file ownership boundaries, or managing integration between parallel work streams. ",
+      "path": "/Users/sethkravitz/.claude/skills/parallel-feature-development/SKILL.md",
+      "background": false
+    },
+    {
+      "name": "dogfood",
+      "dir": "dogfood",
+      "description": "Systematically explore and test a web application to find bugs, UX issues, and other problems. Use when asked to \"dogfood\", \"QA\", \"exploratory test\", \"find issues\", \"bug hunt\", \"test this app/site/platform\", or review the quality of a web application. Produces a structured report with full reproduction evidence -- step-by-step screenshots, repro videos, and detailed repro steps for every issue -- so findings can be handed directly to the responsible teams.",
+      "use_when": "",
+      "search": "systematically explore and test a web application to find bugs, ux issues, and other problems. use when asked to \"dogfood\", \"qa\", \"exploratory test\", \"find issues\", \"bug hunt\", \"test this app/site/platform\", or review the quality of a web application. produces a structured report with full reproduction evidence -- step-by-step screenshots, repro videos, and detailed repro steps for every issue -- so findings can be handed directly to the responsible teams. ",
+      "path": "/Users/sethkravitz/.claude/skills/dogfood/SKILL.md",
       "background": false
     }
   ],
-  "generated_at": "2026-02-25T18:30:12Z",
-  "count": 12
+  "generated_at": "2026-02-28T14:33:46Z",
+  "count": 51
 }

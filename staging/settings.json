@@ -140,15 +140,6 @@
         ]
       },
       {
-        "matcher": "Read|Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"/Users/sethkravitz/.claude/fieldtheory-librarian-pretool.py\""
-          }
-        ]
-      },
-      {
         "matcher": "*",
         "hooks": [
           {
@@ -278,14 +269,6 @@
       }
     ],
     "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"/Users/sethkravitz/.claude/fieldtheory-librarian-hook.py\""
-          }
-        ]
-      },
       {
         "hooks": [
           {
