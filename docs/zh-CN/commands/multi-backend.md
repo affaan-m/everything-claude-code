@@ -86,13 +86,13 @@ EOF",
 
 ### 阶段 0：提示词增强（可选）
 
-`[Mode: Prepare]` - 如果 ace-tool MCP 可用，调用 `mcp__ace-tool__enhance_prompt`，**用增强后的结果替换原始的 $ARGUMENTS，用于后续的 Codex 调用**
+`[Mode: Prepare]` - 如果 ace-tool MCP 可用，调用 `mcp__ace-tool__enhance_prompt`，**用增强后的结果替换原始的 $ARGUMENTS，用于后续的 Codex 调用**。不可用时，直接使用 `$ARGUMENTS`。
 
 ### 阶段 1：研究
 
 `[Mode: Research]` - 理解需求并收集上下文
 
-1. **代码检索**（如果 ace-tool MCP 可用）：调用 `mcp__ace-tool__search_context` 以检索现有的 API、数据模型、服务架构
+1. **代码检索**（如果 ace-tool MCP 可用）：调用 `mcp__ace-tool__search_context` 以检索现有的 API、数据模型、服务架构。不可用时，使用内置工具：`Glob` 进行文件发现，`Grep` 进行符号/API 搜索，`Read` 进行上下文收集，`Task`（Explore 代理）进行更深入的探索。
 2. 需求完整性评分（0-10）：>=7 继续，<7 停止并补充
 
 ### 阶段 2：构思

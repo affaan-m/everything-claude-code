@@ -71,7 +71,7 @@ TaskOutput({ task_id: "<task_id>", block: true, timeout: 600000 })
 
 #### 1.1 Prompt Enhancement (MUST execute first)
 
-**MUST call `mcp__ace-tool__enhance_prompt` tool**:
+**If ace-tool MCP is available**, call `mcp__ace-tool__enhance_prompt` tool:
 
 ```
 mcp__ace-tool__enhance_prompt({
@@ -83,9 +83,11 @@ mcp__ace-tool__enhance_prompt({
 
 Wait for enhanced prompt, **replace original $ARGUMENTS with enhanced result** for all subsequent phases.
 
+**If ace-tool MCP is NOT available**: Skip this step and use the original `$ARGUMENTS` as-is for all subsequent phases.
+
 #### 1.2 Context Retrieval
 
-**Call `mcp__ace-tool__search_context` tool**:
+**If ace-tool MCP is available**, call `mcp__ace-tool__search_context` tool:
 
 ```
 mcp__ace-tool__search_context({
@@ -96,7 +98,12 @@ mcp__ace-tool__search_context({
 
 - Build semantic query using natural language (Where/What/How)
 - **NEVER answer based on assumptions**
-- If MCP unavailable: fallback to Glob + Grep for file discovery and key symbol location
+
+**If ace-tool MCP is NOT available**, use Claude Code built-in tools as fallback:
+1. **Glob**: Find relevant files by pattern (e.g., `Glob("**/*.ts")`, `Glob("src/**/*.py")`)
+2. **Grep**: Search for key symbols, function names, class definitions (e.g., `Grep("className|functionName")`)
+3. **Read**: Read the discovered files to gather complete context
+4. **Task (Explore agent)**: For deeper exploration, use `Task` with `subagent_type: "Explore"` to search across the codebase
 
 #### 1.3 Completeness Check
 

@@ -138,23 +138,28 @@ TaskOutput({ task_id: "<task_id>", block: true, timeout: 600000 })
 
 `[Mode: Retrieval]`
 
-**必须使用 MCP 工具进行快速上下文检索，切勿手动逐个读取文件**
+**如果 ace-tool MCP 可用**，使用它进行快速上下文检索：
 
-基于计划中的“关键文件”列表，调用 `mcp__ace-tool__search_context`：
+基于计划中的”关键文件”列表，调用 `mcp__ace-tool__search_context`：
 
 ```
 mcp__ace-tool__search_context({
-  query: "<semantic query based on plan content, including key files, modules, function names>",
-  project_root_path: "$PWD"
+  query: “<semantic query based on plan content, including key files, modules, function names>”,
+  project_root_path: “$PWD”
 })
 ```
 
 **检索策略**：
 
-* 从计划的“关键文件”表中提取目标路径
+* 从计划的”关键文件”表中提取目标路径
 * 构建语义查询覆盖：入口文件、依赖模块、相关类型定义
 * 如果结果不足，添加 1-2 次递归检索
-* **切勿**使用 Bash + find/ls 手动探索项目结构
+
+**如果 ace-tool MCP 不可用**，使用 Claude Code 内置工具作为回退：
+1. **Glob**：从计划的”关键文件”表中查找目标文件（例如 `Glob(“src/components/**/*.tsx”)`）
+2. **Grep**：在代码库中搜索关键符号、函数名、类型定义
+3. **Read**：读取发现的文件以收集完整上下文
+4. **Task（Explore 代理）**：如需更广泛的探索，使用 `Task` 并设置 `subagent_type: “Explore”`
 
 **检索后**：
 

@@ -15,7 +15,7 @@
 * 待开发任务：$ARGUMENTS
 * 结构化的 6 阶段工作流程，包含质量门控
 * 多模型协作：Codex（后端） + Gemini（前端） + Claude（编排）
-* MCP 服务集成（ace-tool）以增强能力
+* MCP 服务集成（ace-tool，可选）以增强能力
 
 ## 你的角色
 
@@ -23,7 +23,7 @@
 
 **协作模型**：
 
-* **ace-tool MCP** – 代码检索 + 提示词增强
+* **ace-tool MCP**（可选） – 代码检索 + 提示词增强
 * **Codex** – 后端逻辑、算法、调试（**后端权威，可信赖**）
 * **Gemini** – 前端 UI/UX、视觉设计（**前端专家，后端意见仅供参考**）
 * **Claude（自身）** – 编排、规划、执行、交付
@@ -114,8 +114,8 @@ TaskOutput({ task_id: "<task_id>", block: true, timeout: 600000 })
 
 `[Mode: Research]` - 理解需求并收集上下文：
 
-1. **提示词增强**：调用 `mcp__ace-tool__enhance_prompt`，**将所有后续对 Codex/Gemini 的调用中的原始 $ARGUMENTS 替换为增强后的结果**
-2. **上下文检索**：调用 `mcp__ace-tool__search_context`
+1. **提示词增强**（如果 ace-tool MCP 可用）：调用 `mcp__ace-tool__enhance_prompt`，**将所有后续对 Codex/Gemini 的调用中的原始 $ARGUMENTS 替换为增强后的结果**。不可用时，直接使用 `$ARGUMENTS`。
+2. **上下文检索**（如果 ace-tool MCP 可用）：调用 `mcp__ace-tool__search_context`。不可用时，使用内置工具：`Glob` 进行文件发现，`Grep` 进行符号搜索，`Read` 进行上下文收集，`Task`（Explore 代理）进行更深入的探索。
 3. **需求完整性评分** (0-10)：
    * 目标清晰度 (0-3)，预期成果 (0-3)，范围边界 (0-2)，约束条件 (0-2)
    * ≥7：继续 | <7：停止，询问澄清问题
