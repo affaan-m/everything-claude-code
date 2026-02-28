@@ -536,12 +536,11 @@ class ExposedUserRepository(
 
     override suspend fun create(request: CreateUserRequest): User =
         newSuspendedTransaction(db = database) {
-            val id = UsersTable.insertAndGetId {
+            UsersTable.insert {
                 it[name] = request.name
                 it[email] = request.email
                 it[role] = request.role
-            }
-            findById(id.value)!!
+            }.resultedValues!!.first().toUser()
         }
 
     override suspend fun update(id: UUID, request: UpdateUserRequest): User? =
@@ -590,7 +589,11 @@ inline fun <reified T : Any> Table.jsonb(
 
     override fun valueFromDB(value: Any): T = when (value) {
         is String -> json.decodeFromString(value)
-        is PGobject -> json.decodeFromString(value.value!!)
+        is PGobject -> {
+            val jsonString = value.value
+                ?: throw IllegalArgumentException("PGobject value is null for column '$name'")
+            json.decodeFromString(jsonString)
+        }
         else -> throw IllegalArgumentException("Unexpected value: $value")
     }
 

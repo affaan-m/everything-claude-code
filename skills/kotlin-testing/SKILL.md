@@ -687,8 +687,10 @@ kover {
 # XML report for CI
 ./gradlew koverXmlReport
 
-# View HTML report
-open build/reports/kover/html/index.html
+# View HTML report (use the command for your OS)
+# macOS:   open build/reports/kover/html/index.html
+# Linux:   xdg-open build/reports/kover/html/index.html
+# Windows: start build/reports/kover/html/index.html
 ```
 
 ### Coverage Targets
