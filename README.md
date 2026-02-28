@@ -557,8 +557,15 @@ cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
 # Copy commands
 cp everything-claude-code/commands/*.md ~/.claude/commands/
 
-# Copy skills
-cp -r everything-claude-code/skills/* ~/.claude/skills/
+# Copy skills (core vs niche)
+# Recommended (new users): core/general skills only
+cp -r everything-claude-code/.agents/skills/* ~/.claude/skills/
+cp -r everything-claude-code/skills/search-first ~/.claude/skills/
+
+# Optional: add niche/framework-specific skills only when needed
+# for s in django-patterns django-tdd springboot-patterns; do
+#   cp -r everything-claude-code/skills/$s ~/.claude/skills/
+# done
 ```
 
 #### Add hooks to settings.json

@@ -6,6 +6,10 @@ The Feature Implementation Workflow describes the development pipeline: planning
 
 ## Feature Implementation Workflow
 
+0. **Research & Reuse**
+   - Run the **search-first** skill or researcher agent to scan the existing codebase and GitHub open-source repos for implementations/templates before planning work.
+   - Prefer adopting or porting a proven approach over writing net-new code when it meets the requirement.
+
 1. **Plan First**
    - Use **planner** agent to create implementation plan
    - Identify dependencies and risks
