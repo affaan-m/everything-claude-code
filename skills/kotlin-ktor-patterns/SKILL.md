@@ -475,8 +475,8 @@ fun Application.configureWebSockets() {
     install(WebSockets) {
         pingPeriod = 15.seconds
         timeout = 15.seconds
-        maxFrameSize = 64 * 1024 // 64 KiB — increase only if your protocol requires larger frames
-        masking = false // Server-to-client frames are unmasked per RFC 6455; client-to-server are always masked by Ktor
+        maxFrameSize = 1024 * 1024  // 1 MB limit
+        masking = true
     }
 }
 
