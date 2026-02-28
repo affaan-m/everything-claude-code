@@ -279,8 +279,20 @@ suspend fun fetchDashboard(userId: String): Dashboard =
 
         Dashboard(
             user = user.await(),
-            notifications = runCatching { notifications.await() }.getOrDefault(emptyList()),
-            recommendations = runCatching { recommendations.await() }.getOrDefault(emptyList()),
+            notifications = try {
+                notifications.await()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                emptyList()
+            },
+            recommendations = try {
+                recommendations.await()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                emptyList()
+            },
         )
     }
 ```
@@ -488,8 +500,8 @@ val first20 = fibonacci.take(20).toList()
 ```kotlin
 // Check for latest versions: https://kotlinlang.org/docs/releases.html
 plugins {
-    kotlin("jvm") version "2.3.0"
-    kotlin("plugin.serialization") version "2.3.0"
+    kotlin("jvm") version "2.3.10"
+    kotlin("plugin.serialization") version "2.3.10"
     id("io.ktor.plugin") version "3.4.0"
     id("org.jetbrains.kotlinx.kover") version "0.9.7"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
@@ -522,9 +534,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
     // Testing
-    testImplementation("io.kotest:kotest-runner-junit5:6.1.3")
-    testImplementation("io.kotest:kotest-assertions-core:6.1.3")
-    testImplementation("io.kotest:kotest-property:6.1.3")
+    testImplementation("io.kotest:kotest-runner-junit5:6.1.4")
+    testImplementation("io.kotest:kotest-assertions-core:6.1.4")
+    testImplementation("io.kotest:kotest-property:6.1.4")
     testImplementation("io.mockk:mockk:1.14.9")
     testImplementation("io.ktor:ktor-server-test-host:3.4.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")

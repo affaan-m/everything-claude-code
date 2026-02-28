@@ -42,7 +42,9 @@ install(Authentication) {
         )
         validate { credential ->
             val payload = credential.payload
-            if (payload.audience.contains(audience) && payload.subject != null) {
+            if (payload.audience.contains(audience) &&
+                payload.issuer == issuer &&
+                payload.subject != null) {
                 JWTPrincipal(payload)
             } else {
                 null
