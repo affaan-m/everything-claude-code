@@ -11,6 +11,9 @@
 
 set -e
 
+# NOTE: set -e is disabled inside the background subshell below
+# to prevent claude CLI failures from killing the observer loop.
+
 CONFIG_DIR="${HOME}/.claude/homunculus"
 PID_FILE="${CONFIG_DIR}/.observer.pid"
 LOG_FILE="${CONFIG_DIR}/observer.log"
@@ -69,12 +72,28 @@ case "${1:-start}" in
 
     echo "Starting observer agent..."
 
-    # The observer loop
-    (
-      trap 'rm -f "$PID_FILE"; exit 0' TERM INT
+    # The observer loop — fully detached with nohup, IO redirected to log.
+    # Variables passed safely via env to avoid shell injection from special chars in paths.
+    nohup env \
+      CONFIG_DIR="$CONFIG_DIR" \
+      PID_FILE="$PID_FILE" \
+      LOG_FILE="$LOG_FILE" \
+      OBSERVATIONS_FILE="$OBSERVATIONS_FILE" \
+      /bin/bash -c '
+      set +e
+      unset CLAUDECODE
+
+      SLEEP_PID=""
+      USR1_FIRED=0
+
+      cleanup() {
+        [ -n "$SLEEP_PID" ] && kill "$SLEEP_PID" 2>/dev/null
+        rm -f "$PID_FILE"
+        exit 0
+      }
+      trap cleanup TERM INT
 
       analyze_observations() {
-        # Only analyze if observations file exists and has enough entries
         if [ ! -f "$OBSERVATIONS_FILE" ]; then
           return
         fi
@@ -85,12 +104,37 @@ case "${1:-start}" in
 
         echo "[$(date)] Analyzing $obs_count observations..." >> "$LOG_FILE"
 
-        # Use Claude Code with Haiku to analyze observations
-        # This spawns a quick analysis session
         if command -v claude &> /dev/null; then
           exit_code=0
           claude --model haiku --max-turns 3 --print \
-            "Read $OBSERVATIONS_FILE and identify patterns. If you find 3+ occurrences of the same pattern, create an instinct file in $CONFIG_DIR/instincts/personal/ following the format in the observer agent spec. Be conservative - only create instincts for clear patterns." \
+            "Read $OBSERVATIONS_FILE and identify patterns (user corrections, error resolutions, repeated workflows, tool preferences). If you find 3+ occurrences of the same pattern, create an instinct file in $CONFIG_DIR/instincts/personal/<id>.md.
+
+CRITICAL: Every instinct file MUST use this exact format:
+
+---
+id: kebab-case-name
+trigger: \"when <specific condition>\"
+confidence: <0.3-0.85 based on frequency: 3-5 times=0.5, 6-10=0.7, 11+=0.85>
+domain: <one of: code-style, testing, git, debugging, workflow, file-patterns>
+source: session-observation
+---
+
+# Title
+
+## Action
+<what to do, one clear sentence>
+
+## Evidence
+- Observed N times in session <id>
+- Pattern: <description>
+- Last observed: <date>
+
+Rules:
+- Be conservative, only clear patterns with 3+ observations
+- Use narrow, specific triggers
+- Never include actual code snippets, only describe patterns
+- If a similar instinct already exists in $CONFIG_DIR/instincts/personal/, update it instead of creating a duplicate
+- The YAML frontmatter (between --- markers) with id field is MANDATORY" \
             >> "$LOG_FILE" 2>&1 || exit_code=$?
           if [ "$exit_code" -ne 0 ]; then
             echo "[$(date)] Claude analysis failed (exit $exit_code)" >> "$LOG_FILE"
@@ -99,7 +143,6 @@ case "${1:-start}" in
           echo "[$(date)] claude CLI not found, skipping analysis" >> "$LOG_FILE"
         fi
 
-        # Archive processed observations
         if [ -f "$OBSERVATIONS_FILE" ]; then
           archive_dir="${CONFIG_DIR}/observations.archive"
           mkdir -p "$archive_dir"
@@ -108,28 +151,45 @@ case "${1:-start}" in
         fi
       }
 
-      # Handle SIGUSR1 for on-demand analysis
-      trap 'analyze_observations' USR1
+      on_usr1() {
+        # Kill pending sleep to avoid leak, then analyze
+        [ -n "$SLEEP_PID" ] && kill "$SLEEP_PID" 2>/dev/null
+        SLEEP_PID=""
+        USR1_FIRED=1
+        analyze_observations
+      }
+      trap on_usr1 USR1
 
-      echo "$$" > "$PID_FILE"
+      echo $$ > "$PID_FILE"
       echo "[$(date)] Observer started (PID: $$)" >> "$LOG_FILE"
 
       while true; do
-        # Check every 5 minutes
-        sleep 300
+        sleep 300 &
+        SLEEP_PID=$!
+        wait $SLEEP_PID 2>/dev/null
+        SLEEP_PID=""
 
-        analyze_observations
+        # Skip scheduled analysis if USR1 already ran it
+        if [ "$USR1_FIRED" -eq 1 ]; then
+          USR1_FIRED=0
+        else
+          analyze_observations
+        fi
       done
-    ) &
+    ' >> "$LOG_FILE" 2>&1 &
 
-    disown
-
-    # Wait a moment for PID file
-    sleep 1
+    # Wait for PID file
+    sleep 2
 
     if [ -f "$PID_FILE" ]; then
-      echo "Observer started (PID: $(cat "$PID_FILE"))"
-      echo "Log: $LOG_FILE"
+      pid=$(cat "$PID_FILE")
+      if kill -0 "$pid" 2>/dev/null; then
+        echo "Observer started (PID: $pid)"
+        echo "Log: $LOG_FILE"
+      else
+        echo "Failed to start observer (process died immediately, check $LOG_FILE)"
+        exit 1
+      fi
     else
       echo "Failed to start observer"
       exit 1
