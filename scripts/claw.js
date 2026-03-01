@@ -218,7 +218,7 @@ function main() {
       }
 
       if (line === '/sessions') {
-        handleSessions();
+        handleSessions(clawDir);
         prompt();
         return;
       }
