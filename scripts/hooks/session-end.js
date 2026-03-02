@@ -171,9 +171,10 @@ async function main() {
     if (summary) {
       const existing = readFile(sessionFile);
       if (existing) {
-        // Use a flexible regex that tolerates CRLF, extra whitespace, and minor template variations
+        // Use a flexible regex that matches both "## Session Summary" and "## Current State"
+        // Match to end-of-string to avoid duplicate ### Stats sections
         const updatedContent = existing.replace(
-          /## Session Summary[\s\S]*?(?=### Stats|$)/,
+          /## (?:Session Summary|Current State)[\s\S]*?$/ ,
           buildSummarySection(summary).trim() + '\n'
         );
         writeFile(sessionFile, updatedContent);
