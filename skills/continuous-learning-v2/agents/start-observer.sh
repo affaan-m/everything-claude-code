@@ -157,7 +157,10 @@ case "${1:-start}" in
 
       cleanup() {
         [ -n "$SLEEP_PID" ] && kill "$SLEEP_PID" 2>/dev/null
-        rm -f "$PID_FILE"
+        # Only remove PID file if it still belongs to this process
+        if [ -f "$PID_FILE" ] && [ "$(cat "$PID_FILE" 2>/dev/null)" = "$$" ]; then
+          rm -f "$PID_FILE"
+        fi
         exit 0
       }
       trap cleanup TERM INT
