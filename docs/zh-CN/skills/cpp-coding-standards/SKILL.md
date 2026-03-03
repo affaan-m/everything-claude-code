@@ -655,7 +655,7 @@ private:
 }  // namespace my_project
 ```
 
-### 反面模式
+### 反模式
 
 * 在头文件的全局作用域内使用 `using namespace std;` (SF.7)
 * 依赖包含顺序的头文件 (SF.10, SF.11)
@@ -693,7 +693,7 @@ std::vector<Point> points;           // GOOD: contiguous
 std::vector<std::unique_ptr<Point>> indirect_points; // BAD: pointer chasing
 ```
 
-### 反面模式
+### 反模式
 
 * 在没有性能分析数据的情况下进行优化 (Per.1, Per.6)
 * 选择“巧妙”的低级代码而非清晰的抽象 (Per.4, Per.5)
