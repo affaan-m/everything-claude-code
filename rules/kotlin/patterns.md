@@ -67,7 +67,7 @@ interface ItemRepository {
 Single responsibility, `operator fun invoke`:
 
 ```kotlin
-class GetItemsUseCase(private val repository: ItemRepository) {
+class GetItemUseCase(private val repository: ItemRepository) {
     suspend operator fun invoke(id: String): Result<Item> {
         return repository.getById(id)
     }
