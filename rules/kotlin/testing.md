@@ -19,7 +19,8 @@ paths:
 ```kotlin
 @Test
 fun `loading state emitted then data`() = runTest {
-    val repo = FakeItemRepository(items = listOf(testItem))
+    val repo = FakeItemRepository()
+    repo.addItem(testItem)
     val viewModel = ItemListViewModel(GetItemsUseCase(repo))
 
     viewModel.state.test {
@@ -119,7 +120,7 @@ fun `delete item emits updated list without deleted item`() = runTest { }
 ```
 src/
 ├── commonTest/kotlin/     # Shared tests (ViewModel, UseCase, Repository)
-├── androidTest/kotlin/    # Android unit tests (JUnit)
+├── androidUnitTest/kotlin/ # Android unit tests (JUnit)
 ├── androidInstrumentedTest/kotlin/  # Instrumented tests (Room, UI)
 └── iosTest/kotlin/        # iOS-specific tests
 ```

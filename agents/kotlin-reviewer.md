@@ -127,15 +127,14 @@ End every review with:
 | Severity | Count | Status |
 |----------|-------|--------|
 | CRITICAL | 0     | pass   |
-| HIGH     | 1     | warn   |
+| HIGH     | 1     | block  |
 | MEDIUM   | 2     | info   |
 | LOW      | 0     | note   |
 
-Verdict: WARNING — 1 HIGH issue should be resolved before merge.
+Verdict: BLOCK — HIGH issues must be fixed before merge.
 ```
 
 ## Approval Criteria
 
 - **Approve**: No CRITICAL or HIGH issues
-- **Warning**: HIGH issues only (can merge with caution)
-- **Block**: CRITICAL issues — must fix before merge
+- **Block**: Any CRITICAL or HIGH issues — must fix before merge

@@ -91,7 +91,7 @@ fun onEvent(event: ItemListEvent) {
     when (event) {
         is ItemListEvent.Search -> onSearch(event.query)
         is ItemListEvent.Delete -> deleteItem(event.itemId)
-        is ItemListEvent.Refresh -> loadItems()
+        is ItemListEvent.Refresh -> loadItems(_state.value.searchQuery)
     }
 }
 
@@ -252,9 +252,12 @@ val showScrollToTop by remember {
 // BAD — new lambda and list every recomposition
 items.filter { it.isActive }.forEach { ActiveItem(it, onClick = { handle(it) }) }
 
-// GOOD — remember filtered list, use method reference or remembered lambda
+// GOOD — remember filtered list, stable lambda with key
 val activeItems = remember(items) { items.filter { it.isActive } }
-activeItems.forEach { ActiveItem(it, onClick = remember { { handle(it) } }) }
+activeItems.forEach { item ->
+    val onClick = remember(item.id) { { handle(item) } }
+    ActiveItem(item, onClick = onClick)
+}
 ```
 
 ## Theming

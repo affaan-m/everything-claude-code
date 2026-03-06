@@ -68,8 +68,8 @@ Single responsibility, `operator fun invoke`:
 
 ```kotlin
 class GetItemsUseCase(private val repository: ItemRepository) {
-    suspend operator fun invoke(filter: Filter): Result<List<Item>> {
-        return repository.getAll(filter)
+    suspend operator fun invoke(id: String): Result<Item> {
+        return repository.getById(id)
     }
 }
 ```

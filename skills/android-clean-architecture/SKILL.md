@@ -81,7 +81,8 @@ data class Item(
     val title: String,
     val description: String,
     val tags: List<String>,
-    val status: Status
+    val status: Status,
+    val category: String
 )
 
 enum class Status { DRAFT, ACTIVE, ARCHIVED }
@@ -119,6 +120,12 @@ class ItemRepositoryImpl(
         }
     }
 
+    override suspend fun saveItem(item: Item): Result<Unit> {
+        return runCatching {
+            localDataSource.insertItems(listOf(item.toEntity()))
+        }
+    }
+
     override fun observeItems(): Flow<List<Item>> {
         return localDataSource.observeAll().map { entities ->
             entities.map { it.toDomain() }
@@ -138,7 +145,8 @@ fun ItemEntity.toDomain() = Item(
     title = title,
     description = description,
     tags = tags.split("|"),
-    status = Status.valueOf(status)
+    status = Status.valueOf(status),
+    category = category
 )
 
 fun ItemDto.toEntity() = ItemEntity(
@@ -146,7 +154,8 @@ fun ItemDto.toEntity() = ItemEntity(
     title = title,
     description = description,
     tags = tags.joinToString("|"),
-    status = status
+    status = status,
+    category = category
 )
 ```
 
@@ -159,7 +168,8 @@ data class ItemEntity(
     val title: String,
     val description: String,
     val tags: String,
-    val status: String
+    val status: String,
+    val category: String
 )
 
 @Dao
@@ -184,15 +194,16 @@ CREATE TABLE ItemEntity (
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     tags TEXT NOT NULL,
-    status TEXT NOT NULL
+    status TEXT NOT NULL,
+    category TEXT NOT NULL
 );
 
 getByCategory:
 SELECT * FROM ItemEntity WHERE category = ?;
 
 upsert:
-INSERT OR REPLACE INTO ItemEntity (id, title, description, tags, status)
-VALUES (?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO ItemEntity (id, title, description, tags, status, category)
+VALUES (?, ?, ?, ?, ?, ?);
 
 observeAll:
 SELECT * FROM ItemEntity;

@@ -125,8 +125,13 @@ searchQuery
 
 // Retry with exponential backoff
 fun fetchWithRetry(): Flow<Data> = flow { emit(api.fetch()) }
-    .retry(3) { cause ->
-        cause is IOException && run { delay(1000L * (1 shl (3 - remainingAttempts))) ; true }
+    .retryWhen { cause, attempt ->
+        if (cause is IOException && attempt < 3) {
+            delay(1000L * (1 shl attempt.toInt()))
+            true
+        } else {
+            false
+        }
     }
 ```
 
@@ -183,7 +188,7 @@ In KMP, use `Dispatchers.Default` and `Dispatchers.Main` (available on all platf
 Long-running loops must check for cancellation:
 
 ```kotlin
-suspend fun processItems(items: List<Item>) {
+suspend fun processItems(items: List<Item>) = coroutineScope {
     for (item in items) {
         ensureActive()  // throws CancellationException if cancelled
         process(item)
