@@ -43,8 +43,16 @@ When unsure: ASK. A clarifying question now prevents wrong implementation later.
 | `/careful` | Sensitive code, step-by-step approval |
 | `/spike` | 90-min fast validation (TDD suspended) |
 | `/brief` | Create Grade A brief from vague idea |
-| `/review` | Code audit (`--ship` for formal gate) |
-| `/evolve` | Analyze external resources |
+| `/plan` | Create implementation plan before coding |
+| `/tdd` | Test-driven development (RED/GREEN/REFACTOR) |
+| `/review` | Quick review of recent changes |
+| `/ship` | Formal quality gate before merging |
+| `/audit` | Forensic deep sweep of codebase |
+| `/verify` | Automated checks (build, types, lint, tests) |
+| `/evolve` | Analyze external resources with skepticism |
+| `/orchestrate` | Multi-agent workflow pipelines |
+| `/learn` | Extract reusable patterns from session |
+| `/instinct` | Manage learned instincts (status/export/import) |
 | `/end` | Session cleanup |
 
 ---

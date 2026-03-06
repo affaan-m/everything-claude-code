@@ -146,5 +146,5 @@ The real problem is [root cause], not just [surface request].
 Save brief to `docs/briefs/[name].md`, then:
 
 ```
-To build this, run: /build
+To build this, run: /autonomous
 ```

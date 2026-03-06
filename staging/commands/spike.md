@@ -113,7 +113,7 @@ Based on verdict:
 
 **PROCEED:**
 - Create a proper brief with `/brief`
-- Then build properly with `/build`
+- Then build properly with `/autonomous`
 
 **ITERATE:**
 - Document what needs to change
