@@ -70,7 +70,7 @@ When Claude makes a mistake:
 1. Fix it immediately
 2. Reflect: "What general pattern caused this?"
 3. Write to `~/.claude/learned/$(date +%Y-%m-%d).md`
-4. Weekly: Run `consolidate-learnings` to promote patterns to rules
+4. Weekly: `consolidate-instincts.py --execute` promotes patterns to rules (runs automatically via LaunchAgent)
 
 ---
 

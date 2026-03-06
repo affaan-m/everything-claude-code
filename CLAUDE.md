@@ -52,6 +52,7 @@ docs/              ← Architecture documentation
 | `hooks/` | Automation scripts |
 | `contexts/` | Mode toggles (dev, research, review) |
 | `learned/` | Self-improvement archive |
+| `bin/` | CLI utilities (trash, etc.) |
 
 ## Rollback
 
