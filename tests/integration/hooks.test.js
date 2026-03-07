@@ -292,6 +292,25 @@ async function runTests() {
     }
   })) passed++; else failed++;
 
+  if (await asyncTest('dev server blocker ignores heredoc prose in non-dev commands', async () => {
+    const blockingCommand = hooks.hooks.PreToolUse[0].hooks[0].command;
+    const heredocCommand = [
+      'gh pr create --title "test" --body "$(cat <<\'EOF\'',
+      '## Test plan',
+      '',
+      '- [ ] Run npm run dev to verify the site starts',
+      '',
+      'EOF',
+      ')"'
+    ].join('\n');
+    const result = await runHookCommand(blockingCommand, {
+      tool_input: { command: heredocCommand }
+    });
+
+    assert.strictEqual(result.code, 0, 'Non-dev commands with heredoc prose should pass');
+    assert.ok(!result.stderr.includes('BLOCKED'), 'Should not emit a BLOCKED message');
+  })) passed++; else failed++;
+
   if (await asyncTest('hooks handle missing files gracefully', async () => {
     const testDir = createTestDir();
     const transcriptPath = path.join(testDir, 'nonexistent.jsonl');
