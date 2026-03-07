@@ -15,14 +15,14 @@ Prefer constructor injection. Use Koin (KMP) or Hilt (Android-only):
 // Koin — declare modules
 val dataModule = module {
     single<ItemRepository> { ItemRepositoryImpl(get(), get()) }
-    factory { GetItemsUseCase(get()) }
+    factory { GetItemUseCase(get()) }
     viewModelOf(::ItemListViewModel)
 }
 
 // Hilt — annotations
 @HiltViewModel
 class ItemListViewModel @Inject constructor(
-    private val getItems: GetItemsUseCase
+    private val getItem: GetItemUseCase
 ) : ViewModel()
 ```
 
@@ -36,7 +36,7 @@ data class ScreenState(
     val isLoading: Boolean = false
 )
 
-class ScreenViewModel(private val useCase: GetItemsUseCase) : ViewModel() {
+class ScreenViewModel(private val useCase: GetItemUseCase) : ViewModel() {
     private val _state = MutableStateFlow(ScreenState())
     val state = _state.asStateFlow()
 
@@ -90,21 +90,21 @@ expect class SecureStorage {
 actual fun platformName(): String = "Android"
 actual class SecureStorage {
     actual fun save(key: String, value: String) { /* EncryptedSharedPreferences */ }
-    actual fun get(key: String): String? { /* ... */ }
+    actual fun get(key: String): String? = null /* ... */
 }
 
 // iosMain
 actual fun platformName(): String = "iOS"
 actual class SecureStorage {
     actual fun save(key: String, value: String) { /* Keychain */ }
-    actual fun get(key: String): String? { /* ... */ }
+    actual fun get(key: String): String? = null /* ... */
 }
 ```
 
 ## Coroutine Patterns
 
 - Use `viewModelScope` in ViewModels, `coroutineScope` for structured child work
-- Use `stateIn(WhileSubscribed(5_000))` for StateFlow from cold Flows
+- Use `stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), initialValue)` for StateFlow from cold Flows
 - Use `supervisorScope` when child failures should be independent
 
 ## Builder Pattern with DSL

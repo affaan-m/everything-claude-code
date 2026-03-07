@@ -31,7 +31,7 @@ data class ItemListState(
 )
 
 class ItemListViewModel(
-    private val getItems: GetItemsUseCase
+    private val getItems: GetItemUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(ItemListState())
     val state: StateFlow<ItemListState> = _state.asStateFlow()
