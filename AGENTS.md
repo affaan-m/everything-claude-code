@@ -92,7 +92,12 @@ Troubleshoot failures: check test isolation → verify mocks → fix implementat
 1. **Plan** — Use planner agent, identify dependencies and risks, break into phases
 2. **TDD** — Use tdd-guide agent, write tests first, implement, refactor
 3. **Review** — Use code-reviewer agent immediately, address CRITICAL/HIGH issues
-4. **Commit** — Conventional commits format, comprehensive PR summaries
+4. **Capture knowledge in the right place**
+   - Personal debugging notes, preferences, and temporary context → auto memory
+   - Team/project knowledge (architecture decisions, API changes, runbooks) → the project's existing docs structure
+   - If the current task already produces the relevant docs or code comments, do not duplicate the same information elsewhere
+   - If there is no obvious project doc location, ask before creating a new top-level file
+5. **Commit** — Conventional commits format, comprehensive PR summaries
 
 ## Git Workflow
 
