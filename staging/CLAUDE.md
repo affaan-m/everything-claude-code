@@ -45,7 +45,7 @@ When unsure: ASK. A clarifying question now prevents wrong implementation later.
 | `/brief` | Create Grade A brief from vague idea |
 | `/plan` | Create implementation plan before coding |
 | `/tdd` | Test-driven development (RED/GREEN/REFACTOR) |
-| `/review` | Quick review of recent changes |
+| `/review` | Parallel 3-agent review with deduplication |
 | `/ship` | Formal quality gate before merging |
 | `/audit` | Forensic deep sweep of codebase |
 | `/verify` | Automated checks (build, types, lint, tests) |
