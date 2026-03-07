@@ -35,6 +35,9 @@ tasks/
 personal/
 private/
 
+# Claude Code local settings (user-specific, not shared config)
+.claude/*.local.json
+
 # Session templates (not committed)
 examples/sessions/*.tmp
 
