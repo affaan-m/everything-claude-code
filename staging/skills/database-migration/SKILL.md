@@ -174,6 +174,10 @@ module.exports = {
         throw new Error("Migration verification failed: no rows");
       }
       // Cleanup backup and commit
+      // WARNING: DROP TABLE is a destructive operation requiring explicit user
+      // approval per safety rules. Never include DROP TABLE in automated
+      // migrations without confirmation. Consider keeping backup tables for a
+      // rollback window before dropping.
       await queryInterface.sequelize.query("DROP TABLE users_backup", {
         transaction,
       });
@@ -200,8 +204,11 @@ module.exports = {
       const [, meta] = await queryInterface.sequelize.query(`
         UPDATE users
         SET full_name = CONCAT(first_name, ' ', last_name)
-        WHERE full_name IS NULL
-        LIMIT ${batchSize}
+        WHERE id IN (
+          SELECT id FROM users
+          WHERE full_name IS NULL
+          LIMIT ${batchSize}
+        )
       `);
       affected = meta?.rowCount ?? meta?.affectedRows ?? 0;
     }
@@ -249,6 +256,14 @@ After migration:
 - [ ] Verify row counts and data integrity
 - [ ] Run application smoke tests
 - [ ] Keep rollback plan ready for 24 hours
+
+## Testing Migrations
+
+Test migrations against a dedicated test database. Verify both up and down migrations. Use the project's test framework (Vitest for TypeScript, pytest for Python) to automate migration testing where possible. At minimum, write tests that:
+
+- Run the `up` migration and verify the schema matches expectations
+- Run the `down` migration and verify it cleanly reverts
+- Seed test data before migration and verify data integrity after
 
 ## Pitfalls
 

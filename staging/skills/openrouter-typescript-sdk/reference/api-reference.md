@@ -21,7 +21,7 @@ const authResponse = await client.oAuth.createAuthCode({
 // - authorizationUrl: URL to redirect the user to
 // - code: The authorization code for later exchange
 
-console.log('Redirect user to:', authResponse.authorizationUrl);
+// Redirect user to authResponse.authorizationUrl
 ```
 
 **Parameters:**
@@ -110,7 +110,7 @@ app.get('/auth/callback', async (req, res) => {
 
     res.redirect('/dashboard?auth=success');
   } catch (error) {
-    console.error('OAuth exchange failed:', error);
+    // Log OAuth failure through your project's error handler
     res.redirect('/auth/error');
   }
 });
@@ -125,7 +125,7 @@ app.post('/api/chat', async (req, res) => {
   });
 
   const result = userClient.callModel({
-    model: 'openai/gpt-5-nano',
+    model: 'openai/gpt-4o-mini',
     input: req.body.message
   });
 
@@ -143,8 +143,7 @@ Programmatically manage API keys:
 ```typescript
 // Get current key metadata
 const keyInfo = await client.apiKeys.getCurrentKeyMetadata();
-console.log('Key name:', keyInfo.name);
-console.log('Created:', keyInfo.createdAt);
+// Access keyInfo.name, keyInfo.createdAt, etc.
 
 // List all keys
 const keys = await client.apiKeys.list();
@@ -195,7 +194,7 @@ import { fromChatMessages, toChatMessage } from '@openrouter/sdk';
 
 // OpenAI messages -> OpenRouter format
 const result = client.callModel({
-  model: 'openai/gpt-5-nano',
+  model: 'openai/gpt-4o-mini',
   input: fromChatMessages(openaiMessages)
 });
 
@@ -211,7 +210,7 @@ import { fromClaudeMessages, toClaudeMessage } from '@openrouter/sdk';
 
 // Claude messages -> OpenRouter format
 const result = client.callModel({
-  model: 'anthropic/claude-3-opus',
+  model: 'anthropic/claude-sonnet-4',
   input: fromClaudeMessages(claudeMessages)
 });
 
@@ -283,7 +282,7 @@ Full list of parameters for controlling model behavior:
 
 ```typescript
 const result = client.callModel({
-  model: 'openai/gpt-5-nano',
+  model: 'openai/gpt-4o-mini',
   input: 'Write a creative story',
   temperature: 0.7,        // Creativity (0-2, default varies by model)
   maxOutputTokens: 1000,   // Maximum tokens to generate
@@ -540,7 +539,7 @@ type ToolStreamEvent =
 
 ```typescript
 const result = client.callModel({
-  model: 'openai/gpt-5-nano',
+  model: 'openai/gpt-4o-mini',
   input: 'Analyze this data',
   tools: [analysisTool]
 });
@@ -552,19 +551,19 @@ for await (const event of result.getFullResponsesStream()) {
       break;
 
     case 'response.reasoning.delta':
-      console.log('[Reasoning]', event.delta);
+      // Process reasoning token
       break;
 
     case 'response.function_call_arguments.delta':
-      console.log('[Tool Args]', event.delta);
+      // Process tool argument chunk
       break;
 
     case 'tool.preliminary_result':
-      console.log(`[Progress: ${event.toolCallId}]`, event.result);
+      // Handle tool progress update
       break;
 
     case 'response.completed':
-      console.log('\n[Complete]', event.response.usage);
+      // Process final response and usage stats
       break;
   }
 }
@@ -584,7 +583,7 @@ type MessageStreamUpdate =
 
 ```typescript
 const result = client.callModel({
-  model: 'openai/gpt-5-nano',
+  model: 'openai/gpt-4o-mini',
   input: 'Research this topic',
   tools: [searchTool]
 });
@@ -595,9 +594,9 @@ for await (const message of result.getNewMessagesStream()) {
   allMessages.push(message);
 
   if (message.type === 'message') {
-    console.log('Assistant:', message.content);
+    // Process assistant message content
   } else if (message.type === 'function_call_output') {
-    console.log('Tool result:', message.output);
+    // Process tool execution result
   }
 }
 ```
@@ -618,13 +617,13 @@ const models = await client.models.list();
 
 // Chat completions (alternative to callModel)
 const completion = await client.chat.send({
-  model: 'openai/gpt-5-nano',
+  model: 'openai/gpt-4o-mini',
   messages: [{ role: 'user', content: 'Hello!' }]
 });
 
 // Legacy completions format
 const legacyCompletion = await client.completions.generate({
-  model: 'openai/gpt-5-nano',
+  model: 'openai/gpt-4o-mini',
   prompt: 'Once upon a time'
 });
 

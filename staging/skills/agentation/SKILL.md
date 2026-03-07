@@ -11,7 +11,7 @@ Set up the Agentation annotation toolbar in this project.
 
 1. **Check if already installed**
    - Look for `agentation` in package.json dependencies
-   - If not found, run `npm install agentation` (or pnpm/yarn based on lockfile)
+   - If not found, ask the user before installing: `npm install agentation` (or pnpm/yarn based on lockfile)
 
 2. **Check if already configured**
    - Search for `<Agentation` or `import { Agentation }` in src/ or app/
@@ -47,8 +47,9 @@ Set up the Agentation annotation toolbar in this project.
    - If yes, skip to final confirmation step
 
 7. **Configure Claude Code MCP server**
+   - Ask the user before registering the MCP server. This modifies Claude Code's configuration.
    - Run: `claude mcp add agentation -- npx agentation-mcp server`
-   - This registers the MCP server with Claude Code automatically
+   - This registers the MCP server with Claude Code
 
 8. **Confirm full setup**
    - Tell the user both components are set up:
@@ -60,7 +61,7 @@ Set up the Agentation annotation toolbar in this project.
 ## Notes
 
 - The `NODE_ENV` check ensures Agentation only loads in development
-- Agentation requires React 18
+- Agentation requires React 18+. Check the package's peer dependencies for the latest compatibility.
 - The MCP server auto-starts when Claude Code launches (uses npx, no global install needed)
 - Port 4747 is used by default for the HTTP server
 - Run `npx agentation-mcp doctor` to verify setup

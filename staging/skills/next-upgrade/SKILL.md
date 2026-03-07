@@ -30,7 +30,7 @@ Upgrade the current project to the latest Next.js version following official mig
    - `next-request-geo-ip` - Migrates geo/ip properties (v15)
    - `next-dynamic-access-named-export` - Transforms dynamic imports (v15)
 
-5. **Update dependencies**: Upgrade Next.js and peer dependencies together:
+5. **Update dependencies**: Ask the user for approval before upgrading. Major version upgrades can introduce breaking changes. Upgrade Next.js and peer dependencies together:
    ```bash
    npm install next@latest react@latest react-dom@latest
    ```
@@ -40,11 +40,16 @@ Upgrade the current project to the latest Next.js version following official mig
    - Configuration changes in `next.config.js`
    - Deprecated features being removed
 
-7. **Update TypeScript types** (if applicable):
+7. **Update TypeScript types** (if applicable). Ask the user for approval before upgrading. Major version upgrades can introduce breaking changes:
    ```bash
    npm install @types/react@latest @types/react-dom@latest
    ```
 
 8. **Test the upgrade**:
    - Run `npm run build` to check for build errors
+   - Run the full test suite (`npx vitest run` or the project's configured test command). Build passing does NOT mean the upgrade is safe — tests must pass too.
    - Run `npm run dev` and test key functionality
+
+## Rollback
+
+If the upgrade breaks the build and fixes are not straightforward, revert: `git checkout -- package.json package-lock.json && npm install`

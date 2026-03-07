@@ -3,6 +3,9 @@ name: organization-best-practices
 description: This skill provides guidance and enforcement rules for implementing multi-tenant organizations, teams, and role-based access control using Better Auth's organization plugin.
 ---
 
+## When to Activate
+Use when implementing multi-tenant organizations, team management, or role-based access control with Better Auth's organization plugin.
+
 ## Setting Up Organizations
 
 Configure the `organization` plugin with appropriate limits and permissions:
@@ -21,6 +24,8 @@ export const auth = betterAuth({
   ],
 });
 ```
+
+Back up your database before running migrations. Migration failures can leave the schema in an inconsistent state.
 
 After adding the plugin, run `npx @better-auth/cli migrate` to add the required database tables.
 

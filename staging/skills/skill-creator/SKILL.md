@@ -138,6 +138,14 @@ Output: feat(auth): implement JWT-based authentication
 
 Try to explain to the model why things are important in lieu of heavy-handed musty MUSTs. Use theory of mind and try to make the skill general and not super-narrow to specific examples. Start by writing a draft and then look at it with fresh eyes and improve it.
 
+### Skill Quality Checks
+
+Before finalizing a skill, review it against these criteria:
+
+- **Hard-stop violations in bundled code**: Check bundled scripts for TODOs/FIXMEs, console.log (except logging utilities), placeholder implementations, dead code, and untyped `any` without justification.
+- **Testing bundled scripts**: If a skill bundles executable scripts (Python, bash, etc.), suggest writing tests for non-trivial logic. Reference the project's test framework (Vitest for TypeScript, pytest for Python).
+- **Verification**: Verify all claims and code examples in the skill are accurate. Apply the verification mindset: if you feel confident it's correct, that's when you most need to check.
+
 ### Test Cases
 
 After writing the skill draft, come up with 2-3 realistic test prompts — the kind of thing a real user would actually say. Share them with the user: [you don't have to use this exact language] "Here are a few test cases I'd like to try. Do these look right, or do you want to add more?" Then run them.
@@ -299,7 +307,7 @@ This is the heart of the loop. You've run the test cases, the user has reviewed 
 
 2. **Keep the prompt lean.** Remove things that aren't pulling their weight. Make sure to read the transcripts, not just the final outputs — if it looks like the skill is making the model waste a bunch of time doing things that are unproductive, you can try getting rid of the parts of the skill that are making it do that and seeing what happens.
 
-3. **Explain the why.** Try hard to explain the **why** behind everything you're asking the model to do. Today's LLMs are *smart*. They have good theory of mind and when given a good harness can go beyond rote instructions and really make things happen. Even if the feedback from the user is terse or frustrated, try to actually understand the task and why the user is writing what they wrote, and what they actually wrote, and then transmit this understanding into the instructions. If you find yourself writing ALWAYS or NEVER in all caps, or using super rigid structures, that's a yellow flag — if possible, reframe and explain the reasoning so that the model understands why the thing you're asking for is important. That's a more humane, powerful, and effective approach.
+3. **Explain the why.** Try hard to explain the **why** behind everything you're asking the model to do. Today's LLMs are *smart*. They have good theory of mind and when given a good harness can go beyond rote instructions and really make things happen. Even if the feedback from the user is terse or frustrated, try to actually understand the task and why the user is writing what they wrote, and what they actually wrote, and then transmit this understanding into the instructions. Use ALWAYS/NEVER directives for safety-critical rules and hard requirements. For general guidance and preferences, use softer language ("prefer", "consider", "when possible"). The distinction matters — a safety rule ("NEVER commit secrets") demands absolute language, while a style preference ("prefer named exports") does not. When you do use absolute directives, still explain the reasoning so the model understands *why* the rule is important.
 
 4. **Look for repeated work across test cases.** Read the transcripts from the test runs and notice if the subagents all independently wrote similar helper scripts or took the same multi-step approach to something. If all 3 test cases resulted in the subagent writing a `create_docx.py` or a `build_chart.py`, that's a strong signal the skill should bundle that script. Write it once, put it in `scripts/`, and tell the skill to use it. This saves every future invocation from reinventing the wheel.
 

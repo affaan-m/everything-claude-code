@@ -7,6 +7,10 @@ description: Implement WCAG 2.2 compliant interfaces with mobile accessibility, 
 
 Master accessibility implementation to create inclusive experiences that work for everyone, including users with disabilities.
 
+## Model Routing
+
+Route mechanical checks (contrast ratios, alt-text audits, checklist verification) to Sonnet. Reserve Opus for architectural ARIA pattern decisions and complex component accessibility design.
+
 ## When to Use This Skill
 
 - Implementing WCAG 2.2 Level AA or AAA compliance
@@ -360,6 +364,7 @@ function SearchResults({ results, isLoading }) {
 ```typescript
 // Relative luminance calculation per WCAG 2.2
 function getLuminance(hex: string): number {
+  // Non-null assertion safe: regex always matches for valid 6-char hex strings
   const rgb = hex.replace("#", "").match(/.{2}/g)!.map((c) => {
     const sRGB = parseInt(c, 16) / 255;
     return sRGB <= 0.04045 ? sRGB / 12.92 : Math.pow((sRGB + 0.055) / 1.055, 2.4);

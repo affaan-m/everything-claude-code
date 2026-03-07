@@ -5,6 +5,9 @@ description: Optimize vector index performance for latency, recall, and memory. 
 
 # Vector Index Tuning
 
+## Language Note
+Code examples are in Python. For TypeScript/Node.js projects, adapt using: `@qdrant/js-client-rest` for Qdrant, `pgvector` with your ORM for Postgres vector search, or `hnswlib-node` for HNSW. The conceptual guidance (parameter tables, memory formulas, quantization strategies) is language-agnostic.
+
 Guide to optimizing vector indexes for production performance.
 
 ## When to Use This Skill
@@ -158,7 +161,7 @@ def recommend_hnsw_params(
 
 ```python
 import numpy as np
-from typing import Optional
+from typing import Optional, Tuple
 
 class VectorQuantizer:
     """Quantization strategies for vector compression."""
@@ -203,7 +206,8 @@ class VectorQuantizer:
         from sklearn.cluster import KMeans
 
         n, dim = vectors.shape
-        assert dim % n_subvectors == 0
+        if dim % n_subvectors != 0:
+            raise ValueError(f"Dimension {dim} must be divisible by n_subvectors {n_subvectors}")
         subvector_dim = dim // n_subvectors
 
         codebooks = []

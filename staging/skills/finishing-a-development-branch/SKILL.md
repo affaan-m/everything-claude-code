@@ -20,8 +20,7 @@ Guide completion of development work by presenting clear options and handling ch
 **Before presenting options, verify tests pass:**
 
 ```bash
-# Run project's test suite
-npm test / cargo test / pytest / go test ./...
+# Run the project's test suite (e.g., `npx vitest run` for TypeScript projects)
 ```
 
 **If tests fail:**
@@ -130,6 +129,8 @@ If confirmed:
 git checkout <base-branch>
 git branch -D <feature-branch>
 ```
+
+**Note:** This permanently deletes unmerged commits. They cannot be recovered after garbage collection.
 
 Then: Cleanup worktree (Step 5)
 

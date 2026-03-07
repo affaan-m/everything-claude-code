@@ -127,11 +127,11 @@ jobs:
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-      - name: Configure AWS credentials
+      # Long-lived access keys are deprecated. Use OIDC federation for keyless authentication.
+      - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@ff717079ee2060e4bcee96c4779b553acc87447c # v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-deploy
           aws-region: us-west-2
 
       - name: Update kubeconfig
@@ -143,6 +143,11 @@ jobs:
           kubectl apply -f k8s/
           kubectl rollout status deployment/my-app -n production
           kubectl get services -n production
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          kubectl rollout undo deployment/my-app -n production
 
       - name: Verify deployment
         run: |
@@ -282,7 +287,7 @@ jobs:
       - name: Deploy application
         run: |
           echo "Deploying to production..."
-          # Add deployment commands here
+          rsync -avz --delete ./dist/ user@server:/var/www/app/
 
       - name: Notify Slack
         if: success()

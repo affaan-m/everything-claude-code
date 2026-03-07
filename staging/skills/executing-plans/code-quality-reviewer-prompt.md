@@ -17,4 +17,6 @@ Task tool (code-reviewer agent):
   DESCRIPTION: [task summary]
 ```
 
+**Requires the requesting-code-review skill to be available.** If not loaded, perform a basic quality review: check for hard-stop violations (TODOs, console.log, placeholders, dead code, untyped `any`), verify type safety, and review error handling.
+
 **Code reviewer returns:** Strengths, Issues (Critical/Important/Minor), Assessment

@@ -111,6 +111,8 @@ export const config = {
 
 ### Next.js 16+: `proxy.ts`
 
+> **[UNVERIFIED]** The middleware-to-proxy rename (middleware.ts -> proxy.ts, middleware() -> proxy(), config -> proxyConfig) has not been verified against stable Next.js releases. Verify against https://nextjs.org/docs before using.
+
 Renamed for clarity - same capabilities, different names:
 
 ```ts

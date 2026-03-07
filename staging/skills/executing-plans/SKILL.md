@@ -58,6 +58,10 @@ Load plan, review critically, execute tasks. Two modes available:
 
 **Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration.
 
+### Worktree Isolation
+
+Use `isolation: worktree` when dispatching implementer subagents to prevent file clobbering between parallel agents. This is mandatory for any subagent that writes or commits code.
+
 ### Process
 
 1. **Read plan once**, extract all tasks with full text, note context, create task tracking
@@ -115,7 +119,7 @@ Task 2: Recovery modes
 - Guess when blocked — ask for clarification
 
 **Subagent mode specific:**
-- Never dispatch parallel implementation subagents (conflicts)
+- Never dispatch parallel implementation subagents without worktree isolation (use `isolation: worktree` to make parallel dispatch safe)
 - Never make subagent read plan file (provide full text instead)
 - Never skip scene-setting context
 - Always answer subagent questions before letting them proceed

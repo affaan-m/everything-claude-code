@@ -248,6 +248,7 @@ export const isAuthenticatedAtom = atom((get) => get(userAtom) !== null)
 export const themeAtom = atomWithStorage<'light' | 'dark'>('theme', 'light')
 
 // Async atom
+// Wrap in try/catch or use Suspense error boundaries to handle fetch failures
 export const userProfileAtom = atom(async (get) => {
   const user = get(userAtom)
   if (!user) return null
@@ -427,6 +428,44 @@ const todosSlice = createSlice({
     },
   },
 });
+```
+
+## Testing State
+
+### Zustand Stores
+
+```typescript
+import { act } from '@testing-library/react'
+import { useStore } from './store'
+
+it('should update user', () => {
+  const mockUser = { id: '1', name: 'Test' }
+  act(() => useStore.getState().setUser(mockUser))
+  expect(useStore.getState().user).toEqual(mockUser)
+})
+```
+
+### React Query Hooks
+
+```typescript
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+// Wrap component in <QueryClientProvider client={queryClient}>
+// Call queryClient.clear() in afterEach
+```
+
+### RTK Slices
+
+```typescript
+import { configureStore } from '@reduxjs/toolkit'
+import userReducer, { setUser } from './slices/userSlice'
+
+it('should handle setUser', () => {
+  const store = configureStore({ reducer: { user: userReducer } })
+  store.dispatch(setUser({ id: '1', email: 'a@b.com', name: 'Test' }))
+  expect(store.getState().user.current?.name).toBe('Test')
+})
 ```
 
 ## Resources

@@ -31,17 +31,9 @@ fi
 # Extract cwd from stdin for project detection
 # ─────────────────────────────────────────────
 
-# Extract cwd from the hook JSON to use for project detection.
-# This avoids spawning a separate git subprocess when cwd is available.
-STDIN_CWD=$(echo "$INPUT_JSON" | python3 -c '
-import json, sys
-try:
-    data = json.load(sys.stdin)
-    cwd = data.get("cwd", "")
-    print(cwd)
-except(KeyError, TypeError, ValueError):
-    print("")
-' 2>/dev/null || echo "")
+# Extract cwd from the hook JSON using bash pattern matching (no python3 spawn).
+# Handles the common case where "cwd" is a simple path string in the JSON.
+STDIN_CWD=$(echo "$INPUT_JSON" | grep -o '"cwd" *: *"[^"]*"' | head -1 | sed 's/.*: *"//;s/"$//' 2>/dev/null || echo "")
 
 # If cwd was provided in stdin, use it for project detection
 if [ -n "$STDIN_CWD" ] && [ -d "$STDIN_CWD" ]; then
@@ -72,29 +64,62 @@ if [ -f "$CONFIG_DIR/disabled" ]; then
   exit 0
 fi
 
-# Parse using python via stdin pipe (safe for all JSON payloads)
-# Pass HOOK_PHASE via env var since Claude Code does not include hook type in stdin JSON
-PARSED=$(echo "$INPUT_JSON" | HOOK_PHASE="$HOOK_PHASE" python3 -c '
-import json
-import sys
-import os
+# Archive if file too large (atomic: rename with unique suffix to avoid race)
+if [ -f "$OBSERVATIONS_FILE" ]; then
+  file_size_mb=$(du -m "$OBSERVATIONS_FILE" 2>/dev/null | cut -f1)
+  if [ "${file_size_mb:-0}" -ge "$MAX_FILE_SIZE_MB" ]; then
+    archive_dir="${PROJECT_DIR}/observations.archive"
+    mkdir -p "$archive_dir"
+    mv "$OBSERVATIONS_FILE" "$archive_dir/observations-$(date +%Y%m%d-%H%M%S)-$$.jsonl" 2>/dev/null || true
+  fi
+fi
+
+# ─────────────────────────────────────────────
+# Single python3 call: parse, scrub, build observation, output
+# ─────────────────────────────────────────────
+# Consolidates what was previously 4 separate python3 invocations
+# (parse, check-parsed, error-fallback, write-observation) into one.
+# Also scrubs sensitive data before writing (Issue: raw credentials could leak).
+
+timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+echo "$INPUT_JSON" | \
+  HOOK_PHASE="$HOOK_PHASE" \
+  TIMESTAMP="$timestamp" \
+  PROJECT_ID_ENV="$PROJECT_ID" \
+  PROJECT_NAME_ENV="$PROJECT_NAME" \
+  python3 -c '
+import json, sys, os, re
+
+SENSITIVE_PATTERN = re.compile(
+    r"""(sk-[A-Za-z0-9_-]{10,})"""          # OpenAI/Anthropic-style keys
+    r"""|([A-Za-z0-9_-]*(password|secret|token|credential|api_key|apikey|auth)[A-Za-z0-9_-]*\s*[=:]\s*\S+)"""
+    r"""|("(password|secret|token|credential|api_key|apikey|auth)"\s*:\s*"[^"]*")""",
+    re.IGNORECASE
+)
+
+def scrub(text):
+    """Redact strings that look like secrets, tokens, or credentials."""
+    if not text:
+        return text
+    return SENSITIVE_PATTERN.sub("[REDACTED]", text)
+
+timestamp = os.environ["TIMESTAMP"]
+project_id = os.environ.get("PROJECT_ID_ENV", "global")
+project_name = os.environ.get("PROJECT_NAME_ENV", "global")
+
+raw_input = sys.stdin.read()
 
 try:
-    data = json.load(sys.stdin)
+    data = json.loads(raw_input)
 
-    # Determine event type from CLI argument passed via env var.
-    # Claude Code does NOT include a "hook_type" field in the stdin JSON,
-    # so we rely on the shell argument ("pre" or "post") instead.
     hook_phase = os.environ.get("HOOK_PHASE", "post")
     event = "tool_start" if hook_phase == "pre" else "tool_complete"
 
-    # Extract fields - Claude Code hook format
     tool_name = data.get("tool_name", data.get("tool", "unknown"))
     tool_input = data.get("tool_input", data.get("input", {}))
     tool_output = data.get("tool_output", data.get("output", ""))
     session_id = data.get("session_id", "unknown")
-    tool_use_id = data.get("tool_use_id", "")
-    cwd = data.get("cwd", "")
 
     # Truncate large inputs/outputs
     if isinstance(tool_input, dict):
@@ -107,72 +132,28 @@ try:
     else:
         tool_response_str = str(tool_output)[:5000]
 
-    print(json.dumps({
-        "parsed": True,
+    # Build observation
+    observation = {
+        "timestamp": timestamp,
         "event": event,
         "tool": tool_name,
-        "input": tool_input_str if event == "tool_start" else None,
-        "output": tool_response_str if event == "tool_complete" else None,
         "session": session_id,
-        "tool_use_id": tool_use_id,
-        "cwd": cwd
-    }))
-except Exception as e:
-    print(json.dumps({"parsed": False, "error": str(e)}))
-')
+        "project_id": project_id,
+        "project_name": project_name
+    }
 
-# Check if parsing succeeded
-PARSED_OK=$(echo "$PARSED" | python3 -c "import json,sys; print(json.load(sys.stdin).get('parsed', False))" 2>/dev/null || echo "False")
+    if event == "tool_start" and tool_input_str:
+        observation["input"] = scrub(tool_input_str)
+    if event == "tool_complete" and tool_response_str:
+        observation["output"] = scrub(tool_response_str)
 
-if [ "$PARSED_OK" != "True" ]; then
-  # Fallback: log raw input for debugging
-  timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  export TIMESTAMP="$timestamp"
-  echo "$INPUT_JSON" | python3 -c "
-import json, sys, os
-raw = sys.stdin.read()[:2000]
-print(json.dumps({'timestamp': os.environ['TIMESTAMP'], 'event': 'parse_error', 'raw': raw}))
-" >> "$OBSERVATIONS_FILE"
-  exit 0
-fi
+    print(json.dumps(observation))
 
-# Archive if file too large (atomic: rename with unique suffix to avoid race)
-if [ -f "$OBSERVATIONS_FILE" ]; then
-  file_size_mb=$(du -m "$OBSERVATIONS_FILE" 2>/dev/null | cut -f1)
-  if [ "${file_size_mb:-0}" -ge "$MAX_FILE_SIZE_MB" ]; then
-    archive_dir="${PROJECT_DIR}/observations.archive"
-    mkdir -p "$archive_dir"
-    mv "$OBSERVATIONS_FILE" "$archive_dir/observations-$(date +%Y%m%d-%H%M%S)-$$.jsonl" 2>/dev/null || true
-  fi
-fi
-
-# Build and write observation (now includes project context)
-timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
-export PROJECT_ID_ENV="$PROJECT_ID"
-export PROJECT_NAME_ENV="$PROJECT_NAME"
-export TIMESTAMP="$timestamp"
-
-echo "$PARSED" | python3 -c "
-import json, sys, os
-
-parsed = json.load(sys.stdin)
-observation = {
-    'timestamp': os.environ['TIMESTAMP'],
-    'event': parsed['event'],
-    'tool': parsed['tool'],
-    'session': parsed['session'],
-    'project_id': os.environ.get('PROJECT_ID_ENV', 'global'),
-    'project_name': os.environ.get('PROJECT_NAME_ENV', 'global')
-}
-
-if parsed['input']:
-    observation['input'] = parsed['input']
-if parsed['output'] is not None:
-    observation['output'] = parsed['output']
-
-print(json.dumps(observation))
-" >> "$OBSERVATIONS_FILE"
+except Exception:
+    # Parse failure fallback — scrub raw input before logging
+    safe_raw = scrub(raw_input[:2000])
+    print(json.dumps({"timestamp": timestamp, "event": "parse_error", "raw": safe_raw}))
+' >> "$OBSERVATIONS_FILE"
 
 # Signal observer if running (check both project-scoped and global observer)
 for pid_file in "${PROJECT_DIR}/.observer.pid" "${CONFIG_DIR}/.observer.pid"; do

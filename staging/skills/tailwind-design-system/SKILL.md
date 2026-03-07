@@ -424,8 +424,8 @@ function LoginForm() {
     resolver: zodResolver(schema),
   })
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    // Handle form submission with validated data
+  const onSubmit = async (data: z.infer<typeof schema>) => {
+    await handleSubmit(data);
   }
 
   return (
@@ -539,27 +539,27 @@ export function Container({ className, size, ...props }: ContainerProps) {
 @theme {
   --animate-dialog-in: dialog-fade-in 0.2s ease-out;
   --animate-dialog-out: dialog-fade-out 0.15s ease-in;
-}
 
-@keyframes dialog-fade-in {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(-0.5rem);
+  @keyframes dialog-fade-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
   }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
 
-@keyframes dialog-fade-out {
-  from {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.95) translateY(-0.5rem);
+  @keyframes dialog-fade-out {
+    from {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.95) translateY(-0.5rem);
+    }
   }
 }
 
@@ -694,6 +694,7 @@ export function ThemeProvider({
   }, [theme])
 
   return (
+    {/* suppressHydrationWarning prevents SSR/client mismatch flash on theme class */}
     <ThemeContext.Provider value={{
       theme,
       setTheme: (newTheme) => {
@@ -712,6 +713,10 @@ export const useTheme = () => {
   if (!context) throw new Error('useTheme must be used within ThemeProvider')
   return context
 }
+
+// For Next.js projects, consider using next-themes which handles SSR hydration
+// correctly (adds suppressHydrationWarning to <html> and uses a script tag to
+// set the theme before React hydrates, preventing flash of wrong theme).
 
 // components/ThemeToggle.tsx
 import { Moon, Sun } from 'lucide-react'
@@ -872,7 +877,7 @@ Define reusable custom utilities:
 ## Resources
 
 - [Tailwind CSS v4 Documentation](https://tailwindcss.com/docs)
-- [Tailwind v4 Beta Announcement](https://tailwindcss.com/blog/tailwindcss-v4-beta)
+- [Tailwind CSS v4](https://tailwindcss.com/blog/tailwindcss-v4)
 - [CVA Documentation](https://cva.style/docs)
 - [shadcn/ui](https://ui.shadcn.com/)
 - [Radix Primitives](https://www.radix-ui.com/primitives)

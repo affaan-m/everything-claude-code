@@ -126,6 +126,12 @@ implementer-2: Shared auth infrastructure (horizontal — middleware, JWT utils,
 
 **Best for**: Most real-world features with some shared infrastructure.
 
+## Worktree Isolation (Required)
+
+Each implementer agent MUST use `isolation: worktree` or `claude --worktree` to work on an isolated copy of the repo. Without isolation, parallel agents editing files in the same working directory will silently clobber each other's work.
+
+When spawning implementer subagents via the Task tool, pass `isolation: "worktree"` in the agent configuration. For CLI usage, run each agent with `claude --worktree` or `claude --worktree --tmux` for background execution.
+
 ## Branch Management
 
 ### Single Branch Strategy
@@ -150,3 +156,14 @@ feature/auth
 - More isolation, explicit merge points
 - Higher overhead, merge conflicts still possible in shared files
 - Best for: larger teams (4+), complex features
+
+## Post-Integration Verification
+
+After merging all agent branches:
+
+1. Run `git diff` to review the combined changes — never assume integration succeeded because individual agents reported success
+2. Run the full test suite
+3. Run type-check (`npx tsc --noEmit`)
+4. Run lint
+
+Individual agent success does not guarantee successful integration. Conflicts, duplicate code, and incompatible assumptions surface only at merge time.

@@ -33,6 +33,8 @@ alter system set max_connections = 100;
 -- Also set work_mem appropriately
 -- work_mem * max_connections should not exceed 25% of RAM
 alter system set work_mem = '8MB';  -- 8MB * 100 = 800MB max
+
+-- Changes require: SELECT pg_reload_conf(); (for most settings) or a full restart (for shared_buffers, etc.)
 ```
 
 Monitor connection usage:

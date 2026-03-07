@@ -32,9 +32,10 @@ Task tool (general-purpose):
     1. Implement exactly what the task specifies
     2. Write tests (following TDD if task says to)
     3. Verify implementation works
-    4. Commit your work
-    5. Self-review (see below)
-    6. Report back
+    4. Before committing, read the full `git diff` to review your changes. Check for unintended modifications, debug code, or files you didn't mean to touch.
+    5. Commit your work
+    6. Self-review (see below)
+    7. Report back
 
     Work from: [directory]
 
@@ -64,6 +65,13 @@ Task tool (general-purpose):
     - Do tests actually verify behavior (not just mock behavior)?
     - Did I follow TDD if required?
     - Are tests comprehensive?
+
+    **Hard-stops check:**
+    - No TODOs/FIXMEs in committed code
+    - No console.log (except logging utilities)
+    - No placeholder implementations
+    - No dead or commented-out code
+    - No untyped `any` without justification comment
 
     If you find issues during self-review, fix them now before reporting.
 

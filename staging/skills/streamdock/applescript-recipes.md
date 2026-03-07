@@ -222,13 +222,15 @@ end tell
 Requires: `brew install brightness`
 
 ```applescript
-set currentBrightness to do shell script "/usr/local/bin/brightness -l 2>&1 | grep 'display 0' | awk '{print $NF}'"
+set brewPrefix to do shell script "brew --prefix"
+set brightnessBin to brewPrefix & "/bin/brightness"
+set currentBrightness to do shell script brightnessBin & " -l 2>&1 | grep 'display 0' | awk '{print $NF}'"
 set brightnessVal to currentBrightness as number
 
 if brightnessVal > 0.5 then
-    do shell script "/usr/local/bin/brightness 0.2"
+    do shell script brightnessBin & " 0.2"
 else
-    do shell script "/usr/local/bin/brightness 1.0"
+    do shell script brightnessBin & " 1.0"
 end if
 ```
 

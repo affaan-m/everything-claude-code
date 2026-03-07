@@ -66,15 +66,20 @@ export default function Page() {
 
 ### 3. Avoid Barrel File Imports (200-800ms cold start cost)
 
-```tsx
-// BAD: loads 1,583 modules           // GOOD: loads 3 modules
-import { Check, X } from 'lucide-react' import Check from 'lucide-react/dist/esm/icons/check'
-                                        import X from 'lucide-react/dist/esm/icons/x'
+**Primary approach** -- use `optimizePackageImports` in next.config.js (Next.js 13.5+):
+```js
+// next.config.js (Next.js 14.1+)
+module.exports = {
+  optimizePackageImports: ['lucide-react', '@mui/material'],
+}
+// For Next.js < 14.1, use `experimental: { optimizePackageImports: [...] }`
 ```
 
-Or use Next.js 13.5+ `optimizePackageImports` in next.config.js:
-```js
-experimental: { optimizePackageImports: ['lucide-react', '@mui/material'] }
+**Fragile fallback** -- direct internal imports (paths are version-dependent and may break on upgrades):
+```tsx
+// BAD: loads 1,583 modules           // FALLBACK: loads 3 modules (fragile)
+import { Check, X } from 'lucide-react' import Check from 'lucide-react/dist/esm/icons/check'
+                                        import X from 'lucide-react/dist/esm/icons/x'
 ```
 
 Affected libs: `lucide-react`, `@mui/material`, `@tabler/icons-react`, `react-icons`,
@@ -130,7 +135,7 @@ via context. Consumers compose only what they need.
 const ComposerContext = createContext<ComposerContextValue | null>(null)
 
 function ComposerInput() {
-  const { state, actions: { update }, meta } = use(ComposerContext)
+  const { state, actions: { update }, meta } = use(ComposerContext) // use() requires React 19+; for React 18, use useContext(ComposerContext)
   return <TextInput ref={meta.inputRef} value={state.input}
     onChangeText={(text) => update(s => ({ ...s, input: text }))} />
 }
@@ -201,6 +206,8 @@ Only pass fields the client component uses. All props are serialized into HTML.
 ```
 
 ### 11. React.cache() for Per-Request Dedup
+
+> Requires React 19+. For React 18, use manual memoization (e.g., module-level `Map` or `unstable_cache` from Next.js).
 
 Wraps server-side non-fetch async work (DB queries, auth checks). Use primitive
 args -- inline objects always miss (shallow equality via `Object.is`).

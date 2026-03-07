@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+description: "Use before significant creative work — new features, major UI changes, architectural decisions. Skip for trivial changes like config edits or dependency bumps. Explores user intent, requirements and design before implementation."
 ---
 
 # Brainstorming Ideas Into Designs
@@ -68,6 +68,7 @@ You MUST create a task for each of these items and complete them in order:
 **Documentation:**
 - Write the validated design to `docs/plans/YYYY-MM-DD-<topic>-design.md`
 - Use elements-of-style:writing-clearly-and-concisely skill if available
+- Before committing: verify the file doesn't already exist (`git ls-files | grep <filename>`), check for TODOs/placeholders in the document, and review with `git diff`.
 - Commit the design document to git
 
 **Implementation:**

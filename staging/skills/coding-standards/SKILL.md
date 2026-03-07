@@ -22,7 +22,8 @@ async function fetchData(): Promise<Result<Data>> {
     const response = await api.get('/data');
     return { success: true, data: response.data };
   } catch (error) {
-    console.error('Fetch failed:', error);
+    // Use your project's logger — avoid console.error in production code
+    logger.error('Fetch failed:', error);
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
@@ -181,7 +182,8 @@ async function fetchUser(id: string): Promise<Result<User>> {
     if (!user) return { success: false, error: 'User not found' };
     return { success: true, data: user };
   } catch (error) {
-    console.error('Database error:', error);
+    // Use your project's logger — avoid console.error in production code
+    logger.error('Database error:', error);
     return { success: false, error: 'Database unavailable' };
   }
 }

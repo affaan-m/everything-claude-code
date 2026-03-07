@@ -252,8 +252,11 @@ Use `generateImageMetadata` for multiple images per route:
 // app/blog/[slug]/opengraph-image.tsx
 import { ImageResponse } from 'next/og'
 
-export async function generateImageMetadata({ params }) {
-  const images = await getPostImages(params.slug)
+type Props = { params: Promise<{ slug: string }> }
+
+export async function generateImageMetadata({ params }: Props) {
+  const { slug } = await params
+  const images = await getPostImages(slug)
   return images.map((img, idx) => ({
     id: idx,
     alt: img.alt,
@@ -262,8 +265,9 @@ export async function generateImageMetadata({ params }) {
   }))
 }
 
-export default async function Image({ params, id }) {
-  const images = await getPostImages(params.slug)
+export default async function Image({ params }: Props & { id: number }) {
+  const { slug } = await params
+  const images = await getPostImages(slug)
   const image = images[id]
   return new ImageResponse(/* ... */)
 }

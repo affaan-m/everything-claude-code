@@ -86,6 +86,8 @@ curl -X POST http://localhost:<port>/_next/mcp \
 
 ## Rebuild Specific Routes (Next.js 16+)
 
+> **[UNVERIFIED]** The `next build --debug-build-paths` flag referenced as Next.js 16+ has not been verified against stable Next.js releases. Verify against https://nextjs.org/docs before using.
+
 Use `--debug-build-paths` to rebuild only specific routes instead of the entire app:
 
 ```bash

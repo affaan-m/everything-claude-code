@@ -31,10 +31,12 @@ Audit your Claude Code configuration for security issues using [AgentShield](htt
 AgentShield must be installed. Check and install if needed:
 
 ```bash
+# Pin to a specific version in production usage, e.g.: npx ecc-agentshield@1.x.x
 # Check if installed
-npx ecc-agentshield --version
+npx ecc-agentshield@latest --version
 
 # Install globally (recommended)
+# Ask the user for approval before installing. This is a global package installation that modifies the system.
 npm install -g ecc-agentshield
 
 # Or run directly via npx (no install needed)
@@ -82,6 +84,8 @@ Apply safe fixes automatically (only fixes marked as auto-fixable):
 npx ecc-agentshield scan --fix
 ```
 
+Review all changes with `git diff` before committing. The --fix flag modifies configuration files automatically.
+
 This will:
 - Replace hardcoded secrets with environment variable references
 - Tighten wildcard permissions to scoped alternatives
@@ -120,7 +124,8 @@ Creates:
 Add to your CI pipeline:
 
 ```yaml
-- uses: affaan-m/agentshield@v1
+# For production workflows, pin to a specific commit SHA instead of a tag to prevent supply chain attacks.
+- uses: affaan-m/agentshield@sha256:abc123...  # pin to specific commit SHA
   with:
     path: '.'
     min-severity: 'medium'

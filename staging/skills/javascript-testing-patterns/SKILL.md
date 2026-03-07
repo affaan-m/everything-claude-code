@@ -1,6 +1,6 @@
 ---
 name: javascript-testing-patterns
-description: Implement comprehensive testing strategies using Jest, Vitest, and Testing Library for unit tests, integration tests, and end-to-end testing with mocking, fixtures, and test-driven development. Use when writing JavaScript/TypeScript tests, setting up test infrastructure, or implementing TDD/BDD workflows.
+description: Implement comprehensive testing strategies using Vitest and Testing Library for unit tests, integration tests, and end-to-end testing with mocking, fixtures, and test-driven development.
 ---
 
 # JavaScript Testing Patterns
@@ -207,6 +207,7 @@ describe("User API Integration Tests", () => {
     await pool.query("CREATE TABLE IF NOT EXISTS users (...)");
   });
 
+  // IMPORTANT: Integration tests MUST use a dedicated test database (TEST_DATABASE_URL), never production
   afterAll(async () => {
     await pool.query("DROP TABLE IF EXISTS users");
     await pool.end();
@@ -279,6 +280,7 @@ describe("UserRepository Integration Tests", () => {
     await pool.query(`CREATE TABLE IF NOT EXISTS users (...)`);
   });
 
+  // IMPORTANT: Integration tests MUST use a dedicated test database (TEST_DATABASE_URL), never production
   afterAll(async () => {
     await pool.query("DROP TABLE IF EXISTS users");
     await pool.end();
@@ -323,3 +325,11 @@ it("should call function after delay", () => {
   vi.useRealTimers();
 });
 ```
+
+## TDD Workflow
+
+1. Write a failing test (RED).
+2. Write minimal code to pass (GREEN).
+3. Refactor while tests pass (REFACTOR).
+
+TDD is the default for all work except /spike mode.

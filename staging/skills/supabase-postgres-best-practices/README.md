@@ -3,32 +3,15 @@
 This skill contains Postgres performance optimization references optimized for
 AI agents and LLMs. It follows the [Agent Skills Open Standard](https://agentskills.io/).
 
-## Quick Start
-
-```bash
-# From repository root
-npm install
-
-# Validate existing references
-npm run validate
-
-# Build AGENTS.md
-npm run build
-```
-
 ## Creating a New Reference
 
 1. **Choose a section prefix** based on the category:
-   - `query-` Query Performance (CRITICAL)
    - `conn-` Connection Management (CRITICAL)
    - `security-` Security & RLS (CRITICAL)
-   - `schema-` Schema Design (HIGH)
    - `lock-` Concurrency & Locking (MEDIUM-HIGH)
-   - `data-` Data Access Patterns (MEDIUM)
    - `monitor-` Monitoring & Diagnostics (LOW-MEDIUM)
-   - `advanced-` Advanced Features (LOW)
 
-2. **Create a new reference file** in `references/` with the appropriate prefix (e.g., `query-`, `conn-`, `schema-`).
+2. **Create a new reference file** in `references/` with the appropriate prefix.
 
 3. **Fill in the content** following the structure of existing reference files.
 

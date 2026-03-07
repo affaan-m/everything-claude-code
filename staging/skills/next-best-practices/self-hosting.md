@@ -334,7 +334,7 @@ export async function GET() {
     // await db.$queryRaw`SELECT 1`;
 
     return Response.json({ status: 'healthy' }, { status: 200 });
-  } catch (error) {
+  } catch {
     return Response.json({ status: 'unhealthy' }, { status: 503 });
   }
 }

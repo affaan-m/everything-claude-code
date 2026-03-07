@@ -39,6 +39,7 @@ grant usage on sequence orders_id_seq to app_writer;
 -- No DELETE permission
 
 -- Login role inherits from these
+-- NEVER hardcode passwords. Use environment variables or a secrets manager.
 create role app_user login password 'xxx';
 grant app_writer to app_user;
 ```

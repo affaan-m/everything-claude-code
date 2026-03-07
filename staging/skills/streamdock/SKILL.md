@@ -5,6 +5,9 @@ description: Build and manage StreamDock (VSD) macro buttons — app launchers, 
 
 # StreamDock Macro Builder
 
+## Cost Routing
+StreamDock manifest edits, icon generation, and script compilation are mechanical — route to Sonnet when available.
+
 ## Workflow
 
 1. **Read current manifest** — ALWAYS first, GUI may have changed it

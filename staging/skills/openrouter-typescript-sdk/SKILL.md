@@ -32,7 +32,7 @@ const client = new OpenRouter({
 
 ```typescript
 const result = client.callModel({
-  model: 'openai/gpt-5-nano',
+  model: 'openai/gpt-4o-mini',
   input: 'Explain quantum computing in one sentence.',
 });
 
@@ -62,7 +62,7 @@ input: [{ role: 'user', content: [
 
 ```typescript
 client.callModel({
-  model: 'openai/gpt-5-nano',
+  model: 'openai/gpt-4o-mini',
   instructions: 'You are a helpful coding assistant. Be concise.',
   input: 'How do I reverse a string in Python?'
 });
@@ -108,7 +108,7 @@ const weatherTool = tool({
 });
 
 const result = client.callModel({
-  model: 'openai/gpt-5-nano',
+  model: 'openai/gpt-4o-mini',
   input: 'What is the weather in Paris?',
   tools: [weatherTool]
 });
@@ -165,7 +165,7 @@ for await (const delta of result.getTextStream()) {
 
 // Stream tool calls
 for await (const toolCall of result.getToolCallsStream()) {
-  console.log(`Tool: ${toolCall.name}`, toolCall.arguments, toolCall.result);
+  // Process the tool call result
 }
 
 // Multiple consumers work concurrently on the same result object
@@ -183,7 +183,7 @@ Errors expose `error.statusCode`: **401** (bad key), **402** (no credits), **429
 
 ```typescript
 try {
-  await client.callModel({ model: 'openai/gpt-5-nano', input: 'Hello!' }).getText();
+  await client.callModel({ model: 'openai/gpt-4o-mini', input: 'Hello!' }).getText();
 } catch (error) {
   if (error.statusCode === 429 || error.statusCode >= 500) {
     // Retry with exponential backoff: sleep(2^attempt * 1000ms)
@@ -217,7 +217,7 @@ const finishTool = tool({
 });
 
 const result = client.callModel({
-  model: 'openai/gpt-5-nano',
+  model: 'openai/gpt-4o-mini',
   instructions: 'Research assistant. Use web_search, then finish.',
   input: 'Latest quantum computing developments?',
   tools: [searchTool, finishTool],
@@ -225,9 +225,9 @@ const result = client.callModel({
 });
 
 for await (const tc of result.getToolCallsStream()) {
-  console.log(`[${tc.name}]`, tc.arguments);
+  // Handle the streaming chunk
 }
-console.log(await result.getText());
+// Process the final response text
 ```
 
 ---
@@ -239,6 +239,13 @@ console.log(await result.getText());
 3. **Always set stop conditions** -- prevent runaway costs: `stopWhen: [stepCountIs(20), maxCost(5.00)]`
 4. **Use streaming for long responses** -- better UX, enables early termination
 5. **Handle errors with retry logic** -- exponential backoff for 429/5xx
+6. **Use your project's logger** -- examples omit logging for clarity. Use your project's logger in production
+
+---
+
+## Cost-Aware Model Routing
+
+OpenRouter provides access to 300+ models. Route by task complexity: use cheap models (GPT-4o-mini, Haiku) for classification and extraction, mid-tier models (Sonnet, GPT-4o) for general tasks, premium models (Opus, o1) for complex reasoning.
 
 ---
 

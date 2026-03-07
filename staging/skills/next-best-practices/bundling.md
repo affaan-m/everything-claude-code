@@ -139,6 +139,8 @@ module.exports = {
 
 ## Bundle Analysis
 
+> **[UNVERIFIED]** The `next experimental-analyze` command referenced as Next.js 16.1+ has not been verified against stable Next.js releases. Verify against https://nextjs.org/docs before using.
+
 Analyze bundle size with the built-in analyzer (Next.js 16.1+):
 
 ```bash

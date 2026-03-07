@@ -148,13 +148,19 @@ Agent 3 → Fix tool-approval-race-conditions.test.ts
 3. **Independence** - Agents don't interfere with each other
 4. **Speed** - 3 problems solved in time of 1
 
+## Worktree Isolation
+
+All write-heavy subagents MUST use `isolation: worktree` to prevent file clobbering. Read-only agents (research, review) do not need isolation.
+
 ## Verification
 
 After agents return:
 1. **Review each summary** - Understand what changed
-2. **Check for conflicts** - Did agents edit same code?
-3. **Run full suite** - Verify all fixes work together
-4. **Spot check** - Agents can make systematic errors
+2. **Check `git diff` from each agent's worktree** - Verify files were actually modified as claimed
+3. **Check for conflicts** - Did agents edit same code?
+4. **Run the full test suite after integrating changes** - Verify all fixes work together
+5. **Spot check** - Agents can make systematic errors
+6. **Never trust agent success reports at face value** - Always verify with VCS diff and actual test runs
 
 ## Real-World Impact
 

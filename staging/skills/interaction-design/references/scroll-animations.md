@@ -311,14 +311,15 @@ function StickySection({ title, content, image }) {
 
 ## Smooth Scroll
 
-```tsx
-// Using CSS
+```css
 html {
   scroll-behavior: smooth;
 }
+```
 
+```tsx
 // Using Lenis for butter-smooth scrolling
-import Lenis from '@studio-freight/lenis';
+import Lenis from 'lenis';
 
 function SmoothScrollProvider({ children }) {
   useEffect(() => {

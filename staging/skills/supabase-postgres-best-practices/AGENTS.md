@@ -16,7 +16,7 @@ supabase-postgres-best-practices/
 2. Browse `references/` for detailed documentation on specific topics
 3. Reference files are loaded on-demand - read only what you need
 
-Comprehensive performance optimization guide for Postgres, maintained by Supabase. Contains rules across 8 categories, prioritized by impact to guide automated query optimization and schema design.
+Comprehensive performance optimization guide for Postgres, maintained by Supabase. Contains rules across 4 categories, prioritized by impact to guide automated query optimization and schema design.
 
 ## When to Apply
 
@@ -32,14 +32,10 @@ Reference these guidelines when:
 
 | Priority | Category | Impact | Prefix |
 |----------|----------|--------|--------|
-| 1 | Query Performance | CRITICAL | `query-` |
-| 2 | Connection Management | CRITICAL | `conn-` |
-| 3 | Security & RLS | CRITICAL | `security-` |
-| 4 | Schema Design | HIGH | `schema-` |
-| 5 | Concurrency & Locking | MEDIUM-HIGH | `lock-` |
-| 6 | Data Access Patterns | MEDIUM | `data-` |
-| 7 | Monitoring & Diagnostics | LOW-MEDIUM | `monitor-` |
-| 8 | Advanced Features | LOW | `advanced-` |
+| 1 | Connection Management | CRITICAL | `conn-` |
+| 2 | Security & RLS | CRITICAL | `security-` |
+| 3 | Concurrency & Locking | MEDIUM-HIGH | `lock-` |
+| 4 | Monitoring & Diagnostics | LOW-MEDIUM | `monitor-` |
 
 ## How to Use
 

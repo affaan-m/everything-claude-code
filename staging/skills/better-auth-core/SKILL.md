@@ -132,7 +132,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url, token }, request) => {
-      void sendEmail({
+      void sendEmail({ // void intentional: prevents timing attacks by not awaiting email delivery. Log failures separately via your email service's webhook/dashboard.
         to: user.email,
         subject: "Reset your password",
         text: `Click the link to reset your password: ${url}`,

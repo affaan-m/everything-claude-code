@@ -9,7 +9,7 @@ When adding 2FA to your application, configure the `twoFactor` plugin with your 
 
 ```ts
 import { betterAuth } from "better-auth";
-import { twoFactor } from "better-auth/plugins";
+import { twoFactor } from "better-auth/plugins/two-factor";
 
 export const auth = betterAuth({
   appName: "My App", // Used as the default issuer for TOTP
@@ -121,7 +121,7 @@ OTP sends a one-time code to the user's email or phone. You must implement the `
 
 ```ts
 import { betterAuth } from "better-auth";
-import { twoFactor } from "better-auth/plugins";
+import { twoFactor } from "better-auth/plugins/two-factor";
 import { sendEmail } from "./email";
 
 export const auth = betterAuth({
@@ -172,6 +172,8 @@ twoFactor({
   },
 });
 ```
+
+**Default storage is `"plain"` — ALWAYS set to `"encrypted"` or `"hashed"` in production. Never store OTP secrets in plaintext.**
 
 For custom encryption:
 
@@ -376,7 +378,7 @@ const disable2FA = async (password: string) => {
 
 ```ts
 import { betterAuth } from "better-auth";
-import { twoFactor } from "better-auth/plugins";
+import { twoFactor } from "better-auth/plugins/two-factor";
 import { sendEmail } from "./email";
 
 export const auth = betterAuth({
@@ -415,3 +417,15 @@ export const auth = betterAuth({
   ],
 });
 ```
+
+---
+
+## Production Checklist
+
+| Area | Check |
+|------|-------|
+| **OTP Storage** | `storeOTP` set to `"encrypted"` or `"hashed"`. Never `"plain"` in production. |
+| **Backup Code Length** | `backupCodeOptions.length` is at least 10 characters. |
+| **Trust Device Duration** | `trustDeviceMaxAge` is appropriate for your threat model (default 30 days). |
+| **Rate Limiting** | Rate limiting enabled on verification endpoints. OTP `allowedAttempts` configured. |
+| **Fresh Session** | `session.freshAge` configured so enable/disable 2FA requires recent authentication. |

@@ -4,6 +4,8 @@
 
 The most popular React animation library with declarative API.
 
+> **Note:** Framer Motion components require the `'use client'` directive in Next.js App Router.
+
 ### Basic Animations
 
 ```tsx
@@ -146,7 +148,7 @@ function StaggeredList({ items }) {
 
 ```tsx
 import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 
 const pageVariants = {
   initial: { opacity: 0, x: -20 },
@@ -155,12 +157,12 @@ const pageVariants = {
 };
 
 function PageTransition({ children }) {
-  const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
-        key={router.pathname}
+        key={pathname}
         variants={pageVariants}
         initial="initial"
         animate="enter"

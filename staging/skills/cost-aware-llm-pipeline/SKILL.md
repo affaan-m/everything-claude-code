@@ -22,7 +22,7 @@ Patterns for controlling LLM API costs while maintaining quality. Combines model
 Automatically select cheaper models for simple tasks, reserving expensive models for complex ones.
 
 ```python
-MODEL_SONNET = "claude-sonnet-4-6"
+MODEL_SONNET = "claude-sonnet-4-6"  # Verify current model IDs at https://docs.anthropic.com/en/docs/about-claude/models
 MODEL_HAIKU = "claude-haiku-4-5-20251001"
 
 _SONNET_TEXT_THRESHOLD = 10_000  # chars
@@ -81,6 +81,8 @@ class CostTracker:
 Retry only on transient errors. Fail fast on authentication or bad request errors.
 
 ```python
+import time
+
 from anthropic import (
     APIConnectionError,
     InternalServerError,
@@ -158,6 +160,8 @@ def process(text: str, config: Config, tracker: CostTracker) -> tuple[Result, Co
 | Haiku 4.5 | $0.80 | $4.00 | 1x |
 | Sonnet 4.6 | $3.00 | $15.00 | ~4x |
 | Opus 4.5 | $15.00 | $75.00 | ~19x |
+
+Verify current pricing at anthropic.com/pricing — prices change over time.
 
 ## Best Practices
 

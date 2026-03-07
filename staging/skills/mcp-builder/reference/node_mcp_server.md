@@ -200,6 +200,7 @@ Error Handling:
     try {
       // Input validation is handled by Zod schema
       // Make API request using validated parameters
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any — API response type varies by endpoint
       const data = await makeApiRequest<any>(
         "users/search",
         "GET",
@@ -228,6 +229,7 @@ Error Handling:
         total,
         count: users.length,
         offset: params.offset,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any — user shape varies per API response
         users: users.map((user: any) => ({
           id: user.id,
           name: user.name,
@@ -442,7 +444,9 @@ Extract common functionality into reusable functions:
 async function makeApiRequest<T>(
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — request body varies by endpoint
   data?: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — query params vary by endpoint
   params?: any
 ): Promise<T> {
   try {
@@ -635,7 +639,9 @@ type UserSearchInput = z.infer<typeof UserSearchInputSchema>;
 async function makeApiRequest<T>(
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — request body varies by endpoint
   data?: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any — query params vary by endpoint
   params?: any
 ): Promise<T> {
   try {
@@ -687,7 +693,26 @@ server.registerTool(
   "example_search_users",
   {
     title: "Search Example Users",
-    description: `[Full description as shown above]`,
+    description: `Search for users in the Example system by name, email, or team.
+
+This tool searches across all user profiles in the Example platform, supporting partial matches and various search filters. It does NOT create or modify users, only searches existing ones.
+
+Args:
+  - query (string): Search string to match against names/emails
+  - limit (number): Maximum results to return, between 1-100 (default: 20)
+  - offset (number): Number of results to skip for pagination (default: 0)
+  - response_format ('markdown' | 'json'): Output format (default: 'markdown')
+
+Returns:
+  JSON object with total, count, offset, users array, has_more, and next_offset fields.
+
+Examples:
+  - "Find all marketing team members" -> query="team:marketing"
+  - "Search for John's account" -> query="john"
+
+Error Handling:
+  - Returns "Error: Rate limit exceeded" if too many requests (429 status)
+  - Returns "No users found matching '<query>'" if search returns empty`,
     inputSchema: UserSearchInputSchema,
     annotations: {
       readOnlyHint: true,

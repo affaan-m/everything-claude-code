@@ -114,8 +114,7 @@ async def service_tool_name(params: ServiceToolInput) -> str:
     Returns:
         str: JSON-formatted response containing operation results
     '''
-    # Implementation here
-    pass
+    raise NotImplementedError("Implement tool logic")
 ```
 
 ## Pydantic v2 Key Features
@@ -419,7 +418,27 @@ def _handle_api_error(e: Exception) -> str:
 async def example_search_users(params: UserSearchInput) -> str:
     '''Search for users in the Example system by name, email, or team.
 
-    [Full docstring as shown above]
+    This tool searches across all user profiles in the Example platform,
+    supporting partial matches and various search filters. It does NOT
+    create or modify users, only searches existing ones.
+
+    Args:
+        params (UserSearchInput): Validated input parameters containing:
+            - query (str): Search string to match against names/emails
+            - limit (Optional[int]): Maximum results to return, between 1-100 (default: 20)
+            - offset (Optional[int]): Number of results to skip for pagination (default: 0)
+            - response_format (ResponseFormat): Output format (default: 'markdown')
+
+    Returns:
+        str: Formatted search results (Markdown or JSON depending on response_format).
+
+    Examples:
+        - "Find all marketing team members" -> params with query="team:marketing"
+        - "Search for John's account" -> params with query="john"
+
+    Error Handling:
+        - Returns "Error: Rate limit exceeded" if too many requests (429 status)
+        - Returns "No users found matching '<query>'" if search returns empty
     '''
     try:
         # Make API request using validated parameters

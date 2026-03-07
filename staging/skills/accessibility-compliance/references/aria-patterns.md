@@ -547,17 +547,20 @@ function ChatLog({ messages }) {
 <div id="menu">Menu content</div>
 ```
 
-### 3. Hidden Content Still Announced
+### 3. Hiding Content from Assistive Technology
 
 ```tsx
-// Bad: visually hidden but still in accessibility tree
-<div style={{ display: 'none' }}>Hidden content</div>
+// display: none removes elements from both the visual layout AND the accessibility tree.
+// No additional aria-hidden needed:
+<div style={{ display: 'none' }}>Hidden from everyone</div>
 
-// Good: properly hidden
-<div style={{ display: 'none' }} aria-hidden="true">Hidden content</div>
+// The hidden attribute also removes from both visual and accessibility tree:
+<div hidden>Hidden from everyone</div>
 
-// Or just use display: none (implicitly hidden)
-<div hidden>Hidden content</div>
+// Use aria-hidden="true" for elements that are visually PRESENT but should
+// be hidden from assistive technology (e.g., decorative icons):
+<span aria-hidden="true">🔍</span>
+<span className="sr-only">Search</span>
 ```
 
 ## Resources

@@ -11,6 +11,12 @@ Current stable API for building AI agents and features with the Vercel AI SDK.
 
 ---
 
+## Model Selection
+
+Use Haiku/Flash for classification, extraction, and simple tool calls. Use Sonnet for general coding and chat. Reserve Opus for complex multi-step reasoning. The AI Gateway model list endpoint can help discover available models.
+
+---
+
 ## Core Functions
 
 ### generateText — Single LLM call
@@ -18,7 +24,7 @@ Current stable API for building AI agents and features with the Vercel AI SDK.
 import { generateText } from 'ai';
 
 const { text, toolCalls, toolResults, usage } = await generateText({
-  model: 'anthropic/claude-sonnet-4-5-20250929',
+  model: 'anthropic/claude-sonnet-4-5',
   prompt: 'Explain quantum computing in one paragraph.',
 });
 ```
@@ -28,7 +34,7 @@ const { text, toolCalls, toolResults, usage } = await generateText({
 import { streamText } from 'ai';
 
 const result = streamText({
-  model: 'anthropic/claude-sonnet-4-5-20250929',
+  model: 'anthropic/claude-sonnet-4-5',
   prompt: 'Write a haiku about TypeScript.',
 });
 
@@ -43,7 +49,7 @@ import { generateText, Output } from 'ai';
 import { z } from 'zod';
 
 const { output } = await generateText({
-  model: 'anthropic/claude-sonnet-4-5-20250929',
+  model: 'anthropic/claude-sonnet-4-5',
   output: Output.object({
     schema: z.object({
       name: z.string(),
@@ -80,7 +86,7 @@ const weatherTool = tool({
 Use with generateText/streamText:
 ```typescript
 const { text } = await generateText({
-  model: 'anthropic/claude-sonnet-4-5-20250929',
+  model: 'anthropic/claude-sonnet-4-5',
   tools: { weather: weatherTool },
   stopWhen: stepCountIs(5),
   prompt: 'What is the weather in Tokyo?',
@@ -98,7 +104,7 @@ import { ToolLoopAgent, tool } from 'ai';
 import { z } from 'zod';
 
 const agent = new ToolLoopAgent({
-  model: 'anthropic/claude-sonnet-4-5-20250929',
+  model: 'anthropic/claude-sonnet-4-5',
   instructions: 'You are a helpful research assistant.',
   tools: {
     search: searchTool,
@@ -108,7 +114,7 @@ const agent = new ToolLoopAgent({
 
 // One-shot
 const result = await agent.generate({ prompt: 'Summarize the Q4 report.' });
-console.log(result.text);
+// Use result.text — contains the agent's final response
 
 // Streaming
 const stream = await agent.stream({ prompt: 'Summarize the Q4 report.' });
@@ -148,7 +154,7 @@ import { z } from 'zod';
 
 // 1. Define subagent with its own model, instructions, tools, and context
 const researchSubagent = new ToolLoopAgent({
-  model: 'anthropic/claude-sonnet-4-5-20250929',
+  model: 'anthropic/claude-sonnet-4-5',
   instructions: `You are a research agent. Complete the task autonomously.
 
 IMPORTANT: When finished, write a clear summary of your findings as your final response.
@@ -176,7 +182,7 @@ const researchTool = tool({
 
 // 3. Give to the main agent
 const mainAgent = new ToolLoopAgent({
-  model: 'anthropic/claude-sonnet-4-5-20250929',
+  model: 'anthropic/claude-sonnet-4-5',
   instructions: 'You are a helpful assistant that can delegate research tasks.',
   tools: {
     research: researchTool,
@@ -292,7 +298,13 @@ export function Chat() {
   return (
     <div>
       {messages.map(m => (
-        <div key={m.id}>{m.role}: {m.content}</div>
+        <div key={m.id}>
+          {m.role}:{' '}
+          {m.parts.map((part, i) => {
+            if (part.type === 'text') return <span key={i}>{part.text}</span>;
+            return null;
+          })}
+        </div>
       ))}
       <form onSubmit={handleSubmit}>
         <input value={input} onChange={e => setInput(e.target.value)} />
@@ -347,7 +359,7 @@ message.parts.map((part, i) => {
 ```typescript
 // Anthropic
 import { anthropic } from '@ai-sdk/anthropic';
-const model = anthropic('claude-sonnet-4-5-20250929');
+const model = anthropic('claude-sonnet-4-5');
 
 // OpenAI
 import { openai } from '@ai-sdk/openai';
@@ -359,7 +371,7 @@ const model = google('gemini-2.0-flash');
 
 // OpenRouter (multi-provider)
 import { openrouter } from '@openrouter/ai-sdk-provider';
-const model = openrouter('anthropic/claude-sonnet-4-5-20250929');
+const model = openrouter('anthropic/claude-sonnet-4-5');
 ```
 
 ---

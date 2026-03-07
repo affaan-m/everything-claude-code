@@ -5,6 +5,10 @@ description: Build RAG pipelines with vector search, hybrid retrieval, and embed
 
 # RAG Pipeline
 
+## Model Routing
+
+Use Haiku for simple extractive QA. Use Sonnet for synthesis and summarization. Reserve Opus for multi-step reasoning chains and complex document analysis.
+
 ## Decision Tables
 
 ### Embedding Model Selection
@@ -73,12 +77,14 @@ from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from typing import TypedDict
+import os
 
 llm = ChatAnthropic(model="claude-sonnet-4-6")
 embeddings = VoyageAIEmbeddings(model="voyage-3-large")
 vectorstore = PGVector(
     embeddings=embeddings, collection_name="docs",
-    connection="postgresql+psycopg://user:pass@localhost:5432/vectordb"
+    # Always use environment variables for connection strings — never hardcode credentials
+    connection=os.environ["DATABASE_URL"],
 )
 splitter = RecursiveCharacterTextSplitter(
     chunk_size=1000, chunk_overlap=200, separators=["\n\n", "\n", ". ", " ", ""]
@@ -203,11 +209,11 @@ class PostgresHybridSearch:
             where = "1=1"
             params = [query_embedding, query, limit * 3, vector_weight]
             if filter_metadata:
-                import re as _re
+                # Whitelist approach prevents SQL injection — never interpolate user-controlled keys
+                ALLOWED_METADATA_KEYS = {"source", "author", "date", "category", "type"}
                 for key, val in filter_metadata.items():
-                    # Validate key names to prevent SQL injection via dict keys
-                    if not _re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', key):
-                        raise ValueError(f"Invalid metadata key: {key}")
+                    if key not in ALLOWED_METADATA_KEYS:
+                        raise ValueError(f"Unknown metadata key: {key}")
                     params.append(val)
                     where += f" AND metadata->>'{key}' = ${len(params)}"
             results = await conn.fetch(f"""

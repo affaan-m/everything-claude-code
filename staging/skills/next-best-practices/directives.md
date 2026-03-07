@@ -66,7 +66,9 @@ export async function getCachedData() {
 }
 ```
 
-Requires `cacheComponents: true` in `next.config.ts`.
+Requires enabling in `next.config.ts` (e.g., `dynamicIO: true`).
+
+> **[UNVERIFIED]** The config key `cacheComponents: true` has not been verified against stable Next.js releases. The actual key may be `dynamicIO: true`. Verify against https://nextjs.org/docs before using.
 
 For detailed usage including cache profiles, `cacheLife()`, `cacheTag()`, and `updateTag()`, see the `next-cache-components` skill.
 
