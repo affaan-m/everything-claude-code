@@ -110,7 +110,7 @@ This repo is the raw code only. The guides explain everything.
 
 - **Interactive installation wizard** — New `configure-ecc` skill provides guided setup with merge/overwrite detection
 - **PM2 & multi-agent orchestration** — 6 new commands (`/pm2`, `/multi-plan`, `/multi-execute`, `/multi-backend`, `/multi-frontend`, `/multi-workflow`) for managing complex multi-service workflows
-- **Multi-language rules architecture** — Rules restructured from flat files into `common/` + `typescript/` + `python/` + `golang/` + `perl/` directories. Install only the languages you need
+- **Multi-language rules architecture** — Rules restructured from flat files into `common/` + `typescript/` + `python/` + `golang/` directories. Install only the languages you need
 - **Chinese (zh-CN) translations** — Complete translation of all agents, commands, skills, and rules (80+ files)
 - **GitHub Sponsors support** — Sponsor the project via GitHub Sponsors
 - **Enhanced CONTRIBUTING.md** — Detailed PR templates for each contribution type

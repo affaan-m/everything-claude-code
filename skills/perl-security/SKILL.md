@@ -197,7 +197,7 @@ sub safe_path($base_dir, $user_path) {
         // die "Path does not exist\n";
     my $base_real = realpath($base_dir)
         // die "Base dir does not exist\n";
-    die "Path traversal blocked\n" unless $real =~ /^\Q$base_real\E/;
+    die "Path traversal blocked\n" unless $real =~ /^\Q$base_real\E\//;
     return $real;
 }
 ```

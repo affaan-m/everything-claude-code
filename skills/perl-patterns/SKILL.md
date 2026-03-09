@@ -157,14 +157,14 @@ sub fetch_user($id) {
 ```perl
 use v5.40;
 
-sub divide($a, $b) {
+sub divide($x, $y) {
     try {
-        die "Division by zero" if $b == 0;
-        return $a / $b;
+        die "Division by zero" if $y == 0;
+        return $x / $y;
     }
     catch ($e) {
         warn "Error: $e";
-        return undef;
+        return;
     }
 }
 ```
