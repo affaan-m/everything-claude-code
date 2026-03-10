@@ -75,6 +75,35 @@ function cleanupTestDir(testDir) {
   fs.rmSync(testDir, { recursive: true, force: true });
 }
 
+function createCommandShim(binDir, baseName, logFile) {
+  fs.mkdirSync(binDir, { recursive: true });
+
+  const shimJs = path.join(binDir, `${baseName}-shim.js`);
+  fs.writeFileSync(shimJs, [
+    'const fs = require(\'fs\');',
+    `fs.appendFileSync(${JSON.stringify(logFile)}, JSON.stringify({ bin: ${JSON.stringify(baseName)}, args: process.argv.slice(2), cwd: process.cwd() }) + '\\n');`
+  ].join('\n'));
+
+  if (process.platform === 'win32') {
+    const shimCmd = path.join(binDir, `${baseName}.cmd`);
+    fs.writeFileSync(shimCmd, `@echo off\r\nnode "${shimJs}" %*\r\n`);
+    return shimCmd;
+  }
+
+  const shimPath = path.join(binDir, baseName);
+  fs.writeFileSync(shimPath, `#!/usr/bin/env node\nrequire(${JSON.stringify(shimJs)});\n`);
+  fs.chmodSync(shimPath, 0o755);
+  return shimPath;
+}
+
+function readCommandLog(logFile) {
+  if (!fs.existsSync(logFile)) return [];
+  return fs.readFileSync(logFile, 'utf8')
+    .split('\n')
+    .filter(Boolean)
+    .map(line => JSON.parse(line));
+}
+
 // Test suite
 async function runTests() {
   console.log('\n=== Testing Hook Scripts ===\n');
@@ -699,6 +728,131 @@ async function runTests() {
     const result = await runScript(path.join(scriptsDir, 'post-edit-format.js'), stdinJson);
     assert.strictEqual(result.code, 0, 'Should exit 0 even when prettier fails');
     assert.ok(result.stdout.includes('tool_input'), 'Should pass through original data');
+  })) passed++; else failed++;
+
+  if (await asyncTest('finds formatter config in parent dirs without package.json', async () => {
+    const testDir = createTestDir();
+    const rootDir = path.join(testDir, 'config-only-repo');
+    const nestedDir = path.join(rootDir, 'src', 'nested');
+    const filePath = path.join(nestedDir, 'component.ts');
+    const binDir = path.join(testDir, 'bin');
+    const logFile = path.join(testDir, 'formatter.log');
+
+    fs.mkdirSync(nestedDir, { recursive: true });
+    fs.writeFileSync(path.join(rootDir, '.prettierrc'), '{}');
+    fs.writeFileSync(filePath, 'export const value = 1;\n');
+    createCommandShim(binDir, 'npx', logFile);
+
+    const stdinJson = JSON.stringify({ tool_input: { file_path: filePath } });
+    const result = await runScript(path.join(scriptsDir, 'post-edit-format.js'), stdinJson, {
+      PATH: `${binDir}${path.delimiter}${process.env.PATH || ''}`
+    });
+
+    assert.strictEqual(result.code, 0, 'Should exit 0 for config-only repo');
+    const logEntries = readCommandLog(logFile);
+    assert.strictEqual(logEntries.length, 1, 'Should invoke formatter once');
+    assert.strictEqual(
+      fs.realpathSync(logEntries[0].cwd),
+      fs.realpathSync(rootDir),
+      'Should run formatter from config root'
+    );
+    assert.deepStrictEqual(
+      logEntries[0].args,
+      ['prettier', '--write', filePath],
+      'Should use the formatter on the nested file'
+    );
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (await asyncTest('respects CLAUDE_PACKAGE_MANAGER for formatter fallback runner', async () => {
+    const testDir = createTestDir();
+    const rootDir = path.join(testDir, 'pnpm-repo');
+    const filePath = path.join(rootDir, 'index.ts');
+    const binDir = path.join(testDir, 'bin');
+    const logFile = path.join(testDir, 'pnpm.log');
+
+    fs.mkdirSync(rootDir, { recursive: true });
+    fs.writeFileSync(path.join(rootDir, '.prettierrc'), '{}');
+    fs.writeFileSync(filePath, 'export const value = 1;\n');
+    createCommandShim(binDir, 'pnpm', logFile);
+
+    const stdinJson = JSON.stringify({ tool_input: { file_path: filePath } });
+    const result = await runScript(path.join(scriptsDir, 'post-edit-format.js'), stdinJson, {
+      PATH: `${binDir}${path.delimiter}${process.env.PATH || ''}`,
+      CLAUDE_PACKAGE_MANAGER: 'pnpm'
+    });
+
+    assert.strictEqual(result.code, 0, 'Should exit 0 when pnpm fallback is used');
+    const logEntries = readCommandLog(logFile);
+    assert.strictEqual(logEntries.length, 1, 'Should invoke pnpm fallback runner once');
+    assert.strictEqual(logEntries[0].bin, 'pnpm', 'Should use pnpm runner');
+    assert.deepStrictEqual(
+      logEntries[0].args,
+      ['dlx', 'prettier', '--write', filePath],
+      'Should use pnpm dlx for fallback formatter execution'
+    );
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (await asyncTest('respects project package-manager config for formatter fallback runner', async () => {
+    const testDir = createTestDir();
+    const rootDir = path.join(testDir, 'bun-repo');
+    const filePath = path.join(rootDir, 'index.ts');
+    const binDir = path.join(testDir, 'bin');
+    const logFile = path.join(testDir, 'bun.log');
+
+    fs.mkdirSync(path.join(rootDir, '.claude'), { recursive: true });
+    fs.writeFileSync(path.join(rootDir, '.claude', 'package-manager.json'), JSON.stringify({ packageManager: 'bun' }));
+    fs.writeFileSync(path.join(rootDir, '.prettierrc'), '{}');
+    fs.writeFileSync(filePath, 'export const value = 1;\n');
+    createCommandShim(binDir, 'bunx', logFile);
+
+    const stdinJson = JSON.stringify({ tool_input: { file_path: filePath } });
+    const result = await runScript(path.join(scriptsDir, 'post-edit-format.js'), stdinJson, {
+      PATH: `${binDir}${path.delimiter}${process.env.PATH || ''}`
+    });
+
+    assert.strictEqual(result.code, 0, 'Should exit 0 when project config selects bun');
+    const logEntries = readCommandLog(logFile);
+    assert.strictEqual(logEntries.length, 1, 'Should invoke bunx fallback runner once');
+    assert.strictEqual(logEntries[0].bin, 'bunx', 'Should use bunx runner');
+    assert.deepStrictEqual(
+      logEntries[0].args,
+      ['prettier', '--write', filePath],
+      'Should use bunx for fallback formatter execution'
+    );
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  console.log('\npre-bash-dev-server-block.js:');
+
+  if (await asyncTest('allows non-dev commands whose heredoc text mentions npm run dev', async () => {
+    const command = [
+      'gh pr create --title "fix: docs" --body "$(cat <<\'EOF\'',
+      '## Test plan',
+      '- run npm run dev to verify the site starts',
+      'EOF',
+      ')"'
+    ].join('\n');
+    const stdinJson = JSON.stringify({ tool_input: { command } });
+    const result = await runScript(path.join(scriptsDir, 'pre-bash-dev-server-block.js'), stdinJson);
+
+    assert.strictEqual(result.code, 0, 'Non-dev commands should pass through');
+    assert.strictEqual(result.stdout, stdinJson, 'Should preserve original input');
+    assert.ok(!result.stderr.includes('BLOCKED'), 'Should not emit a block message');
+  })) passed++; else failed++;
+
+  if (await asyncTest('blocks bare npm run dev outside tmux on non-Windows platforms', async () => {
+    const stdinJson = JSON.stringify({ tool_input: { command: 'npm run dev' } });
+    const result = await runScript(path.join(scriptsDir, 'pre-bash-dev-server-block.js'), stdinJson);
+
+    if (process.platform === 'win32') {
+      assert.strictEqual(result.code, 0, 'Windows path should pass through');
+      assert.strictEqual(result.stdout, stdinJson, 'Windows path should preserve original input');
+    } else {
+      assert.strictEqual(result.code, 2, 'Unix path should block bare dev servers');
+      assert.ok(result.stderr.includes('BLOCKED'), 'Should explain why the command was blocked');
+    }
   })) passed++; else failed++;
 
   // post-edit-typecheck.js tests
@@ -1514,6 +1668,28 @@ async function runTests() {
     const codeOnly = typecheckSource.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
     assert.ok(!codeOnly.includes('shell:'), 'post-edit-typecheck.js should not pass shell option in code');
     assert.ok(typecheckSource.includes('npx.cmd'), 'Should use npx.cmd for Windows cross-platform safety');
+  })) passed++; else failed++;
+
+  console.log('\nShell wrapper portability:');
+
+  if (test('run-with-flags-shell resolves plugin root when CLAUDE_PLUGIN_ROOT is unset', () => {
+    const wrapperSource = fs.readFileSync(path.join(scriptsDir, 'run-with-flags-shell.sh'), 'utf8');
+    assert.ok(
+      wrapperSource.includes('PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-'),
+      'Shell wrapper should derive PLUGIN_ROOT from its own script path'
+    );
+  })) passed++; else failed++;
+
+  if (test('continuous-learning shell scripts use resolved Python command instead of hardcoded python3 invocations', () => {
+    const observeSource = fs.readFileSync(path.join(__dirname, '..', '..', 'skills', 'continuous-learning-v2', 'hooks', 'observe.sh'), 'utf8');
+    const startObserverSource = fs.readFileSync(path.join(__dirname, '..', '..', 'skills', 'continuous-learning-v2', 'agents', 'start-observer.sh'), 'utf8');
+    const detectProjectSource = fs.readFileSync(path.join(__dirname, '..', '..', 'skills', 'continuous-learning-v2', 'scripts', 'detect-project.sh'), 'utf8');
+
+    assert.ok(!/python3\s+-c/.test(observeSource), 'observe.sh should not invoke python3 directly');
+    assert.ok(!/python3\s+-c/.test(startObserverSource), 'start-observer.sh should not invoke python3 directly');
+    assert.ok(observeSource.includes('PYTHON_CMD'), 'observe.sh should resolve Python dynamically');
+    assert.ok(startObserverSource.includes('CLV2_PYTHON_CMD'), 'start-observer.sh should reuse detected Python command');
+    assert.ok(detectProjectSource.includes('_clv2_resolve_python_cmd'), 'detect-project.sh should provide shared Python resolution');
   })) passed++; else failed++;
 
   if (await asyncTest('matches .tsx extension for type checking', async () => {

@@ -23,6 +23,28 @@ _CLV2_HOMUNCULUS_DIR="${HOME}/.claude/homunculus"
 _CLV2_PROJECTS_DIR="${_CLV2_HOMUNCULUS_DIR}/projects"
 _CLV2_REGISTRY_FILE="${_CLV2_HOMUNCULUS_DIR}/projects.json"
 
+_clv2_resolve_python_cmd() {
+  if [ -n "${CLV2_PYTHON_CMD:-}" ] && command -v "$CLV2_PYTHON_CMD" >/dev/null 2>&1; then
+    printf '%s\n' "$CLV2_PYTHON_CMD"
+    return 0
+  fi
+
+  if command -v python3 >/dev/null 2>&1; then
+    printf '%s\n' python3
+    return 0
+  fi
+
+  if command -v python >/dev/null 2>&1; then
+    printf '%s\n' python
+    return 0
+  fi
+
+  return 1
+}
+
+_CLV2_PYTHON_CMD="$(_clv2_resolve_python_cmd 2>/dev/null || true)"
+export CLV2_PYTHON_CMD
+
 _clv2_detect_project() {
   local project_root=""
   local project_name=""
@@ -73,10 +95,12 @@ _clv2_detect_project() {
   fi
 
   local hash_input="${remote_url:-$project_root}"
-  # Use SHA256 via python3 (portable across macOS/Linux, no shasum/sha256sum divergence)
-  project_id=$(printf '%s' "$hash_input" | python3 -c "import sys,hashlib; print(hashlib.sha256(sys.stdin.buffer.read()).hexdigest()[:12])" 2>/dev/null)
+  # Prefer Python for consistent SHA256 behavior across shells/platforms.
+  if [ -n "$_CLV2_PYTHON_CMD" ]; then
+    project_id=$(printf '%s' "$hash_input" | "$_CLV2_PYTHON_CMD" -c "import sys,hashlib; print(hashlib.sha256(sys.stdin.buffer.read()).hexdigest()[:12])" 2>/dev/null)
+  fi
 
-  # Fallback if python3 failed
+  # Fallback if Python is unavailable or hash generation failed.
   if [ -z "$project_id" ]; then
     project_id=$(printf '%s' "$hash_input" | shasum -a 256 2>/dev/null | cut -c1-12 || \
                  printf '%s' "$hash_input" | sha256sum 2>/dev/null | cut -c1-12 || \
@@ -85,9 +109,9 @@ _clv2_detect_project() {
 
   # Backward compatibility: if credentials were stripped and the hash changed,
   # check if a project dir exists under the legacy hash and reuse it
-  if [ "$legacy_hash_input" != "$hash_input" ]; then
-    local legacy_id
-    legacy_id=$(printf '%s' "$legacy_hash_input" | python3 -c "import sys,hashlib; print(hashlib.sha256(sys.stdin.buffer.read()).hexdigest()[:12])" 2>/dev/null)
+  if [ "$legacy_hash_input" != "$hash_input" ] && [ -n "$_CLV2_PYTHON_CMD" ]; then
+    local legacy_id=""
+    legacy_id=$(printf '%s' "$legacy_hash_input" | "$_CLV2_PYTHON_CMD" -c "import sys,hashlib; print(hashlib.sha256(sys.stdin.buffer.read()).hexdigest()[:12])" 2>/dev/null)
     if [ -n "$legacy_id" ] && [ -d "${_CLV2_PROJECTS_DIR}/${legacy_id}" ] && [ ! -d "${_CLV2_PROJECTS_DIR}/${project_id}" ]; then
       # Migrate legacy directory to new hash
       mv "${_CLV2_PROJECTS_DIR}/${legacy_id}" "${_CLV2_PROJECTS_DIR}/${project_id}" 2>/dev/null || project_id="$legacy_id"
@@ -120,14 +144,18 @@ _clv2_update_project_registry() {
 
   mkdir -p "$(dirname "$_CLV2_REGISTRY_FILE")"
 
+  if [ -z "$_CLV2_PYTHON_CMD" ]; then
+    return 0
+  fi
+
   # Pass values via env vars to avoid shell→python injection.
-  # python3 reads them with os.environ, which is safe for any string content.
+  # Python reads them with os.environ, which is safe for any string content.
   _CLV2_REG_PID="$pid" \
   _CLV2_REG_PNAME="$pname" \
   _CLV2_REG_PROOT="$proot" \
   _CLV2_REG_PREMOTE="$premote" \
   _CLV2_REG_FILE="$_CLV2_REGISTRY_FILE" \
-  python3 -c '
+  "$_CLV2_PYTHON_CMD" -c '
 import json, os
 from datetime import datetime, timezone
 
