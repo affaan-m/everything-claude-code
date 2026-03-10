@@ -28,6 +28,7 @@ OBSERVER_LOOP_SCRIPT="${SCRIPT_DIR}/observer-loop.sh"
 # Source shared project detection helper
 # This sets: PROJECT_ID, PROJECT_NAME, PROJECT_ROOT, PROJECT_DIR
 source "${SKILL_ROOT}/scripts/detect-project.sh"
+PYTHON_CMD="${CLV2_PYTHON_CMD:-}"
 
 # ─────────────────────────────────────────────
 # Configuration
@@ -46,7 +47,10 @@ OBSERVER_INTERVAL_MINUTES=5
 MIN_OBSERVATIONS=20
 OBSERVER_ENABLED=false
 if [ -f "$CONFIG_FILE" ]; then
-  _config=$(CLV2_CONFIG="$CONFIG_FILE" python3 -c "
+  if [ -z "$PYTHON_CMD" ]; then
+    echo "No python interpreter found; using built-in observer defaults." >&2
+  else
+    _config=$(CLV2_CONFIG="$CONFIG_FILE" "$PYTHON_CMD" -c "
 import json, os
 with open(os.environ['CLV2_CONFIG']) as f:
     cfg = json.load(f)
@@ -57,17 +61,18 @@ print(str(obs.get('enabled', False)).lower())
 " 2>/dev/null || echo "5
 20
 false")
-  _interval=$(echo "$_config" | sed -n '1p')
-  _min_obs=$(echo "$_config" | sed -n '2p')
-  _enabled=$(echo "$_config" | sed -n '3p')
-  if [ "$_interval" -gt 0 ] 2>/dev/null; then
-    OBSERVER_INTERVAL_MINUTES="$_interval"
-  fi
-  if [ "$_min_obs" -gt 0 ] 2>/dev/null; then
-    MIN_OBSERVATIONS="$_min_obs"
-  fi
-  if [ "$_enabled" = "true" ]; then
-    OBSERVER_ENABLED=true
+    _interval=$(echo "$_config" | sed -n '1p')
+    _min_obs=$(echo "$_config" | sed -n '2p')
+    _enabled=$(echo "$_config" | sed -n '3p')
+    if [ "$_interval" -gt 0 ] 2>/dev/null; then
+      OBSERVER_INTERVAL_MINUTES="$_interval"
+    fi
+    if [ "$_min_obs" -gt 0 ] 2>/dev/null; then
+      MIN_OBSERVATIONS="$_min_obs"
+    fi
+    if [ "$_enabled" = "true" ]; then
+      OBSERVER_ENABLED=true
+    fi
   fi
 fi
 OBSERVER_INTERVAL_SECONDS=$((OBSERVER_INTERVAL_MINUTES * 60))

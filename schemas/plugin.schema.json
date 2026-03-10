@@ -34,6 +34,25 @@
     "agents": {
       "type": "array",
       "items": { "type": "string" }
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "agents": { "type": "integer", "minimum": 0 },
+        "commands": { "type": "integer", "minimum": 0 },
+        "skills": { "type": "integer", "minimum": 0 },
+        "configAssets": { "type": "boolean" },
+        "hookEvents": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "customTools": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
     }
-  }
+  },
+  "additionalProperties": false
 }

@@ -1050,6 +1050,13 @@ Then add to your `opencode.json`:
 }
 ```
 
+That npm plugin entry enables ECC's published OpenCode plugin module (hooks/events and plugin tools).
+It does **not** automatically add ECC's full command/agent/instruction catalog to your project config.
+
+For the full ECC OpenCode setup, either:
+- run OpenCode inside this repository, or
+- copy the bundled `.opencode/` config assets into your project and wire the `instructions`, `agent`, and `command` entries in `opencode.json`
+
 ### Documentation
 
 - **Migration Guide**: `.opencode/MIGRATION.md`

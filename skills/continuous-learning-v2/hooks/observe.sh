@@ -38,6 +38,31 @@ if [ -z "$INPUT_JSON" ]; then
   exit 0
 fi
 
+resolve_python_cmd() {
+  if [ -n "${CLV2_PYTHON_CMD:-}" ] && command -v "$CLV2_PYTHON_CMD" >/dev/null 2>&1; then
+    printf '%s\n' "$CLV2_PYTHON_CMD"
+    return 0
+  fi
+
+  if command -v python3 >/dev/null 2>&1; then
+    printf '%s\n' python3
+    return 0
+  fi
+
+  if command -v python >/dev/null 2>&1; then
+    printf '%s\n' python
+    return 0
+  fi
+
+  return 1
+}
+
+PYTHON_CMD="$(resolve_python_cmd 2>/dev/null || true)"
+if [ -z "$PYTHON_CMD" ]; then
+  echo "[observe] No python interpreter found, skipping observation" >&2
+  exit 0
+fi
+
 # ─────────────────────────────────────────────
 # Extract cwd from stdin for project detection
 # ─────────────────────────────────────────────
@@ -69,6 +94,7 @@ SKILL_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # Source shared project detection helper
 # This sets: PROJECT_ID, PROJECT_NAME, PROJECT_ROOT, PROJECT_DIR
 source "${SKILL_ROOT}/scripts/detect-project.sh"
+PYTHON_CMD="${CLV2_PYTHON_CMD:-$PYTHON_CMD}"
 
 # ─────────────────────────────────────────────
 # Configuration
@@ -90,7 +116,7 @@ if [ ! -f "$PURGE_MARKER" ] || [ "$(find "$PURGE_MARKER" -mtime +1 2>/dev/null)"
   touch "$PURGE_MARKER" 2>/dev/null || true
 fi
 
-# Parse using python via stdin pipe (safe for all JSON payloads)
+# Parse using Python via stdin pipe (safe for all JSON payloads)
 # Pass HOOK_PHASE via env var since Claude Code does not include hook type in stdin JSON
 PARSED=$(echo "$INPUT_JSON" | HOOK_PHASE="$HOOK_PHASE" "$PYTHON_CMD" -c '
 import json
