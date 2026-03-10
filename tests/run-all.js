@@ -11,6 +11,7 @@ const fs = require('fs');
 
 const testsDir = __dirname;
 const testFiles = [
+  'agent-system/orchestrator.test.js',
   'lib/utils.test.js',
   'lib/package-manager.test.js',
   'lib/session-manager.test.js',
@@ -21,6 +22,7 @@ const testFiles = [
   'hooks/suggest-compact.test.js',
   'integration/hooks.test.js',
   'ci/validators.test.js',
+  'scripts/agent-cli.test.js',
   'scripts/claw.test.js',
   'scripts/setup-package-manager.test.js',
   'scripts/skill-create-output.test.js'

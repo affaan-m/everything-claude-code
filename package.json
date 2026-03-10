@@ -77,11 +77,16 @@
     "llms.txt"
   ],
   "bin": {
-    "ecc-install": "install.sh"
+    "ecc-install": "install.sh",
+    "agent": "scripts/agent-cli.js"
   },
   "scripts": {
     "postinstall": "echo '\\n  ecc-universal installed!\\n  Run: npx ecc-install typescript\\n  Docs: https://github.com/affaan-m/everything-claude-code\\n'",
     "lint": "eslint . && markdownlint '**/*.md' --ignore node_modules",
+    "agent": "node scripts/agent-cli.js run",
+    "agent:plan": "node scripts/agent-cli.js plan",
+    "agent:execute": "node scripts/agent-cli.js execute",
+    "agent:learn": "node scripts/agent-cli.js learn",
     "claw": "node scripts/claw.js",
     "test": "node scripts/ci/validate-agents.js && node scripts/ci/validate-commands.js && node scripts/ci/validate-rules.js && node scripts/ci/validate-skills.js && node scripts/ci/validate-hooks.js && node scripts/ci/validate-no-personal-paths.js && node tests/run-all.js"
   },

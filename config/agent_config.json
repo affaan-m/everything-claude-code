@@ -1,0 +1,30 @@
+{
+  "model": {
+    "provider": "mock",
+    "name": "mock-agent-team"
+  },
+  "temperature": 0.2,
+  "memory_paths": {
+    "working": "agent_memory/working",
+    "episodic": "agent_memory/episodic",
+    "semantic": "agent_memory/semantic"
+  },
+  "skill_library_path": "agent_skills",
+  "tool_permissions": {
+    "allow_terminal": true,
+    "allow_file_system": true,
+    "allow_api": false,
+    "blocked_commands": [
+      "rm -rf",
+      "git reset --hard",
+      "mkfs",
+      "shutdown",
+      "reboot"
+    ]
+  },
+  "execution_sandbox": {
+    "mode": "workspace-write",
+    "dry_run": true,
+    "max_react_steps": 6
+  }
+}

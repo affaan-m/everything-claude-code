@@ -36,6 +36,29 @@ Not just configs. A complete system: skills, instincts, memory optimization, con
 
 Works across **Claude Code**, **Codex**, **Cowork**, and other AI agent harnesses.
 
+## Self-Evolving Agent System
+
+This repo now ships a runnable self-improving agent framework in `agent_system/` with:
+
+- Planner → Architect → Builder → Evaluator → Reflection orchestration
+- ReAct execution in the builder
+- Episodic, semantic, and procedural memory
+- Model adapters for Claude Code, OpenAI, local models, and safe mock mode
+
+Quick commands:
+
+```bash
+npm run agent -- "Build a SaaS analytics dashboard"
+npm run agent:plan -- "Design a billing subsystem"
+npm run agent:execute -- "Debug a Python dependency error"
+npm run agent:learn -- --episode latest
+```
+
+Docs:
+
+- [Self-Evolving Agent System](docs/agent-system.md)
+- [Example Task Runs](docs/agent-system-example-runs.md)
+
 ---
 
 ## The Guides
