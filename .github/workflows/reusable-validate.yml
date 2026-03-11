@@ -24,6 +24,9 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
 
+      - name: Install validation dependencies
+        run: npm ci --ignore-scripts
+
       - name: Validate agents
         run: node scripts/ci/validate-agents.js
 
