@@ -91,7 +91,8 @@ PROMPT
     max_turns=10
   fi
 
-  claude --model haiku --max-turns "$max_turns" --print < "$prompt_file" >> "$LOG_FILE" 2>&1 &
+  # Prevent observe.sh from recording this automated Haiku session as observations
+  ECC_SKIP_OBSERVE=1 ECC_HOOK_PROFILE=minimal claude --model haiku --max-turns "$max_turns" --print < "$prompt_file" >> "$LOG_FILE" 2>&1 &
   claude_pid=$!
 
   (
