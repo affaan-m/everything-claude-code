@@ -297,6 +297,15 @@ Then in your `opencode.json`:
 }
 ```
 
+This only loads the published ECC OpenCode plugin module (hooks/events and exported plugin tools).
+It does **not** automatically inject ECC's full `agent`, `command`, or `instructions` config into your project.
+
+If you want the full ECC OpenCode workflow surface, use the repository's bundled `.opencode/opencode.json` as your base config or copy these pieces into your project:
+- `.opencode/commands/`
+- `.opencode/prompts/`
+- `.opencode/instructions/INSTRUCTIONS.md`
+- the `agent` and `command` sections from `.opencode/opencode.json`
+
 ## Troubleshooting
 
 ### Configuration Not Loading
@@ -322,6 +331,7 @@ Then in your `opencode.json`:
 1. Verify the command is defined in `opencode.json` or as `.md` file in `.opencode/commands/`
 2. Check the referenced agent exists
 3. Ensure the template uses `$ARGUMENTS` for user input
+4. If you installed only `plugin: ["ecc-universal"]`, note that npm plugin install does not auto-add ECC commands or agents to your project config
 
 ## Best Practices
 

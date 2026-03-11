@@ -1,42 +1,37 @@
-# Everything Claude Code (ECC) — Codex CLI Reference Configuration
+#:schema https://developers.openai.com/codex/config-schema.json
+
+# Everything Claude Code (ECC) — Codex Reference Configuration
 #
-# Copy this file to ~/.codex/config.toml to apply globally.
-# Or keep it in your project root for project-level config.
+# Copy this file to ~/.codex/config.toml for global defaults, or keep it in
+# the project root as .codex/config.toml for project-local settings.
 #
-# Docs: https://github.com/openai/codex
+# Official docs:
+# - https://developers.openai.com/codex/config-reference
+# - https://developers.openai.com/codex/multi-agent
 
 # Model selection
 model = "o4-mini"
 model_provider = "openai"
 
-# Permissions
-[permissions]
-# "untrusted" = no writes, "on-request" = ask per action, "never" = full auto
+# Top-level runtime settings (current Codex schema)
 approval_policy = "on-request"
-# "off", "workspace-read", "workspace-write", "danger-full-access"
 sandbox_mode = "workspace-write"
+web_search = "live"
 
-# Notifications (macOS)
-[notify]
-command = "terminal-notifier -title 'Codex ECC' -message 'Task completed!' -sound default"
-on_complete = true
+# External notifications receive a JSON payload on stdin.
+notify = [
+  "terminal-notifier",
+  "-title", "Codex ECC",
+  "-message", "Task completed!",
+  "-sound", "default",
+]
 
-# History - persistent instructions applied to every session
-[history]
-# These are prepended to every conversation
-persistent_instructions = """
-Follow ECC principles:
-1. Test-Driven Development (TDD) - write tests first, 80%+ coverage required
-2. Immutability - always create new objects, never mutate
-3. Security-First - validate all inputs, no hardcoded secrets
-4. Conventional commits: feat|fix|refactor|docs|test|chore|perf|ci: description
-5. File organization: many small files (200-400 lines, 800 max)
-6. Error handling: handle at every level, never swallow errors
-7. Input validation: schema-based validation at system boundaries
-"""
+# Prefer AGENTS.md and project-local .codex/AGENTS.md for instructions.
+# model_instructions_file replaces built-in instructions instead of AGENTS.md,
+# so leave it unset unless you intentionally want a single override file.
+# model_instructions_file = "/absolute/path/to/instructions.md"
 
-# MCP Servers
-# Codex supports command-based MCP servers
+# MCP servers
 [mcp_servers.github]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-github"]
@@ -62,19 +57,41 @@ args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
 # command = "npx"
 # args = ["-y", "firecrawl-mcp"]
 #
-# [mcp_servers.railway]
+# [mcp_servers.cloudflare]
 # command = "npx"
-# args = ["-y", "@anthropic/railway-mcp"]
+# args = ["-y", "@cloudflare/mcp-server-cloudflare"]
 
-# Features
 [features]
-web_search_request = true
+# Codex multi-agent support is experimental as of March 2026.
+multi_agent = true
 
-# Profiles — switch with CODEX_PROFILE=<name>
+# Profiles — switch with `codex -p <name>`
 [profiles.strict]
 approval_policy = "on-request"
-sandbox_mode = "workspace-read"
+sandbox_mode = "read-only"
+web_search = "cached"
 
 [profiles.yolo]
 approval_policy = "never"
 sandbox_mode = "workspace-write"
+web_search = "live"
+
+# Optional project-local multi-agent roles.
+# Keep these commented in global config, because config_file paths are resolved
+# relative to the config.toml file and must exist at load time.
+#
+# [agents]
+# max_threads = 6
+# max_depth = 1
+#
+# [agents.explorer]
+# description = "Read-only codebase explorer for gathering evidence before changes are proposed."
+# config_file = "agents/explorer.toml"
+#
+# [agents.reviewer]
+# description = "PR reviewer focused on correctness, security, and missing tests."
+# config_file = "agents/reviewer.toml"
+#
+# [agents.docs_researcher]
+# description = "Documentation specialist that verifies APIs, framework behavior, and release notes."
+# config_file = "agents/docs-researcher.toml"

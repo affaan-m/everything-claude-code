@@ -1,6 +1,6 @@
 # Everything Claude Code (ECC) — Agent Instructions
 
-This is a **production-ready AI coding plugin** providing 13 specialized agents, 50+ skills, 33 commands, and automated hook workflows for software development.
+This is a **production-ready AI coding plugin** providing 16 specialized agents, 65+ skills, 40 commands, and automated hook workflows for software development.
 
 ## Core Principles
 
@@ -27,6 +27,9 @@ This is a **production-ready AI coding plugin** providing 13 specialized agents,
 | go-build-resolver | Go build errors | Go build failures |
 | database-reviewer | PostgreSQL/Supabase specialist | Schema design, query optimization |
 | python-reviewer | Python code review | Python projects |
+| chief-of-staff | Communication triage and drafts | Multi-channel email, Slack, LINE, Messenger |
+| loop-operator | Autonomous loop execution | Run loops safely, monitor stalls, intervene |
+| harness-optimizer | Harness config tuning | Reliability, cost, throughput |
 
 ## Agent Orchestration
 
@@ -36,6 +39,9 @@ Use agents proactively without user prompt:
 - Bug fix or new feature → **tdd-guide**
 - Architectural decision → **architect**
 - Security-sensitive code → **security-reviewer**
+- Multi-channel communication triage → **chief-of-staff**
+- Autonomous loops / loop monitoring → **loop-operator**
+- Harness config reliability and cost → **harness-optimizer**
 
 Use parallel execution for independent operations — launch multiple agents simultaneously.
 
@@ -123,8 +129,8 @@ Troubleshoot failures: check test isolation → verify mocks → fix implementat
 
 ```
 agents/          — 13 specialized subagents
-skills/          — 50+ workflow skills and domain knowledge
-commands/        — 33 slash commands
+skills/          — 65+ workflow skills and domain knowledge
+commands/        — 40 slash commands
 hooks/           — Trigger-based automations
 rules/           — Always-follow guidelines (common + per-language)
 scripts/         — Cross-platform Node.js utilities

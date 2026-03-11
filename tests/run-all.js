@@ -10,21 +10,25 @@ const path = require('path');
 const fs = require('fs');
 
 const testsDir = __dirname;
-const testFiles = [
-  'lib/utils.test.js',
-  'lib/package-manager.test.js',
-  'lib/session-manager.test.js',
-  'lib/session-aliases.test.js',
-  'lib/project-detect.test.js',
-  'hooks/hooks.test.js',
-  'hooks/evaluate-session.test.js',
-  'hooks/suggest-compact.test.js',
-  'integration/hooks.test.js',
-  'ci/validators.test.js',
-  'scripts/claw.test.js',
-  'scripts/setup-package-manager.test.js',
-  'scripts/skill-create-output.test.js'
-];
+
+/**
+ * Discover all *.test.js files under testsDir (relative paths for stable output order).
+ */
+function discoverTestFiles(dir, baseDir = dir, acc = []) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const e of entries) {
+    const full = path.join(dir, e.name);
+    const rel = path.relative(baseDir, full);
+    if (e.isDirectory()) {
+      discoverTestFiles(full, baseDir, acc);
+    } else if (e.isFile() && e.name.endsWith('.test.js')) {
+      acc.push(rel);
+    }
+  }
+  return acc.sort();
+}
+
+const testFiles = discoverTestFiles(testsDir);
 
 const BOX_W = 58; // inner width between ║ delimiters
 const boxLine = (s) => `║${s.padEnd(BOX_W)}║`;
@@ -67,6 +71,17 @@ for (const testFile of testFiles) {
 
   if (passedMatch) totalPassed += parseInt(passedMatch[1], 10);
   if (failedMatch) totalFailed += parseInt(failedMatch[1], 10);
+
+  if (result.error) {
+    console.log(`✗ ${testFile} failed to start: ${result.error.message}`);
+    totalFailed += failedMatch ? 0 : 1;
+    continue;
+  }
+
+  if (result.status !== 0) {
+    console.log(`✗ ${testFile} exited with status ${result.status}`);
+    totalFailed += failedMatch ? 0 : 1;
+  }
 }
 
 totalTests = totalPassed + totalFailed;

@@ -1927,7 +1927,7 @@ function runTests() {
       PreToolUse: [{
         matcher: 'Write',
         hooks: [{
-          type: 'intercept',
+          type: 'command',
           command: 'echo test',
           async: 'yes'  // Should be boolean, not string
         }]
@@ -1947,7 +1947,7 @@ function runTests() {
       PostToolUse: [{
         matcher: 'Edit',
         hooks: [{
-          type: 'intercept',
+          type: 'command',
           command: 'echo test',
           timeout: -5  // Must be non-negative
         }]
@@ -2102,6 +2102,31 @@ function runTests() {
     assert.strictEqual(result.code, 0, 'Should pass with Notification and SubagentStop events');
     assert.ok(result.stdout.includes('Validated 2 hook'),
       `Should report 2 validated matchers, got: ${result.stdout}`);
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  console.log('\nRound 82b: validate-hooks (current official events and hook types):');
+
+  if (test('accepts UserPromptSubmit with omitted matcher and prompt/http/agent hooks', () => {
+    const testDir = createTestDir();
+    const hooksJson = JSON.stringify({
+      hooks: {
+        UserPromptSubmit: [
+          {
+            hooks: [
+              { type: 'prompt', prompt: 'Summarize the request.' },
+              { type: 'agent', prompt: 'Review for security issues.', model: 'gpt-5.4' },
+              { type: 'http', url: 'https://example.com/hooks', headers: { Authorization: 'Bearer token' } }
+            ]
+          }
+        ]
+      }
+    });
+    const hooksFile = path.join(testDir, 'hooks.json');
+    fs.writeFileSync(hooksFile, hooksJson);
+
+    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    assert.strictEqual(result.code, 0, 'Should accept current official hook event/type combinations');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 

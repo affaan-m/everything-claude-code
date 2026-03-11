@@ -893,27 +893,29 @@ ECC provides **first-class Codex support** for both the macOS app and CLI, with 
 ### Quick Start (Codex App + CLI)
 
 ```bash
-# Copy the reference config to your home directory
-cp .codex/config.toml ~/.codex/config.toml
-
-# Run Codex CLI in the repo — AGENTS.md is auto-detected
+# Run Codex CLI in the repo — AGENTS.md and .codex/ are auto-detected
 codex
+
+# Optional: copy the global-safe defaults to your home directory
+cp .codex/config.toml ~/.codex/config.toml
 ```
 
 Codex macOS app:
 - Open this repository as your workspace.
 - The root `AGENTS.md` is auto-detected.
-- Optional: copy `.codex/config.toml` to `~/.codex/config.toml` for CLI/app behavior consistency.
+- `.codex/config.toml` and `.codex/agents/*.toml` work best when kept project-local.
+- Optional: copy `.codex/config.toml` to `~/.codex/config.toml` for global defaults; keep the multi-agent role files project-local unless you also copy `.codex/agents/`.
 
 ### What's Included
 
 | Component | Count | Details |
 |-----------|-------|---------|
-| Config | 1 | `.codex/config.toml` — model, permissions, MCP servers, persistent instructions |
+| Config | 1 | `.codex/config.toml` — top-level approvals/sandbox/web_search, MCP servers, notifications, profiles |
 | AGENTS.md | 2 | Root (universal) + `.codex/AGENTS.md` (Codex-specific supplement) |
 | Skills | 16 | `.agents/skills/` — SKILL.md + agents/openai.yaml per skill |
 | MCP Servers | 4 | GitHub, Context7, Memory, Sequential Thinking (command-based) |
 | Profiles | 2 | `strict` (read-only sandbox) and `yolo` (full auto-approve) |
+| Agent Roles | 3 | `.codex/agents/` — explorer, reviewer, docs-researcher |
 
 ### Skills
 
@@ -940,7 +942,24 @@ Skills at `.agents/skills/` are auto-loaded by Codex:
 
 ### Key Limitation
 
-Codex does **not yet provide Claude-style hook execution parity**. ECC enforcement there is instruction-based via `AGENTS.md` and `persistent_instructions`, plus sandbox permissions.
+Codex does **not yet provide Claude-style hook execution parity**. ECC enforcement there is instruction-based via `AGENTS.md`, optional `model_instructions_file` overrides, and sandbox/approval settings.
+
+### Multi-Agent Support
+
+Current Codex builds support experimental multi-agent workflows.
+
+- Enable `features.multi_agent = true` in `.codex/config.toml`
+- Define roles under `[agents.<name>]`
+- Point each role at a file under `.codex/agents/`
+- Use `/agent` in the CLI to inspect or steer child agents
+
+ECC ships three sample role configs:
+
+| Role | Purpose |
+|------|---------|
+| `explorer` | Read-only codebase evidence gathering before edits |
+| `reviewer` | Correctness, security, and missing-test review |
+| `docs_researcher` | Documentation and API verification before release/docs changes |
 
 ---
 
@@ -1050,6 +1069,13 @@ Then add to your `opencode.json`:
 }
 ```
 
+That npm plugin entry enables ECC's published OpenCode plugin module (hooks/events and plugin tools).
+It does **not** automatically add ECC's full command/agent/instruction catalog to your project config.
+
+For the full ECC OpenCode setup, either:
+- run OpenCode inside this repository, or
+- copy the bundled `.opencode/` config assets into your project and wire the `instructions`, `agent`, and `command` entries in `opencode.json`
+
 ### Documentation
 
 - **Migration Guide**: `.opencode/MIGRATION.md`
@@ -1083,7 +1109,7 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 - **AGENTS.md** at root is the universal cross-tool file (read by all 4 tools)
 - **DRY adapter pattern** lets Cursor reuse Claude Code's hook scripts without duplication
 - **Skills format** (SKILL.md with YAML frontmatter) works across Claude Code, Codex, and OpenCode
-- Codex's lack of hooks is compensated by `persistent_instructions` and sandbox permissions
+- Codex's lack of hooks is compensated by `AGENTS.md`, optional `model_instructions_file` overrides, and sandbox permissions
 
 ---
 

@@ -6,10 +6,10 @@ This supplements the root `AGENTS.md` with Codex-specific guidance.
 
 | Task Type | Recommended Model |
 |-----------|------------------|
-| Routine coding, tests, formatting | o4-mini |
-| Complex features, architecture | o3 |
-| Debugging, refactoring | o4-mini |
-| Security review | o3 |
+| Routine coding, tests, formatting | GPT 5.4 |
+| Complex features, architecture | GPT 5.4 |
+| Debugging, refactoring | GPT 5.4 |
+| Security review | GPT 5.4 |
 
 ## Skills Discovery
 
@@ -39,6 +39,20 @@ Available skills:
 
 Configure in `~/.codex/config.toml` under `[mcp_servers]`. See `.codex/config.toml` for reference configuration with GitHub, Context7, Memory, and Sequential Thinking servers.
 
+## Multi-Agent Support
+
+Codex now supports multi-agent workflows behind the experimental `features.multi_agent` flag.
+
+- Enable it in `.codex/config.toml` with `[features] multi_agent = true`
+- Define project-local roles under `[agents.<name>]`
+- Point each role at a TOML layer under `.codex/agents/`
+- Use `/agent` inside Codex CLI to inspect and steer child agents
+
+Sample role configs in this repo:
+- `.codex/agents/explorer.toml` — read-only evidence gathering
+- `.codex/agents/reviewer.toml` — correctness/security review
+- `.codex/agents/docs-researcher.toml` — API and release-note verification
+
 ## Key Differences from Claude Code
 
 | Feature | Claude Code | Codex CLI |
@@ -47,7 +61,7 @@ Configure in `~/.codex/config.toml` under `[mcp_servers]`. See `.codex/config.to
 | Context file | CLAUDE.md + AGENTS.md | AGENTS.md only |
 | Skills | Skills loaded via plugin | `.agents/skills/` directory |
 | Commands | `/slash` commands | Instruction-based |
-| Agents | Subagent Task tool | Single agent model |
+| Agents | Subagent Task tool | Multi-agent via `/agent` and `[agents.<name>]` roles |
 | Security | Hook-based enforcement | Instruction + sandbox |
 | MCP | Full support | Command-based only |
 
