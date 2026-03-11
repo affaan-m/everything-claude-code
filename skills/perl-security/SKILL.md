@@ -17,6 +17,10 @@ Comprehensive security guidelines for Perl applications covering input validatio
 - Executing system commands from Perl
 - Writing DBI database queries
 
+## How It Works
+
+Start with taint-aware input boundaries, then move outward: validate and untaint inputs, keep filesystem and process execution constrained, and use parameterized DBI queries everywhere. The examples below show the safe defaults this skill expects you to apply before shipping Perl code that touches user input, the shell, or the network.
+
 ## Taint Mode
 
 Perl's taint mode (`-T`) tracks data from external sources and prevents it from being used in unsafe operations without explicit validation.
@@ -197,7 +201,7 @@ sub safe_path($base_dir, $user_path) {
         // die "Path does not exist\n";
     my $base_real = realpath($base_dir)
         // die "Base dir does not exist\n";
-    die "Path traversal blocked\n" unless $real =~ /^\Q$base_real\E\//;
+    die "Path traversal blocked\n" unless $real =~ /^\Q$base_real\E(?:\/|\z)/;
     return $real;
 }
 ```

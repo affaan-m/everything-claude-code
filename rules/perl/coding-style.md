@@ -8,7 +8,7 @@ paths:
 ---
 # Perl Coding Style
 
-> This file extends [common/coding-style.md](../common/coding-style.md) with Perl specific content.
+> This file extends [common/coding-style.md](../common/coding-style.md) with Perl-specific content.
 
 ## Standards
 

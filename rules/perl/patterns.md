@@ -8,7 +8,7 @@ paths:
 ---
 # Perl Patterns
 
-> This file extends [common/patterns.md](../common/patterns.md) with Perl specific content.
+> This file extends [common/patterns.md](../common/patterns.md) with Perl-specific content.
 
 ## Repository Pattern
 

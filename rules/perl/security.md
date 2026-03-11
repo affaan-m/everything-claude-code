@@ -8,7 +8,7 @@ paths:
 ---
 # Perl Security
 
-> This file extends [common/security.md](../common/security.md) with Perl specific content.
+> This file extends [common/security.md](../common/security.md) with Perl-specific content.
 
 ## Taint Mode
 

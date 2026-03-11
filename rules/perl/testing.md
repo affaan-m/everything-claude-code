@@ -8,7 +8,7 @@ paths:
 ---
 # Perl Testing
 
-> This file extends [common/testing.md](../common/testing.md) with Perl specific content.
+> This file extends [common/testing.md](../common/testing.md) with Perl-specific content.
 
 ## Framework
 

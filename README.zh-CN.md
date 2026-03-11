@@ -488,7 +488,7 @@ node tests/hooks/hooks.test.js
 
 ### 贡献想法
 
-- 特定语言的技能（Rust、C#、Swift、Kotlin）- 现已包含 Go、Python、Java、Perl！
+- 特定语言的技能（Rust、C#、Kotlin、Java）- 现已包含 Go、Python、Perl、Swift 和 TypeScript！
 - 特定框架的配置（Django、Rails、Laravel）
 - DevOps 代理（Kubernetes、Terraform、AWS）
 - 测试策略（不同框架）
