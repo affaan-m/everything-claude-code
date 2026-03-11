@@ -72,20 +72,22 @@ Produces a plan with parallel steps where possible (e.g., "implement Anthropic p
 
 ## Installation
 
+This skill ships with Everything Claude Code. No separate installation is needed when ECC is installed.
+
 ```bash
-mkdir -p ~/.claude/skills
-git clone https://github.com/antbotlab/blueprint.git ~/.claude/skills/blueprint
-cd ~/.claude/skills/blueprint
-git checkout e6508e9258c763b67a9486af34de84d1e3b5cc74  # pin to reviewed version
+# Verify the skill is present in your ECC checkout
+ls ~/.claude/plugins/ecc/skills/blueprint/SKILL.md
 ```
 
-To update later, review the [changelog](https://github.com/antbotlab/blueprint/blob/main/CHANGELOG.md) before pulling:
+If you are vendoring only this skill outside the full ECC install, copy the reviewed file from this repository into `~/.claude/skills/blueprint/SKILL.md` and keep it pinned to a reviewed ECC commit.
+
+To update later, review the ECC diff before updating:
 
 ```bash
-cd ~/.claude/skills/blueprint
-git fetch origin
-git log --oneline HEAD..origin/main  # review new commits
-git checkout <new-commit-sha>        # pin to a specific reviewed commit
+cd /path/to/everything-claude-code
+git fetch origin main
+git log --oneline HEAD..origin/main       # review new commits before updating
+git checkout <reviewed-full-sha>          # pin to a specific reviewed commit
 ```
 
 ## Requirements
@@ -95,4 +97,4 @@ git checkout <new-commit-sha>        # pin to a specific reviewed commit
 
 ## Source
 
-[github.com/antbotlab/blueprint](https://github.com/antbotlab/blueprint) — MIT License
+Inspired by [github.com/antbotlab/blueprint](https://github.com/antbotlab/blueprint) — upstream project and reference design.
