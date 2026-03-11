@@ -166,9 +166,9 @@ jobs:
       url: ${{ steps.deploy.outputs.url }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@ff717079ee2060e4bcee96c4779b553acc87447c  # v4.0.2
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/deploy-${{ inputs.environment }}
           aws-region: ${{ inputs.region }}
@@ -263,9 +263,9 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
 
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8  # v4.0.2
       with:
         node-version: ${{ inputs.node-version }}
         cache: 'npm'
@@ -327,9 +327,9 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8  # v4.0.2
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
@@ -373,8 +373,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8  # v4.0.2
         with:
           node-version: '20'
           cache: 'npm'
