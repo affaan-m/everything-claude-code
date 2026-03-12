@@ -82,12 +82,12 @@ If the user chooses niche or core + niche, continue to category selection below 
 
 ### 2b: Choose Skill Categories
 
-There are 7 selectable category groups below. The detailed confirmation lists that follow cover 41 skills across 8 categories, plus 1 standalone template. Use `AskUserQuestion` with `multiSelect: true`:
+There are 7 selectable category groups below. The detailed confirmation lists that follow cover 45 skills across 8 categories, plus 1 standalone template. Use `AskUserQuestion` with `multiSelect: true`:
 
 ```
 Question: "Which skill categories do you want to install?"
 Options:
-  - "Framework & Language" — "Django, Spring Boot, Go, Python, Java, Frontend, Backend patterns"
+  - "Framework & Language" — "Django, Laravel, Spring Boot, Go, Python, Java, Frontend, Backend patterns"
   - "Database" — "PostgreSQL, ClickHouse, JPA/Hibernate patterns"
   - "Workflow & Quality" — "TDD, verification, learning, security review, compaction"
   - "Research & APIs" — "Deep research, Exa search, Claude API patterns"
@@ -101,7 +101,7 @@ Options:
 
 For each selected category, print the full list of skills below and ask the user to confirm or deselect specific ones. If the list exceeds 4 items, print the list as text and use `AskUserQuestion` with an "Install all listed" option plus "Other" for the user to paste specific names.
 
-**Category: Framework & Language (17 skills)**
+**Category: Framework & Language (21 skills)**
 
 | Skill | Description |
 |-------|-------------|
@@ -111,6 +111,10 @@ For each selected category, print the full list of skills below and ask the user
 | `django-security` | Django security: auth, CSRF, SQL injection, XSS prevention |
 | `django-tdd` | Django testing with pytest-django, factory_boy, mocking, coverage |
 | `django-verification` | Django verification loop: migrations, linting, tests, security scans |
+| `laravel-patterns` | Laravel architecture patterns: routing, controllers, Eloquent, queues, caching |
+| `laravel-security` | Laravel security: auth, policies, CSRF, mass assignment, rate limiting |
+| `laravel-tdd` | Laravel testing with PHPUnit and Pest, factories, fakes, coverage |
+| `laravel-verification` | Laravel verification: linting, static analysis, tests, security scans |
 | `frontend-patterns` | React, Next.js, state management, performance, UI patterns |
 | `frontend-slides` | Zero-dependency HTML presentations, style previews, and PPTX-to-web conversion |
 | `golang-patterns` | Idiomatic Go patterns, conventions for robust Go applications |
@@ -258,6 +262,7 @@ grep -rn "skills/" $TARGET/skills/
 
 Some skills reference others. Verify these dependencies:
 - `django-tdd` may reference `django-patterns`
+- `laravel-tdd` may reference `laravel-patterns`
 - `springboot-tdd` may reference `springboot-patterns`
 - `continuous-learning-v2` references `~/.claude/homunculus/` directory
 - `python-testing` may reference `python-patterns`
