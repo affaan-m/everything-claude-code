@@ -74,7 +74,7 @@ final class OrdersController extends Controller
     {
         $order = $this->createOrder->handle($request->toDto());
 
-        return response()->json(OrderResource::from($order));
+        return response()->json(OrderResource::make($order));
     }
 }
 ```
