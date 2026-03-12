@@ -11,7 +11,7 @@ function renderTemplate(template, variables) {
 
   for (const [key, value] of entries) {
     const token = new RegExp(`{{\\s*${escapeRegExp(key)}\\s*}}`, 'g');
-    rendered = rendered.replace(token, stringifyValue(value));
+    rendered = rendered.replace(token, () => stringifyValue(value));
   }
 
   return rendered;

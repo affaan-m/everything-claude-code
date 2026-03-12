@@ -19,22 +19,9 @@ Return JSON only with this shape:
       "taskId": "string",
       "goal": "string",
       "suggestedAction": {
-        "type": "terminal_command | write_file | append_file | read_file | replace_in_file | http_request | web_search | finish",
-        "command": "string",
-        "path": "string",
-        "content": "string",
-        "search": "string",
-        "replace": "string",
-        "query": "string",
-        "url": "string",
-        "method": "string",
-        "headers": {
-          "Authorization": "string"
-        },
-        "body": {
-          "key": "value"
-        },
-        "summary": "string"
+        "type": "write_file",
+        "path": "agent-output/example.md",
+        "content": "# Example artifact"
       }
     }
   ],
@@ -55,6 +42,7 @@ Task graph:
 
 Notes for `suggestedAction`:
 
+- Allowed `type` values: `terminal_command`, `write_file`, `append_file`, `read_file`, `replace_in_file`, `http_request`, `web_search`, `finish`.
 - Use `terminal_command` with `command`.
 - Use `write_file` or `append_file` with `path` and `content`.
 - Use `read_file` with `path`.

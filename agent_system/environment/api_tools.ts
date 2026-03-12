@@ -1,5 +1,13 @@
 'use strict';
 
+const BLOCKED_HOSTNAMES = new Set([
+  'localhost',
+  'metadata.google.internal',
+  'metadata',
+  '169.254.169.254',
+  '100.100.100.200'
+]);
+
 class ApiTools {
   constructor(options) {
     const normalizedOptions = options || {};
@@ -21,6 +29,15 @@ class ApiTools {
         type: 'http_request',
         dryRun: true,
         request: options || {}
+      };
+    }
+
+    const validationError = validateRequestUrl(options && options.url);
+    if (validationError) {
+      return {
+        ok: false,
+        type: 'http_request',
+        error: validationError
       };
     }
 
@@ -109,6 +126,72 @@ function isApiAllowed(config) {
 
 function isDryRun(config) {
   return Boolean(config.execution_sandbox && config.execution_sandbox.dry_run);
+}
+
+function validateRequestUrl(url) {
+  let parsedUrl = null;
+  try {
+    parsedUrl = new URL(String(url || ''));
+  } catch (_err) {
+    return 'A valid http_request URL is required.';
+  }
+
+  if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+    return 'Only http and https URLs are allowed for http_request.';
+  }
+
+  const hostname = parsedUrl.hostname.trim().toLowerCase();
+  if (!hostname) {
+    return 'A valid http_request URL is required.';
+  }
+
+  if (BLOCKED_HOSTNAMES.has(hostname) || hostname.endsWith('.local')) {
+    return 'URL was blocked by the API request policy.';
+  }
+
+  if (isPrivateIpv4(hostname) || isBlockedIpv6(hostname)) {
+    return 'URL was blocked by the API request policy.';
+  }
+
+  return '';
+}
+
+function isPrivateIpv4(hostname) {
+  const parts = hostname.split('.');
+  if (parts.length !== 4 || parts.some((part) => !/^\d+$/.test(part))) {
+    return false;
+  }
+
+  const octets = parts.map((part) => Number(part));
+  if (octets.some((value) => value < 0 || value > 255)) {
+    return false;
+  }
+
+  if (octets[0] === 10 || octets[0] === 127) {
+    return true;
+  }
+
+  if (octets[0] === 169 && octets[1] === 254) {
+    return true;
+  }
+
+  if (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31) {
+    return true;
+  }
+
+  if (octets[0] === 192 && octets[1] === 168) {
+    return true;
+  }
+
+  return false;
+}
+
+function isBlockedIpv6(hostname) {
+  const normalized = hostname.replace(/^\[|\]$/g, '').toLowerCase();
+  return normalized === '::1'
+    || normalized.startsWith('fe80:')
+    || normalized.startsWith('fc')
+    || normalized.startsWith('fd');
 }
 
 module.exports = {

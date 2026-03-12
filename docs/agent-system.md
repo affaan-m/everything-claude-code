@@ -1,6 +1,6 @@
 # Self-Evolving Agent System
 
-This repository now includes a runnable agent operating system under `agent_system/` for both Claude Code and OpenAI Codex.
+This repository now includes a runnable agent operating system under `agent_system/` designed for Claude Code and OpenAI Codex, with `mock` and `local` adapters for safer testing and extension.
 
 ## What It Does
 
@@ -115,6 +115,6 @@ After a successful run:
 
 ## Notes
 
-- The runtime is zero-dependency and executes `.ts` modules through the Node CLI loader in `scripts/agent-cli.js`.
-- `mock` mode is intentionally conservative: it writes artifacts into `agent-output/` instead of changing production code.
-- Real code-changing behavior should be paired with `claude`, `openai`, or `local` providers and a tighter policy review.
+- The CLI entrypoint is zero-dependency and executes `.ts` modules through the Node loader shim in `scripts/agent-cli.js`.
+- Safety comes from the checked-in `mock` provider, `dry_run` mode, and the blocked-command policy. In mock mode the system writes artifacts into `agent-output/` instead of changing production code.
+- Real code-changing behavior should be paired with `claude`, `openai`, or `local` providers only after reviewing the sandbox and blocked-command settings.

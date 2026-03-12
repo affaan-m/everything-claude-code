@@ -152,7 +152,9 @@ module.exports = {
   parseArgs
 };
 
-main().catch((err) => {
-  process.stderr.write(`${err.message}\n`);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    process.stderr.write(`${err.message}\n`);
+    process.exit(1);
+  });
+}

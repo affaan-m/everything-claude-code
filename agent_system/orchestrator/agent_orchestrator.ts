@@ -169,7 +169,7 @@ class AgentOrchestrator {
       throw new Error('No episode was found to learn from.');
     }
 
-    if (episode.reflection && episode.createdSkill) {
+    if (episode.learnedAt) {
       return episode;
     }
 

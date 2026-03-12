@@ -91,10 +91,11 @@ function createFallbackReflection(goal, execution, evaluation) {
 }
 
 function normalizeSemanticInsight(insight) {
+  const normalizedInsight = insight && typeof insight === 'object' ? insight : {};
   return {
-    topic: safeString(insight.topic, 'general'),
-    fact: safeString(insight.fact, ''),
-    tags: safeArray(insight.tags).map(String)
+    topic: safeString(normalizedInsight.topic, 'general'),
+    fact: safeString(normalizedInsight.fact, ''),
+    tags: safeArray(normalizedInsight.tags).map(String)
   };
 }
 

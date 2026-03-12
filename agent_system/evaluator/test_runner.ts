@@ -8,6 +8,19 @@ class TestRunner {
 
   async run(commands) {
     const normalizedCommands = Array.isArray(commands) ? commands.filter(Boolean) : [];
+    if (!this.terminal || typeof this.terminal.runCommand !== 'function') {
+      return {
+        results: normalizedCommands.map((command) => ({
+          ok: false,
+          type: 'terminal_command',
+          command,
+          error: 'Test runner requires a terminal backend.'
+        })),
+        passedCount: 0,
+        failedCount: normalizedCommands.length
+      };
+    }
+
     const results = [];
 
     for (const command of normalizedCommands) {

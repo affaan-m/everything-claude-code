@@ -63,27 +63,39 @@ async function runTests() {
       jsonUtils: loadModule('agent_system/shared/json_utils.ts'),
       openaiProvider: loadModule('model_providers/openai_provider.ts'),
       localProvider: loadModule('model_providers/local_provider.ts'),
+      promptLoader: loadModule('agent_system/shared/prompt_loader.ts'),
       toolRunner: loadModule('agent_system/builder/tool_runner.ts'),
       episodicMemory: loadModule('agent_system/memory/episodic_memory.ts'),
       plannerAgent: loadModule('agent_system/planner/planner_agent.ts'),
       providerFactory: loadModule('agent_system/shared/provider_factory.ts'),
       taskGraph: loadModule('agent_system/planner/task_graph.ts'),
       terminalInterface: loadModule('agent_system/environment/terminal_interface.ts'),
+      fileSystemTools: loadModule('agent_system/environment/file_system_tools.ts'),
+      apiTools: loadModule('agent_system/environment/api_tools.ts'),
+      testRunner: loadModule('agent_system/evaluator/test_runner.ts'),
+      reflectionAgent: loadModule('agent_system/reflection/reflection_agent.ts'),
+      skillExtractor: loadModule('agent_system/reflection/skill_extractor.ts'),
       skillLibrary: loadModule('agent_system/memory/skill_library.ts'),
       orchestrator: loadModule('agent_system/orchestrator/agent_orchestrator.ts'),
       mockProvider: loadModule('model_providers/mock_provider.ts')
     };
 
     assert.strictEqual(typeof modules.taskGraph.createTaskGraph, 'function');
-      assert.strictEqual(typeof modules.executorAgent.ExecutorAgent, 'function');
+    assert.strictEqual(typeof modules.executorAgent.ExecutorAgent, 'function');
     assert.strictEqual(typeof modules.jsonUtils.tryParseJson, 'function');
     assert.strictEqual(typeof modules.openaiProvider.OpenAIProvider, 'function');
     assert.strictEqual(typeof modules.localProvider.LocalProvider, 'function');
+    assert.strictEqual(typeof modules.promptLoader.renderTemplate, 'function');
     assert.strictEqual(typeof modules.toolRunner.ToolRunner, 'function');
     assert.strictEqual(typeof modules.episodicMemory.EpisodicMemory, 'function');
     assert.strictEqual(typeof modules.plannerAgent.PlannerAgent, 'function');
     assert.strictEqual(typeof modules.providerFactory.createModelProvider, 'function');
     assert.strictEqual(typeof modules.terminalInterface.TerminalInterface, 'function');
+    assert.strictEqual(typeof modules.fileSystemTools.FileSystemTools, 'function');
+    assert.strictEqual(typeof modules.apiTools.ApiTools, 'function');
+    assert.strictEqual(typeof modules.testRunner.TestRunner, 'function');
+    assert.strictEqual(typeof modules.reflectionAgent.ReflectionAgent, 'function');
+    assert.strictEqual(typeof modules.skillExtractor.SkillExtractor, 'function');
     assert.strictEqual(typeof modules.skillLibrary.SkillLibrary, 'function');
     assert.strictEqual(typeof modules.orchestrator.AgentOrchestrator, 'function');
     assert.strictEqual(typeof modules.mockProvider.MockModelProvider, 'function');
@@ -192,6 +204,16 @@ async function runTests() {
     assert.ok(result.error.includes('fileSystem backend'));
   })) passed++; else failed++;
 
+  if (await test('TestRunner returns structured failures when no terminal backend is configured', async () => {
+    const runner = new modules.testRunner.TestRunner({});
+    const result = await runner.run(['npm test']);
+
+    assert.strictEqual(result.passedCount, 0);
+    assert.strictEqual(result.failedCount, 1);
+    assert.strictEqual(result.results[0].ok, false);
+    assert.ok(result.results[0].error.includes('terminal backend'));
+  })) passed++; else failed++;
+
   console.log('\nMemory helpers:');
 
   if (await test('EpisodicMemory generates unique fallback runIds when Date.now collides', async () => {
@@ -298,6 +320,74 @@ async function runTests() {
     assert.strictEqual(allowedResult.ok, true);
   })) passed++; else failed++;
 
+  if (await test('TerminalInterface defaults to dry-run mode and rejects shell interpreter bypasses', async () => {
+    const terminal = new modules.terminalInterface.TerminalInterface();
+
+    const dryRunResult = await terminal.runCommand('node -e "process.stdout.write(\'live\')"');
+    const shellBypassResult = await terminal.runCommand('sh -c "echo unsafe"');
+
+    assert.strictEqual(dryRunResult.ok, true);
+    assert.strictEqual(dryRunResult.dryRun, true);
+    assert.strictEqual(shellBypassResult.ok, false);
+    assert.ok(shellBypassResult.error.includes('blocked by the execution policy'));
+  })) passed++; else failed++;
+
+  if (await test('ApiTools blocks localhost and private-network requests', async () => {
+    const apiTools = new modules.apiTools.ApiTools({
+      config: {
+        tool_permissions: {
+          allow_api: true
+        },
+        execution_sandbox: {
+          dry_run: false
+        }
+      }
+    });
+
+    const result = await apiTools.request({
+      url: 'http://127.0.0.1:8080/health'
+    });
+
+    assert.strictEqual(result.ok, false);
+    assert.strictEqual(result.error, 'URL was blocked by the API request policy.');
+  })) passed++; else failed++;
+
+  if (await test('renderTemplate preserves literal replacement tokens like $1 and $&', async () => {
+    const rendered = modules.promptLoader.renderTemplate('value={{token}}', {
+      token: '$1 $& $$'
+    });
+
+    assert.strictEqual(rendered, 'value=$1 $& $$');
+  })) passed++; else failed++;
+
+  if (await test('FileSystemTools rejects empty replace_in_file search strings', async () => {
+    const tmpDir = makeTmpDir();
+    try {
+      const filePath = path.join(tmpDir, 'README.md');
+      fs.writeFileSync(filePath, 'hello world', 'utf8');
+      const tools = new modules.fileSystemTools.FileSystemTools({
+        cwd: tmpDir,
+        config: {
+          tool_permissions: {
+            allow_file_system: true
+          },
+          execution_sandbox: {
+            dry_run: false,
+            mode: 'workspace-write'
+          }
+        }
+      });
+
+      const result = await tools.replaceInFile('README.md', '', 'x');
+
+      assert.strictEqual(result.ok, false);
+      assert.ok(result.error.includes('Search value is required'));
+      assert.strictEqual(fs.readFileSync(filePath, 'utf8'), 'hello world');
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
   console.log('\nProvider error handling:');
 
   if (await test('OpenAIProvider surfaces HTTP status for non-JSON error bodies', async () => {
@@ -343,6 +433,144 @@ async function runTests() {
     } finally {
       global.fetch = originalFetch;
     }
+  })) passed++; else failed++;
+
+  if (await test('OpenAIProvider aborts hung requests using a timeout', async () => {
+    const originalFetch = global.fetch;
+    try {
+      global.fetch = async (_url, options) => new Promise((_resolve, reject) => {
+        options.signal.addEventListener('abort', () => {
+          const error = new Error('aborted');
+          error.name = 'AbortError';
+          reject(error);
+        });
+      });
+
+      const provider = new modules.openaiProvider.OpenAIProvider({
+        apiKey: 'test-key',
+        timeoutMs: 5
+      });
+
+      await assert.rejects(
+        () => provider.complete({ prompt: 'hello' }),
+        /OpenAI provider request timed out after 5ms/
+      );
+    } finally {
+      global.fetch = originalFetch;
+    }
+  })) passed++; else failed++;
+
+  if (await test('LocalProvider uses chat completions for openai-compatible backends', async () => {
+    const originalFetch = global.fetch;
+    let capturedUrl = '';
+    let capturedBody = null;
+    try {
+      global.fetch = async (url, options) => {
+        capturedUrl = url;
+        capturedBody = JSON.parse(options.body);
+        return {
+          ok: true,
+          status: 200,
+          text: async () => JSON.stringify({
+            model: 'local-model',
+            choices: [
+              {
+                message: {
+                  content: 'ok'
+                }
+              }
+            ]
+          })
+        };
+      };
+
+      const provider = new modules.localProvider.LocalProvider({
+        baseUrl: 'http://localhost:1234',
+        kind: 'openai-compatible',
+        timeoutMs: 1000
+      });
+      const result = await provider.complete({
+        instructions: 'Be brief.',
+        prompt: 'Say hello'
+      });
+
+      assert.strictEqual(result.text, 'ok');
+      assert.strictEqual(capturedUrl, 'http://localhost:1234/v1/chat/completions');
+      assert.deepStrictEqual(capturedBody.messages, [
+        {
+          role: 'system',
+          content: 'Be brief.'
+        },
+        {
+          role: 'user',
+          content: 'Say hello'
+        }
+      ]);
+    } finally {
+      global.fetch = originalFetch;
+    }
+  })) passed++; else failed++;
+
+  console.log('\nReflection helpers:');
+
+  if (await test('ReflectionAgent normalizes malformed semantic insight entries safely', async () => {
+    const agent = new modules.reflectionAgent.ReflectionAgent({
+      provider: {
+        async complete() {
+          return {
+            text: JSON.stringify({
+              summary: 'ok',
+              lessons: [],
+              failureModes: [],
+              semanticInsights: [null, 'bad', { topic: 'agents', fact: 'learn', tags: ['memory'] }],
+              skillCandidate: {
+                slug: 'skill',
+                title: 'Skill',
+                tags: [],
+                problem: '',
+                steps: [],
+                toolsUsed: [],
+                commonFailures: [],
+                reusablePattern: ''
+              }
+            })
+          };
+        }
+      }
+    });
+
+    const reflection = await agent.reflect({
+      goal: 'Learn safely',
+      execution: {},
+      evaluation: {}
+    });
+
+    assert.deepStrictEqual(reflection.semanticInsights[0], {
+      topic: 'general',
+      fact: '',
+      tags: []
+    });
+    assert.deepStrictEqual(reflection.semanticInsights[1], {
+      topic: 'general',
+      fact: '',
+      tags: []
+    });
+    assert.deepStrictEqual(reflection.semanticInsights[2], {
+      topic: 'agents',
+      fact: 'learn',
+      tags: ['memory']
+    });
+  })) passed++; else failed++;
+
+  if (await test('SkillExtractor returns null without a configured skill library', async () => {
+    const extractor = new modules.skillExtractor.SkillExtractor({});
+    const result = extractor.extract({
+      skillCandidate: {
+        slug: 'test-skill'
+      }
+    });
+
+    assert.strictEqual(result, null);
   })) passed++; else failed++;
 
   console.log('\nSkill library:');
@@ -507,6 +735,67 @@ async function runTests() {
       assert.ok(learnedReport.reflection);
       assert.ok(learnedReport.createdSkill);
       assert.ok(fs.existsSync(path.join(tmpDir, 'agent_skills', `${learnedReport.createdSkill.slug}.md`)));
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
+  if (await test('learnFromEpisode short-circuits once an episode already has learnedAt', async () => {
+    const tmpDir = makeTmpDir();
+    try {
+      const configPath = path.join(tmpDir, 'config', 'agent_config.json');
+      writeJson(configPath, {
+        model: {
+          provider: 'mock',
+          name: 'mock-agent-team'
+        },
+        temperature: 0.1,
+        memory_paths: {
+          working: 'agent_memory/working',
+          episodic: 'agent_memory/episodic',
+          semantic: 'agent_memory/semantic'
+        },
+        skill_library_path: 'agent_skills',
+        tool_permissions: {
+          allow_terminal: true,
+          allow_file_system: true,
+          allow_api: false,
+          blocked_commands: ['rm -rf', 'git reset --hard']
+        },
+        execution_sandbox: {
+          mode: 'workspace-write',
+          dry_run: true,
+          max_react_steps: 4
+        }
+      });
+
+      const episodicDir = path.join(tmpDir, 'agent_memory', 'episodic');
+      fs.mkdirSync(episodicDir, { recursive: true });
+      writeJson(path.join(episodicDir, 'already-learned.json'), {
+        runId: 'already-learned',
+        goal: 'Already learned',
+        evaluation: {
+          status: 'pass'
+        },
+        reflection: {
+          summary: 'done'
+        },
+        learnedAt: '2026-03-12T00:00:00.000Z'
+      });
+
+      const orchestrator = new modules.orchestrator.AgentOrchestrator({
+        configPath,
+        cwd: tmpDir,
+        provider: new modules.mockProvider.MockModelProvider()
+      });
+      orchestrator.reflectionAgent.reflect = async () => {
+        throw new Error('reflection should not rerun');
+      };
+
+      const report = await orchestrator.learnFromEpisode('already-learned');
+
+      assert.strictEqual(report.runId, 'already-learned');
+      assert.strictEqual(report.learnedAt, '2026-03-12T00:00:00.000Z');
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }

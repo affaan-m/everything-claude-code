@@ -1,12 +1,13 @@
 'use strict';
 
-const { spawnSync } = require('child_process');
+const { spawn } = require('child_process');
 
 class ClaudeProvider {
   constructor(options) {
     const normalizedOptions = options || {};
     this.binary = normalizedOptions.binary || process.env.CLAUDE_BINARY || 'claude';
     this.model = normalizedOptions.model || 'sonnet';
+    this.timeoutMs = normalizeTimeoutMs(normalizedOptions.timeoutMs, 300000);
   }
 
   async complete(request) {
@@ -19,18 +20,14 @@ class ClaudeProvider {
 
     args.push('-p', prompt);
 
-    const result = spawnSync(this.binary, args, {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-      timeout: 300000
-    });
+    const result = await runClaudeCommand(this.binary, args, this.timeoutMs);
 
     if (result.error) {
-      throw new Error(`Claude provider failed: ${result.error.message}`);
+      throw new Error(`Claude provider failed: ${result.error}`);
     }
 
-    if (result.status !== 0) {
-      throw new Error(`Claude provider exited with code ${result.status}: ${(result.stderr || '').trim()}`);
+    if (result.exitCode !== 0) {
+      throw new Error(`Claude provider exited with code ${result.exitCode}: ${(result.stderr || '').trim()}`);
     }
 
     return {
@@ -41,11 +38,88 @@ class ClaudeProvider {
   }
 }
 
+async function runClaudeCommand(binary, args, timeoutMs) {
+  return new Promise((resolve) => {
+    const child = spawn(binary, args, {
+      shell: false,
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+    let stdout = '';
+    let stderr = '';
+    let settled = false;
+    let timedOut = false;
+    const timeoutId = setTimeout(() => {
+      timedOut = true;
+      child.kill('SIGTERM');
+    }, timeoutMs);
+
+    child.stdout.on('data', (chunk) => {
+      stdout += String(chunk);
+    });
+    child.stderr.on('data', (chunk) => {
+      stderr += String(chunk);
+    });
+    child.on('error', (error) => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      clearTimeout(timeoutId);
+      resolve({
+        stdout: stdout.trim(),
+        stderr: stderr.trim(),
+        exitCode: 1,
+        error: error.message
+      });
+    });
+    child.on('close', (code, signal) => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      clearTimeout(timeoutId);
+      if (timedOut) {
+        resolve({
+          stdout: stdout.trim(),
+          stderr: stderr.trim(),
+          exitCode: 124,
+          error: `Command timed out after ${timeoutMs}ms.`
+        });
+        return;
+      }
+
+      if (signal) {
+        resolve({
+          stdout: stdout.trim(),
+          stderr: stderr.trim(),
+          exitCode: 1,
+          error: `Process exited due to signal ${signal}.`
+        });
+        return;
+      }
+
+      resolve({
+        stdout: stdout.trim(),
+        stderr: stderr.trim(),
+        exitCode: typeof code === 'number' ? code : 1,
+        error: ''
+      });
+    });
+  });
+}
+
 function buildPrompt(request) {
   return [
     request && request.instructions ? `SYSTEM:\n${request.instructions}\n` : '',
     request && request.prompt ? `USER:\n${request.prompt}` : ''
   ].filter(Boolean).join('\n');
+}
+
+function normalizeTimeoutMs(value, fallback) {
+  return Number.isInteger(value) && value > 0 ? value : fallback;
 }
 
 module.exports = {

@@ -6,6 +6,7 @@ class LocalProvider {
     this.baseUrl = normalizedOptions.baseUrl || process.env.LOCAL_MODEL_BASE_URL || 'http://127.0.0.1:11434';
     this.model = normalizedOptions.model || process.env.LOCAL_MODEL_NAME || 'llama3.2';
     this.kind = normalizedOptions.kind || process.env.LOCAL_MODEL_KIND || guessKind(this.baseUrl);
+    this.timeoutMs = normalizeTimeoutMs(normalizedOptions.timeoutMs, 30000);
   }
 
   async complete(request) {
@@ -17,7 +18,7 @@ class LocalProvider {
   }
 
   async completeWithOllama(request) {
-    const response = await fetch(`${this.baseUrl.replace(/\/$/, '')}/api/generate`, {
+    const response = await fetchWithTimeout(`${this.baseUrl.replace(/\/$/, '')}/api/generate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -27,7 +28,7 @@ class LocalProvider {
         prompt: buildPrompt(request),
         stream: false
       })
-    });
+    }, this.timeoutMs, 'Local provider request');
 
     if (!response.ok) {
       throw new Error(await formatHttpError('Local provider request failed', response));
@@ -43,24 +44,18 @@ class LocalProvider {
   }
 
   async completeWithOpenAICompatibleApi(request) {
-    const response = await fetch(`${this.baseUrl.replace(/\/$/, '')}/responses`, {
+    const response = await fetchWithTimeout(buildOpenAICompatibleUrl(this.baseUrl), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         model: this.model,
-        instructions: request.instructions || undefined,
-        input: request.prompt || '',
+        messages: buildMessages(request),
         temperature: typeof request.temperature === 'number' ? request.temperature : undefined,
-        store: false,
-        text: {
-          format: {
-            type: 'text'
-          }
-        }
+        stream: false
       })
-    });
+    }, this.timeoutMs, 'Local provider request');
 
     if (!response.ok) {
       throw new Error(await formatHttpError('Local provider request failed', response));
@@ -68,19 +63,31 @@ class LocalProvider {
 
     const payload = await parseJsonResponse('Local provider response', response);
 
-    const output = Array.isArray(payload.output) ? payload.output : [];
-    const text = output
-      .flatMap((item) => Array.isArray(item.content) ? item.content : [])
-      .filter((content) => content && content.type === 'output_text')
-      .map((content) => content.text)
-      .join('\n')
-      .trim();
-
     return {
-      text,
+      text: extractChatCompletionText(payload),
       model: payload.model || this.model,
       raw: payload
     };
+  }
+}
+
+async function fetchWithTimeout(url, options, timeoutMs, label) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+  } catch (err) {
+    if (err && err.name === 'AbortError') {
+      throw new Error(`${label} timed out after ${timeoutMs}ms.`);
+    }
+
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -114,8 +121,66 @@ function buildPrompt(request) {
   ].filter(Boolean).join('\n');
 }
 
+function buildMessages(request) {
+  const messages = [];
+  if (request && request.instructions) {
+    messages.push({
+      role: 'system',
+      content: String(request.instructions)
+    });
+  }
+
+  messages.push({
+    role: 'user',
+    content: String((request && request.prompt) || '')
+  });
+
+  return messages;
+}
+
+function buildOpenAICompatibleUrl(baseUrl) {
+  const normalizedBaseUrl = String(baseUrl || '').replace(/\/$/, '');
+  return normalizedBaseUrl.endsWith('/v1')
+    ? `${normalizedBaseUrl}/chat/completions`
+    : `${normalizedBaseUrl}/v1/chat/completions`;
+}
+
+function extractChatCompletionText(payload) {
+  const choices = Array.isArray(payload && payload.choices) ? payload.choices : [];
+  const message = choices[0] && choices[0].message ? choices[0].message : {};
+  const content = message.content;
+
+  if (typeof content === 'string') {
+    return content.trim();
+  }
+
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => {
+        if (typeof part === 'string') {
+          return part;
+        }
+
+        if (part && typeof part.text === 'string') {
+          return part.text;
+        }
+
+        return '';
+      })
+      .filter(Boolean)
+      .join('\n')
+      .trim();
+  }
+
+  return '';
+}
+
 function guessKind(baseUrl) {
   return String(baseUrl || '').includes('11434') ? 'ollama' : 'openai-compatible';
+}
+
+function normalizeTimeoutMs(value, fallback) {
+  return Number.isInteger(value) && value > 0 ? value : fallback;
 }
 
 module.exports = {

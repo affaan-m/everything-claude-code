@@ -97,9 +97,13 @@ class FileSystemTools {
 
   async replaceInFile(targetPath, searchValue, replaceValue) {
     try {
+      if (!String(searchValue ?? '')) {
+        throw new Error('Search value is required for replace_in_file.');
+      }
+
       const resolvedPath = this.resolvePath(targetPath, true);
       const currentContent = fs.readFileSync(resolvedPath, 'utf8');
-      const nextContent = currentContent.split(String(searchValue || '')).join(String(replaceValue || ''));
+      const nextContent = currentContent.split(String(searchValue)).join(String(replaceValue || ''));
 
       if (isDryRun(this.config)) {
         return {

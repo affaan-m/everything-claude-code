@@ -91,6 +91,18 @@ function runTests() {
 
   console.log('Planning:');
 
+  if (test('requiring agent-cli does not execute the CLI entrypoint', () => {
+    const cliPath = path.join(__dirname, '..', '..', 'scripts', 'agent-cli.js');
+    const result = spawnSync('node', ['-e', `require(${JSON.stringify(cliPath)}); process.stdout.write('loaded');`], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      timeout: 10000
+    });
+
+    assert.strictEqual(result.status, 0, result.stderr);
+    assert.strictEqual(result.stdout, 'loaded');
+  })) passed++; else failed++;
+
   if (test('agent-cli plan returns planner and architect output as JSON', () => {
     const tmpDir = makeTmpDir();
     try {

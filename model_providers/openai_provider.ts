@@ -5,7 +5,8 @@ class OpenAIProvider {
     const normalizedOptions = options || {};
     this.baseUrl = normalizedOptions.baseUrl || process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
     this.apiKey = normalizedOptions.apiKey || process.env.OPENAI_API_KEY || '';
-    this.model = normalizedOptions.model || 'gpt-5.4';
+    this.model = normalizedOptions.model || 'gpt-5';
+    this.timeoutMs = normalizeTimeoutMs(normalizedOptions.timeoutMs, 30000);
   }
 
   async complete(request) {
@@ -13,7 +14,7 @@ class OpenAIProvider {
       throw new Error('OpenAI provider requires OPENAI_API_KEY.');
     }
 
-    const response = await fetch(`${this.baseUrl.replace(/\/$/, '')}/responses`, {
+    const response = await fetchWithTimeout(`${this.baseUrl.replace(/\/$/, '')}/responses`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${this.apiKey}`,
@@ -31,7 +32,7 @@ class OpenAIProvider {
           }
         }
       })
-    });
+    }, this.timeoutMs, 'OpenAI provider request');
 
     if (!response.ok) {
       throw new Error(await formatHttpError('OpenAI provider request failed', response));
@@ -44,6 +45,26 @@ class OpenAIProvider {
       model: payload.model || this.model,
       raw: payload
     };
+  }
+}
+
+async function fetchWithTimeout(url, options, timeoutMs, label) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+  } catch (err) {
+    if (err && err.name === 'AbortError') {
+      throw new Error(`${label} timed out after ${timeoutMs}ms.`);
+    }
+
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -88,6 +109,10 @@ function extractResponseText(payload) {
   }
 
   return '';
+}
+
+function normalizeTimeoutMs(value, fallback) {
+  return Number.isInteger(value) && value > 0 ? value : fallback;
 }
 
 module.exports = {

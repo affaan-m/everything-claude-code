@@ -7,7 +7,7 @@ class SkillExtractor {
   }
 
   extract(reflection) {
-    if (!reflection || !reflection.skillCandidate) {
+    if (!reflection || !reflection.skillCandidate || !this.skillLibrary || typeof this.skillLibrary.storeSkill !== 'function') {
       return null;
     }
 
