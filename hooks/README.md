@@ -25,6 +25,7 @@ User request → Claude picks a tool → PreToolUse hook runs → Tool executes 
 | **Git push reminder** | `Bash` | Reminds to review changes before `git push` | 0 (warns) |
 | **Doc file warning** | `Write` | Warns about non-standard `.md`/`.txt` files (allows README, CLAUDE, CONTRIBUTING, CHANGELOG, LICENSE, SKILL, docs/, skills/); cross-platform path handling | 0 (warns) |
 | **Strategic compact** | `Edit\|Write` | Suggests manual `/compact` at logical intervals (every ~50 tool calls) | 0 (warns) |
+| **InsAIts security monitor (opt-in)** | `Bash\|Write\|Edit\|MultiEdit` | Optional security scan for high-signal tool inputs. Disabled unless `ECC_ENABLE_INSAITS=1`. Blocks on critical findings, warns on non-critical, and writes audit log to `.insaits_audit_session.jsonl`. Requires `pip install insa-its`. [Details](../scripts/hooks/insaits-security-monitor.py) | 2 (blocks critical) / 0 (warns) |
 
 ### PostToolUse Hooks
 

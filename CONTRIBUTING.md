@@ -10,6 +10,7 @@ Thanks for wanting to contribute! This repo is a community resource for Claude C
 - [Contributing Agents](#contributing-agents)
 - [Contributing Hooks](#contributing-hooks)
 - [Contributing Commands](#contributing-commands)
+- [Cross-Harness and Translations](#cross-harness-and-translations)
 - [Pull Request Process](#pull-request-process)
 
 ---
@@ -345,6 +346,29 @@ What the user receives.
 | `code-review.md` | Review code changes |
 | `tdd.md` | TDD workflow |
 | `e2e.md` | E2E testing |
+
+---
+
+## Cross-Harness and Translations
+
+### Skill subsets (Codex and Cursor)
+
+ECC ships skill subsets for other harnesses:
+
+- **Codex:** `.agents/skills/` — skills listed in `agents/openai.yaml` are loaded by Codex.
+- **Cursor:** `.cursor/skills/` — a subset of skills is bundled for Cursor.
+
+When you **add a new skill** that should be available on Codex or Cursor:
+
+1. Add the skill under `skills/your-skill-name/` as usual.
+2. If it should be available on **Codex**, add it to `.agents/skills/` (copy the skill directory or add a reference) and ensure it is referenced in `agents/openai.yaml` if required.
+3. If it should be available on **Cursor**, add it under `.cursor/skills/` per Cursor's layout.
+
+Check existing skills in those directories for the expected structure. Keeping these subsets in sync is manual; mention in your PR if you updated them.
+
+### Translations
+
+Translations live under `docs/` (e.g. `docs/zh-CN`, `docs/zh-TW`, `docs/ja-JP`). If you change agents, commands, or skills that are translated, consider updating the corresponding translation files or opening an issue so maintainers or translators can update them.
 
 ---
 

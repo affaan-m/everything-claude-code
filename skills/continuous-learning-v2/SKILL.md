@@ -258,6 +258,7 @@ Other behavior (observation capture, instinct thresholds, project scoping, promo
 |   +-- commands/           # Global generated commands
 +-- projects/
     +-- a1b2c3d4e5f6/       # Project hash (from git remote URL)
+    |   +-- project.json    # Per-project metadata mirror (id/name/root/remote)
     |   +-- observations.jsonl
     |   +-- observations.archive/
     |   +-- instincts/

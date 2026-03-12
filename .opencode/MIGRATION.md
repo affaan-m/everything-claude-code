@@ -148,7 +148,7 @@ You are an expert planning specialist...
       "description": "Expert planning specialist...",
       "mode": "subagent",
       "model": "anthropic/claude-opus-4-5",
-      "prompt": "{file:.opencode/prompts/agents/planner.txt}",
+      "prompt": "{file:prompts/agents/planner.txt}",
       "tools": { "read": true, "bash": true }
     }
   }
@@ -213,7 +213,7 @@ Create a detailed implementation plan for: $ARGUMENTS
 ```json
 {
   "instructions": [
-    ".opencode/instructions/INSTRUCTIONS.md",
+    "instructions/INSTRUCTIONS.md",
     "rules/common/security.md",
     "rules/common/coding-style.md"
   ]

@@ -156,6 +156,9 @@ jobs:
         with:
           node-version: '20.x'
 
+      - name: Install validation dependencies
+        run: npm ci --ignore-scripts
+
       - name: Validate agents
         run: node scripts/ci/validate-agents.js
         continue-on-error: false

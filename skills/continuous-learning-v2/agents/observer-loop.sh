@@ -78,9 +78,20 @@ Rules:
 PROMPT
 
   timeout_seconds="${ECC_OBSERVER_TIMEOUT_SECONDS:-120}"
+  max_turns="${ECC_OBSERVER_MAX_TURNS:-10}"
   exit_code=0
 
-  claude --model haiku --max-turns 3 --print < "$prompt_file" >> "$LOG_FILE" 2>&1 &
+  case "$max_turns" in
+    ''|*[!0-9]*)
+      max_turns=10
+      ;;
+  esac
+
+  if [ "$max_turns" -lt 4 ]; then
+    max_turns=10
+  fi
+
+  claude --model haiku --max-turns "$max_turns" --print < "$prompt_file" >> "$LOG_FILE" 2>&1 &
   claude_pid=$!
 
   (

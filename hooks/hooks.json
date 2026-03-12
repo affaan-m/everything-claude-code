@@ -63,6 +63,17 @@
           }
         ],
         "description": "Capture tool use observations for continuous learning"
+      },
+      {
+        "matcher": "Bash|Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:insaits-security\" \"scripts/hooks/insaits-security-wrapper.js\" \"standard,strict\"",
+            "timeout": 15
+          }
+        ],
+        "description": "Optional InsAIts AI security monitor for Bash/Edit/Write flows. Enable with ECC_ENABLE_INSAITS=1. Requires: pip install insa-its"
       }
     ],
     "PreCompact": [

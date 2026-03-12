@@ -88,10 +88,13 @@
     "agent:execute": "node scripts/agent-cli.js execute",
     "agent:learn": "node scripts/agent-cli.js learn",
     "claw": "node scripts/claw.js",
-    "test": "node scripts/ci/validate-agents.js && node scripts/ci/validate-commands.js && node scripts/ci/validate-rules.js && node scripts/ci/validate-skills.js && node scripts/ci/validate-hooks.js && node scripts/ci/validate-no-personal-paths.js && node tests/run-all.js"
+    "test": "node scripts/ci/validate-agents.js && node scripts/ci/validate-commands.js && node scripts/ci/validate-rules.js && node scripts/ci/validate-skills.js && node scripts/ci/validate-hooks.js && node scripts/ci/validate-no-personal-paths.js && node tests/run-all.js",
+    "coverage": "c8 --all --include=\"scripts/**/*.js\" --check-coverage --lines 80 --functions 80 --branches 80 --statements 80 --reporter=text --reporter=lcov node tests/run-all.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "ajv": "^8.18.0",
+    "c8": "^10.1.2",
     "eslint": "^9.39.2",
     "globals": "^17.1.0",
     "markdownlint-cli": "^0.47.0"

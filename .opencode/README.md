@@ -189,7 +189,7 @@ Full configuration in `opencode.json`:
   "$schema": "https://opencode.ai/config.json",
   "model": "anthropic/claude-sonnet-4-5",
   "small_model": "anthropic/claude-haiku-4-5",
-  "plugin": ["./.opencode/plugins"],
+  "plugin": ["./plugins"],
   "instructions": [
     "skills/tdd-workflow/SKILL.md",
     "skills/security-review/SKILL.md"

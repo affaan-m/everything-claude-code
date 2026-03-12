@@ -88,6 +88,11 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/projects"],
       "description": "Filesystem operations (set your path)"
+    },
+    "insaits": {
+      "command": "python3",
+      "args": ["-m", "insa_its.mcp_server"],
+      "description": "AI-to-AI security monitoring — anomaly detection, credential exposure, hallucination checks, forensic tracing. 23 anomaly types, OWASP MCP Top 10 coverage. 100% local. Install: pip install insa-its"
     }
   },
   "_comments": {

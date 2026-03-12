@@ -5,6 +5,7 @@
 ![Shell](https://img.shields.io/badge/-Shell-4EAA25?logo=gnu-bash&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
 ![Go](https://img.shields.io/badge/-Go-00ADD8?logo=go&logoColor=white)
+![Perl](https://img.shields.io/badge/-Perl-39457E?logo=perl&logoColor=white)
 ![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown&logoColor=white)
 
 ---
@@ -81,8 +82,12 @@
 # 首先克隆仓库
 git clone https://github.com/affaan-m/everything-claude-code.git
 
-# 复制规则（应用于所有项目）
-cp -r everything-claude-code/rules/* ~/.claude/rules/
+# 复制规则（通用 + 语言特定）
+cp -r everything-claude-code/rules/common/* ~/.claude/rules/
+cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/   # 选择你的技术栈
+cp -r everything-claude-code/rules/python/* ~/.claude/rules/
+cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
+cp -r everything-claude-code/rules/perl/* ~/.claude/rules/
 ```
 
 ### 第三步：开始使用
@@ -175,6 +180,9 @@ everything-claude-code/
 |   |-- golang-patterns/            # Go 惯用语和最佳实践（新增）
 |   |-- golang-testing/             # Go 测试模式、TDD、基准测试（新增）
 |   |-- cpp-testing/                # C++ 测试模式、GoogleTest、CMake/CTest（新增）
+|   |-- perl-patterns/             # 现代 Perl 5.36+ 惯用语和最佳实践（新增）
+|   |-- perl-security/             # Perl 安全模式、污染模式、安全 I/O（新增）
+|   |-- perl-testing/              # 使用 Test2::V0、prove、Devel::Cover 的 Perl TDD（新增）
 |
 |-- commands/         # 用于快速执行的斜杠命令
 |   |-- tdd.md              # /tdd - 测试驱动开发
@@ -197,12 +205,20 @@ everything-claude-code/
 |   |-- evolve.md           # /evolve - 将直觉聚类到技能中（新增）
 |
 |-- rules/            # 始终遵循的指南（复制到 ~/.claude/rules/）
-|   |-- security.md         # 强制性安全检查
-|   |-- coding-style.md     # 不可变性、文件组织
-|   |-- testing.md          # TDD、80% 覆盖率要求
-|   |-- git-workflow.md     # 提交格式、PR 流程
-|   |-- agents.md           # 何时委托给子代理
-|   |-- performance.md      # 模型选择、上下文管理
+|   |-- README.md            # 结构概述和安装指南
+|   |-- common/              # 与语言无关的原则
+|   |   |-- coding-style.md    # 不可变性、文件组织
+|   |   |-- git-workflow.md    # 提交格式、PR 流程
+|   |   |-- testing.md         # TDD、80% 覆盖率要求
+|   |   |-- performance.md     # 模型选择、上下文管理
+|   |   |-- patterns.md        # 设计模式、骨架项目
+|   |   |-- hooks.md           # 钩子架构、TodoWrite
+|   |   |-- agents.md          # 何时委托给子代理
+|   |   |-- security.md        # 强制性安全检查
+|   |-- typescript/          # TypeScript/JavaScript 特定
+|   |-- python/              # Python 特定
+|   |-- golang/              # Go 特定
+|   |-- perl/                # Perl 特定（新增）
 |
 |-- hooks/            # 基于触发器的自动化
 |   |-- hooks.json                # 所有钩子配置（PreToolUse、PostToolUse、Stop 等）
@@ -356,8 +372,12 @@ git clone https://github.com/affaan-m/everything-claude-code.git
 # 将代理复制到你的 Claude 配置
 cp everything-claude-code/agents/*.md ~/.claude/agents/
 
-# 复制规则
-cp everything-claude-code/rules/*.md ~/.claude/rules/
+# 复制规则（通用 + 语言特定）
+cp -r everything-claude-code/rules/common/* ~/.claude/rules/
+cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/   # 选择你的技术栈
+cp -r everything-claude-code/rules/python/* ~/.claude/rules/
+cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
+cp -r everything-claude-code/rules/perl/* ~/.claude/rules/
 
 # 复制命令
 cp everything-claude-code/commands/*.md ~/.claude/commands/
@@ -425,13 +445,15 @@ model: opus
 
 ### 规则
 
-规则是始终遵循的指南。保持模块化：
+规则是始终遵循的指南，分为 `common/`（通用）+ 语言特定目录：
 
 ```
 ~/.claude/rules/
-  security.md      # 无硬编码秘密
-  coding-style.md  # 不可变性、文件限制
-  testing.md       # TDD、覆盖率要求
+  common/          # 通用原则（必装）
+  typescript/      # TS/JS 特定模式和工具
+  python/          # Python 特定模式和工具
+  golang/          # Go 特定模式和工具
+  perl/            # Perl 特定模式和工具
 ```
 
 ---
@@ -466,7 +488,7 @@ node tests/hooks/hooks.test.js
 
 ### 贡献想法
 
-- 特定语言的技能（Python、Rust 模式）- 现已包含 Go！
+- 特定语言的技能（Rust、C#、Kotlin、Java）- 现已包含 Go、Python、Perl、Swift 和 TypeScript！
 - 特定框架的配置（Django、Rails、Laravel）
 - DevOps 代理（Kubernetes、Terraform、AWS）
 - 测试策略（不同框架）

@@ -124,7 +124,9 @@ try:
     # Extract fields - Claude Code hook format
     tool_name = data.get("tool_name", data.get("tool", "unknown"))
     tool_input = data.get("tool_input", data.get("input", {}))
-    tool_output = data.get("tool_output", data.get("output", ""))
+    tool_output = data.get("tool_response")
+    if tool_output is None:
+        tool_output = data.get("tool_output", data.get("output", ""))
     session_id = data.get("session_id", "unknown")
     tool_use_id = data.get("tool_use_id", "")
     cwd = data.get("cwd", "")

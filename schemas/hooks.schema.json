@@ -1,9 +1,17 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Claude Code Hooks Configuration",
-  "description": "Configuration for Claude Code hooks. Event types are validated at runtime and must be one of: PreToolUse, PostToolUse, PreCompact, SessionStart, SessionEnd, Stop, Notification, SubagentStop",
+  "description": "Configuration for Claude Code hooks. Supports current Claude Code hook events and hook action types.",
   "$defs": {
-    "hookItem": {
+    "stringArray": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "commandHookItem": {
       "type": "object",
       "required": [
         "type",
@@ -12,28 +20,17 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": [
-            "PreToolUse",
-            "PostToolUse",
-            "PreCompact",
-            "SessionStart",
-            "SessionEnd",
-            "Stop",
-            "Notification",
-            "SubagentStop"
-          ],
-          "description": "Hook event type that triggers this hook"
+          "const": "command",
+          "description": "Run a local command"
         },
         "command": {
           "oneOf": [
             {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             },
             {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/stringArray"
             }
           ]
         },
@@ -46,17 +43,94 @@
           "minimum": 0,
           "description": "Timeout in seconds for async hooks"
         }
-      }
+      },
+      "additionalProperties": true
+    },
+    "httpHookItem": {
+      "type": "object",
+      "required": [
+        "type",
+        "url"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "http"
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "allowedEnvVars": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "promptHookItem": {
+      "type": "object",
+      "required": [
+        "type",
+        "prompt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["prompt", "agent"]
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "hookItem": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/commandHookItem"
+        },
+        {
+          "$ref": "#/$defs/httpHookItem"
+        },
+        {
+          "$ref": "#/$defs/promptHookItem"
+        }
+      ]
     },
     "matcherEntry": {
       "type": "object",
       "required": [
-        "matcher",
         "hooks"
       ],
       "properties": {
         "matcher": {
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object"
+            }
+          ]
         },
         "hooks": {
           "type": "array",
@@ -79,6 +153,28 @@
         },
         "hooks": {
           "type": "object",
+          "propertyNames": {
+            "enum": [
+              "SessionStart",
+              "UserPromptSubmit",
+              "PreToolUse",
+              "PermissionRequest",
+              "PostToolUse",
+              "PostToolUseFailure",
+              "Notification",
+              "SubagentStart",
+              "Stop",
+              "SubagentStop",
+              "PreCompact",
+              "InstructionsLoaded",
+              "TeammateIdle",
+              "TaskCompleted",
+              "ConfigChange",
+              "WorktreeCreate",
+              "WorktreeRemove",
+              "SessionEnd"
+            ]
+          },
           "additionalProperties": {
             "type": "array",
             "items": {
