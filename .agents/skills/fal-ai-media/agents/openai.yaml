@@ -1,0 +1,7 @@
+interface:
+  display_name: "fal.ai Media"
+  short_description: "AI image, video, and audio generation via fal.ai"
+  brand_color: "#F43F5E"
+  default_prompt: "Generate images, videos, or audio using fal.ai models"
+policy:
+  allow_implicit_invocation: true

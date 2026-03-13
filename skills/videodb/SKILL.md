@@ -108,7 +108,7 @@ The user must set `VIDEO_DB_API_KEY` using **either** method:
 - **Export in terminal** (before starting Claude): `export VIDEO_DB_API_KEY=your-key`
 - **Project `.env` file**: Save `VIDEO_DB_API_KEY=your-key` in the project's `.env` file
 
-Get a free API key at https://console.videodb.io (50 free uploads, no credit card).
+Get a free API key at [console.videodb.io](https://console.videodb.io) (50 free uploads, no credit card).
 
 **Do NOT** read, write, or handle the API key yourself. Always let the user set it.
 
@@ -353,7 +353,6 @@ Reference documentation is in the `reference/` directory adjacent to this SKILL.
 - [reference/capture.md](reference/capture.md) - Desktop capture workflow
 - [reference/capture-reference.md](reference/capture-reference.md) - Capture SDK and WebSocket events
 - [reference/use-cases.md](reference/use-cases.md) - Common video processing patterns and examples
-
 
 **Do not use ffmpeg, moviepy, or local encoding tools** when VideoDB supports the operation. The following are all handled server-side by VideoDB — trimming, combining clips, overlaying audio or music, adding subtitles, text/image overlays, transcoding, resolution changes, aspect-ratio conversion, resizing for platform requirements, transcription, and media generation. Only fall back to local tools for operations listed under Limitations in reference/editor.md (transitions, speed changes, crop/zoom, colour grading, volume mixing).
 

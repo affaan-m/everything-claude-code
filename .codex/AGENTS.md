@@ -34,10 +34,17 @@ Available skills:
 - strategic-compact — Context management
 - api-design — REST API design patterns
 - verification-loop — Build, test, lint, typecheck, security
+- deep-research — Multi-source research with firecrawl and exa MCPs
+- exa-search — Neural search via Exa MCP for web, code, and companies
+- claude-api — Anthropic Claude API patterns and SDKs
+- x-api — X/Twitter API integration for posting, threads, and analytics
+- crosspost — Multi-platform content distribution
+- fal-ai-media — AI image/video/audio generation via fal.ai
+- dmux-workflows — Multi-agent orchestration with dmux
 
 ## MCP Servers
 
-Configure in `~/.codex/config.toml` under `[mcp_servers]`. See `.codex/config.toml` for reference configuration with GitHub, Context7, Memory, and Sequential Thinking servers.
+Treat the project-local `.codex/config.toml` as the default Codex baseline for ECC. The current ECC baseline enables GitHub, Context7, Exa, Memory, Playwright, and Sequential Thinking; add heavier extras in `~/.codex/config.toml` only when a task actually needs them.
 
 ## Multi-Agent Support
 
@@ -63,7 +70,7 @@ Sample role configs in this repo:
 | Commands | `/slash` commands | Instruction-based |
 | Agents | Subagent Task tool | Multi-agent via `/agent` and `[agents.<name>]` roles |
 | Security | Hook-based enforcement | Instruction + sandbox |
-| MCP | Full support | Command-based only |
+| MCP | Full support | Supported via `config.toml` and `codex mcp add` |
 
 ## Security Without Hooks
 

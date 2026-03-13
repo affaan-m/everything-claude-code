@@ -16,15 +16,17 @@ const {
   getDateString,
   getTimeString,
   getSessionIdShort,
+  getProjectName,
   ensureDir,
   readFile,
   writeFile,
-  replaceInFile,
+  runCommand,
   log
 } = require('../lib/utils');
 
 const SUMMARY_START_MARKER = '<!-- ECC:SUMMARY:START -->';
 const SUMMARY_END_MARKER = '<!-- ECC:SUMMARY:END -->';
+const SESSION_SEPARATOR = '\n---\n';
 
 /**
  * Extract a meaningful summary from the session transcript.
@@ -128,6 +130,51 @@ function runMain() {
   });
 }
 
+function getSessionMetadata() {
+  const branchResult = runCommand('git rev-parse --abbrev-ref HEAD');
+
+  return {
+    project: getProjectName() || 'unknown',
+    branch: branchResult.success ? branchResult.output : 'unknown',
+    worktree: process.cwd()
+  };
+}
+
+function extractHeaderField(header, label) {
+  const match = header.match(new RegExp(`\\*\\*${escapeRegExp(label)}:\\*\\*\\s*(.+)$`, 'm'));
+  return match ? match[1].trim() : null;
+}
+
+function buildSessionHeader(today, currentTime, metadata, existingContent = '') {
+  const headingMatch = existingContent.match(/^#\s+.+$/m);
+  const heading = headingMatch ? headingMatch[0] : `# Session: ${today}`;
+  const date = extractHeaderField(existingContent, 'Date') || today;
+  const started = extractHeaderField(existingContent, 'Started') || currentTime;
+
+  return [
+    heading,
+    `**Date:** ${date}`,
+    `**Started:** ${started}`,
+    `**Last Updated:** ${currentTime}`,
+    `**Project:** ${metadata.project}`,
+    `**Branch:** ${metadata.branch}`,
+    `**Worktree:** ${metadata.worktree}`,
+    ''
+  ].join('\n');
+}
+
+function mergeSessionHeader(content, today, currentTime, metadata) {
+  const separatorIndex = content.indexOf(SESSION_SEPARATOR);
+  if (separatorIndex === -1) {
+    return null;
+  }
+
+  const existingHeader = content.slice(0, separatorIndex);
+  const body = content.slice(separatorIndex + SESSION_SEPARATOR.length);
+  const nextHeader = buildSessionHeader(today, currentTime, metadata, existingHeader);
+  return `${nextHeader}${SESSION_SEPARATOR}${body}`;
+}
+
 async function main() {
   // Parse stdin JSON to get transcript_path
   let transcriptPath = null;
@@ -143,6 +190,7 @@ async function main() {
   const today = getDateString();
   const shortId = getSessionIdShort();
   const sessionFile = path.join(sessionsDir, `${today}-${shortId}-session.tmp`);
+  const sessionMetadata = getSessionMetadata();
 
   ensureDir(sessionsDir);
 
@@ -160,40 +208,40 @@ async function main() {
   }
 
   if (fs.existsSync(sessionFile)) {
-    // Update existing session file
-    const updated = replaceInFile(
-      sessionFile,
-      /\*\*Last Updated:\*\*.*/,
-      `**Last Updated:** ${currentTime}`
-    );
-    if (!updated) {
-      log(`[SessionEnd] Failed to update timestamp in ${sessionFile}`);
+    const existing = readFile(sessionFile);
+    let updatedContent = existing;
+
+    if (existing) {
+      const merged = mergeSessionHeader(existing, today, currentTime, sessionMetadata);
+      if (merged) {
+        updatedContent = merged;
+      } else {
+        log(`[SessionEnd] Failed to normalize header in ${sessionFile}`);
+      }
     }
 
     // If we have a new summary, update only the generated summary block.
     // This keeps repeated Stop invocations idempotent and preserves
     // user-authored sections in the same session file.
-    if (summary) {
-      const existing = readFile(sessionFile);
-      if (existing) {
-        const summaryBlock = buildSummaryBlock(summary);
-        let updatedContent = existing;
+    if (summary && updatedContent) {
+      const summaryBlock = buildSummaryBlock(summary);
 
-        if (existing.includes(SUMMARY_START_MARKER) && existing.includes(SUMMARY_END_MARKER)) {
-          updatedContent = existing.replace(
-            new RegExp(`${escapeRegExp(SUMMARY_START_MARKER)}[\\s\\S]*?${escapeRegExp(SUMMARY_END_MARKER)}`),
-            summaryBlock
-          );
-        } else {
-          // Migration path for files created before summary markers existed.
-          updatedContent = existing.replace(
-            /## (?:Session Summary|Current State)[\s\S]*?$/,
-            `${summaryBlock}\n\n### Notes for Next Session\n-\n\n### Context to Load\n\`\`\`\n[relevant files]\n\`\`\`\n`
-          );
-        }
-
-        writeFile(sessionFile, updatedContent);
+      if (updatedContent.includes(SUMMARY_START_MARKER) && updatedContent.includes(SUMMARY_END_MARKER)) {
+        updatedContent = updatedContent.replace(
+          new RegExp(`${escapeRegExp(SUMMARY_START_MARKER)}[\\s\\S]*?${escapeRegExp(SUMMARY_END_MARKER)}`),
+          summaryBlock
+        );
+      } else {
+        // Migration path for files created before summary markers existed.
+        updatedContent = updatedContent.replace(
+          /## (?:Session Summary|Current State)[\s\S]*?$/,
+          `${summaryBlock}\n\n### Notes for Next Session\n-\n\n### Context to Load\n\`\`\`\n[relevant files]\n\`\`\`\n`
+        );
       }
+    }
+
+    if (updatedContent) {
+      writeFile(sessionFile, updatedContent);
     }
 
     log(`[SessionEnd] Updated session file: ${sessionFile}`);
@@ -203,14 +251,7 @@ async function main() {
       ? `${buildSummaryBlock(summary)}\n\n### Notes for Next Session\n-\n\n### Context to Load\n\`\`\`\n[relevant files]\n\`\`\``
       : `## Current State\n\n[Session context goes here]\n\n### Completed\n- [ ]\n\n### In Progress\n- [ ]\n\n### Notes for Next Session\n-\n\n### Context to Load\n\`\`\`\n[relevant files]\n\`\`\``;
 
-    const template = `# Session: ${today}
-**Date:** ${today}
-**Started:** ${currentTime}
-**Last Updated:** ${currentTime}
-
----
-
-${summarySection}
+    const template = `${buildSessionHeader(today, currentTime, sessionMetadata)}${SESSION_SEPARATOR}${summarySection}
 `;
 
     writeFile(sessionFile, template);

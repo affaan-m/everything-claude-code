@@ -33,6 +33,8 @@ notify = [
 # model_instructions_file = "/absolute/path/to/instructions.md"
 
 # MCP servers
+# Keep the default project set lean. API-backed servers inherit credentials from
+# the launching environment or can be supplied by a user-level ~/.codex/config.toml.
 [mcp_servers.github]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-github"]
@@ -41,9 +43,16 @@ args = ["-y", "@modelcontextprotocol/server-github"]
 command = "npx"
 args = ["-y", "@upstash/context7-mcp@latest"]
 
+[mcp_servers.exa]
+url = "https://mcp.exa.ai/mcp"
+
 [mcp_servers.memory]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-memory"]
+
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@latest", "--extension"]
 
 [mcp_servers.sequential-thinking]
 command = "npx"
@@ -57,6 +66,10 @@ args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
 # [mcp_servers.firecrawl]
 # command = "npx"
 # args = ["-y", "firecrawl-mcp"]
+#
+# [mcp_servers.fal-ai]
+# command = "npx"
+# args = ["-y", "fal-ai-mcp-server"]
 #
 # [mcp_servers.cloudflare]
 # command = "npx"
@@ -77,22 +90,18 @@ approval_policy = "never"
 sandbox_mode = "workspace-write"
 web_search = "live"
 
-# Optional project-local multi-agent roles.
-# Keep these commented in global config, because config_file paths are resolved
-# relative to the config.toml file and must exist at load time.
-#
-# [agents]
-# max_threads = 6
-# max_depth = 1
-#
-# [agents.explorer]
-# description = "Read-only codebase explorer for gathering evidence before changes are proposed."
-# config_file = "agents/explorer.toml"
-#
-# [agents.reviewer]
-# description = "PR reviewer focused on correctness, security, and missing tests."
-# config_file = "agents/reviewer.toml"
-#
-# [agents.docs_researcher]
-# description = "Documentation specialist that verifies APIs, framework behavior, and release notes."
-# config_file = "agents/docs-researcher.toml"
+[agents]
+max_threads = 6
+max_depth = 1
+
+[agents.explorer]
+description = "Read-only codebase explorer for gathering evidence before changes are proposed."
+config_file = "agents/explorer.toml"
+
+[agents.reviewer]
+description = "PR reviewer focused on correctness, security, and missing tests."
+config_file = "agents/reviewer.toml"
+
+[agents.docs_researcher]
+description = "Documentation specialist that verifies APIs, framework behavior, and release notes."
+config_file = "agents/docs-researcher.toml"

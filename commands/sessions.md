@@ -12,6 +12,8 @@ Manage Claude Code session history - list, load, alias, and edit sessions stored
 
 Display all sessions with metadata, filtering, and pagination.
 
+Use `/sessions info` when you need operator-surface context for a swarm: branch, worktree path, and session recency.
+
 ```bash
 /sessions                              # List all sessions (default)
 /sessions list                         # Same as above
@@ -25,6 +27,7 @@ Display all sessions with metadata, filtering, and pagination.
 node -e "
 const sm = require((process.env.CLAUDE_PLUGIN_ROOT||require('path').join(require('os').homedir(),'.claude'))+'/scripts/lib/session-manager');
 const aa = require((process.env.CLAUDE_PLUGIN_ROOT||require('path').join(require('os').homedir(),'.claude'))+'/scripts/lib/session-aliases');
+const path = require('path');
 
 const result = sm.getAllSessions({ limit: 20 });
 const aliases = aa.listAliases();
@@ -33,17 +36,18 @@ for (const a of aliases) aliasMap[a.sessionPath] = a.name;
 
 console.log('Sessions (showing ' + result.sessions.length + ' of ' + result.total + '):');
 console.log('');
-console.log('ID        Date        Time     Size     Lines  Alias');
-console.log('────────────────────────────────────────────────────');
+console.log('ID        Date        Time     Branch       Worktree           Alias');
+console.log('────────────────────────────────────────────────────────────────────');
 
 for (const s of result.sessions) {
   const alias = aliasMap[s.filename] || '';
-  const size = sm.getSessionSize(s.sessionPath);
-  const stats = sm.getSessionStats(s.sessionPath);
+  const metadata = sm.parseSessionMetadata(sm.getSessionContent(s.sessionPath));
   const id = s.shortId === 'no-id' ? '(none)' : s.shortId.slice(0, 8);
   const time = s.modifiedTime.toTimeString().slice(0, 5);
+  const branch = (metadata.branch || '-').slice(0, 12);
+  const worktree = metadata.worktree ? path.basename(metadata.worktree).slice(0, 18) : '-';
 
-  console.log(id.padEnd(8) + ' ' + s.date + '  ' + time + '   ' + size.padEnd(7) + '  ' + String(stats.lineCount).padEnd(5) + '  ' + alias);
+  console.log(id.padEnd(8) + ' ' + s.date + '  ' + time + '   ' + branch.padEnd(12) + ' ' + worktree.padEnd(18) + ' ' + alias);
 }
 "
 ```
@@ -107,6 +111,18 @@ if (session.metadata.started) {
 
 if (session.metadata.lastUpdated) {
   console.log('Last Updated: ' + session.metadata.lastUpdated);
+}
+
+if (session.metadata.project) {
+  console.log('Project: ' + session.metadata.project);
+}
+
+if (session.metadata.branch) {
+  console.log('Branch: ' + session.metadata.branch);
+}
+
+if (session.metadata.worktree) {
+  console.log('Worktree: ' + session.metadata.worktree);
 }
 " "$ARGUMENTS"
 ```
@@ -215,6 +231,9 @@ console.log('ID:          ' + (session.shortId === 'no-id' ? '(none)' : session.
 console.log('Filename:    ' + session.filename);
 console.log('Date:        ' + session.date);
 console.log('Modified:    ' + session.modifiedTime.toISOString().slice(0, 19).replace('T', ' '));
+console.log('Project:     ' + (session.metadata.project || '-'));
+console.log('Branch:      ' + (session.metadata.branch || '-'));
+console.log('Worktree:    ' + (session.metadata.worktree || '-'));
 console.log('');
 console.log('Content:');
 console.log('  Lines:         ' + stats.lineCount);
@@ -235,6 +254,11 @@ Show all session aliases.
 ```bash
 /sessions aliases                      # List all aliases
 ```
+
+## Operator Notes
+
+- Session files persist `Project`, `Branch`, and `Worktree` in the header so `/sessions info` can disambiguate parallel tmux/worktree runs.
+- For command-center style monitoring, combine `/sessions info`, `git diff --stat`, and the cost metrics emitted by `scripts/hooks/cost-tracker.js`.
 
 **Script:**
 ```bash

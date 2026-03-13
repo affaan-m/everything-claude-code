@@ -41,3 +41,4 @@ examples/sessions/*.tmp
 
 # Local drafts
 marketing/
+.dmux/

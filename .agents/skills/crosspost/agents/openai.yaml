@@ -1,0 +1,7 @@
+interface:
+  display_name: "Crosspost"
+  short_description: "Multi-platform content distribution with native adaptation"
+  brand_color: "#EC4899"
+  default_prompt: "Distribute content across X, LinkedIn, Threads, and Bluesky with platform-native adaptation"
+policy:
+  allow_implicit_invocation: true

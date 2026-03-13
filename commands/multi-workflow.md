@@ -101,6 +101,14 @@ TaskOutput({ task_id: "<task_id>", block: true, timeout: 600000 })
 4. Force stop when score < 7 or user does not approve.
 5. Use `AskUserQuestion` tool for user interaction when needed (e.g., confirmation/selection/approval).
 
+## When to Use External Orchestration
+
+Use external tmux/worktree orchestration when the work must be split across parallel workers that need isolated git state, independent terminals, or separate build/test execution. Use in-process subagents for lightweight analysis, planning, or review where the main session remains the only writer.
+
+```bash
+node scripts/orchestrate-worktrees.js .claude/plan/workflow-e2e-test.json --execute
+```
+
 ---
 
 ## Execution Workflow

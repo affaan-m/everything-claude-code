@@ -148,6 +148,61 @@ Run simultaneously:
 Combine outputs into single report
 ```
 
+For external tmux-pane workers with separate git worktrees, use `node scripts/orchestrate-worktrees.js plan.json --execute`. The built-in orchestration pattern stays in-process; the helper is for long-running or cross-harness sessions.
+
+When workers need to see dirty or untracked local files from the main checkout, add `seedPaths` to the plan file. ECC overlays only those selected paths into each worker worktree after `git worktree add`, which keeps the branch isolated while still exposing in-flight local scripts, plans, or docs.
+
+```json
+{
+  "sessionName": "workflow-e2e",
+  "seedPaths": [
+    "scripts/orchestrate-worktrees.js",
+    "scripts/lib/tmux-worktree-orchestrator.js",
+    ".claude/plan/workflow-e2e-test.json"
+  ],
+  "workers": [
+    { "name": "docs", "task": "Update orchestration docs." }
+  ]
+}
+```
+
+To export a control-plane snapshot for a live tmux/worktree session, run:
+
+```bash
+node scripts/orchestration-status.js .claude/plan/workflow-visual-proof.json
+```
+
+The snapshot includes session activity, tmux pane metadata, worker states, objectives, seeded overlays, and recent handoff summaries in JSON form.
+
+## Operator Command-Center Handoff
+
+When the workflow spans multiple sessions, worktrees, or tmux panes, append a control-plane block to the final handoff:
+
+```markdown
+CONTROL PLANE
+-------------
+Sessions:
+- active session ID or alias
+- branch + worktree path for each active worker
+- tmux pane or detached session name when applicable
+
+Diffs:
+- git status summary
+- git diff --stat for touched files
+- merge/conflict risk notes
+
+Approvals:
+- pending user approvals
+- blocked steps awaiting confirmation
+
+Telemetry:
+- last activity timestamp or idle signal
+- estimated token or cost drift
+- policy events raised by hooks or reviewers
+```
+
+This keeps planner, implementer, reviewer, and loop workers legible from the operator surface.
+
 ## Arguments
 
 $ARGUMENTS:

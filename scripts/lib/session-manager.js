@@ -86,6 +86,9 @@ function parseSessionMetadata(content) {
     date: null,
     started: null,
     lastUpdated: null,
+    project: null,
+    branch: null,
+    worktree: null,
     completed: [],
     inProgress: [],
     notes: '',
@@ -116,6 +119,22 @@ function parseSessionMetadata(content) {
   const updatedMatch = content.match(/\*\*Last Updated:\*\*\s*([\d:]+)/);
   if (updatedMatch) {
     metadata.lastUpdated = updatedMatch[1];
+  }
+
+  // Extract control-plane metadata
+  const projectMatch = content.match(/\*\*Project:\*\*\s*(.+)$/m);
+  if (projectMatch) {
+    metadata.project = projectMatch[1].trim();
+  }
+
+  const branchMatch = content.match(/\*\*Branch:\*\*\s*(.+)$/m);
+  if (branchMatch) {
+    metadata.branch = branchMatch[1].trim();
+  }
+
+  const worktreeMatch = content.match(/\*\*Worktree:\*\*\s*(.+)$/m);
+  if (worktreeMatch) {
+    metadata.worktree = worktreeMatch[1].trim();
   }
 
   // Extract completed items
