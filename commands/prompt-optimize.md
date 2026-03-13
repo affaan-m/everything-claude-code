@@ -23,14 +23,17 @@ Apply the **prompt-optimizer** skill to the user's input below. Follow the 6-pha
 - Provide both **Full Version** (detailed) and **Quick Version** (compact, varied by intent type)
 - Respond in the same language as the user's input
 - The optimized prompt must be complete and ready to copy-paste into a new session
-- End with footer offering adjustment or direct execution
+- End with footer offering adjustment or a follow-up path if the user wants execution in a separate request
 
 ## CRITICAL
 
 Do NOT execute the user's task. Output ONLY the analysis and optimized prompt.
-If the user says "just do it" or "直接做", stop this command and execute the task directly instead.
+If the user asks for direct execution instead, explain that `/prompt-optimize`
+is advisory-only and tell them to make a normal task request outside this
+command.
 
-Note: `blueprint` is a **skill** (not a command). Write "Use the blueprint skill" instead of `/blueprint`.
+Note: `blueprint` is a **skill**, not a slash command. Write "Use the blueprint
+skill" instead of presenting it as a slash command.
 
 ## User Input
 

@@ -23,7 +23,7 @@ metadata:
 Analyze a draft prompt, critique it, match it to ECC ecosystem components,
 and output a complete optimized prompt the user can paste and run.
 
-## When to Activate
+## When to Use
 
 - User says "optimize this prompt", "improve my prompt", "rewrite this prompt"
 - User says "help me write a better prompt for..."
@@ -34,7 +34,7 @@ and output a complete optimized prompt the user can paste and run.
 - User says "how should I use ECC for..."
 - User explicitly invokes `/prompt-optimize`
 
-## When NOT to Activate
+**Do not use** when:
 
 - User wants the task done directly (just execute it)
 - User says "优化代码", "优化性能", "optimize this code", "optimize performance" — these are refactoring tasks, not prompt optimization
@@ -42,19 +42,17 @@ and output a complete optimized prompt the user can paste and run.
 - User wants a skill inventory (use `skill-stocktake` instead)
 - User says "just do it" or "直接做"
 
----
+## How It Works
 
-**ADVISORY ONLY — DO NOT EXECUTE THE USER'S TASK.**
+**Advisory only — do not execute the user's task.**
 
 Do NOT write code, create files, run commands, or take any implementation
 action. Your ONLY output is an analysis plus an optimized prompt.
 
-**Exit condition:** If the user says "just do it", "直接做", or "don't optimize,
-just execute", exit this skill immediately and execute the task directly.
-
----
-
-## Analysis Pipeline
+If the user says "just do it", "直接做", or "don't optimize, just execute",
+do not switch into implementation mode. State that this skill only produces
+analysis plus an optimized prompt, and tell the user to make a normal task
+request if they want execution instead.
 
 Run these 6 phases sequentially. Present results using the Output Format below.
 
@@ -232,7 +230,7 @@ The prompt must be self-contained and ready to copy-paste. Include:
 - Scope boundaries (what NOT to do)
 
 For items that reference blueprint, write: "Use the blueprint skill to..."
-(not `/blueprint`, since blueprint is a skill, not a command).
+and do not present blueprint as a slash command.
 
 ### Section 4: Optimized Prompt — Quick Version
 
@@ -257,8 +255,8 @@ A compact version for experienced ECC users. Vary by intent type:
 
 ### Footer
 
-> Not what you need? Tell me what to adjust — or say "直接做" to skip optimization
-> and execute the task directly.
+> Not what you need? Tell me what to adjust. If you want execution instead of
+> optimization, make a normal task request outside this skill.
 
 ---
 
