@@ -61,8 +61,13 @@ Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
 
 ```php
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
-$user->update(['password' => Hash::make($request->validated('password'))]);
+$validated = $request->validate([
+    'password' => ['required', 'string', Password::min(12)->letters()->mixedCase()->numbers()->symbols()],
+]);
+
+$user->update(['password' => Hash::make($validated['password'])]);
 ```
 
 ## Authorization: Policies and Gates
