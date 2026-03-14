@@ -284,6 +284,10 @@ everything-claude-code/
 |   |-- django-security/            # Django security best practices (NEW)
 |   |-- django-tdd/                 # Django TDD workflow (NEW)
 |   |-- django-verification/        # Django verification loops (NEW)
+|   |-- laravel-patterns/           # Laravel architecture patterns (NEW)
+|   |-- laravel-security/           # Laravel security best practices (NEW)
+|   |-- laravel-tdd/                # Laravel TDD workflow (NEW)
+|   |-- laravel-verification/       # Laravel verification loops (NEW)
 |   |-- python-patterns/            # Python idioms and best practices (NEW)
 |   |-- python-testing/             # Python testing with pytest (NEW)
 |   |-- springboot-patterns/        # Java Spring Boot patterns (NEW)
@@ -403,6 +407,7 @@ everything-claude-code/
 |   |-- saas-nextjs-CLAUDE.md   # Real-world SaaS (Next.js + Supabase + Stripe)
 |   |-- go-microservice-CLAUDE.md # Real-world Go microservice (gRPC + PostgreSQL)
 |   |-- django-api-CLAUDE.md      # Real-world Django REST API (DRF + Celery)
+|   |-- laravel-api-CLAUDE.md     # Real-world Laravel API (PostgreSQL + Redis) (NEW)
 |   |-- rust-api-CLAUDE.md        # Real-world Rust API (Axum + SQLx + PostgreSQL) (NEW)
 |
 |-- mcp-configs/      # MCP server configurations
@@ -607,7 +612,7 @@ cp -r everything-claude-code/.agents/skills/* ~/.claude/skills/
 cp -r everything-claude-code/skills/search-first ~/.claude/skills/
 
 # Optional: add niche/framework-specific skills only when needed
-# for s in django-patterns django-tdd springboot-patterns; do
+# for s in django-patterns django-tdd laravel-patterns springboot-patterns; do
 #   cp -r everything-claude-code/skills/$s ~/.claude/skills/
 # done
 ```
@@ -861,7 +866,7 @@ Please contribute! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 ### Ideas for Contributions
 
 - Language-specific skills (Rust, C#, Kotlin, Java) — Go, Python, Perl, Swift, and TypeScript already included
-- Framework-specific configs (Rails, Laravel, FastAPI, NestJS) — Django, Spring Boot already included
+- Framework-specific configs (Rails, FastAPI, NestJS) — Django, Spring Boot, Laravel already included
 - DevOps agents (Kubernetes, Terraform, AWS, Docker)
 - Testing strategies (different frameworks, visual regression)
 - Domain-specific knowledge (ML, data engineering, mobile)
