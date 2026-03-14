@@ -257,6 +257,7 @@ final class ProjectQuery
 ### Global Scopes and Soft Deletes
 
 Use global scopes for default filtering and `SoftDeletes` for recoverable records.
+Use either a global scope or a named scope for the same filter, not both, unless you intend layered behavior.
 
 ```php
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -370,9 +371,18 @@ final class StoreOrderRequest extends FormRequest
 Keep API responses consistent with resources and pagination.
 
 ```php
-return ProjectResource::collection(
-    Project::query()->active()->paginate(25)
-);
+$projects = Project::query()->active()->paginate(25);
+
+return response()->json([
+    'success' => true,
+    'data' => ProjectResource::collection($projects),
+    'error' => null,
+    'meta' => [
+        'page' => $projects->currentPage(),
+        'per_page' => $projects->perPage(),
+        'total' => $projects->total(),
+    ],
+]);
 ```
 
 ### Events, Jobs, and Queues

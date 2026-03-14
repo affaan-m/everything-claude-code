@@ -97,6 +97,10 @@ routes/
 ### Service Layer
 
 ```php
+<?php
+
+declare(strict_types=1);
+
 final class CreateOrderAction
 {
     public function __construct(private OrderRepository $orders) {}
@@ -121,6 +125,10 @@ final class OrderService
 ### Controller Pattern
 
 ```php
+<?php
+
+declare(strict_types=1);
+
 final class OrdersController extends Controller
 {
     public function __construct(private OrderService $service) {}
@@ -142,6 +150,10 @@ final class OrdersController extends Controller
 ### Policy Pattern
 
 ```php
+<?php
+
+declare(strict_types=1);
+
 final class OrderPolicy
 {
     public function view(User $user, Order $order): bool
@@ -154,6 +166,10 @@ final class OrderPolicy
 ### Form Request + DTO
 
 ```php
+<?php
+
+declare(strict_types=1);
+
 final class StoreOrderRequest extends FormRequest
 {
     public function authorize(): bool
@@ -183,7 +199,12 @@ final class StoreOrderRequest extends FormRequest
 ### API Resource
 
 ```php
+<?php
+
+declare(strict_types=1);
+
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 final class OrderResource extends JsonResource
 {
@@ -202,6 +223,10 @@ final class OrderResource extends JsonResource
 ### Queue Job
 
 ```php
+<?php
+
+declare(strict_types=1);
+
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -225,6 +250,10 @@ final class SendOrderConfirmation implements ShouldQueue
 ### Test Pattern (Pest)
 
 ```php
+<?php
+
+declare(strict_types=1);
+
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -245,6 +274,10 @@ test('user can place order', function () {
 ### Test Pattern (PHPUnit)
 
 ```php
+<?php
+
+declare(strict_types=1);
+
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

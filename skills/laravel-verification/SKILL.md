@@ -79,7 +79,7 @@ CI example (format -> static analysis -> tests):
 ```bash
 vendor/bin/pint --test
 vendor/bin/phpstan analyse
-php artisan test --coverage
+XDEBUG_MODE=coverage php artisan test --coverage
 ```
 
 ## Phase 4: Security and Dependency Checks

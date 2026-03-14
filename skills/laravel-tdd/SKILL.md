@@ -190,7 +190,7 @@ $response->assertOk();
 ### Coverage Targets
 
 - Enforce 80%+ coverage for unit + feature tests
-- Use `phpdbg` or `XDEBUG_MODE=coverage` in CI
+- Use `pcov` or `XDEBUG_MODE=coverage` in CI
 
 ### Test Commands
 
