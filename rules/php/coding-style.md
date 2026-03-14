@@ -25,6 +25,11 @@ paths:
 - Use **PHPStan** or **Psalm** for static analysis.
 - Keep Composer scripts checked in so the same commands run locally and in CI.
 
+## Imports
+
+- Add `use` statements for all referenced classes, interfaces, and traits.
+- Avoid relying on the global namespace unless the project explicitly prefers fully qualified names.
+
 ## Error Handling
 
 - Throw exceptions for exceptional states; avoid returning `false`/`null` as hidden error channels in new code.
