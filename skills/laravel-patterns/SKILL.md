@@ -84,9 +84,39 @@ final class OrdersController extends Controller
 Prefer route-model binding and resource controllers for clarity.
 
 ```php
+use Illuminate\Support\Facades\Route;
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('projects', ProjectController::class);
 });
+```
+
+### Route Model Binding (Scoped)
+
+Use scoped bindings to prevent cross-tenant access.
+
+```php
+Route::scopeBindings()->group(function () {
+    Route::get('/accounts/{account}/projects/{project}', [ProjectController::class, 'show']);
+});
+```
+
+## Service Container Bindings
+
+Bind interfaces to implementations in a service provider for clear dependency wiring.
+
+```php
+use App\Repositories\EloquentOrderRepository;
+use App\Repositories\OrderRepository;
+use Illuminate\Support\ServiceProvider;
+
+final class AppServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->bind(OrderRepository::class, EloquentOrderRepository::class);
+    }
+}
 ```
 
 ## Eloquent Model Patterns
@@ -117,6 +147,37 @@ final class Project extends Model
 }
 ```
 
+### Custom Casts and Value Objects
+
+Use enums or value objects for strict typing.
+
+```php
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
+protected $casts = [
+    'status' => ProjectStatus::class,
+];
+```
+
+```php
+protected function budgetCents(): Attribute
+{
+    return Attribute::make(
+        get: fn (int $value) => Money::fromCents($value),
+        set: fn (Money $money) => $money->toCents(),
+    );
+}
+```
+
+### Eager Loading to Avoid N+1
+
+```php
+$orders = Order::query()
+    ->with(['customer', 'items.product'])
+    ->latest()
+    ->paginate(25);
+```
+
 ### Query Objects for Complex Filters
 
 ```php
@@ -139,6 +200,90 @@ final class ProjectQuery
         return $this->query;
     }
 }
+```
+
+### Global Scopes and Soft Deletes
+
+Use global scopes for default filtering and `SoftDeletes` for recoverable records.
+
+```php
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
+
+final class Project extends Model
+{
+    use SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('active', function (Builder $builder): void {
+            $builder->whereNull('archived_at');
+        });
+    }
+}
+```
+
+### Query Scopes for Reusable Filters
+
+```php
+use Illuminate\Database\Eloquent\Builder;
+
+final class Project extends Model
+{
+    public function scopeOwnedBy(Builder $query, int $userId): Builder
+    {
+        return $query->where('owner_id', $userId);
+    }
+}
+
+// In service, repository etc.
+$projects = Project::ownedBy($user->id)->get();
+```
+
+## Transactions for Multi-Step Updates
+
+```php
+use Illuminate\Support\Facades\DB;
+
+DB::transaction(function (): void {
+    $order->update(['status' => 'paid']);
+    $order->items()->update(['paid_at' => now()]);
+});
+```
+
+## Migrations
+
+### Naming Convention
+
+- File names use timestamps: `YYYY_MM_DD_HHMMSS_create_users_table.php`
+- Migrations use anonymous classes (no named class); the filename communicates intent
+- Table names are `snake_case` and plural by default
+
+### Example Migration
+
+```php
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('orders', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
+            $table->string('status', 32)->index();
+            $table->unsignedInteger('total_cents');
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('orders');
+    }
+};
 ```
 
 ## Form Requests and Validation

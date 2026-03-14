@@ -20,6 +20,12 @@ Test-driven development for Laravel applications using PHPUnit and Pest with 80%
 2) Implement the minimal change to pass
 3) Refactor while keeping tests green
 
+## Test Layers
+
+- **Unit**: pure PHP classes, value objects, services
+- **Feature**: HTTP endpoints, auth, validation, policies
+- **Integration**: database + queue + external boundaries
+
 ## PHPUnit Example
 
 ```php
@@ -38,6 +44,22 @@ final class ProjectControllerTest extends TestCase
         $response->assertCreated();
         $this->assertDatabaseHas('projects', ['name' => 'New Project']);
     }
+}
+```
+
+## Feature Test Example (HTTP Layer)
+
+```php
+use App\Models\Project;
+
+public function test_projects_index_returns_paginated_results(): void
+{
+    Project::factory()->count(3)->create();
+
+    $response = $this->getJson('/api/projects');
+
+    $response->assertOk();
+    $response->assertJsonStructure(['data', 'links', 'meta']);
 }
 ```
 
@@ -69,11 +91,32 @@ test('owner can create project', function () {
 $user = User::factory()->state(['role' => 'admin'])->create();
 ```
 
+## Database Strategies
+
+- `RefreshDatabase` for most tests (migrate + rollback)
+- `DatabaseTransactions` for faster unit/feature tests without migrations
+- `DatabaseMigrations` when you need fresh migrations per test
+
 ## Database Testing
 
 - Use `RefreshDatabase` for clean state
 - Keep tests isolated and deterministic
 - Prefer `assertDatabaseHas` over manual queries
+
+## Persistence Test Example
+
+```php
+use App\Models\Project;
+
+public function test_project_can_be_retrieved_by_slug(): void
+{
+    $project = Project::factory()->create(['slug' => 'alpha']);
+
+    $found = Project::query()->where('slug', 'alpha')->firstOrFail();
+
+    $this->assertSame($project->id, $found->id);
+}
+```
 
 ## Fakes for Side Effects
 
@@ -81,6 +124,37 @@ $user = User::factory()->state(['role' => 'admin'])->create();
 - `Queue::fake()` for queued work
 - `Mail::fake()` and `Notification::fake()` for notifications
 - `Event::fake()` for domain events
+
+```php
+use Illuminate\Support\Facades\Queue;
+
+Queue::fake();
+
+dispatch(new SendOrderConfirmation($order->id));
+
+Queue::assertPushed(SendOrderConfirmation::class);
+```
+
+```php
+use Illuminate\Support\Facades\Notification;
+
+Notification::fake();
+
+$user->notify(new InvoiceReady($invoice));
+
+Notification::assertSentTo($user, InvoiceReady::class);
+```
+
+## Auth Testing (Sanctum)
+
+```php
+use Laravel\Sanctum\Sanctum;
+
+Sanctum::actingAs($user);
+
+$response = $this->getJson('/api/projects');
+$response->assertOk();
+```
 
 ## HTTP and External Services
 
@@ -97,3 +171,16 @@ $user = User::factory()->state(['role' => 'admin'])->create();
 - `php artisan test`
 - `vendor/bin/phpunit`
 - `vendor/bin/pest`
+
+## Test Configuration
+
+- Use `phpunit.xml` to set `DB_CONNECTION=sqlite` and `DB_DATABASE=:memory:` for fast tests
+- Keep separate env for tests to avoid touching dev/prod data
+
+## Authorization Tests
+
+```php
+use Illuminate\Support\Facades\Gate;
+
+Gate::forUser($user)->authorize('update', $project);
+```

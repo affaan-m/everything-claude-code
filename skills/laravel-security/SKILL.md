@@ -23,11 +23,39 @@ Comprehensive security guidance for Laravel applications to protect against comm
 - Set `SESSION_SECURE_COOKIE=true` and `SESSION_SAME_SITE=lax` (or `strict` for sensitive apps)
 - Configure trusted proxies for correct HTTPS detection
 
+## Session and Cookie Hardening
+
+- Set `SESSION_HTTP_ONLY=true` to prevent JavaScript access
+- Use `SESSION_SAME_SITE=strict` for high-risk flows
+- Regenerate sessions on login and privilege changes
+
 ## Authentication and Tokens
 
 - Use Laravel Sanctum or Passport for API auth
 - Prefer short-lived tokens with refresh flows for sensitive data
 - Revoke tokens on logout and compromised accounts
+
+Example route protection:
+
+```php
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
+    return $request->user();
+});
+```
+
+## Password Security
+
+- Hash passwords with `Hash::make()` and never store plaintext
+- Use Laravel's password broker for reset flows
+
+```php
+use Illuminate\Support\Facades\Hash;
+
+$user->update(['password' => Hash::make($request->input('password'))]);
+```
 
 ## Authorization: Policies and Gates
 
@@ -36,6 +64,15 @@ Comprehensive security guidance for Laravel applications to protect against comm
 
 ```php
 $this->authorize('update', $project);
+```
+
+Use policy middleware for route-level enforcement:
+
+```php
+use Illuminate\Support\Facades\Route;
+
+Route::put('/projects/{project}', [ProjectController::class, 'update'])
+    ->middleware(['auth:sanctum', 'can:update,project']);
 ```
 
 ## Validation and Data Sanitization
@@ -69,16 +106,49 @@ DB::select('select * from users where email = ?', [$email]);
 - Keep `VerifyCsrfToken` middleware enabled
 - Include `@csrf` in forms and send XSRF tokens for SPA requests
 
+For SPA authentication with Sanctum, ensure stateful requests are configured:
+
+```php
+// config/sanctum.php
+'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'localhost')),
+```
+
 ## File Upload Safety
 
 - Validate file size, MIME type, and extension
 - Store uploads outside the public path when possible
 - Scan files for malware if required
 
+```php
+final class UploadInvoiceRequest extends FormRequest
+{
+    public function rules(): array
+    {
+        return [
+            'invoice' => ['required', 'file', 'mimes:pdf', 'max:5120'],
+        ];
+    }
+}
+```
+
+```php
+$path = $request->file('invoice')->store('invoices', 'private');
+```
+
 ## Rate Limiting
 
 - Apply `throttle` middleware on auth and write endpoints
 - Use stricter limits for login, password reset, and OTP
+
+```php
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+
+RateLimiter::for('login', function (Request $request) {
+    return Limit::perMinute(5)->by($request->ip());
+});
+```
 
 ## Secrets and Credentials
 
@@ -86,12 +156,97 @@ DB::select('select * from users where email = ?', [$email]);
 - Use environment variables and secret managers
 - Rotate keys after exposure and invalidate sessions
 
+## Encrypted Attributes
+
+Use encrypted casts for sensitive columns at rest.
+
+```php
+protected $casts = [
+    'api_token' => 'encrypted',
+];
+```
+
 ## Security Headers
 
 - Add CSP, HSTS, and frame protection where appropriate
 - Use trusted proxy configuration to enforce HTTPS redirects
 
+Example middleware to set headers:
+
+```php
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+final class SecurityHeaders
+{
+    public function handle(Request $request, \Closure $next): Response
+    {
+        $response = $next($request);
+
+        return $response->withHeaders([
+            'Content-Security-Policy' => "default-src 'self'",
+            'X-Frame-Options' => 'DENY',
+            'X-Content-Type-Options' => 'nosniff',
+            'Referrer-Policy' => 'no-referrer',
+        ]);
+    }
+}
+```
+
+## CORS and API Exposure
+
+- Restrict origins in `config/cors.php`
+- Avoid wildcard origins for authenticated routes
+
+```php
+// config/cors.php
+return [
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    'allowed_origins' => ['https://app.example.com'],
+    'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With'],
+    'supports_credentials' => true,
+];
+```
+
+## Logging and PII
+
+- Never log passwords, tokens, or full card data
+- Redact sensitive fields in structured logs
+
+```php
+use Illuminate\Support\Facades\Log;
+
+Log::info('User updated profile', [
+    'user_id' => $user->id,
+    'email' => $user->email,
+    'token' => '[REDACTED]',
+]);
+```
+
 ## Dependency Security
 
 - Run `composer audit` regularly
 - Pin dependencies with care and update promptly on CVEs
+
+## Signed URLs
+
+Use signed routes for temporary, tamper-proof links.
+
+```php
+use Illuminate\Support\Facades\URL;
+
+$url = URL::temporarySignedRoute(
+    'downloads.invoice',
+    now()->addMinutes(15),
+    ['invoice' => $invoice->id]
+);
+```
+
+```php
+use Illuminate\Support\Facades\Route;
+
+Route::get('/invoices/{invoice}/download', [InvoiceController::class, 'download'])
+    ->name('downloads.invoice')
+    ->middleware('signed');
+```
