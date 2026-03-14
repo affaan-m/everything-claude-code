@@ -161,11 +161,6 @@ final class StoreOrderRequest extends FormRequest
         return (bool) $this->user();
     }
 
-    protected function failedAuthorization(): void
-    {
-        throw new \Illuminate\Auth\AuthenticationException();
-    }
-
     public function rules(): array
     {
         return [
