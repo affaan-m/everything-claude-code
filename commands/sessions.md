@@ -1,3 +1,7 @@
+---
+description: Manage Claude Code session history, aliases, and session metadata.
+---
+
 # Sessions Command
 
 Manage Claude Code session history - list, load, alias, and edit sessions stored in `~/.claude/sessions/`.
@@ -255,11 +259,6 @@ Show all session aliases.
 /sessions aliases                      # List all aliases
 ```
 
-## Operator Notes
-
-- Session files persist `Project`, `Branch`, and `Worktree` in the header so `/sessions info` can disambiguate parallel tmux/worktree runs.
-- For command-center style monitoring, combine `/sessions info`, `git diff --stat`, and the cost metrics emitted by `scripts/hooks/cost-tracker.js`.
-
 **Script:**
 ```bash
 node -e "
@@ -283,6 +282,11 @@ if (aliases.length === 0) {
 }
 "
 ```
+
+## Operator Notes
+
+- Session files persist `Project`, `Branch`, and `Worktree` in the header so `/sessions info` can disambiguate parallel tmux/worktree runs.
+- For command-center style monitoring, combine `/sessions info`, `git diff --stat`, and the cost metrics emitted by `scripts/hooks/cost-tracker.js`.
 
 ## Arguments
 

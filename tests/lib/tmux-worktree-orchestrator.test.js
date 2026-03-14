@@ -9,6 +9,7 @@ const {
   slugify,
   renderTemplate,
   buildOrchestrationPlan,
+  executePlan,
   materializePlan,
   normalizeSeedPaths,
   overlaySeedPaths
@@ -177,6 +178,24 @@ test('buildOrchestrationPlan exposes shell-safe launcher aliases alongside raw d
   );
 });
 
+test('buildOrchestrationPlan shell-quotes the orchestration banner command', () => {
+  const repoRoot = path.join('/tmp', "O'Hare Repo");
+  const plan = buildOrchestrationPlan({
+    repoRoot,
+    sessionName: 'Quote Audit',
+    launcherCommand: 'echo run',
+    workers: [{ name: 'Docs', task: 'Update docs' }]
+  });
+  const quote = value => `'${String(value).replace(/'/g, `'\\''`)}'`;
+  const bannerCommand = plan.tmuxCommands[1].args[3];
+
+  assert.strictEqual(
+    bannerCommand,
+    `printf '%s\\n' ${quote(`Session: ${plan.sessionName}`)} ${quote(`Coordination: ${plan.coordinationDir}`)}`,
+    'Banner command should quote coordination paths safely for tmux send-keys'
+  );
+});
+
 test('normalizeSeedPaths rejects paths outside the repo root', () => {
   assert.throws(
     () => normalizeSeedPaths(['../outside.txt'], '/tmp/ecc'),
@@ -297,6 +316,137 @@ test('overlaySeedPaths copies local overlays into the worker worktree', () => {
   } finally {
     fs.rmSync(tempRoot, { recursive: true, force: true });
   }
+});
+
+test('executePlan rolls back partial setup when orchestration fails mid-run', () => {
+  const plan = {
+    repoRoot: '/tmp/ecc',
+    sessionName: 'rollback-test',
+    coordinationDir: '/tmp/ecc/.orchestration/rollback-test',
+    replaceExisting: false,
+    workerPlans: [
+      {
+        workerName: 'Docs',
+        workerSlug: 'docs',
+        worktreePath: '/tmp/ecc-rollback-docs',
+        seedPaths: ['commands/orchestrate.md'],
+        gitArgs: ['worktree', 'add', '-b', 'orchestrator-rollback-test-docs', '/tmp/ecc-rollback-docs', 'HEAD'],
+        launchCommand: 'echo run'
+      }
+    ]
+  };
+  const calls = [];
+  const rollbackCalls = [];
+
+  assert.throws(
+    () => executePlan(plan, {
+      spawnSync(program, args) {
+        calls.push({ type: 'spawnSync', program, args });
+        if (program === 'tmux' && args[0] === 'has-session') {
+          return { status: 1, stdout: '', stderr: '' };
+        }
+        throw new Error(`Unexpected spawnSync call: ${program} ${args.join(' ')}`);
+      },
+      runCommand(program, args) {
+        calls.push({ type: 'runCommand', program, args });
+        if (program === 'git' && args[0] === 'rev-parse') {
+          return { status: 0, stdout: 'true\n', stderr: '' };
+        }
+        if (program === 'tmux' && args[0] === '-V') {
+          return { status: 0, stdout: 'tmux 3.4\n', stderr: '' };
+        }
+        if (program === 'git' && args[0] === 'worktree') {
+          return { status: 0, stdout: '', stderr: '' };
+        }
+        throw new Error(`Unexpected runCommand call: ${program} ${args.join(' ')}`);
+      },
+      materializePlan(receivedPlan) {
+        calls.push({ type: 'materializePlan', receivedPlan });
+      },
+      overlaySeedPaths() {
+        throw new Error('overlay failed');
+      },
+      rollbackCreatedResources(receivedPlan, createdState) {
+        rollbackCalls.push({ receivedPlan, createdState });
+      }
+    }),
+    /overlay failed/
+  );
+
+  assert.deepStrictEqual(
+    rollbackCalls.map(call => call.receivedPlan),
+    [plan],
+    'executePlan should invoke rollback on failure'
+  );
+  assert.deepStrictEqual(
+    rollbackCalls[0].createdState.workerPlans,
+    plan.workerPlans,
+    'executePlan should only roll back resources created before the failure'
+  );
+  assert.ok(
+    calls.some(call => call.type === 'runCommand' && call.program === 'git' && call.args[0] === 'worktree'),
+    'executePlan should attempt setup before rolling back'
+  );
+});
+
+test('executePlan does not mark pre-existing resources for rollback when worktree creation fails', () => {
+  const plan = {
+    repoRoot: '/tmp/ecc',
+    sessionName: 'rollback-existing',
+    coordinationDir: '/tmp/ecc/.orchestration/rollback-existing',
+    replaceExisting: false,
+    workerPlans: [
+      {
+        workerName: 'Docs',
+        workerSlug: 'docs',
+        worktreePath: '/tmp/ecc-existing-docs',
+        seedPaths: [],
+        gitArgs: ['worktree', 'add', '-b', 'orchestrator-rollback-existing-docs', '/tmp/ecc-existing-docs', 'HEAD'],
+        launchCommand: 'echo run',
+        branchName: 'orchestrator-rollback-existing-docs'
+      }
+    ]
+  };
+  const rollbackCalls = [];
+
+  assert.throws(
+    () => executePlan(plan, {
+      spawnSync(program, args) {
+        if (program === 'tmux' && args[0] === 'has-session') {
+          return { status: 1, stdout: '', stderr: '' };
+        }
+        throw new Error(`Unexpected spawnSync call: ${program} ${args.join(' ')}`);
+      },
+      runCommand(program, args) {
+        if (program === 'git' && args[0] === 'rev-parse') {
+          return { status: 0, stdout: 'true\n', stderr: '' };
+        }
+        if (program === 'tmux' && args[0] === '-V') {
+          return { status: 0, stdout: 'tmux 3.4\n', stderr: '' };
+        }
+        if (program === 'git' && args[0] === 'worktree') {
+          throw new Error('branch already exists');
+        }
+        throw new Error(`Unexpected runCommand call: ${program} ${args.join(' ')}`);
+      },
+      materializePlan() {},
+      rollbackCreatedResources(receivedPlan, createdState) {
+        rollbackCalls.push({ receivedPlan, createdState });
+      }
+    }),
+    /branch already exists/
+  );
+
+  assert.deepStrictEqual(
+    rollbackCalls[0].createdState.workerPlans,
+    [],
+    'Failures before creation should not schedule any worker resources for rollback'
+  );
+  assert.strictEqual(
+    rollbackCalls[0].createdState.sessionCreated,
+    false,
+    'Failures before tmux session creation should not mark a session for rollback'
+  );
 });
 
 console.log(`\n=== Results: ${passed} passed, ${failed} failed ===`);

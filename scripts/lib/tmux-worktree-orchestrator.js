@@ -46,6 +46,10 @@ function buildTemplateVariables(values) {
   }, {});
 }
 
+function buildSessionBannerCommand(sessionName, coordinationDir) {
+  return `printf '%s\\n' ${shellQuote(`Session: ${sessionName}`)} ${shellQuote(`Coordination: ${coordinationDir}`)}`;
+}
+
 function normalizeSeedPaths(seedPaths, repoRoot) {
   const resolvedRepoRoot = path.resolve(repoRoot);
   const entries = Array.isArray(seedPaths) ? seedPaths : [];
@@ -269,7 +273,7 @@ function buildOrchestrationPlan(config = {}) {
         'send-keys',
         '-t',
         sessionName,
-        `printf '%s\\n' 'Session: ${sessionName}' 'Coordination: ${coordinationDir}'`,
+        buildSessionBannerCommand(sessionName, coordinationDir),
         'C-m'
       ],
       description: 'Print orchestrator session details'
@@ -430,14 +434,82 @@ function cleanupExisting(plan) {
   }
 }
 
-function executePlan(plan) {
-  runCommand('git', ['rev-parse', '--is-inside-work-tree'], { cwd: plan.repoRoot });
-  runCommand('tmux', ['-V']);
+function rollbackCreatedResources(plan, createdState, runtime = {}) {
+  const runCommandImpl = runtime.runCommand || runCommand;
+  const listWorktreesImpl = runtime.listWorktrees || listWorktrees;
+  const branchExistsImpl = runtime.branchExists || branchExists;
+  const errors = [];
+
+  if (createdState.sessionCreated) {
+    try {
+      runCommandImpl('tmux', ['kill-session', '-t', plan.sessionName], { cwd: plan.repoRoot });
+    } catch (error) {
+      errors.push(error.message);
+    }
+  }
+
+  for (const workerPlan of [...createdState.workerPlans].reverse()) {
+    const expectedWorktreePath = canonicalizePath(workerPlan.worktreePath);
+    const existingWorktree = listWorktreesImpl(plan.repoRoot).find(
+      worktree => worktree.canonicalPath === expectedWorktreePath
+    );
+
+    if (existingWorktree) {
+      try {
+        runCommandImpl('git', ['worktree', 'remove', '--force', existingWorktree.listedPath], {
+          cwd: plan.repoRoot
+        });
+      } catch (error) {
+        errors.push(error.message);
+      }
+    } else if (fs.existsSync(workerPlan.worktreePath)) {
+      fs.rmSync(workerPlan.worktreePath, { force: true, recursive: true });
+    }
+
+    try {
+      runCommandImpl('git', ['worktree', 'prune', '--expire', 'now'], { cwd: plan.repoRoot });
+    } catch (error) {
+      errors.push(error.message);
+    }
+
+    if (branchExistsImpl(plan.repoRoot, workerPlan.branchName)) {
+      try {
+        runCommandImpl('git', ['branch', '-D', workerPlan.branchName], { cwd: plan.repoRoot });
+      } catch (error) {
+        errors.push(error.message);
+      }
+    }
+  }
+
+  if (createdState.removeCoordinationDir && fs.existsSync(plan.coordinationDir)) {
+    fs.rmSync(plan.coordinationDir, { force: true, recursive: true });
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`rollback failed: ${errors.join('; ')}`);
+  }
+}
+
+function executePlan(plan, runtime = {}) {
+  const spawnSyncImpl = runtime.spawnSync || spawnSync;
+  const runCommandImpl = runtime.runCommand || runCommand;
+  const materializePlanImpl = runtime.materializePlan || materializePlan;
+  const overlaySeedPathsImpl = runtime.overlaySeedPaths || overlaySeedPaths;
+  const cleanupExistingImpl = runtime.cleanupExisting || cleanupExisting;
+  const rollbackCreatedResourcesImpl = runtime.rollbackCreatedResources || rollbackCreatedResources;
+  const createdState = {
+    workerPlans: [],
+    sessionCreated: false,
+    removeCoordinationDir: !fs.existsSync(plan.coordinationDir)
+  };
+
+  runCommandImpl('git', ['rev-parse', '--is-inside-work-tree'], { cwd: plan.repoRoot });
+  runCommandImpl('tmux', ['-V']);
 
   if (plan.replaceExisting) {
-    cleanupExisting(plan);
+    cleanupExistingImpl(plan);
   } else {
-    const hasSession = spawnSync('tmux', ['has-session', '-t', plan.sessionName], {
+    const hasSession = spawnSyncImpl('tmux', ['has-session', '-t', plan.sessionName], {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'pipe']
     });
@@ -446,61 +518,76 @@ function executePlan(plan) {
     }
   }
 
-  materializePlan(plan);
+  try {
+    materializePlanImpl(plan);
 
-  for (const workerPlan of plan.workerPlans) {
-    runCommand('git', workerPlan.gitArgs, { cwd: plan.repoRoot });
-    overlaySeedPaths({
-      repoRoot: plan.repoRoot,
-      seedPaths: workerPlan.seedPaths,
-      worktreePath: workerPlan.worktreePath
-    });
-  }
-
-  runCommand(
-    'tmux',
-    ['new-session', '-d', '-s', plan.sessionName, '-n', 'orchestrator', '-c', plan.repoRoot],
-    { cwd: plan.repoRoot }
-  );
-  runCommand(
-    'tmux',
-    [
-      'send-keys',
-      '-t',
-      plan.sessionName,
-      `printf '%s\\n' 'Session: ${plan.sessionName}' 'Coordination: ${plan.coordinationDir}'`,
-      'C-m'
-    ],
-    { cwd: plan.repoRoot }
-  );
-
-  for (const workerPlan of plan.workerPlans) {
-    const splitResult = runCommand(
-      'tmux',
-      ['split-window', '-d', '-P', '-F', '#{pane_id}', '-t', plan.sessionName, '-c', workerPlan.worktreePath],
-      { cwd: plan.repoRoot }
-    );
-    const paneId = splitResult.stdout.trim();
-
-    if (!paneId) {
-      throw new Error(`tmux split-window did not return a pane id for ${workerPlan.workerName}`);
+    for (const workerPlan of plan.workerPlans) {
+      runCommandImpl('git', workerPlan.gitArgs, { cwd: plan.repoRoot });
+      createdState.workerPlans.push(workerPlan);
+      overlaySeedPathsImpl({
+        repoRoot: plan.repoRoot,
+        seedPaths: workerPlan.seedPaths,
+        worktreePath: workerPlan.worktreePath
+      });
     }
 
-    runCommand('tmux', ['select-layout', '-t', plan.sessionName, 'tiled'], { cwd: plan.repoRoot });
-    runCommand('tmux', ['select-pane', '-t', paneId, '-T', workerPlan.workerSlug], {
-      cwd: plan.repoRoot
-    });
-    runCommand(
+    runCommandImpl(
+      'tmux',
+      ['new-session', '-d', '-s', plan.sessionName, '-n', 'orchestrator', '-c', plan.repoRoot],
+      { cwd: plan.repoRoot }
+    );
+    createdState.sessionCreated = true;
+    runCommandImpl(
       'tmux',
       [
         'send-keys',
         '-t',
-        paneId,
-        `cd ${shellQuote(workerPlan.worktreePath)} && ${workerPlan.launchCommand}`,
+        plan.sessionName,
+        buildSessionBannerCommand(plan.sessionName, plan.coordinationDir),
         'C-m'
       ],
       { cwd: plan.repoRoot }
     );
+
+    for (const workerPlan of plan.workerPlans) {
+      const splitResult = runCommandImpl(
+        'tmux',
+        ['split-window', '-d', '-P', '-F', '#{pane_id}', '-t', plan.sessionName, '-c', workerPlan.worktreePath],
+        { cwd: plan.repoRoot }
+      );
+      const paneId = splitResult.stdout.trim();
+
+      if (!paneId) {
+        throw new Error(`tmux split-window did not return a pane id for ${workerPlan.workerName}`);
+      }
+
+      runCommandImpl('tmux', ['select-layout', '-t', plan.sessionName, 'tiled'], { cwd: plan.repoRoot });
+      runCommandImpl('tmux', ['select-pane', '-t', paneId, '-T', workerPlan.workerSlug], {
+        cwd: plan.repoRoot
+      });
+      runCommandImpl(
+        'tmux',
+        [
+          'send-keys',
+          '-t',
+          paneId,
+          `cd ${shellQuote(workerPlan.worktreePath)} && ${workerPlan.launchCommand}`,
+          'C-m'
+        ],
+        { cwd: plan.repoRoot }
+      );
+    }
+  } catch (error) {
+    try {
+      rollbackCreatedResourcesImpl(plan, createdState, {
+        branchExists: runtime.branchExists,
+        listWorktrees: runtime.listWorktrees,
+        runCommand: runCommandImpl
+      });
+    } catch (cleanupError) {
+      error.message = `${error.message}; cleanup failed: ${cleanupError.message}`;
+    }
+    throw error;
   }
 
   return {
@@ -516,6 +603,7 @@ module.exports = {
   materializePlan,
   normalizeSeedPaths,
   overlaySeedPaths,
+  rollbackCreatedResources,
   renderTemplate,
   slugify
 };
