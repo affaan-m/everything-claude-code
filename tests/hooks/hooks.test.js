@@ -20,6 +20,24 @@ function toBashPath(filePath) {
     .replace(/\\/g, '/');
 }
 
+function fromBashPath(filePath) {
+  if (process.platform !== 'win32') {
+    return filePath;
+  }
+
+  const match = String(filePath).match(/^\/mnt\/([a-z])(?:\/(.*))?$/i);
+  if (!match) {
+    return filePath;
+  }
+
+  const [, driveLetter, remainder = ''] = match;
+  return `${driveLetter.toUpperCase()}:\\${remainder.replace(/\//g, '\\')}`;
+}
+
+function shellQuote(value) {
+  return `'${String(value).replace(/'/g, `'\\''`)}'`;
+}
+
 function sleepMs(ms) {
   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 }
@@ -79,11 +97,27 @@ function runScript(scriptPath, input = '', env = {}) {
 
 function runShellScript(scriptPath, args = [], input = '', env = {}, cwd = process.cwd()) {
   return new Promise((resolve, reject) => {
-    const proc = spawn('bash', [toBashPath(scriptPath), ...args], {
-      cwd,
-      env: { ...process.env, ...env },
-      stdio: ['pipe', 'pipe', 'pipe']
-    });
+    const proc = process.platform === 'win32'
+      ? spawn(
+          'bash',
+          [
+            '-lc',
+            [
+              ...Object.entries(env).map(([key, value]) => `export ${key}=${shellQuote(value)}`),
+              `exec bash ${shellQuote(toBashPath(scriptPath))}${args.length > 0 ? ` ${args.map(shellQuote).join(' ')}` : ''}`
+            ].join('; ')
+          ],
+          {
+            cwd,
+            env: process.env,
+            stdio: ['pipe', 'pipe', 'pipe']
+          }
+        )
+      : spawn('bash', [scriptPath, ...args], {
+          cwd,
+          env: { ...process.env, ...env },
+          stdio: ['pipe', 'pipe', 'pipe']
+        });
 
     let stdout = '';
     let stderr = '';
@@ -2279,7 +2313,10 @@ async function runTests() {
   if (
     await asyncTest('detect-project exports the resolved Python command for downstream scripts', async () => {
       const detectProjectPath = path.join(__dirname, '..', '..', 'skills', 'continuous-learning-v2', 'scripts', 'detect-project.sh');
-      const shellCommand = [`source "${toBashPath(detectProjectPath)}" >/dev/null 2>&1`, 'printf "%s\\n" "${CLV2_PYTHON_CMD:-}"'].join('; ');
+      const shellCommand = [
+        `source "${toBashPath(detectProjectPath)}" >/dev/null 2>&1`,
+        `env | grep '^CLV2_PYTHON_CMD=' | sed 's/^CLV2_PYTHON_CMD=//'`
+      ].join('; ');
 
       const shell = process.platform === 'win32' ? 'bash' : 'bash';
       const proc = spawn(shell, ['-lc', shellCommand], {
@@ -2318,10 +2355,12 @@ async function runTests() {
         spawnSync('git', ['remote', 'add', 'origin', 'https://github.com/example/ecc-test.git'], { cwd: repoDir, stdio: 'ignore' });
 
         const shellCommand = [
+          `export HOME=${shellQuote(toBashPath(homeDir))}`,
+          `export USERPROFILE=${shellQuote(toBashPath(homeDir))}`,
           `cd "${toBashPath(repoDir)}"`,
           `source "${toBashPath(detectProjectPath)}" >/dev/null 2>&1`,
-          'printf "%s\\n" "$PROJECT_ID"',
-          'printf "%s\\n" "$PROJECT_DIR"'
+          `env | grep '^PROJECT_ID=' | sed 's/^PROJECT_ID=//'`,
+          `env | grep '^PROJECT_DIR=' | sed 's/^PROJECT_DIR=//'`
         ].join('; ');
 
         const proc = spawn('bash', ['-lc', shellCommand], {
@@ -2341,7 +2380,8 @@ async function runTests() {
 
         assert.strictEqual(code, 0, `detect-project should source cleanly, stderr: ${stderr}`);
 
-        const [projectId, projectDir] = stdout.trim().split(/\r?\n/);
+        const [projectId, bashProjectDir] = stdout.trim().split(/\r?\n/);
+        const projectDir = fromBashPath(bashProjectDir);
         const registryPath = path.join(homeDir, '.claude', 'homunculus', 'projects.json');
         const projectMetadataPath = path.join(projectDir, 'project.json');
 
@@ -2355,7 +2395,7 @@ async function runTests() {
         assert.ok(registry[projectId], 'registry should contain the detected project');
         assert.strictEqual(metadata.id, projectId, 'project.json should include the detected id');
         assert.strictEqual(metadata.name, path.basename(repoDir), 'project.json should include the repo name');
-        assert.strictEqual(fs.realpathSync(metadata.root), fs.realpathSync(repoDir), 'project.json should include the repo root');
+        assert.strictEqual(fs.realpathSync(fromBashPath(metadata.root)), fs.realpathSync(repoDir), 'project.json should include the repo root');
         assert.strictEqual(metadata.remote, 'https://github.com/example/ecc-test.git', 'project.json should include the sanitized remote');
         assert.ok(metadata.created_at, 'project.json should include created_at');
         assert.ok(metadata.last_seen, 'project.json should include last_seen');

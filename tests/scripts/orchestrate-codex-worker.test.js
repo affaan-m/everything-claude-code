@@ -8,6 +8,16 @@ const { spawnSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'orchestrate-codex-worker.sh');
 
+function toBashPath(filePath) {
+  if (process.platform !== 'win32') {
+    return filePath;
+  }
+
+  return String(filePath)
+    .replace(/^([A-Za-z]):/, (_, driveLetter) => `/mnt/${driveLetter.toLowerCase()}`)
+    .replace(/\\/g, '/');
+}
+
 console.log('=== Testing orchestrate-codex-worker.sh ===\n');
 
 let passed = 0;
@@ -49,7 +59,7 @@ test('fails fast for an unreadable task file and records failure artifacts', () 
   try {
     spawnSync('git', ['init'], { cwd: tempRoot, stdio: 'ignore' });
 
-    const result = spawnSync('bash', [SCRIPT, missingTaskFile, handoffFile, statusFile], {
+    const result = spawnSync('bash', [toBashPath(SCRIPT), toBashPath(missingTaskFile), toBashPath(handoffFile), toBashPath(statusFile)], {
       cwd: tempRoot,
       encoding: 'utf8'
     });
