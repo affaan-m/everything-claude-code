@@ -14,6 +14,7 @@ function runCli(args, options = {}) {
   return spawnSync('node', [SCRIPT, ...args], {
     encoding: 'utf8',
     cwd: options.cwd || process.cwd(),
+    maxBuffer: 10 * 1024 * 1024,
     env: {
       ...process.env,
       ...(options.env || {}),

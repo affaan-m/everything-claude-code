@@ -31,6 +31,21 @@ EOF
 }
 
 mkdir -p "$(dirname "$handoff_file")" "$(dirname "$status_file")"
+
+if [[ ! -r "$task_file" ]]; then
+  write_status "failed" "- Error: task file is missing or unreadable (\`$task_file\`)"
+  {
+    echo "# Handoff"
+    echo
+    echo "- Failed: $(timestamp)"
+    echo "- Branch: \`$(git rev-parse --abbrev-ref HEAD)\`"
+    echo "- Worktree: \`$(pwd)\`"
+    echo
+    echo "Task file is missing or unreadable: \`$task_file\`"
+  } > "$handoff_file"
+  exit 1
+fi
+
 write_status "running" "- Task file: \`$task_file\`"
 
 prompt_file="$(mktemp)"

@@ -126,8 +126,8 @@ function runTests() {
       const result = run(['--target', 'cursor', 'typescript'], { cwd: projectDir, homeDir });
       assert.strictEqual(result.code, 0, result.stderr);
 
-      assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'rules', 'common', 'coding-style.md')));
-      assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'rules', 'typescript', 'testing.md')));
+      assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'rules', 'common-coding-style.md')));
+      assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'rules', 'typescript-testing.md')));
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'agents', 'architect.md')));
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'commands', 'plan.md')));
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'hooks.json')));
@@ -163,10 +163,10 @@ function runTests() {
       const result = run(['--target', 'antigravity', 'typescript'], { cwd: projectDir, homeDir });
       assert.strictEqual(result.code, 0, result.stderr);
 
-      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'rules', 'common', 'coding-style.md')));
-      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'rules', 'typescript', 'testing.md')));
-      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'commands', 'plan.md')));
-      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'agents', 'architect.md')));
+      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'rules', 'common-coding-style.md')));
+      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'rules', 'typescript-testing.md')));
+      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'workflows', 'plan.md')));
+      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'skills', 'architect.md')));
 
       const statePath = path.join(projectDir, '.agent', 'ecc-install-state.json');
       const state = readJson(statePath);
@@ -176,7 +176,7 @@ function runTests() {
       assert.deepStrictEqual(state.resolution.selectedModules, ['rules-core', 'agents-core', 'commands-core']);
       assert.ok(
         state.operations.some(operation => (
-          operation.destinationPath.endsWith(path.join('.agent', 'commands', 'plan.md'))
+          operation.destinationPath.endsWith(path.join('.agent', 'workflows', 'plan.md'))
         )),
         'Should record manifest command file copy operation'
       );
@@ -266,9 +266,9 @@ function runTests() {
       const result = run(['--target', 'antigravity', '--profile', 'core'], { cwd: projectDir, homeDir });
       assert.strictEqual(result.code, 0, result.stderr);
 
-      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'rules', 'common', 'coding-style.md')));
-      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'agents', 'architect.md')));
-      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'commands', 'plan.md')));
+      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'rules', 'common-coding-style.md')));
+      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'skills', 'architect.md')));
+      assert.ok(fs.existsSync(path.join(projectDir, '.agent', 'workflows', 'plan.md')));
       assert.ok(!fs.existsSync(path.join(projectDir, '.agent', 'skills', 'tdd-workflow', 'SKILL.md')));
 
       const state = readJson(path.join(projectDir, '.agent', 'ecc-install-state.json'));

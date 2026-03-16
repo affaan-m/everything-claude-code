@@ -348,7 +348,10 @@ function persistCanonicalSnapshot(snapshot, options = {}) {
   const writer = resolveStateStoreWriter(stateStore);
 
   if (stateStore && !writer) {
-    throw new Error('State store does not expose a supported session snapshot writer');
+    // The loaded object is a factory module (e.g. has createStateStore but no
+    // writer methods).  Treat it the same as a missing state store and fall
+    // through to the JSON-file recording path below.
+    return writeFallbackSessionRecording(snapshot, options);
   }
 
   if (writer) {

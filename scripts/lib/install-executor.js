@@ -83,6 +83,11 @@ function validateLegacyTarget(target) {
   }
 }
 
+const IGNORED_DIRECTORY_NAMES = new Set([
+  'node_modules',
+  '.git',
+]);
+
 function listFilesRecursive(dirPath) {
   if (!fs.existsSync(dirPath)) {
     return [];
@@ -94,6 +99,9 @@ function listFilesRecursive(dirPath) {
   for (const entry of entries) {
     const absolutePath = path.join(dirPath, entry.name);
     if (entry.isDirectory()) {
+      if (IGNORED_DIRECTORY_NAMES.has(entry.name)) {
+        continue;
+      }
       const childFiles = listFilesRecursive(absolutePath);
       for (const childFile of childFiles) {
         files.push(path.join(entry.name, childFile));
