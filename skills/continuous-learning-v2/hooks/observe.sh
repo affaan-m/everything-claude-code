@@ -365,24 +365,45 @@ if [ "$OBSERVER_ENABLED" = "true" ]; then
   fi
 fi
 
-# Signal observer if running (check both project-scoped and global observer, deduplicate)
-signaled_pids=" "
-for pid_file in "${PROJECT_DIR}/.observer.pid" "${CONFIG_DIR}/.observer.pid"; do
-  if [ -f "$pid_file" ]; then
-    observer_pid=$(cat "$pid_file" 2>/dev/null || true)
-    # Validate PID is a positive integer (>1)
-    case "$observer_pid" in
-      ''|*[!0-9]*|0|1) rm -f "$pid_file" 2>/dev/null || true; continue ;;
-    esac
-    # Deduplicate: skip if already signaled this pass
-    case "$signaled_pids" in
-      *" $observer_pid "*) continue ;;
-    esac
-    if kill -0 "$observer_pid" 2>/dev/null; then
-      kill -USR1 "$observer_pid" 2>/dev/null || true
-      signaled_pids="${signaled_pids}${observer_pid} "
-    fi
+# Throttle SIGUSR1: only signal observer every N observations (#521)
+# This prevents rapid signaling when tool calls fire every second,
+# which caused runaway parallel Claude analysis processes.
+SIGNAL_EVERY_N="${ECC_OBSERVER_SIGNAL_EVERY_N:-20}"
+SIGNAL_COUNTER_FILE="${PROJECT_DIR}/.observer-signal-counter"
+
+should_signal=0
+if [ -f "$SIGNAL_COUNTER_FILE" ]; then
+  counter=$(cat "$SIGNAL_COUNTER_FILE" 2>/dev/null || echo 0)
+  counter=$((counter + 1))
+  if [ "$counter" -ge "$SIGNAL_EVERY_N" ]; then
+    should_signal=1
+    counter=0
   fi
-done
+  echo "$counter" > "$SIGNAL_COUNTER_FILE"
+else
+  echo "1" > "$SIGNAL_COUNTER_FILE"
+fi
+
+# Signal observer if running and throttle allows (check both project-scoped and global observer, deduplicate)
+if [ "$should_signal" -eq 1 ]; then
+  signaled_pids=" "
+  for pid_file in "${PROJECT_DIR}/.observer.pid" "${CONFIG_DIR}/.observer.pid"; do
+    if [ -f "$pid_file" ]; then
+      observer_pid=$(cat "$pid_file" 2>/dev/null || true)
+      # Validate PID is a positive integer (>1)
+      case "$observer_pid" in
+        ''|*[!0-9]*|0|1) rm -f "$pid_file" 2>/dev/null || true; continue ;;
+      esac
+      # Deduplicate: skip if already signaled this pass
+      case "$signaled_pids" in
+        *" $observer_pid "*) continue ;;
+      esac
+      if kill -0 "$observer_pid" 2>/dev/null; then
+        kill -USR1 "$observer_pid" 2>/dev/null || true
+        signaled_pids="${signaled_pids}${observer_pid} "
+      fi
+    fi
+  done
+fi
 
 exit 0
