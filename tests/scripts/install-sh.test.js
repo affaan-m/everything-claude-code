@@ -61,6 +61,12 @@ function runTests() {
   let passed = 0;
   let failed = 0;
 
+  if (process.platform === 'win32') {
+    console.log('  - skipped on Windows; install.ps1 covers the native wrapper path');
+    console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
+    process.exit(0);
+  }
+
   if (test('delegates to the Node installer and preserves dry-run output', () => {
     const homeDir = createTempDir('install-sh-home-');
     const projectDir = createTempDir('install-sh-project-');

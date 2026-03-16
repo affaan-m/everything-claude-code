@@ -88,11 +88,12 @@
     ".claude-plugin/plugin.json",
     ".claude-plugin/README.md",
     "install.sh",
+    "install.ps1",
     "llms.txt"
   ],
   "bin": {
     "ecc": "scripts/ecc.js",
-    "ecc-install": "install.sh"
+    "ecc-install": "scripts/install-apply.js"
   },
   "scripts": {
     "postinstall": "echo '\\n  ecc-universal installed!\\n  Run: npx ecc typescript\\n  Compat: npx ecc-install typescript\\n  Docs: https://github.com/affaan-m/everything-claude-code\\n'",

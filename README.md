@@ -155,14 +155,22 @@ Get up and running in under 2 minutes:
 git clone https://github.com/affaan-m/everything-claude-code.git
 cd everything-claude-code
 
-# Recommended: use the installer (handles common + language rules safely)
+# macOS/Linux
 ./install.sh typescript    # or python or golang or swift or php
-# You can pass multiple languages:
 # ./install.sh typescript python golang swift php
-# or target cursor:
 # ./install.sh --target cursor typescript
-# or target antigravity:
 # ./install.sh --target antigravity typescript
+```
+
+```powershell
+# Windows PowerShell
+.\install.ps1 typescript   # or python or golang or swift or php
+# .\install.ps1 typescript python golang swift php
+# .\install.ps1 --target cursor typescript
+# .\install.ps1 --target antigravity typescript
+
+# npm-installed compatibility entrypoint also works cross-platform
+npx ecc-install typescript
 ```
 
 For manual install instructions see the README in the `rules/` folder.
@@ -875,9 +883,15 @@ ECC provides **full Cursor IDE support** with hooks, rules, agents, skills, comm
 ### Quick Start (Cursor)
 
 ```bash
-# Install for your language(s)
+# macOS/Linux
 ./install.sh --target cursor typescript
 ./install.sh --target cursor python golang swift php
+```
+
+```powershell
+# Windows PowerShell
+.\install.ps1 --target cursor typescript
+.\install.ps1 --target cursor python golang swift php
 ```
 
 ### What's Included
