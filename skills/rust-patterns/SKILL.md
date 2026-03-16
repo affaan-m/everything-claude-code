@@ -8,7 +8,7 @@ origin: ECC
 
 Idiomatic Rust patterns and best practices for building safe, performant, and maintainable applications.
 
-## When to Activate
+## When to Use
 
 - Writing new Rust code
 - Reviewing Rust code

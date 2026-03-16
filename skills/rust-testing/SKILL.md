@@ -8,7 +8,7 @@ origin: ECC
 
 Comprehensive Rust testing patterns for writing reliable, maintainable tests following TDD methodology.
 
-## When to Activate
+## When to Use
 
 - Writing new Rust functions, methods, or traits
 - Adding test coverage to existing code
