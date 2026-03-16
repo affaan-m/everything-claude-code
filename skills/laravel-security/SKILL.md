@@ -150,7 +150,10 @@ final class UploadInvoiceRequest extends FormRequest
 ```
 
 ```php
-$path = $request->file('invoice')->store('invoices', 'local');
+$path = $request->file('invoice')->store(
+    'invoices',
+    config('filesystems.private_disk', 'local') // set this to a non-public disk
+);
 ```
 
 ## Rate Limiting

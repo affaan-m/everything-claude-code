@@ -261,18 +261,23 @@ declare(strict_types=1);
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\postJson;
 
 uses(RefreshDatabase::class);
 
 test('user can place order', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->postJson('/api/orders', [
+    actingAs($user);
+
+    $response = postJson('/api/orders', [
         'items' => [['sku' => 'sku-1', 'quantity' => 2]],
     ]);
 
     $response->assertCreated();
-    $this->assertDatabaseHas('orders', ['user_id' => $user->id]);
+    assertDatabaseHas('orders', ['user_id' => $user->id]);
 });
 ```
 

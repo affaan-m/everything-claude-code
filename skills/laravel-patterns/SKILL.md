@@ -349,11 +349,13 @@ return new class extends Migration
 Keep validation in form requests and transform inputs to DTOs.
 
 ```php
+use App\Models\Order;
+
 final class StoreOrderRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Authorization handled by auth middleware/policies
+        return $this->user()?->can('create', Order::class) ?? false;
     }
 
     public function rules(): array
