@@ -9,7 +9,7 @@ This command invokes the **rust-build-resolver** agent to incrementally fix Rust
 ## What This Command Does
 
 1. **Run Diagnostics**: Execute `cargo check`, `cargo clippy`, `cargo fmt --check`
-2. **Parse Errors**: Group by file and sort by severity
+2. **Parse Errors**: Identify error codes and affected files
 3. **Fix Incrementally**: One error at a time
 4. **Verify Each Fix**: Re-run `cargo check` after each change
 5. **Report Summary**: Show what was fixed and what remains
@@ -71,14 +71,8 @@ Error: E0502 — cannot borrow `map` as mutable because also borrowed as immutab
 Cause: Immutable borrow still active during mutable insert
 
 ```rust
-// Changed
-let value = map.get("key");
-if value.is_none() {
-    map.insert("key".into(), default);
-}
-// To
-let value = map.get("key").cloned();
-if value.is_none() {
+// Changed: restructured to end immutable borrow before mutable access
+if !map.contains_key("key") {
     map.insert("key".into(), default);
 }
 ```
@@ -130,8 +124,15 @@ $ cargo clippy -- -D warnings
 # No warnings
 
 $ cargo test
-ok  src/service/cache.rs   0.02s
-ok  src/handler/api.rs     0.01s
+running 6 tests
+test service::cache::tests::test_insert ... ok
+test service::cache::tests::test_get ... ok
+test handler::api::tests::test_parse_count ... ok
+test handler::api::tests::test_missing_count ... ok
+test handler::api::tests::test_db_import ... ok
+test handler::api::tests::test_response ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored
 ```
 
 ## Summary
@@ -150,9 +151,9 @@ Build Status: SUCCESS
 
 | Error | Typical Fix |
 |-------|-------------|
-| `cannot borrow as mutable` | Clone to end immutable borrow, or restructure |
+| `cannot borrow as mutable` | Restructure to end immutable borrow first; clone only if justified |
 | `does not live long enough` | Use owned type or add lifetime annotation |
-| `cannot move out of` | Use `.clone()` or restructure ownership |
+| `cannot move out of` | Restructure to take ownership; clone only as last resort |
 | `mismatched types` | Add `.into()`, `as`, or explicit conversion |
 | `trait X not implemented` | Add `#[derive(Trait)]` or implement manually |
 | `unresolved import` | Add to Cargo.toml or fix `use` path |
