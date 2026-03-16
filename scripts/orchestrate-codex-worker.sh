@@ -18,17 +18,17 @@ normalize_path() {
     return 0
   fi
 
+normalize_path() {
+  local input="$1"
+
+  if [[ -z "$input" ]]; then
+    printf '%s\n' ''
+    return 0
+  fi
+
   case "$input" in
     /*)
       printf '%s\n' "$input"
-      return 0
-      ;;
-    [A-Za-z]:\\*|[A-Za-z]:/*)
-      local drive="${input%%:*}"
-      local rest="${input#?:}"
-      drive="$(printf '%s' "$drive" | tr '[:upper:]' '[:lower:]')"
-      rest="${rest//\\//}"
-      printf '/mnt/%s%s\n' "$drive" "$rest"
       return 0
       ;;
   esac
@@ -41,7 +41,19 @@ normalize_path() {
     cygpath -u "$input" 2>/dev/null && return 0
   fi
 
+  case "$input" in
+    [A-Za-z]:\\*|[A-Za-z]:/*)
+      local drive="${input%%:*}"
+      local rest="${input#?:}"
+      drive="$(printf '%s' "$drive" | tr '[:upper:]' '[:lower:]')"
+      rest="${rest//\\//}"
+      printf '/mnt/%s%s\n' "$drive" "$rest"
+      return 0
+      ;;
+  esac
+
   printf '%s\n' "$input"
+}
 }
 
 task_file="$(normalize_path "$task_file")"
