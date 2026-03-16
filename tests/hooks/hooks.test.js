@@ -2318,7 +2318,7 @@ async function runTests() {
         `env | grep '^CLV2_PYTHON_CMD=' | sed 's/^CLV2_PYTHON_CMD=//'`
       ].join('; ');
 
-      const shell = 'bash';
+      const shell = process.platform === 'win32' ? 'bash' : 'bash';
       const proc = spawn(shell, ['-lc', shellCommand], {
         env: process.env,
         stdio: ['ignore', 'pipe', 'pipe']
