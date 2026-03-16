@@ -14,7 +14,7 @@ When the user asks about libraries, frameworks, or APIs, fetch current documenta
 - **resolve-library-id**: Returns Context7-compatible library IDs (e.g. `/vercel/next.js`) from a library name and query.
 - **query-docs**: Fetches documentation and code snippets for a given library ID and question. Always call resolve-library-id first to get a valid library ID.
 
-## When to Use This Skill
+## When to use
 
 Activate when the user:
 
@@ -23,7 +23,9 @@ Activate when the user:
 - Needs API or reference information ("What are the Supabase auth methods?")
 - Mentions specific frameworks or libraries (React, Vue, Svelte, Express, Tailwind, Prisma, Supabase, etc.)
 
-## How to Fetch Documentation
+Use this skill whenever the request depends on accurate, up-to-date behavior of a library, framework, or API. Applies across harnesses that have the Context7 MCP configured (e.g. Claude Code, Cursor, Codex).
+
+## How it works
 
 ### Step 1: Resolve the Library ID
 
@@ -50,7 +52,7 @@ Call the **query-docs** MCP tool with:
 - **libraryId**: The selected Context7 library ID from Step 2 (e.g. `/vercel/next.js`).
 - **query**: The user's specific question or task. Be specific to get relevant snippets.
 
-Limit: do not call query-docs (or resolve-library-id) more than 3 times per question. If the answer is unclear after 3 calls, use the best information you have.
+Limit: do not call query-docs (or resolve-library-id) more than 3 times per question. If the answer is unclear after 3 calls, state the uncertainty and use the best information you have rather than guessing.
 
 ### Step 4: Use the Documentation
 
@@ -58,22 +60,31 @@ Limit: do not call query-docs (or resolve-library-id) more than 3 times per ques
 - Include relevant code examples from the docs when helpful.
 - Cite the library or version when it matters (e.g. "In Next.js 15...").
 
-## Code Examples
+## Examples
 
-Example flow for "How do I set up Next.js middleware?":
+### Example: Next.js middleware
 
 1. Call **resolve-library-id** with `libraryName: "Next.js"`, `query: "How do I set up Next.js middleware?"`.
 2. From results, pick the best match (e.g. `/vercel/next.js`) by name and benchmark score.
 3. Call **query-docs** with `libraryId: "/vercel/next.js"`, `query: "How do I set up Next.js middleware?"`.
 4. Use the returned snippets and text to answer; include a minimal `middleware.ts` example from the docs if relevant.
 
+### Example: Prisma query
+
+1. Call **resolve-library-id** with `libraryName: "Prisma"`, `query: "How do I query with relations?"`.
+2. Select the official Prisma library ID (e.g. `/prisma/prisma`).
+3. Call **query-docs** with that `libraryId` and the query.
+4. Return the Prisma Client pattern (e.g. `include` or `select`) with a short code snippet from the docs.
+
+### Example: Supabase auth methods
+
+1. Call **resolve-library-id** with `libraryName: "Supabase"`, `query: "What are the auth methods?"`.
+2. Pick the Supabase docs library ID.
+3. Call **query-docs**; summarize the auth methods and show minimal examples from the fetched docs.
+
 ## Best Practices
 
 - **Be specific**: Use the user's full question as the query where possible for better relevance.
 - **Version awareness**: When users mention versions, use version-specific library IDs from the resolve step when available.
 - **Prefer official sources**: When multiple matches exist, prefer official or primary packages over community forks.
-- **No sensitive data**: Do not include API keys, passwords, or other secrets in any query sent to Context7.
-
-## When to Use
-
-Use this skill whenever the user's request depends on accurate, up-to-date behavior of a library, framework, or API. It applies across harnesses that have the Context7 MCP configured (e.g. Claude Code, Cursor, Codex with Context7).
+- **No sensitive data**: Redact API keys, passwords, tokens, and other secrets from any query sent to Context7. Treat the user's question as potentially containing secrets before passing it to resolve-library-id or query-docs.
