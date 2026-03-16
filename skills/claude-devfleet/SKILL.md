@@ -10,6 +10,26 @@ Use this skill when you need to dispatch multiple Claude Code agents to work on 
 
 Requires a running Claude DevFleet instance connected via MCP. Setup: `claude mcp add devfleet --transport sse http://localhost:18801/mcp/sse`
 
+## Flow
+
+```
+User → "Build a REST API with auth and tests"
+  ↓
+plan_project(prompt) → project_id + mission DAG
+  ↓
+Show plan to user → get approval
+  ↓
+dispatch_mission(M1) → Agent 1 spawns in worktree
+  ↓
+M1 completes → auto-merge → auto-dispatch M2 (depends_on M1)
+  ↓
+M2 completes → auto-merge
+  ↓
+get_report(M2) → files_changed, what_done, errors, next_steps
+  ↓
+Report back to user
+```
+
 ## Tools Available
 
 | Tool | Purpose |
