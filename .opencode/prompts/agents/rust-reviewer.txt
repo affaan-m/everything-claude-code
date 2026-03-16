@@ -44,7 +44,7 @@ When invoked:
 ## Concurrency (HIGH)
 
 - **Blocking in async**: `std::thread::sleep`, `std::fs` in async context
-- **Unbounded channels**: `mpsc::channel()` without backpressure
+- **Unbounded channels**: `mpsc::channel()`/`tokio::sync::mpsc::unbounded_channel()` need justification — prefer bounded channels
 - **`Mutex` poisoning ignored**: Not handling `PoisonError`
 - **Missing `Send`/`Sync` bounds**: Types shared across threads
 

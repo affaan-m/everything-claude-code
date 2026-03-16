@@ -44,7 +44,7 @@ When invoked:
 ### HIGH — Concurrency
 
 - **Blocking in async**: `std::thread::sleep`, `std::fs` in async context — use tokio equivalents
-- **Unbounded channels**: `mpsc::channel()` or `tokio::sync::mpsc::unbounded_channel()` without backpressure — prefer `sync_channel(n)` or `tokio::sync::mpsc::channel(n)`
+- **Unbounded channels**: `mpsc::channel()`/`tokio::sync::mpsc::unbounded_channel()` need justification — prefer bounded channels (`tokio::sync::mpsc::channel(n)` in async, `sync_channel(n)` in sync)
 - **`Mutex` poisoning ignored**: Not handling `PoisonError` from `.lock()`
 - **Missing `Send`/`Sync` bounds**: Types shared across threads without proper bounds
 - **Deadlock patterns**: Nested lock acquisition without consistent ordering
