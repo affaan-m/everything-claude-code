@@ -123,6 +123,11 @@
       },
       "description": "AI browser agent for web tasks"
     },
+    "devfleet": {
+      "type": "sse",
+      "url": "http://localhost:18801/mcp/sse",
+      "description": "Multi-agent orchestration — dispatch parallel Claude Code agents in isolated worktrees. Plan projects, auto-chain missions, read structured reports. Install: git clone https://github.com/LEC-AI/claude-devfleet && cd claude-devfleet && ./start.sh"
+    },
     "token-optimizer": {
       "command": "npx",
       "args": ["-y", "token-optimizer-mcp"],
