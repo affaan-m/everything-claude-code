@@ -105,10 +105,10 @@ Reports contain: `files_changed`, `what_done`, `what_open`, `what_tested`, `what
 
 ### Manual: step-by-step control
 
-1. `create_project` to set up workspace.
-2. `create_mission` for each task, setting `depends_on` for ordering.
-3. `dispatch_mission` to start work.
-4. `get_report` when done.
+1. `create_project(name="My Project")` → returns `project_id`.
+2. `create_mission(project_id=project_id, title="...", prompt="...")` for each task, setting `depends_on` for ordering.
+3. `dispatch_mission(mission_id=...)` to start work.
+4. `get_report(mission_id=...)` when done.
 
 ### Sequential with review
 
