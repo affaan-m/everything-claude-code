@@ -25,12 +25,7 @@ The Node/TypeScript SDK may expose `tool()` / `resource()` or `registerTool()` /
 
 ### Connecting with stdio
 
-```typescript
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-
-const transport = StdioServerTransport.create();
-await server.connect(transport);
-```
+For local clients, create a stdio transport and pass it to your server’s connect method. The exact API varies by SDK version (e.g. constructor vs factory). See the [MCP Node SDK](https://github.com/modelcontextprotocol/typescript-sdk) or query Context7 for "MCP stdio server" for the current pattern.
 
 Keep server logic (tools + resources) independent of transport so you can plug in stdio or HTTP in the entrypoint.
 
