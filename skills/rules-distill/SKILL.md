@@ -16,29 +16,43 @@ Applies the "deterministic collection + LLM judgment" principle: scripts collect
 - After a skill-stocktake reveals patterns that should be rules
 - When rules feel incomplete relative to the skills being used
 
-## Phase 1: Inventory (Deterministic Collection)
+## Prerequisites
 
-### 1a. Collect skill inventory
+- **skill-stocktake** must be installed (`~/.claude/skills/skill-stocktake/scripts/scan.sh`). If not available, manually enumerate skills with `find ~/.claude/skills -name 'SKILL.md'`.
+
+## How It Works
+
+The rules distillation process follows three phases:
+
+### Phase 1: Inventory (Deterministic Collection)
+
+#### 1a. Collect skill inventory
 
 Use skill-stocktake's scan script to enumerate all installed skills:
 
 ```bash
-bash ~/.claude/skills/skill-stocktake/scripts/scan.sh
+# Requires skill-stocktake to be installed
+bash "${SKILL_STOCKTAKE_DIR:-$HOME/.claude/skills/skill-stocktake}/scripts/scan.sh"
 ```
 
-### 1b. Collect rules index
+If skill-stocktake is not installed, fall back to:
+
+```bash
+find "${CLAUDE_RULES_DIR:-$HOME/.claude/skills}" -name 'SKILL.md' -o -name '*.md' | head -100
+```
+
+#### 1b. Collect rules index
 
 Enumerate all rule files with their H2 headings:
 
 ```bash
-# List all .md files under rules/, extract H2 headings
-find ~/.claude/rules -name '*.md' -not -path '*/_archived/*' | while read f; do
+find "${CLAUDE_RULES_DIR:-$HOME/.claude/rules}" -name '*.md' -not -path '*/_archived/*' | while IFS= read -r f; do
   echo "=== $f ==="
   grep '^## ' "$f"
 done
 ```
 
-### 1c. Present to user
+#### 1c. Present to user
 
 ```
 Rules Distillation — Phase 1: Inventory
@@ -49,15 +63,15 @@ Rules:  {M} files ({K} headings indexed)
 Proceeding to cross-read analysis...
 ```
 
-## Phase 2: Cross-read, Match & Verdict (LLM Judgment)
+### Phase 2: Cross-read, Match & Verdict (LLM Judgment)
 
 Extraction and matching are unified in a single pass. Rules files are small enough (~800 lines total) that the full text can be provided to the LLM — no grep pre-filtering needed.
 
-### Batching
+#### Batching
 
 Group skills into **thematic clusters** based on their descriptions. Analyze each cluster in a subagent with the full rules text.
 
-### Subagent Prompt
+#### Subagent Prompt
 
 Launch a general-purpose Agent with the following prompt:
 
@@ -90,6 +104,7 @@ For each candidate, compare against the full rules text and assign a verdict:
 
 ## Output Format (per candidate)
 
+```json
 {
   "principle": "1-2 sentences in 'do X' / 'don't do Y' form",
   "evidence": ["skill-name: §Section", "skill-name: §Section"],
@@ -97,8 +112,14 @@ For each candidate, compare against the full rules text and assign a verdict:
   "verdict": "Append / Revise / New Section / New File / Already Covered / Too Specific",
   "target_rule": "filename §Section, or 'new'",
   "confidence": "high / medium / low",
-  "draft": "Draft text for Append/Revise/New Section/New File verdicts"
+  "draft": "Draft text for Append/New Section/New File verdicts",
+  "revision": {
+    "reason": "Why the existing content is inaccurate or insufficient (Revise only)",
+    "before": "Current text to be replaced (Revise only)",
+    "after": "Proposed replacement text (Revise only)"
+  }
 }
+```
 
 ## Exclude
 
@@ -107,18 +128,18 @@ For each candidate, compare against the full rules text and assign a verdict:
 - Code examples and commands (belongs in skills)
 ```
 
-### Verdict Reference
+#### Verdict Reference
 
 | Verdict | Meaning | Presented to User |
 |---------|---------|-------------------|
 | **Append** | Add to existing section | Target + draft |
-| **Revise** | Fix inaccurate/insufficient content | Target + reason + before/after draft |
+| **Revise** | Fix inaccurate/insufficient content | Target + reason + before/after |
 | **New Section** | Add new section to existing file | Target + draft |
 | **New File** | Create new rule file | Filename + full draft |
 | **Already Covered** | Covered in rules (possibly different wording) | Reason (1 line) |
 | **Too Specific** | Should stay in skills | Link to relevant skill |
 
-### Verdict Quality Requirements
+#### Verdict Quality Requirements
 
 ```
 # Good
@@ -132,9 +153,9 @@ validation only; LLM output trust boundary is missing.
 Append to security.md: Add LLM security principle
 ```
 
-## Phase 3: User Review & Execution
+### Phase 3: User Review & Execution
 
-### Summary Table
+#### Summary Table
 
 ```
 # Rules Distillation Report
@@ -153,7 +174,7 @@ Skills scanned: {N} | Rules: {M} files | Candidates: {K}
 (Per-candidate details: evidence, violation_risk, draft text)
 ```
 
-### User Actions
+#### User Actions
 
 User responds with numbers to:
 - **Approve**: Apply draft to rules as-is
@@ -162,25 +183,88 @@ User responds with numbers to:
 
 **Never modify rules automatically. Always require user approval.**
 
-### Save Results
+#### Save Results
 
-Store results in `~/.claude/skills/rules-distill/results.json`:
+Store results in the skill directory (`results.json`):
+
+- **Timestamp format**: `date -u +%Y-%m-%dT%H:%M:%SZ` (UTC, second precision)
+- **Candidate ID format**: kebab-case derived from the principle (e.g., `llm-output-trust-boundary`)
 
 ```json
 {
-  "distilled_at": "2026-03-18T10:00:00Z",
+  "distilled_at": "2026-03-18T10:30:42Z",
   "skills_scanned": 56,
   "rules_scanned": 22,
   "candidates": {
-    "candidate-id": {
-      "principle": "...",
+    "llm-output-trust-boundary": {
+      "principle": "Treat LLM output as untrusted when stored or re-injected",
       "verdict": "Append",
       "target": "rules/common/security.md",
-      "evidence": ["skill-a", "skill-b"],
-      "status": "applied | skipped"
+      "evidence": ["llm-memory-trust-boundary", "llm-social-agent-anti-pattern"],
+      "status": "applied"
+    },
+    "iteration-bounds": {
+      "principle": "Define explicit stop conditions for all iteration loops",
+      "verdict": "New Section",
+      "target": "rules/common/coding-style.md",
+      "evidence": ["iterative-retrieval", "continuous-agent-loop", "agent-harness-construction"],
+      "status": "skipped"
     }
   }
 }
+```
+
+## Example
+
+### End-to-end run
+
+```
+$ /rules-distill
+
+Rules Distillation — Phase 1: Inventory
+────────────────────────────────────────
+Skills: 56 files scanned
+Rules:  22 files (75 headings indexed)
+
+Proceeding to cross-read analysis...
+
+[Subagent analysis: Batch 1 (agent/meta skills) ...]
+[Subagent analysis: Batch 2 (coding/pattern skills) ...]
+
+# Rules Distillation Report
+
+## Summary
+Skills scanned: 56 | Rules: 22 files | Candidates: 4
+
+| # | Principle | Verdict | Target | Confidence |
+|---|-----------|---------|--------|------------|
+| 1 | LLM output: normalize, type-check, sanitize before reuse | New Section | coding-style.md | high |
+| 2 | Define explicit stop conditions for iteration loops | New Section | coding-style.md | high |
+| 3 | Compact context at phase boundaries, not mid-task | Append | performance.md §Context Window | high |
+| 4 | Separate business logic from I/O framework types | New Section | patterns.md | high |
+
+## Details
+
+### 1. LLM Output Validation
+Verdict: New Section in coding-style.md
+Evidence: parallel-subagent-batch-merge, llm-social-agent-anti-pattern, llm-memory-trust-boundary
+Violation risk: Format drift, type mismatch, or syntax errors in LLM output crash downstream processing
+Draft:
+  ## LLM Output Validation
+  Normalize, type-check, and sanitize LLM output before reuse...
+  See skill: parallel-subagent-batch-merge, llm-memory-trust-boundary
+
+[... details for candidates 2-4 ...]
+
+Approve, modify, or skip each candidate by number:
+> User: Approve 1, 3. Skip 2, 4.
+
+✓ Applied: coding-style.md §LLM Output Validation
+✓ Applied: performance.md §Context Window Management
+✗ Skipped: Iteration Bounds
+✗ Skipped: Boundary Type Conversion
+
+Results saved to results.json
 ```
 
 ## Design Principles
