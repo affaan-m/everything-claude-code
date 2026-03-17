@@ -30,15 +30,14 @@ Scan each component type and estimate token consumption:
 **Agents** (`agents/*.md`)
 ```
 For each agent file:
-  - Read the description frontmatter (always loaded into Task tool routing)
-  - Count description tokens (words × 1.3) — this is the per-session overhead
-  - Read the full agent body — this is loaded only when the agent is invoked
-  - Flag agents where description exceeds 30 words (warn) or 50 words (fail)
-  - Sum description-only tokens as "always-on overhead"
-  - Sum full-file tokens as "worst-case overhead"
+  - Read the file
+  - Count approximate tokens (words × 1.3)
+  - Flag agents over 200 lines as "heavy" (large agents inflate Task tool context)
+  - Flag agents where description frontmatter exceeds 30 words
+  - Sum total agent token overhead
 ```
 
-**Skills** (`skills/*/SKILL.md` and `.agents/skills/*/SKILL.md`)
+**Skills** (`skills/*/SKILL.md`)
 ```
 For each skill:
   - Read SKILL.md
@@ -88,7 +87,7 @@ Check for these common problems:
 **Bloated agent descriptions**
 - Agent descriptions should be 1-3 lines for the Task tool
 - Detailed instructions belong in the agent body, not the description
-- Warning at >30 words in the `description` frontmatter; fail at >50 words
+- Flag descriptions exceeding 30 words in frontmatter
 
 **Redundant components**
 - Skills that overlap with agent capabilities
@@ -140,7 +139,7 @@ Component Breakdown:
    → planner.md (213 lines, ~1,840 tokens)
    → architect.md (208 lines, ~1,780 tokens)
    → security-reviewer.md (205 lines, ~1,760 tokens)
-   Action: Shorten description frontmatter; move details to agent body
+   Action: Split into focused sub-agents or trim redundant sections
 
 2. MCP OVER-SUBSCRIPTION — 14 servers, 87 tools
    → github (~30 tools), supabase (~15 tools), vercel (~10 tools) — replaceable with CLI: gh, supabase, vercel
