@@ -110,11 +110,12 @@ The installer writes `.agent/ecc-install-state.json` to track which files ECC ow
 If you're contributing a new skill and want it available on Antigravity:
 
 1. Create the skill under `skills/your-skill-name/SKILL.md` as usual
-2. Add the Antigravity agent config at `.agents/skills/your-skill-name/agents/openai.yaml` — this file is part of the repo's static layout, not auto-deployed by the installer
-3. Mirror the `SKILL.md` content to `.agents/skills/your-skill-name/SKILL.md` — the `.agents/` directory is a static repo layout consumed by Codex and used as a reference for Antigravity
-4. Mention in your PR that you added Antigravity support
+2. Add an agent definition at `agents/your-skill-name.md` — this is the path the installer maps to `.agent/skills/` at runtime, making your skill available in the Antigravity harness
+3. Add the Antigravity agent config at `.agents/skills/your-skill-name/agents/openai.yaml` — this is a static repo layout consumed by Codex for implicit invocation metadata
+4. Mirror the `SKILL.md` content to `.agents/skills/your-skill-name/SKILL.md` — this static copy is used by Codex and serves as a reference for Antigravity
+5. Mention in your PR that you added Antigravity support
 
-> **Note**: The installer maps `agents/` (no dot) → `.agent/skills/`, which deploys agent definitions like `planner.md` and `code-reviewer.md`. The `.agents/` (dot-prefixed) directory containing `openai.yaml` configs is separate and not auto-deployed — it serves as a reference layout.
+> **Key distinction**: The installer deploys `agents/` (no dot) → `.agent/skills/` — this is what makes skills available at runtime. The `.agents/` (dot-prefixed) directory is a separate static layout for Codex `openai.yaml` configs and is not auto-deployed by the installer.
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full contribution guide.
 
