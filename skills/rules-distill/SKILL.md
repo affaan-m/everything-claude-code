@@ -10,15 +10,11 @@ Scan installed skills, extract cross-cutting principles that appear in multiple 
 
 Applies the "deterministic collection + LLM judgment" principle: scripts collect facts exhaustively, then an LLM cross-reads the full context and produces verdicts.
 
-## When to Activate
+## When to Use
 
 - Periodic rules maintenance (monthly or after installing new skills)
 - After a skill-stocktake reveals patterns that should be rules
 - When rules feel incomplete relative to the skills being used
-
-## Prerequisites
-
-- **skill-stocktake** must be installed (`~/.claude/skills/skill-stocktake/scripts/scan.sh`). If not available, manually enumerate skills with `find ~/.claude/skills -name 'SKILL.md'`.
 
 ## How It Works
 
@@ -28,28 +24,14 @@ The rules distillation process follows three phases:
 
 #### 1a. Collect skill inventory
 
-Use skill-stocktake's scan script to enumerate all installed skills:
-
 ```bash
-# Requires skill-stocktake to be installed
-bash "${SKILL_STOCKTAKE_DIR:-$HOME/.claude/skills/skill-stocktake}/scripts/scan.sh"
-```
-
-If skill-stocktake is not installed, fall back to:
-
-```bash
-find "${CLAUDE_RULES_DIR:-$HOME/.claude/skills}" -name 'SKILL.md' -o -name '*.md' | head -100
+bash ~/.claude/skills/rules-distill/scripts/scan-skills.sh
 ```
 
 #### 1b. Collect rules index
 
-Enumerate all rule files with their H2 headings:
-
 ```bash
-find "${CLAUDE_RULES_DIR:-$HOME/.claude/rules}" -name '*.md' -not -path '*/_archived/*' | while IFS= read -r f; do
-  echo "=== $f ==="
-  grep '^## ' "$f"
-done
+bash ~/.claude/skills/rules-distill/scripts/scan-rules.sh
 ```
 
 #### 1c. Present to user
@@ -71,11 +53,17 @@ Extraction and matching are unified in a single pass. Rules files are small enou
 
 Group skills into **thematic clusters** based on their descriptions. Analyze each cluster in a subagent with the full rules text.
 
+#### Cross-batch Merge
+
+After all batches complete, merge candidates across batches:
+- Deduplicate candidates with the same or overlapping principles
+- Re-check the "2+ skills" requirement using evidence from **all** batches combined — a principle found in 1 skill per batch but 2+ skills total is valid
+
 #### Subagent Prompt
 
 Launch a general-purpose Agent with the following prompt:
 
-```
+````
 You are an analyst who cross-reads skills to extract principles that should be promoted to rules.
 
 ## Input
@@ -126,7 +114,7 @@ For each candidate, compare against the full rules text and assign a verdict:
 - Obvious principles already in rules
 - Language/framework-specific knowledge (belongs in language-specific rules or skills)
 - Code examples and commands (belongs in skills)
-```
+````
 
 #### Verdict Reference
 
@@ -230,6 +218,7 @@ Proceeding to cross-read analysis...
 
 [Subagent analysis: Batch 1 (agent/meta skills) ...]
 [Subagent analysis: Batch 2 (coding/pattern skills) ...]
+[Cross-batch merge: 2 duplicates removed, 1 cross-batch candidate promoted]
 
 # Rules Distillation Report
 
