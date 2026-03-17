@@ -73,13 +73,14 @@ What becomes easier or more difficult to do because of this change?
 
 When a decision moment is detected:
 
-1. **Identify the decision** — extract the core architectural choice being made
-2. **Gather context** — what problem prompted this? What constraints exist?
-3. **Document alternatives** — what other options were considered? Why were they rejected?
-4. **State consequences** — what are the trade-offs? What becomes easier/harder?
-5. **Assign a number** — scan existing ADRs in `docs/adr/` and increment
-6. **Write the file** — save to `docs/adr/NNNN-decision-title.md`
-7. **Update the index** — append to `docs/adr/README.md`
+1. **Initialize (first time only)** — if `docs/adr/` does not exist, create the directory, an empty `README.md` index, and a blank `template.md` for manual use
+2. **Identify the decision** — extract the core architectural choice being made
+3. **Gather context** — what problem prompted this? What constraints exist?
+4. **Document alternatives** — what other options were considered? Why were they rejected?
+5. **State consequences** — what are the trade-offs? What becomes easier/harder?
+6. **Assign a number** — scan existing ADRs in `docs/adr/` and increment
+7. **Write the file** — save to `docs/adr/NNNN-decision-title.md`
+8. **Update the index** — append to `docs/adr/README.md`
 
 ### ADR Directory Structure
 
