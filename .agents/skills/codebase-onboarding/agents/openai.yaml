@@ -1,0 +1,7 @@
+interface:
+  display_name: "Codebase Onboarding"
+  short_description: "Analyze a codebase and generate onboarding guide + starter CLAUDE.md"
+  brand_color: "#10B981"
+  default_prompt: "Onboard me to this codebase — analyze the structure, conventions, and generate a starter CLAUDE.md"
+policy:
+  allow_implicit_invocation: true
