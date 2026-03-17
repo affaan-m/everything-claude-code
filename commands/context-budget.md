@@ -30,10 +30,12 @@ Scan each component type and estimate token consumption:
 **Agents** (`agents/*.md`)
 ```
 For each agent file:
-  - Read the file
-  - Count approximate tokens (words × 1.3)
-  - Flag agents over 200 lines as "heavy"
-  - Sum total agent token overhead
+  - Read the description frontmatter (always loaded into Task tool routing)
+  - Count description tokens (words × 1.3) — this is the per-session overhead
+  - Read the full agent body — this is loaded only when the agent is invoked
+  - Flag agents where description exceeds 30 words (warn) or 50 words (fail)
+  - Sum description-only tokens as "always-on overhead"
+  - Sum full-file tokens as "worst-case overhead"
 ```
 
 **Skills** (`skills/*/SKILL.md` and `.agents/skills/*/SKILL.md`)
