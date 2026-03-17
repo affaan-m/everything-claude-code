@@ -1,0 +1,7 @@
+interface:
+  display_name: "Architecture Decision Records"
+  short_description: "Capture architectural decisions as structured ADRs during coding sessions"
+  brand_color: "#8B5CF6"
+  default_prompt: "Record this architectural decision as an ADR with context, alternatives, and consequences"
+policy:
+  allow_implicit_invocation: true
