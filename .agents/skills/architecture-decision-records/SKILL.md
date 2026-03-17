@@ -18,10 +18,11 @@ Capture architectural decisions as they happen during coding sessions, producing
 
 ## Workflow
 
-1. **Detect** the decision moment from conversation signals
-2. **Gather** context, constraints, and alternatives considered
-3. **Write** a structured ADR to `docs/adr/NNNN-decision-title.md`
-4. **Update** the ADR index at `docs/adr/README.md`
+1. **Detect** the decision moment from conversation signals — for implicit signals, **suggest** recording an ADR and wait for user confirmation before proceeding
+2. **Confirm** with the user before creating any files (especially `docs/adr/` on first use)
+3. **Gather** context, constraints, and alternatives considered
+4. **Write** a structured ADR to `docs/adr/NNNN-decision-title.md`
+5. **Update** the ADR index at `docs/adr/README.md`
 
 ## ADR Format
 
