@@ -73,7 +73,7 @@ What becomes easier or more difficult to do because of this change?
 
 When a decision moment is detected:
 
-1. **Initialize (first time only)** — if `docs/adr/` does not exist, create the directory, an empty `README.md` index, and a blank `template.md` for manual use
+1. **Initialize (first time only)** — if `docs/adr/` does not exist, create the directory, a `README.md` seeded with the index table header (see ADR Index Format below), and a blank `template.md` for manual use
 2. **Identify the decision** — extract the core architectural choice being made
 3. **Gather context** — what problem prompted this? What constraints exist?
 4. **Document alternatives** — what other options were considered? Why were they rejected?
@@ -81,6 +81,15 @@ When a decision moment is detected:
 6. **Assign a number** — scan existing ADRs in `docs/adr/` and increment
 7. **Write the file** — save to `docs/adr/NNNN-decision-title.md`
 8. **Update the index** — append to `docs/adr/README.md`
+
+### Reading Existing ADRs
+
+When a user asks "why did we choose X?":
+
+1. Check if `docs/adr/` exists — if not, respond: "No ADRs found in this project. Would you like to start recording architectural decisions?"
+2. If it exists, scan `docs/adr/README.md` index for relevant entries
+3. Read matching ADR files and present the Context and Decision sections
+4. If no match is found, respond: "No ADR found for that decision. Would you like to record one now?"
 
 ### ADR Directory Structure
 
@@ -116,13 +125,12 @@ Watch for these patterns in conversation that indicate an architectural decision
 - "The trade-off is worth it because..."
 - "Record this as an ADR"
 
-**Implicit signals**
-- Comparing two frameworks or libraries
-- Discussing database schema design choices
+**Implicit signals** (suggest recording an ADR — do not auto-create without user confirmation)
+- Comparing two frameworks or libraries and reaching a conclusion
+- Making a database schema design choice with stated rationale
 - Choosing between architectural patterns (monolith vs microservices, REST vs GraphQL)
 - Deciding on authentication/authorization strategy
-- Selecting deployment infrastructure
-- Establishing testing strategy or coverage targets
+- Selecting deployment infrastructure after evaluating alternatives
 
 ## What Makes a Good ADR
 
