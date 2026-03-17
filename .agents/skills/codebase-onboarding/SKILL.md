@@ -146,6 +146,7 @@ Produce two outputs:
 - [Git workflow]
 
 ## Common Tasks
+<!-- Example for a Node.js project — replace with detected commands -->
 - **Run dev server**: `npm run dev`
 - **Run tests**: `npm test`
 - **Run linter**: `npm run lint`
