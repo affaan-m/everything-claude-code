@@ -18,14 +18,6 @@ normalize_path() {
     return 0
   fi
 
-normalize_path() {
-  local input="$1"
-
-  if [[ -z "$input" ]]; then
-    printf '%s\n' ''
-    return 0
-  fi
-
   case "$input" in
     /*)
       printf '%s\n' "$input"
@@ -33,12 +25,12 @@ normalize_path() {
       ;;
   esac
 
-  if command -v wslpath >/dev/null 2>&1; then
-    wslpath -a "$input" 2>/dev/null && return 0
-  fi
-
   if command -v cygpath >/dev/null 2>&1; then
     cygpath -u "$input" 2>/dev/null && return 0
+  fi
+
+  if command -v wslpath >/dev/null 2>&1; then
+    wslpath -a "$input" 2>/dev/null && return 0
   fi
 
   case "$input" in
@@ -53,7 +45,6 @@ normalize_path() {
   esac
 
   printf '%s\n' "$input"
-}
 }
 
 task_file="$(normalize_path "$task_file")"

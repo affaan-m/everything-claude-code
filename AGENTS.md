@@ -18,11 +18,14 @@ This is a **production-ready AI coding plugin** providing 25 specialized agents,
 | architect | System design and scalability | Architectural decisions |
 | tdd-guide | Test-driven development | New features, bug fixes |
 | code-reviewer | Code quality and maintainability | After writing/modifying code |
+| cpp-reviewer | C++ code review | C++ projects, native code changes |
+| cpp-build-resolver | CMake and C++ build errors | C++ build or toolchain failures |
 | security-reviewer | Vulnerability detection | Before commits, sensitive code |
 | build-error-resolver | Fix build/type errors | When build fails |
 | e2e-runner | End-to-end Playwright testing | Critical user flows |
 | refactor-cleaner | Dead code cleanup | Code maintenance |
 | doc-updater | Documentation and codemaps | Updating docs |
+| docs-lookup | Documentation research | Verifying APIs and vendor behavior |
 | go-reviewer | Go code review | Go projects |
 | go-build-resolver | Go build errors | Go build failures |
 | kotlin-reviewer | Kotlin code review | Kotlin/Android/KMP projects |

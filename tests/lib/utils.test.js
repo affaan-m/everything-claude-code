@@ -7,6 +7,7 @@
 const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
 // Import the module
 const utils = require('../../scripts/lib/utils');
@@ -55,6 +56,31 @@ function runTests() {
     assert.strictEqual(typeof home, 'string');
     assert.ok(home.length > 0, 'Home dir should not be empty');
     assert.ok(fs.existsSync(home), 'Home dir should exist');
+  })) passed++; else failed++;
+
+  if (test('getHomeDir ignores Unix-style HOME on Windows when USERPROFILE is available', () => {
+    const originalHome = process.env.HOME;
+    const originalUserProfile = process.env.USERPROFILE;
+
+    try {
+      process.env.HOME = '/c/Users/example';
+      process.env.USERPROFILE = path.join(os.tmpdir(), 'ecc-userprofile');
+
+      const expectedHome = utils.isWindows ? process.env.USERPROFILE : process.env.HOME;
+      assert.strictEqual(utils.getHomeDir(), expectedHome);
+    } finally {
+      if (originalHome === undefined) {
+        delete process.env.HOME;
+      } else {
+        process.env.HOME = originalHome;
+      }
+
+      if (originalUserProfile === undefined) {
+        delete process.env.USERPROFILE;
+      } else {
+        process.env.USERPROFILE = originalUserProfile;
+      }
+    }
   })) passed++; else failed++;
 
   if (test('getClaudeDir returns path under home', () => {

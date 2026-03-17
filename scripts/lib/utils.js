@@ -17,7 +17,7 @@ const isLinux = process.platform === 'linux';
  * Get the user's home directory (cross-platform)
  */
 function getHomeDir() {
-  if (typeof process.env.HOME === 'string' && process.env.HOME.length > 0) {
+  if (!isWindows && typeof process.env.HOME === 'string' && process.env.HOME.length > 0) {
     return process.env.HOME;
   }
 

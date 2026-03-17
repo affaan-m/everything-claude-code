@@ -150,7 +150,7 @@ Example `plan.json`:
 {
   "sessionName": "skill-audit",
   "baseRef": "HEAD",
-  "launcherCommand": "codex exec --cwd {worktree_path} --task-file {task_file}",
+  "launcherCommand": "codex exec --cwd {worktree_path_sh} --task-file {task_file_sh}",
   "workers": [
     { "name": "docs-a", "task": "Fix skills 1-4 and write handoff notes." },
     { "name": "docs-b", "task": "Fix skills 5-8 and write handoff notes." }
@@ -176,7 +176,7 @@ Use `seedPaths` when workers need access to dirty or untracked local files that 
     "scripts/lib/tmux-worktree-orchestrator.js",
     ".claude/plan/workflow-e2e-test.json"
   ],
-  "launcherCommand": "bash {repo_root}/scripts/orchestrate-codex-worker.sh {task_file} {handoff_file} {status_file}",
+  "launcherCommand": "bash {repo_root_sh}/scripts/orchestrate-codex-worker.sh {task_file_sh} {handoff_file_sh} {status_file_sh}",
   "workers": [
     { "name": "seed-check", "task": "Verify seeded files are present before starting work." }
   ]

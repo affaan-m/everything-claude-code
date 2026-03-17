@@ -52,6 +52,10 @@ function writeInstallComponentsManifest(testDir, components) {
   });
 }
 
+function stripShebang(source) {
+  return source.replace(/^#![^\r\n]*[\r\n]+/, '').trimStart();
+}
+
 /**
  * Run a validator script via a wrapper that overrides its directory constant.
  * This allows testing error cases without modifying real project files.
@@ -68,7 +72,7 @@ function runValidatorWithDir(validatorName, dirConstant, overridePath) {
   let source = fs.readFileSync(validatorPath, 'utf8');
 
   // Remove the shebang line
-  source = source.replace(/^#![^\r\n]*[\r\n]+/, '').trimStart();
+  source = stripShebang(source);
 
   // Replace the directory constant with our override path
   const dirRegex = new RegExp(`const ${dirConstant} = .*?;`);
@@ -98,7 +102,7 @@ function runValidatorWithDir(validatorName, dirConstant, overridePath) {
 function runValidatorWithDirs(validatorName, overrides) {
   const validatorPath = path.join(validatorsDir, `${validatorName}.js`);
   let source = fs.readFileSync(validatorPath, 'utf8');
-  source = source.replace(/^#!.*\n/, '');
+  source = stripShebang(source);
   for (const [constant, overridePath] of Object.entries(overrides)) {
     const dirRegex = new RegExp(`const ${constant} = .*?;`);
     source = source.replace(dirRegex, `const ${constant} = ${JSON.stringify(overridePath)};`);
@@ -143,7 +147,7 @@ function runValidator(validatorName) {
 function runCatalogValidator(overrides = {}) {
   const validatorPath = path.join(validatorsDir, 'catalog.js');
   let source = fs.readFileSync(validatorPath, 'utf8');
-  source = source.replace(/^#!.*\n/, '');
+  source = stripShebang(source);
   source = `process.argv.push('--text');\n${source}`;
 
   const resolvedOverrides = {

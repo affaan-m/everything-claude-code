@@ -58,7 +58,7 @@ test('buildOrchestrationPlan creates worktrees, branches, and tmux commands', ()
     repoRoot,
     sessionName: 'Skill Audit',
     baseRef: 'main',
-    launcherCommand: 'codex exec --cwd {worktree_path} --task-file {task_file}',
+    launcherCommand: 'codex exec --cwd {worktree_path_sh} --task-file {task_file_sh}',
     workers: [
       { name: 'Docs A', task: 'Fix skills 1-4' },
       { name: 'Docs B', task: 'Fix skills 5-8' }
@@ -109,10 +109,22 @@ test('buildOrchestrationPlan requires at least one worker', () => {
     () => buildOrchestrationPlan({
       repoRoot: '/tmp/ecc',
       sessionName: 'empty',
-      launcherCommand: 'codex exec --task-file {task_file}',
+      launcherCommand: 'codex exec --task-file {task_file_sh}',
       workers: []
     }),
     /at least one worker/
+  );
+});
+
+test('buildOrchestrationPlan rejects raw path placeholders in launcher commands', () => {
+  assert.throws(
+    () => buildOrchestrationPlan({
+      repoRoot: '/tmp/ecc',
+      sessionName: 'unsafe',
+      launcherCommand: 'codex exec --cwd {worktree_path} --task-file {task_file}',
+      workers: [{ name: 'Docs', task: 'Update docs' }]
+    }),
+    /shell-safe path placeholders/
   );
 });
 
@@ -211,7 +223,7 @@ test('materializePlan keeps worker instructions inside the worktree boundary', (
       repoRoot: tempRoot,
       coordinationRoot: path.join(tempRoot, '.claude', 'orchestration'),
       sessionName: 'Workflow E2E',
-      launcherCommand: 'bash {repo_root}/scripts/orchestrate-codex-worker.sh {task_file} {handoff_file} {status_file}',
+      launcherCommand: 'bash {repo_root_sh}/scripts/orchestrate-codex-worker.sh {task_file_sh} {handoff_file_sh} {status_file_sh}',
       workers: [{ name: 'Docs', task: 'Update the workflow docs.' }]
     });
 

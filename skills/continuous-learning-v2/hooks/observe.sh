@@ -27,12 +27,12 @@ normalize_shell_path() {
       ;;
   esac
 
-  if command -v wslpath >/dev/null 2>&1; then
-    wslpath -a "$input" 2>/dev/null && return 0
-  fi
-
   if command -v cygpath >/dev/null 2>&1; then
     cygpath -u "$input" 2>/dev/null && return 0
+  fi
+
+  if command -v wslpath >/dev/null 2>&1; then
+    wslpath -a "$input" 2>/dev/null && return 0
   fi
 
   case "$input" in

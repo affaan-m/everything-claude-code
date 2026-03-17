@@ -16,9 +16,11 @@ function usage() {
     '  node scripts/orchestrate-worktrees.js <plan.json> [--execute]',
     '  node scripts/orchestrate-worktrees.js <plan.json> [--write-only]',
     '',
-    'Placeholders supported in launcherCommand:',
-    '  {worker_name} {worker_slug} {session_name} {repo_root}',
-    '  {worktree_path} {branch_name} {task_file} {handoff_file} {status_file}',
+    'Path placeholders for launcherCommand (prefer *_sh in shell commands):',
+    '  {repo_root_sh} {worktree_path_sh} {task_file_sh} {handoff_file_sh} {status_file_sh}',
+    '  Raw aliases remain available as {repo_root}/{repo_root_raw}, etc.',
+    'Other placeholders:',
+    '  {worker_name} {worker_name_sh} {worker_slug} {session_name} {branch_name}',
     '',
     'Without flags the script prints a dry-run plan only.'
   ].join('\n'));
