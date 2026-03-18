@@ -199,60 +199,65 @@ feat: add everything-claude-code ECC bundle (.codex/config.toml)
 feat: add everything-claude-code ECC bundle (.codex/AGENTS.md)
 ```
 
-### Add Command Or Skill Or Agent Or Workflow
-
-Adds a new command, skill, agent, or workflow to the ECC system by creating or updating the corresponding markdown file in .claude/commands.
-
-**Frequency**: ~3 times per month
-
-**Steps**:
-1. Create or update the appropriate markdown file in .claude/commands (e.g., add-command-or-skill-or-agent-or-workflow.md).
-2. Commit the change with a descriptive message.
-
-**Files typically involved**:
-- `.claude/commands/add-command-or-skill-or-agent-or-workflow.md`
-
-**Example commit sequence**:
-```
-Create or update the appropriate markdown file in .claude/commands (e.g., add-command-or-skill-or-agent-or-workflow.md).
-Commit the change with a descriptive message.
-```
-
 ### Add Team Or Identity Or Research Config
 
-Adds or updates team, identity, or research configuration files to set up or modify project structure and roles.
+Adds a new team, identity, or research configuration to the system.
 
 **Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/team/everything-claude-code-team-config.json for team config.
-2. Create or update .claude/identity.json for identity config.
-3. Create or update .claude/research/everything-claude-code-research-playbook.md for research playbook.
-4. Commit the changes.
+1. Create or update .claude/team/everything-claude-code-team-config.json for teams
+2. Create or update .claude/identity.json for identities
+3. Create or update .claude/research/everything-claude-code-research-playbook.md for research configs
 
 **Files typically involved**:
 - `.claude/team/everything-claude-code-team-config.json`
 - `.claude/identity.json`
 - `.claude/research/everything-claude-code-research-playbook.md`
+- `.claude/commands/add-team-or-identity-or-research-config.md`
 
 **Example commit sequence**:
 ```
-Create or update .claude/team/everything-claude-code-team-config.json for team config.
-Create or update .claude/identity.json for identity config.
-Create or update .claude/research/everything-claude-code-research-playbook.md for research playbook.
-Commit the changes.
+Create or update .claude/team/everything-claude-code-team-config.json for teams
+Create or update .claude/identity.json for identities
+Create or update .claude/research/everything-claude-code-research-playbook.md for research configs
 ```
 
-### Add Guardrails Or Instincts
+### Add Command Or Skill Or Agent Or Workflow
 
-Adds or updates guardrails or instincts configuration to enforce rules or behaviors for the ECC system.
+Adds a new command, skill, agent, or workflow to the system.
 
 **Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/rules/everything-claude-code-guardrails.md for guardrails.
-2. Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml for instincts.
-3. Commit the changes.
+1. Create or update .claude/commands/add-command-or-skill-or-agent-or-workflow.md
+2. Create or update .claude/skills/everything-claude-code/SKILL.md or .agents/skills/everything-claude-code/SKILL.md for skills
+3. Create or update agent definitions in .codex/agents/*.toml
+
+**Files typically involved**:
+- `.claude/commands/add-command-or-skill-or-agent-or-workflow.md`
+- `.claude/skills/everything-claude-code/SKILL.md`
+- `.agents/skills/everything-claude-code/SKILL.md`
+- `.codex/agents/docs-researcher.toml`
+- `.codex/agents/reviewer.toml`
+- `.codex/agents/explorer.toml`
+
+**Example commit sequence**:
+```
+Create or update .claude/commands/add-command-or-skill-or-agent-or-workflow.md
+Create or update .claude/skills/everything-claude-code/SKILL.md or .agents/skills/everything-claude-code/SKILL.md for skills
+Create or update agent definitions in .codex/agents/*.toml
+```
+
+### Add Guardrails Or Instincts
+
+Adds or updates system guardrails or instincts for the homunculus/AI agent.
+
+**Frequency**: ~3 times per month
+
+**Steps**:
+1. Create or update .claude/rules/everything-claude-code-guardrails.md for guardrails
+2. Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml for instincts
 
 **Files typically involved**:
 - `.claude/rules/everything-claude-code-guardrails.md`
@@ -260,29 +265,34 @@ Adds or updates guardrails or instincts configuration to enforce rules or behavi
 
 **Example commit sequence**:
 ```
-Create or update .claude/rules/everything-claude-code-guardrails.md for guardrails.
-Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml for instincts.
-Commit the changes.
+Create or update .claude/rules/everything-claude-code-guardrails.md for guardrails
+Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml for instincts
 ```
 
-### Add Or Update Skill Documentation
+### Bundle Ecc Configs
 
-Adds or updates SKILL.md documentation for a skill in the agents or claude skills directories.
+Adds or updates a set of ECC (Everything Claude Code) configuration files as a bundle.
 
-**Frequency**: ~2 times per month
+**Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update SKILL.md in the relevant skill directory (either .agents/skills/everything-claude-code/ or .claude/skills/everything-claude-code/).
-2. Commit the change.
+1. Add or update .claude/ecc-tools.json
+2. Add or update .codex/config.toml
+3. Add or update .codex/AGENTS.md
+4. Add or update .claude/enterprise/controls.md
 
 **Files typically involved**:
-- `.agents/skills/everything-claude-code/SKILL.md`
-- `.claude/skills/everything-claude-code/SKILL.md`
+- `.claude/ecc-tools.json`
+- `.codex/config.toml`
+- `.codex/AGENTS.md`
+- `.claude/enterprise/controls.md`
 
 **Example commit sequence**:
 ```
-Create or update SKILL.md in the relevant skill directory (either .agents/skills/everything-claude-code/ or .claude/skills/everything-claude-code/).
-Commit the change.
+Add or update .claude/ecc-tools.json
+Add or update .codex/config.toml
+Add or update .codex/AGENTS.md
+Add or update .claude/enterprise/controls.md
 ```
 
 
