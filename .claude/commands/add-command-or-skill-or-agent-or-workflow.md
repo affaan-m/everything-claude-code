@@ -15,11 +15,6 @@ Adds a new command, skill, agent, or workflow to the ECC bundle.
 ## Common Files
 
 - `.claude/commands/add-command-or-skill-or-agent-or-workflow.md`
-- `.claude/skills/everything-claude-code/SKILL.md`
-- `.agents/skills/everything-claude-code/SKILL.md`
-- `.codex/agents/docs-researcher.toml`
-- `.codex/agents/reviewer.toml`
-- `.codex/agents/explorer.toml`
 
 ## Suggested Sequence
 
@@ -30,10 +25,7 @@ Adds a new command, skill, agent, or workflow to the ECC bundle.
 
 ## Typical Commit Signals
 
-- Create or update .claude/commands/add-command-or-skill-or-agent-or-workflow.md
-- Create or update .claude/skills/everything-claude-code/SKILL.md or .agents/skills/everything-claude-code/SKILL.md for skills
-- Create or update agent definition files such as .codex/agents/*.toml
-- Update .codex/AGENTS.md if a new agent is added
+- Create or update the file .claude/commands/add-command-or-skill-or-agent-or-workflow.md
 
 ## Notes
 
