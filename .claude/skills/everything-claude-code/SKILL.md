@@ -48,7 +48,7 @@ Follow these commit message conventions based on 500 analyzed commits.
 *Commit message example*
 
 ```text
-feat: add everything-claude-code ECC bundle (.claude/commands/add-new-skill-command.md)
+feat: add everything-claude-code ECC bundle (.claude/commands/add-new-agent-command.md)
 ```
 
 *Commit message example*
@@ -78,7 +78,7 @@ chore(config): governance and config foundation (#292)
 *Commit message example*
 
 ```text
-feat: add everything-claude-code ECC bundle (.claude/commands/add-new-agent-command.md)
+feat: add everything-claude-code ECC bundle (.claude/commands/add-new-skill-command.md)
 ```
 
 *Commit message example*
@@ -203,35 +203,15 @@ feat: add everything-claude-code ECC bundle (.claude/enterprise/controls.md)
 feat: add everything-claude-code ECC bundle (.claude/commands/feature-development.md)
 ```
 
-### Add New Skill Command
-
-Adds documentation or command definition for a new skill to the system.
-
-**Frequency**: ~3 times per month
-
-**Steps**:
-1. Create or update .claude/commands/add-new-skill-command.md or .claude/commands/add-new-skill.md
-2. Commit the new or updated file
-
-**Files typically involved**:
-- `.claude/commands/add-new-skill-command.md`
-- `.claude/commands/add-new-skill.md`
-
-**Example commit sequence**:
-```
-Create or update .claude/commands/add-new-skill-command.md or .claude/commands/add-new-skill.md
-Commit the new or updated file
-```
-
 ### Add New Agent Command
 
-Adds documentation or command definition for a new agent to the system.
+Adds documentation or command specification for creating a new agent in the system.
 
 **Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/commands/add-new-agent-command.md or .claude/commands/add-new-agent.md
-2. Commit the new or updated file
+1. Create or update '.claude/commands/add-new-agent-command.md' or '.claude/commands/add-new-agent.md'
+2. Commit the new or updated command file
 
 **Files typically involved**:
 - `.claude/commands/add-new-agent-command.md`
@@ -239,18 +219,38 @@ Adds documentation or command definition for a new agent to the system.
 
 **Example commit sequence**:
 ```
-Create or update .claude/commands/add-new-agent-command.md or .claude/commands/add-new-agent.md
-Commit the new or updated file
+Create or update '.claude/commands/add-new-agent-command.md' or '.claude/commands/add-new-agent.md'
+Commit the new or updated command file
+```
+
+### Add New Skill Command
+
+Adds documentation or command specification for creating a new skill in the system.
+
+**Frequency**: ~3 times per month
+
+**Steps**:
+1. Create or update '.claude/commands/add-new-skill-command.md' or '.claude/commands/add-new-skill.md'
+2. Commit the new or updated command file
+
+**Files typically involved**:
+- `.claude/commands/add-new-skill-command.md`
+- `.claude/commands/add-new-skill.md`
+
+**Example commit sequence**:
+```
+Create or update '.claude/commands/add-new-skill-command.md' or '.claude/commands/add-new-skill.md'
+Commit the new or updated command file
 ```
 
 ### Feature Development Command
 
-Adds or updates documentation for feature development processes.
+Documents or specifies the workflow for feature development.
 
-**Frequency**: ~4 times per month
+**Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/commands/feature-development.md
+1. Create or update '.claude/commands/feature-development.md'
 2. Commit the new or updated file
 
 **Files typically involved**:
@@ -258,7 +258,7 @@ Adds or updates documentation for feature development processes.
 
 **Example commit sequence**:
 ```
-Create or update .claude/commands/feature-development.md
+Create or update '.claude/commands/feature-development.md'
 Commit the new or updated file
 ```
 
@@ -266,88 +266,87 @@ Commit the new or updated file
 
 Updates the team configuration for everything-claude-code.
 
-**Frequency**: ~4 times per month
+**Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/team/everything-claude-code-team-config.json
-2. Commit the new or updated file
+1. Edit '.claude/team/everything-claude-code-team-config.json'
+2. Commit the updated config file
 
 **Files typically involved**:
 - `.claude/team/everything-claude-code-team-config.json`
 
 **Example commit sequence**:
 ```
-Create or update .claude/team/everything-claude-code-team-config.json
-Commit the new or updated file
+Edit '.claude/team/everything-claude-code-team-config.json'
+Commit the updated config file
 ```
 
 ### Update Research Playbook
 
-Adds or updates the research playbook documentation.
+Updates the research playbook documentation for the project.
 
-**Frequency**: ~4 times per month
+**Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/research/everything-claude-code-research-playbook.md
-2. Commit the new or updated file
+1. Edit '.claude/research/everything-claude-code-research-playbook.md'
+2. Commit the updated playbook
 
 **Files typically involved**:
 - `.claude/research/everything-claude-code-research-playbook.md`
 
 **Example commit sequence**:
 ```
-Create or update .claude/research/everything-claude-code-research-playbook.md
-Commit the new or updated file
+Edit '.claude/research/everything-claude-code-research-playbook.md'
+Commit the updated playbook
 ```
 
 ### Update Guardrails
 
-Adds or updates the guardrails/rules documentation.
+Updates the rules or guardrails documentation for the project.
 
-**Frequency**: ~4 times per month
+**Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/rules/everything-claude-code-guardrails.md
-2. Commit the new or updated file
+1. Edit '.claude/rules/everything-claude-code-guardrails.md'
+2. Commit the updated guardrails file
 
 **Files typically involved**:
 - `.claude/rules/everything-claude-code-guardrails.md`
 
 **Example commit sequence**:
 ```
-Create or update .claude/rules/everything-claude-code-guardrails.md
-Commit the new or updated file
+Edit '.claude/rules/everything-claude-code-guardrails.md'
+Commit the updated guardrails file
 ```
 
-### Update Identity
+### Update Ecc Tools
 
-Adds or updates the identity configuration for everything-claude-code.
+Updates the ECC tools configuration for the project.
 
-**Frequency**: ~4 times per month
+**Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/identity.json
-2. Commit the new or updated file
+1. Edit '.claude/ecc-tools.json'
+2. Commit the updated tools file
 
 **Files typically involved**:
-- `.claude/identity.json`
+- `.claude/ecc-tools.json`
 
 **Example commit sequence**:
 ```
-Create or update .claude/identity.json
-Commit the new or updated file
+Edit '.claude/ecc-tools.json'
+Commit the updated tools file
 ```
 
 ### Add Or Update Skill Md
 
-Adds or updates skill documentation in both .agents and .claude directories.
+Adds or updates skill documentation markdown files for everything-claude-code.
 
-**Frequency**: ~4 times per month
+**Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .agents/skills/everything-claude-code/SKILL.md
-2. Create or update .claude/skills/everything-claude-code/SKILL.md
-3. Commit the new or updated files
+1. Create or edit '.agents/skills/everything-claude-code/SKILL.md' or '.claude/skills/everything-claude-code/SKILL.md'
+2. Commit the new or updated skill documentation
 
 **Files typically involved**:
 - `.agents/skills/everything-claude-code/SKILL.md`
@@ -355,49 +354,27 @@ Adds or updates skill documentation in both .agents and .claude directories.
 
 **Example commit sequence**:
 ```
-Create or update .agents/skills/everything-claude-code/SKILL.md
-Create or update .claude/skills/everything-claude-code/SKILL.md
-Commit the new or updated files
+Create or edit '.agents/skills/everything-claude-code/SKILL.md' or '.claude/skills/everything-claude-code/SKILL.md'
+Commit the new or updated skill documentation
 ```
 
-### Update Ecc Tools
+### Update Identity Json
 
-Adds or updates the ECC tools configuration.
+Updates the identity configuration for everything-claude-code.
 
-**Frequency**: ~4 times per month
+**Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/ecc-tools.json
-2. Commit the new or updated file
+1. Edit '.claude/identity.json'
+2. Commit the updated identity file
 
 **Files typically involved**:
-- `.claude/ecc-tools.json`
+- `.claude/identity.json`
 
 **Example commit sequence**:
 ```
-Create or update .claude/ecc-tools.json
-Commit the new or updated file
-```
-
-### Add Codex Agent Toml
-
-Adds or updates agent configuration files in the .codex/agents directory.
-
-**Frequency**: ~4 times per month
-
-**Steps**:
-1. Create or update .codex/agents/*.toml
-2. Commit the new or updated file
-
-**Files typically involved**:
-- `.codex/agents/docs-researcher.toml`
-- `.codex/agents/reviewer.toml`
-- `.codex/agents/explorer.toml`
-
-**Example commit sequence**:
-```
-Create or update .codex/agents/*.toml
-Commit the new or updated file
+Edit '.claude/identity.json'
+Commit the updated identity file
 ```
 
 
