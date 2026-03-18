@@ -10,7 +10,7 @@ Use this workflow when working on **add-new-skill-or-agent** in `everything-clau
 
 ## Goal
 
-Adds a new skill or agent to the everything-claude-code system, including documentation and configuration.
+Adds a new skill or agent to the system, including documentation.
 
 ## Common Files
 
@@ -19,7 +19,6 @@ Adds a new skill or agent to the everything-claude-code system, including docume
 - `.claude/commands/add-new-agent.md`
 - `.agents/skills/everything-claude-code/SKILL.md`
 - `.claude/skills/everything-claude-code/SKILL.md`
-- `.agents/skills/everything-claude-code/agents/openai.yaml`
 
 ## Suggested Sequence
 
@@ -30,9 +29,8 @@ Adds a new skill or agent to the everything-claude-code system, including docume
 
 ## Typical Commit Signals
 
-- Create or update '.claude/commands/add-new-skill-or-agent.md' or similar command documentation.
-- Add or update '.agents/skills/everything-claude-code/SKILL.md' and/or '.claude/skills/everything-claude-code/SKILL.md'.
-- Optionally, add or update agent configuration files such as '.agents/skills/everything-claude-code/agents/openai.yaml' or '.codex/agents/*.toml'.
+- Create a new markdown file in .claude/commands/ describing the new skill or agent.
+- Optionally, add SKILL.md in .agents/skills/everything-claude-code/ or .claude/skills/everything-claude-code/.
 
 ## Notes
 
