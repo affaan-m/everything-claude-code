@@ -8,8 +8,8 @@
   ],
   "commandFiles": [
     ".claude/commands/feature-development.md",
-    ".claude/commands/add-team-or-identity-or-research-config.md",
-    ".claude/commands/add-documentation-command-or-skill-or-agent-or-workflow.md"
+    ".claude/commands/add-documentation-command-or-skill-or-agent-or-workflow.md",
+    ".claude/commands/add-team-or-identity-or-research-config.md"
   ],
-  "updatedAt": "2026-03-18T10:19:16.999Z"
+  "updatedAt": "2026-03-18T10:20:08.522Z"
 }
