@@ -18,4 +18,4 @@ Use this when the task is documentation-heavy, source-sensitive, or requires bro
 
 - Primary language: JavaScript
 - Framework: Not detected
-- Workflows detected: 9
+- Workflows detected: 8
