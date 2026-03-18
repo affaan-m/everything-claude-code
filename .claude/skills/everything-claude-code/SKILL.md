@@ -46,7 +46,7 @@ Follow these commit message conventions based on 8 analyzed commits.
 *Commit message example*
 
 ```text
-feat: add everything-claude-code ECC bundle (.claude/commands/add-command-or-skill-or-agent-or-workflow.md)
+feat: add everything-claude-code ECC bundle (.claude/commands/add-team-or-identity-or-research-config.md)
 ```
 
 *Commit message example*
@@ -206,65 +206,45 @@ Adds a new command, skill, agent, or workflow to the ECC system.
 **Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/commands/add-command-or-skill-or-agent-or-workflow.md
+1. Create or update .claude/commands/add-command-or-skill-or-agent-or-workflow.md with the new entity details
 
 **Files typically involved**:
 - `.claude/commands/add-command-or-skill-or-agent-or-workflow.md`
 
 **Example commit sequence**:
 ```
-Create or update .claude/commands/add-command-or-skill-or-agent-or-workflow.md
+Create or update .claude/commands/add-command-or-skill-or-agent-or-workflow.md with the new entity details
 ```
 
 ### Add Team Or Identity Or Research Config
 
-Adds or updates configuration for teams, identities, or research in ECC.
+Adds or updates team configuration, identity, or research playbook files.
 
 **Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/commands/add-team-or-identity-or-research-config.md
-2. Create or update .claude/team/everything-claude-code-team-config.json
-3. Create or update .claude/identity.json
-4. Create or update .claude/research/everything-claude-code-research-playbook.md
+1. Create or update .claude/team/everything-claude-code-team-config.json
+2. Create or update .claude/identity.json
+3. Create or update .claude/research/everything-claude-code-research-playbook.md
+4. Optionally update .claude/commands/add-team-or-identity-or-research-config.md
 
 **Files typically involved**:
-- `.claude/commands/add-team-or-identity-or-research-config.md`
 - `.claude/team/everything-claude-code-team-config.json`
 - `.claude/identity.json`
 - `.claude/research/everything-claude-code-research-playbook.md`
+- `.claude/commands/add-team-or-identity-or-research-config.md`
 
 **Example commit sequence**:
 ```
-Create or update .claude/commands/add-team-or-identity-or-research-config.md
 Create or update .claude/team/everything-claude-code-team-config.json
 Create or update .claude/identity.json
 Create or update .claude/research/everything-claude-code-research-playbook.md
+Optionally update .claude/commands/add-team-or-identity-or-research-config.md
 ```
 
-### Add Skill Documentation
+### Add Or Update Guardrails And Controls
 
-Adds or updates documentation for a skill in the ECC system.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create or update .agents/skills/everything-claude-code/SKILL.md
-2. Create or update .claude/skills/everything-claude-code/SKILL.md
-
-**Files typically involved**:
-- `.agents/skills/everything-claude-code/SKILL.md`
-- `.claude/skills/everything-claude-code/SKILL.md`
-
-**Example commit sequence**:
-```
-Create or update .agents/skills/everything-claude-code/SKILL.md
-Create or update .claude/skills/everything-claude-code/SKILL.md
-```
-
-### Add Guardrails Or Controls
-
-Adds or updates guardrails or enterprise controls for ECC.
+Establishes or modifies project guardrails and enterprise controls.
 
 **Frequency**: ~2 times per month
 
@@ -282,9 +262,46 @@ Create or update .claude/rules/everything-claude-code-guardrails.md
 Create or update .claude/enterprise/controls.md
 ```
 
-### Add Agent Config
+### Add Or Update Instincts
 
-Adds or updates agent configuration files for ECC.
+Adds or updates inherited instincts for the homunculus agent.
+
+**Frequency**: ~2 times per month
+
+**Steps**:
+1. Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml
+
+**Files typically involved**:
+- `.claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml`
+
+**Example commit sequence**:
+```
+Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml
+```
+
+### Add Or Update Skill Documentation
+
+Adds or updates documentation for a skill in both .agents and .claude directories.
+
+**Frequency**: ~2 times per month
+
+**Steps**:
+1. Create or update .agents/skills/everything-claude-code/SKILL.md
+2. Create or update .claude/skills/everything-claude-code/SKILL.md
+
+**Files typically involved**:
+- `.agents/skills/everything-claude-code/SKILL.md`
+- `.claude/skills/everything-claude-code/SKILL.md`
+
+**Example commit sequence**:
+```
+Create or update .agents/skills/everything-claude-code/SKILL.md
+Create or update .claude/skills/everything-claude-code/SKILL.md
+```
+
+### Add Or Update Codex Agents
+
+Adds or updates agent configuration files in the .codex/agents directory and updates agent documentation.
 
 **Frequency**: ~2 times per month
 
@@ -292,7 +309,7 @@ Adds or updates agent configuration files for ECC.
 1. Create or update .codex/agents/docs-researcher.toml
 2. Create or update .codex/agents/reviewer.toml
 3. Create or update .codex/agents/explorer.toml
-4. Update .codex/AGENTS.md
+4. Optionally update .codex/AGENTS.md
 
 **Files typically involved**:
 - `.codex/agents/docs-researcher.toml`
@@ -305,27 +322,7 @@ Adds or updates agent configuration files for ECC.
 Create or update .codex/agents/docs-researcher.toml
 Create or update .codex/agents/reviewer.toml
 Create or update .codex/agents/explorer.toml
-Update .codex/AGENTS.md
-```
-
-### Add Instincts Or Ecc Tools
-
-Adds or updates instincts or ECC tools configuration.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml
-2. Create or update .claude/ecc-tools.json
-
-**Files typically involved**:
-- `.claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml`
-- `.claude/ecc-tools.json`
-
-**Example commit sequence**:
-```
-Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml
-Create or update .claude/ecc-tools.json
+Optionally update .codex/AGENTS.md
 ```
 
 
