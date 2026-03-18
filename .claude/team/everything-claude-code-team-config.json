@@ -8,8 +8,8 @@
   ],
   "commandFiles": [
     ".claude/commands/feature-development.md",
-    ".claude/commands/add-new-agent-command.md",
-    ".claude/commands/add-new-skill-command.md"
+    ".claude/commands/add-new-skill-command.md",
+    ".claude/commands/add-new-agent-command.md"
   ],
-  "updatedAt": "2026-03-18T21:09:14.086Z"
+  "updatedAt": "2026-03-18T21:10:12.516Z"
 }
