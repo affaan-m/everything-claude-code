@@ -38,7 +38,7 @@ Follow these commit message conventions based on 8 analyzed commits.
 
 ### Message Guidelines
 
-- Average message length: ~85 characters
+- Average message length: ~86 characters
 - Keep first line concise and descriptive
 - Use imperative mood ("Add feature" not "Added feature")
 
@@ -70,12 +70,6 @@ docs(skills): align documentation-lookup with CONTRIBUTING template; add cross-h
 *Commit message example*
 
 ```text
-chore(config): governance and config foundation (#292)
-```
-
-*Commit message example*
-
-```text
 feat: add everything-claude-code ECC bundle (.claude/commands/feature-development.md)
 ```
 
@@ -89,6 +83,12 @@ feat: add everything-claude-code ECC bundle (.claude/enterprise/controls.md)
 
 ```text
 feat: add everything-claude-code ECC bundle (.claude/team/everything-claude-code-team-config.json)
+```
+
+*Commit message example*
+
+```text
+feat: add everything-claude-code ECC bundle (.claude/rules/everything-claude-code-guardrails.md)
 ```
 
 ## Architecture
@@ -199,33 +199,16 @@ feat: add everything-claude-code ECC bundle (.codex/config.toml)
 feat: add everything-claude-code ECC bundle (.codex/AGENTS.md)
 ```
 
-### Add Command Or Skill Or Agent Or Workflow
-
-Adds a new command, skill, agent, or workflow to the system by creating or updating the corresponding markdown file in the .claude/commands directory.
-
-**Frequency**: ~3 times per month
-
-**Steps**:
-1. Create or update .claude/commands/add-command-or-skill-or-agent-or-workflow.md
-
-**Files typically involved**:
-- `.claude/commands/add-command-or-skill-or-agent-or-workflow.md`
-
-**Example commit sequence**:
-```
-Create or update .claude/commands/add-command-or-skill-or-agent-or-workflow.md
-```
-
 ### Add Team Or Identity Or Research Config
 
-Adds or updates team, identity, or research configuration by modifying the relevant files in .claude/team, .claude/identity.json, or .claude/research.
+Adds a new team, identity, or research configuration to the ECC bundle.
 
 **Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/team/everything-claude-code-team-config.json
-2. Create or update .claude/identity.json
-3. Create or update .claude/research/everything-claude-code-research-playbook.md
+1. Create or update .claude/team/everything-claude-code-team-config.json for team config
+2. Create or update .claude/identity.json for identity config
+3. Create or update .claude/research/everything-claude-code-research-playbook.md for research config
 
 **Files typically involved**:
 - `.claude/team/everything-claude-code-team-config.json`
@@ -234,20 +217,46 @@ Adds or updates team, identity, or research configuration by modifying the relev
 
 **Example commit sequence**:
 ```
-Create or update .claude/team/everything-claude-code-team-config.json
-Create or update .claude/identity.json
-Create or update .claude/research/everything-claude-code-research-playbook.md
+Create or update .claude/team/everything-claude-code-team-config.json for team config
+Create or update .claude/identity.json for identity config
+Create or update .claude/research/everything-claude-code-research-playbook.md for research config
 ```
 
-### Add Guardrails Or Instincts
+### Add Command Or Skill Or Agent Or Workflow
 
-Adds or updates guardrails or instincts for the system by modifying the relevant YAML or markdown files.
+Adds a new command, skill, agent, or workflow to the ECC bundle.
 
 **Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/rules/everything-claude-code-guardrails.md
-2. Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml
+1. Create or update .claude/commands/add-command-or-skill-or-agent-or-workflow.md
+2. Create or update .agents/skills/everything-claude-code/SKILL.md or .claude/skills/everything-claude-code/SKILL.md for skills
+3. Create or update agent definition files (e.g., .codex/agents/*.toml)
+
+**Files typically involved**:
+- `.claude/commands/add-command-or-skill-or-agent-or-workflow.md`
+- `.agents/skills/everything-claude-code/SKILL.md`
+- `.claude/skills/everything-claude-code/SKILL.md`
+- `.codex/agents/docs-researcher.toml`
+- `.codex/agents/reviewer.toml`
+- `.codex/agents/explorer.toml`
+
+**Example commit sequence**:
+```
+Create or update .claude/commands/add-command-or-skill-or-agent-or-workflow.md
+Create or update .agents/skills/everything-claude-code/SKILL.md or .claude/skills/everything-claude-code/SKILL.md for skills
+Create or update agent definition files (e.g., .codex/agents/*.toml)
+```
+
+### Add Guardrails Or Instincts
+
+Adds or updates system guardrails or inherited instincts for the ECC bundle.
+
+**Frequency**: ~2 times per month
+
+**Steps**:
+1. Create or update .claude/rules/everything-claude-code-guardrails.md for guardrails
+2. Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml for instincts
 
 **Files typically involved**:
 - `.claude/rules/everything-claude-code-guardrails.md`
@@ -255,28 +264,8 @@ Adds or updates guardrails or instincts for the system by modifying the relevant
 
 **Example commit sequence**:
 ```
-Create or update .claude/rules/everything-claude-code-guardrails.md
-Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml
-```
-
-### Add Or Update Skill Documentation
-
-Adds or updates skill documentation for the everything-claude-code agent by modifying SKILL.md files.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create or update .agents/skills/everything-claude-code/SKILL.md
-2. Create or update .claude/skills/everything-claude-code/SKILL.md
-
-**Files typically involved**:
-- `.agents/skills/everything-claude-code/SKILL.md`
-- `.claude/skills/everything-claude-code/SKILL.md`
-
-**Example commit sequence**:
-```
-Create or update .agents/skills/everything-claude-code/SKILL.md
-Create or update .claude/skills/everything-claude-code/SKILL.md
+Create or update .claude/rules/everything-claude-code-guardrails.md for guardrails
+Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml for instincts
 ```
 
 
