@@ -17,6 +17,9 @@ Adds a new command, skill, agent, or workflow to the ECC system.
 - `.claude/commands/add-command-or-skill-or-agent-or-workflow.md`
 - `.agents/skills/everything-claude-code/SKILL.md`
 - `.claude/skills/everything-claude-code/SKILL.md`
+- `.codex/agents/docs-researcher.toml`
+- `.codex/agents/reviewer.toml`
+- `.codex/agents/explorer.toml`
 
 ## Suggested Sequence
 
@@ -27,8 +30,10 @@ Adds a new command, skill, agent, or workflow to the ECC system.
 
 ## Typical Commit Signals
 
-- Create or update '.claude/commands/add-command-or-skill-or-agent-or-workflow.md' to document the addition.
-- Optionally, add related SKILL.md or agent YAML files under '.agents/skills/' or '.claude/skills/'.
+- Create or update .claude/commands/add-command-or-skill-or-agent-or-workflow.md to document the addition
+- Create or update .agents/skills/everything-claude-code/SKILL.md or .claude/skills/everything-claude-code/SKILL.md for skill details
+- Create or update agent definition files (e.g., .codex/agents/*.toml)
+- Update .codex/AGENTS.md if agent is added
 
 ## Notes
 
