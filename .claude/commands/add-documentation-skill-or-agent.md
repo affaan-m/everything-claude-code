@@ -16,6 +16,7 @@ Adds documentation for a new skill or agent to the project.
 
 - `.claude/commands/add-skill-or-agent-doc.md`
 - `.claude/commands/add-new-skill-or-agent-doc.md`
+- `.claude/commands/add-documentation-skill-or-agent.md`
 
 ## Suggested Sequence
 
@@ -26,8 +27,8 @@ Adds documentation for a new skill or agent to the project.
 
 ## Typical Commit Signals
 
-- Create or update a markdown file in .claude/commands/ with the name add-skill-or-agent-doc.md or add-new-skill-or-agent-doc.md
-- Commit the new or updated documentation file
+- Create a new markdown file in .claude/commands/ with a name matching add-*-skill-or-agent*.md
+- Commit the new file with a message referencing the ECC bundle.
 
 ## Notes
 
