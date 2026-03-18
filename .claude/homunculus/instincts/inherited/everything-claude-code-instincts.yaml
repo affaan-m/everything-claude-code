@@ -1,5 +1,5 @@
 # Instincts generated from https://github.com/affaan-m/everything-claude-code
-# Generated: 2026-03-18T10:35:32.788Z
+# Generated: 2026-03-18T10:36:19.677Z
 # Version: 2.0
 
 ---
@@ -201,8 +201,8 @@ source_repo: https://github.com/affaan-m/everything-claude-code
 ## Action
 
 Follow the add-command-or-skill-or-agent-or-workflow workflow:
-1. Create a new markdown file named add-command-or-skill-or-agent-or-workflow.md in .claude/commands/
-2. Commit the new file with a descriptive message
+1. Create or update the appropriate markdown file in .claude/commands (e.g., add-command-or-skill-or-agent-or-workflow.md).
+2. Commit the change with a descriptive message.
 
 ## Evidence
 
@@ -224,10 +224,10 @@ source_repo: https://github.com/affaan-m/everything-claude-code
 ## Action
 
 Follow the add-team-or-identity-or-research-config workflow:
-1. Create or update .claude/team/everything-claude-code-team-config.json
-2. Create or update .claude/identity.json
-3. Create or update .claude/research/everything-claude-code-research-playbook.md
-4. Commit the changes
+1. Create or update .claude/team/everything-claude-code-team-config.json for team config.
+2. Create or update .claude/identity.json for identity config.
+3. Create or update .claude/research/everything-claude-code-research-playbook.md for research playbook.
+4. Commit the changes.
 
 ## Evidence
 
@@ -249,9 +249,9 @@ source_repo: https://github.com/affaan-m/everything-claude-code
 ## Action
 
 Follow the add-guardrails-or-instincts workflow:
-1. Create or update .claude/rules/everything-claude-code-guardrails.md
-2. Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml
-3. Commit the changes
+1. Create or update .claude/rules/everything-claude-code-guardrails.md for guardrails.
+2. Create or update .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml for instincts.
+3. Commit the changes.
 
 ## Evidence
 
@@ -260,51 +260,25 @@ Follow the add-guardrails-or-instincts workflow:
 - Files: .claude/rules/everything-claude-code-guardrails.md, .claude/homunculus/instincts/inherited/everything-claude-code-instincts.yaml
 
 ---
-id: everything-claude-code-workflow-add-skill-documentation
-trigger: "when doing add skill documentation"
+id: everything-claude-code-workflow-add-or-update-skill-documentation
+trigger: "when doing add or update skill documentation"
 confidence: 0.6
 domain: workflow
 source: repo-analysis
 source_repo: https://github.com/affaan-m/everything-claude-code
 ---
 
-# Everything Claude Code Workflow Add Skill Documentation
+# Everything Claude Code Workflow Add Or Update Skill Documentation
 
 ## Action
 
-Follow the add-skill-documentation workflow:
-1. Create or update .agents/skills/everything-claude-code/SKILL.md
-2. Create or update .claude/skills/everything-claude-code/SKILL.md
-3. Commit the changes
+Follow the add-or-update-skill-documentation workflow:
+1. Create or update SKILL.md in the relevant skill directory (either .agents/skills/everything-claude-code/ or .claude/skills/everything-claude-code/).
+2. Commit the change.
 
 ## Evidence
 
 - Workflow detected from commit patterns
 - Frequency: ~2x per month
 - Files: .agents/skills/everything-claude-code/SKILL.md, .claude/skills/everything-claude-code/SKILL.md
-
----
-id: everything-claude-code-workflow-add-codex-agent-or-config
-trigger: "when doing add codex agent or config"
-confidence: 0.65
-domain: workflow
-source: repo-analysis
-source_repo: https://github.com/affaan-m/everything-claude-code
----
-
-# Everything Claude Code Workflow Add Codex Agent Or Config
-
-## Action
-
-Follow the add-codex-agent-or-config workflow:
-1. Create or update .codex/agents/*.toml files for each agent
-2. Create or update .codex/AGENTS.md
-3. Create or update .codex/config.toml
-4. Commit the changes
-
-## Evidence
-
-- Workflow detected from commit patterns
-- Frequency: ~3x per month
-- Files: .codex/agents/docs-researcher.toml, .codex/agents/reviewer.toml, .codex/agents/explorer.toml
 
