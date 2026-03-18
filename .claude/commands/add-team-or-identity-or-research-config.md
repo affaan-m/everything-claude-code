@@ -10,7 +10,7 @@ Use this workflow when working on **add-team-or-identity-or-research-config** in
 
 ## Goal
 
-Adds or updates team configuration, identity, or research playbook files for the ECC system.
+Adds or updates team, identity, or research configuration files for the project.
 
 ## Common Files
 
