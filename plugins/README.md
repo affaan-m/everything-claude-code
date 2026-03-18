@@ -25,6 +25,7 @@ claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 | claude-plugins-official | `anthropics/claude-plugins-official` |
 | claude-code-plugins | `anthropics/claude-code` |
 | Mixedbread-Grep (@mixedbread-ai) | `mixedbread-ai/mgrep` |
+| AutoCode (@ilang-ai) | `ilang-ai/autocode` |
 
 ---
 
@@ -83,3 +84,6 @@ claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 |-- known_marketplaces.json   # Added marketplaces
 |-- marketplaces/             # Marketplace data
 ```
+
+**Non-Programmer / Auto-Coding:**
+- `autocode` - 39 auto-activated skills that turn Claude Code into a fully automatic coding machine for non-programmers. Persistent memory, I-Lang compression (60%+ cost savings), zero dependencies. Just say what you want. `ilang-ai/autocode`
