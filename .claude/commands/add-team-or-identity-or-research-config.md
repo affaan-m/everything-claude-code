@@ -10,10 +10,11 @@ Use this workflow when working on **add-team-or-identity-or-research-config** in
 
 ## Goal
 
-Adds a new team, identity, or research configuration to the system.
+Adds or updates team, identity, or research configuration files.
 
 ## Common Files
 
+- `.claude/commands/add-team-or-identity-or-research-config.md`
 - `.claude/team/everything-claude-code-team-config.json`
 - `.claude/identity.json`
 - `.claude/research/everything-claude-code-research-playbook.md`
@@ -27,9 +28,10 @@ Adds a new team, identity, or research configuration to the system.
 
 ## Typical Commit Signals
 
-- Create or update .claude/team/everything-claude-code-team-config.json for team config
-- Create or update .claude/identity.json for identity config
-- Create or update .claude/research/everything-claude-code-research-playbook.md for research config
+- Create or update .claude/commands/add-team-or-identity-or-research-config.md
+- Create or update .claude/team/everything-claude-code-team-config.json
+- Create or update .claude/identity.json
+- Create or update .claude/research/everything-claude-code-research-playbook.md
 
 ## Notes
 
