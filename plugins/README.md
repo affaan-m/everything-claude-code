@@ -61,6 +61,10 @@ claude plugin install typescript-lsp@claude-plugins-official
 - `frontend-design` - UI patterns
 - `feature-dev` - Feature development
 
+**Non-Programmer / Auto-Coding:**
+- `autocode` - Auto-activated skills for non-programmers with persistent memory and I-Lang compression. `ilang-ai/autocode`
+
+
 ---
 
 ## Quick Setup
@@ -85,5 +89,3 @@ claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 |-- marketplaces/             # Marketplace data
 ```
 
-**Non-Programmer / Auto-Coding:**
-- `autocode` - 39 auto-activated skills that turn Claude Code into a fully automatic coding machine for non-programmers. Persistent memory, I-Lang compression (60%+ cost savings), zero dependencies. Just say what you want. `ilang-ai/autocode`
