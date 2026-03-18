@@ -10,11 +10,16 @@ Use this workflow when working on **add-command-or-skill-or-agent-or-workflow** 
 
 ## Goal
 
-Adds a new command, skill, agent, or workflow to the system by creating or updating the corresponding markdown file in the .claude/commands directory.
+Adds a new command, skill, agent, or workflow to the ECC bundle.
 
 ## Common Files
 
 - `.claude/commands/add-command-or-skill-or-agent-or-workflow.md`
+- `.agents/skills/everything-claude-code/SKILL.md`
+- `.claude/skills/everything-claude-code/SKILL.md`
+- `.codex/agents/docs-researcher.toml`
+- `.codex/agents/reviewer.toml`
+- `.codex/agents/explorer.toml`
 
 ## Suggested Sequence
 
@@ -26,6 +31,8 @@ Adds a new command, skill, agent, or workflow to the system by creating or updat
 ## Typical Commit Signals
 
 - Create or update .claude/commands/add-command-or-skill-or-agent-or-workflow.md
+- Create or update .agents/skills/everything-claude-code/SKILL.md or .claude/skills/everything-claude-code/SKILL.md for skills
+- Create or update agent definition files (e.g., .codex/agents/*.toml)
 
 ## Notes
 
