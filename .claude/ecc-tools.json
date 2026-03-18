@@ -2,7 +2,7 @@
   "version": "1.3",
   "schemaVersion": "1.0",
   "generatedBy": "ecc-tools",
-  "generatedAt": "2026-03-18T10:20:08.522Z",
+  "generatedAt": "2026-03-18T10:20:59.558Z",
   "repo": "https://github.com/affaan-m/everything-claude-code",
   "profiles": {
     "requested": "full",
@@ -149,7 +149,7 @@
     ".claude/team/everything-claude-code-team-config.json",
     ".claude/enterprise/controls.md",
     ".claude/commands/feature-development.md",
-    ".claude/commands/add-documentation-command-or-skill-or-agent-or-workflow.md",
+    ".claude/commands/add-command-or-skill-or-agent-or-workflow.md",
     ".claude/commands/add-team-or-identity-or-research-config.md"
   ],
   "packageFiles": {
@@ -179,7 +179,7 @@
     ],
     "workflow-pack": [
       ".claude/commands/feature-development.md",
-      ".claude/commands/add-documentation-command-or-skill-or-agent-or-workflow.md",
+      ".claude/commands/add-command-or-skill-or-agent-or-workflow.md",
       ".claude/commands/add-team-or-identity-or-research-config.md"
     ]
   },
@@ -210,7 +210,7 @@
     ],
     "workflow-pack": [
       ".claude/commands/feature-development.md",
-      ".claude/commands/add-documentation-command-or-skill-or-agent-or-workflow.md",
+      ".claude/commands/add-command-or-skill-or-agent-or-workflow.md",
       ".claude/commands/add-team-or-identity-or-research-config.md"
     ]
   },
@@ -292,8 +292,8 @@
     },
     {
       "moduleId": "workflow-pack",
-      "path": ".claude/commands/add-documentation-command-or-skill-or-agent-or-workflow.md",
-      "description": "Workflow command scaffold for add-documentation-command-or-skill-or-agent-or-workflow."
+      "path": ".claude/commands/add-command-or-skill-or-agent-or-workflow.md",
+      "description": "Workflow command scaffold for add-command-or-skill-or-agent-or-workflow."
     },
     {
       "moduleId": "workflow-pack",
@@ -307,8 +307,8 @@
       "path": ".claude/commands/feature-development.md"
     },
     {
-      "command": "add-documentation-command-or-skill-or-agent-or-workflow",
-      "path": ".claude/commands/add-documentation-command-or-skill-or-agent-or-workflow.md"
+      "command": "add-command-or-skill-or-agent-or-workflow",
+      "path": ".claude/commands/add-command-or-skill-or-agent-or-workflow.md"
     },
     {
       "command": "add-team-or-identity-or-research-config",
@@ -321,7 +321,7 @@
       "identityPath": ".claude/identity.json",
       "commandPaths": [
         ".claude/commands/feature-development.md",
-        ".claude/commands/add-documentation-command-or-skill-or-agent-or-workflow.md",
+        ".claude/commands/add-command-or-skill-or-agent-or-workflow.md",
         ".claude/commands/add-team-or-identity-or-research-config.md"
       ]
     },
