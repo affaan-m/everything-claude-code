@@ -2,7 +2,7 @@
   "version": "1.3",
   "schemaVersion": "1.0",
   "generatedBy": "ecc-tools",
-  "generatedAt": "2026-03-18T21:14:57.329Z",
+  "generatedAt": "2026-03-18T21:15:47.840Z",
   "repo": "https://github.com/affaan-m/everything-claude-code",
   "profiles": {
     "requested": "full",
@@ -149,8 +149,8 @@
     ".claude/team/everything-claude-code-team-config.json",
     ".claude/enterprise/controls.md",
     ".claude/commands/feature-development.md",
-    ".claude/commands/add-new-skill-command.md",
-    ".claude/commands/add-new-agent-command.md"
+    ".claude/commands/add-new-agent-command.md",
+    ".claude/commands/add-new-skill-command.md"
   ],
   "packageFiles": {
     "runtime-core": [
@@ -179,8 +179,8 @@
     ],
     "workflow-pack": [
       ".claude/commands/feature-development.md",
-      ".claude/commands/add-new-skill-command.md",
-      ".claude/commands/add-new-agent-command.md"
+      ".claude/commands/add-new-agent-command.md",
+      ".claude/commands/add-new-skill-command.md"
     ]
   },
   "moduleFiles": {
@@ -210,8 +210,8 @@
     ],
     "workflow-pack": [
       ".claude/commands/feature-development.md",
-      ".claude/commands/add-new-skill-command.md",
-      ".claude/commands/add-new-agent-command.md"
+      ".claude/commands/add-new-agent-command.md",
+      ".claude/commands/add-new-skill-command.md"
     ]
   },
   "files": [
@@ -292,13 +292,13 @@
     },
     {
       "moduleId": "workflow-pack",
-      "path": ".claude/commands/add-new-skill-command.md",
-      "description": "Workflow command scaffold for add-new-skill-command."
+      "path": ".claude/commands/add-new-agent-command.md",
+      "description": "Workflow command scaffold for add-new-agent-command."
     },
     {
       "moduleId": "workflow-pack",
-      "path": ".claude/commands/add-new-agent-command.md",
-      "description": "Workflow command scaffold for add-new-agent-command."
+      "path": ".claude/commands/add-new-skill-command.md",
+      "description": "Workflow command scaffold for add-new-skill-command."
     }
   ],
   "workflows": [
@@ -307,12 +307,12 @@
       "path": ".claude/commands/feature-development.md"
     },
     {
-      "command": "add-new-skill-command",
-      "path": ".claude/commands/add-new-skill-command.md"
-    },
-    {
       "command": "add-new-agent-command",
       "path": ".claude/commands/add-new-agent-command.md"
+    },
+    {
+      "command": "add-new-skill-command",
+      "path": ".claude/commands/add-new-skill-command.md"
     }
   ],
   "adapters": {
@@ -321,8 +321,8 @@
       "identityPath": ".claude/identity.json",
       "commandPaths": [
         ".claude/commands/feature-development.md",
-        ".claude/commands/add-new-skill-command.md",
-        ".claude/commands/add-new-agent-command.md"
+        ".claude/commands/add-new-agent-command.md",
+        ".claude/commands/add-new-skill-command.md"
       ]
     },
     "codex": {
