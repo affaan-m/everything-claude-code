@@ -15,7 +15,6 @@ Standard feature implementation workflow
 ## Common Files
 
 - `manifests/*`
-- `schemas/*`
 - `**/*.test.*`
 - `**/api/**`
 
