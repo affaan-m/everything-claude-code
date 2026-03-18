@@ -22,7 +22,7 @@ The generated baseline enables GitHub, Context7, Exa, Memory, Playwright, and Se
 ## Workflow Files
 
 - `.claude/commands/feature-development.md`
-- `.claude/commands/add-new-skill.md`
-- `.claude/commands/add-new-agent.md`
+- `.claude/commands/add-new-skill-or-agent.md`
+- `.claude/commands/add-command-or-workflow-doc.md`
 
 Use these workflow files as reusable task scaffolds when the detected repository workflows recur.
