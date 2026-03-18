@@ -494,6 +494,23 @@ Use `/security-scan` in Claude Code to run it, or add to CI with the [GitHub Act
 
 [GitHub](https://github.com/affaan-m/agentshield) | [npm](https://www.npmjs.com/package/ecc-agentshield)
 
+### Prism Scanner — Agent Supply Chain Security
+
+Open-source security scanner for AI Agent skills, plugins, and MCP servers. Complements AgentShield (which focuses on your local Claude Code config) by scanning third-party code *before* you install it.
+
+```bash
+pip install prism-scanner
+prism scan https://github.com/user/some-skill
+```
+
+**What it scans:** Agent skills, plugins, and MCP servers across ClawHub, npm, and pip with 39+ detection rules — AST-level taint tracking, malicious signature matching, metadata analysis, and post-uninstall system residue detection.
+
+**Grading:** A-F letter grades with severity breakdown and actionable recommendations.
+
+**Output formats:** Terminal, JSON, HTML, SARIF (GitHub Code Scanning integration).
+
+[GitHub](https://github.com/aidongise-cell/prism-scanner) | [PyPI](https://pypi.org/project/prism-scanner/) | [MCP Server](https://mcp.so/server/prism-scanner)
+
 ### 🔬 Plankton — Write-Time Code Quality Enforcement
 
 Plankton (credit: @alxfazio) is a recommended companion for write-time code quality enforcement. It runs formatters and 20+ linters on every file edit via PostToolUse hooks, then spawns Claude subprocesses (routed to Haiku/Sonnet/Opus by violation complexity) to fix issues the main agent missed. Three-phase architecture: auto-format silently (40-50% of issues), collect remaining violations as structured JSON, delegate fixes to a subprocess. Includes config protection hooks that prevent agents from modifying linter configs to pass instead of fixing code. Supports Python, TypeScript, Shell, YAML, JSON, TOML, Markdown, and Dockerfile. Use alongside AgentShield for security + quality coverage. See `skills/plankton-code-quality/` for full integration guide.
