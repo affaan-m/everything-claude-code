@@ -97,8 +97,11 @@ fi
 #   - automated sessions creating project-scoped homunculus metadata
 
 # Layer 1: entrypoint. Only interactive terminal sessions should continue.
+# sdk-ts: Agent SDK sessions can be human-interactive (e.g. via Happy).
+# Non-interactive SDK automation is still filtered by Layers 2-5 below
+# (ECC_HOOK_PROFILE=minimal, ECC_SKIP_OBSERVE=1, agent_id, path exclusions).
 case "${CLAUDE_CODE_ENTRYPOINT:-cli}" in
-  cli) ;;
+  cli|sdk-ts) ;;
   *) exit 0 ;;
 esac
 
