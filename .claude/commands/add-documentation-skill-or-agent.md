@@ -10,13 +10,12 @@ Use this workflow when working on **add-documentation-skill-or-agent** in `every
 
 ## Goal
 
-Adds documentation for a new skill or agent to the project.
+Adds documentation for a new skill or agent to the system.
 
 ## Common Files
 
-- `.claude/commands/add-skill-or-agent-doc.md`
-- `.claude/commands/add-new-skill-or-agent-doc.md`
 - `.claude/commands/add-documentation-skill-or-agent.md`
+- `.claude/commands/add-skill-or-agent-doc.md`
 
 ## Suggested Sequence
 
@@ -27,8 +26,8 @@ Adds documentation for a new skill or agent to the project.
 
 ## Typical Commit Signals
 
-- Create a new markdown file in .claude/commands/ with a name matching add-*-skill-or-agent*.md
-- Commit the new file with a message referencing the ECC bundle.
+- Create a new markdown file in .claude/commands/ named add-documentation-skill-or-agent.md or similar.
+- Commit the new documentation file.
 
 ## Notes
 
