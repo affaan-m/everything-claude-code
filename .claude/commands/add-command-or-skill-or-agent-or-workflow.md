@@ -10,7 +10,7 @@ Use this workflow when working on **add-command-or-skill-or-agent-or-workflow** 
 
 ## Goal
 
-Adds a new command, skill, agent, or workflow to the ECC system by creating or updating the relevant markdown documentation.
+Adds a new command, skill, agent, or workflow to the system by creating or updating the corresponding markdown file in .claude/commands.
 
 ## Common Files
 
