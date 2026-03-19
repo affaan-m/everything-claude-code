@@ -226,9 +226,9 @@ cp -r $ECC_ROOT/rules/common/* $TARGET/rules/
 
 # Language-specific rules (prefixed to avoid overwriting common rules)
 # Files like coding-style.md become typescript-coding-style.md, etc.
-for f in $ECC_ROOT/rules/typescript/*; do cp "$f" "$TARGET/rules/typescript-$(basename "$f")"; done   # if selected
-for f in $ECC_ROOT/rules/python/*; do cp "$f" "$TARGET/rules/python-$(basename "$f")"; done           # if selected
-for f in $ECC_ROOT/rules/golang/*; do cp "$f" "$TARGET/rules/golang-$(basename "$f")"; done           # if selected
+for f in "$ECC_ROOT"/rules/typescript/*; do [ -e "$f" ] && cp -r "$f" "$TARGET/rules/typescript-$(basename "$f")"; done   # if selected
+for f in "$ECC_ROOT"/rules/python/*; do [ -e "$f" ] && cp -r "$f" "$TARGET/rules/python-$(basename "$f")"; done           # if selected
+for f in "$ECC_ROOT"/rules/golang/*; do [ -e "$f" ] && cp -r "$f" "$TARGET/rules/golang-$(basename "$f")"; done           # if selected
 ```
 
 **重要**：如果用户选择了任何特定语言的规则但**没有**选择通用规则，警告他们：

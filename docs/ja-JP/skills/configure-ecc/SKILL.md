@@ -159,9 +159,9 @@ cp -r $ECC_ROOT/rules/common/* $TARGET/rules/
 
 # 言語固有のルール（共通ルールの上書きを防ぐためプレフィックス付き）
 # coding-style.md は typescript-coding-style.md のようになります
-for f in $ECC_ROOT/rules/typescript/*; do cp "$f" "$TARGET/rules/typescript-$(basename "$f")"; done   # 選択された場合
-for f in $ECC_ROOT/rules/python/*; do cp "$f" "$TARGET/rules/python-$(basename "$f")"; done           # 選択された場合
-for f in $ECC_ROOT/rules/golang/*; do cp "$f" "$TARGET/rules/golang-$(basename "$f")"; done           # 選択された場合
+for f in "$ECC_ROOT"/rules/typescript/*; do [ -e "$f" ] && cp -r "$f" "$TARGET/rules/typescript-$(basename "$f")"; done   # 選択された場合
+for f in "$ECC_ROOT"/rules/python/*; do [ -e "$f" ] && cp -r "$f" "$TARGET/rules/python-$(basename "$f")"; done           # 選択された場合
+for f in "$ECC_ROOT"/rules/golang/*; do [ -e "$f" ] && cp -r "$f" "$TARGET/rules/golang-$(basename "$f")"; done           # 選択された場合
 ```
 
 **重要**: ユーザーが言語固有のルールを選択したが、共通ルールを選択しなかった場合、警告します：
