@@ -444,18 +444,34 @@ watch(query, (term) => debouncedSearch(term))
 
 ### Responsive Breakpoints
 
-```vue
-<script setup lang="ts">
-const isMobile = useMediaQuery('(max-width: 768px)')
-const isTablet = useMediaQuery('(min-width: 769px) and (max-width: 1024px)')
-</script>
+**CSS-first (preferred for layout switching):**
 
+```vue
 <template>
-  <!-- Use for JS logic only — prefer CSS for layout -->
-  <MobileNav v-if="isMobile" />
-  <DesktopNav v-else />
+  <!-- Good: CSS handles layout — no hydration mismatch -->
+  <MobileNav class="md:hidden" />
+  <DesktopNav class="hidden md:block" />
 </template>
 ```
+
+**`useBreakpoints` with `ssrWidth` (when JS logic is truly needed):**
+
+```vue
+<script setup lang="ts">
+import { useBreakpoints, breakpointsTailwind } from '@vueuse/core'
+
+// ssrWidth ensures server and client agree on initial render
+const breakpoints = useBreakpoints(breakpointsTailwind, { ssrWidth: 1024 })
+const isMobile = breakpoints.smaller('md')
+
+// Legitimate JS use case: adjust non-layout behavior by breakpoint
+const scrollOffset = computed(() => isMobile.value ? 56 : 96)
+</script>
+```
+
+> **Warning:** `useMediaQuery` is a no-op on server (always returns `false`).
+> Using it with `v-if` to toggle components causes hydration mismatch.
+> Use CSS breakpoint classes for layout switching instead.
 
 ### Keyboard Shortcuts
 
@@ -478,7 +494,8 @@ whenever(ctrl_k, () => {
 | `useDark` / `usePreferredDark`    | Dark mode detection       | Yes                    |
 | `useIntersectionObserver`         | Viewport visibility       | Yes (no-op on server)  |
 | `useDebounceFn` / `useThrottleFn` | Rate-limit function calls | Yes                    |
-| `useMediaQuery`                   | Responsive breakpoints    | Yes (no-op on server)  |
+| `useMediaQuery`                   | Responsive breakpoints    | No-op on server — **do not use with `v-if` for layout** (causes hydration mismatch). Use CSS breakpoints or `useBreakpoints` with `ssrWidth` instead |
+| `useBreakpoints`                  | JS breakpoint logic       | Yes (with `ssrWidth` option for SSR-safe initial value) |
 | `useMagicKeys`                    | Keyboard shortcuts        | Yes (no-op on server)  |
 | `useElementBounding`              | Element position/size     | Yes (no-op on server)  |
 | `useWindowSize`                   | Window dimensions         | Yes (no-op on server)  |
@@ -492,7 +509,7 @@ whenever(ctrl_k, () => {
 | Pitfall                                     | Fix                                                           |
 | ------------------------------------------- | ------------------------------------------------------------- |
 | Using `localStorage` directly in setup      | Use `useCookie` or `useLocalStorage` from VueUse              |
-| `v-if` based on `window` / `document`       | Use CSS media queries or `useMediaQuery`                      |
+| `v-if` based on `window` / `document`       | Use CSS media queries for layout; `useBreakpoints` with `ssrWidth` for JS logic. **Avoid `useMediaQuery` with `v-if`** — it causes hydration mismatch |
 | `Math.random()` / `Date.now()` in templates | Wrap in `useState` to sync SSR/client                         |
 | Too many plugins with expensive init        | Convert to composables; set `parallel: true` on async plugins |
 | All components loaded eagerly               | Add `Lazy` prefix for below-the-fold components               |
