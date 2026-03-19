@@ -271,8 +271,11 @@ proxy.gtag('config', 'G-XXXXXXX')
 <script setup lang="ts">
 import { shallowRef } from 'vue'
 
+const appTitle = 'My App'
+
 // Use shallowRef for large objects that don't need deep reactivity
 const largeList = shallowRef<Item[]>([])
+const items = largeList
 </script>
 
 <template>
@@ -431,6 +434,7 @@ useIntersectionObserver(target, ([entry]) => {
 ### Debounced Search
 
 ```vue
+<script setup lang="ts">
 const query = ref('')
 const results = ref<Array<{ id: string; title: string }>>([])
 
@@ -440,6 +444,7 @@ const debouncedSearch = useDebounceFn(async (term: string) => {
 }, 300)
 
 watch(query, (term) => debouncedSearch(term))
+</script>
 ```
 
 ### Responsive Breakpoints
