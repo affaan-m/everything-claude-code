@@ -243,7 +243,8 @@ Control when components become interactive — reduces JavaScript work on initia
 
 ### Third-Party Script Management
 
-```typescript
+```vue
+<script setup lang="ts">
 // Good: controlled loading with useScript
 const { load, proxy } = useScriptGoogleAnalytics({
   id: 'G-XXXXXXX',
@@ -253,6 +254,7 @@ const { load, proxy } = useScriptGoogleAnalytics({
 // Must explicitly load when using manual trigger
 await load()
 proxy.gtag('config', 'G-XXXXXXX')
+</script>
 ```
 
 ### Vue Performance Primitives
@@ -430,6 +432,14 @@ watch(query, async (term) => {
   }
 })
 </script>
+
+<template>
+  <input v-model="query" placeholder="Search..." />
+  <p v-if="error" class="text-red-500">{{ error }}</p>
+  <ul v-else>
+    <li v-for="item in results" :key="item.id">{{ item.title }}</li>
+  </ul>
+</template>
 ```
 
 ### Responsive Breakpoints
@@ -477,7 +487,6 @@ whenever(ctrl_k, () => {
 ```
 
 ## Common Pitfalls
-
 - **`localStorage` in setup** — use `useCookie` or `useLocalStorage` from VueUse
 - **`v-if` on `window`/`document`** — use CSS media queries for layout; `useBreakpoints` with `ssrWidth` for JS logic. Avoid `useMediaQuery` with `v-if` (hydration mismatch)
 - **`Math.random()`/`Date.now()` in templates** — wrap in `useState` to sync SSR/client
@@ -488,5 +497,3 @@ whenever(ctrl_k, () => {
 - **Third-party scripts blocking render** — use `useScript` with manual trigger
 - **Deep reactivity on large objects** — use `shallowRef` for collections not needing deep tracking
 - **Ignoring hydration warnings** — every warning is a bug; fix immediately
-
-
