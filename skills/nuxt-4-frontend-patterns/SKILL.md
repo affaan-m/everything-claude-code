@@ -54,14 +54,12 @@ const count = useState('count', () => 0)
 ```
 
 ### Avoid Non-Deterministic Rendering
-
 ```typescript
 // Good: useState ensures same value on both sides
 const id = useState('id', () => Math.random().toString(36))
 ```
 
 ### Handle Browser-Only APIs
-
 ```vue
 <script setup lang="ts">
 // Good: defer to onMounted
@@ -102,7 +100,6 @@ onMounted(() => {
 ```
 
 ### Third-Party Libraries with DOM Side Effects
-
 ```typescript
 // Good: dynamic import after mount
 onMounted(async () => {
@@ -119,7 +116,6 @@ if (import.meta.client) {
 
 ### SSR-Safe Composables Reference
 
-
 | Composable          | Purpose                                           |
 | ------------------- | ------------------------------------------------- |
 | `useState`          | Shared state across SSR and client                |
@@ -127,7 +123,6 @@ if (import.meta.client) {
 | `useFetch`          | Server-side data fetching with payload forwarding |
 | `useAsyncData`      | Async operations with SSR support                 |
 | `useRequestHeaders` | Access request headers during SSR                 |
-
 
 ## Performance Patterns
 
@@ -147,14 +142,12 @@ export default defineNuxtConfig({
 })
 ```
 
-
 | Strategy          | Use Case                                         |
 | ----------------- | ------------------------------------------------ |
 | `prerender: true` | Static content — homepage, about, docs           |
 | `swr: seconds`    | Stale-while-revalidate — product listings, feeds |
 | `isr: seconds`    | Incremental static regeneration — blog posts     |
 | `ssr: false`      | Client-only — admin dashboards, auth-gated pages |
-
 
 ### NuxtLink Prefetching
 
@@ -251,9 +244,14 @@ const { load, proxy } = useScriptGoogleAnalytics({
   scriptOptions: { trigger: 'manual' },
 })
 
-// Must explicitly load when using manual trigger
-await load()
-proxy.gtag('config', 'G-XXXXXXX')
+onMounted(async () => {
+  try {
+    await load()
+    proxy.gtag('config', 'G-XXXXXXX')
+  } catch {
+    // Script blocked by ad blocker or network error — app continues
+  }
+})
 </script>
 ```
 
@@ -416,16 +414,19 @@ useIntersectionObserver(target, ([entry]) => {
 <script setup lang="ts">
 const query = ref('')
 const results = ref<Array<{ id: string; title: string }>>([])
+const error = ref<string | null>(null)
+let searchVersion = 0
 
 const debouncedSearch = useDebounceFn(async (term: string) => {
   if (!term) { results.value = []; return }
-  results.value = await $fetch(`/api/search?q=${encodeURIComponent(term)}`) ?? []
+  const version = ++searchVersion
+  const data = await $fetch(`/api/search?q=${encodeURIComponent(term)}`) ?? []
+  if (version === searchVersion) results.value = data
 }, 300)
-
-const error = ref<string | null>(null)
 
 watch(query, async (term) => {
   try {
+    error.value = null
     await debouncedSearch(term)
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Search failed'
