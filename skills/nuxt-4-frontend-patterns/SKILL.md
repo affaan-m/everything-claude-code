@@ -257,11 +257,13 @@ Control when components become interactive — reduces JavaScript work on initia
 
 ```typescript
 // Good: controlled loading with useScript
-const { proxy } = useScriptGoogleAnalytics({
+const { load, proxy } = useScriptGoogleAnalytics({
   id: 'G-XXXXXXX',
   scriptOptions: { trigger: 'manual' },
 })
 
+// Must explicitly load when using manual trigger
+await load()
 proxy.gtag('config', 'G-XXXXXXX')
 ```
 
