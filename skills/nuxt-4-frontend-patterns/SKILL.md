@@ -276,8 +276,9 @@ import { shallowRef } from 'vue'
 const appTitle = 'My App'
 
 // Use shallowRef for large objects that don't need deep reactivity
-const largeList = shallowRef<Item[]>([])
-const items = largeList
+// Use shallowRef for large objects that don't need deep reactivity
+interface Item { id: string; name: string; selected: boolean }
+const items = shallowRef<Item[]>([])
 </script>
 
 <template>
