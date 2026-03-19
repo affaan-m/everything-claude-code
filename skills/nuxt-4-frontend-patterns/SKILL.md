@@ -486,9 +486,10 @@ const scrollOffset = computed(() => isMobile.value ? 56 : 96)
 ```vue
 <script setup lang="ts">
 const { ctrl_k } = useMagicKeys()
+const isCommandPaletteOpen = ref(false)
 
 whenever(ctrl_k, () => {
-  openCommandPalette()
+  isCommandPaletteOpen.value = true 
 })
 </script>
 ```
