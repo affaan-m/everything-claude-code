@@ -209,7 +209,7 @@ function buildOrchestrationPlan(config = {}) {
     throw new Error('buildOrchestrationPlan requires at least one worker');
   }
 
-  const seenWorkerSlugs = new Set();
+  const seenSlugs = new Set();
   const workerPlans = workers.map((worker, index) => {
     if (!worker || typeof worker.task !== 'string' || worker.task.trim().length === 0) {
       throw new Error(`Worker ${index + 1} is missing a task`);
@@ -217,10 +217,11 @@ function buildOrchestrationPlan(config = {}) {
 
     const workerName = worker.name || `worker-${index + 1}`;
     const workerSlug = slugify(workerName, `worker-${index + 1}`);
-    if (seenWorkerSlugs.has(workerSlug)) {
-      throw new Error(`Workers must produce unique slugs; duplicate slug: ${workerSlug}`);
+
+    if (seenSlugs.has(workerSlug)) {
+      throw new Error(`Workers must have unique slugs — duplicate: ${workerSlug}`);
     }
-    seenWorkerSlugs.add(workerSlug);
+    seenSlugs.add(workerSlug);
 
     const branchName = `orchestrator-${sessionName}-${workerSlug}`;
     const worktreePath = path.join(worktreeRoot, `${repoName}-${sessionName}-${workerSlug}`);
