@@ -221,10 +221,11 @@ Execute installation:
 # Common rules (flat copy into rules/)
 cp -r $ECC_ROOT/rules/common/* $TARGET/rules/
 
-# Language-specific rules (flat copy into rules/)
-cp -r $ECC_ROOT/rules/typescript/* $TARGET/rules/   # if selected
-cp -r $ECC_ROOT/rules/python/* $TARGET/rules/        # if selected
-cp -r $ECC_ROOT/rules/golang/* $TARGET/rules/        # if selected
+# Language-specific rules (prefixed to avoid overwriting common rules)
+# Files like coding-style.md become typescript-coding-style.md, etc.
+for f in $ECC_ROOT/rules/typescript/*; do cp "$f" "$TARGET/rules/typescript-$(basename "$f")"; done   # if selected
+for f in $ECC_ROOT/rules/python/*; do cp "$f" "$TARGET/rules/python-$(basename "$f")"; done           # if selected
+for f in $ECC_ROOT/rules/golang/*; do cp "$f" "$TARGET/rules/golang-$(basename "$f")"; done           # if selected
 ```
 
 **Important**: If the user selects any language-specific rules but NOT common rules, warn them:
@@ -360,6 +361,7 @@ Then print a summary report:
 
 ### "Rules not working"
 - Rules are flat files, not in subdirectories: `$TARGET/rules/coding-style.md` (correct) vs `$TARGET/rules/common/coding-style.md` (incorrect for flat install)
+- Language-specific rules are prefixed: `$TARGET/rules/python-coding-style.md` (correct) vs `$TARGET/rules/coding-style.md` (incorrect — overwrites the common rule)
 - Restart Claude Code after installing rules
 
 ### "Path reference errors after project-level install"
