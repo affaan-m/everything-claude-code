@@ -431,21 +431,15 @@ useIntersectionObserver(target, ([entry]) => {
 ### Debounced Search
 
 ```vue
-<script setup lang="ts">
 const query = ref('')
+const results = ref<Array<{ id: string; title: string }>>([])
 
 const debouncedSearch = useDebounceFn(async (term: string) => {
   if (!term) { results.value = []; return }
   results.value = await $fetch(`/api/search?q=${encodeURIComponent(term)}`) ?? []
 }, 300)
-</script>
 
-<template>
-  <input v-model="query" placeholder="Search..." />
-  <ul>
-    <li v-for="r in results" :key="r.id">{{ r.title }}</li>
-  </ul>
-</template>
+watch(query, (term) => debouncedSearch(term))
 ```
 
 ### Responsive Breakpoints
