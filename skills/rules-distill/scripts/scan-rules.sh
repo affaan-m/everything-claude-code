@@ -11,15 +11,15 @@ set -euo pipefail
 RULES_DIR="${RULES_DISTILL_DIR:-${1:-$HOME/.claude/rules}}"
 
 if [[ ! -d "$RULES_DIR" ]]; then
-  echo '{"error":"rules directory not found","path":"'"$RULES_DIR"'"}' >&2
+  jq -n --arg path "$RULES_DIR" '{"error":"rules directory not found","path":$path}' >&2
   exit 1
 fi
 
 # Collect all .md files (excluding _archived/)
 files=()
-while IFS= read -r -d '' f; do
+while IFS= read -r f; do
   files+=("$f")
-done < <(find "$RULES_DIR" -name '*.md' -not -path '*/_archived/*' -print0 | sort -z)
+done < <(find "$RULES_DIR" -name '*.md' -not -path '*/_archived/*' -print | sort)
 
 total=${#files[@]}
 
@@ -33,7 +33,7 @@ for i in "${!files[@]}"; do
   rel_path="~/$rel_path"
 
   # Extract H2 headings (## Title) into a JSON array via jq
-  headings_json=$(grep -E '^## ' "$file" 2>/dev/null | sed 's/^## //' | jq -R . | jq -s '.')
+  headings_json=$({ grep -E '^## ' "$file" 2>/dev/null || true; } | sed 's/^## //' | jq -R . | jq -s '.')
 
   # Get line count
   line_count=$(wc -l < "$file" | tr -d ' ')

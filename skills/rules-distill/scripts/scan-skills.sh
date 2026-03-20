@@ -42,6 +42,15 @@ extract_field() {
   ' "$file"
 }
 
+# Get file mtime in UTC ISO8601 (portable: GNU and BSD)
+get_mtime() {
+  local file="$1"
+  local secs
+  secs=$(stat -c %Y "$file" 2>/dev/null || stat -f %m "$file" 2>/dev/null) || return 1
+  date -u -d "@$secs" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null ||
+  date -u -r "$secs" +%Y-%m-%dT%H:%M:%SZ
+}
+
 # Scan a directory and produce a JSON array of skill objects
 scan_dir_to_json() {
   local dir="$1"
@@ -57,7 +66,7 @@ scan_dir_to_json() {
     local name desc mtime dp
     name=$(extract_field "$file" "name")
     desc=$(extract_field "$file" "description")
-    mtime=$(date -u -r "$file" +%Y-%m-%dT%H:%M:%SZ)
+    mtime=$(get_mtime "$file")
     dp="${file/#$HOME/~}"
 
     jq -n \
@@ -68,7 +77,7 @@ scan_dir_to_json() {
       '{path:$path,name:$name,description:$description,mtime:$mtime}' \
       > "$tmpdir/$i.json"
     i=$((i+1))
-  done < <(find "$dir" -name "*.md" -type f 2>/dev/null | sort)
+  done < <(find "$dir" -name "SKILL.md" -type f 2>/dev/null | sort)
 
   if [[ $i -eq 0 ]]; then
     echo "[]"
