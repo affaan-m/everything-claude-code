@@ -30,11 +30,16 @@ function makeTempDir() {
 
 function runScript(input, envOverrides = {}) {
   const inputStr = typeof input === 'string' ? input : JSON.stringify(input);
+  // Mirror HOME to USERPROFILE for Windows (os.homedir() checks USERPROFILE on Windows)
+  const env = { ...process.env, ...envOverrides };
+  if (envOverrides.HOME && !envOverrides.USERPROFILE) {
+    env.USERPROFILE = envOverrides.HOME;
+  }
   const result = spawnSync('node', [script], {
     encoding: 'utf8',
     input: inputStr,
     timeout: 10000,
-    env: { ...process.env, ...envOverrides },
+    env
   });
   return { code: result.status || 0, stdout: result.stdout || '', stderr: result.stderr || '' };
 }
@@ -46,23 +51,25 @@ function runTests() {
   let failed = 0;
 
   // 1. Passes through input on stdout
-  (test('passes through input on stdout', () => {
+  test('passes through input on stdout', () => {
     const input = {
       model: 'claude-sonnet-4-20250514',
-      usage: { input_tokens: 100, output_tokens: 50 },
+      usage: { input_tokens: 100, output_tokens: 50 }
     };
     const inputStr = JSON.stringify(input);
     const result = runScript(input);
     assert.strictEqual(result.code, 0, `Expected exit code 0, got ${result.code}`);
     assert.strictEqual(result.stdout, inputStr, 'Expected stdout to match original input');
-  }) ? passed++ : failed++);
+  })
+    ? passed++
+    : failed++;
 
   // 2. Creates metrics file when given valid usage data
-  (test('creates metrics file when given valid usage data', () => {
+  test('creates metrics file when given valid usage data', () => {
     const tmpHome = makeTempDir();
     const input = {
       model: 'claude-sonnet-4-20250514',
-      usage: { input_tokens: 1000, output_tokens: 500 },
+      usage: { input_tokens: 1000, output_tokens: 500 }
     };
     const result = runScript(input, { HOME: tmpHome });
     assert.strictEqual(result.code, 0, `Expected exit code 0, got ${result.code}`);
@@ -79,10 +86,12 @@ function runTests() {
     assert.ok(row.estimated_cost_usd > 0, 'Expected estimated_cost_usd to be positive');
 
     fs.rmSync(tmpHome, { recursive: true, force: true });
-  }) ? passed++ : failed++);
+  })
+    ? passed++
+    : failed++;
 
   // 3. Handles empty input gracefully
-  (test('handles empty input gracefully', () => {
+  test('handles empty input gracefully', () => {
     const tmpHome = makeTempDir();
     const result = runScript('', { HOME: tmpHome });
     assert.strictEqual(result.code, 0, `Expected exit code 0, got ${result.code}`);
@@ -90,10 +99,12 @@ function runTests() {
     assert.strictEqual(result.stdout, '', 'Expected empty stdout for empty input');
 
     fs.rmSync(tmpHome, { recursive: true, force: true });
-  }) ? passed++ : failed++);
+  })
+    ? passed++
+    : failed++;
 
   // 4. Handles invalid JSON gracefully
-  (test('handles invalid JSON gracefully', () => {
+  test('handles invalid JSON gracefully', () => {
     const tmpHome = makeTempDir();
     const invalidInput = 'not valid json {{{';
     const result = runScript(invalidInput, { HOME: tmpHome });
@@ -102,10 +113,12 @@ function runTests() {
     assert.strictEqual(result.stdout, invalidInput, 'Expected stdout to contain original invalid input');
 
     fs.rmSync(tmpHome, { recursive: true, force: true });
-  }) ? passed++ : failed++);
+  })
+    ? passed++
+    : failed++;
 
   // 5. Handles missing usage fields gracefully
-  (test('handles missing usage fields gracefully', () => {
+  test('handles missing usage fields gracefully', () => {
     const tmpHome = makeTempDir();
     const input = { model: 'claude-sonnet-4-20250514' };
     const inputStr = JSON.stringify(input);
@@ -122,7 +135,9 @@ function runTests() {
     assert.strictEqual(row.estimated_cost_usd, 0, 'Expected estimated_cost_usd to be 0 when no tokens');
 
     fs.rmSync(tmpHome, { recursive: true, force: true });
-  }) ? passed++ : failed++);
+  })
+    ? passed++
+    : failed++;
 
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
