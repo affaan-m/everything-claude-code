@@ -18,7 +18,6 @@ Adds a new agent to the project, including documentation and registration.
 - `AGENTS.md`
 - `README.md`
 - `docs/COMMAND-AGENT-MAP.md`
-- `.codex/agents/*.toml`
 
 ## Suggested Sequence
 
@@ -29,10 +28,10 @@ Adds a new agent to the project, including documentation and registration.
 
 ## Typical Commit Signals
 
-- Create a new agent markdown file under agents/<agent-name>.md
+- Create a new agent documentation file in agents/ (e.g., agents/agent-name.md)
 - Register the agent in AGENTS.md
-- Optionally update README.md and docs/COMMAND-AGENT-MAP.md
-- Optionally add agent TOML config under .codex/agents/
+- Update README.md with agent count or agent list
+- Optionally update docs/COMMAND-AGENT-MAP.md if mapping is needed
 
 ## Notes
 
