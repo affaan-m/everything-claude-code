@@ -36,7 +36,7 @@ impl OrderService {
         Self { repo, payment }
     }
 
-    pub fn place_order(&self, request: CreateOrderRequest) -> Result<OrderSummary> {
+    pub fn place_order(&self, request: CreateOrderRequest) -> anyhow::Result<OrderSummary> {
         let order = Order::from(request);
         self.payment.charge(order.total())?;
         let saved = self.repo.save(&order)?;
@@ -53,7 +53,7 @@ Prevent argument mix-ups with distinct wrapper types:
 struct UserId(u64);
 struct OrderId(u64);
 
-fn get_order(user: UserId, order: OrderId) -> Result<Order> {
+fn get_order(user: UserId, order: OrderId) -> anyhow::Result<Order> {
     // Can't accidentally swap user and order IDs at call sites
     todo!()
 }

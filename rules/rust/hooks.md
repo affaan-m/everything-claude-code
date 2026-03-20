@@ -2,7 +2,6 @@
 paths:
   - "**/*.rs"
   - "**/Cargo.toml"
-  - "**/Cargo.lock"
 ---
 # Rust Hooks
 

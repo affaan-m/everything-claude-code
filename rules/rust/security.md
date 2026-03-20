@@ -18,7 +18,7 @@ paths:
 const API_KEY: &str = "sk-abc123...";
 
 // GOOD — environment variable with early validation
-fn load_api_key() -> Result<String> {
+fn load_api_key() -> anyhow::Result<String> {
     std::env::var("PAYMENT_API_KEY")
         .context("PAYMENT_API_KEY must be set")
 }
@@ -34,9 +34,9 @@ fn load_api_key() -> Result<String> {
 let query = format!("SELECT * FROM users WHERE name = '{name}'");
 sqlx::query(&query).fetch_one(&pool).await?;
 
-// GOOD — parameterized query with sqlx (placeholder syntax varies by backend:
-//   Postgres: $1, $2  |  MySQL: ?  |  SQLite: ?1 or ?)
-sqlx::query("SELECT * FROM users WHERE name = ?")
+// GOOD — parameterized query with sqlx
+// Placeholder syntax varies by backend: Postgres: $1  |  MySQL: ?  |  SQLite: $1
+sqlx::query("SELECT * FROM users WHERE name = $1")
     .bind(&name)
     .fetch_one(&pool)
     .await?;

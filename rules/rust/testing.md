@@ -12,7 +12,7 @@ paths:
 - **rstest** for parameterized tests and fixtures
 - **proptest** for property-based testing
 - **mockall** for trait-based mocking
-- **tokio::test** for async tests
+- **`#[tokio::test]`** for async tests
 
 ## Test Organization
 
@@ -87,33 +87,35 @@ async fn fetches_data_successfully() {
 Define traits in production code; generate mocks in test modules:
 
 ```rust
-use mockall::predicate::eq;
-
 // Production trait — pub so integration tests can import it
 pub trait UserRepository {
     fn find_by_id(&self, id: u64) -> Option<User>;
 }
 
-// Generate mock inside a test module
 #[cfg(test)]
-mockall::mock! {
-    pub UserRepository {}
-    impl UserRepository for UserRepository {
-        fn find_by_id(&self, id: u64) -> Option<User>;
+mod tests {
+    use super::*;
+    use mockall::predicate::eq;
+
+    mockall::mock! {
+        pub Repo {}
+        impl UserRepository for Repo {
+            fn find_by_id(&self, id: u64) -> Option<User>;
+        }
     }
-}
 
-#[test]
-fn service_returns_user_when_found() {
-    let mut mock = MockUserRepository::new();
-    mock.expect_find_by_id()
-        .with(eq(42))
-        .times(1)
-        .returning(|_| Some(User { id: 42, name: "Alice".into() }));
+    #[test]
+    fn service_returns_user_when_found() {
+        let mut mock = MockRepo::new();
+        mock.expect_find_by_id()
+            .with(eq(42))
+            .times(1)
+            .returning(|_| Some(User { id: 42, name: "Alice".into() }));
 
-    let service = UserService::new(Box::new(mock));
-    let user = service.get_user(42).unwrap();
-    assert_eq!(user.name, "Alice");
+        let service = UserService::new(Box::new(mock));
+        let user = service.get_user(42).unwrap();
+        assert_eq!(user.name, "Alice");
+    }
 }
 ```
 
@@ -143,7 +145,7 @@ cargo test                       # Run all tests
 cargo test -- --nocapture        # Show println output
 cargo test test_name             # Run tests matching pattern
 cargo test --lib                 # Unit tests only
-cargo test --test integration    # Specific integration test
+cargo test --test api_test       # Specific integration test (tests/api_test.rs)
 cargo test --doc                 # Doc tests only
 ```
 

@@ -22,6 +22,8 @@ Rust variables are immutable by default — embrace this:
 - Use `Cow<'_, T>` when a function may or may not need to allocate
 
 ```rust
+use std::borrow::Cow;
+
 // GOOD — immutable by default, new value returned
 fn normalize(input: &str) -> Cow<'_, str> {
     if input.contains(' ') {
@@ -88,6 +90,8 @@ pub enum ConfigError {
 }
 
 // GOOD — application error with anyhow
+use anyhow::Context;
+
 fn load_config(path: &str) -> anyhow::Result<Config> {
     let content = std::fs::read_to_string(path)
         .with_context(|| format!("failed to read {path}"))?;
