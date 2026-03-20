@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"C:/Users/Ankit Jangir/Workspace/Ankit/everything-claude-code/skills/frappe-development\")",
+      "Bash(mkdir -p \"C:/Users/Ankit Jangir/Workspace/Ankit/everything-claude-code/skills/pm-workflow\")",
+      "Bash(mkdir -p \"C:/Users/Ankit Jangir/Workspace/Ankit/everything-claude-code/skills/qa-testing\")",
+      "Bash(mkdir -p \"C:/Users/Ankit Jangir/Workspace/Ankit/everything-claude-code/skills/devops-loadtesting\")",
+      "Bash(mkdir -p \"C:/Users/Ankit Jangir/Workspace/Ankit/everything-claude-code/skills/github-analytics\")",
+      "Bash(npm install:*)",
+      "Bash(node scripts/install-apply.js typescript)",
+      "WebFetch(domain:doot-workspaces.github.io)",
+      "Bash(wc:*)",
+      "Bash(ls -1d \"C:\\\\Users\\\\Ankit Jangir\\\\Workspace\\\\Ankit\\\\everything-claude-code\\\\skills\"/*)",
+      "Bash(gh run:*)",
+      "Bash(gh api:*)"
+    ]
+  }
+}
