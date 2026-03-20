@@ -416,6 +416,36 @@ async function runTests() {
   else failed++;
 
   if (
+    await asyncTest('strips ANSI escape codes from injected session content', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-ansi-start-${Date.now()}`);
+      const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-11-winansi00-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        '\x1b[H\x1b[2J\x1b[3J# Real Session\n\nI worked on \x1b[1;36mWindows terminal handling\x1b[0m.\x1b[K\n'
+      );
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome
+        });
+        assert.strictEqual(result.code, 0);
+        assert.ok(result.stdout.includes('Previous session summary'), 'Should inject real session content');
+        assert.ok(result.stdout.includes('Windows terminal handling'), 'Should preserve sanitized session text');
+        assert.ok(!result.stdout.includes('\x1b['), 'Should not emit ANSI escape codes');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
     await asyncTest('reports learned skills count', async () => {
       const isoHome = path.join(os.tmpdir(), `ecc-skills-start-${Date.now()}`);
       const learnedDir = path.join(isoHome, '.claude', 'skills', 'learned');
