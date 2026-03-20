@@ -8,6 +8,21 @@ origin: ECC
 
 Comprehensive, library-agnostic checklist for reviewing Flutter/Dart applications. These principles apply regardless of which state management solution, routing library, or DI framework is used.
 
+## When to Use
+
+- Reviewing Flutter/Dart pull requests
+- Pre-commit code quality checks
+- Onboarding new team members to Flutter review standards
+- Auditing an existing Flutter codebase for quality and consistency
+
+## How It Works
+
+Apply the 15-section checklist below systematically to the code under review. Each section is severity-tagged (CRITICAL, HIGH, MEDIUM, LOW) matching the `flutter-reviewer` agent's priorities. Start with Architecture and State Management (CRITICAL), then work through HIGH and MEDIUM sections.
+
+## Examples
+
+See Section 4 (State Management) for code examples comparing boolean flag soup vs sealed types and reactive approaches. The State Management Quick Reference table at the end maps universal review principles to solution-specific implementations.
+
 ---
 
 ## 1. General Project Health
@@ -416,7 +431,7 @@ The table below maps universal principles to their implementation in popular sol
 | UI consumer | `BlocBuilder` | `ConsumerWidget` | `Consumer` | `Obx`/`GetBuilder` | `Observer` | `Watch` | `setState` |
 | Selector | `BlocSelector`/`buildWhen` | `ref.watch(p.select(...))` | `Selector` | N/A | computed | `computed()` | N/A |
 | Side effects | `BlocListener` | `ref.listen` | `Consumer` callback | `ever()`/`once()` | `reaction` | `effect()` | callbacks |
-| Disposal | auto via `BlocProvider` | `.autoDispose` | auto via `Provider` | `onClose()` | `ReactionDisposer` | manual | `dispose()` |
+| Disposal | auto via `BlocProvider` | `.autoDispose` | auto via `create`; manual with `.value` | `onClose()` | `ReactionDisposer` | manual | `dispose()` |
 | Testing | `blocTest()` | `ProviderContainer` | `ChangeNotifier` directly | `Get.put` in test | store directly | signal directly | widget test |
 
 ---

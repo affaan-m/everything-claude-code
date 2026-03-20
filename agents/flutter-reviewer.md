@@ -21,7 +21,7 @@ You are a senior Flutter and Dart code reviewer ensuring idiomatic, performant, 
 
 Run `git diff --staged` and `git diff` to see changes. If no diff, check `git log --oneline -5`. Identify changed Dart files.
 
-### Step 2: Understand Project Structure
+### Step 2a: Understand Project Structure
 
 Check for:
 - `pubspec.yaml` — dependencies and project type
@@ -119,7 +119,7 @@ Adapt to the project's chosen architecture (Clean Architecture, MVVM, feature-fi
 ### Dart Idioms (MEDIUM)
 
 - **Missing type annotations / implicit `dynamic`** — Enable `strict-casts`, `strict-inference`, `strict-raw-types` to catch these
-- **`!` bang overuse** — Prefer `?.`, `??`, `case var v?`, or `requireNotNull`
+- **`!` bang overuse** — Prefer `?.`, `??`, `case var v?`, or null-check patterns
 - **Broad exception catching** — `catch (e)` without `on` clause; specify exception types
 - **Catching `Error` subtypes** — `Error` indicates bugs, not recoverable conditions
 - **`var` where `final` works** — Prefer `final` for locals, `const` for compile-time constants
