@@ -127,6 +127,8 @@ generate_prompt_file() {
   } > "$out"
 }
 
+MCP_MERGE_SCRIPT="$REPO_ROOT/scripts/codex/merge-mcp-config.js"
+
 require_path "$REPO_ROOT/AGENTS.md" "ECC AGENTS.md"
 require_path "$AGENTS_CODEX_SUPP_SRC" "ECC Codex AGENTS supplement"
 require_path "$SKILLS_SRC" "ECC skills directory"
@@ -135,6 +137,12 @@ require_path "$HOOKS_INSTALLER" "ECC global git hooks installer"
 require_path "$SANITY_CHECKER" "ECC global sanity checker"
 require_path "$CURSOR_RULES_DIR" "ECC Cursor rules directory"
 require_path "$CONFIG_FILE" "Codex config.toml"
+require_path "$MCP_MERGE_SCRIPT" "ECC MCP merge script"
+
+if ! command -v node >/dev/null 2>&1; then
+  log "ERROR: node is required for MCP config merging but was not found"
+  exit 1
+fi
 
 log "Mode: $MODE"
 log "Repo root: $REPO_ROOT"
@@ -187,16 +195,31 @@ else
     compose_ecc_block > "$AGENTS_FILE"
   elif awk -v b="$ECC_BEGIN_MARKER" -v e="$ECC_END_MARKER" '
         { gsub(/\r$/, "") }
-        $0 == b { found_b = NR } $0 == e { found_e = NR }
-        END { exit !(found_b && found_e && found_b < found_e) }
+        $0 == b { bc++; if (!fb) fb = NR }
+        $0 == e { ec++; if (!fe) fe = NR }
+        END { exit !(bc == 1 && ec == 1 && fb < fe) }
       ' "$AGENTS_FILE"; then
-    # Existing file with matched, correctly ordered ECC markers — replace only the ECC section
+    # Exactly one BEGIN/END pair in correct order — replace only the ECC section
     replace_ecc_section
-  elif grep -qF "$ECC_BEGIN_MARKER" "$AGENTS_FILE"; then
-    # BEGIN marker exists but END marker is missing (corrupted). Warn and
-    # replace the file entirely to restore a valid state. Backup was saved.
-    log "WARNING: found BEGIN marker but no END marker — replacing file (backup saved)"
-    compose_ecc_block > "$AGENTS_FILE"
+  elif awk -v b="$ECC_BEGIN_MARKER" -v e="$ECC_END_MARKER" '
+        { gsub(/\r$/, "") }
+        $0 == b { bc++ } $0 == e { ec++ }
+        END { exit !((bc + ec) > 0) }
+      ' "$AGENTS_FILE"; then
+    # Markers present but not exactly one valid BEGIN/END pair (missing END,
+    # duplicates, or out-of-order). Strip all marker lines, then append a
+    # fresh marked block. This preserves user content outside markers.
+    log "WARNING: ECC markers found but not a clean pair — stripping markers and re-appending"
+    _fix_tmp="$(mktemp)"
+    awk -v b="$ECC_BEGIN_MARKER" -v e="$ECC_END_MARKER" '
+      { gsub(/\r$/, "") }
+      $0 == b { skip = 1; next }
+      $0 == e { skip = 0; next }
+      !skip   { print }
+    ' "$AGENTS_FILE" > "$_fix_tmp"
+    cat "$_fix_tmp" > "$AGENTS_FILE"
+    rm -f "$_fix_tmp"
+    { printf '\n\n'; compose_ecc_block; } >> "$AGENTS_FILE"
   else
     # Existing file without markers — append ECC block, preserving existing content.
     # Legacy ECC-only files will have duplicate content after this first run, but
@@ -437,8 +460,6 @@ EOF
 if [[ "$MODE" == "apply" ]]; then
   sort -u "$extension_manifest" -o "$extension_manifest"
 fi
-
-MCP_MERGE_SCRIPT="$REPO_ROOT/scripts/codex/merge-mcp-config.js"
 
 log "Merging ECC MCP servers into $CONFIG_FILE (add-only, preserving user config)"
 if [[ "$MODE" == "dry-run" ]]; then
