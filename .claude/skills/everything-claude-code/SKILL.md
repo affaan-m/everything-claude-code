@@ -40,7 +40,7 @@ Follow these commit message conventions based on 500 analyzed commits.
 
 ### Message Guidelines
 
-- Average message length: ~65 characters
+- Average message length: ~66 characters
 - Keep first line concise and descriptive
 - Use imperative mood ("Add feature" not "Added feature")
 
@@ -48,7 +48,7 @@ Follow these commit message conventions based on 500 analyzed commits.
 *Commit message example*
 
 ```text
-feat: add everything-claude-code ECC bundle (.claude/commands/add-new-language-rules.md)
+feat: add everything-claude-code ECC bundle (.claude/commands/add-language-rules.md)
 ```
 
 *Commit message example*
@@ -196,21 +196,20 @@ Database schema changes with migration files
 3. Generate/update types
 
 **Files typically involved**:
-- `**/schema.*`
 - `migrations/*`
 
 **Example commit sequence**:
 ```
-feat: implement --with/--without selective install flags (#679)
-fix: sync catalog counts with filesystem (27 agents, 113 skills, 58 commands) (#693)
-feat(rules): add Rust language rules (rebased #660) (#686)
+Add Kiro IDE support (.kiro/) (#548)
+Revert "Add Kiro IDE support (.kiro/) (#548)"
+feat(rules): add C# language support
 ```
 
 ### Feature Development
 
 Standard feature implementation workflow
 
-**Frequency**: ~28 times per month
+**Frequency**: ~30 times per month
 
 **Steps**:
 1. Add feature implementation
@@ -218,175 +217,84 @@ Standard feature implementation workflow
 3. Update documentation
 
 **Files typically involved**:
-- `manifests/*`
-- `schemas/*`
 - `**/*.test.*`
 - `**/api/**`
 
 **Example commit sequence**:
 ```
-Merge pull request #664 from ymdvsymd/fix/observer-sandbox-access-661
-feat(skills): add agent-eval for head-to-head coding agent comparison (#540)
-feat(skills): add codebase-onboarding skill (#553)
+feat(skills): add rules-distill skill (rebased #561) (#678)
+feat: add block-no-verify hook for Claude Code and Cursor (#649)
+Add Kiro IDE support (.kiro/) (#548)
 ```
 
-### Add Language Rules
+### Add Command Or Skill Bundle
 
-Adds a new programming language's rules (style, hooks, patterns, security, testing) to the rules/ directory.
+Adds a new command or skill bundle to the ECC system, typically by creating or updating files in .claude/commands/, .claude/skills/, .agents/skills/, or related directories.
 
-**Frequency**: ~2 times per month
+**Frequency**: ~10 times per month
 
 **Steps**:
-1. Create rules/<language>/coding-style.md
-2. Create rules/<language>/hooks.md
-3. Create rules/<language>/patterns.md
-4. Create rules/<language>/security.md
-5. Create rules/<language>/testing.md
+1. Create or update a markdown or JSON file in .claude/commands/, .claude/skills/, .agents/skills/, .claude/team/, .claude/rules/, .claude/research/, .claude/enterprise/, .codex/agents/, or similar directories.
+2. Commit the new or updated file(s) with a message indicating the addition of an ECC bundle.
 
 **Files typically involved**:
-- `rules/*/coding-style.md`
-- `rules/*/hooks.md`
-- `rules/*/patterns.md`
-- `rules/*/security.md`
-- `rules/*/testing.md`
+- `.claude/commands/*.md`
+- `.claude/skills/*/SKILL.md`
+- `.agents/skills/*/SKILL.md`
+- `.claude/team/*.json`
+- `.claude/rules/*.md`
+- `.claude/research/*.md`
+- `.claude/enterprise/*.md`
+- `.codex/agents/*.toml`
+- `.claude/identity.json`
+- `.claude/ecc-tools.json`
 
 **Example commit sequence**:
 ```
-Create rules/<language>/coding-style.md
-Create rules/<language>/hooks.md
-Create rules/<language>/patterns.md
-Create rules/<language>/security.md
-Create rules/<language>/testing.md
+Create or update a markdown or JSON file in .claude/commands/, .claude/skills/, .agents/skills/, .claude/team/, .claude/rules/, .claude/research/, .claude/enterprise/, .codex/agents/, or similar directories.
+Commit the new or updated file(s) with a message indicating the addition of an ECC bundle.
 ```
 
-### Add Skill
+### Language Support Rules Bundle
 
-Adds a new skill to the system, including implementation, documentation, and supporting scripts.
-
-**Frequency**: ~3 times per month
-
-**Steps**:
-1. Create skills/<skill-name>/SKILL.md
-2. Optionally add scripts in skills/<skill-name>/scripts/
-3. Update README.md and AGENTS.md to increment skill/command counts and document the new skill
-
-**Files typically involved**:
-- `skills/*/SKILL.md`
-- `skills/*/scripts/*.sh`
-- `README.md`
-- `AGENTS.md`
-
-**Example commit sequence**:
-```
-Create skills/<skill-name>/SKILL.md
-Optionally add scripts in skills/<skill-name>/scripts/
-Update README.md and AGENTS.md to increment skill/command counts and document the new skill
-```
-
-### Add Command
-
-Adds a new command to the commands/ directory, often with a corresponding skill.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create commands/<command-name>.md
-2. Optionally create a corresponding skill in skills/<command-name>/SKILL.md
-3. Update README.md and AGENTS.md to increment command/skill counts
-
-**Files typically involved**:
-- `commands/*.md`
-- `skills/*/SKILL.md`
-- `README.md`
-- `AGENTS.md`
-
-**Example commit sequence**:
-```
-Create commands/<command-name>.md
-Optionally create a corresponding skill in skills/<command-name>/SKILL.md
-Update README.md and AGENTS.md to increment command/skill counts
-```
-
-### Sync Catalog Counts
-
-Synchronizes documented counts of agents, skills, and commands in README.md and AGENTS.md to match the actual filesystem state.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Count actual agents, skills, and commands in the filesystem
-2. Update README.md and AGENTS.md with the correct numbers
-
-**Files typically involved**:
-- `README.md`
-- `AGENTS.md`
-
-**Example commit sequence**:
-```
-Count actual agents, skills, and commands in the filesystem
-Update README.md and AGENTS.md with the correct numbers
-```
-
-### Add Agent Support For Ide
-
-Adds or removes a full set of agent, hook, skill, and steering files for IDE integration (e.g., Kiro IDE).
+Adds support for a new programming language by creating a set of rules and patterns files for that language.
 
 **Frequency**: ~1 times per month
 
 **Steps**:
-1. Add or remove .kiro/agents/*.json and .kiro/agents/*.md
-2. Add or remove .kiro/hooks/*.kiro.hook
-3. Add or remove .kiro/skills/*/SKILL.md
-4. Add or remove .kiro/steering/*.md
-5. Add or remove .kiro/scripts/*.sh
-6. Add or remove .kiro/docs/*.md
+1. Create a new directory under rules/ for the language.
+2. Add multiple markdown files: coding-style.md, hooks.md, patterns.md, security.md, testing.md.
+3. Commit all new files together with a message indicating language support.
 
 **Files typically involved**:
-- `.kiro/agents/*.json`
-- `.kiro/agents/*.md`
-- `.kiro/hooks/*.kiro.hook`
-- `.kiro/skills/*/SKILL.md`
-- `.kiro/steering/*.md`
-- `.kiro/scripts/*.sh`
-- `.kiro/docs/*.md`
+- `rules/<language>/*.md`
 
 **Example commit sequence**:
 ```
-Add or remove .kiro/agents/*.json and .kiro/agents/*.md
-Add or remove .kiro/hooks/*.kiro.hook
-Add or remove .kiro/skills/*/SKILL.md
-Add or remove .kiro/steering/*.md
-Add or remove .kiro/scripts/*.sh
-Add or remove .kiro/docs/*.md
+Create a new directory under rules/ for the language.
+Add multiple markdown files: coding-style.md, hooks.md, patterns.md, security.md, testing.md.
+Commit all new files together with a message indicating language support.
 ```
 
-### Add Or Update Ecc Bundle Docs
+### Add Or Revert Large Feature Bundle
 
-Adds or updates ECC bundle documentation and configuration files under .claude/, .codex/, or .agents/ directories.
+Adds or reverts a large, multi-file feature or integration (such as IDE support), involving many agent, skill, hook, and documentation files.
 
-**Frequency**: ~3 times per month
+**Frequency**: ~1 times per month
 
 **Steps**:
-1. Add or update markdown or JSON files in .claude/commands/, .claude/rules/, .claude/skills/, .claude/research/, .claude/team/, .claude/enterprise/
-2. Add or update TOML files in .codex/agents/
-3. Add or update SKILL.md or YAML files in .agents/skills/
+1. Add or remove a large set of files under a new or existing directory (e.g., .kiro/).
+2. Include multiple agent definitions, skills, hooks, scripts, and documentation files.
+3. Commit all files in a single commit with a descriptive message.
 
 **Files typically involved**:
-- `.claude/commands/*.md`
-- `.claude/rules/*.md`
-- `.claude/skills/*/SKILL.md`
-- `.claude/research/*.md`
-- `.claude/team/*.json`
-- `.claude/enterprise/*.md`
-- `.codex/agents/*.toml`
-- `.agents/skills/*/SKILL.md`
-- `.agents/skills/*/agents/*.yaml`
+- `.kiro/**/*`
 
 **Example commit sequence**:
 ```
-Add or update markdown or JSON files in .claude/commands/, .claude/rules/, .claude/skills/, .claude/research/, .claude/team/, .claude/enterprise/
-Add or update TOML files in .codex/agents/
-Add or update SKILL.md or YAML files in .agents/skills/
+Add or remove a large set of files under a new or existing directory (e.g., .kiro/).
+Include multiple agent definitions, skills, hooks, scripts, and documentation files.
+Commit all files in a single commit with a descriptive message.
 ```
 
 
