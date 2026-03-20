@@ -216,6 +216,10 @@ test('counter file handles missing/corrupt file gracefully', () => {
 console.log('\n--- observe.sh end-to-end throttle (shell execution) ---');
 
 test('observe.sh creates counter file and increments on each call', () => {
+  if (process.platform === 'win32') {
+    return;
+  }
+
   // This test runs observe.sh with minimal input to verify counter behavior.
   // We need python3, bash, and a valid project dir to test the full flow.
   // We use ECC_SKIP_OBSERVE=0 and minimal JSON so observe.sh processes but
