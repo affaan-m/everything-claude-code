@@ -10,10 +10,11 @@ Use this workflow when working on **add-new-agent-command** in `everything-claud
 
 ## Goal
 
-Adds documentation for the workflow to add a new agent to the system.
+Adds a new agent command to the system, documenting how to add a new agent.
 
 ## Common Files
 
+- `.claude/commands/add-new-agent-command.md`
 - `.claude/commands/add-new-agent.md`
 
 ## Suggested Sequence
@@ -25,7 +26,7 @@ Adds documentation for the workflow to add a new agent to the system.
 
 ## Typical Commit Signals
 
-- Create or update .claude/commands/add-new-agent.md with instructions or templates for adding a new agent.
+- Create or update .claude/commands/add-new-agent-command.md or .claude/commands/add-new-agent.md
 
 ## Notes
 
