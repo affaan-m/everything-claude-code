@@ -14,7 +14,6 @@ Standard feature implementation workflow
 
 ## Common Files
 
-- `manifests/*`
 - `**/*.test.*`
 
 ## Suggested Sequence
