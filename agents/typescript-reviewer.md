@@ -91,7 +91,7 @@ You DO NOT refactor or rewrite code — you report findings only.
 tsc --noEmit -p tsconfig.json        # Type checking (or point -p at the relevant tsconfig.*.json)
 eslint . --ext .ts,.tsx,.js,.jsx    # Linting
 prettier --check .                  # Format check
-npm audit                           # Dependency vulnerabilities
+npm audit                           # Dependency vulnerabilities (or the equivalent yarn/pnpm/bun audit command)
 vitest run                          # Tests (Vitest)
 jest --ci                           # Tests (Jest)
 ```
