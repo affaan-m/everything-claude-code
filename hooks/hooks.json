@@ -95,6 +95,16 @@
           }
         ],
         "description": "Capture governance events (secrets, policy violations, approval requests). Enable with ECC_GOVERNANCE_CAPTURE=1"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:mcp-health-check\" \"scripts/hooks/mcp-health-check.js\" \"standard,strict\""
+          }
+        ],
+        "description": "Check MCP server health before MCP tool execution and block unhealthy MCP calls"
       }
     ],
     "PreCompact": [
@@ -208,6 +218,18 @@
           }
         ],
         "description": "Capture tool use results for continuous learning"
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:mcp-health-check\" \"scripts/hooks/mcp-health-check.js\" \"standard,strict\""
+          }
+        ],
+        "description": "Track failed MCP tool calls, mark unhealthy servers, and attempt reconnect"
       }
     ],
     "Stop": [

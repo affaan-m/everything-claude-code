@@ -313,6 +313,50 @@ async function runTests() {
     }
   })) passed++; else failed++;
 
+  if (await asyncTest('MCP health hook blocks unhealthy MCP tool calls through hooks.json', async () => {
+    const hookCommand = getHookCommandByDescription(
+      hooks,
+      'PreToolUse',
+      'Check MCP server health before MCP tool execution'
+    );
+
+    const testDir = createTestDir();
+    const configPath = path.join(testDir, 'claude.json');
+    const statePath = path.join(testDir, 'mcp-health.json');
+    const serverScript = path.join(testDir, 'broken-mcp.js');
+
+    try {
+      fs.writeFileSync(serverScript, 'process.exit(1);\n');
+      fs.writeFileSync(
+        configPath,
+        JSON.stringify({
+          mcpServers: {
+            broken: {
+              command: process.execPath,
+              args: [serverScript]
+            }
+          }
+        })
+      );
+
+      const result = await runHookCommand(
+        hookCommand,
+        { tool_name: 'mcp__broken__search', tool_input: {} },
+        {
+          CLAUDE_HOOK_EVENT_NAME: 'PreToolUse',
+          ECC_MCP_CONFIG_PATH: configPath,
+          ECC_MCP_HEALTH_STATE_PATH: statePath,
+          ECC_MCP_HEALTH_TIMEOUT_MS: '100'
+        }
+      );
+
+      assert.strictEqual(result.code, 2, 'Expected unhealthy MCP preflight to block');
+      assert.ok(result.stderr.includes('broken is unavailable'), `Expected health warning, got: ${result.stderr}`);
+    } finally {
+      cleanupTestDir(testDir);
+    }
+  })) passed++; else failed++;
+
   if (await asyncTest('hooks handle missing files gracefully', async () => {
     const testDir = createTestDir();
     const transcriptPath = path.join(testDir, 'nonexistent.jsonl');
