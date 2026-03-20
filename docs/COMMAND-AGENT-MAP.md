@@ -46,6 +46,10 @@ This document lists each slash command and the primary agent(s) or skills it inv
 | `/pm2` | — | PM2 service lifecycle |
 | `/security-scan` | security-reviewer (skill) | AgentShield via security-scan skill |
 
+## Direct-Use Agents
+
+- `typescript-reviewer`: Available for direct agent invocation when a task needs TypeScript/JavaScript-specific review. There is no dedicated slash command for it yet.
+
 ## Skills referenced by commands
 
 - **continuous-learning**, **continuous-learning-v2**: `/learn`, `/learn-eval`, `/instinct-*`, `/evolve`, `/promote`, `/projects`

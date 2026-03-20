@@ -262,10 +262,14 @@ everything-claude-code/
 |   |-- e2e-runner.md        # Playwright E2E testing
 |   |-- refactor-cleaner.md  # Dead code cleanup
 |   |-- doc-updater.md       # Documentation sync
+|   |-- docs-lookup.md       # Documentation/API lookup
+|   |-- cpp-reviewer.md      # C++ code review
+|   |-- cpp-build-resolver.md # C++ build error resolution
 |   |-- go-reviewer.md       # Go code review
 |   |-- go-build-resolver.md # Go build error resolution
 |   |-- python-reviewer.md   # Python code review (NEW)
 |   |-- database-reviewer.md # Database/Supabase review (NEW)
+|   |-- typescript-reviewer.md # TypeScript/JavaScript code review (NEW)
 |
 |-- skills/           # Workflow definitions and domain knowledge
 |   |-- coding-standards/           # Language best practices
@@ -720,6 +724,7 @@ Not sure where to start? Use this quick reference:
 | Update documentation | `/update-docs` | doc-updater |
 | Review Go code | `/go-review` | go-reviewer |
 | Review Python code | `/python-review` | python-reviewer |
+| Review TypeScript/JavaScript code | *(invoke `typescript-reviewer` directly)* | typescript-reviewer |
 | Audit database queries | *(auto-delegated)* | database-reviewer |
 
 ### Common Workflows
