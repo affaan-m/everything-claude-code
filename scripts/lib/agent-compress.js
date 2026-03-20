@@ -160,7 +160,7 @@ const allowedModes = ['catalog', 'summary', 'full'];
  *  - 'summary': catalog + first paragraph summary (~4-5k tokens)
  *  - 'full':    no compression, full body included
  *
- * Returns { agents: [], stats: { totalAgents, originalBytes, compressedTokenEstimate } }
+ * Returns { agents: [], stats: { totalAgents, originalBytes, compressedBytes, compressedTokenEstimate, mode } }
  */
 function buildAgentCatalog(agentsDir, options = {}) {
   const mode = options.mode || 'catalog';
