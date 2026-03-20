@@ -10,7 +10,7 @@ Use this workflow when working on **add-new-skill** in `everything-claude-code`.
 
 ## Goal
 
-Adds a new skill to the project, including documentation and implementation.
+Adds a new skill to the project, including documentation and agent harnesses.
 
 ## Common Files
 
@@ -28,10 +28,9 @@ Adds a new skill to the project, including documentation and implementation.
 
 ## Typical Commit Signals
 
-- Create a new SKILL.md file under skills/<skill-name>/SKILL.md
-- Optionally add agent YAML under .agents/skills/<skill-name>/agents/openai.yaml
-- Optionally add cross-harness skill docs under .agents/skills/ and .cursor/skills/
-- Register or update related documentation if needed
+- Create SKILL.md in skills/skill-name/
+- Create SKILL.md in .agents/skills/skill-name/ and/or .cursor/skills/skill-name/ for cross-harness support
+- Add agents/openai.yaml in .agents/skills/skill-name/ if applicable
 
 ## Notes
 
