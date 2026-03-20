@@ -16,7 +16,6 @@ Standard feature implementation workflow
 
 - `manifests/*`
 - `**/*.test.*`
-- `**/api/**`
 
 ## Suggested Sequence
 
