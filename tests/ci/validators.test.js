@@ -53,6 +53,34 @@ function writeInstallComponentsManifest(testDir, components) {
 }
 
 /**
+ * Run modified source via a temp file (avoids Windows node -e shebang issues).
+ * The temp file is written inside the repo so require() can resolve node_modules.
+ * @param {string} source - JavaScript source to execute
+ * @returns {{code: number, stdout: string, stderr: string}}
+ */
+function runSourceViaTempFile(source) {
+  const tmpFile = path.join(repoRoot, `.tmp-validator-${Date.now()}-${Math.random().toString(36).slice(2)}.js`);
+  try {
+    fs.writeFileSync(tmpFile, source, 'utf8');
+    const stdout = execFileSync('node', [tmpFile], {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+      timeout: 10000,
+      cwd: repoRoot,
+    });
+    return { code: 0, stdout, stderr: '' };
+  } catch (err) {
+    return {
+      code: err.status || 1,
+      stdout: err.stdout || '',
+      stderr: err.stderr || '',
+    };
+  } finally {
+    try { fs.unlinkSync(tmpFile); } catch (_) { /* ignore cleanup errors */ }
+  }
+}
+
+/**
  * Run a validator script via a wrapper that overrides its directory constant.
  * This allows testing error cases without modifying real project files.
  *
@@ -67,27 +95,14 @@ function runValidatorWithDir(validatorName, dirConstant, overridePath) {
   // Read the validator source, replace the directory constant, and run as a wrapper
   let source = fs.readFileSync(validatorPath, 'utf8');
 
-  // Remove the shebang line
+  // Remove the shebang line (Windows node cannot parse shebangs in eval/inline mode)
   source = source.replace(/^#!.*\n/, '');
 
   // Replace the directory constant with our override path
   const dirRegex = new RegExp(`const ${dirConstant} = .*?;`);
   source = source.replace(dirRegex, `const ${dirConstant} = ${JSON.stringify(overridePath)};`);
 
-  try {
-    const stdout = execFileSync('node', ['-e', source], {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-      timeout: 10000,
-    });
-    return { code: 0, stdout, stderr: '' };
-  } catch (err) {
-    return {
-      code: err.status || 1,
-      stdout: err.stdout || '',
-      stderr: err.stderr || '',
-    };
-  }
+  return runSourceViaTempFile(source);
 }
 
 /**
@@ -103,20 +118,7 @@ function runValidatorWithDirs(validatorName, overrides) {
     const dirRegex = new RegExp(`const ${constant} = .*?;`);
     source = source.replace(dirRegex, `const ${constant} = ${JSON.stringify(overridePath)};`);
   }
-  try {
-    const stdout = execFileSync('node', ['-e', source], {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-      timeout: 10000,
-    });
-    return { code: 0, stdout, stderr: '' };
-  } catch (err) {
-    return {
-      code: err.status || 1,
-      stdout: err.stdout || '',
-      stderr: err.stderr || '',
-    };
-  }
+  return runSourceViaTempFile(source);
 }
 
 /**
@@ -158,20 +160,7 @@ function runCatalogValidator(overrides = {}) {
     source = source.replace(dirRegex, `const ${constant} = ${JSON.stringify(overridePath)};`);
   }
 
-  try {
-    const stdout = execFileSync('node', ['-e', source], {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-      timeout: 10000,
-    });
-    return { code: 0, stdout, stderr: '' };
-  } catch (err) {
-    return {
-      code: err.status || 1,
-      stdout: err.stdout || '',
-      stderr: err.stderr || '',
-    };
-  }
+  return runSourceViaTempFile(source);
 }
 
 function writeCatalogFixture(testDir, options = {}) {

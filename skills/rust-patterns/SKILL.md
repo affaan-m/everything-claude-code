@@ -43,7 +43,6 @@ fn process_bad(data: &Vec<u8>) -> usize {
 }
 ```
 
-
 ### Use `Cow` for Flexible Ownership
 
 ```rust
