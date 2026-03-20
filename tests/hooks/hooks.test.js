@@ -203,6 +203,31 @@ function createCommandShim(binDir, baseName, logFile) {
   return shimPath;
 }
 
+function createDelayedCommandShim(binDir, baseName, logFile, delayMs) {
+  fs.mkdirSync(binDir, { recursive: true });
+
+  const shimJs = path.join(binDir, `${baseName}-delay-shim.js`);
+  fs.writeFileSync(
+    shimJs,
+    [
+      "const fs = require('fs');",
+      `fs.appendFileSync(${JSON.stringify(logFile)}, JSON.stringify({ bin: ${JSON.stringify(baseName)}, args: process.argv.slice(2), cwd: process.cwd(), pid: process.pid }) + '\\n');`,
+      `Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ${Math.max(0, Number(delayMs) || 0)});`
+    ].join('\n')
+  );
+
+  if (process.platform === 'win32') {
+    const shimCmd = path.join(binDir, `${baseName}.cmd`);
+    fs.writeFileSync(shimCmd, `@echo off\r\nnode "${shimJs}" %*\r\n`);
+    return shimCmd;
+  }
+
+  const shimPath = path.join(binDir, baseName);
+  fs.writeFileSync(shimPath, `#!/usr/bin/env node\nrequire(${JSON.stringify(shimJs)});\n`);
+  fs.chmodSync(shimPath, 0o755);
+  return shimPath;
+}
+
 function readCommandLog(logFile) {
   if (!fs.existsSync(logFile)) return [];
   return fs
@@ -1385,6 +1410,77 @@ async function runTests() {
       const result = await runScript(path.join(scriptsDir, 'post-edit-typecheck.js'), stdinJson);
       assert.strictEqual(result.code, 0);
       assert.ok(result.stdout.includes('tool_input'), 'Should pass through stdin data on stdout');
+      cleanupTestDir(testDir);
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('coalesces repeated typechecks within the cooldown window', async () => {
+      const testDir = createTestDir();
+      const testFile = path.join(testDir, 'cooled.ts');
+      const binDir = path.join(testDir, 'bin');
+      const logFile = path.join(testDir, 'npx.log');
+      const stateDir = path.join(testDir, 'state');
+
+      fs.writeFileSync(
+        path.join(testDir, 'tsconfig.json'),
+        JSON.stringify({ compilerOptions: { strict: true, noEmit: true } })
+      );
+      fs.writeFileSync(testFile, 'export const value: number = 1;\n');
+      createCommandShim(binDir, 'npx', logFile);
+
+      const stdinJson = JSON.stringify({ tool_input: { file_path: testFile } });
+      const env = withPrependedPath(binDir, {
+        ECC_TYPECHECK_COOLDOWN_MS: '60000',
+        ECC_TYPECHECK_STATE_DIR: stateDir
+      });
+
+      const first = await runScript(path.join(scriptsDir, 'post-edit-typecheck.js'), stdinJson, env);
+      const second = await runScript(path.join(scriptsDir, 'post-edit-typecheck.js'), stdinJson, env);
+
+      assert.strictEqual(first.code, 0, 'First run should exit 0');
+      assert.strictEqual(second.code, 0, 'Second run should exit 0');
+      const logEntries = readCommandLog(logFile);
+      assert.strictEqual(logEntries.length, 1, 'Should only run npx tsc once within cooldown');
+      cleanupTestDir(testDir);
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('skips overlapping typechecks for the same tsconfig root', async () => {
+      const testDir = createTestDir();
+      const testFile = path.join(testDir, 'overlap.ts');
+      const binDir = path.join(testDir, 'bin');
+      const logFile = path.join(testDir, 'npx.log');
+      const stateDir = path.join(testDir, 'state');
+
+      fs.writeFileSync(
+        path.join(testDir, 'tsconfig.json'),
+        JSON.stringify({ compilerOptions: { strict: true, noEmit: true } })
+      );
+      fs.writeFileSync(testFile, 'export const value: number = 1;\n');
+      createDelayedCommandShim(binDir, 'npx', logFile, 300);
+
+      const stdinJson = JSON.stringify({ tool_input: { file_path: testFile } });
+      const env = withPrependedPath(binDir, {
+        ECC_TYPECHECK_COOLDOWN_MS: '0',
+        ECC_TYPECHECK_LOCK_TTL_MS: '60000',
+        ECC_TYPECHECK_STATE_DIR: stateDir
+      });
+
+      const firstPromise = runScript(path.join(scriptsDir, 'post-edit-typecheck.js'), stdinJson, env);
+      sleepMs(50);
+      const secondPromise = runScript(path.join(scriptsDir, 'post-edit-typecheck.js'), stdinJson, env);
+      const [first, second] = await Promise.all([firstPromise, secondPromise]);
+
+      assert.strictEqual(first.code, 0, 'First overlapping run should exit 0');
+      assert.strictEqual(second.code, 0, 'Second overlapping run should exit 0');
+      const logEntries = readCommandLog(logFile);
+      assert.strictEqual(logEntries.length, 1, 'Should not spawn concurrent npx tsc runs for the same tsconfig root');
       cleanupTestDir(testDir);
     })
   )
