@@ -7,9 +7,9 @@
     ".agents/skills/everything-claude-code/SKILL.md"
   ],
   "commandFiles": [
-    ".claude/commands/database-migration.md",
     ".claude/commands/feature-development.md",
-    ".claude/commands/add-command-or-skill-bundle.md"
+    ".claude/commands/add-command-or-skill-bundle.md",
+    ".claude/commands/update-team-or-identity-config.md"
   ],
-  "updatedAt": "2026-03-20T12:10:27.987Z"
+  "updatedAt": "2026-03-20T12:11:28.411Z"
 }
