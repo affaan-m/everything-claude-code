@@ -46,6 +46,15 @@ Available skills:
 
 Treat the project-local `.codex/config.toml` as the default Codex baseline for ECC. The current ECC baseline enables GitHub, Context7, Exa, Memory, Playwright, and Sequential Thinking; add heavier extras in `~/.codex/config.toml` only when a task actually needs them.
 
+### Automatic config.toml merging
+
+The sync script (`scripts/sync-ecc-to-codex.sh`) uses a Node-based TOML parser to safely merge ECC MCP servers into `~/.codex/config.toml`:
+
+- **Add-only by default** — missing ECC servers are appended; existing servers are never modified or removed.
+- **Drift warnings** — if an existing server's config differs from the ECC recommendation, the script logs a warning.
+- **`--update-mcp`** — explicitly replaces all ECC-managed servers with the latest recommended config.
+- **User config is always preserved** — custom servers, args, env vars, and credentials outside ECC-managed sections are never touched.
+
 ## Multi-Agent Support
 
 Codex now supports multi-agent workflows behind the experimental `features.multi_agent` flag.

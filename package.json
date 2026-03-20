@@ -80,6 +80,7 @@
     "scripts/orchestrate-worktrees.js",
     "scripts/setup-package-manager.js",
     "scripts/skill-create-output.js",
+    "scripts/codex/merge-mcp-config.js",
     "scripts/repair.js",
     "scripts/harness-audit.js",
     "scripts/session-inspect.js",
@@ -108,6 +109,7 @@
     "coverage": "c8 --all --include=\"scripts/**/*.js\" --check-coverage --lines 80 --functions 80 --branches 80 --statements 80 --reporter=text --reporter=lcov node tests/run-all.js"
   },
   "dependencies": {
+    "@iarna/toml": "^2.2.5",
     "sql.js": "^1.14.1"
   },
   "devDependencies": {

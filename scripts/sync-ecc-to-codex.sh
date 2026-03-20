@@ -9,12 +9,16 @@ set -euo pipefail
 # - Generates Codex QA wrappers and optional language rule-pack prompts
 # - Installs global git safety hooks (pre-commit and pre-push)
 # - Runs a post-sync global regression sanity check
-# - Normalizes MCP server entries to pnpm dlx and removes duplicate Context7 block
+# - Merges ECC MCP servers into config.toml (add-only via Node TOML parser)
 
 MODE="apply"
-if [[ "${1:-}" == "--dry-run" ]]; then
-  MODE="dry-run"
-fi
+UPDATE_MCP=""
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run)    MODE="dry-run" ;;
+    --update-mcp) UPDATE_MCP="--update-mcp" ;;
+  esac
+done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -435,63 +439,13 @@ if [[ "$MODE" == "apply" ]]; then
   sort -u "$extension_manifest" -o "$extension_manifest"
 fi
 
-if [[ "$MODE" == "apply" ]]; then
-  log "Normalizing MCP server config to pnpm"
+MCP_MERGE_SCRIPT="$REPO_ROOT/scripts/codex/merge-mcp-config.js"
 
-  supabase_token="$(extract_toml_value "$CONFIG_FILE" "mcp_servers.supabase.env" "SUPABASE_ACCESS_TOKEN")"
-  context7_key="$(extract_context7_key "$CONFIG_FILE")"
-  github_bootstrap='token=$(gh auth token 2>/dev/null || true); if [ -n "$token" ]; then export GITHUB_PERSONAL_ACCESS_TOKEN="$token"; fi; exec pnpm dlx @modelcontextprotocol/server-github'
-
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.github.env"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.github"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.memory"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.sequential-thinking"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.context7"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.context7-mcp"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.playwright"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.supabase.env"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.supabase"
-
-  {
-    printf '\n[mcp_servers.supabase]\n'
-    printf 'command = "pnpm"\n'
-    printf 'args = ["dlx", "@supabase/mcp-server-supabase@latest", "--features=account,docs,database,debugging,development,functions,storage,branching"]\n'
-    printf 'startup_timeout_sec = 20.0\n'
-    printf 'tool_timeout_sec = 120.0\n'
-
-    if [[ -n "$supabase_token" ]]; then
-      printf '\n[mcp_servers.supabase.env]\n'
-      printf 'SUPABASE_ACCESS_TOKEN = "%s"\n' "$(toml_escape "$supabase_token")"
-    fi
-
-    printf '\n[mcp_servers.playwright]\n'
-    printf 'command = "pnpm"\n'
-    printf 'args = ["dlx", "@playwright/mcp@latest"]\n'
-
-    if [[ -n "$context7_key" ]]; then
-      printf '\n[mcp_servers.context7-mcp]\n'
-      printf 'command = "pnpm"\n'
-      printf 'args = ["dlx", "@smithery/cli@latest", "run", "@upstash/context7-mcp", "--key", "%s"]\n' "$(toml_escape "$context7_key")"
-    else
-      printf '\n[mcp_servers.context7-mcp]\n'
-      printf 'command = "pnpm"\n'
-      printf 'args = ["dlx", "@upstash/context7-mcp"]\n'
-    fi
-
-    printf '\n[mcp_servers.github]\n'
-    printf 'command = "bash"\n'
-    printf 'args = ["-lc", "%s"]\n' "$(toml_escape "$github_bootstrap")"
-
-    printf '\n[mcp_servers.memory]\n'
-    printf 'command = "pnpm"\n'
-    printf 'args = ["dlx", "@modelcontextprotocol/server-memory"]\n'
-
-    printf '\n[mcp_servers.sequential-thinking]\n'
-    printf 'command = "pnpm"\n'
-    printf 'args = ["dlx", "@modelcontextprotocol/server-sequential-thinking"]\n'
-  } >> "$CONFIG_FILE"
+log "Merging ECC MCP servers into $CONFIG_FILE (add-only, preserving user config)"
+if [[ "$MODE" == "dry-run" ]]; then
+  node "$MCP_MERGE_SCRIPT" "$CONFIG_FILE" --dry-run $UPDATE_MCP
 else
-  log "Skipping MCP config normalization in dry-run mode"
+  node "$MCP_MERGE_SCRIPT" "$CONFIG_FILE" $UPDATE_MCP
 fi
 
 log "Installing global git safety hooks"
