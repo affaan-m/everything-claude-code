@@ -2,7 +2,7 @@
   "version": "1.3",
   "schemaVersion": "1.0",
   "generatedBy": "ecc-tools",
-  "generatedAt": "2026-03-20T07:26:45.857Z",
+  "generatedAt": "2026-03-20T07:27:28.322Z",
   "repo": "https://github.com/affaan-m/everything-claude-code",
   "profiles": {
     "requested": "full",
@@ -149,8 +149,8 @@
     ".claude/team/everything-claude-code-team-config.json",
     ".claude/enterprise/controls.md",
     ".claude/commands/feature-development.md",
-    ".claude/commands/add-new-agent.md",
-    ".claude/commands/add-new-skill.md"
+    ".claude/commands/add-command-documentation.md",
+    ".claude/commands/add-skill-documentation.md"
   ],
   "packageFiles": {
     "runtime-core": [
@@ -179,8 +179,8 @@
     ],
     "workflow-pack": [
       ".claude/commands/feature-development.md",
-      ".claude/commands/add-new-agent.md",
-      ".claude/commands/add-new-skill.md"
+      ".claude/commands/add-command-documentation.md",
+      ".claude/commands/add-skill-documentation.md"
     ]
   },
   "moduleFiles": {
@@ -210,8 +210,8 @@
     ],
     "workflow-pack": [
       ".claude/commands/feature-development.md",
-      ".claude/commands/add-new-agent.md",
-      ".claude/commands/add-new-skill.md"
+      ".claude/commands/add-command-documentation.md",
+      ".claude/commands/add-skill-documentation.md"
     ]
   },
   "files": [
@@ -292,13 +292,13 @@
     },
     {
       "moduleId": "workflow-pack",
-      "path": ".claude/commands/add-new-agent.md",
-      "description": "Workflow command scaffold for add-new-agent."
+      "path": ".claude/commands/add-command-documentation.md",
+      "description": "Workflow command scaffold for add-command-documentation."
     },
     {
       "moduleId": "workflow-pack",
-      "path": ".claude/commands/add-new-skill.md",
-      "description": "Workflow command scaffold for add-new-skill."
+      "path": ".claude/commands/add-skill-documentation.md",
+      "description": "Workflow command scaffold for add-skill-documentation."
     }
   ],
   "workflows": [
@@ -307,12 +307,12 @@
       "path": ".claude/commands/feature-development.md"
     },
     {
-      "command": "add-new-agent",
-      "path": ".claude/commands/add-new-agent.md"
+      "command": "add-command-documentation",
+      "path": ".claude/commands/add-command-documentation.md"
     },
     {
-      "command": "add-new-skill",
-      "path": ".claude/commands/add-new-skill.md"
+      "command": "add-skill-documentation",
+      "path": ".claude/commands/add-skill-documentation.md"
     }
   ],
   "adapters": {
@@ -321,8 +321,8 @@
       "identityPath": ".claude/identity.json",
       "commandPaths": [
         ".claude/commands/feature-development.md",
-        ".claude/commands/add-new-agent.md",
-        ".claude/commands/add-new-skill.md"
+        ".claude/commands/add-command-documentation.md",
+        ".claude/commands/add-skill-documentation.md"
       ]
     },
     "codex": {
