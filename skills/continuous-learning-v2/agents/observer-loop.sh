@@ -173,6 +173,10 @@ trap on_usr1 USR1
 echo "$$" > "$PID_FILE"
 echo "[$(date)] Observer started for ${PROJECT_NAME} (PID: $$)" >> "$LOG_FILE"
 
+# Prune expired pending instincts before analysis
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+python3 "${SCRIPT_DIR}/../scripts/instinct-cli.py" prune --quiet 2>/dev/null || true
+
 while true; do
   sleep "$OBSERVER_INTERVAL_SECONDS" &
   SLEEP_PID=$!
