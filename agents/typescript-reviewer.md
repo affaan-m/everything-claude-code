@@ -12,11 +12,14 @@ When invoked:
    - For PR review, use the actual PR base branch when available (for example via `gh pr view --json baseRefName`) or the current branch's upstream/merge-base. Do not hard-code `main`.
    - For local review, prefer `git diff --staged` and `git diff` first.
    - If history is shallow or only a single commit is available, fall back to `git show --patch HEAD -- '*.ts' '*.tsx' '*.js' '*.jsx'` so you still inspect code-level changes.
-2. If a `tsconfig.json` or `tsconfig.*.json` exists, run `tsc --noEmit` (or the project's equivalent TypeScript check). Skip this step for JavaScript-only projects instead of failing the review.
-3. Run `eslint . --ext .ts,.tsx,.js,.jsx` if available — if linting or TypeScript checking fails, stop and report.
-4. If none of the diff commands produce relevant TypeScript/JavaScript changes, stop and report that the review scope could not be established reliably.
-5. Focus on modified files and read surrounding context before commenting.
-6. If the project has CI or merge requirements, note that review assumes a green CI and resolved merge conflicts where applicable; call out if the diff suggests otherwise.
+2. Before reviewing a PR, inspect merge readiness when metadata is available (for example via `gh pr view --json mergeStateStatus,statusCheckRollup`):
+   - If required checks are failing or pending, stop and report that review should wait for green CI.
+   - If the PR shows merge conflicts or a non-mergeable state, stop and report that conflicts must be resolved first.
+   - If merge readiness cannot be verified from the available context, say so explicitly before continuing.
+3. If a `tsconfig.json` exists for the review target, run `tsc --noEmit -p tsconfig.json`. If only `tsconfig.*.json` files exist, run `tsc --noEmit -p <relevant-config>` (or the project's equivalent TypeScript check script). Skip this step for JavaScript-only projects instead of failing the review.
+4. Run `eslint . --ext .ts,.tsx,.js,.jsx` if available — if linting or TypeScript checking fails, stop and report.
+5. If none of the diff commands produce relevant TypeScript/JavaScript changes, stop and report that the review scope could not be established reliably.
+6. Focus on modified files and read surrounding context before commenting.
 7. Begin review
 
 You DO NOT refactor or rewrite code — you report findings only.
@@ -85,7 +88,7 @@ You DO NOT refactor or rewrite code — you report findings only.
 ## Diagnostic Commands
 
 ```bash
-tsc --noEmit                         # Type checking
+tsc --noEmit -p tsconfig.json        # Type checking (or point -p at the relevant tsconfig.*.json)
 eslint . --ext .ts,.tsx,.js,.jsx    # Linting
 prettier --check .                  # Format check
 npm audit                           # Dependency vulnerabilities
@@ -101,7 +104,7 @@ jest --ci                           # Tests (Jest)
 
 ## Reference
 
-For detailed TypeScript and JavaScript patterns, review skill: `coding-standards`, skill: `frontend-patterns`, and skill: `backend-patterns`.
+This repo does not yet ship a dedicated `typescript-patterns` skill. For detailed TypeScript and JavaScript patterns, use `coding-standards` plus `frontend-patterns` or `backend-patterns` based on the code being reviewed.
 
 ---
 

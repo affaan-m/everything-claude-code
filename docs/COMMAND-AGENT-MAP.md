@@ -1,6 +1,6 @@
 # Command → Agent / Skill Map
 
-This document lists each slash command and the primary agent(s) or skills it invokes. Use it to discover which commands use which agents and to keep refactoring consistent.
+This document lists each slash command and the primary agent(s) or skills it invokes, plus notable direct-invoke agents. Use it to discover which commands use which agents and to keep refactoring consistent.
 
 | Command | Primary agent(s) | Notes |
 |---------|------------------|--------|
@@ -48,7 +48,9 @@ This document lists each slash command and the primary agent(s) or skills it inv
 
 ## Direct-Use Agents
 
-- `typescript-reviewer`: Available for direct agent invocation when a task needs TypeScript/JavaScript-specific review. There is no dedicated slash command for it yet.
+| Direct agent | Purpose | Scope | Notes |
+|--------------|---------|-------|-------|
+| `typescript-reviewer` | TypeScript/JavaScript code review | TypeScript/JavaScript projects | Invoke the agent directly when a review needs TS/JS-specific findings and there is no dedicated slash command yet. |
 
 ## Skills referenced by commands
 
