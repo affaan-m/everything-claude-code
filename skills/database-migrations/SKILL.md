@@ -245,9 +245,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await db.schema
-    .createIndex('idx_user_profile_email')
+    .createIndex('idx_user_profile_avatar')
     .on('user_profile')
-    .column('email')
+    .column('avatar_url')
     .execute()
 }
 
@@ -260,9 +260,15 @@ export async function down(db: Kysely<any>): Promise<void> {
 
 ```typescript
 import { Migrator, FileMigrationProvider } from 'kysely'
+import { fileURLToPath } from 'url'
 import * as path from 'path'
 import { promises as fs } from 'fs'
 
+// ESM: use import.meta.url (CJS: use __dirname instead)
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+// `db` is your Kysely<any> database instance
 const migrator = new Migrator({
   db,
   provider: new FileMigrationProvider({
@@ -270,8 +276,9 @@ const migrator = new Migrator({
     path,
     migrationFolder: path.join(__dirname, './migrations'),
   }),
-  // Allow out-of-order migrations (useful for parallel team development)
-  allowUnorderedMigrations: true,
+  // WARNING: Only enable in development. Disables timestamp-ordering
+  // validation, which can cause schema drift between environments.
+  // allowUnorderedMigrations: true,
 })
 
 const { error, results } = await migrator.migrateToLatest()
