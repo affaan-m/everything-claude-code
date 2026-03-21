@@ -380,7 +380,7 @@ builder.Services.AddDistributedMemoryCache();
 // builder.Services.AddStackExchangeRedisCache(options =>
 //     options.Configuration = builder.Configuration.GetConnectionString("Redis"));
 
-private sealed record CachedIdempotentResponse(int StatusCode, string ContentType, string Body);
+internal sealed record CachedIdempotentResponse(int StatusCode, string ContentType, string Body);
 
 public sealed class IdempotencyMiddleware(
     RequestDelegate next,
