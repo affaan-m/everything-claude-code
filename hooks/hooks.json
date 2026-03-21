@@ -1,297 +1,307 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "npx block-no-verify@1.1.2"
-          }
-        ],
-        "description": "Block git hook-bypass flag to protect pre-commit, commit-msg, and pre-push hooks from being skipped"
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/auto-tmux-dev.js\""
-          }
-        ],
-        "description": "Auto-start dev servers in tmux with directory-based session names"
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:bash:tmux-reminder\" \"scripts/hooks/pre-bash-tmux-reminder.js\" \"strict\""
-          }
-        ],
-        "description": "Reminder to use tmux for long-running commands"
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:bash:git-push-reminder\" \"scripts/hooks/pre-bash-git-push-reminder.js\" \"strict\""
-          }
-        ],
-        "description": "Reminder before git push to review changes"
-      },
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:write:doc-file-warning\" \"scripts/hooks/doc-file-warning.js\" \"standard,strict\""
-          }
-        ],
-        "description": "Doc file warning: warn about non-standard documentation files (exit code 0; warns only)"
-      },
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:edit-write:suggest-compact\" \"scripts/hooks/suggest-compact.js\" \"standard,strict\""
-          }
-        ],
-        "description": "Suggest manual compaction at logical intervals"
-      },
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags-shell.sh\" \"pre:observe\" \"skills/continuous-learning-v2/hooks/observe.sh\" \"standard,strict\"",
-            "async": true,
-            "timeout": 10
-          }
-        ],
-        "description": "Capture tool use observations for continuous learning"
-      },
-      {
-        "matcher": "Bash|Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:insaits-security\" \"scripts/hooks/insaits-security-wrapper.js\" \"standard,strict\"",
-            "timeout": 15
-          }
-        ],
-        "description": "Optional InsAIts AI security monitor for Bash/Edit/Write flows. Enable with ECC_ENABLE_INSAITS=1. Requires: pip install insa-its"
-      },
-      {
-        "matcher": "Bash|Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:governance-capture\" \"scripts/hooks/governance-capture.js\" \"standard,strict\"",
-            "timeout": 10
-          }
-        ],
-        "description": "Capture governance events (secrets, policy violations, approval requests). Enable with ECC_GOVERNANCE_CAPTURE=1"
-      },
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:mcp-health-check\" \"scripts/hooks/mcp-health-check.js\" \"standard,strict\""
-          }
-        ],
-        "description": "Check MCP server health before MCP tool execution and block unhealthy MCP calls"
-      }
-    ],
-    "PreCompact": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:compact\" \"scripts/hooks/pre-compact.js\" \"standard,strict\""
-          }
-        ],
-        "description": "Save state before context compaction"
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -lc 'input=$(cat); for root in \"${CLAUDE_PLUGIN_ROOT:-}\" \"$HOME/.claude/plugins/everything-claude-code\" \"$HOME/.claude/plugins/everything-claude-code@everything-claude-code\" \"$HOME/.claude/plugins/marketplace/everything-claude-code\"; do if [ -n \"$root\" ] && [ -f \"$root/scripts/hooks/run-with-flags.js\" ]; then printf \"%s\" \"$input\" | node \"$root/scripts/hooks/run-with-flags.js\" \"session:start\" \"scripts/hooks/session-start.js\" \"minimal,standard,strict\"; exit $?; fi; done; for parent in \"$HOME/.claude/plugins\" \"$HOME/.claude/plugins/marketplace\"; do if [ -d \"$parent\" ]; then candidate=$(find \"$parent\" -maxdepth 2 -type f -path \"*/scripts/hooks/run-with-flags.js\" 2>/dev/null | head -n 1); if [ -n \"$candidate\" ]; then root=$(dirname \"$(dirname \"$(dirname \"$candidate\")\")\"); printf \"%s\" \"$input\" | node \"$root/scripts/hooks/run-with-flags.js\" \"session:start\" \"scripts/hooks/session-start.js\" \"minimal,standard,strict\"; exit $?; fi; fi; done; echo \"[SessionStart] WARNING: could not resolve ECC plugin root; skipping session-start hook\" >&2; printf \"%s\" \"$input\"; exit 0'"
-          }
-        ],
-        "description": "Load previous context and detect package manager on new session"
-      }
-    ],
     "PostToolUse": [
       {
-        "matcher": "Bash",
+        "description": "Log PR URL and provide review command after PR creation",
         "hooks": [
           {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:bash:pr-created\" \"scripts/hooks/post-bash-pr-created.js\" \"standard,strict\""
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:bash:pr-created\" \"scripts/hooks/post-bash-pr-created.js\" \"standard,strict\"",
+            "type": "command"
           }
         ],
-        "description": "Log PR URL and provide review command after PR creation"
+        "matcher": "Bash"
       },
       {
-        "matcher": "Bash",
+        "description": "Example: async hook for build analysis (runs in background without blocking)",
         "hooks": [
           {
-            "type": "command",
+            "async": true,
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:bash:build-complete\" \"scripts/hooks/post-bash-build-complete.js\" \"standard,strict\"",
-            "async": true,
-            "timeout": 30
+            "timeout": 30,
+            "type": "command"
           }
         ],
-        "description": "Example: async hook for build analysis (runs in background without blocking)"
+        "matcher": "Bash"
       },
       {
-        "matcher": "Edit|Write|MultiEdit",
+        "description": "Run quality gate checks after file edits",
         "hooks": [
           {
-            "type": "command",
+            "async": true,
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:quality-gate\" \"scripts/hooks/quality-gate.js\" \"standard,strict\"",
-            "async": true,
-            "timeout": 30
+            "timeout": 30,
+            "type": "command"
           }
         ],
-        "description": "Run quality gate checks after file edits"
+        "matcher": "Edit|Write|MultiEdit"
       },
       {
-        "matcher": "Edit",
+        "description": "Auto-format JS/TS files after edits (auto-detects Biome or Prettier)",
         "hooks": [
           {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:edit:format\" \"scripts/hooks/post-edit-format.js\" \"standard,strict\""
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:edit:format\" \"scripts/hooks/post-edit-format.js\" \"standard,strict\"",
+            "type": "command"
           }
         ],
-        "description": "Auto-format JS/TS files after edits (auto-detects Biome or Prettier)"
+        "matcher": "Edit"
       },
       {
-        "matcher": "Edit",
+        "description": "TypeScript check after editing .ts/.tsx files",
         "hooks": [
           {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:edit:typecheck\" \"scripts/hooks/post-edit-typecheck.js\" \"standard,strict\""
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:edit:typecheck\" \"scripts/hooks/post-edit-typecheck.js\" \"standard,strict\"",
+            "type": "command"
           }
         ],
-        "description": "TypeScript check after editing .ts/.tsx files"
+        "matcher": "Edit"
       },
       {
-        "matcher": "Edit",
+        "description": "Warn about console.log statements after edits",
         "hooks": [
           {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:edit:console-warn\" \"scripts/hooks/post-edit-console-warn.js\" \"standard,strict\""
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:edit:console-warn\" \"scripts/hooks/post-edit-console-warn.js\" \"standard,strict\"",
+            "type": "command"
           }
         ],
-        "description": "Warn about console.log statements after edits"
+        "matcher": "Edit"
       },
       {
-        "matcher": "Bash|Write|Edit|MultiEdit",
+        "description": "Capture governance events from tool outputs. Enable with ECC_GOVERNANCE_CAPTURE=1",
         "hooks": [
           {
-            "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:governance-capture\" \"scripts/hooks/governance-capture.js\" \"standard,strict\"",
-            "timeout": 10
+            "timeout": 10,
+            "type": "command"
           }
         ],
-        "description": "Capture governance events from tool outputs. Enable with ECC_GOVERNANCE_CAPTURE=1"
+        "matcher": "Bash|Write|Edit|MultiEdit"
       },
       {
-        "matcher": "*",
+        "description": "Capture tool use results for continuous learning",
         "hooks": [
           {
-            "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags-shell.sh\" \"post:observe\" \"skills/continuous-learning-v2/hooks/observe.sh\" \"standard,strict\"",
             "async": true,
-            "timeout": 10
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags-shell.sh\" \"post:observe\" \"skills/continuous-learning-v2/hooks/observe.sh\" \"standard,strict\"",
+            "timeout": 10,
+            "type": "command"
           }
         ],
-        "description": "Capture tool use results for continuous learning"
+        "matcher": "*"
       }
     ],
     "PostToolUseFailure": [
       {
-        "matcher": "*",
+        "description": "Track failed MCP tool calls, mark unhealthy servers, and attempt reconnect",
         "hooks": [
           {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:mcp-health-check\" \"scripts/hooks/mcp-health-check.js\" \"standard,strict\""
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:mcp-health-check\" \"scripts/hooks/mcp-health-check.js\" \"standard,strict\"",
+            "type": "command"
           }
         ],
-        "description": "Track failed MCP tool calls, mark unhealthy servers, and attempt reconnect"
+        "matcher": "*"
       }
     ],
-    "Stop": [
+    "PreCompact": [
       {
-        "matcher": "*",
+        "description": "Save state before context compaction",
         "hooks": [
           {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"stop:check-console-log\" \"scripts/hooks/check-console-log.js\" \"standard,strict\""
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:compact\" \"scripts/hooks/pre-compact.js\" \"standard,strict\"",
+            "type": "command"
           }
         ],
-        "description": "Check for console.log in modified files after each response"
+        "matcher": "*"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "description": "Block git hook-bypass flag to protect pre-commit, commit-msg, and pre-push hooks from being skipped",
+        "hooks": [
+          {
+            "command": "npx block-no-verify@1.1.2",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
       },
       {
-        "matcher": "*",
+        "description": "Auto-start dev servers in tmux with directory-based session names",
         "hooks": [
           {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"stop:session-end\" \"scripts/hooks/session-end.js\" \"minimal,standard,strict\"",
-            "async": true,
-            "timeout": 10
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/auto-tmux-dev.js\"",
+            "type": "command"
           }
         ],
-        "description": "Persist session state after each response (Stop carries transcript_path)"
+        "matcher": "Bash"
       },
       {
-        "matcher": "*",
+        "description": "Reminder to use tmux for long-running commands",
         "hooks": [
           {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"stop:evaluate-session\" \"scripts/hooks/evaluate-session.js\" \"minimal,standard,strict\"",
-            "async": true,
-            "timeout": 10
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:bash:tmux-reminder\" \"scripts/hooks/pre-bash-tmux-reminder.js\" \"strict\"",
+            "type": "command"
           }
         ],
-        "description": "Evaluate session for extractable patterns"
+        "matcher": "Bash"
       },
       {
-        "matcher": "*",
+        "description": "Reminder before git push to review changes",
+        "hooks": [
+          {
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:bash:git-push-reminder\" \"scripts/hooks/pre-bash-git-push-reminder.js\" \"strict\"",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "description": "Doc file warning: warn about non-standard documentation files (exit code 0; warns only)",
+        "hooks": [
+          {
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:write:doc-file-warning\" \"scripts/hooks/doc-file-warning.js\" \"standard,strict\"",
+            "type": "command"
+          }
+        ],
+        "matcher": "Write"
+      },
+      {
+        "description": "Suggest manual compaction at logical intervals",
+        "hooks": [
+          {
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:edit-write:suggest-compact\" \"scripts/hooks/suggest-compact.js\" \"standard,strict\"",
+            "type": "command"
+          }
+        ],
+        "matcher": "Edit|Write"
+      },
+      {
+        "description": "Capture tool use observations for continuous learning",
+        "hooks": [
+          {
+            "async": true,
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags-shell.sh\" \"pre:observe\" \"skills/continuous-learning-v2/hooks/observe.sh\" \"standard,strict\"",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      },
+      {
+        "description": "Optional InsAIts AI security monitor for Bash/Edit/Write flows. Enable with ECC_ENABLE_INSAITS=1. Requires: pip install insa-its",
+        "hooks": [
+          {
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:insaits-security\" \"scripts/hooks/insaits-security-wrapper.js\" \"standard,strict\"",
+            "timeout": 15,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash|Write|Edit|MultiEdit"
+      },
+      {
+        "description": "Capture governance events (secrets, policy violations, approval requests). Enable with ECC_GOVERNANCE_CAPTURE=1",
+        "hooks": [
+          {
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:governance-capture\" \"scripts/hooks/governance-capture.js\" \"standard,strict\"",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash|Write|Edit|MultiEdit"
+      },
+      {
+        "description": "Check MCP server health before MCP tool execution and block unhealthy MCP calls",
+        "hooks": [
+          {
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:mcp-health-check\" \"scripts/hooks/mcp-health-check.js\" \"standard,strict\"",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      },
+      {
+        "matcher": "Write|Edit",
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"stop:cost-tracker\" \"scripts/hooks/cost-tracker.js\" \"minimal,standard,strict\"",
-            "async": true,
-            "timeout": 10
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js protect-config-files scripts/hooks/protect-config-files.sh standard,strict",
+            "timeout": 5
           }
-        ],
-        "description": "Track token and cost metrics per session"
+        ]
       }
     ],
     "SessionEnd": [
       {
-        "matcher": "*",
+        "description": "Session end lifecycle marker (non-blocking)",
         "hooks": [
           {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"session:end:marker\" \"scripts/hooks/session-end-marker.js\" \"minimal,standard,strict\"",
             "async": true,
-            "timeout": 10
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"session:end:marker\" \"scripts/hooks/session-end-marker.js\" \"minimal,standard,strict\"",
+            "timeout": 10,
+            "type": "command"
           }
         ],
-        "description": "Session end lifecycle marker (non-blocking)"
+        "matcher": "*"
+      }
+    ],
+    "SessionStart": [
+      {
+        "description": "Load previous context and detect package manager on new session",
+        "hooks": [
+          {
+            "command": "bash -lc 'input=$(cat); for root in \"${CLAUDE_PLUGIN_ROOT:-}\" \"$HOME/.claude/plugins/everything-claude-code\" \"$HOME/.claude/plugins/everything-claude-code@everything-claude-code\" \"$HOME/.claude/plugins/marketplace/everything-claude-code\"; do if [ -n \"$root\" ] && [ -f \"$root/scripts/hooks/run-with-flags.js\" ]; then printf \"%s\" \"$input\" | node \"$root/scripts/hooks/run-with-flags.js\" \"session:start\" \"scripts/hooks/session-start.js\" \"minimal,standard,strict\"; exit $?; fi; done; for parent in \"$HOME/.claude/plugins\" \"$HOME/.claude/plugins/marketplace\"; do if [ -d \"$parent\" ]; then candidate=$(find \"$parent\" -maxdepth 2 -type f -path \"*/scripts/hooks/run-with-flags.js\" 2>/dev/null | head -n 1); if [ -n \"$candidate\" ]; then root=$(dirname \"$(dirname \"$(dirname \"$candidate\")\")\"); printf \"%s\" \"$input\" | node \"$root/scripts/hooks/run-with-flags.js\" \"session:start\" \"scripts/hooks/session-start.js\" \"minimal,standard,strict\"; exit $?; fi; fi; done; echo \"[SessionStart] WARNING: could not resolve ECC plugin root; skipping session-start hook\" >&2; printf \"%s\" \"$input\"; exit 0'",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "Stop": [
+      {
+        "description": "Check for console.log in modified files after each response",
+        "hooks": [
+          {
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"stop:check-console-log\" \"scripts/hooks/check-console-log.js\" \"standard,strict\"",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      },
+      {
+        "description": "Persist session state after each response (Stop carries transcript_path)",
+        "hooks": [
+          {
+            "async": true,
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"stop:session-end\" \"scripts/hooks/session-end.js\" \"minimal,standard,strict\"",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      },
+      {
+        "description": "Evaluate session for extractable patterns",
+        "hooks": [
+          {
+            "async": true,
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"stop:evaluate-session\" \"scripts/hooks/evaluate-session.js\" \"minimal,standard,strict\"",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      },
+      {
+        "description": "Track token and cost metrics per session",
+        "hooks": [
+          {
+            "async": true,
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"stop:cost-tracker\" \"scripts/hooks/cost-tracker.js\" \"minimal,standard,strict\"",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
       }
     ]
   }
