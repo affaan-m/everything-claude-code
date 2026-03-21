@@ -293,12 +293,11 @@ public static class Pipeline
 
         Task.Run(async () =>
         {
-            var semaphore = new SemaphoreSlim(concurrency);
+            using var semaphore = new SemaphoreSlim(concurrency);
             var tasks = new List<Task>();
 
             try
             {
-
                 await foreach (var item in source.ReadAllAsync(ct))
                 {
                     await semaphore.WaitAsync(ct);

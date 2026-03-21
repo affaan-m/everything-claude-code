@@ -373,7 +373,7 @@ public sealed class RequestLoggingMiddleware(
 ### Idempotency Middleware
 
 ```csharp
-private sealed record CachedIdempotentResponse(int StatusCode, string Body);
+private sealed record CachedIdempotentResponse(int StatusCode, string ContentType, string Body);
 
 public sealed class IdempotencyMiddleware(
     RequestDelegate next,
@@ -410,7 +410,7 @@ public sealed class IdempotencyMiddleware(
             }
 
             context.Response.StatusCode = cached.StatusCode;
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType = cached.ContentType;
             await context.Response.WriteAsync(cached.Body);
             return;
         }
@@ -424,11 +424,15 @@ public sealed class IdempotencyMiddleware(
             await next(context);
 
             memoryStream.Seek(0, SeekOrigin.Begin);
-            var responseBody = await new StreamReader(memoryStream).ReadToEndAsync();
+            using var reader = new StreamReader(memoryStream, leaveOpen: true);
+            var responseBody = await reader.ReadToEndAsync();
 
             if (context.Response.StatusCode is >= 200 and < 300)
             {
-                var entry = new CachedIdempotentResponse(context.Response.StatusCode, responseBody);
+                var entry = new CachedIdempotentResponse(
+                    context.Response.StatusCode,
+                    context.Response.ContentType ?? "application/json",
+                    responseBody);
                 await cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(entry),
                     new DistributedCacheEntryOptions
                     {

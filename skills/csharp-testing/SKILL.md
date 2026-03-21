@@ -801,6 +801,7 @@ public sealed class DatabaseFixture : IAsyncLifetime
             .UseInMemoryDatabase("SharedTestDb")
             .Options;
         Context = new AppDbContext(options);
+        await Context.Database.EnsureDeletedAsync(); // clear state from previous run
         await Context.Database.EnsureCreatedAsync();
     }
 
