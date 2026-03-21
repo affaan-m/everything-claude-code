@@ -327,6 +327,8 @@ public sealed class CorrelationIdMiddleware(RequestDelegate next)
         context.Items["CorrelationId"] = correlationId;
         context.Response.Headers[HeaderName] = correlationId;
 
+        // Requires: using Serilog.Context;
+        // Package:  Serilog (or Serilog.AspNetCore)
         using (LogContext.PushProperty("CorrelationId", correlationId))
         {
             await next(context);

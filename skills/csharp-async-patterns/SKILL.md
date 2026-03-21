@@ -320,22 +320,18 @@ public static class Pipeline
                 }
 
                 await Task.WhenAll(tasks);
+                output.Writer.Complete(); // success path — moved here
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
-                // Graceful cancellation — drain in-flight tasks then close cleanly
                 try { await Task.WhenAll(tasks); } catch { /* expected secondary OCEs */ }
                 output.Writer.Complete(); // no exception: downstream sees clean completion
             }
             catch (Exception ex)
             {
-                // Genuine error — drain then fault the channel
                 try { await Task.WhenAll(tasks); } catch { /* already faulting */ }
                 output.Writer.Complete(ex);
             }
-
-            output.Writer.Complete();
-        });
 
         return output.Reader;
     }
