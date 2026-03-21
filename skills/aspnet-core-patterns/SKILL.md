@@ -13,6 +13,8 @@ Deep patterns for building production-grade ASP.NET Core APIs and services. Comp
 - Designing ASP.NET Core APIs (minimal or controller-based)
 - Implementing authentication and authorization
 - Adding cross-cutting concerns (rate limiting, caching, health checks)
+- Configuring middleware pipelines
+- Building real-time features with SignalR
 
 ## How It Works
 
@@ -35,8 +37,6 @@ app.MapGet("/api/data", Handler).RequireRateLimiting("api");
 app.MapGet("/api/products", GetProducts).CacheOutput("products");
 // Invalidate: await cache.EvictByTagAsync("products", ct);
 ```
-- Configuring middleware pipelines
-- Building real-time features with SignalR
 
 ## Authentication and Authorization
 
@@ -404,6 +404,7 @@ public sealed class IdempotencyMiddleware(
         {
             if (JsonSerializer.Deserialize<CachedIdempotentResponse>(cachedResponse) is not { } cached)
             {
+                await cache.RemoveAsync(cacheKey);
                 await next(context);
                 return;
             }

@@ -515,8 +515,8 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>
     }
 
     /// <summary>
-    /// Reset the in-memory database between tests to prevent state leakage.
-    /// Call this in test constructor or a shared setup method.
+    /// Reset the in-memory database and fake services between tests.
+    /// Call via IAsyncLifetime.InitializeAsync — not from a constructor (async).
     /// </summary>
     public async Task ResetDatabaseAsync()
     {
@@ -524,6 +524,12 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await context.Database.EnsureDeletedAsync();
         await context.Database.EnsureCreatedAsync();
+
+        // Clear fake service state to prevent cross-test leakage
+        if (Services.GetRequiredService<IEmailService>() is FakeEmailService fakeEmail)
+        {
+            fakeEmail.SentEmails.Clear();
+        }
     }
 }
 
