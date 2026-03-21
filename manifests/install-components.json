@@ -170,6 +170,14 @@
       ]
     },
     {
+      "id": "lang:csharp",
+      "family": "language",
+      "description": "C# and .NET engineering guidance including ASP.NET Core, EF Core, xUnit testing, and DI patterns. Currently resolves through the shared framework-language module.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
       "id": "lang:swift",
       "family": "language",
       "description": "Swift, SwiftUI, and Apple platform engineering guidance.",

@@ -14,6 +14,7 @@ rules/
 │   ├── hooks.md
 │   ├── agents.md
 │   └── security.md
+├── csharp/          # C#/.NET specific
 ├── typescript/      # TypeScript/JavaScript specific
 ├── python/          # Python specific
 ├── golang/          # Go specific
