@@ -24,7 +24,7 @@ Run these in order:
 ```bash
 dotnet restore 2>&1
 dotnet build --no-restore 2>&1
-dotnet test --no-build --no-restore 2>&1
+dotnet test 2>&1
 dotnet format --verify-no-changes 2>&1 || echo "format issues found"
 ```
 

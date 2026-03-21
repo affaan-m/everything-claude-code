@@ -513,16 +513,34 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.UseEnvironment("Testing");
     }
+
+    /// <summary>
+    /// Reset the in-memory database between tests to prevent state leakage.
+    /// Call this in test constructor or a shared setup method.
+    /// </summary>
+    public async Task ResetDatabaseAsync()
+    {
+        await using var scope = Services.CreateAsyncScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await context.Database.EnsureDeletedAsync();
+        await context.Database.EnsureCreatedAsync();
+    }
 }
 
-public sealed class OrderApiTests(CustomWebApplicationFactory factory)
-    : IClassFixture<CustomWebApplicationFactory>
+public sealed class OrderApiTests : IClassFixture<CustomWebApplicationFactory>, IAsyncLifetime
 {
+    private readonly CustomWebApplicationFactory _factory;
+
+    public OrderApiTests(CustomWebApplicationFactory factory) => _factory = factory;
+
+    public async Task InitializeAsync() => await _factory.ResetDatabaseAsync();
+    public Task DisposeAsync() => Task.CompletedTask;
+
     [Fact]
     public async Task CreateOrder_SendsConfirmationEmail()
     {
-        var client = factory.CreateClient();
-        var emailService = factory.Services.GetRequiredService<IEmailService>() as FakeEmailService;
+        var client = _factory.CreateClient();
+        var emailService = _factory.Services.GetRequiredService<IEmailService>() as FakeEmailService;
 
         await client.PostAsJsonAsync("/api/orders", new CreateOrderRequest(
             Guid.NewGuid(), [new(Guid.NewGuid(), 1)]));

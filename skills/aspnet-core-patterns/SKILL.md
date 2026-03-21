@@ -22,7 +22,7 @@ This skill provides production patterns for the ASP.NET Core middleware pipeline
 
 **Require authorization on an endpoint:**
 ```csharp
-app.MapGet("/api/orders", GetOrders).RequireAuthorization("admin-only");
+app.MapGet("/api/orders", GetOrders).RequireAuthorization("AdminOnly");
 ```
 
 **Apply rate limiting:**
@@ -402,7 +402,12 @@ public sealed class IdempotencyMiddleware(
 
         if (cachedResponse is not null)
         {
-            var cached = JsonSerializer.Deserialize<CachedIdempotentResponse>(cachedResponse)!;
+            if (JsonSerializer.Deserialize<CachedIdempotentResponse>(cachedResponse) is not { } cached)
+            {
+                await next(context);
+                return;
+            }
+
             context.Response.StatusCode = cached.StatusCode;
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(cached.Body);
