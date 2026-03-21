@@ -379,6 +379,7 @@ public async Task GetOrderAsync_WithNSubstitute()
 public async Task ProcessOrderAsync_CompletesSuccessfully()
 {
     // Arrange
+    var orderId = Guid.NewGuid();
     var service = CreateService();
 
     // Act

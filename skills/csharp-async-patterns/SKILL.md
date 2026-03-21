@@ -320,6 +320,9 @@ public static class Pipeline
             }
             catch (Exception ex)
             {
+                // Await running tasks before completing the channel to avoid
+                // orphaned writes to an already-completed channel.
+                try { await Task.WhenAll(tasks); } catch { /* already faulting */ }
                 output.Writer.Complete(ex);
                 return;
             }
