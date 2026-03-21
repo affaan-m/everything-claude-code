@@ -228,7 +228,7 @@ kysely migrate list
 ### Migration File
 
 ```typescript
-// migrations/2024_01_15_001_add_user_avatar.ts
+// migrations/2024_01_15_001_create_user_profile.ts
 import { type Kysely, sql } from 'kysely'
 
 // IMPORTANT: Always use Kysely<any>, not your typed DB interface.
@@ -260,13 +260,14 @@ export async function down(db: Kysely<any>): Promise<void> {
 
 ```typescript
 import { Migrator, FileMigrationProvider } from 'kysely'
-import { fileURLToPath } from 'url'
-import * as path from 'path'
 import { promises as fs } from 'fs'
-
-// ESM: use import.meta.url (CJS: use __dirname instead)
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+import * as path from 'path'
+// ESM only — CJS can use __dirname directly
+import { fileURLToPath } from 'url'
+const migrationFolder = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  './migrations',
+)
 
 // `db` is your Kysely<any> database instance
 const migrator = new Migrator({
@@ -274,7 +275,7 @@ const migrator = new Migrator({
   provider: new FileMigrationProvider({
     fs,
     path,
-    migrationFolder: path.join(__dirname, './migrations'),
+    migrationFolder,
   }),
   // WARNING: Only enable in development. Disables timestamp-ordering
   // validation, which can cause schema drift between environments.
