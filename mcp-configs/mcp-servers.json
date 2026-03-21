@@ -142,6 +142,14 @@
         "CONFLUENCE_API_TOKEN": "YOUR_CONFLUENCE_TOKEN_HERE"
       },
       "description": "Confluence Cloud integration — search pages, retrieve content, explore spaces"
+    },
+    "novyx": {
+      "command": "uvx",
+      "args": ["novyx-mcp"],
+      "env": {
+        "NOVYX_API_KEY": "YOUR_NOVYX_API_KEY_HERE"
+      },
+      "description": "Persistent agent memory — 64 tools for remember, recall, rollback, cryptographic audit trails, knowledge graph, governed actions, context spaces, execution tracing, and memory eval. Local-first SQLite mode (no API key needed) or cloud via Novyx Core API. Install: pip install novyx-mcp. Repo: https://github.com/novyxlabs/novyx-mcp"
     }
   },
   "_comments": {
