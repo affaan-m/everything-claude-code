@@ -282,9 +282,17 @@ public sealed class AppDbContext(
 
 // Registration — AddDataProtection with a durable key ring is required
 // so encrypted columns survive restarts and scale-out.
-builder.Services.AddDataProtection()
-    .PersistKeysToDbContext<AppDbContext>()          // or PersistKeysToFileSystem / PersistKeysToAzureBlobStorage
-    .SetApplicationName("MyApp");                    // ensures all instances share the same key ring
+var keyRingPath = builder.Configuration["DataProtection:KeyRingPath"]
+    ?? throw new InvalidOperationException(
+        "DataProtection:KeyRingPath must point to a durable key-ring location.");
+
+builder.Services
+    .AddDataProtection()
+    .SetApplicationName("MyApp") // ensures all instances share the same key ring
+    .PersistKeysToFileSystem(new DirectoryInfo(keyRingPath));
+
+// If you prefer EF-backed key storage, use a separate MyKeysContext that
+// implements IDataProtectionKeyContext rather than reusing AppDbContext.
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
