@@ -87,15 +87,28 @@ function run(input) {
 module.exports = { run };
 
 // Stdin fallback for spawnSync execution
+let truncated = false;
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', chunk => {
   if (raw.length < MAX_STDIN) {
     const remaining = MAX_STDIN - raw.length;
     raw += chunk.substring(0, remaining);
+    if (chunk.length > remaining) truncated = true;
+  } else {
+    truncated = true;
   }
 });
 
 process.stdin.on('end', () => {
+  // If stdin was truncated, the JSON is likely malformed. Fail open but
+  // log a warning so the issue is visible. The run() path (used by
+  // run-with-flags.js in-process) is not affected by this.
+  if (truncated) {
+    process.stderr.write('[config-protection] Warning: stdin exceeded 1MB, skipping check\n');
+    process.stdout.write(raw);
+    return;
+  }
+
   try {
     const input = raw.trim() ? JSON.parse(raw) : {};
     const result = run(input);
