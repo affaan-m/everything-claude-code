@@ -11,7 +11,6 @@ Idiomatic Dart and Flutter patterns for building cross-platform mobile, web, and
 ## When to Use
 
 - Writing new Dart or Flutter code
-- Reviewing Dart/Flutter code
 - Setting up state management (Riverpod, Bloc, Provider)
 - Working with code generation (Freezed, json_serializable, build_runner)
 - Writing tests (unit, widget, integration)
@@ -204,15 +203,27 @@ class ValidationError extends AppError {
   ValidationError(this.message, {this.fieldErrors = const {}});
 }
 
-// Result type pattern
-typedef Result<T> = ({T? data, AppError? error});
+// Sealed Result type — impossible states are unrepresentable
+sealed class Result<T> {
+  const Result();
+}
+
+class Success<T> extends Result<T> {
+  final T data;
+  const Success(this.data);
+}
+
+class Failure<T> extends Result<T> {
+  final AppError error;
+  const Failure(this.error);
+}
 
 Future<Result<User>> getUser(String id) async {
   try {
     final response = await _client.get('/users/$id');
-    return (data: User.fromJson(response.data), error: null);
+    return Success(User.fromJson(response.data));
   } on DioException catch (e) {
-    return (data: null, error: NetworkError(e.message ?? 'Network error'));
+    return Failure(NetworkError(e.message ?? 'Network error'));
   }
 }
 ```
@@ -244,16 +255,18 @@ void main() {
 }
 
 // Widget test
-testWidgets('UserTile displays name and email', (tester) async {
+void main() {
+  testWidgets('UserTile displays name and email', (tester) async {
   await tester.pumpWidget(
     MaterialApp(
       home: UserTile(user: testUser),
     ),
   );
 
-  expect(find.text('John Doe'), findsOneWidget);
-  expect(find.text('john@example.com'), findsOneWidget);
-});
+    expect(find.text('John Doe'), findsOneWidget);
+    expect(find.text('john@example.com'), findsOneWidget);
+  });
+}
 
 // Integration test
 void main() {
