@@ -113,6 +113,12 @@ async function fetchData(url) {
   const response = await fetch(url)
   return response.json()
 }
+
+// 💡 When data is destined for an agent prompt, convert to TOON:
+import { encode } from '@toon-format/toon'
+const data = await fetchData('/api/items')
+const toonData = encode(data) // ~40% fewer tokens than JSON.stringify
+// Use toonData in prompt instead of JSON.stringify(data)
 ```
 
 ### Async/Await Best Practices
