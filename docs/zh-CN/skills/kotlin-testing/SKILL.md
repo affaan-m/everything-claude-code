@@ -43,10 +43,10 @@ origin: ECC
 #### RED-GREEN-REFACTOR 周期
 
 ```
-RED     -> Write a failing test first
-GREEN   -> Write minimal code to pass the test
-REFACTOR -> Improve code while keeping tests green
-REPEAT  -> Continue with next requirement
+RED     -> 首先编写一个失败的测试
+GREEN   -> 编写最少的代码使测试通过
+REFACTOR -> 改进代码同时保持测试通过
+REPEAT  -> 继续下一个需求
 ```
 
 #### Kotlin 中逐步进行 TDD

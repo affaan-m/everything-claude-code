@@ -32,12 +32,12 @@ if command -v cargo-audit >/dev/null; then cargo audit; else echo "cargo-audit n
 ## 解决工作流
 
 ```text
-1. cargo check          -> Parse error message and error code
-2. Read affected file   -> Understand ownership and lifetime context
-3. Apply minimal fix    -> Only what's needed
-4. cargo check          -> Verify fix
-5. cargo clippy         -> Check for warnings
-6. cargo test           -> Ensure nothing broke
+1. cargo check          -> 解析错误信息和错误代码
+2. 读取受影响的文件   -> 理解所有权和生命周期的上下文
+3. 应用最小修复      -> 仅做必要的修改
+4. cargo check          -> 验证修复
+5. cargo clippy         -> 检查警告
+6. cargo test           -> 确保没有破坏原有功能
 ```
 
 ## 常见修复模式
@@ -138,10 +138,10 @@ grep "rust-version" Cargo.toml
 ## 输出格式
 
 ```text
-[FIXED] src/handler/user.rs:42
-Error: E0502 — cannot borrow `map` as mutable because it is also borrowed as immutable
-Fix: Cloned value from immutable borrow before mutable insert
-Remaining errors: 3
+[已修复] src/handler/user.rs:42
+错误: E0502 — 无法以可变方式借用 `map`，因为它同时也被不可变借用
+修复: 在可变插入前从不可变借用克隆值
+剩余错误: 3
 ```
 
 最终：`Build Status: SUCCESS/FAILED | Errors Fixed: N | Files Modified: list`

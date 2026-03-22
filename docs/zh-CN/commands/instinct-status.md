@@ -40,20 +40,20 @@ python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py status
 
 ```
 ============================================================
-  INSTINCT STATUS - 12 total
+  INSTINCT 状态 - 总计 12
 ============================================================
 
-  Project: my-app (a1b2c3d4e5f6)
-  Project instincts: 8
-  Global instincts:  4
+  项目: my-app (a1b2c3d4e5f6)
+  项目 instincts: 8
+  全局 instincts:  4
 
-## PROJECT-SCOPED (my-app)
-  ### WORKFLOW (3)
+## 项目范围内 (my-app)
+  ### 工作流 (3)
     ███████░░░  70%  grep-before-edit [project]
-              trigger: when modifying code
+              触发条件: 当修改代码时
 
-## GLOBAL (apply to all projects)
-  ### SECURITY (2)
+## 全局 (适用于所有项目)
+  ### 安全 (2)
     █████████░  85%  validate-user-input [global]
-              trigger: when handling user input
+              触发条件: 当处理用户输入时
 ```

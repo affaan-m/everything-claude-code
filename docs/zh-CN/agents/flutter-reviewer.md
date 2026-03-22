@@ -214,15 +214,15 @@ model: sonnet
 ## 输出格式
 
 ```
-[CRITICAL] Domain layer imports Flutter framework
-File: packages/domain/lib/src/usecases/user_usecase.dart:3
-Issue: `import 'package:flutter/material.dart'` — domain must be pure Dart.
-Fix: Move widget-dependent logic to presentation layer.
+[CRITICAL] 领域层导入了 Flutter 框架
+文件: packages/domain/lib/src/usecases/user_usecase.dart:3
+问题: `import 'package:flutter/material.dart'` — 领域层必须是纯 Dart。
+修复: 将依赖于 widget 的逻辑移至表示层。
 
-[HIGH] State consumer wraps entire screen
-File: lib/features/cart/presentation/cart_page.dart:42
-Issue: Consumer rebuilds entire page on every state change.
-Fix: Narrow scope to the subtree that depends on changed state, or use a selector.
+[HIGH] 状态消费者包裹了整个屏幕
+文件: lib/features/cart/presentation/cart_page.dart:42
+问题: 每次状态变化时，Consumer 都会重建整个页面。
+修复: 将范围缩小到依赖于已更改状态的子树，或使用选择器。
 ```
 
 ## 总结格式
@@ -230,16 +230,16 @@ Fix: Narrow scope to the subtree that depends on changed state, or use a selecto
 每次评审结束时附上：
 
 ```
-## Review Summary
+## 审查摘要
 
-| Severity | Count | Status |
-|----------|-------|--------|
-| CRITICAL | 0     | pass   |
-| HIGH     | 1     | block  |
-| MEDIUM   | 2     | info   |
-| LOW      | 0     | note   |
+| 严重性 | 数量 | 状态     |
+|--------|------|----------|
+| 严重   | 0    | 通过     |
+| 高     | 1    | 阻塞     |
+| 中     | 2    | 信息提示 |
+| 低     | 0    | 备注     |
 
-Verdict: BLOCK — HIGH issues must be fixed before merge.
+裁决：阻塞 — 必须修复高严重性问题后方可合并。
 ```
 
 ## 批准标准

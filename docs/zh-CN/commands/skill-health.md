@@ -34,9 +34,9 @@ node "$ECC_ROOT/scripts/skills-health.js" --dashboard --json
 ## 使用方法
 
 ```
-/skill-health                    # Full dashboard view
-/skill-health --panel failures   # Only failure clustering panel
-/skill-health --json             # Machine-readable JSON output
+/skill-health                    # 完整仪表盘视图
+/skill-health --panel failures   # 仅故障聚类面板
+/skill-health --json             # 机器可读的 JSON 输出
 ```
 
 ## 操作步骤

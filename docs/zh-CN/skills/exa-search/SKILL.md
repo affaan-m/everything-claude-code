@@ -40,7 +40,7 @@ origin: ECC
 用于当前信息、新闻或事实的通用网页搜索。
 
 ```
-web_search_exa(query: "latest AI developments 2026", numResults: 5)
+web_search_exa(query: "2026年最新人工智能发展", numResults: 5)
 ```
 
 **参数：**
@@ -73,27 +73,27 @@ get_code_context_exa(query: "Python asyncio patterns", tokensNum: 3000)
 ### 快速查找
 
 ```
-web_search_exa(query: "Node.js 22 new features", numResults: 3)
+web_search_exa(query: "Node.js 22 新功能", numResults: 3)
 ```
 
 ### 代码研究
 
 ```
-get_code_context_exa(query: "Rust error handling patterns Result type", tokensNum: 3000)
+get_code_context_exa(query: "Rust错误处理模式Result类型", tokensNum: 3000)
 ```
 
 ### 公司或人物研究
 
 ```
-web_search_exa(query: "Vercel funding valuation 2026", numResults: 3, category: "company")
-web_search_exa(query: "site:linkedin.com/in AI safety researchers Anthropic", numResults: 5)
+web_search_exa(query: "Vercel 2026年融资估值", numResults: 3, category: "company")
+web_search_exa(query: "site:linkedin.com/in Anthropic AI安全研究员", numResults: 5)
 ```
 
 ### 技术深度研究
 
 ```
-web_search_exa(query: "WebAssembly component model status and adoption", numResults: 5)
-get_code_context_exa(query: "WebAssembly component model examples", tokensNum: 4000)
+web_search_exa(query: "WebAssembly 组件模型状态与采用情况", numResults: 5)
+get_code_context_exa(query: "WebAssembly 组件模型示例", tokensNum: 4000)
 ```
 
 ## 提示

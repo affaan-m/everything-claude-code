@@ -53,15 +53,15 @@ node scripts/harness-audit.js <scope> --format <text|json>
 ## 结果示例
 
 ```text
-Harness Audit (repo): 66/70
-- Tool Coverage: 10/10 (10/10 pts)
-- Context Efficiency: 9/10 (9/10 pts)
-- Quality Gates: 10/10 (10/10 pts)
+Harness 审计 (代码库): 66/70
+- 工具覆盖率: 10/10 (10/10 分)
+- 上下文效率: 9/10 (9/10 分)
+- 质量门禁: 10/10 (10/10 分)
 
-Top 3 Actions:
-1) [Security Guardrails] Add prompt/tool preflight security guards in hooks/hooks.json. (hooks/hooks.json)
-2) [Tool Coverage] Sync commands/harness-audit.md and .opencode/commands/harness-audit.md. (.opencode/commands/harness-audit.md)
-3) [Eval Coverage] Increase automated test coverage across scripts/hooks/lib. (tests/)
+首要三项行动:
+1) [安全防护] 在 hooks/hooks.json 中添加提示/工具预检安全防护。 (hooks/hooks.json)
+2) [工具覆盖率] 同步 commands/harness-audit.md 和 .opencode/commands/harness-audit.md。 (.opencode/commands/harness-audit.md)
+3) [评估覆盖率] 提升 scripts/hooks/lib 目录下的自动化测试覆盖率。 (tests/)
 ```
 
 ## 参数

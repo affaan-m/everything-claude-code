@@ -76,16 +76,16 @@ origin: ECC
 生成上下文预算报告：
 
 ```
-Context Budget Report
+上下文预算报告
 ═══════════════════════════════════════
 
-Total estimated overhead: ~XX,XXX tokens
-Context model: Claude Sonnet (200K window)
-Effective available context: ~XXX,XXX tokens (XX%)
+总预估开销：约 XX,XXX 个词元
+上下文模型：Claude Sonnet (200K 窗口)
+有效可用上下文：约 XXX,XXX 个词元 (XX%)
 
-Component Breakdown:
+组件细分：
 ┌─────────────────┬────────┬───────────┐
-│ Component       │ Count  │ Tokens    │
+│ 组件            │ 数量   │ 词元数    │
 ├─────────────────┼────────┼───────────┤
 │ Agents          │ N      │ ~X,XXX    │
 │ Skills          │ N      │ ~X,XXX    │
@@ -94,15 +94,15 @@ Component Breakdown:
 │ CLAUDE.md       │ N      │ ~X,XXX    │
 └─────────────────┴────────┴───────────┘
 
-⚠ Issues Found (N):
-[ranked by token savings]
+⚠ 发现的问题 (N)：
+[按可节省词元数排序]
 
-Top 3 Optimizations:
-1. [action] → save ~X,XXX tokens
-2. [action] → save ~X,XXX tokens
-3. [action] → save ~X,XXX tokens
+前 3 项优化建议：
+1. [action] → 节省约 X,XXX 个词元
+2. [action] → 节省约 X,XXX 个词元
+3. [action] → 节省约 X,XXX 个词元
 
-Potential savings: ~XX,XXX tokens (XX% of current overhead)
+潜在节省空间：约 XX,XXX 个词元 (占当前开销的 XX%)
 ```
 
 在详细模式下，额外输出每个文件的令牌计数、最繁重文件的行级细分、重叠组件之间的具体冗余行，以及 MCP 工具列表和每个工具模式大小的估算。
@@ -112,26 +112,26 @@ Potential savings: ~XX,XXX tokens (XX% of current overhead)
 **基本审计**
 
 ```
-User: /context-budget
-Skill: Scans setup → 16 agents (12,400 tokens), 28 skills (6,200), 87 MCP tools (43,500), 2 CLAUDE.md (1,200)
-       Flags: 3 heavy agents, 14 MCP servers (3 CLI-replaceable)
-       Top saving: remove 3 MCP servers → -27,500 tokens (47% overhead reduction)
+/context-budget
+技能：扫描设置 → 16个代理（12,400个令牌），28个技能（6,200），87个MCP工具（43,500），2个CLAUDE.md（1,200）
+       标记：3个重型代理，14个MCP服务器（3个可替换为CLI）
+       最高节省：移除3个MCP服务器 → -27,500个令牌（减少47%开销）
 ```
 
 **详细模式**
 
 ```
-User: /context-budget --verbose
-Skill: Full report + per-file breakdown showing planner.md (213 lines, 1,840 tokens),
-       MCP tool list with per-tool sizes, duplicated rule lines side by side
+/context-budget --verbose
+技能：完整报告 + 按文件细目显示 planner.md（213 行，1,840 个令牌），
+       MCP 工具列表及每个工具的大小，重复规则行并排显示
 ```
 
 **扩容前检查**
 
 ```
-User: I want to add 5 more MCP servers, do I have room?
-Skill: Current overhead 33% → adding 5 servers (~50 tools) would add ~25,000 tokens → pushes to 45% overhead
-       Recommendation: remove 2 CLI-replaceable servers first to stay under 40%
+User: 我想再添加5个MCP服务器，有空间吗？
+Skill: 当前开销33% → 添加5个服务器（约50个工具）会增加约25,000个tokens → 开销将升至45%
+       建议：先移除2个可用CLI替代的服务器以保持在40%以下
 ```
 
 ## 最佳实践

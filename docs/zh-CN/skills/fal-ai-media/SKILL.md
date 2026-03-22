@@ -56,7 +56,7 @@ fal.ai MCP 提供以下工具：
 generate(
   app_id: "fal-ai/nano-banana-2",
   input_data: {
-    "prompt": "a futuristic cityscape at sunset, cyberpunk style",
+    "prompt": "未来主义日落城市景观，赛博朋克风格",
     "image_size": "landscape_16_9",
     "num_images": 1,
     "seed": 42
@@ -72,7 +72,7 @@ generate(
 generate(
   app_id: "fal-ai/nano-banana-pro",
   input_data: {
-    "prompt": "professional product photo of wireless headphones on marble surface, studio lighting",
+    "prompt": "专业产品照片，无线耳机置于大理石表面，影棚灯光",
     "image_size": "square",
     "num_images": 1,
     "guidance_scale": 7.5
@@ -95,10 +95,10 @@ generate(
 使用 Nano Banana 2 并输入图像进行修复、扩展或风格迁移：
 
 ```
-# First upload the source image
+# 首先上传源图像
 upload(file_path: "/path/to/image.png")
 
-# Then generate with image input
+# 然后使用图像输入进行生成
 generate(
   app_id: "fal-ai/nano-banana-2",
   input_data: {
@@ -137,7 +137,7 @@ generate(
 generate(
   app_id: "fal-ai/kling-video/v3/pro",
   input_data: {
-    "prompt": "ocean waves crashing on a rocky coast, dramatic clouds",
+    "prompt": "海浪拍打着岩石海岸，乌云密布",
     "duration": "5s",
     "aspect_ratio": "16:9"
   }
@@ -152,7 +152,7 @@ generate(
 generate(
   app_id: "fal-ai/veo-3",
   input_data: {
-    "prompt": "a bustling Tokyo street market at night, neon signs, crowd noise",
+    "prompt": "夜晚熙熙攘攘的东京街头市场，霓虹灯招牌，人群喧嚣",
     "aspect_ratio": "16:9"
   }
 )

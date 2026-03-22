@@ -33,12 +33,12 @@ python -c "import torch; x = torch.randn(2,3).cuda(); print('CUDA tensor test: O
 ## 解决工作流
 
 ```text
-1. Read error traceback     -> Identify failing line and error type
-2. Read affected file       -> Understand model/training context
-3. Trace tensor shapes      -> Print shapes at key points
-4. Apply minimal fix        -> Only what's needed
-5. Run failing script       -> Verify fix
-6. Check gradients flow     -> Ensure backward pass works
+1. 阅读错误回溯     -> 定位失败行和错误类型
+2. 阅读受影响文件     -> 理解模型/训练上下文
+3. 追踪张量形状      -> 在关键点打印形状
+4. 应用最小修复      -> 仅修改必要部分
+5. 运行失败脚本      -> 验证修复
+6. 检查梯度流动      -> 确保反向传播正常工作
 ```
 
 ## 常见修复模式
@@ -109,10 +109,10 @@ print(f'Max allocated: {torch.cuda.max_memory_allocated()/1e9:.2f} GB')
 ## 输出格式
 
 ```text
-[FIXED] train.py:42
-Error: RuntimeError: mat1 and mat2 shapes cannot be multiplied (32x512 and 256x10)
-Fix: Changed nn.Linear(256, 10) to nn.Linear(512, 10) to match encoder output
-Remaining errors: 0
+[已修复] train.py:42
+错误：RuntimeError：无法相乘 mat1 和 mat2 的形状（32x512 和 256x10）
+修复：将 nn.Linear(256, 10) 更改为 nn.Linear(512, 10) 以匹配编码器输出
+剩余错误：0
 ```
 
 最终：`Status: SUCCESS/FAILED | Errors Fixed: N | Files Modified: list`

@@ -31,10 +31,10 @@ origin: ECC
 ### RED-GREEN-REFACTOR 循环
 
 ```
-RED     → Write a failing test first
-GREEN   → Write minimal code to pass the test
-REFACTOR → Improve code while keeping tests green
-REPEAT  → Continue with next requirement
+RED     → 先写一个失败的测试
+GREEN   → 编写最少代码使测试通过
+REFACTOR → 重构代码，同时保持测试通过
+REPEAT  → 继续下一个需求
 ```
 
 ### Rust 中的分步 TDD
@@ -161,10 +161,10 @@ fn panics_with_specific_message() {
 my_crate/
 ├── src/
 │   └── lib.rs
-├── tests/              # Integration tests
-│   ├── api_test.rs     # Each file is a separate test binary
+├── tests/              # 集成测试
+│   ├── api_test.rs     # 每个文件都是一个独立的测试二进制文件
 │   ├── db_test.rs
-│   └── common/         # Shared test utilities
+│   └── common/         # 共享测试工具
 │       └── mod.rs
 ```
 

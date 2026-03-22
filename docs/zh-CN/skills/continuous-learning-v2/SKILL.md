@@ -82,43 +82,43 @@ Use functional patterns over classes when appropriate.
 ## 工作原理
 
 ```
-Session Activity (in a git repo)
+会话活动（在 git 仓库中）
       |
-      | Hooks capture prompts + tool use (100% reliable)
-      | + detect project context (git remote / repo path)
+      | 钩子捕获提示 + 工具使用（100% 可靠）
+      | + 检测项目上下文（git remote / 仓库路径）
       v
 +---------------------------------------------+
 |  projects/<project-hash>/observations.jsonl  |
-|   (prompts, tool calls, outcomes, project)   |
+|   （提示、工具调用、结果、项目）               |
 +---------------------------------------------+
       |
-      | Observer agent reads (background, Haiku)
+      | 观察者代理读取（后台，Haiku）
       v
 +---------------------------------------------+
-|          PATTERN DETECTION                   |
-|   * User corrections -> instinct             |
-|   * Error resolutions -> instinct            |
-|   * Repeated workflows -> instinct           |
-|   * Scope decision: project or global?       |
+|          模式检测                            |
+|   * 用户修正 -> 直觉                          |
+|   * 错误解决 -> 直觉                          |
+|   * 重复工作流 -> 直觉                        |
+|   * 范围决策：项目级或全局？                   |
 +---------------------------------------------+
       |
-      | Creates/updates
+      | 创建/更新
       v
 +---------------------------------------------+
 |  projects/<project-hash>/instincts/personal/ |
-|   * prefer-functional.yaml (0.7) [project]   |
-|   * use-react-hooks.yaml (0.9) [project]     |
+|   * prefer-functional.yaml (0.7) [项目]      |
+|   * use-react-hooks.yaml (0.9) [项目]        |
 +---------------------------------------------+
-|  instincts/personal/  (GLOBAL)               |
-|   * always-validate-input.yaml (0.85) [global]|
-|   * grep-before-edit.yaml (0.6) [global]     |
+|  instincts/personal/  （全局）                |
+|   * always-validate-input.yaml (0.85) [全局] |
+|   * grep-before-edit.yaml (0.6) [全局]       |
 +---------------------------------------------+
       |
-      | /evolve clusters + /promote
+      | /evolve 聚类 + /promote
       v
 +---------------------------------------------+
-|  projects/<hash>/evolved/ (project-scoped)   |
-|  evolved/ (global)                           |
+|  projects/<hash>/evolved/ （项目范围）        |
+|  evolved/ （全局）                            |
 |   * commands/new-feature.md                  |
 |   * skills/testing-workflow.md               |
 |   * agents/refactor-specialist.md            |
@@ -248,29 +248,29 @@ mkdir -p ~/.claude/homunculus/{instincts/{personal,inherited},evolved/{agents,sk
 
 ```
 ~/.claude/homunculus/
-+-- identity.json           # Your profile, technical level
-+-- projects.json           # Registry: project hash -> name/path/remote
-+-- observations.jsonl      # Global observations (fallback)
++-- identity.json           # 你的个人资料，技术水平
++-- projects.json           # 注册表：项目哈希 -> 名称/路径/远程地址
++-- observations.jsonl      # 全局观察记录（备用）
 +-- instincts/
-|   +-- personal/           # Global auto-learned instincts
-|   +-- inherited/          # Global imported instincts
+|   +-- personal/           # 全局自动学习的本能
+|   +-- inherited/          # 全局导入的本能
 +-- evolved/
-|   +-- agents/             # Global generated agents
-|   +-- skills/             # Global generated skills
-|   +-- commands/           # Global generated commands
+|   +-- agents/             # 全局生成的代理
+|   +-- skills/             # 全局生成的技能
+|   +-- commands/           # 全局生成的命令
 +-- projects/
-    +-- a1b2c3d4e5f6/       # Project hash (from git remote URL)
-    |   +-- project.json    # Per-project metadata mirror (id/name/root/remote)
+    +-- a1b2c3d4e5f6/       # 项目哈希（来自 git 远程 URL）
+    |   +-- project.json    # 项目级元数据镜像（ID/名称/根目录/远程地址）
     |   +-- observations.jsonl
     |   +-- observations.archive/
     |   +-- instincts/
-    |   |   +-- personal/   # Project-specific auto-learned
-    |   |   +-- inherited/  # Project-specific imported
+    |   |   +-- personal/   # 项目特定自动学习的
+    |   |   +-- inherited/  # 项目特定导入的
     |   +-- evolved/
     |       +-- skills/
     |       +-- commands/
     |       +-- agents/
-    +-- f6e5d4c3b2a1/       # Another project
+    +-- f6e5d4c3b2a1/       # 另一个项目
         +-- ...
 ```
 

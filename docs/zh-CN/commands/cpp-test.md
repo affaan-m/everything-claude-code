@@ -28,10 +28,10 @@ description: 为 C++ 强制执行 TDD 工作流程。先编写 GoogleTest 测试
 ## TDD 循环
 
 ```
-RED     → Write failing GoogleTest test
-GREEN   → Implement minimal code to pass
-REFACTOR → Improve code, tests stay green
-REPEAT  → Next test case
+RED     → 编写失败的 GoogleTest 测试
+GREEN   → 实现最小化代码以通过测试
+REFACTOR → 改进代码，测试保持通过
+REPEAT  → 下一个测试用例
 ```
 
 ## 示例会话

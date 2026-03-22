@@ -567,7 +567,7 @@ claude --version
 Claude Code v2.1+ **会自动加载** 任何已安装插件中的 `hooks/hooks.json`（按约定）。在 `plugin.json` 中显式声明会导致重复检测错误：
 
 ```
-Duplicate hooks file detected: ./hooks/hooks.json resolves to already-loaded file
+重复的钩子文件检测到：./hooks/hooks.json 解析到已加载的文件
 ```
 
 **历史背景：** 这已导致此仓库中多次修复/还原循环（[#29](https://github.com/affaan-m/everything-claude-code/issues/29), [#52](https://github.com/affaan-m/everything-claude-code/issues/52), [#103](https://github.com/affaan-m/everything-claude-code/issues/103)）。Claude Code 版本之间的行为发生了变化，导致了混淆。我们现在有一个回归测试来防止这种情况再次发生。
@@ -726,12 +726,12 @@ model: opus
 
 ```
 rules/
-  common/          # Universal principles (always install)
-  typescript/      # TS/JS specific patterns and tools
-  python/          # Python specific patterns and tools
-  golang/          # Go specific patterns and tools
-  swift/           # Swift specific patterns and tools
-  php/             # PHP specific patterns and tools
+  common/          # 通用原则（始终安装）
+  typescript/      # TS/JS 特定模式与工具
+  python/          # Python 特定模式与工具
+  golang/          # Go 特定模式与工具
+  swift/           # Swift 特定模式与工具
+  php/             # PHP 特定模式与工具
 ```
 
 有关安装和结构详情，请参阅 [`rules/README.md`](rules/README.md)。
@@ -763,26 +763,26 @@ rules/
 **开始新功能：**
 
 ```
-/everything-claude-code:plan "Add user authentication with OAuth"
-                                              → planner creates implementation blueprint
-/tdd                                          → tdd-guide enforces write-tests-first
-/code-review                                  → code-reviewer checks your work
+/everything-claude-code:plan "使用 OAuth 添加用户身份验证"
+                                              → 规划器创建实现蓝图
+/tdd                                          → tdd-guide 强制执行先写测试
+/code-review                                  → 代码审查员检查你的工作
 ```
 
 **修复错误：**
 
 ```
-/tdd                                          → tdd-guide: write a failing test that reproduces it
-                                              → implement the fix, verify test passes
-/code-review                                  → code-reviewer: catch regressions
+/tdd                                          → tdd-guide：编写一个能复现问题的失败测试
+                                              → 实现修复，验证测试通过
+/code-review                                  → code-reviewer：捕捉回归问题
 ```
 
 **准备生产环境：**
 
 ```
-/security-scan                                → security-reviewer: OWASP Top 10 audit
-/e2e                                          → e2e-runner: critical user flow tests
-/test-coverage                                → verify 80%+ coverage
+/security-scan                                → security-reviewer: OWASP Top 10 审计
+/e2e                                          → e2e-runner: 关键用户流程测试
+/test-coverage                                → verify 80%+ 覆盖率
 ```
 
 ***
@@ -970,7 +970,7 @@ Cursor 的**钩子事件比 Claude Code 多**（20 对 8）。`.cursor/hooks/ada
 
 ```
 Cursor stdin JSON → adapter.js → transforms → scripts/hooks/*.js
-                                              (shared with Claude Code)
+                                              (与 Claude Code 共享)
 ```
 
 关键钩子：

@@ -34,20 +34,20 @@ origin: ECC
 
 ```
 app/
-├── Actions/            # Single-purpose use cases
+├── Actions/            # 单一用途的用例
 ├── Console/
 ├── Events/
 ├── Exceptions/
 ├── Http/
 │   ├── Controllers/
 │   ├── Middleware/
-│   ├── Requests/       # Form request validation
-│   └── Resources/      # API resources
+│   ├── Requests/       # 表单请求验证
+│   └── Resources/      # API 资源
 ├── Jobs/
 ├── Models/
 ├── Policies/
 ├── Providers/
-├── Services/           # Coordinating domain services
+├── Services/           # 协调领域服务
 └── Support/
 config/
 database/

@@ -21,25 +21,25 @@ origin: ECC
 当 AI 编写代码然后审查其自身工作时，它会将相同的假设带入这两个步骤。这会形成一个可预测的失败模式：
 
 ```
-AI writes fix → AI reviews fix → AI says "looks correct" → Bug still exists
+AI 编写修复 → AI 审查修复 → AI 表示“看起来正确” → 漏洞依然存在
 ```
 
 **实际示例**（在生产环境中观察到）：
 
 ```
-Fix 1: Added notification_settings to API response
-  → Forgot to add it to the SELECT query
-  → AI reviewed and missed it (same blind spot)
+修复 1：向 API 响应添加了 notification_settings
+  → 忘记将其添加到 SELECT 查询中
+  → AI 审核时遗漏了（相同的盲点）
 
-Fix 2: Added it to SELECT query
-  → TypeScript build error (column not in generated types)
-  → AI reviewed Fix 1 but didn't catch the SELECT issue
+修复 2：将其添加到 SELECT 查询中
+  → TypeScript 构建错误（列不在生成的类型中）
+  → AI 审核了修复 1，但未发现 SELECT 问题
 
-Fix 3: Changed to SELECT *
-  → Fixed production path, forgot sandbox path
-  → AI reviewed and missed it AGAIN (4th occurrence)
+修复 3：改为 SELECT *
+  → 修复了生产路径，忘记了沙箱路径
+  → AI 审核时再次遗漏（第 4 次出现）
 
-Fix 4: Test caught it instantly on first run ✅
+修复 4：测试在首次运行时立即捕获了问题 ✅
 ```
 
 模式：**沙盒/生产环境路径不一致**是 AI 引入的 #1 回归问题。
@@ -228,18 +228,18 @@ describe("GET /api/user/messages (conversation list)", () => {
 User: "バグチェックして" (or "/bug-check")
   │
   ├─ Step 1: npm run test
-  │   ├─ FAIL → Bug found mechanically (no AI judgment needed)
-  │   └─ PASS → Continue
+  │   ├─ FAIL → 发现机械性错误（无需AI判断）
+  │   └─ PASS → 继续
   │
   ├─ Step 2: npm run build
-  │   ├─ FAIL → Type error found mechanically
-  │   └─ PASS → Continue
+  │   ├─ FAIL → 发现类型错误
+  │   └─ PASS → 继续
   │
-  ├─ Step 3: AI code review (with known blind spots in mind)
-  │   └─ Findings reported
+  ├─ Step 3: AI代码审查（考虑已知盲点）
+  │   └─ 报告发现的问题
   │
-  └─ Step 4: For each fix, write a regression test
-      └─ Next bug-check catches if fix breaks
+  └─ Step 4: 对每个修复编写回归测试
+      └─ 下次bug-check时捕获修复是否破坏功能
 ```
 
 ## 常见的 AI 回归模式
@@ -345,10 +345,10 @@ const handleRemove = async (id: string) => {
 不要追求 100% 的覆盖率。相反：
 
 ```
-Bug found in /api/user/profile     → Write test for profile API
-Bug found in /api/user/messages    → Write test for messages API
-Bug found in /api/user/favorites   → Write test for favorites API
-No bug in /api/user/notifications  → Don't write test (yet)
+在 /api/user/profile 发现 bug → 为 profile API 编写测试
+在 /api/user/messages 发现 bug → 为 messages API 编写测试
+在 /api/user/favorites 发现 bug → 为 favorites API 编写测试
+在 /api/user/notifications 没有发现 bug → 暂时不编写测试
 ```
 
 **为什么这在 AI 开发中有效：**

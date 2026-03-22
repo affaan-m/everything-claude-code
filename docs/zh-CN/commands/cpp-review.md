@@ -68,26 +68,23 @@ cmake --build build -- -Wall -Wextra -Wpedantic
 ## 使用示例
 
 ````text
-User: /cpp-review
+# C++ 代码审查报告
 
-Agent:
-# C++ Code Review Report
+## 已审查文件
+- src/handler/user.cpp (已修改)
+- src/service/auth.cpp (已修改)
 
-## Files Reviewed
-- src/handler/user.cpp (modified)
-- src/service/auth.cpp (modified)
+## 静态分析结果
+✓ clang-tidy: 2 个警告
+✓ cppcheck: 无问题
 
-## Static Analysis Results
-✓ clang-tidy: 2 warnings
-✓ cppcheck: No issues
+## 发现的问题
 
-## Issues Found
-
-[CRITICAL] Memory Leak
-File: src/service/auth.cpp:45
-Issue: Raw `new` without matching `delete`
+[严重] 内存泄漏
+文件: src/service/auth.cpp:45
+问题: 使用了原始的 `new` 而没有匹配的 `delete`
 ```cpp
-auto* session = new Session(userId);  // Memory leak!
+auto* session = new Session(userId);  // 内存泄漏！
 cache[userId] = session;
 ````
 
@@ -121,25 +118,23 @@ void processUser(const User& user) {
 建议：❌ 在严重问题修复前阻止合并
 
 ```
+## 批准标准
 
-## Approval Criteria
-
-| Status | Condition |
+| 状态 | 条件 |
 |--------|-----------|
-| ✅ Approve | No CRITICAL or HIGH issues |
-| ⚠️ Warning | Only MEDIUM issues (merge with caution) |
-| ❌ Block | CRITICAL or HIGH issues found |
+| ✅ 批准 | 没有 CRITICAL 或 HIGH 级别的问题 |
+| ⚠️ 警告 | 仅有 MEDIUM 级别的问题（谨慎合并） |
+| ❌ 阻止 | 发现 CRITICAL 或 HIGH 级别的问题 |
 
-## Integration with Other Commands
+## 与其他命令的集成
 
-- Use `/cpp-test` first to ensure tests pass
-- Use `/cpp-build` if build errors occur
-- Use `/cpp-review` before committing
-- Use `/code-review` for non-C++ specific concerns
+- 首先使用 `/cpp-test` 确保测试通过
+- 如果出现构建错误，请使用 `/cpp-build`
+- 在提交前使用 `/cpp-review`
+- 对于非 C++ 特定的问题，请使用 `/code-review`
 
-## Related
+## 相关
 
-- Agent: `agents/cpp-reviewer.md`
-- Skills: `skills/cpp-coding-standards/`, `skills/cpp-testing/`
-
+- 代理：`agents/cpp-reviewer.md`
+- 技能：`skills/cpp-coding-standards/`, `skills/cpp-testing/`
 ```

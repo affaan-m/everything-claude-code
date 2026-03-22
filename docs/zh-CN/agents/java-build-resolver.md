@@ -36,11 +36,11 @@ model: sonnet
 ## 解决工作流
 
 ```text
-1. ./mvnw compile OR ./gradlew build  -> Parse error message
-2. Read affected file                 -> Understand context
-3. Apply minimal fix                  -> Only what's needed
-4. ./mvnw compile OR ./gradlew build  -> Verify fix
-5. ./mvnw test OR ./gradlew test      -> Ensure nothing broke
+1. ./mvnw compile 或 ./gradlew build  -> 解析错误信息
+2. 读取受影响的文件                 -> 理解上下文
+3. 应用最小修复                  -> 仅处理必需项
+4. ./mvnw compile 或 ./gradlew build  -> 验证修复
+5. ./mvnw test 或 ./gradlew test      -> 确保未破坏其他功能
 ```
 
 ## 常见修复模式
@@ -143,10 +143,10 @@ grep -A5 "annotationProcessorPaths\|annotationProcessor" pom.xml build.gradle
 ## 输出格式
 
 ```text
-[FIXED] src/main/java/com/example/service/PaymentService.java:87
-Error: cannot find symbol — symbol: class IdempotencyKey
-Fix: Added import com.example.domain.IdempotencyKey
-Remaining errors: 1
+[已修复] src/main/java/com/example/service/PaymentService.java:87
+错误: 找不到符号 — 符号: 类 IdempotencyKey
+修复: 添加了 import com.example.domain.IdempotencyKey
+剩余错误: 1
 ```
 
 最终：`Build Status: SUCCESS/FAILED | Errors Fixed: N | Files Modified: list`

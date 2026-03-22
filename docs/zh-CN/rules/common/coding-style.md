@@ -5,9 +5,9 @@
 始终创建新对象，绝不改变现有对象：
 
 ```
-// Pseudocode
-WRONG:  modify(original, field, value) → changes original in-place
-CORRECT: update(original, field, value) → returns new copy with change
+// 伪代码
+WRONG:  modify(original, field, value) → 原地修改 original
+CORRECT: update(original, field, value) → 返回包含更改的新副本
 ```
 
 理由：不可变数据可以防止隐藏的副作用，使调试更容易，并支持安全的并发。

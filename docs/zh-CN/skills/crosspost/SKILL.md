@@ -102,35 +102,35 @@ origin: ECC
 **X 版本：**
 
 ```
-We just shipped [feature].
+我们刚刚发布了 [feature]。
 
-[One specific thing it does that's impressive]
+[它所实现的某个具体且令人印象深刻的功能]
 
-[Link]
+[链接]
 ```
 
 **LinkedIn 版本：**
 
 ```
-Excited to share: we just launched [feature] at [Company].
+激动地宣布：我们刚刚在[Company]推出了[feature]。
 
-Here's why it matters:
+以下是其重要意义：
 
-[2-3 short paragraphs with context]
+[2-3段简短背景说明]
 
-[Takeaway for the audience]
+[对受众的核心启示]
 
-[Link]
+[链接]
 ```
 
 **Threads 版本：**
 
 ```
-just shipped something cool — [feature]
+刚发布了一个很酷的东西 —— [feature]
 
-[casual explanation of what it does]
+[对这个功能是什么的随意解释]
 
-link in bio
+链接在简介里
 ```
 
 ### 源内容：技术见解
@@ -138,21 +138,21 @@ link in bio
 **X 版本：**
 
 ```
-TIL: [specific technical insight]
+今天学到：[具体技术见解]
 
-[Why it matters in one sentence]
+[一句话说明其重要性]
 ```
 
 **LinkedIn 版本：**
 
 ```
-A pattern I've been using that's made a real difference:
+我一直在使用的一种模式，它带来了真正的改变：
 
-[Technical insight with professional framing]
+[技术见解与专业框架]
 
-[How it applies to teams/orgs]
+[它如何适用于团队/组织]
 
-#relevantHashtag
+#相关标签
 ```
 
 ## API 集成

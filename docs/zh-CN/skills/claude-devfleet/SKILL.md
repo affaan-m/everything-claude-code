@@ -19,21 +19,21 @@ claude mcp add devfleet --transport http http://localhost:18801/mcp
 ## 工作原理
 
 ```
-User → "Build a REST API with auth and tests"
+用户 → "构建一个带有身份验证和测试的 REST API"
   ↓
-plan_project(prompt) → project_id + mission DAG
+plan_project(prompt) → 项目ID + 任务DAG
   ↓
-Show plan to user → get approval
+向用户展示计划 → 获取批准
   ↓
-dispatch_mission(M1) → Agent 1 spawns in worktree
+dispatch_mission(M1) → 代理1在工作树中生成
   ↓
-M1 completes → auto-merge → auto-dispatch M2 (depends_on M1)
+M1完成 → 自动合并 → 自动分发M2 (依赖于M1)
   ↓
-M2 completes → auto-merge
+M2完成 → 自动合并
   ↓
-get_report(M2) → files_changed, what_done, errors, next_steps
+get_report(M2) → 更改的文件、完成的工作、错误、后续步骤
   ↓
-Report back to user
+向用户报告
 ```
 
 ### 工具

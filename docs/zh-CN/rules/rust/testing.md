@@ -20,17 +20,17 @@ paths:
 ```text
 my_crate/
 ├── src/
-│   ├── lib.rs           # Unit tests in #[cfg(test)] modules
+│   ├── lib.rs           # 位于 #[cfg(test)] 模块中的单元测试
 │   ├── auth/
 │   │   └── mod.rs       # #[cfg(test)] mod tests { ... }
 │   └── orders/
 │       └── service.rs   # #[cfg(test)] mod tests { ... }
-├── tests/               # Integration tests (each file = separate binary)
+├── tests/               # 集成测试（每个文件 = 独立的二进制文件）
 │   ├── api_test.rs
 │   ├── db_test.rs
-│   └── common/          # Shared test utilities
+│   └── common/          # 共享的测试工具
 │       └── mod.rs
-└── benches/             # Criterion benchmarks
+└── benches/             # Criterion 基准测试
     └── benchmark.rs
 ```
 

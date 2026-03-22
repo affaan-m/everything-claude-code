@@ -146,14 +146,14 @@
 ## 项目结构
 
 ```
-agents/          — 28 specialized subagents
-skills/          — 115 workflow skills and domain knowledge
-commands/        — 59 slash commands
-hooks/           — Trigger-based automations
-rules/           — Always-follow guidelines (common + per-language)
-scripts/         — Cross-platform Node.js utilities
-mcp-configs/     — 14 MCP server configurations
-tests/           — Test suite
+agents/          — 28 个专业子代理
+skills/          — 115 个工作流技能和领域知识
+commands/        — 59 个斜杠命令
+hooks/           — 基于触发的自动化
+rules/           — 始终遵循的指导方针（通用 + 每种语言）
+scripts/         — 跨平台 Node.js 实用工具
+mcp-configs/     — 14 个 MCP 服务器配置
+tests/           — 测试套件
 ```
 
 ## 成功指标

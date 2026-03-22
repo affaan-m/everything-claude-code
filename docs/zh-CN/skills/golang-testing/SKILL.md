@@ -21,10 +21,10 @@ origin: ECC
 ### 红-绿-重构循环
 
 ```
-RED     → Write a failing test first
-GREEN   → Write minimal code to pass the test
-REFACTOR → Improve code while keeping tests green
-REPEAT  → Continue with next requirement
+RED     → 首先编写一个失败的测试
+GREEN   → 编写最少的代码来通过测试
+REFACTOR → 改进代码，同时保持测试通过
+REPEAT  → 继续处理下一个需求
 ```
 
 ### Go 中的分步 TDD

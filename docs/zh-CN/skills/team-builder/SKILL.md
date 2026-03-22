@@ -70,12 +70,12 @@ agents/
 ### 步骤 2：呈现领域菜单
 
 ```
-Available agent domains:
-1. Engineering — Software Architect, Security Engineer
-2. Marketing — SEO Specialist
-3. Sales — Discovery Coach, Outbound Strategist
+可用的代理领域：
+1. 工程领域 — 软件架构师、安全工程师
+2. 市场营销 — SEO专家
+3. 销售领域 — 发现教练、外拓策略师
 
-Pick domains or name specific agents (e.g., "1,3" or "security + seo"):
+请选择领域或指定具体代理（例如："1,3" 或 "security + seo"）：
 ```
 
 * 跳过智能体数量为零的领域（空目录）
@@ -94,8 +94,8 @@ Pick domains or name specific agents (e.g., "1,3" or "security + seo"):
 确认选择：
 
 ```
-Selected: Security Engineer + SEO Specialist
-What should they work on? (describe the task):
+选定：安全工程师 + SEO专家  
+他们应该专注于什么任务？（描述任务）
 ```
 
 ### 步骤 4：并行启动智能体
@@ -133,33 +133,33 @@ What should they work on? (describe the task):
 User: team builder
 
 Claude:
-Available agent domains:
-1. Engineering (2) — Software Architect, Security Engineer
-2. Marketing (1) — SEO Specialist
-3. Sales (4) — Discovery Coach, Outbound Strategist, Proposal Strategist, Sales Engineer
-4. Support (1) — Executive Summary
+可用代理领域：
+1. 工程 (2) — 软件架构师，安全工程师
+2. 市场营销 (1) — SEO专家
+3. 销售 (4) — 探索教练，外拓策略师，提案策略师，销售工程师
+4. 支持 (1) — 执行摘要
 
-Pick domains or name specific agents:
+选择领域或指定具体代理：
 
 User: security + seo
 
 Claude:
-Selected: Security Engineer + SEO Specialist
-What should they work on?
+已选择：安全工程师 + SEO专家
+他们应该处理什么任务？
 
-User: Review my Next.js e-commerce site before launch
+User: 在发布前审查我的 Next.js 电商网站
 
-[Both agents spawn in parallel, each applying their specialty to the codebase]
+[两个代理并行启动，各自将他们的专长应用于代码库]
 
 Claude:
-## Security Engineer Findings
-- [findings...]
+## 安全工程师发现
+- [发现内容...]
 
-## SEO Specialist Findings
-- [findings...]
+## SEO专家发现
+- [发现内容...]
 
-## Synthesis
-Both agents agree on: [...]
-Tension: Security recommends CSP that blocks inline styles, SEO needs inline schema markup. Resolution: [...]
-Next steps: [...]
+## 综合分析
+双方代理均同意：[...]
+冲突点：安全建议的CSP阻止内联样式，SEO需要内联模式标记。解决方案：[...]
+后续步骤：[...]
 ```

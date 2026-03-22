@@ -22,13 +22,13 @@ origin: ECC
 
 ```
 project/
-├── app/                  # Android entry point, DI wiring, Application class
-├── core/                 # Shared utilities, base classes, error types
-├── domain/               # UseCases, domain models, repository interfaces (pure Kotlin)
-├── data/                 # Repository implementations, DataSources, DB, network
-├── presentation/         # Screens, ViewModels, UI models, navigation
-├── design-system/        # Reusable Compose components, theme, typography
-└── feature/              # Feature modules (optional, for larger projects)
+├── app/                  # Android 入口点，DI 装配，Application 类
+├── core/                 # 共享工具类，基类，错误类型
+├── domain/               # 用例，领域模型，仓库接口（纯 Kotlin）
+├── data/                 # 仓库实现，数据源，数据库，网络
+├── presentation/         # 界面，ViewModel，UI 模型，导航
+├── design-system/        # 可复用的 Compose 组件，主题，排版
+└── feature/              # 功能模块（可选，用于大型项目）
     ├── auth/
     ├── settings/
     └── profile/
@@ -37,11 +37,11 @@ project/
 ### 依赖规则
 
 ```
-app → presentation, domain, data, core
-presentation → domain, design-system, core
-data → domain, core
-domain → core (or no dependencies)
-core → (nothing)
+app → presentation, domain, data, core  
+presentation → domain, design-system, core  
+data → domain, core  
+domain → core (或无依赖)  
+core → (无依赖)
 ```
 
 **关键**：`domain` 绝不能依赖 `data`、`presentation` 或任何框架。它仅包含纯 Kotlin 代码。

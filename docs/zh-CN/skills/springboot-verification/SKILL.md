@@ -178,13 +178,13 @@ git secrets --scan  # if configured
 ### 常见安全发现
 
 ```
-# Check for System.out.println (use logger instead)
+# 检查 System.out.println（应使用日志记录器）
 grep -rn "System\.out\.print" src/main/ --include="*.java"
 
-# Check for raw exception messages in responses
+# 检查响应中的原始异常消息
 grep -rn "e\.getMessage()" src/main/ --include="*.java"
 
-# Check for wildcard CORS
+# 检查通配符 CORS 配置
 grep -rn "allowedOrigins.*\*" src/main/ --include="*.java"
 ```
 
@@ -212,17 +212,17 @@ git diff
 ## 输出模板
 
 ```
-VERIFICATION REPORT
+验证报告
 ===================
-Build:     [PASS/FAIL]
-Static:    [PASS/FAIL] (spotbugs/pmd/checkstyle)
-Tests:     [PASS/FAIL] (X/Y passed, Z% coverage)
-Security:  [PASS/FAIL] (CVE findings: N)
-Diff:      [X files changed]
+构建:     [通过/失败]
+静态分析:    [通过/失败] (spotbugs/pmd/checkstyle)
+测试:     [通过/失败] (X/Y 通过, Z% 覆盖率)
+安全性:  [通过/失败] (CVE 发现数: N)
+差异:      [X 个文件变更]
 
-Overall:   [READY / NOT READY]
+总体:   [就绪 / 未就绪]
 
-Issues to Fix:
+待修复问题:
 1. ...
 2. ...
 ```

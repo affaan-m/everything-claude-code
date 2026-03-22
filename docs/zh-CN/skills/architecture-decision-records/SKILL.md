@@ -96,11 +96,11 @@ origin: ECC
 ```
 docs/
 └── adr/
-    ├── README.md              ← index of all ADRs
+    ├── README.md              ← 所有 ADR 的索引
     ├── 0001-use-nextjs.md
     ├── 0002-postgres-over-mongo.md
     ├── 0003-rest-over-graphql.md
-    └── template.md            ← blank template for manual use
+    └── template.md            ← 供手动使用的空白模板
 ```
 
 ### ADR 索引格式

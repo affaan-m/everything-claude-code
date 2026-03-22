@@ -300,27 +300,27 @@ ALTER TABLE users DROP COLUMN IF EXISTS avatar_url;
 
 ```
 Phase 1: EXPAND
-  - Add new column/table (nullable or with default)
-  - Deploy: app writes to BOTH old and new
-  - Backfill existing data
+  - 添加新列/表（可为空或带有默认值）
+  - 部署：应用同时写入旧数据和新数据
+  - 回填现有数据
 
 Phase 2: MIGRATE
-  - Deploy: app reads from NEW, writes to BOTH
-  - Verify data consistency
+  - 部署：应用读取新数据，同时写入新旧数据
+  - 验证数据一致性
 
 Phase 3: CONTRACT
-  - Deploy: app only uses NEW
-  - Drop old column/table in separate migration
+  - 部署：应用仅使用新数据
+  - 在单独迁移中删除旧列/表
 ```
 
 ### 时间线示例
 
 ```
-Day 1: Migration adds new_status column (nullable)
-Day 1: Deploy app v2 — writes to both status and new_status
-Day 2: Run backfill migration for existing rows
-Day 3: Deploy app v3 — reads from new_status only
-Day 7: Migration drops old status column
+Day 1：迁移添加新的 `new_status` 列（可空）
+Day 1：部署应用 v2 —— 同时写入 `status` 和 `new_status`
+Day 2：运行针对现有行的回填迁移
+Day 3：部署应用 v3 —— 仅从 `new_status` 读取
+Day 7：迁移删除旧的 `status` 列
 ```
 
 ## 反模式

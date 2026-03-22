@@ -101,34 +101,34 @@ for batch in chunks(items, size=5):
 
 ```
 my-agent/
-├── config.yaml              # User customises this (keywords, filters, preferences)
+├── config.yaml              # 用户自定义此文件（关键词、过滤器、偏好设置）
 ├── profile/
-│   └── context.md           # User context the AI uses (resume, interests, criteria)
+│   └── context.md           # AI 使用的用户上下文（简历、兴趣、标准）
 ├── scraper/
 │   ├── __init__.py
-│   ├── main.py              # Orchestrator: scrape → enrich → store
-│   ├── filters.py           # Rule-based pre-filter (fast, before AI)
+│   ├── main.py              # 协调器：抓取 → 丰富 → 存储
+│   ├── filters.py           # 基于规则的预过滤器（快速，在 AI 处理之前）
 │   └── sources/
 │       ├── __init__.py
-│       └── source_name.py   # One file per data source
+│       └── source_name.py   # 每个数据源一个文件
 ├── ai/
 │   ├── __init__.py
-│   ├── client.py            # Gemini REST client with model fallback
-│   ├── pipeline.py          # Batch AI analysis
-│   ├── jd_fetcher.py        # Fetch full content from URLs (optional)
-│   └── memory.py            # Learn from user feedback
+│   ├── client.py            # Gemini REST 客户端，带模型回退
+│   ├── pipeline.py          # 批量 AI 分析
+│   ├── jd_fetcher.py        # 从 URL 获取完整内容（可选）
+│   └── memory.py            # 从用户反馈中学习
 ├── storage/
 │   ├── __init__.py
-│   └── notion_sync.py       # Or sheets_sync.py / supabase_sync.py
+│   └── notion_sync.py       # 或 sheets_sync.py / supabase_sync.py
 ├── data/
-│   └── feedback.json        # User decision history (auto-updated)
+│   └── feedback.json        # 用户决策历史（自动更新）
 ├── .env.example
-├── setup.py                 # One-time DB/schema creation
-├── enrich_existing.py       # Backfill AI scores on old rows
+├── setup.py                 # 一次性数据库/模式创建
+├── enrich_existing.py       # 对旧行进行 AI 分数回填
 ├── requirements.txt
 └── .github/
     └── workflows/
-        └── scraper.yml      # GitHub Actions schedule
+        └── scraper.yml      # GitHub Actions 计划任务
 ```
 
 ***
@@ -725,8 +725,8 @@ beautifulsoup4==4.12.3
 lxml==5.1.0
 python-dotenv==1.0.1
 pyyaml==6.0.2
-notion-client==2.2.1   # if using Notion
-# playwright==1.40.0   # uncomment for JS-rendered sites
+notion-client==2.2.1   # 如需使用 Notion
+# playwright==1.40.0   # 针对 JS 渲染的站点，请取消注释
 ```
 
 ***
@@ -753,14 +753,14 @@ notion-client==2.2.1   # if using Notion
 ## 真实世界示例
 
 ```
-"Build me an agent that monitors Hacker News for AI startup funding news"
-"Scrape product prices from 3 e-commerce sites and alert when they drop"
-"Track new GitHub repos tagged with 'llm' or 'agents' — summarise each one"
-"Collect Chief of Staff job listings from LinkedIn and Cutshort into Notion"
-"Monitor a subreddit for posts mentioning my company — classify sentiment"
-"Scrape new academic papers from arXiv on a topic I care about daily"
-"Track sports fixture results and keep a running table in Google Sheets"
-"Build a real estate listing watcher — alert on new properties under ₹1 Cr"
+"为我构建一个监控 Hacker News 上 AI 初创公司融资新闻的智能体"
+"从 3 家电商网站抓取产品价格并在降价时发出提醒"
+"追踪标记有 'llm' 或 'agents' 的新 GitHub 仓库——并为每个仓库生成摘要"
+"将 LinkedIn 和 Cutshort 上的首席运营官职位列表收集到 Notion 中"
+"监控一个提到我公司的 subreddit 帖子——并进行情感分类"
+"每日从 arXiv 抓取我关注主题的新学术论文"
+"追踪体育赛事结果并在 Google Sheets 中维护动态更新的表格"
+"构建一个房地产房源监控器——在新房源价格低于 1 千万卢比时发出提醒"
 ```
 
 ***

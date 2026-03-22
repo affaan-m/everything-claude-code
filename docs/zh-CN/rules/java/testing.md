@@ -18,10 +18,10 @@ paths:
 
 ```
 src/test/java/com/example/app/
-  service/           # Unit tests for service layer
-  controller/        # Web layer / API tests
-  repository/        # Data access tests
-  integration/       # Cross-layer integration tests
+  service/           # 服务层单元测试
+  controller/        # Web 层/API 测试
+  repository/        # 数据访问测试
+  integration/       # 跨层集成测试
 ```
 
 在 `src/test/java` 中镜像 `src/main/java` 的包结构。

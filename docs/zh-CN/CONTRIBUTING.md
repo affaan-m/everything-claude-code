@@ -390,11 +390,11 @@ ECC 为其他平台提供了技能子集：
 ### 1. PR 标题格式
 
 ```
-feat(skills): add rust-patterns skill
-feat(agents): add api-designer agent
-feat(hooks): add auto-format hook
-fix(skills): update React patterns
-docs: improve contributing guide
+feat(skills): 新增 Rust 模式技能
+feat(agents): 新增 API 设计器代理
+feat(hooks): 新增自动格式化钩子
+fix(skills): 更新 React 模式
+docs: 完善贡献指南
 ```
 
 ### 2. PR 描述

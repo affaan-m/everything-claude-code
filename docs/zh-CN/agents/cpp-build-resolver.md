@@ -31,11 +31,11 @@ cppcheck --enable=all src/ 2>/dev/null || echo "cppcheck not available"
 ## 解决工作流程
 
 ```text
-1. cmake --build build    -> Parse error message
-2. Read affected file     -> Understand context
-3. Apply minimal fix      -> Only what's needed
-4. cmake --build build    -> Verify fix
-5. ctest --test-dir build -> Ensure nothing broke
+1. cmake --build build    -> 解析错误信息
+2. 读取受影响的文件     -> 理解上下文
+3. 应用最小修复        -> 仅修复必需部分
+4. cmake --build build    -> 验证修复
+5. ctest --test-dir build -> 确保未破坏其他功能
 ```
 
 ## 常见修复模式
@@ -80,10 +80,10 @@ cmake --build build --clean-first
 ## 输出格式
 
 ```text
-[FIXED] src/handler/user.cpp:42
-Error: undefined reference to `UserService::create`
-Fix: Added missing method implementation in user_service.cpp
-Remaining errors: 3
+[已修复] src/handler/user.cpp:42
+错误：未定义的引用 `UserService::create`
+修复：在 user_service.cpp 中添加了缺失的方法实现
+剩余错误：3
 ```
 
 最终：`Build Status: SUCCESS/FAILED | Errors Fixed: N | Files Modified: list`

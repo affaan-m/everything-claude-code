@@ -41,10 +41,10 @@ tdd-guide 代理将：
 ```
 RED → GREEN → REFACTOR → REPEAT
 
-RED:      Write a failing test
-GREEN:    Write minimal code to pass
-REFACTOR: Improve code, keep tests passing
-REPEAT:   Next feature/scenario
+RED:      编写一个失败测试
+GREEN:    编写通过测试的最简代码
+REFACTOR: 改进代码，保持测试通过
+REPEAT:   开始下一个功能/场景
 ```
 
 ## 使用示例
@@ -254,79 +254,77 @@ Coverage: 100% ✅ (Target: 80%)
 ✅ TDD 会话完成！
 
 ```
+## TDD 最佳实践
 
-## TDD Best Practices
+**应做：**
+- ✅ 先写测试，再写实现
+- ✅ 运行测试并确认失败，再实现功能
+- ✅ 编写最少代码使测试通过
+- ✅ 仅在测试通过后进行重构
+- ✅ 添加边界情况和错误场景
+- ✅ 目标覆盖率 80% 以上（关键代码 100%）
 
-**DO:**
-- ✅ Write the test FIRST, before any implementation
-- ✅ Run tests and verify they FAIL before implementing
-- ✅ Write minimal code to make tests pass
-- ✅ Refactor only after tests are green
-- ✅ Add edge cases and error scenarios
-- ✅ Aim for 80%+ coverage (100% for critical code)
+**不应做：**
+- ❌ 先写实现再写测试
+- ❌ 每次更改后跳过运行测试
+- ❌ 一次性编写过多代码
+- ❌ 忽略失败的测试
+- ❌ 测试实现细节（应测试行为）
+- ❌ 过度模拟（优先使用集成测试）
 
-**DON'T:**
-- ❌ Write implementation before tests
-- ❌ Skip running tests after each change
-- ❌ Write too much code at once
-- ❌ Ignore failing tests
-- ❌ Test implementation details (test behavior)
-- ❌ Mock everything (prefer integration tests)
+## 应包含的测试类型
 
-## Test Types to Include
+**单元测试**（函数级别）：
+- 正常路径场景
+- 边界情况（空值、null、最大值）
+- 错误条件
+- 边界值
 
-**Unit Tests** (Function-level):
-- Happy path scenarios
-- Edge cases (empty, null, max values)
-- Error conditions
-- Boundary values
+**集成测试**（组件级别）：
+- API 端点
+- 数据库操作
+- 外部服务调用
+- 包含钩子的 React 组件
 
-**Integration Tests** (Component-level):
-- API endpoints
-- Database operations
-- External service calls
-- React components with hooks
+**端到端测试**（使用 `/e2e` 命令）：
+- 关键用户流程
+- 多步骤流程
+- 全栈集成
 
-**E2E Tests** (use `/e2e` command):
-- Critical user flows
-- Multi-step processes
-- Full stack integration
+## 覆盖率要求
 
-## Coverage Requirements
+- 所有代码**最低 80%**
+- **必须达到 100%** 的代码：
+  - 财务计算
+  - 认证逻辑
+  - 安全关键代码
+  - 核心业务逻辑
 
-- **80% minimum** for all code
-- **100% required** for:
-  - Financial calculations
-  - Authentication logic
-  - Security-critical code
-  - Core business logic
+## 重要说明
 
-## Important Notes
+**强制要求**：测试必须在实现之前编写。TDD 循环是：
 
-**MANDATORY**: Tests must be written BEFORE implementation. The TDD cycle is:
+1. **红** - 编写失败的测试
+2. **绿** - 实现功能使测试通过
+3. **重构** - 改进代码
 
-1. **RED** - Write failing test
-2. **GREEN** - Implement to pass
-3. **REFACTOR** - Improve code
+切勿跳过红阶段。切勿在测试之前编写代码。
 
-Never skip the RED phase. Never write code before tests.
+## 与其他命令的集成
 
-## Integration with Other Commands
+- 首先使用 `/plan` 来了解要构建什么
+- 使用 `/tdd` 进行带测试的实现
+- 如果出现构建错误，请使用 `/build-fix`
+- 使用 `/code-review` 审查实现
+- 使用 `/test-coverage` 验证覆盖率
 
-- Use `/plan` first to understand what to build
-- Use `/tdd` to implement with tests
-- Use `/build-fix` if build errors occur
-- Use `/code-review` to review implementation
-- Use `/test-coverage` to verify coverage
+## 相关代理
 
-## Related Agents
+此命令调用由 ECC 提供的 `tdd-guide` 代理。
 
-This command invokes the `tdd-guide` agent provided by ECC.
+相关的 `tdd-workflow` 技能也随 ECC 捆绑提供。
 
-The related `tdd-workflow` skill is also bundled with ECC.
-
-For manual installs, the source files live at:
+对于手动安装，源文件位于：
 - `agents/tdd-guide.md`
 - `skills/tdd-workflow/SKILL.md`
-
 ```

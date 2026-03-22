@@ -56,9 +56,9 @@ mkdir -p ~/.claude/sessions
 写入后，显示完整内容并询问：
 
 ```
-Session saved to [actual resolved path to the session file]
+会话已保存至 [实际解析的会话文件路径]
 
-Does this look accurate? Anything to correct or add before we close?
+这看起来准确吗？在关闭之前，还有什么需要纠正或补充的吗？
 ```
 
 等待确认。如果用户要求，进行编辑。

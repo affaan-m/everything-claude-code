@@ -41,18 +41,16 @@ cppcheck --enable=all src/
 ## 示例会话
 
 ````text
-User: /cpp-build
+# C++ 构建问题解决
 
-Agent:
-# C++ Build Resolution
-
-## Initial Diagnostics
+## 初始诊断
 
 ```bash
 $ cmake --build build
 src/service/user.cpp:25:15: error: use of undeclared identifier 'UserRepository'
 src/handler/api.cpp:42:9: error: no matching function for call to 'process'
 src/handler/api.cpp:58:1: error: non-void function does not return a value
+
 ````
 
 发现的错误：3
@@ -133,45 +131,43 @@ All tests passed.
 构建状态：✅ 成功
 
 ```
+## 常见错误修复
 
-## Common Errors Fixed
-
-| Error | Typical Fix |
+| 错误 | 典型修复方法 |
 |-------|-------------|
-| `undeclared identifier` | Add `#include` or fix typo |
-| `no matching function` | Fix argument types or add overload |
-| `undefined reference` | Link library or add implementation |
-| `multiple definition` | Use `inline` or move to .cpp |
-| `incomplete type` | Replace forward decl with `#include` |
-| `no member named X` | Fix member name or include |
-| `cannot convert X to Y` | Add appropriate cast |
-| `CMake Error` | Fix CMakeLists.txt configuration |
+| `undeclared identifier` | 添加 `#include` 或修正拼写错误 |
+| `no matching function` | 修正参数类型或添加重载函数 |
+| `undefined reference` | 链接库或添加实现 |
+| `multiple definition` | 使用 `inline` 或移至 .cpp 文件 |
+| `incomplete type` | 将前向声明替换为 `#include` |
+| `no member named X` | 修正成员名称或包含头文件 |
+| `cannot convert X to Y` | 添加适当的类型转换 |
+| `CMake Error` | 修正 CMakeLists.txt 配置 |
 
-## Fix Strategy
+## 修复策略
 
-1. **Compilation errors first** - Code must compile
-2. **Linker errors second** - Resolve undefined references
-3. **Warnings third** - Fix with `-Wall -Wextra`
-4. **One fix at a time** - Verify each change
-5. **Minimal changes** - Don't refactor, just fix
+1. **优先处理编译错误** - 代码必须能够编译
+2. **其次处理链接器错误** - 解决未定义引用
+3. **第三处理警告** - 使用 `-Wall -Wextra` 进行修复
+4. **一次只修复一个问题** - 验证每个更改
+5. **最小化改动** - 仅修复问题，不重构代码
 
-## Stop Conditions
+## 停止条件
 
-The agent will stop and report if:
-- Same error persists after 3 attempts
-- Fix introduces more errors
-- Requires architectural changes
-- Missing external dependencies
+在以下情况下，代理将停止并报告：
+- 同一错误经过 3 次尝试后仍然存在
+- 修复引入了更多错误
+- 需要架构性更改
+- 缺少外部依赖项
 
-## Related Commands
+## 相关命令
 
-- `/cpp-test` - Run tests after build succeeds
-- `/cpp-review` - Review code quality
-- `/verify` - Full verification loop
+- `/cpp-test` - 构建成功后运行测试
+- `/cpp-review` - 审查代码质量
+- `/verify` - 完整验证循环
 
-## Related
+## 相关
 
-- Agent: `agents/cpp-build-resolver.md`
-- Skill: `skills/cpp-coding-standards/`
-
+- 代理: `agents/cpp-build-resolver.md`
+- 技能: `skills/cpp-coding-standards/`
 ```

@@ -397,19 +397,19 @@ my_app/
 ├── src/
 │   ├── main.rs
 │   ├── lib.rs
-│   ├── auth/          # Domain module
+│   ├── auth/          # 领域模块
 │   │   ├── mod.rs
 │   │   ├── token.rs
 │   │   └── middleware.rs
-│   ├── orders/        # Domain module
+│   ├── orders/        # 领域模块
 │   │   ├── mod.rs
 │   │   ├── model.rs
 │   │   └── service.rs
-│   └── db/            # Infrastructure
+│   └── db/            # 基础设施
 │       ├── mod.rs
 │       └── pool.rs
-├── tests/             # Integration tests
-├── benches/           # Benchmarks
+├── tests/             # 集成测试
+├── benches/           # 基准测试
 └── Cargo.toml
 ```
 

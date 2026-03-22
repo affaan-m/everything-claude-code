@@ -161,10 +161,10 @@ alias claude-research='claude --system-prompt "$(cat ~/.claude/contexts/research
 **关键指标：**
 
 ```
-pass@k: At least ONE of k attempts succeeds
+pass@k: 至少 k 次尝试中有一次成功
         k=1: 70%  k=3: 91%  k=5: 97%
 
-pass^k: ALL k attempts must succeed
+pass^k: 所有 k 次尝试都必须成功
         k=1: 70%  k=3: 34%  k=5: 17%
 ```
 

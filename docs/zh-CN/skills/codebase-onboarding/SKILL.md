@@ -23,28 +23,28 @@ origin: ECC
 在不阅读每个文件的情况下，收集关于项目的原始信息。并行运行以下检查：
 
 ```
-1. Package manifest detection
-   → package.json, go.mod, Cargo.toml, pyproject.toml, pom.xml, build.gradle,
-     Gemfile, composer.json, mix.exs, pubspec.yaml
+1. 包清单检测
+   → package.json、go.mod、Cargo.toml、pyproject.toml、pom.xml、build.gradle、
+     Gemfile、composer.json、mix.exs、pubspec.yaml
 
-2. Framework fingerprinting
-   → next.config.*, nuxt.config.*, angular.json, vite.config.*,
-     django settings, flask app factory, fastapi main, rails config
+2. 框架指纹识别
+   → next.config.*、nuxt.config.*、angular.json、vite.config.*、
+     django 设置、flask 应用工厂、fastapi 主程序、rails 配置
 
-3. Entry point identification
-   → main.*, index.*, app.*, server.*, cmd/, src/main/
+3. 入口点识别
+   → main.*、index.*、app.*、server.*、cmd/、src/main/
 
-4. Directory structure snapshot
-   → Top 2 levels of the directory tree, ignoring node_modules, vendor,
-     .git, dist, build, __pycache__, .next
+4. 目录结构快照
+   → 目录树的前 2 层，忽略 node_modules、vendor、
+     .git、dist、build、__pycache__、.next
 
-5. Config and tooling detection
-   → .eslintrc*, .prettierrc*, tsconfig.json, Makefile, Dockerfile,
-     docker-compose*, .github/workflows/, .env.example, CI configs
+5. 配置与工具检测
+   → .eslintrc*、.prettierrc*、tsconfig.json、Makefile、Dockerfile、
+     docker-compose*、.github/workflows/、.env.example、CI 配置
 
-6. Test structure detection
-   → tests/, test/, __tests__/, *_test.go, *.spec.ts, *.test.js,
-     pytest.ini, jest.config.*, vitest.config.*
+6. 测试结构检测
+   → tests/、test/、__tests__/、*_test.go、*.spec.ts、*.test.js、
+     pytest.ini、jest.config.*、vitest.config.*
 ```
 
 ### 阶段 2：架构映射
@@ -71,12 +71,12 @@ origin: ECC
 <!-- Example for a React project — replace with detected directories -->
 
 ```
-src/components/  → React UI components
-src/api/         → API route handlers
-src/lib/         → Shared utilities
-src/db/          → Database models and migrations
-tests/           → Test suites
-scripts/         → Build and deployment scripts
+src/components/  → React UI 组件
+src/api/         → API 路由处理程序
+src/lib/         → 共享工具库
+src/db/          → 数据库模型和迁移文件
+tests/           → 测试套件
+scripts/         → 构建和部署脚本
 ```
 
 **数据流**

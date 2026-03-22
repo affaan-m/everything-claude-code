@@ -244,14 +244,14 @@ setCount(count + 1)  // Can be stale in async scenarios
 ### REST API 约定
 
 ```
-GET    /api/markets              # List all markets
-GET    /api/markets/:id          # Get specific market
-POST   /api/markets              # Create new market
-PUT    /api/markets/:id          # Update market (full)
-PATCH  /api/markets/:id          # Update market (partial)
-DELETE /api/markets/:id          # Delete market
+GET    /api/markets              # 列出所有市场
+GET    /api/markets/:id          # 获取特定市场
+POST   /api/markets              # 创建新市场
+PUT    /api/markets/:id          # 更新市场（完整）
+PATCH  /api/markets/:id          # 更新市场（部分）
+DELETE /api/markets/:id          # 删除市场
 
-# Query parameters for filtering
+# 用于筛选的查询参数
 GET /api/markets?status=active&limit=10&offset=0
 ```
 
@@ -341,10 +341,10 @@ src/
 ### 文件命名
 
 ```
-components/Button.tsx          # PascalCase for components
-hooks/useAuth.ts              # camelCase with 'use' prefix
-lib/formatDate.ts             # camelCase for utilities
-types/market.types.ts         # camelCase with .types suffix
+components/Button.tsx          # 组件使用帕斯卡命名法
+hooks/useAuth.ts              # 使用 'use' 前缀的驼峰命名法
+lib/formatDate.ts             # 工具函数使用驼峰命名法
+types/market.types.ts         # 使用 .types 后缀的驼峰命名法
 ```
 
 ## 注释与文档

@@ -129,15 +129,15 @@ for user in &users {
 src/
 ├── main.rs
 ├── lib.rs
-├── auth/           # Domain module
+├── auth/           # 领域模块
 │   ├── mod.rs
 │   ├── token.rs
 │   └── middleware.rs
-├── orders/         # Domain module
+├── orders/         # 领域模块
 │   ├── mod.rs
 │   ├── model.rs
 │   └── service.rs
-└── db/             # Infrastructure
+└── db/             # 基础设施
     ├── mod.rs
     └── pool.rs
 ```

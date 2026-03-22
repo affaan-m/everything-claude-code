@@ -28,10 +28,10 @@ description: 为Rust强制执行TDD工作流。先写测试，然后实现。使
 ## TDD 循环
 
 ```
-RED     -> Write failing test first
-GREEN   -> Implement minimal code to pass
-REFACTOR -> Improve code, tests stay green
-REPEAT  -> Next test case
+RED     -> 先编写失败的测试
+GREEN   -> 实现最小化代码以通过测试
+REFACTOR -> 改进代码，保持测试通过
+REPEAT  -> 下一个测试用例
 ```
 
 ## 示例会话

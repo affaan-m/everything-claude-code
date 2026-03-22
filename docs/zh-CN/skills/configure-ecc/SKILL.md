@@ -44,11 +44,11 @@ git clone https://github.com/affaan-m/everything-claude-code.git /tmp/everything
 使用 `AskUserQuestion` 询问用户安装位置：
 
 ```
-Question: "Where should ECC components be installed?"
-Options:
-  - "User-level (~/.claude/)" — "Applies to all your Claude Code projects"
-  - "Project-level (.claude/)" — "Applies only to the current project"
-  - "Both" — "Common/shared items user-level, project-specific items project-level"
+问题："ECC组件应安装在哪里？"
+选项：
+  - "用户级别 (~/.claude/)" — "适用于您所有的Claude Code项目"
+  - "项目级别 (.claude/)" — "仅适用于当前项目"
+  - "两者" — "通用/共享项在用户级别，项目特定项在项目级别"
 ```
 
 将选择存储为 `INSTALL_LEVEL`。设置目标目录：
@@ -74,12 +74,12 @@ mkdir -p $TARGET/skills $TARGET/rules
 使用 `AskUserQuestion`（单选）：
 
 ```
-Question: "Install core skills only, or include niche/framework packs?"
-Options:
-  - "Core only (recommended)" — "tdd, e2e, evals, verification, research-first, security, frontend patterns, compacting, cross-functional Anthropic skills"
-  - "Core + selected niche" — "Add framework/domain-specific skills after core"
-  - "Niche only" — "Skip core, install specific framework/domain skills"
-Default: Core only
+问题："只安装核心技能，还是包含小众/框架包？"
+选项：
+  - "仅核心（推荐）" — "tdd, e2e, evals, verification, research-first, security, frontend patterns, compacting, cross-functional Anthropic skills"
+  - "核心 + 精选小众" — "在核心基础上添加框架/领域特定技能"
+  - "仅小众" — "跳过核心，安装特定框架/领域技能"
+默认：仅核心
 ```
 
 如果用户选择细分领域或核心 + 细分领域，则继续下面的类别选择，并且仅包含他们选择的那些细分领域技能。
@@ -89,16 +89,16 @@ Default: Core only
 下方有7个可选的类别组。后续的详细确认列表涵盖了8个类别中的45项技能，外加1个独立模板。使用 `AskUserQuestion` 与 `multiSelect: true`：
 
 ```
-Question: "Which skill categories do you want to install?"
-Options:
-  - "Framework & Language" — "Django, Laravel, Spring Boot, Go, Python, Java, Frontend, Backend patterns"
-  - "Database" — "PostgreSQL, ClickHouse, JPA/Hibernate patterns"
-  - "Workflow & Quality" — "TDD, verification, learning, security review, compaction"
-  - "Research & APIs" — "Deep research, Exa search, Claude API patterns"
-  - "Social & Content Distribution" — "X/Twitter API, crossposting alongside content-engine"
-  - "Media Generation" — "fal.ai image/video/audio alongside VideoDB"
-  - "Orchestration" — "dmux multi-agent workflows"
-  - "All skills" — "Install every available skill"
+问题：“您希望安装哪些技能类别？”
+选项：
+  - “框架与语言” — “Django, Laravel, Spring Boot, Go, Python, Java, 前端, 后端模式”
+  - “数据库” — “PostgreSQL, ClickHouse, JPA/Hibernate 模式”
+  - “工作流与质量” — “TDD, 验证, 学习, 安全审查, 压缩”
+  - “研究与 API” — “深度研究, Exa 搜索, Claude API 模式”
+  - “社交与内容分发” — “X/Twitter API, 内容引擎并行交叉发布”
+  - “媒体生成” — “fal.ai 图像/视频/音频与 VideoDB 并行”
+  - “编排” — “dmux 多智能体工作流”
+  - “所有技能” — “安装所有可用技能”
 ```
 
 ### 2c: 确认个人技能
@@ -213,12 +213,12 @@ cp -r $ECC_ROOT/skills/<skill-name> $TARGET/skills/
 使用 `AskUserQuestion` 和 `multiSelect: true`：
 
 ```
-Question: "Which rule sets do you want to install?"
-Options:
-  - "Common rules (Recommended)" — "Language-agnostic principles: coding style, git workflow, testing, security, etc. (8 files)"
-  - "TypeScript/JavaScript" — "TS/JS patterns, hooks, testing with Playwright (5 files)"
-  - "Python" — "Python patterns, pytest, black/ruff formatting (5 files)"
-  - "Go" — "Go patterns, table-driven tests, gofmt/staticcheck (5 files)"
+问题："您希望安装哪些规则集？"
+选项：
+  - "通用规则（推荐）" — "语言无关原则：编码风格、Git工作流、测试、安全等（8个文件）"
+  - "TypeScript/JavaScript" — "TS/JS模式、钩子、Playwright测试（5个文件）"
+  - "Python" — "Python模式、pytest、black/ruff格式化（5个文件）"
+  - "Go" — "Go模式、表驱动测试、gofmt/staticcheck（5个文件）"
 ```
 
 执行安装：
@@ -300,12 +300,12 @@ grep -rn "skills/" $TARGET/skills/
 使用 `AskUserQuestion`：
 
 ```
-Question: "Would you like to optimize the installed files for your project?"
-Options:
-  - "Optimize skills" — "Remove irrelevant sections, adjust paths, tailor to your tech stack"
-  - "Optimize rules" — "Adjust coverage targets, add project-specific patterns, customize tool configs"
-  - "Optimize both" — "Full optimization of all installed files"
-  - "Skip" — "Keep everything as-is"
+问题："您想要优化项目中的已安装文件吗？"
+选项：
+  - "优化技能" — "移除无关部分，调整路径，适配您的技术栈"
+  - "优化规则" — "调整覆盖目标，添加项目特定模式，自定义工具配置"
+  - "两者都优化" — "对所有已安装文件进行全面优化"
+  - "跳过" — "保持原样不变"
 ```
 
 ### 如果优化技能：
@@ -341,26 +341,26 @@ rm -rf /tmp/everything-claude-code
 然后打印摘要报告：
 
 ```
-## ECC Installation Complete
+## ECC 安装完成
 
-### Installation Target
-- Level: [user-level / project-level / both]
-- Path: [target path]
+### 安装目标
+- 级别：[用户级别 / 项目级别 / 两者]
+- 路径：[目标路径]
 
-### Skills Installed ([count])
-- skill-1, skill-2, skill-3, ...
+### 已安装技能 ([数量])
+- 技能-1, 技能-2, 技能-3, ...
 
-### Rules Installed ([count])
-- common (8 files)
-- typescript (5 files)
+### 已安装规则 ([数量])
+- 通用规则 (8 个文件)
+- TypeScript 规则 (5 个文件)
 - ...
 
-### Verification Results
-- [count] issues found, [count] fixed
-- [list any remaining issues]
+### 验证结果
+- 发现 [数量] 个问题，已修复 [数量] 个
+- [列出任何剩余问题]
 
-### Optimizations Applied
-- [list changes made, or "None"]
+### 已应用的优化
+- [列出所做的更改，或 "无"]
 ```
 
 ***
