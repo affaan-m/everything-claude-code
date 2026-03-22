@@ -252,6 +252,33 @@ public sealed class EncryptedStringConverter(IDataProtector protector)
     : ValueConverter<string, string>(
         v => protector.Protect(v),
         v => protector.Unprotect(v));
+
+public sealed class Customer
+{
+    public Guid Id { get; init; }
+    public required string Email { get; init; }
+    public required string TaxId { get; init; }
+}
+
+public sealed class AppDbContext(
+    DbContextOptions<AppDbContext> options,
+    IDataProtectionProvider dataProtectionProvider) : DbContext(options)
+{
+    private readonly IDataProtector _protector =
+        dataProtectionProvider.CreateProtector("Customer.TaxId");
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        var encryptedStringConverter = new EncryptedStringConverter(_protector);
+
+        modelBuilder.Entity<Customer>(entity =>
+        {
+            entity.Property(c => c.TaxId)
+                .HasConversion(encryptedStringConverter)
+                .HasMaxLength(512);
+        });
+    }
+}
 ```
 
 ## Concurrency Control
