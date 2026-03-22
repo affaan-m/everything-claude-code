@@ -1,0 +1,91 @@
+# Project context and architecture
+
+@meta {
+  id: "ecc-context"
+  syntax: "1.1.0"
+}
+
+@context {
+  project: "Everything Claude Code (ECC)"
+  version: "1.9.0"
+  description: "Production-ready AI coding plugin — agents, skills, hooks, commands, rules, and MCP configurations"
+  license: "MIT"
+
+  runtime: "Node.js 18+"
+  platforms: ["Windows", "macOS", "Linux"]
+
+  packageManager: {
+    detection: "auto"
+    supported: ["npm", "pnpm", "yarn", "bun"]
+    override: "CLAUDE_PACKAGE_MANAGER env var or project config"
+  }
+
+  """
+  ## Project Overview
+
+  This is a **Claude Code plugin** — a collection of production-ready agents, skills, hooks, commands, rules, and MCP configurations. The project provides battle-tested workflows for software development using Claude Code.
+
+  ## Architecture
+
+  The project is organized into several core components:
+
+  - **agents/** — 28 specialized subagents for delegation (markdown with YAML frontmatter: name, description, tools, model)
+  - **skills/** — 116 workflow skills and domain knowledge (SKILL.md per skill folder with sections: When to Use, How It Works, Examples)
+  - **commands/** — 59 slash commands invoked by users (markdown with description frontmatter)
+  - **hooks/** — Trigger-based automations (JSON with matcher conditions and command/notification hooks)
+  - **rules/** — Always-follow guidelines organized by language (common/ + per-language: typescript/, python/, golang/, etc.)
+  - **scripts/** — Cross-platform Node.js utilities for hooks and setup
+  - **mcp-configs/** — 14 MCP server configurations for external integrations
+  - **contexts/** — Mode-specific behavior profiles (dev, research, review)
+  - **schemas/** — JSON schemas for validation
+  - **tests/** — Test suite for scripts and utilities
+
+  ## Running Tests
+
+  ```bash
+  # Run all tests
+  node tests/run-all.js
+
+  # Run individual test files
+  node tests/lib/utils.test.js
+  node tests/lib/package-manager.test.js
+  node tests/hooks/hooks.test.js
+  ```
+
+  ## Agent Orchestration
+
+  Use agents proactively without user prompt:
+  - Complex feature requests -> **planner**
+  - Code just written/modified -> **code-reviewer**
+  - Bug fix or new feature -> **tdd-guide**
+  - Architectural decision -> **architect**
+  - Security-sensitive code -> **security-reviewer**
+  - Multi-channel communication triage -> **chief-of-staff**
+  - Autonomous loops / loop monitoring -> **loop-operator**
+  - Harness config reliability and cost -> **harness-optimizer**
+
+  Use parallel execution for independent operations — launch multiple agents simultaneously.
+
+  ## Development Workflow
+
+  1. **Plan** — Use planner agent, identify dependencies and risks, break into phases
+  2. **TDD** — Use tdd-guide agent, write tests first, implement, refactor
+  3. **Review** — Use code-reviewer agent immediately, address CRITICAL/HIGH issues
+  4. **Capture knowledge in the right place**
+     - Personal debugging notes, preferences, and temporary context -> auto memory
+     - Team/project knowledge (architecture decisions, API changes, runbooks) -> the project's existing docs structure
+     - If the current task already produces the relevant docs or code comments, do not duplicate the same information elsewhere
+     - If there is no obvious project doc location, ask before creating a new top-level file
+  5. **Commit** — Conventional commits format, comprehensive PR summaries
+
+  ## Contributing
+
+  Follow the formats in CONTRIBUTING.md:
+  - Agents: Markdown with frontmatter (name, description, tools, model)
+  - Skills: Clear sections (When to Use, How It Works, Examples)
+  - Commands: Markdown with description frontmatter
+  - Hooks: JSON with matcher and hooks array
+
+  File naming: lowercase with hyphens (e.g., python-reviewer.md, tdd-workflow.md)
+  """
+}

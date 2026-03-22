@@ -1,0 +1,535 @@
+# Slash commands — compiled to executable prompts for each target
+
+@meta {
+  id: "ecc-commands"
+  syntax: "1.1.0"
+}
+
+@shortcuts {
+  "/plan": {
+    prompt: true
+    description: "Restate requirements, assess risks, and create step-by-step implementation plan. WAIT for user CONFIRM before touching any code."
+    content: """
+    # Plan Command
+
+    This command invokes the **planner** agent to create a comprehensive implementation plan before writing any code.
+
+    ## What This Command Does
+
+    1. **Restate Requirements** - Clarify what needs to be built
+    2. **Identify Risks** - Surface potential issues and blockers
+    3. **Create Step Plan** - Break down implementation into phases
+    4. **Wait for Confirmation** - MUST receive user approval before proceeding
+
+    ## When to Use
+
+    Use /plan when:
+    - Starting a new feature
+    - Making significant architectural changes
+    - Working on complex refactoring
+    - Multiple files/components will be affected
+    - Requirements are unclear or ambiguous
+
+    ## How It Works
+
+    The planner agent will:
+
+    1. **Analyze the request** and restate requirements in clear terms
+    2. **Break down into phases** with specific, actionable steps
+    3. **Identify dependencies** between components
+    4. **Assess risks** and potential blockers
+    5. **Estimate complexity** (High/Medium/Low)
+    6. **Present the plan** and WAIT for your explicit confirmation
+
+    ## Example Usage
+
+    User: /plan I need to add real-time notifications when markets resolve
+
+    Agent (planner):
+    # Implementation Plan: Real-Time Market Resolution Notifications
+
+    ## Requirements Restatement
+    - Send notifications to users when markets they're watching resolve
+    - Support multiple notification channels (in-app, email, webhook)
+    - Include market outcome and user's position result
+
+    ## Implementation Phases
+
+    ### Phase 1: Database Schema
+    - Add notifications table with columns: id, user_id, market_id, type, status, created_at
+    - Add user_notification_preferences table for channel preferences
+
+    ### Phase 2: Notification Service
+    - Create notification service in lib/notifications.ts
+    - Implement notification queue using BullMQ/Redis
+    - Add retry logic for failed deliveries
+
+    ### Phase 3: Integration Points
+    - Hook into market resolution logic
+    - Query all users with positions in market
+    - Enqueue notifications for each user
+
+    ### Phase 4: Frontend Components
+    - Create NotificationBell component in header
+    - Add NotificationList modal
+    - Implement real-time updates via Supabase subscriptions
+
+    ## Risks
+    - HIGH: Email deliverability (SPF/DKIM required)
+    - MEDIUM: Performance with 1000+ users per market
+
+    ## Estimated Complexity: MEDIUM
+
+    **WAITING FOR CONFIRMATION**: Proceed with this plan? (yes/no/modify)
+
+    ## Important Notes
+
+    **CRITICAL**: The planner agent will **NOT** write any code until you explicitly confirm the plan with "yes" or "proceed" or similar affirmative response.
+
+    If you want changes, respond with:
+    - "modify: [your changes]"
+    - "different approach: [alternative]"
+    - "skip phase 2 and do phase 3 first"
+
+    ## Integration with Other Commands
+
+    After planning:
+    - Use /tdd to implement with test-driven development
+    - Use /build-fix if build errors occur
+    - Use /code-review to review completed implementation
+
+    This command invokes the planner agent provided by ECC.
+    """
+  }
+
+  "/tdd": {
+    prompt: true
+    description: "Enforce test-driven development workflow. Scaffold interfaces, generate tests FIRST, then implement minimal code to pass. Ensure 80%+ coverage."
+    content: """
+    # TDD Command
+
+    This command invokes the **tdd-guide** agent to enforce test-driven development methodology.
+
+    ## What This Command Does
+
+    1. **Scaffold Interfaces** - Define types/interfaces first
+    2. **Generate Tests First** - Write failing tests (RED)
+    3. **Implement Minimal Code** - Write just enough to pass (GREEN)
+    4. **Refactor** - Improve code while keeping tests green (REFACTOR)
+    5. **Verify Coverage** - Ensure 80%+ test coverage
+
+    ## When to Use
+
+    Use /tdd when:
+    - Implementing new features
+    - Adding new functions/components
+    - Fixing bugs (write test that reproduces bug first)
+    - Refactoring existing code
+    - Building critical business logic
+
+    ## How It Works
+
+    The tdd-guide agent will:
+
+    1. **Define interfaces** for inputs/outputs
+    2. **Write tests that will FAIL** (because code doesn't exist yet)
+    3. **Run tests** and verify they fail for the right reason
+    4. **Write minimal implementation** to make tests pass
+    5. **Run tests** and verify they pass
+    6. **Refactor** code while keeping tests green
+    7. **Check coverage** and add more tests if below 80%
+
+    ## TDD Cycle
+
+    RED -> GREEN -> REFACTOR -> REPEAT
+
+    RED:      Write a failing test
+    GREEN:    Write minimal code to pass
+    REFACTOR: Improve code, keep tests passing
+    REPEAT:   Next feature/scenario
+
+    ## TDD Best Practices
+
+    **DO:**
+    - Write the test FIRST, before any implementation
+    - Run tests and verify they FAIL before implementing
+    - Write minimal code to make tests pass
+    - Refactor only after tests are green
+    - Add edge cases and error scenarios
+    - Aim for 80%+ coverage (100% for critical code)
+
+    **DON'T:**
+    - Write implementation before tests
+    - Skip running tests after each change
+    - Write too much code at once
+    - Ignore failing tests
+    - Test implementation details (test behavior)
+    - Mock everything (prefer integration tests)
+
+    ## Test Types to Include
+
+    **Unit Tests** (Function-level): happy path, edge cases, error conditions, boundary values
+    **Integration Tests** (Component-level): API endpoints, database operations, external service calls
+    **E2E Tests** (use /e2e command): critical user flows, multi-step processes
+
+    ## Coverage Requirements
+
+    - **80% minimum** for all code
+    - **100% required** for: financial calculations, authentication logic, security-critical code, core business logic
+
+    **MANDATORY**: Tests must be written BEFORE implementation. Never skip the RED phase.
+
+    ## Integration with Other Commands
+
+    - Use /plan first to understand what to build
+    - Use /tdd to implement with tests
+    - Use /build-fix if build errors occur
+    - Use /code-review to review implementation
+    - Use /verify to check full verification pipeline
+
+    This command invokes the tdd-guide agent provided by ECC.
+    """
+  }
+
+  "/code-review": {
+    prompt: true
+    description: "Comprehensive security and quality review of uncommitted changes."
+    content: """
+    # Code Review
+
+    Comprehensive security and quality review of uncommitted changes:
+
+    1. Get changed files: git diff --name-only HEAD
+
+    2. For each changed file, check for:
+
+    **Security Issues (CRITICAL):**
+    - Hardcoded credentials, API keys, tokens
+    - SQL injection vulnerabilities
+    - XSS vulnerabilities
+    - Missing input validation
+    - Insecure dependencies
+    - Path traversal risks
+
+    **Code Quality (HIGH):**
+    - Functions > 50 lines
+    - Files > 800 lines
+    - Nesting depth > 4 levels
+    - Missing error handling
+    - console.log statements
+    - TODO/FIXME comments
+    - Missing JSDoc for public APIs
+
+    **Best Practices (MEDIUM):**
+    - Mutation patterns (use immutable instead)
+    - Missing tests for new code
+    - Accessibility issues (a11y)
+
+    3. Generate report with:
+       - Severity: CRITICAL, HIGH, MEDIUM, LOW
+       - File location and line numbers
+       - Issue description
+       - Suggested fix
+
+    4. Block commit if CRITICAL or HIGH issues found
+
+    Never approve code with security vulnerabilities!
+    """
+  }
+
+  "/build-fix": {
+    prompt: true
+    description: "Incrementally fix build and type errors with minimal, safe changes."
+    content: """
+    # Build and Fix
+
+    Incrementally fix build and type errors with minimal, safe changes.
+
+    ## Step 1: Detect Build System
+
+    Identify the project's build tool and run the build:
+
+    | Indicator | Build Command |
+    |-----------|---------------|
+    | package.json with build script | npm run build or pnpm build |
+    | tsconfig.json (TypeScript only) | npx tsc --noEmit |
+    | Cargo.toml | cargo build 2>&1 |
+    | pom.xml | mvn compile |
+    | build.gradle | ./gradlew compileJava |
+    | go.mod | go build ./... |
+    | pyproject.toml | python -m py_compile or mypy . |
+
+    ## Step 2: Parse and Group Errors
+
+    1. Run the build command and capture stderr
+    2. Group errors by file path
+    3. Sort by dependency order (fix imports/types before logic errors)
+    4. Count total errors for progress tracking
+
+    ## Step 3: Fix Loop (One Error at a Time)
+
+    For each error:
+
+    1. **Read the file** — Use Read tool to see error context (10 lines around the error)
+    2. **Diagnose** — Identify root cause (missing import, wrong type, syntax error)
+    3. **Fix minimally** — Use Edit tool for the smallest change that resolves the error
+    4. **Re-run build** — Verify the error is gone and no new errors introduced
+    5. **Move to next** — Continue with remaining errors
+
+    ## Step 4: Guardrails
+
+    Stop and ask the user if:
+    - A fix introduces **more errors than it resolves**
+    - The **same error persists after 3 attempts** (likely a deeper issue)
+    - The fix requires **architectural changes** (not just a build fix)
+    - Build errors stem from **missing dependencies** (need npm install, cargo add, etc.)
+
+    ## Step 5: Summary
+
+    Show results:
+    - Errors fixed (with file paths)
+    - Errors remaining (if any)
+    - New errors introduced (should be zero)
+    - Suggested next steps for unresolved issues
+
+    ## Recovery Strategies
+
+    | Situation | Action |
+    |-----------|--------|
+    | Missing module/import | Check if package is installed; suggest install command |
+    | Type mismatch | Read both type definitions; fix the narrower type |
+    | Circular dependency | Identify cycle with import graph; suggest extraction |
+    | Version conflict | Check package.json / Cargo.toml for version constraints |
+    | Build tool misconfiguration | Read config file; compare with working defaults |
+
+    Fix one error at a time for safety. Prefer minimal diffs over refactoring.
+    """
+  }
+
+  "/verify": {
+    prompt: true
+    description: "Run comprehensive verification on current codebase state."
+    content: """
+    # Verification Command
+
+    Run comprehensive verification on current codebase state.
+
+    ## Instructions
+
+    Execute verification in this exact order:
+
+    1. **Build Check**
+       - Run the build command for this project
+       - If it fails, report errors and STOP
+
+    2. **Type Check**
+       - Run TypeScript/type checker
+       - Report all errors with file:line
+
+    3. **Lint Check**
+       - Run linter
+       - Report warnings and errors
+
+    4. **Test Suite**
+       - Run all tests
+       - Report pass/fail count
+       - Report coverage percentage
+
+    5. **Secrets Scan**
+       - Search source files for hardcoded API keys, tokens, passwords
+       - Report any matches
+
+    6. **Console.log Audit**
+       - Search for console.log in source files
+       - Report locations
+
+    7. **Git Status**
+       - Show uncommitted changes
+       - Show files modified since last commit
+
+    ## Output
+
+    Produce a concise verification report:
+
+    VERIFICATION: [PASS/FAIL]
+
+    Build:    [OK/FAIL]
+    Types:    [OK/X errors]
+    Lint:     [OK/X issues]
+    Tests:    [X/Y passed, Z% coverage]
+    Secrets:  [OK/X found]
+    Logs:     [OK/X console.logs]
+
+    Ready for PR: [YES/NO]
+
+    If any critical issues, list them with fix suggestions.
+
+    ## Arguments
+
+    $ARGUMENTS can be:
+    - quick - Only build + types
+    - full - All checks (default)
+    - pre-commit - Checks relevant for commits
+    - pre-pr - Full checks plus security scan
+    """
+  }
+
+  "/e2e": {
+    prompt: true
+    description: "Generate and run end-to-end tests with Playwright. Creates test journeys, runs tests, captures screenshots/videos/traces, and uploads artifacts."
+    content: """
+    # E2E Command
+
+    This command invokes the **e2e-runner** agent to generate, maintain, and execute end-to-end tests using Playwright.
+
+    ## What This Command Does
+
+    1. **Generate Test Journeys** - Create Playwright tests for user flows
+    2. **Run E2E Tests** - Execute tests across browsers
+    3. **Capture Artifacts** - Screenshots, videos, traces on failures
+    4. **Upload Results** - HTML reports and JUnit XML
+    5. **Identify Flaky Tests** - Quarantine unstable tests
+
+    ## When to Use
+
+    Use /e2e when:
+    - Testing critical user journeys (login, trading, payments)
+    - Verifying multi-step flows work end-to-end
+    - Testing UI interactions and navigation
+    - Validating integration between frontend and backend
+    - Preparing for production deployment
+
+    ## How It Works
+
+    The e2e-runner agent will:
+
+    1. **Analyze user flow** and identify test scenarios
+    2. **Generate Playwright test** using Page Object Model pattern
+    3. **Run tests** across multiple browsers (Chrome, Firefox, Safari)
+    4. **Capture failures** with screenshots, videos, and traces
+    5. **Generate report** with results and artifacts
+    6. **Identify flaky tests** and recommend fixes
+
+    ## Key Principles
+
+    - Use data-testid locators (not CSS/XPath)
+    - Wait for conditions, not time (never waitForTimeout)
+    - Each test must be independent (no shared state)
+    - Capture screenshots at critical points
+    - Configure trace: on-first-retry for debugging
+
+    ## Integration with Other Commands
+
+    - Use /plan first to understand what to test
+    - Use /tdd to implement features being tested
+    - Use /code-review after writing tests
+    - Use /verify for full verification pipeline
+
+    This command invokes the e2e-runner agent provided by ECC.
+    """
+  }
+
+  "/learn": {
+    prompt: true
+    description: "Extract reusable patterns from current session."
+    content: """
+    # /learn - Extract Reusable Patterns
+
+    Analyze the current session and extract any patterns worth saving as skills.
+
+    ## Trigger
+
+    Run /learn at any point during a session when you've solved a non-trivial problem.
+
+    ## What to Extract
+
+    Look for:
+
+    1. **Error Resolution Patterns**
+       - What error occurred?
+       - What was the root cause?
+       - What fixed it?
+       - Is this reusable for similar errors?
+
+    2. **Debugging Techniques**
+       - Non-obvious debugging steps
+       - Tool combinations that worked
+       - Diagnostic patterns
+
+    3. **Workarounds**
+       - Library quirks
+       - API limitations
+       - Version-specific fixes
+
+    4. **Project-Specific Patterns**
+       - Codebase conventions discovered
+       - Architecture decisions made
+       - Integration patterns
+
+    ## Output Format
+
+    Create a skill file with:
+
+    # [Descriptive Pattern Name]
+
+    **Extracted:** [Date]
+    **Context:** [Brief description of when this applies]
+
+    ## Problem
+    [What problem this solves - be specific]
+
+    ## Solution
+    [The pattern/technique/workaround]
+
+    ## Example
+    [Code example if applicable]
+
+    ## When to Use
+    [Trigger conditions - what should activate this skill]
+
+    ## Process
+
+    1. Review the session for extractable patterns
+    2. Identify the most valuable/reusable insight
+    3. Draft the skill file
+    4. Ask user to confirm before saving
+    5. Save to ~/.claude/skills/learned/
+
+    ## Notes
+
+    - Don't extract trivial fixes (typos, simple syntax errors)
+    - Don't extract one-time issues (specific API outages, etc.)
+    - Focus on patterns that will save time in future sessions
+    - Keep skills focused - one pattern per skill
+    """
+  }
+
+  "/quality-gate": {
+    prompt: true
+    description: "Run the ECC quality pipeline on demand for a file or project scope."
+    content: """
+    # Quality Gate Command
+
+    Run the ECC quality pipeline on demand for a file or project scope.
+
+    ## Usage
+
+    /quality-gate [path|.] [--fix] [--strict]
+
+    - default target: current directory (.)
+    - --fix: allow auto-format/fix where configured
+    - --strict: fail on warnings where supported
+
+    ## Pipeline
+
+    1. Detect language/tooling for target.
+    2. Run formatter checks.
+    3. Run lint/type checks when available.
+    4. Produce a concise remediation list.
+
+    ## Notes
+
+    This command mirrors hook behavior but is operator-invoked.
+    """
+  }
+}
