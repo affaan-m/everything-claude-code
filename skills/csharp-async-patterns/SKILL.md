@@ -295,7 +295,7 @@ public static class Pipeline
             FullMode = BoundedChannelFullMode.Wait
         });
 
-        Task.Run(async () =>
+        _ = Task.Run(async () =>
         {
             using var semaphore = new SemaphoreSlim(concurrency, concurrency);
             var tasks = new List<Task>();
@@ -324,12 +324,38 @@ public static class Pipeline
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
-                try { await Task.WhenAll(tasks); } catch { /* expected secondary OCEs */ }
-                output.Writer.Complete(); // no exception: downstream sees clean completion
+                Exception? inFlightFault = null;
+
+                try
+                {
+                    await Task.WhenAll(tasks);
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    inFlightFault = ex;
+                }
+                catch (OperationCanceledException)
+                {
+                    // Expected when in-flight work observes the same cancellation token.
+                }
+
+                output.Writer.Complete(inFlightFault);
             }
             catch (Exception ex)
             {
-                try { await Task.WhenAll(tasks); } catch { /* already faulting */ }
+                try
+                {
+                    await Task.WhenAll(tasks);
+                }
+                catch (OperationCanceledException) when (ct.IsCancellationRequested)
+                {
+                    // Expected while the primary exception is already faulting the channel.
+                }
+                catch (Exception)
+                {
+                    // The channel is already being faulted with the primary exception.
+                }
+
                 output.Writer.Complete(ex);
             }
         });
