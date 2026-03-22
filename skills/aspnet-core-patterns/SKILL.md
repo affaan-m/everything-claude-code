@@ -405,7 +405,20 @@ public sealed class IdempotencyMiddleware(
             return;
         }
 
-        var userId = context.User.Identity?.Name ?? "anonymous";
+        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsJsonAsync(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Idempotency key requires an authenticated caller",
+                Detail =
+                    "Apply this middleware after authentication, or scope cache keys to a trusted caller identifier."
+            });
+            return;
+        }
+
         var cacheKey = $"idempotency:{userId}:{idempotencyKey}";
         var cachedResponse = await cache.GetStringAsync(cacheKey);
 
