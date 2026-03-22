@@ -451,7 +451,7 @@ public sealed class MetricsCollectorWorker(
 
 ```csharp
 // Bridge callback-based APIs to async/await
-public sealed class CallbackToAsyncBridge
+public sealed class CallbackToAsyncBridge(Action<Request> send)
 {
     private readonly ConcurrentDictionary<Guid, TaskCompletionSource<Response>>
         _pending = new();
@@ -473,7 +473,7 @@ public sealed class CallbackToAsyncBridge
 
         try
         {
-            Send(request); // fire-and-forget the actual send
+            send(request); // kick off the underlying transport send
         }
         catch
         {
@@ -483,7 +483,7 @@ public sealed class CallbackToAsyncBridge
         }
 
         // Dispose registration when task completes to avoid leaks
-        tcs.Task.ContinueWith(_ => registration.Dispose(), TaskScheduler.Default);
+        _ = tcs.Task.ContinueWith(_ => registration.Dispose(), TaskScheduler.Default);
         return tcs.Task;
     }
 
