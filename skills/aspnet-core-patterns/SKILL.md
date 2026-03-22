@@ -384,6 +384,10 @@ builder.Services.AddDistributedMemoryCache();
 
 internal sealed record CachedIdempotentResponse(int StatusCode, string ContentType, string Body);
 
+// NOTE: This implementation does not protect against concurrent first-time requests
+// with the same idempotency key. Under concurrent load, the handler may execute
+// more than once. For true at-most-once semantics, use a distributed lock
+// (e.g., Redis SET key NX PX <ttl>) around the check-and-execute block.
 public sealed class IdempotencyMiddleware(
     RequestDelegate next,
     IDistributedCache cache)
