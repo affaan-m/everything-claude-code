@@ -296,7 +296,15 @@ var keyEncryptionCertificatePath =
 var keyEncryptionCertificatePassword =
     builder.Configuration["DataProtection:KeyEncryptionCertificatePassword"];
 
-if (!string.IsNullOrWhiteSpace(keyEncryptionCertificatePath))
+if (string.IsNullOrWhiteSpace(keyEncryptionCertificatePath))
+{
+    if (!builder.Environment.IsDevelopment())
+    {
+        throw new InvalidOperationException(
+            "DataProtection:KeyEncryptionCertificatePath is required outside development to protect keys at rest.");
+    }
+}
+else
 {
     var certificate = X509CertificateLoader.LoadPkcs12FromFile(
         keyEncryptionCertificatePath,
@@ -305,6 +313,7 @@ if (!string.IsNullOrWhiteSpace(keyEncryptionCertificatePath))
 }
 
 // In production, protect keys at rest with a certificate or managed KMS.
+// In development, prefer platform defaults unless you truly need a shared persisted key ring.
 
 // If you prefer EF-backed key storage, use a separate MyKeysContext that
 // implements IDataProtectionKeyContext rather than reusing AppDbContext.
