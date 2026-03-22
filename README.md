@@ -184,6 +184,42 @@ For manual install instructions see the README in the `rules/` folder.
 
 ---
 
+## How It Works In Practice
+
+If you are learning this repo for the first time, do not try to use everything at once. Start with one real-world example and follow a short sequence.
+
+### Example Sequence: Build a Small SaaS Feature
+
+Use [examples/saas-nextjs-CLAUDE.md](examples/saas-nextjs-CLAUDE.md) as your starting point.
+
+1. Read the example file to see how a real project is described: stack, architecture, critical rules, file structure, environment variables, and testing strategy.
+2. Copy it into your own project as `CLAUDE.md` and remove anything that does not match your stack.
+3. Keep the important constraints, like auth rules, database rules, validation rules, and testing expectations.
+4. Ask the agent to plan one small feature, for example: `/plan "Add team invitations to the dashboard"`.
+5. Implement that feature with `/tdd`, then verify important user flows with `/e2e` and inspect the result with `/code-review`.
+6. Once the pattern works, repeat it for the next feature instead of starting from scratch every time.
+
+
+### What You Learn From This
+
+- How to turn vague prompts into project-specific engineering rules.
+- How production constraints are documented before coding starts.
+- How to keep the agent focused on your actual stack instead of generating generic code.
+- How planning, testing, review, and verification fit into one repeatable workflow.
+
+### Why This Is Useful For Real Projects
+
+This repo is useful because it is not just a prompt collection. It gives you a working system for setting expectations, reusing proven workflows, and reducing low-quality agent output.
+
+- The example files show what a serious project context looks like.
+- The rules keep the agent aligned with code quality, security, and testing standards.
+- The commands give you repeatable workflows for planning, TDD, review, and verification.
+- The skills help you apply the same approach across different stacks instead of rebuilding your process each time.
+
+In practice, the repo helps you learn two things at once: how to work with AI agents effectively, and how real software projects should be structured.
+
+---
+
 ## 🌐 Cross-Platform Support
 
 This plugin now fully supports **Windows, macOS, and Linux**, alongside tight integration across major IDEs (Cursor, OpenCode, Antigravity) and CLI harnesses. All hooks and scripts have been rewritten in Node.js for maximum compatibility.
