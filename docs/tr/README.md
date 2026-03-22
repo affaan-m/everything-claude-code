@@ -15,7 +15,7 @@
 ![Perl](https://img.shields.io/badge/-Perl-39457E?logo=perl&logoColor=white)
 ![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown&logoColor=white)
 
-> **50K+ yıldız** | **6K+ fork** | **30 katkıda bulunan** | **5 dil desteği** | **Anthropic Hackathon Kazananı**
+> **50K+ yıldız** | **6K+ fork** | **30 katkıda bulunan** | **6 dil desteği** | **Anthropic Hackathon Kazananı**
 
 ---
 
