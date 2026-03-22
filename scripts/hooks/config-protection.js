@@ -19,6 +19,7 @@ const MAX_STDIN = 1024 * 1024;
 let raw = '';
 
 const PROTECTED_FILES = new Set([
+  // ESLint (legacy + v9 flat config, JS/TS/MJS/CJS)
   '.eslintrc',
   '.eslintrc.js',
   '.eslintrc.cjs',
@@ -28,6 +29,10 @@ const PROTECTED_FILES = new Set([
   'eslint.config.js',
   'eslint.config.mjs',
   'eslint.config.cjs',
+  'eslint.config.ts',
+  'eslint.config.mts',
+  'eslint.config.cts',
+  // Prettier (all config variants including ESM)
   '.prettierrc',
   '.prettierrc.js',
   '.prettierrc.cjs',
@@ -36,11 +41,17 @@ const PROTECTED_FILES = new Set([
   '.prettierrc.yaml',
   'prettier.config.js',
   'prettier.config.cjs',
+  'prettier.config.mjs',
+  // Biome
   'biome.json',
   'biome.jsonc',
+  // Ruff (Python)
   '.ruff.toml',
   'ruff.toml',
-  'pyproject.toml',
+  // Note: pyproject.toml is intentionally NOT included here because it
+  // contains project metadata alongside linter config. Blocking all edits
+  // to pyproject.toml would prevent legitimate dependency changes.
+  // Shell / Style / Markdown
   '.shellcheckrc',
   '.stylelintrc',
   '.stylelintrc.json',
@@ -50,10 +61,32 @@ const PROTECTED_FILES = new Set([
   '.markdownlintrc',
 ]);
 
-// Patterns for files where only certain sections are config-like
-// (e.g. pyproject.toml has [tool.ruff] but also [project])
-const PARTIAL_CONFIG_FILES = new Set(['pyproject.toml']);
+/**
+ * Exportable run() for in-process execution via run-with-flags.js.
+ * Avoids the ~50-100ms spawnSync overhead when available.
+ */
+function run(input) {
+  const filePath = input?.tool_input?.file_path || input?.tool_input?.file || '';
+  if (!filePath) return { exitCode: 0 };
 
+  const basename = path.basename(filePath);
+  if (PROTECTED_FILES.has(basename)) {
+    return {
+      exitCode: 2,
+      stderr:
+        `BLOCKED: Modifying ${basename} is not allowed. ` +
+        `Fix the source code to satisfy linter/formatter rules instead of ` +
+        `weakening the config. If this is a legitimate config change, ` +
+        `disable the config-protection hook temporarily.`,
+    };
+  }
+
+  return { exitCode: 0 };
+}
+
+module.exports = { run };
+
+// Stdin fallback for spawnSync execution
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', chunk => {
   if (raw.length < MAX_STDIN) {
@@ -65,22 +98,10 @@ process.stdin.on('data', chunk => {
 process.stdin.on('end', () => {
   try {
     const input = raw.trim() ? JSON.parse(raw) : {};
-    const filePath = input.tool_input?.file_path || input.tool_input?.file || '';
+    const result = run(input);
 
-    if (!filePath) {
-      process.stdout.write(raw);
-      process.exit(0);
-    }
-
-    const basename = path.basename(filePath);
-
-    if (PROTECTED_FILES.has(basename) && !PARTIAL_CONFIG_FILES.has(basename)) {
-      process.stderr.write(
-        `BLOCKED: Modifying ${basename} is not allowed. ` +
-        `Fix the source code to satisfy linter/formatter rules instead of ` +
-        `weakening the config. If this is a legitimate config change, ` +
-        `disable the config-protection hook temporarily.\n`
-      );
+    if (result.exitCode === 2) {
+      process.stderr.write(result.stderr + '\n');
       process.exit(2);
     }
   } catch {
