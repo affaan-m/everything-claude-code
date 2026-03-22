@@ -78,5 +78,3 @@ cat docs/tr/examples/statusline.json >> ~/.claude/settings.json
 ## İlgili Kaynaklar
 
 - [Ana Dokümantasyon](../README.md)
-- [Kurulum Rehberi](../kurulum.md)
-- [Başlangıç Rehberi](../baslangic.md)
