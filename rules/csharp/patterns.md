@@ -40,7 +40,11 @@ Use strongly typed options for config instead of reading raw strings throughout 
 public sealed class PaymentsOptions
 {
     public const string SectionName = "Payments";
+
+    [Required]
     public required string BaseUrl { get; init; }
+
+    [Required]
     public required string ApiKeySecretName { get; init; }
     public int TimeoutSeconds { get; init; } = 30;
 }
@@ -49,6 +53,7 @@ public sealed class PaymentsOptions
 builder.Services
     .AddOptions<PaymentsOptions>()
     .BindConfiguration(PaymentsOptions.SectionName)
+    .ValidateDataAnnotations()
     .ValidateOnStart();
 ```
 
