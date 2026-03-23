@@ -119,7 +119,7 @@ opencode
 | Prettier | `file.edited` | Auto-format JS/TS |
 | TypeScript | `tool.execute.after` | Check for type errors |
 | console.log | `file.edited` | Warn about debug statements |
-| Notification | `session.idle` | Desktop notification |
+| Session completion | `session.idle` | Completion summary (files, tests, duration, warnings) |
 | Security | `tool.execute.before` | Check for secrets |
 
 ### Custom Tools
@@ -154,7 +154,9 @@ export ECC_DISABLED_HOOKS="pre:bash:tmux-reminder,post:edit:typecheck"
 ```
 
 - `ECC_HOOK_PROFILE`: `minimal`, `standard` (default), `strict`
-- `ECC_DISABLED_HOOKS`: comma-separated hook IDs to disable
+- `ECC_DISABLED_HOOKS`: comma-separated hook IDs to disable (e.g. `session:completion-summary`)
+- `ECC_SESSION_COMPLETION_MODE`: `desktop`, `webhook`, `tui`, or `all` (default: `desktop`)
+- `ECC_SESSION_WEBHOOK_URL`: URL for webhook delivery when mode is `webhook` or `all`
 
 ## Skills
 
