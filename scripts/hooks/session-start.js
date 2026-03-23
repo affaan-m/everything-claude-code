@@ -31,6 +31,25 @@ async function main() {
   ensureDir(sessionsDir);
   ensureDir(learnedDir);
 
+  // Clean up expired session files (default: 30 days)
+  const retentionDays = parseInt(process.env.ECC_SESSION_RETENTION_DAYS || '30', 10);
+  const expiredSessions = findFiles(sessionsDir, '*-session.tmp', { minAge: retentionDays });
+
+  if (expiredSessions.length > 0) {
+    let cleaned = 0;
+    for (const session of expiredSessions) {
+      try {
+        require('fs').unlinkSync(session.path);
+        cleaned++;
+      } catch {
+        // Ignore errors on cleanup — file may already be gone
+      }
+    }
+    if (cleaned > 0) {
+      log(`[SessionStart] Cleaned up ${cleaned} expired session file(s) (>${retentionDays} days old)`);
+    }
+  }
+
   // Check for recent session files (last 7 days)
   const recentSessions = findFiles(sessionsDir, '*-session.tmp', { maxAge: 7 });
 
