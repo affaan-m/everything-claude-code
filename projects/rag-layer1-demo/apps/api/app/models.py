@@ -31,6 +31,12 @@ class SourceType(str, enum.Enum):
     URL = "url"
 
 
+class MessageRole(str, enum.Enum):
+    USER = "user"
+    ASSISTANT = "assistant"
+    SYSTEM = "system"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -69,6 +75,7 @@ class Project(Base):
     owner = relationship("User", back_populates="projects")
     api_keys = relationship("APIKey", back_populates="project", cascade="all, delete-orphan")
     documents = relationship("Document", back_populates="project", cascade="all, delete-orphan")
+    sessions = relationship("ConversationSession", back_populates="project", cascade="all, delete-orphan")
 
 
 class APIKey(Base):
@@ -81,6 +88,7 @@ class APIKey(Base):
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     revoked_at = Column(DateTime, nullable=True)
+    expires_at = Column(DateTime, nullable=True)  # Optional expiration
 
     project = relationship("Project", back_populates="api_keys")
 
@@ -122,8 +130,35 @@ class DocumentChunk(Base):
     content = Column(Text, nullable=False)
     page_number = Column(Integer, nullable=True)
     section_heading = Column(String(500), nullable=True)
-    metadata = Column(JSONB, nullable=True, default=dict)
+    meta = Column("metadata", JSONB, nullable=True, default=dict)
     embedding = Column(Vector(768), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     document = relationship("Document", back_populates="chunks")
+
+
+class ConversationSession(Base):
+    __tablename__ = "conversation_sessions"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id"), nullable=False, index=True)
+    external_user_id = Column(String(255), nullable=True, index=True)
+    title = Column(String(255), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    project = relationship("Project", back_populates="sessions")
+    messages = relationship("ConversationMessage", back_populates="session", cascade="all, delete-orphan")
+
+
+class ConversationMessage(Base):
+    __tablename__ = "conversation_messages"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    session_id = Column(UUID(as_uuid=True), ForeignKey("conversation_sessions.id"), nullable=False, index=True)
+    project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id"), nullable=False, index=True)
+    role = Column(SAEnum(MessageRole, name="message_role_enum"), nullable=False)
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    session = relationship("ConversationSession", back_populates="messages")

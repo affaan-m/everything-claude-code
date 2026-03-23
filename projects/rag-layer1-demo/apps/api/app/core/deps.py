@@ -1,3 +1,5 @@
+from datetime import datetime
+import uuid
 from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
@@ -20,7 +22,12 @@ def get_current_user(
     if not user_id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token")
 
-    user = db.query(User).filter(User.id == user_id, User.is_active.is_(True)).first()
+    try:
+        user_uuid = uuid.UUID(user_id)
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token subject")
+
+    user = db.query(User).filter(User.id == user_uuid, User.is_active.is_(True)).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     return user
@@ -42,4 +49,13 @@ def get_project_from_api_key(
     )
     if not api_key:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API key")
+    
+    # Check expiration
+    if api_key.expires_at and api_key.expires_at < datetime.utcnow():
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="API key expired")
+    
+    # Check revocation
+    if api_key.revoked_at:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="API key revoked")
+    
     return api_key

@@ -47,7 +47,7 @@ def index_chunks(
                 content=chunk.content,
                 page_number=chunk.page_number,
                 section_heading=chunk.section_heading,
-                metadata=chunk.metadata,
+                meta=chunk.metadata,
                 embedding=embedding,
                 created_at=datetime.utcnow(),
             )

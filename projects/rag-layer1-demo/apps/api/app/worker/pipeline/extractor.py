@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import tempfile
 from pathlib import Path
 
@@ -9,19 +10,39 @@ logger = logging.getLogger(__name__)
 
 def extract_text(storage_key: str, mime_type: str) -> list[tuple[str, int]]:
     """
-    Returns a list of (page_text, page_number) tuples.
-    Page numbers are 1-based.
-    """
-    path = Path(storage_key)
-    if not path.exists():
-        raise FileNotFoundError(f"File not found: {storage_key}")
+    Returns a list of (page_text, page_number) tuples (1-based page numbers).
 
-    if mime_type == "application/pdf":
-        return _extract_pdf(str(path))
-    elif mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        return _extract_docx(str(path))
+    Works for both local and S3 storage:
+    - Local: resolves the key against UPLOAD_DIR and reads directly.
+    - S3: downloads the object to a temp file, processes it, then cleans up.
+    """
+    from app.config import settings
+    from app.storage import get_storage_provider
+
+    if settings.STORAGE_PROVIDER == "s3":
+        local_path = get_storage_provider().get_local_path(storage_key)
+        try:
+            return _extract_by_mime(local_path, mime_type)
+        finally:
+            try:
+                os.unlink(local_path)
+            except OSError:
+                pass
     else:
-        return _extract_text(str(path))
+        # For local storage the key is the absolute path returned by LocalStorageProvider.save()
+        path = Path(storage_key)
+        if not path.exists():
+            raise FileNotFoundError(f"File not found: {storage_key}")
+        return _extract_by_mime(str(path), mime_type)
+
+
+def _extract_by_mime(path: str, mime_type: str) -> list[tuple[str, int]]:
+    if mime_type == "application/pdf":
+        return _extract_pdf(path)
+    elif mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        return _extract_docx(path)
+    else:
+        return _extract_text(path)
 
 
 def _extract_pdf(path: str) -> list[tuple[str, int]]:

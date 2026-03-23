@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_user, get_project_from_api_key
+from app.core.rate_limit import limiter
 from app.core.security import hash_api_key
 from app.database import get_db
 from app.models import APIKey, User
@@ -13,13 +14,15 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=APIResponse[UserOut], status_code=201)
-def register(payload: RegisterRequest, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def register(request: Request, payload: RegisterRequest, db: Session = Depends(get_db)):
     user = auth_service.register_user(payload, db)
     return APIResponse(success=True, data=UserOut.model_validate(user))
 
 
 @router.post("/login", response_model=APIResponse[TokenResponse])
-def login(payload: LoginRequest, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)):
     token = auth_service.login_user(payload, db)
     return APIResponse(success=True, data=token)
 
@@ -30,7 +33,8 @@ def me(current_user: User = Depends(get_current_user)):
 
 
 @router.post("/validate-key", response_model=ValidateKeyResponse)
-def validate_key(api_key: APIKey = Depends(get_project_from_api_key)):
+@limiter.limit("60/minute")
+def validate_key(request: Request, api_key: APIKey = Depends(get_project_from_api_key)):
     """Validates a project API key — used by Layer 2 services."""
     return ValidateKeyResponse(
         valid=True,

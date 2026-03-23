@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Generic, TypeVar, Any
+from typing import Any, Generic, Literal, TypeVar
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
-from app.models import ChunkingStrategy, DocumentStatus, SourceType
+from app.models import ChunkingStrategy, DocumentStatus, MessageRole, SourceType
 
 T = TypeVar("T")
 
@@ -145,11 +145,53 @@ class URLIngestRequest(BaseModel):
         return v
 
 
+# ── Sessions ──────────────────────────────────────────────────────────────────
+
+class SessionCreateRequest(BaseModel):
+    external_user_id: str | None = Field(default=None, max_length=255)
+    title: str | None = Field(default=None, max_length=255)
+
+
+class SessionOut(BaseModel):
+    id: uuid.UUID
+    project_id: uuid.UUID
+    external_user_id: str | None
+    title: str | None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class SessionMessageCreate(BaseModel):
+    role: MessageRole = MessageRole.USER
+    content: str = Field(min_length=1, max_length=8000)
+
+
+class SessionMessageOut(BaseModel):
+    id: uuid.UUID
+    session_id: uuid.UUID
+    project_id: uuid.UUID
+    role: MessageRole
+    content: str
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
 # ── Retrieval ─────────────────────────────────────────────────────────────────
 
 class RetrieveRequest(BaseModel):
     question: str = Field(min_length=1, max_length=4096)
     top_k: int | None = Field(default=None, ge=1, le=50)
+    session_id: uuid.UUID | None = None
+    context_turns: int = Field(default=6, ge=0, le=20)
+    persist_question_to_session: bool = True
+    retrieval_mode: Literal["semantic", "hybrid"] = "hybrid"
+    candidate_pool: int | None = Field(default=None, ge=1, le=200)
+    semantic_weight: float = Field(default=0.75, ge=0.0, le=1.0)
+    diversify: bool = True
+    diversity_lambda: float = Field(default=0.75, ge=0.0, le=1.0)
 
 
 class ChunkResult(BaseModel):

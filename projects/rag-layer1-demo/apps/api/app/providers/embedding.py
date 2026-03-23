@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import logging
-import os
 from abc import ABC, abstractmethod
+from functools import lru_cache
 
 import numpy as np
 
@@ -65,15 +65,11 @@ class GeminiEmbeddingProvider(EmbeddingProvider):
         return embeddings
 
 
-_provider: EmbeddingProvider | None = None
-
-
+@lru_cache(maxsize=1)
 def get_embedding_provider() -> EmbeddingProvider:
-    global _provider
-    if _provider is None:
-        if settings.EMBEDDING_PROVIDER == "gemini":
-            _provider = GeminiEmbeddingProvider()
-        else:
-            _provider = MockEmbeddingProvider()
-        logger.info("Initialized embedding provider: %s", settings.EMBEDDING_PROVIDER)
-    return _provider
+    """Get singleton embedding provider with thread-safe lazy initialization."""
+    if settings.EMBEDDING_PROVIDER == "gemini":
+        logger.info("Initializing Gemini embedding provider")
+        return GeminiEmbeddingProvider()
+    logger.info("Initializing mock embedding provider")
+    return MockEmbeddingProvider()
