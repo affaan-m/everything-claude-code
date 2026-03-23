@@ -1,0 +1,22 @@
+{
+  "skills": [
+    "coding-standards",
+    "python-patterns",
+    "python-testing",
+    "security-review",
+    "tdd-workflow",
+    "api-design"
+  ],
+  "agents": [
+    "code-reviewer.md",
+    "planner.md",
+    "security-reviewer.md",
+    "tdd-guide.md"
+  ],
+  "commands": [
+    "plan.md",
+    "tdd.md",
+    "code-review.md",
+    "learn.md"
+  ]
+}

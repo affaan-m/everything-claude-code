@@ -87,3 +87,6 @@ temp/
 # Generated lock files in tool subdirectories
 .opencode/package-lock.json
 .opencode/node_modules/
+
+# Generated enabled/ symlink tree (rebuilt by scripts/sync-enabled.js)
+enabled/
