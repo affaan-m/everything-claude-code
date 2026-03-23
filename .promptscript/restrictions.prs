@@ -1,0 +1,32 @@
+# Security guidelines and hard rules
+
+@meta {
+  id: "ecc-restrictions"
+  syntax: "1.1.0"
+}
+
+@restrictions {
+  # Security — mandatory before ANY commit
+  - "No hardcoded secrets (API keys, passwords, tokens) in source code"
+  - "All user inputs validated at system boundaries"
+  - "SQL injection prevention — always use parameterized queries"
+  - "XSS prevention — sanitize all user-supplied HTML"
+  - "CSRF protection enabled on state-changing endpoints"
+  - "Authentication and authorization verified on every protected route"
+  - "Rate limiting on all public endpoints"
+  - "Error messages must not leak sensitive data or stack traces"
+
+  # Secret management
+  - "NEVER hardcode secrets — use environment variables or a secret manager"
+  - "Validate required secrets are present at startup"
+  - "Rotate any secrets that may have been exposed immediately"
+
+  # Security response protocol
+  - "If security issue found: STOP -> use security-reviewer agent -> fix CRITICAL issues -> rotate exposed secrets -> review codebase for similar issues"
+
+  # Code quality gates
+  - "Never skip the TDD cycle — tests before implementation"
+  - "Never merge with CRITICAL or HIGH security issues"
+  - "Never commit console.log debug statements"
+  - "Never use mutation patterns — always use immutable operations"
+}

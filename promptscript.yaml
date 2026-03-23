@@ -1,0 +1,43 @@
+id: everything-claude-code
+syntax: "1.1.0"
+description: "Production-ready AI coding plugin with agents, skills, hooks, commands, and rules"
+
+input:
+  entry: .promptscript/project.prs
+  include: [".promptscript/**/*.prs"]
+
+# Prevent overwriting existing manually-maintained files (CLAUDE.md, AGENTS.md, etc.)
+output:
+  overwrite: false
+
+# Disable auto-discovery from .agents/ — ECC maintains that directory manually
+universalDir: false
+
+# Suppress false-positive warnings for localhost URLs in code examples
+validation:
+  rules:
+    PS010: "off"
+
+targets:
+  - claude:
+      version: full
+  - github:
+      version: full
+  - cursor:
+      version: standard
+  - factory:
+      version: full
+  - opencode:
+      version: full
+  - windsurf:
+      version: simple
+  # cline disabled: existing .clinerules file conflicts with directory-based skill output
+  # - cline:
+  #     version: simple
+  # codex disabled: its .agents/ output directory conflicts with ECC's manually-maintained skills
+  # - codex:
+  #     version: simple
+  - gemini:
+      version: full
+  - antigravity:
+      version: frontmatter

@@ -1,0 +1,77 @@
+# Coding standards, testing, and workflow conventions
+
+@meta {
+  id: "ecc-standards"
+  syntax: "1.1.0"
+}
+
+@standards {
+  immutability: [
+    "ALWAYS create new objects, NEVER mutate existing ones",
+    "Return new copies with changes applied",
+    "Use spread operators, map, filter — never modify in place"
+  ]
+
+  fileOrganization: [
+    "Many small files over few large files",
+    "200-400 lines typical, 800 max",
+    "Organize by feature/domain, not by type",
+    "High cohesion, low coupling"
+  ]
+
+  errorHandling: [
+    "Handle errors explicitly at every level",
+    "Provide user-friendly messages in UI code",
+    "Log detailed context server-side",
+    "Never silently swallow errors"
+  ]
+
+  inputValidation: [
+    "Validate all user input at system boundaries",
+    "Use schema-based validation where available",
+    "Fail fast with clear error messages",
+    "Never trust external data"
+  ]
+
+  codeQuality: [
+    "Functions small (<50 lines)",
+    "Files focused (<800 lines)",
+    "No deep nesting (>4 levels)",
+    "Proper error handling, no hardcoded values",
+    "Readable, well-named identifiers"
+  ]
+
+  testing: {
+    minimumCoverage: "80%"
+    methodology: "TDD (test-driven development)"
+    types: [
+      "Unit tests — individual functions and utilities",
+      "Integration tests — API endpoints, database operations",
+      "E2E tests — critical user flows via Playwright"
+    ]
+    workflow: [
+      "Write test first (RED) — test should FAIL",
+      "Write minimal implementation (GREEN) — test should PASS",
+      "Refactor (IMPROVE) — verify coverage 80%+"
+    ]
+    troubleshooting: "Check test isolation -> verify mocks -> fix implementation (not tests, unless tests are wrong)"
+  }
+
+  git: {
+    commitFormat: "<type>: <description>"
+    types: [feat, fix, refactor, docs, test, chore, perf, ci]
+    prWorkflow: "Analyze full commit history -> draft comprehensive summary -> include test plan -> push with -u flag -> verify CI checks pass (gh pr checks --watch) -> resolve merge conflicts before requesting review"
+  }
+
+  architecture: {
+    apiResponse: "Consistent envelope with success indicator, data payload, error message, and pagination metadata"
+    repositoryPattern: "Encapsulate data access behind standard interface (findAll, findById, create, update, delete)"
+    skeletonProjects: "Search for battle-tested templates from vetted sources (official repos, verified orgs), evaluate with parallel agents, review dependencies before cloning, iterate"
+  }
+
+  performance: [
+    "Avoid last 20% of context window for large refactoring and multi-file features",
+    "Use build-error-resolver agent for incremental error fixing",
+    "Prefer minimal diffs over large refactoring"
+  ]
+}
