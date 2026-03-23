@@ -104,11 +104,11 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - uses: actions/checkout@v4
-      - run: pip install evalview
+      - run: pip install "evalview>=0.5,<1"
       - run: evalview check --fail-on REGRESSION
 ```
 
-No third-party actions — just `pip install` and run the CLI directly.
+`--fail-on REGRESSION` gates on score drops only. For stricter gating that also catches tool sequence changes, use `--fail-on REGRESSION,TOOLS_CHANGED` or `--strict` (fails on any change).
 
 ## Test Case Format
 
