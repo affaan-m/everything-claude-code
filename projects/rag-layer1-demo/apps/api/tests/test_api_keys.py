@@ -63,3 +63,27 @@ def test_validate_key(client, auth_headers, project):
     assert resp.status_code == 200
     assert resp.json()["valid"] is True
     assert resp.json()["project_id"] == project["id"]
+
+
+def test_expired_key_fails_retrieval(client, auth_headers, project, db_session):
+    from datetime import datetime, timedelta
+    import uuid
+    from app.models import APIKey
+
+    create_resp = client.post(f"/api/v1/projects/{project['id']}/api-keys", headers=auth_headers)
+    key_data = create_resp.json()["data"]
+    plaintext = key_data["plaintext_key"]
+    key_id = key_data["id"]
+
+    # Expire the key directly in the database
+    api_key = db_session.query(APIKey).filter(APIKey.id == uuid.UUID(key_id)).first()
+    api_key.expires_at = datetime.utcnow() - timedelta(hours=1)
+    db_session.flush()
+
+    resp = client.post(
+        "/api/v1/retrieve",
+        json={"question": "test"},
+        headers={"Authorization": f"Bearer {plaintext}"},
+    )
+    assert resp.status_code == 401
+    assert "expired" in resp.json()["detail"].lower()

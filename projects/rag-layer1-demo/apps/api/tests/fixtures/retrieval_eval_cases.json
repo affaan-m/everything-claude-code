@@ -1,0 +1,20 @@
+[
+  {
+    "id": "q1",
+    "question": "What is RAG?",
+    "relevant_chunk_ids": ["c1"],
+    "predicted_chunk_ids": ["c1", "c9", "c8", "c7"]
+  },
+  {
+    "id": "q2",
+    "question": "How does chunking help retrieval?",
+    "relevant_chunk_ids": ["c3", "c4"],
+    "predicted_chunk_ids": ["c7", "c4", "c3", "c1"]
+  },
+  {
+    "id": "q3",
+    "question": "What is latency budget?",
+    "relevant_chunk_ids": ["c10"],
+    "predicted_chunk_ids": ["c2", "c5", "c6", "c11"]
+  }
+]
