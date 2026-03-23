@@ -462,12 +462,13 @@ test/
 │   └── shared/
 │       └── widgets/
 │           └── app_button_test.dart
-├── integration/
-│   └── app_test.dart
 └── helpers/
     ├── mocks.dart
     ├── test_helpers.dart
     └── pump_app.dart
+
+integration_test/          # Flutter convention: at project root, not under test/
+└── app_test.dart
 ```
 
 ## Test Helpers

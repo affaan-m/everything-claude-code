@@ -211,6 +211,14 @@
       ]
     },
     {
+      "id": "lang:dart",
+      "family": "language",
+      "description": "Dart and Flutter development patterns, state management, testing, and code generation guidance.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
       "id": "lang:csharp",
       "family": "language",
       "description": "C# coding standards and patterns guidance. Currently resolves through the shared framework-language module.",

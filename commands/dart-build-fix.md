@@ -20,10 +20,11 @@ Incrementally fix Dart analysis and Flutter build errors:
    - Re-run dart analyze on the file
    - Verify error resolved
 
-4. After analysis is clean, run build:
-   - flutter build apk --debug (Android)
-   - flutter build ios --no-codesign (iOS)
+4. After analysis is clean, run relevant platform builds:
+   - flutter build apk --debug (Android - requires Android SDK)
+   - flutter build ios --no-codesign (iOS - requires macOS with Xcode)
    - flutter build web (Web)
+   Note: Only run builds for platforms you are targeting. iOS builds require macOS with Xcode installed.
 
 5. If code generation is stale:
    - Run: dart run build_runner build --delete-conflicting-outputs

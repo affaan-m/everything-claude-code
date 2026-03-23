@@ -387,7 +387,7 @@ class UserProfile extends ConsumerWidget {
     return userAsync.when(
       data: (user) => UserCard(user: user),
       loading: () => const CircularProgressIndicator(),
-      error: (error, stack) => ErrorWidget(error: error),
+      error: (error, stack) => ErrorWidget(error),
     );
   }
 }
@@ -567,7 +567,7 @@ sealed class PaymentMethod with _$PaymentMethod {
 // Pattern matching
 String describePayment(PaymentMethod method) {
   return switch (method) {
-    CreditCard(:final number) => 'Card ending in ${number.substring(number.length - 4)}',
+    CreditCard(:final number) => 'Card ending in ${number.substring(number.length - min(4, number.length))}',
     BankTransfer(:final accountNumber) => 'Bank account $accountNumber',
     DigitalWallet(:final provider) => '${provider.name} wallet',
   };
