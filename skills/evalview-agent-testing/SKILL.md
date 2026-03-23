@@ -98,17 +98,15 @@ on: [pull_request, push]
 jobs:
   check:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - uses: actions/checkout@v4
-      - name: Check for regressions
-        uses: hidai25/eval-view@c757b8209a2eacd3cda1044eb26c53b23f8edbf7  # v0.5.3
-        with:
-          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+      - run: pip install evalview
+      - run: evalview check --fail-on REGRESSION
 ```
 
-Automatically posts PR comments with pass/fail, tool diffs, cost/latency alerts, and model change detection.
+No third-party actions — just `pip install` and run the CLI directly.
 
 ## Test Case Format
 
