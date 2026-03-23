@@ -1,8 +1,8 @@
 use anyhow::Result;
 use std::fmt;
 
-use super::{Session, SessionMetrics, SessionState};
 use super::store::StateStore;
+use super::{Session, SessionMetrics, SessionState};
 use crate::config::Config;
 use crate::worktree;
 

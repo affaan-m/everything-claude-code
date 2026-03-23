@@ -1,9 +1,9 @@
+mod comms;
 mod config;
+mod observability;
 mod session;
 mod tui;
 mod worktree;
-mod observability;
-mod comms;
 
 use anyhow::Result;
 use clap::Parser;
@@ -63,10 +63,13 @@ async fn main() -> Result<()> {
         Some(Commands::Dashboard) | None => {
             tui::app::run(db, cfg).await?;
         }
-        Some(Commands::Start { task, agent, worktree: use_worktree }) => {
-            let session_id = session::manager::create_session(
-                &db, &cfg, &task, &agent, use_worktree,
-            ).await?;
+        Some(Commands::Start {
+            task,
+            agent,
+            worktree: use_worktree,
+        }) => {
+            let session_id =
+                session::manager::create_session(&db, &cfg, &task, &agent, use_worktree).await?;
             println!("Session started: {session_id}");
         }
         Some(Commands::Sessions) => {

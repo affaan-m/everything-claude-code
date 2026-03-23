@@ -170,16 +170,12 @@ impl StateStore {
 
     pub fn get_session(&self, id: &str) -> Result<Option<Session>> {
         let sessions = self.list_sessions()?;
-        Ok(sessions.into_iter().find(|s| s.id == id || s.id.starts_with(id)))
+        Ok(sessions
+            .into_iter()
+            .find(|s| s.id == id || s.id.starts_with(id)))
     }
 
-    pub fn send_message(
-        &self,
-        from: &str,
-        to: &str,
-        content: &str,
-        msg_type: &str,
-    ) -> Result<()> {
+    pub fn send_message(&self, from: &str, to: &str, content: &str, msg_type: &str) -> Result<()> {
         self.conn.execute(
             "INSERT INTO messages (from_session, to_session, content, msg_type, timestamp)
              VALUES (?1, ?2, ?3, ?4, ?5)",

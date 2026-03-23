@@ -28,7 +28,11 @@ pub fn create_for_session(session_id: &str, cfg: &Config) -> Result<WorktreeInfo
         anyhow::bail!("git worktree add failed: {stderr}");
     }
 
-    tracing::info!("Created worktree at {} on branch {}", path.display(), branch);
+    tracing::info!(
+        "Created worktree at {} on branch {}",
+        path.display(),
+        branch
+    );
 
     Ok(WorktreeInfo {
         path,
