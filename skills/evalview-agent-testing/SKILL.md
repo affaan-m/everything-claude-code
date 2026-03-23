@@ -22,7 +22,7 @@ Automated regression testing for AI agents. EvalView snapshots your agent's beha
 
 ```bash
 # 1. Set up
-pip install evalview
+pip install "evalview>=0.5,<1"
 evalview init              # Detect agent, create starter test suite
 
 # 2. Baseline
