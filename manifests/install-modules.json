@@ -333,6 +333,7 @@
       "paths": [
         "skills/fal-ai-media",
         "skills/remotion-video-creation",
+        "skills/ui-demo",
         "skills/video-editing",
         "skills/videodb"
       ],
