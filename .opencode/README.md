@@ -156,7 +156,8 @@ export ECC_DISABLED_HOOKS="pre:bash:tmux-reminder,post:edit:typecheck"
 - `ECC_HOOK_PROFILE`: `minimal`, `standard` (default), `strict`
 - `ECC_DISABLED_HOOKS`: comma-separated hook IDs to disable (e.g. `session:completion-summary`)
 - `ECC_SESSION_COMPLETION_MODE`: `desktop`, `webhook`, `tui`, or `all` (default: `desktop`)
-- `ECC_SESSION_WEBHOOK_URL`: URL for webhook delivery when mode is `webhook` or `all`
+- `ECC_SESSION_WEBHOOK_URL`: `http` or `https` URL only (no credentials); used when mode is `webhook` or `all`
+- `ECC_SESSION_WEBHOOK_TIMEOUT_MS`: webhook request timeout in ms (default: `10000`, max: `120000`)
 
 ## Skills
 

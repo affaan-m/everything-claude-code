@@ -14,6 +14,7 @@
  */
 
 import type { PluginInput } from "@opencode-ai/plugin"
+import { postSessionWebhookWithTimeout, validateSessionWebhookUrl } from "./session-completion.js"
 
 export const ECCHooksPlugin = async ({
   client,
@@ -25,12 +26,16 @@ export const ECCHooksPlugin = async ({
 
   const editedFiles = new Set<string>()
   let sessionStartTime = 0
-  const sessionWarnings: string[] = []
+  let sessionWarnings: string[] = []
   let testRunCount = 0
 
   const log = (level: "debug" | "info" | "warn" | "error", message: string) => {
-    if (level === "warn") sessionWarnings.push(message)
     client.app.log({ body: { service: "ecc", level, message } })
+  }
+
+  const warnSession = (message: string) => {
+    sessionWarnings = [...sessionWarnings, message]
+    log("warn", message)
   }
 
   const normalizeProfile = (value: string | undefined): HookProfile => {
@@ -95,8 +100,7 @@ export const ECCHooksPlugin = async ({
           const result = await $`grep -n "console\\.log" ${event.path} 2>/dev/null`.text()
           if (result.trim()) {
             const lines = result.trim().split("\n").length
-            log(
-              "warn",
+            warnSession(
               `[ECC] console.log found in ${event.path} (${lines} occurrence${lines > 1 ? "s" : ""})`
             )
           }
@@ -128,11 +132,10 @@ export const ECCHooksPlugin = async ({
           log("info", "[ECC] TypeScript check passed")
         } catch (error: unknown) {
           const err = error as { stdout?: string }
-          log("warn", "[ECC] TypeScript errors detected:")
+          warnSession("[ECC] TypeScript errors detected:")
           if (err.stdout) {
-            // Log first few errors
             const errors = err.stdout.split("\n").slice(0, 5)
-            errors.forEach((line: string) => log("warn", `  ${line}`))
+            errors.forEach((line: string) => warnSession(`  ${line}`))
           }
         }
       }
@@ -190,8 +193,7 @@ export const ECCHooksPlugin = async ({
           !filePath.includes("LICENSE") &&
           !filePath.includes("CONTRIBUTING")
         ) {
-          log(
-            "warn",
+          warnSession(
             `[ECC] Creating ${filePath} - consider if this documentation is necessary`
           )
         }
@@ -267,12 +269,11 @@ export const ECCHooksPlugin = async ({
         }
 
         if (totalConsoleLogCount > 0) {
-          log(
-            "warn",
+          warnSession(
             `[ECC] Audit: ${totalConsoleLogCount} console.log statement(s) in ${filesWithConsoleLogs.length} file(s)`
           )
-          filesWithConsoleLogs.forEach((f) => log("warn", `  - ${f}`))
-          log("warn", "[ECC] Remove console.log statements before committing")
+          filesWithConsoleLogs.forEach((f) => warnSession(`  - ${f}`))
+          warnSession("[ECC] Remove console.log statements before committing")
         } else {
           log("info", "[ECC] Audit passed: No console.log statements found")
         }
@@ -309,15 +310,23 @@ export const ECCHooksPlugin = async ({
           }
         }
 
-        if ((mode === "webhook" || mode === "all") && webhookUrl) {
-          try {
-            await fetch(webhookUrl, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(summary),
-            })
-          } catch {
-            log("warn", "[ECC] Session webhook failed")
+        if (mode === "webhook" || mode === "all") {
+          const validatedUrl = validateSessionWebhookUrl(webhookUrl)
+          if (webhookUrl && !validatedUrl) {
+            log("warn", "[ECC] ECC_SESSION_WEBHOOK_URL is invalid (use http or https, no credentials in URL)")
+          } else if (validatedUrl) {
+            const timeoutMs = Math.min(
+              120_000,
+              Math.max(1_000, Number.parseInt(process.env.ECC_SESSION_WEBHOOK_TIMEOUT_MS || "10000", 10) || 10_000)
+            )
+            const result = await postSessionWebhookWithTimeout(validatedUrl, summary, timeoutMs)
+            if (!result.ok) {
+              log("warn", `[ECC] Session webhook failed: ${result.error}`)
+            } else if (result.status >= 400) {
+              log("warn", `[ECC] Session webhook returned HTTP ${result.status}`)
+            }
+          } else if (mode === "webhook") {
+            log("warn", "[ECC] ECC_SESSION_WEBHOOK_URL is not set")
           }
         }
 
@@ -335,7 +344,7 @@ export const ECCHooksPlugin = async ({
       }
 
       editedFiles.clear()
-      sessionWarnings.length = 0
+      sessionWarnings = []
       testRunCount = 0
     },
 
@@ -350,7 +359,7 @@ export const ECCHooksPlugin = async ({
       if (!hookEnabled("session:end-marker", ["minimal", "standard", "strict"])) return
       log("info", "[ECC] Session ended - cleaning up")
       editedFiles.clear()
-      sessionWarnings.length = 0
+      sessionWarnings = []
       testRunCount = 0
     },
 
