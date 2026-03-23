@@ -42,6 +42,7 @@ export const ECCHooksPlugin = async ({
   }
 
   const pendingToolChanges = new Map<string, { path: string; type: "added" | "modified" }>()
+  let writeCounter = 0
 
   function getFilePath(args: Record<string, unknown> | undefined): string | null {
     if (!args) return null
@@ -142,7 +143,7 @@ export const ECCHooksPlugin = async ({
         recordChange(filePath, "modified")
       }
       if (input.tool === "write" && filePath) {
-        const key = input.callID ?? filePath
+        const key = input.callID ?? `write-${++writeCounter}-${filePath}`
         const pending = pendingToolChanges.get(key)
         if (pending) {
           recordChange(pending.path, pending.type)
@@ -196,8 +197,15 @@ export const ECCHooksPlugin = async ({
         const filePath = getFilePath(input.args)
         if (filePath) {
           const absPath = resolvePath(filePath)
-          const type = fs.existsSync(absPath) ? "modified" : "added"
-          const key = input.callID ?? filePath
+          let type: "added" | "modified" = "modified"
+          try {
+            if (typeof fs.existsSync === "function") {
+              type = fs.existsSync(absPath) ? "modified" : "added"
+            }
+          } catch {
+            type = "modified"
+          }
+          const key = input.callID ?? `write-${++writeCounter}-${filePath}`
           pendingToolChanges.set(key, { path: filePath, type })
         }
       }
