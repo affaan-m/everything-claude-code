@@ -35,7 +35,7 @@ cd projects/rag-layer1-demo
 cp .env.example .env
 
 # 3. Start all services
-docker-compose up --build
+docker compose up --build
 
 # 4. Initialize database (in another terminal)
 cd apps/api
@@ -177,7 +177,7 @@ Copy `.env.example` to `.env` and configure:
 
 ```bash
 # Database
-DATABASE_URL=postgresql://rag:rag@localhost:5432/rag_layer1
+DATABASE_URL=postgresql://rag:ragpassword@localhost:5432/rag_layer1
 
 # Cache + Queue
 REDIS_URL=redis://localhost:6379/0
@@ -185,6 +185,7 @@ REDIS_URL=redis://localhost:6379/0
 # Auth
 SECRET_KEY=your-secret-key-change-in-production
 ACCESS_TOKEN_EXPIRE_MINUTES=60
+ALLOWED_ORIGINS=http://localhost:3000
 
 # Embeddings
 EMBEDDING_PROVIDER=mock  # or "gemini"

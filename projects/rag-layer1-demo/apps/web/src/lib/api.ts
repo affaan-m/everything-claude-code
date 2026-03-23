@@ -2,6 +2,7 @@ import type { APIKey, APIKeyCreated, APIResponse, Document, Project, ProjectCrea
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const BASE = `${API_URL}/api/v1`;
+const IS_DEV = process.env.NODE_ENV !== "production";
 
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -9,6 +10,7 @@ function getToken(): string | null {
 }
 
 function log(method: string, path: string, status: "start" | "success" | "error", details?: unknown): void {
+  if (!IS_DEV) return;
   const timestamp = new Date().toISOString();
   const prefix = `[API ${timestamp}]`;
   if (status === "start") {
@@ -62,7 +64,6 @@ export async function register(email: string, password: string): Promise<User> {
     method: "POST",
     body: JSON.stringify({ email, password }),
   }, false);
-  console.log("[Auth] Registration successful for:", email);
   return resp.data!;
 }
 
@@ -73,12 +74,10 @@ export async function login(email: string, password: string): Promise<void> {
   }, false);
   const token = resp.data!.access_token;
   localStorage.setItem("access_token", token);
-  console.log("[Auth] Login successful for:", email);
 }
 
 export function logout(): void {
   localStorage.removeItem("access_token");
-  console.log("[Auth] Logout successful");
 }
 
 export async function getMe(): Promise<User> {
@@ -124,14 +123,12 @@ export async function listAPIKeys(projectId: string): Promise<APIKey[]> {
 
 export async function revokeAPIKey(projectId: string, keyId: string): Promise<APIKey> {
   const resp = await req<APIKey>(`/projects/${projectId}/api-keys/${keyId}/revoke`, { method: "POST" });
-  console.log("[APIKey] Revoked key:", keyId);
   return resp.data!;
 }
 
 // ── Documents ─────────────────────────────────────────────────────────────────
 
 export async function uploadDocument(projectId: string, file: File): Promise<Document> {
-  console.log("[Document] Uploading file:", file.name);
   const formData = new FormData();
   formData.append("file", file);
 
@@ -144,10 +141,10 @@ export async function uploadDocument(projectId: string, file: File): Promise<Doc
   const json = await res.json();
   if (!res.ok) {
     const error = json.detail ?? "Upload failed";
-    console.error("[Document] Upload failed:", error);
+    log("POST", `/projects/${projectId}/documents`, "error", error);
     throw new Error(error);
   }
-  console.log("[Document] Upload successful:", file.name);
+  log("POST", `/projects/${projectId}/documents`, "success", { status: res.status });
   return json.data;
 }
 

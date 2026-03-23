@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: ankane/pgvector:latest
@@ -51,6 +49,11 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   worker:
     build:
@@ -71,6 +74,11 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "celery", "-A", "app.worker.celery_app", "inspect", "ping"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
 
   web:
     build:
@@ -84,6 +92,11 @@ services:
       - "${WEB_PORT:-3000}:3000"
     depends_on:
       - api
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pgdata:
