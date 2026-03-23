@@ -1,8 +1,12 @@
+import { spawn } from "child_process"
+
 const PLATFORM = process.platform
 const isMac = PLATFORM === "darwin"
 const isLinux = PLATFORM === "linux"
 
 export type NotifyEvent = "completion" | "error" | "approval" | "budget"
+
+export type NotifySpec = { executable: string; args: string[] }
 
 function parseTimeHHMM(value: string): { h: number; m: number } | null {
   const m = value.trim().match(/^(\d{1,2}):(\d{2})$/)
@@ -13,7 +17,7 @@ function parseTimeHHMM(value: string): { h: number; m: number } | null {
   return { h, m: min }
 }
 
-function isInQuietHours(now: Date): boolean {
+export function isInQuietHours(now: Date): boolean {
   const startRaw = process.env.ECC_QUIET_HOURS_START?.trim()
   const endRaw = process.env.ECC_QUIET_HOURS_END?.trim()
   if (!startRaw || !endRaw) return false
@@ -32,7 +36,7 @@ function isInQuietHours(now: Date): boolean {
   return nowMins >= startMins || nowMins < endMins
 }
 
-function isEventEnabled(event: NotifyEvent): boolean {
+export function isEventEnabled(event: NotifyEvent): boolean {
   const explicitlyOff = process.env.ECC_DESKTOP_NOTIFY === "0" || process.env.ECC_DESKTOP_NOTIFY === "false"
   if (explicitlyOff) return false
   const explicitlyOn = process.env.ECC_DESKTOP_NOTIFY === "1" || process.env.ECC_DESKTOP_NOTIFY === "true"
@@ -45,7 +49,7 @@ function isEventEnabled(event: NotifyEvent): boolean {
   return true
 }
 
-function sanitize(text: string, maxLen: number): string {
+export function sanitize(text: string, maxLen: number): string {
   const safe = text.replace(/[^\w\s.,!?\-:]/g, " ").replace(/\s+/g, " ").trim()
   return safe.slice(0, maxLen) || "Notification"
 }
@@ -55,7 +59,7 @@ export function buildNotifyCommand(
   title: string,
   message: string,
   urgency: "normal" | "critical" = "normal"
-): string | null {
+): NotifySpec | null {
   if (!isMac && !isLinux) return null
   if (!isEventEnabled(event)) return null
   if (isInQuietHours(new Date())) return null
@@ -65,12 +69,12 @@ export function buildNotifyCommand(
 
   if (isMac) {
     const script = `display notification "${m.replace(/"/g, '\\"')}" with title "${t.replace(/"/g, '\\"')}"`
-    return `osascript -e '${script.replace(/'/g, "'\"'\"'")}' 2>/dev/null`
+    return { executable: "osascript", args: ["-e", script] }
   }
 
   if (isLinux) {
-    const u = urgency === "critical" ? "-u critical" : ""
-    return `notify-send ${u} "${t}" "${m.replace(/"/g, '\\"')}" 2>/dev/null`
+    const args = urgency === "critical" ? ["-u", "critical", t, m] : [t, m]
+    return { executable: "notify-send", args }
   }
 
   return null
@@ -80,12 +84,15 @@ export async function maybeNotify(
   event: NotifyEvent,
   title: string,
   message: string,
-  urgency: "normal" | "critical" = "normal",
-  shell: (cmd: string) => Promise<unknown>
+  urgency: "normal" | "critical" = "normal"
 ): Promise<void> {
-  const cmd = buildNotifyCommand(event, title, message, urgency)
-  if (!cmd) return
+  const spec = buildNotifyCommand(event, title, message, urgency)
+  if (!spec) return
   try {
-    await shell(cmd)
+    const proc = spawn(spec.executable, spec.args, { stdio: "ignore" })
+    await new Promise<void>((resolve, reject) => {
+      proc.on("close", (code) => (code === 0 ? resolve() : resolve()))
+      proc.on("error", reject)
+    })
   } catch {}
 }

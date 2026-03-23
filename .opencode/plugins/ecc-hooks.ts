@@ -272,13 +272,7 @@ export const ECCHooksPlugin = async ({
         log("info", "[ECC] Audit passed: No console.log statements found")
       }
 
-      await maybeNotify(
-        "completion",
-        "ECC",
-        "Task completed",
-        "normal",
-        (cmd) => $`${String(cmd)}`
-      )
+      await maybeNotify("completion", "ECC", "Task completed", "normal")
 
       editedFiles.clear()
     },
@@ -287,7 +281,7 @@ export const ECCHooksPlugin = async ({
       let msg = "Session error"
       const err = event?.properties?.error?.data?.message ?? event?.error
       if (typeof err === "string") msg = err
-      await maybeNotify("error", "ECC Error", msg.slice(0, 80), "critical", (cmd) => $`${String(cmd)}`)
+      await maybeNotify("error", "ECC Error", msg.slice(0, 80), "critical")
     },
 
     /**
@@ -454,13 +448,7 @@ export const ECCHooksPlugin = async ({
         return { approved: true, reason: "Test execution" }
       }
 
-      await maybeNotify(
-        "approval",
-        "ECC Approval",
-        `Permission needed for: ${event.tool}`,
-        "critical",
-        (c) => $`${String(c)}`
-      )
+      await maybeNotify("approval", "ECC Approval", `Permission needed for: ${event.tool}`, "critical")
       return { approved: undefined }
     },
   }
