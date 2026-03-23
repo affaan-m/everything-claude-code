@@ -180,7 +180,7 @@ jobs:
         continue-on-error: false
 
       - name: Validate catalog counts
-        run: node scripts/ci/catalog.js --text
+        run: npm run catalog:check
         continue-on-error: false
 
   security:

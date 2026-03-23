@@ -92,6 +92,32 @@ function readOptionalStringOption(options, key) {
   return options[key];
 }
 
+function readModuleTargetsOrThrow(module) {
+  const moduleId = module && module.id ? module.id : '<unknown>';
+  const targets = module && module.targets;
+
+  if (!Array.isArray(targets)) {
+    throw new Error(`Install module ${moduleId} has invalid targets; expected an array of supported target ids`);
+  }
+
+  const normalizedTargets = targets.map(target => (
+    typeof target === 'string' ? target.trim() : ''
+  ));
+
+  if (normalizedTargets.some(target => target.length === 0)) {
+    throw new Error(`Install module ${moduleId} has invalid targets; expected an array of supported target ids`);
+  }
+
+  const unsupportedTargets = normalizedTargets.filter(target => !SUPPORTED_INSTALL_TARGETS.includes(target));
+  if (unsupportedTargets.length > 0) {
+    throw new Error(
+      `Install module ${moduleId} has unsupported targets: ${unsupportedTargets.join(', ')}`
+    );
+  }
+
+  return normalizedTargets;
+}
+
 function assertKnownModuleIds(moduleIds, manifests) {
   const unknownModuleIds = dedupeStrings(moduleIds)
     .filter(moduleId => !manifests.modulesById.has(moduleId));
@@ -141,6 +167,11 @@ function loadInstallManifests(options = {}) {
     ? profilesData.profiles
     : {};
   const components = Array.isArray(componentsData.components) ? componentsData.components : [];
+
+  for (const module of modules) {
+    readModuleTargetsOrThrow(module);
+  }
+
   const modulesById = new Map(modules.map(module => [module.id, module]));
   const componentsById = new Map(components.map(component => [component.id, component]));
 
@@ -385,8 +416,7 @@ function resolveInstallPlan(options = {}) {
 
     const supportsTarget = !target
       || (
-        Array.isArray(module.targets)
-        && module.targets.includes(target)
+        readModuleTargetsOrThrow(module).includes(target)
         && (!targetAdapter || targetAdapter.supportsModule(module, targetPlanningInput))
       );
 
@@ -438,9 +468,9 @@ function resolveInstallPlan(options = {}) {
   const scaffoldPlan = target
     ? planInstallTargetScaffold({
       target,
-      repoRoot: manifests.repoRoot,
-      projectRoot: options.projectRoot || manifests.repoRoot,
-      homeDir: options.homeDir || os.homedir(),
+      repoRoot: targetPlanningInput.repoRoot,
+      projectRoot: targetPlanningInput.projectRoot,
+      homeDir: targetPlanningInput.homeDir,
       modules: selectedModules,
     })
     : null;
