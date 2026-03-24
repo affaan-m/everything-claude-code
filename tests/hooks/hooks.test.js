@@ -3342,8 +3342,9 @@ async function runTests() {
 
   if (
     await asyncTest('logs failure count when deletion fails (non-blocking)', async () => {
-      // Skip on non-Unix — read-only dirs behave differently on Windows
+      // Skip on Windows and root — chmod-based failure won't occur
       if (process.platform === 'win32') return;
+      if (process.getuid && process.getuid() === 0) return;
 
       const isoHome = path.join(os.tmpdir(), `ecc-cleanup-fail-${Date.now()}`);
       const sessionsDir = path.join(isoHome, '.claude', 'sessions');
