@@ -36,7 +36,6 @@ Follow these commit message conventions based on 500 analyzed commits.
 - `feat`
 - `fix`
 - `docs`
-- `test`
 
 ### Message Guidelines
 
@@ -184,122 +183,76 @@ try {
 
 These workflows were detected from analyzing commit patterns.
 
-### Database Migration
-
-Database schema changes with migration files
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create migration file
-2. Update schema definitions
-3. Generate/update types
-
-**Files typically involved**:
-- `migrations/*`
-
-**Example commit sequence**:
-```
-Add Turkish (tr) docs and update README (#744)
-docs(zh-CN): translate code block(plain text) (#753)
-fix(install): add rust, cpp, csharp to legacy language alias map (#747)
-```
-
 ### Feature Development
 
 Standard feature implementation workflow
 
-**Frequency**: ~26 times per month
+**Frequency**: ~30 times per month
 
 **Steps**:
 1. Add feature implementation
 2. Add tests for feature
 3. Update documentation
 
-**Files typically involved**:
-- `manifests/*`
-- `**/*.test.*`
-- `**/api/**`
-
 **Example commit sequence**:
 ```
-Merge pull request #736 from pvgomes/docs/add-brazilian-portuguese-translation
-fix: bump plugin.json and marketplace.json to v1.9.0
-Add Turkish (tr) docs and update README (#744)
+feat: add click-path-audit skill — finds state interaction bugs (#729)
+feat: pending instinct TTL pruning and /prune command (#725)
+feat(skills): add santa-method - multi-agent adversarial verification (#760)
 ```
 
 ### Add Or Update Skill
 
-Adds or updates a skill, including its documentation and configuration.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create or update .claude/commands/add-or-update-skill.md
-2. Create or update .claude/skills/<skill-name>/SKILL.md
-3. Optionally update .agents/skills/<skill-name>/SKILL.md
-4. Optionally update .agents/skills/<skill-name>/agents/*.yaml
-
-**Files typically involved**:
-- `.claude/commands/add-or-update-skill.md`
-- `.claude/skills/*/SKILL.md`
-- `.agents/skills/*/SKILL.md`
-- `.agents/skills/*/agents/*.yaml`
-
-**Example commit sequence**:
-```
-Create or update .claude/commands/add-or-update-skill.md
-Create or update .claude/skills/<skill-name>/SKILL.md
-Optionally update .agents/skills/<skill-name>/SKILL.md
-Optionally update .agents/skills/<skill-name>/agents/*.yaml
-```
-
-### Add Or Update Command Documentation
-
-Adds or updates documentation for a CLI command or workflow.
+Adds or updates a skill in the everything-claude-code system, including documentation and configuration.
 
 **Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/commands/<command-name>.md
+1. Create or update .claude/commands/add-or-update-skill.md
+2. Create or update .agents/skills/everything-claude-code/SKILL.md and/or .claude/skills/everything-claude-code/SKILL.md
+3. Optionally update .agents/skills/everything-claude-code/agents/openai.yaml
 
 **Files typically involved**:
-- `.claude/commands/*.md`
+- `.claude/commands/add-or-update-skill.md`
+- `.agents/skills/everything-claude-code/SKILL.md`
+- `.claude/skills/everything-claude-code/SKILL.md`
+- `.agents/skills/everything-claude-code/agents/openai.yaml`
 
 **Example commit sequence**:
 ```
-Create or update .claude/commands/<command-name>.md
+Create or update .claude/commands/add-or-update-skill.md
+Create or update .agents/skills/everything-claude-code/SKILL.md and/or .claude/skills/everything-claude-code/SKILL.md
+Optionally update .agents/skills/everything-claude-code/agents/openai.yaml
 ```
 
-### Add Or Update Database Migration Patterns
+### Add Or Update Command Doc
 
-Adds or updates database migration patterns or documentation.
+Adds or updates a command documentation file in the ECC bundle.
 
-**Frequency**: ~2 times per month
+**Frequency**: ~4 times per month
 
 **Steps**:
-1. Create or update .claude/commands/database-migration.md
-2. Create or update skills/database-migrations/SKILL.md
+1. Create or update .claude/commands/{command-name}.md
 
 **Files typically involved**:
+- `.claude/commands/add-or-update-skill.md`
+- `.claude/commands/feature-development.md`
 - `.claude/commands/database-migration.md`
-- `skills/database-migrations/SKILL.md`
+- `.claude/commands/add-or-update-skill-documentation.md`
 
 **Example commit sequence**:
 ```
-Create or update .claude/commands/database-migration.md
-Create or update skills/database-migrations/SKILL.md
+Create or update .claude/commands/{command-name}.md
 ```
 
-### Add Or Update Team Or Identity Config
+### Update Team Or Identity Config
 
-Adds or updates team configuration or identity files.
+Updates team configuration or identity files for ECC.
 
-**Frequency**: ~2 times per month
+**Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update .claude/team/everything-claude-code-team-config.json
-2. Create or update .claude/identity.json
+1. Edit .claude/team/everything-claude-code-team-config.json and/or .claude/identity.json
 
 **Files typically involved**:
 - `.claude/team/everything-claude-code-team-config.json`
@@ -307,79 +260,25 @@ Adds or updates team configuration or identity files.
 
 **Example commit sequence**:
 ```
-Create or update .claude/team/everything-claude-code-team-config.json
-Create or update .claude/identity.json
+Edit .claude/team/everything-claude-code-team-config.json and/or .claude/identity.json
 ```
 
-### Add Or Update Guardrails Or Controls
+### Add Or Update Research Or Rules Doc
 
-Adds or updates project guardrails, rules, or enterprise controls.
+Adds or updates research playbooks or rules/guardrails documentation.
 
 **Frequency**: ~2 times per month
 
 **Steps**:
-1. Create or update .claude/rules/everything-claude-code-guardrails.md
-2. Create or update .claude/enterprise/controls.md
-
-**Files typically involved**:
-- `.claude/rules/everything-claude-code-guardrails.md`
-- `.claude/enterprise/controls.md`
-
-**Example commit sequence**:
-```
-Create or update .claude/rules/everything-claude-code-guardrails.md
-Create or update .claude/enterprise/controls.md
-```
-
-### Add Or Update Agent Config
-
-Adds or updates agent configuration TOML files.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create or update .codex/agents/*.toml
-
-**Files typically involved**:
-- `.codex/agents/*.toml`
-
-**Example commit sequence**:
-```
-Create or update .codex/agents/*.toml
-```
-
-### Add Or Update Research Playbook
-
-Adds or updates research playbooks or process documentation.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create or update .claude/research/everything-claude-code-research-playbook.md
+1. Create or update .claude/research/everything-claude-code-research-playbook.md and/or .claude/rules/everything-claude-code-guardrails.md
 
 **Files typically involved**:
 - `.claude/research/everything-claude-code-research-playbook.md`
+- `.claude/rules/everything-claude-code-guardrails.md`
 
 **Example commit sequence**:
 ```
-Create or update .claude/research/everything-claude-code-research-playbook.md
-```
-
-### Add Or Update Ecc Tools Config
-
-Adds or updates ECC tools configuration.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create or update .claude/ecc-tools.json
-
-**Files typically involved**:
-- `.claude/ecc-tools.json`
-
-**Example commit sequence**:
-```
-Create or update .claude/ecc-tools.json
+Create or update .claude/research/everything-claude-code-research-playbook.md and/or .claude/rules/everything-claude-code-guardrails.md
 ```
 
 
