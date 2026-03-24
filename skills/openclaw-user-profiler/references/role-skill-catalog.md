@@ -91,9 +91,20 @@ Recommended Claude Code Skills organized by user role. Covers 11 categories and 
 
 ### A3. Full-Stack Engineer
 
-> Inherits: everything from A1 (Backend) + A2 (Frontend)
+> Inherits: Level 0 + Level 1 (Engineering Universal)
 
-A full-stack engineer is the union of backend and frontend — no additional role-specific Skills. Pick from A1 and A2 based on your actual tech stack.
+Curated picks from A1 and A2 — the skills that matter most when you work both sides of the stack.
+
+| Skill | Source | Why for full-stack |
+|-------|--------|--------------------|
+| frontend-design | 🅰️ Anthropic Official | UI component generation — the frontend half of every feature |
+| webapp-testing | 🅰️ Anthropic Official | End-to-end Playwright testing across the full stack |
+| docker | 📦 bobmatnyc/claude-mpm-skills | Containerize both frontend and backend services (456 installs) |
+| microservices-architect | 📦 jeffallan/claude-skills | Design service boundaries you'll implement yourself (977 installs) |
+| performance-profiling | 📦 sickn33/antigravity-awesome-skills | Profile both server and client bottlenecks (424 installs) |
+| nextjs-react-typescript | 📦 mindrally/skills | Full-stack framework of choice for many solo builders (1.2K installs) |
+
+**Need deeper specialization?** Check A1 (Backend) and A2 (Frontend) for stack-specific skills.
 
 ---
 
@@ -525,7 +536,7 @@ A full-stack engineer is the union of backend and frontend — no additional rol
 
 ### H2. Indie Hacker
 
-> Inherits: Level 0 + everything from A3 (Full-Stack Engineer)
+> Inherits: Level 0 + Level 1 (Engineering Universal) + A3 (Full-Stack Engineer)
 
 **The most versatile role** — you wear the hats of product, engineering, marketing, and operations.
 
