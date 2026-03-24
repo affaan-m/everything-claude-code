@@ -32,8 +32,8 @@ Interpret `$ARGUMENTS` to determine what to stage:
 | *(blank / empty)* | Stage everything | `git add -A` |
 | `staged` | Use whatever is already staged | *(no git add)* |
 | `*.ts` or `*.py` etc. | Stage matching glob | `git add '*.ts'` |
-| `except tests` | Stage all, then unstage tests | `git add -A && git reset -- '**/*.test.*' '**/*.spec.*' '**/test_*'` |
-| `only new files` | Stage untracked files only | `git ls-files --others --exclude-standard \| xargs -r git add` |
+| `except tests` | Stage all, then unstage tests | `git add -A && git reset -- '**/*.test.*' '**/*.spec.*' '**/test_*' 2>/dev/null \|\| true` |
+| `only new files` | Stage untracked files only | `git ls-files --others --exclude-standard \| grep . && git ls-files --others --exclude-standard \| xargs git add` |
 | `the auth changes` | Interpret from status/diff — find auth-related files | `git add <matched files>` |
 | Specific filenames | Stage those files | `git add <files>` |
 

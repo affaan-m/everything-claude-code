@@ -43,9 +43,9 @@ If all checks pass, proceed.
 
 Search for PR template in order:
 
-1. `.github/PULL_REQUEST_TEMPLATE.md`
-2. `.github/pull_request_template.md`
-3. `.github/PULL_REQUEST_TEMPLATE/default.md`
+1. `.github/PULL_REQUEST_TEMPLATE/` directory — if exists, list files and let user choose (or use `default.md`)
+2. `.github/PULL_REQUEST_TEMPLATE.md`
+3. `.github/pull_request_template.md`
 4. `docs/pull_request_template.md`
 
 If found, read it and use its structure for the PR body.

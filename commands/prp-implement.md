@@ -174,10 +174,20 @@ Build must succeed with zero errors.
 SERVER_PID=$!
 
 # Wait for server to be ready (adjust port as needed)
+SERVER_READY=0
 for i in $(seq 1 30); do
-  curl -sf http://localhost:PORT/health >/dev/null 2>&1 && break
+  if curl -sf http://localhost:PORT/health >/dev/null 2>&1; then
+    SERVER_READY=1
+    break
+  fi
   sleep 1
 done
+
+if [ "$SERVER_READY" -ne 1 ]; then
+  kill "$SERVER_PID" 2>/dev/null || true
+  echo "ERROR: Server failed to start within 30s" >&2
+  exit 1
+fi
 
 [integration test command]
 TEST_EXIT=$?

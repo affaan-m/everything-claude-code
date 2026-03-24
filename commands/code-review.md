@@ -109,7 +109,7 @@ Read each changed file **in full** (not just the diff hunks — you need surroun
 
 For PR reviews, fetch the full file contents at the PR head revision:
 ```bash
-for file in $(gh pr diff <NUMBER> --name-only); do
+gh pr diff <NUMBER> --name-only | while IFS= read -r file; do
   gh api "repos/{owner}/{repo}/contents/$file?ref=<head-branch>" --jq '.content' | base64 -d
 done
 ```
@@ -249,6 +249,7 @@ gh api "repos/{owner}/{repo}/pulls/<NUMBER>/comments" \
   -f body="<comment>" \
   -f path="<file>" \
   -F line=<line-number> \
+  -f side="RIGHT" \
   -f commit_id="$(gh pr view <NUMBER> --json headRefOid --jq .headRefOid)"
 ```
 

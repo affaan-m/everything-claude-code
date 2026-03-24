@@ -29,7 +29,7 @@ Determine input type from `$ARGUMENTS`:
 
 ### PRD Parsing (when input is a PRD)
 
-1. Read the PRD file with `cat`
+1. Read the PRD file with `cat "$PRD_PATH"`
 2. Parse the **Implementation Phases** section
 3. Find phases by status:
    - Look for `pending` phases
@@ -441,7 +441,7 @@ If this plan was generated from a PRD phase:
 ```
 ## Plan Created
 
-- **File**: .claude/PRPs/plans/{name}.plan.md
+- **File**: .claude/PRPs/plans/{kebab-case-feature-name}.plan.md
 - **Source PRD**: [path or "N/A"]
 - **Phase**: [phase name or "standalone"]
 - **Complexity**: [level]
