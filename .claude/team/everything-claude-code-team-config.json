@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "generatedBy": "ecc-tools",
+  "profile": "full",
+  "sharedSkills": [
+    ".claude/skills/everything-claude-code/SKILL.md",
+    ".agents/skills/everything-claude-code/SKILL.md"
+  ],
+  "commandFiles": [
+    ".claude/commands/database-migration.md",
+    ".claude/commands/feature-development.md",
+    ".claude/commands/add-new-skill.md"
+  ],
+  "updatedAt": "2026-03-24T10:54:04.463Z"
+}
