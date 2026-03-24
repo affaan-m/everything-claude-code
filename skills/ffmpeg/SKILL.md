@@ -484,7 +484,7 @@ export_all() {
   local input="$1"
   local base="${input%.*}"
   ffmpeg -i "$input" -c:v libx264 -crf 18 -preset slow -c:a aac -b:a 192k -movflags +faststart "${base}_youtube.mp4" &
-  ffmpeg -i "$input" -c:v libx264 -crf 23 -vf "scale='min(1920,iw)':-2" -c:a aac -b:a 128k -t 140 -movflags +faststart "${base}_twitter.mp4" &
+  ffmpeg -i "$input" -c:v libx264 -crf 23 -vf "scale='min(1920,iw)':'min(1200,ih)':force_original_aspect_ratio=decrease" -c:a aac -b:a 128k -t 140 -movflags +faststart "${base}_twitter.mp4" &
   ffmpeg -i "$input" -c:v libx264 -crf 20 -vf "scale=-2:1080" -c:a aac -b:a 192k -movflags +faststart "${base}_linkedin.mp4" &
   wait
   echo "All exports complete"
