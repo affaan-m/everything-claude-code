@@ -33,8 +33,8 @@ async function main() {
   ensureDir(learnedDir);
 
   // Clean up expired session files
-  const parsed = parseInt(process.env.ECC_SESSION_RETENTION_DAYS || '30', 10);
-  const retentionDays = Number.isFinite(parsed) && parsed >= 7 ? parsed : 30;
+  const parsed = Number(process.env.ECC_SESSION_RETENTION_DAYS || '30');
+  const retentionDays = Number.isFinite(parsed) ? Math.max(7, parsed) : 30;
   const expiredSessions = findFiles(sessionsDir, '*-session.tmp', { minAge: retentionDays });
 
   if (expiredSessions.length > 0) {

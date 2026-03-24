@@ -3248,7 +3248,8 @@ async function runTests() {
       fs.mkdirSync(sessionsDir, { recursive: true });
       fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
 
-      const expiredFile = path.join(sessionsDir, '2025-12-01-abcd1234-session.tmp');
+      // Use a recent filename but old mtime to decouple filename from age (#5)
+      const expiredFile = path.join(sessionsDir, '2026-03-20-abcd1234-session.tmp');
       fs.writeFileSync(expiredFile, '# Old Session\n');
       const past = new Date(Date.now() - 45 * 24 * 60 * 60 * 1000);
       fs.utimesSync(expiredFile, past, past);
@@ -3303,16 +3304,24 @@ async function runTests() {
   else failed++;
 
   if (
-    await asyncTest('clamps retention to minimum 7 days when set too low', async () => {
-      const isoHome = path.join(os.tmpdir(), `ecc-cleanup-low-${Date.now()}`);
+    await asyncTest('clamps retention to minimum 7 days — deletes 10-day file with ECC_SESSION_RETENTION_DAYS=3', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-cleanup-clamp-${Date.now()}`);
       const sessionsDir = path.join(isoHome, '.claude', 'sessions');
       fs.mkdirSync(sessionsDir, { recursive: true });
       fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
 
-      const recentFile = path.join(sessionsDir, '2026-03-19-recent12-session.tmp');
-      fs.writeFileSync(recentFile, '# Recent Session\n');
+      // 5-day file — must survive (younger than clamped minimum of 7)
+      const youngFile = path.join(sessionsDir, '2026-03-19-young123-session.tmp');
+      fs.writeFileSync(youngFile, '# Young Session\n');
       const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
-      fs.utimesSync(recentFile, fiveDaysAgo, fiveDaysAgo);
+      fs.utimesSync(youngFile, fiveDaysAgo, fiveDaysAgo);
+
+      // 10-day file — must be deleted (older than clamped minimum of 7)
+      // This distinguishes clamp-to-7 from fallback-to-30 (#3)
+      const oldFile = path.join(sessionsDir, '2026-03-14-old12345-session.tmp');
+      fs.writeFileSync(oldFile, '# Old Session\n');
+      const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
+      fs.utimesSync(oldFile, tenDaysAgo, tenDaysAgo);
 
       try {
         const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
@@ -3321,8 +3330,44 @@ async function runTests() {
           ECC_SESSION_RETENTION_DAYS: '3'
         });
         assert.strictEqual(result.code, 0);
-        assert.ok(fs.existsSync(recentFile), 'File should survive when retention clamped to 7 (was set to 3)');
+        assert.ok(fs.existsSync(youngFile), '5-day file survives (younger than clamped 7-day minimum)');
+        assert.ok(!fs.existsSync(oldFile), '10-day file deleted (older than clamped 7-day minimum)');
       } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('logs failure count when deletion fails (non-blocking)', async () => {
+      // Skip on non-Unix — read-only dirs behave differently on Windows
+      if (process.platform === 'win32') return;
+
+      const isoHome = path.join(os.tmpdir(), `ecc-cleanup-fail-${Date.now()}`);
+      const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const lockedFile = path.join(sessionsDir, '2026-03-20-locked12-session.tmp');
+      fs.writeFileSync(lockedFile, '# Locked Session\n');
+      const past = new Date(Date.now() - 45 * 24 * 60 * 60 * 1000);
+      fs.utimesSync(lockedFile, past, past);
+
+      // Make directory read-only so unlinkSync fails
+      fs.chmodSync(sessionsDir, 0o555);
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome,
+          ECC_SESSION_RETENTION_DAYS: '30'
+        });
+        assert.strictEqual(result.code, 0, 'Should still exit 0 (non-blocking)');
+        assert.ok(result.stderr.includes('1 failed'), 'Should log failure count');
+      } finally {
+        fs.chmodSync(sessionsDir, 0o755);
         fs.rmSync(isoHome, { recursive: true, force: true });
       }
     })
