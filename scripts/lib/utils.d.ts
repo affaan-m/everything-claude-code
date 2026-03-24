@@ -48,8 +48,17 @@ export function getDateTimeString(): string;
 // --- Session/Project ---
 
 /**
+ * Sanitize a string for use as a session filename segment.
+ * Replaces characters not in [a-zA-Z0-9_-] with hyphens, collapses runs,
+ * strips leading dots (e.g., ".claude" → "claude").
+ * Returns null if the result is empty after sanitization.
+ */
+export function sanitizeSessionId(raw: string): string | null;
+
+/**
  * Get short session ID from CLAUDE_SESSION_ID environment variable.
- * Returns last 8 characters, falls back to project name then the provided fallback.
+ * Returns last 8 characters, falls back to sanitized project name then the provided fallback.
+ * Output is always safe for session filenames (matches SESSION_FILENAME_REGEX).
  */
 export function getSessionIdShort(fallback?: string): string;
 

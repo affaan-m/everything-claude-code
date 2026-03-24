@@ -118,15 +118,60 @@ function runTests() {
     assert.ok(name && name.length > 0);
   })) passed++; else failed++;
 
+  // sanitizeSessionId tests
+  console.log('\nsanitizeSessionId:');
+
+  if (test('sanitizeSessionId strips leading dots (.claude → claude)', () => {
+    assert.strictEqual(utils.sanitizeSessionId('.claude'), 'claude');
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId replaces dots in middle (my.project → my-project)', () => {
+    assert.strictEqual(utils.sanitizeSessionId('my.project'), 'my-project');
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId replaces spaces (my project → my-project)', () => {
+    assert.strictEqual(utils.sanitizeSessionId('my project'), 'my-project');
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId replaces special chars (project@v2 → project-v2)', () => {
+    assert.strictEqual(utils.sanitizeSessionId('project@v2'), 'project-v2');
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId collapses consecutive hyphens', () => {
+    assert.strictEqual(utils.sanitizeSessionId('a...b'), 'a-b');
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId preserves valid chars', () => {
+    assert.strictEqual(utils.sanitizeSessionId('my-project_123'), 'my-project_123');
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId returns null for empty string', () => {
+    assert.strictEqual(utils.sanitizeSessionId(''), null);
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId returns null for null/undefined', () => {
+    assert.strictEqual(utils.sanitizeSessionId(null), null);
+    assert.strictEqual(utils.sanitizeSessionId(undefined), null);
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId returns null for dots-only string', () => {
+    assert.strictEqual(utils.sanitizeSessionId('...'), null);
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId strips leading/trailing hyphens after replacement', () => {
+    assert.strictEqual(utils.sanitizeSessionId('.@foo@.'), 'foo');
+  })) passed++; else failed++;
+
   // Session ID tests
   console.log('\nSession ID Functions:');
 
-  if (test('getSessionIdShort falls back to project name', () => {
+  if (test('getSessionIdShort falls back to sanitized project name', () => {
     const original = process.env.CLAUDE_SESSION_ID;
     delete process.env.CLAUDE_SESSION_ID;
     try {
       const shortId = utils.getSessionIdShort();
-      assert.strictEqual(shortId, utils.getProjectName());
+      const expected = utils.sanitizeSessionId(utils.getProjectName());
+      assert.strictEqual(shortId, expected);
     } finally {
       if (original) process.env.CLAUDE_SESSION_ID = original;
     }

@@ -1632,15 +1632,12 @@ src/main.ts
   // ── Round 98: parseSessionFilename with null input throws TypeError ──
   console.log('\nRound 98: parseSessionFilename (null input — crashes at line 30):');
 
-  if (test('parseSessionFilename(null) throws TypeError because null has no .match()', () => {
-    // session-manager.js line 30: `filename.match(SESSION_FILENAME_REGEX)`
-    // When filename is null, null.match() throws TypeError.
-    // Function lacks a type guard like `if (!filename || typeof filename !== 'string')`.
-    assert.throws(
-      () => sessionManager.parseSessionFilename(null),
-      { name: 'TypeError' },
-      'null.match() should throw TypeError (no type guard on filename parameter)'
-    );
+  if (test('parseSessionFilename(null) returns null (type guard added)', () => {
+    // session-manager.js: type guard `if (!filename || typeof filename !== 'string')` added
+    // to prevent TypeError when null/undefined is passed.
+    assert.strictEqual(sessionManager.parseSessionFilename(null), null);
+    assert.strictEqual(sessionManager.parseSessionFilename(undefined), null);
+    assert.strictEqual(sessionManager.parseSessionFilename(123), null);
   })) passed++; else failed++;
 
   // ── Round 99: writeSessionContent with null path returns false (error caught) ──

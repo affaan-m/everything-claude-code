@@ -30,6 +30,7 @@ const SESSION_FILENAME_REGEX = /^(\d{4}-\d{2}-\d{2})(?:-([a-zA-Z0-9_][a-zA-Z0-9_
  * @returns {object|null} Parsed metadata or null if invalid
  */
 function parseSessionFilename(filename) {
+  if (!filename || typeof filename !== 'string') return null;
   const match = filename.match(SESSION_FILENAME_REGEX);
   if (!match) return null;
 

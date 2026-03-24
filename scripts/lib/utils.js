@@ -108,15 +108,33 @@ function getProjectName() {
 }
 
 /**
+ * Sanitize a string for use as a session filename segment.
+ * Replaces characters not in [a-zA-Z0-9_-] with hyphens,
+ * collapses consecutive hyphens, strips leading/trailing hyphens,
+ * and strips leading dots (hidden dir names like ".claude").
+ * Returns null if the result is empty after sanitization.
+ */
+function sanitizeSessionId(raw) {
+  if (!raw || typeof raw !== 'string') return null;
+  const sanitized = raw
+    .replace(/^\.+/, '')              // strip leading dots
+    .replace(/[^a-zA-Z0-9_-]/g, '-') // replace invalid chars
+    .replace(/-{2,}/g, '-')          // collapse runs of hyphens
+    .replace(/^-+|-+$/g, '');        // trim leading/trailing hyphens
+  return sanitized.length > 0 ? sanitized : null;
+}
+
+/**
  * Get short session ID from CLAUDE_SESSION_ID environment variable
- * Returns last 8 characters, falls back to project name then 'default'
+ * Returns last 8 characters, falls back to sanitized project name then 'default'.
+ * Output is always safe for use in session filenames (matches SESSION_FILENAME_REGEX).
  */
 function getSessionIdShort(fallback = 'default') {
   const sessionId = process.env.CLAUDE_SESSION_ID;
   if (sessionId && sessionId.length > 0) {
     return sessionId.slice(-8);
   }
-  return getProjectName() || fallback;
+  return sanitizeSessionId(getProjectName()) || fallback;
 }
 
 /**
@@ -535,6 +553,7 @@ module.exports = {
   getDateTimeString,
 
   // Session/Project
+  sanitizeSessionId,
   getSessionIdShort,
   getGitRepoName,
   getProjectName,
