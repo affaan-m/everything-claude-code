@@ -3238,6 +3238,98 @@ async function runTests() {
     passed++;
   else failed++;
 
+  // ─── Session cleanup (#807) ───
+  console.log('\nsession-start.js (expired session cleanup #807):');
+
+  if (
+    await asyncTest('cleans up expired session files older than retention period', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-cleanup-${Date.now()}`);
+      const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const expiredFile = path.join(sessionsDir, '2025-12-01-abcd1234-session.tmp');
+      fs.writeFileSync(expiredFile, '# Old Session\n');
+      const past = new Date(Date.now() - 45 * 24 * 60 * 60 * 1000);
+      fs.utimesSync(expiredFile, past, past);
+
+      const recentFile = path.join(sessionsDir, '2026-03-20-efgh5678-session.tmp');
+      fs.writeFileSync(recentFile, '# Recent Session\n');
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome,
+          ECC_SESSION_RETENTION_DAYS: '30'
+        });
+        assert.strictEqual(result.code, 0);
+        assert.ok(!fs.existsSync(expiredFile), 'Expired session file should be deleted');
+        assert.ok(fs.existsSync(recentFile), 'Recent session file should be kept');
+        assert.ok(result.stderr.includes('Cleaned up 1 expired session file'), 'Should log cleanup');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('falls back to 30-day retention for non-numeric ECC_SESSION_RETENTION_DAYS', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-cleanup-nan-${Date.now()}`);
+      const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const safeFile = path.join(sessionsDir, '2026-03-14-safe1234-session.tmp');
+      fs.writeFileSync(safeFile, '# Safe Session\n');
+      const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
+      fs.utimesSync(safeFile, tenDaysAgo, tenDaysAgo);
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome,
+          ECC_SESSION_RETENTION_DAYS: 'notanumber'
+        });
+        assert.strictEqual(result.code, 0);
+        assert.ok(fs.existsSync(safeFile), 'File should survive when env var is invalid (falls back to 30)');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('clamps retention to minimum 7 days when set too low', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-cleanup-low-${Date.now()}`);
+      const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const recentFile = path.join(sessionsDir, '2026-03-19-recent12-session.tmp');
+      fs.writeFileSync(recentFile, '# Recent Session\n');
+      const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
+      fs.utimesSync(recentFile, fiveDaysAgo, fiveDaysAgo);
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome,
+          ECC_SESSION_RETENTION_DAYS: '3'
+        });
+        assert.strictEqual(result.code, 0);
+        assert.ok(fs.existsSync(recentFile), 'File should survive when retention clamped to 7 (was set to 3)');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
   // ─── Round 25: post-edit-console-warn pass-through fix, check-console-log edge cases ───
   console.log('\nRound 25: post-edit-console-warn.js (pass-through fix):');
 

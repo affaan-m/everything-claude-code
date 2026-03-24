@@ -2483,6 +2483,60 @@ function runTests() {
     assert.strictEqual(utils.stripAnsi('\x1b[?25hvisible\x1b[?25l'), 'visible');
   })) passed++; else failed++;
 
+  // ── findFiles minAge support (#807) ──
+  console.log('\nfindFiles minAge support (#807):');
+
+  if (test('findFiles with minAge returns only old files', () => {
+    const tmpDir = fs.mkdtempSync(path.join(utils.getTempDir(), 'minage-'));
+    try {
+      const recent = path.join(tmpDir, 'recent.txt');
+      const old = path.join(tmpDir, 'old.txt');
+      fs.writeFileSync(recent, 'new');
+      fs.writeFileSync(old, 'old');
+      const past = new Date(Date.now() - 45 * 24 * 60 * 60 * 1000);
+      fs.utimesSync(old, past, past);
+
+      const results = utils.findFiles(tmpDir, '*.txt', { minAge: 30 });
+      assert.strictEqual(results.length, 1, 'Should only return old file');
+      assert.ok(results[0].path.includes('old.txt'), 'Should return the old file');
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
+  if (test('findFiles with minAge excludes recent files', () => {
+    const tmpDir = fs.mkdtempSync(path.join(utils.getTempDir(), 'minage-recent-'));
+    try {
+      fs.writeFileSync(path.join(tmpDir, 'fresh.txt'), 'f');
+      const results = utils.findFiles(tmpDir, '*.txt', { minAge: 7 });
+      assert.strictEqual(results.length, 0, 'minAge: 7 should exclude fresh files');
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
+  if (test('findFiles with maxAge and minAge combined filters correctly', () => {
+    const tmpDir = fs.mkdtempSync(path.join(utils.getTempDir(), 'minmax-'));
+    try {
+      const fresh = path.join(tmpDir, 'fresh.txt');
+      const mid = path.join(tmpDir, 'mid.txt');
+      const ancient = path.join(tmpDir, 'ancient.txt');
+      fs.writeFileSync(fresh, 'f');
+      fs.writeFileSync(mid, 'm');
+      fs.writeFileSync(ancient, 'a');
+      const midPast = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
+      const ancientPast = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
+      fs.utimesSync(mid, midPast, midPast);
+      fs.utimesSync(ancient, ancientPast, ancientPast);
+
+      const results = utils.findFiles(tmpDir, '*.txt', { maxAge: 30, minAge: 7 });
+      assert.strictEqual(results.length, 1, 'Should only return mid-age file');
+      assert.ok(results[0].path.includes('mid.txt'));
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
   // Summary
   console.log('\n=== Test Results ===');
   console.log(`Passed: ${passed}`);

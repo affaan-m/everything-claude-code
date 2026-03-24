@@ -9,6 +9,7 @@
  * sessions and learned skills.
  */
 
+const fs = require('fs');
 const {
   getSessionsDir,
   getLearnedSkillsDir,
@@ -30,6 +31,25 @@ async function main() {
   // Ensure directories exist
   ensureDir(sessionsDir);
   ensureDir(learnedDir);
+
+  // Clean up expired session files
+  const parsed = parseInt(process.env.ECC_SESSION_RETENTION_DAYS || '30', 10);
+  const retentionDays = Number.isFinite(parsed) && parsed >= 7 ? parsed : 30;
+  const expiredSessions = findFiles(sessionsDir, '*-session.tmp', { minAge: retentionDays });
+
+  if (expiredSessions.length > 0) {
+    let deleted = 0;
+    let failed = 0;
+    for (const file of expiredSessions) {
+      try {
+        fs.unlinkSync(file.path);
+        deleted++;
+      } catch {
+        failed++;
+      }
+    }
+    log(`[SessionStart] Cleaned up ${deleted} expired session file(s)${failed > 0 ? ` (${failed} failed)` : ''}`);
+  }
 
   // Check for recent session files (last 7 days)
   const recentSessions = findFiles(sessionsDir, '*-session.tmp', { maxAge: 7 });
