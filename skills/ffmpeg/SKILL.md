@@ -57,8 +57,8 @@ ffprobe -v error -select_streams v:0 -show_entries stream=codec_type -of csv=p=0
 # Both -ss and -to before -i so they reference input timestamps
 ffmpeg -ss 00:01:30 -to 00:02:45 -i input.mp4 -c copy output.mp4
 
-# Frame-accurate trim (re-encodes, -to is duration from start of output)
-ffmpeg -ss 00:01:30 -i input.mp4 -t 00:01:15 -c:v libx264 -crf 18 -c:a aac output.mp4
+# Frame-accurate trim (re-encodes, -ss after -i for precise seek)
+ffmpeg -i input.mp4 -ss 00:01:30 -t 00:01:15 -c:v libx264 -crf 18 -c:a aac output.mp4
 
 # Extract by frame range
 ffmpeg -i input.mp4 -vf "select=between(n\,100\,500)" -vsync vfr output.mp4
@@ -373,7 +373,7 @@ ffmpeg -i "https://example.com/playlist.m3u8" -c copy output.mp4
 # Download with auth headers
 ffmpeg -headers "Authorization: Bearer TOKEN\r\n" \
   -i "https://example.com/playlist.m3u8" \
-  -c copy -protocol_whitelist file,http,https,tcp,tls,crypto output.mp4
+  -c copy -protocol_whitelist http,https,tcp,tls,crypto output.mp4
 ```
 
 ---
