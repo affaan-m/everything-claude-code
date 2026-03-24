@@ -42,61 +42,24 @@ function getSessionsDir() {
     return newDir;
   }
 
-  // If legacy directory exists, try one-time migration
+  // If legacy directory exists, try atomic rename migration.
+  // We intentionally avoid a copy-based fallback: a non-atomic copy can
+  // leave partial data in newDir on failure, causing future calls to
+  // prefer incomplete session history. If rename fails (e.g. cross-device
+  // mount), we keep using legacyDir — the auto-cleanup risk only applies
+  // to the default same-device case where rename succeeds.
   if (fs.existsSync(legacyDir)) {
     try {
       fs.renameSync(legacyDir, newDir);
       return newDir;
-    } catch {
-      // Rename failed (e.g. cross-device mount). Copy files individually,
-      // but only switch to newDir if ALL files copied successfully.
-      // A partial copy would split session data across two directories.
-      try {
-        fs.mkdirSync(newDir, { recursive: true });
-
-        let entries;
-        try {
-          entries = fs.readdirSync(legacyDir);
-        } catch (readErr) {
-          // Can't read legacy dir (permissions changed between existsSync
-          // and readdirSync). Remove the empty newDir and fall back.
-          try { fs.rmdirSync(newDir); } catch { /* best effort */ }
-          log(`[Utils] getSessionsDir: cannot read legacy dir: ${readErr.message}`);
-          return legacyDir;
-        }
-
-        let failedCount = 0;
-        for (const entry of entries) {
-          const src = path.join(legacyDir, entry);
-          const dst = path.join(newDir, entry);
-          try {
-            fs.copyFileSync(src, dst);
-          } catch (copyErr) {
-            failedCount++;
-            log(`[Utils] getSessionsDir: failed to copy ${entry}: ${copyErr.message}`);
-          }
-        }
-
-        if (failedCount > 0) {
-          // Partial copy — clean up newDir and fall back to legacy
-          // so no session data is silently lost.
-          try {
-            const copied = fs.readdirSync(newDir);
-            for (const f of copied) {
-              try { fs.unlinkSync(path.join(newDir, f)); } catch { /* best effort */ }
-            }
-            fs.rmdirSync(newDir);
-          } catch { /* best effort cleanup */ }
-          log(`[Utils] getSessionsDir: ${failedCount} file(s) failed to copy, using legacy dir`);
-          return legacyDir;
-        }
-
+    } catch (renameErr) {
+      // Another process may have completed the migration concurrently.
+      // Re-check before falling back.
+      if (fs.existsSync(newDir)) {
         return newDir;
-      } catch (outerErr) {
-        // If mkdir or overall copy fails, fall back to legacy to avoid data loss
-        log(`[Utils] getSessionsDir: migration failed: ${outerErr.message}`);
-        return legacyDir;
       }
+      log(`[Utils] getSessionsDir: rename failed (${renameErr.code || renameErr.message}), using legacy dir`);
+      return legacyDir;
     }
   }
 
