@@ -25,6 +25,22 @@ const configPath = path.join(repoRoot, '.codex', 'config.toml');
 const config = fs.readFileSync(configPath, 'utf8');
 const codexAgentsDir = path.join(repoRoot, '.codex', 'agents');
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function getTomlSection(text, sectionName) {
+  const escapedSection = escapeRegExp(sectionName);
+  const headerPattern = new RegExp(`^\\s*\\[${escapedSection}\\]\\s*$`, 'm');
+  const headerMatch = headerPattern.exec(text);
+
+  assert.ok(headerMatch, `Expected TOML section to exist: [${sectionName}]`);
+
+  const afterHeader = text.slice(headerMatch.index + headerMatch[0].length);
+  const nextHeaderIndex = afterHeader.search(/^\s*\[/m);
+  return nextHeaderIndex === -1 ? afterHeader : afterHeader.slice(0, nextHeaderIndex);
+}
+
 let passed = 0;
 let failed = 0;
 
@@ -62,10 +78,15 @@ if (
   test('reference config wires the sample Codex role files', () => {
     for (const roleFile of ['explorer.toml', 'reviewer.toml', 'docs-researcher.toml']) {
       const rolePath = path.join(codexAgentsDir, roleFile);
+      const roleSection = roleFile.replace(/\.toml$/, '').replace(/-/g, '_');
+      const sectionBody = getTomlSection(config, `agents.${roleSection}`);
+
       assert.ok(fs.existsSync(rolePath), `Expected role config to exist: ${roleFile}`);
       assert.ok(
-        config.includes(`config_file = "agents/${roleFile}"`),
-        `Expected \`.codex/config.toml\` to reference ${roleFile}`,
+        new RegExp(`^\\s*config_file\\s*=\\s*"agents\\/${escapeRegExp(roleFile)}"\\s*$`, 'm').test(
+          sectionBody,
+        ),
+        `Expected \`.codex/config.toml\` to reference ${roleFile} inside [agents.${roleSection}]`,
       );
     }
   })
