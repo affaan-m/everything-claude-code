@@ -33,8 +33,8 @@ Follow these commit message conventions based on 500 analyzed commits.
 
 ### Prefixes Used
 
-- `fix`
 - `feat`
+- `fix`
 - `docs`
 - `test`
 
@@ -48,7 +48,7 @@ Follow these commit message conventions based on 500 analyzed commits.
 *Commit message example*
 
 ```text
-feat: add everything-claude-code ECC bundle (.claude/commands/add-or-update-skill-documentation.md)
+feat: add everything-claude-code ECC bundle (.claude/commands/add-or-update-skill.md)
 ```
 
 *Commit message example*
@@ -209,7 +209,7 @@ fix(install): add rust, cpp, csharp to legacy language alias map (#747)
 
 Standard feature implementation workflow
 
-**Frequency**: ~21 times per month
+**Frequency**: ~26 times per month
 
 **Steps**:
 1. Add feature implementation
@@ -223,139 +223,131 @@ Standard feature implementation workflow
 
 **Example commit sequence**:
 ```
-docs(pt-BR): add rules translation
-docs(pt-BR): add examples translation
-docs(pt-BR): add commands translation
+Merge pull request #736 from pvgomes/docs/add-brazilian-portuguese-translation
+fix: bump plugin.json and marketplace.json to v1.9.0
+Add Turkish (tr) docs and update README (#744)
 ```
 
 ### Add Or Update Skill
 
-Adds a new skill or updates an existing skill's documentation and implementation.
+Adds or updates a skill in the ECC system, including documentation and provenance.
 
 **Frequency**: ~3 times per month
 
 **Steps**:
-1. Create or update skills/<skill-name>/SKILL.md or similar documentation file.
-2. Optionally, add or update related scripts, diagrams, or integration notes.
+1. Create or update SKILL.md in the appropriate skills directory (e.g., skills/{skill-name}/SKILL.md or .claude/skills/{skill-name}/SKILL.md)
+2. Optionally add or update agent YAML files (e.g., .agents/skills/{skill-name}/agents/*.yaml)
+3. Optionally update provenance or placement policy files (e.g., schemas/provenance.schema.json, docs/SKILL-PLACEMENT-POLICY.md)
 
 **Files typically involved**:
 - `skills/*/SKILL.md`
 - `.claude/skills/*/SKILL.md`
+- `.agents/skills/*/SKILL.md`
+- `.agents/skills/*/agents/*.yaml`
+- `schemas/provenance.schema.json`
+- `docs/SKILL-PLACEMENT-POLICY.md`
 
 **Example commit sequence**:
 ```
-Create or update skills/<skill-name>/SKILL.md or similar documentation file.
-Optionally, add or update related scripts, diagrams, or integration notes.
+Create or update SKILL.md in the appropriate skills directory (e.g., skills/{skill-name}/SKILL.md or .claude/skills/{skill-name}/SKILL.md)
+Optionally add or update agent YAML files (e.g., .agents/skills/{skill-name}/agents/*.yaml)
+Optionally update provenance or placement policy files (e.g., schemas/provenance.schema.json, docs/SKILL-PLACEMENT-POLICY.md)
 ```
 
-### Add Or Update Command Doc
+### Add Or Update Command Documentation
 
-Adds or updates documentation for a CLI or agent command.
+Adds or updates documentation for a command, often as part of a new feature or workflow.
 
 **Frequency**: ~4 times per month
 
 **Steps**:
-1. Create or update .claude/commands/<command>.md or docs/<lang>/commands/<command>.md.
-2. Optionally, update README or command catalog.
+1. Create or update .claude/commands/{command-name}.md
+2. Optionally update localized docs (e.g., docs/zh-CN/commands/{command-name}.md, docs/tr/commands/{command-name}.md, docs/pt-BR/commands/{command-name}.md)
 
 **Files typically involved**:
 - `.claude/commands/*.md`
-- `docs/*/commands/*.md`
+- `docs/zh-CN/commands/*.md`
+- `docs/tr/commands/*.md`
+- `docs/pt-BR/commands/*.md`
 
 **Example commit sequence**:
 ```
-Create or update .claude/commands/<command>.md or docs/<lang>/commands/<command>.md.
-Optionally, update README or command catalog.
+Create or update .claude/commands/{command-name}.md
+Optionally update localized docs (e.g., docs/zh-CN/commands/{command-name}.md, docs/tr/commands/{command-name}.md, docs/pt-BR/commands/{command-name}.md)
 ```
 
-### Add Or Update Localization
+### Add Or Update Localized Documentation
 
-Adds or syncs translated documentation for a new or existing language.
+Adds or updates documentation in a new or existing language (localization).
 
 **Frequency**: ~2 times per month
 
 **Steps**:
-1. Create or update docs/<lang>/* (agents, commands, skills, rules, etc.).
-2. Update README.md to add language link or increment language count.
+1. Add or update files in docs/{locale}/ (where locale is zh-CN, tr, pt-BR, etc.)
+2. Update README.md to reflect new language support
 
 **Files typically involved**:
-- `docs/*/README.md`
-- `docs/*/agents/*.md`
-- `docs/*/commands/*.md`
-- `docs/*/skills/*/SKILL.md`
-- `docs/*/rules/**/*.md`
-
-**Example commit sequence**:
-```
-Create or update docs/<lang>/* (agents, commands, skills, rules, etc.).
-Update README.md to add language link or increment language count.
-```
-
-### Update Readme And Metadata
-
-Updates the main README and/or project metadata to reflect new features, credits, or language support.
-
-**Frequency**: ~3 times per month
-
-**Steps**:
-1. Edit README.md to add or remove references, credits, or links.
-2. Update version or metadata files (e.g., plugin.json, marketplace.json) as needed.
-
-**Files typically involved**:
+- `docs/zh-CN/**/*`
+- `docs/tr/**/*`
+- `docs/pt-BR/**/*`
 - `README.md`
-- `.claude-plugin/marketplace.json`
-- `.claude-plugin/plugin.json`
 
 **Example commit sequence**:
 ```
-Edit README.md to add or remove references, credits, or links.
-Update version or metadata files (e.g., plugin.json, marketplace.json) as needed.
+Add or update files in docs/{locale}/ (where locale is zh-CN, tr, pt-BR, etc.)
+Update README.md to reflect new language support
 ```
 
-### Add Or Update Hook
+### Update Or Add Hooks
 
-Adds or modifies agent/editor hooks for validation, protection, or workflow automation.
+Adds or updates hooks for validation, config protection, or workflow automation.
 
 **Frequency**: ~2 times per month
 
 **Steps**:
-1. Edit hooks/hooks.json to add or modify hook definitions.
-2. Add or update supporting scripts in scripts/hooks/.
-3. Optionally, update plugin or integration files.
+1. Edit hooks/hooks.json to add or update hook definitions
+2. Create or update scripts/hooks/*.js or .ts for hook logic
+3. Optionally update plugin files (e.g., .opencode/plugins/ecc-hooks.ts)
 
 **Files typically involved**:
 - `hooks/hooks.json`
 - `scripts/hooks/*.js`
-- `.opencode/plugins/ecc-hooks.ts`
+- `.opencode/plugins/*.ts`
 
 **Example commit sequence**:
 ```
-Edit hooks/hooks.json to add or modify hook definitions.
-Add or update supporting scripts in scripts/hooks/.
-Optionally, update plugin or integration files.
+Edit hooks/hooks.json to add or update hook definitions
+Create or update scripts/hooks/*.js or .ts for hook logic
+Optionally update plugin files (e.g., .opencode/plugins/ecc-hooks.ts)
 ```
 
-### Add Or Update Session Adapter
+### Add Or Update Ecc Bundle
 
-Adds or updates session management logic, including worker health/state and related tests/docs.
+Adds or updates a set of ECC configuration, command, or skill files as a bundle.
 
 **Frequency**: ~2 times per month
 
 **Steps**:
-1. Edit scripts/lib/session-adapters/*.js to add or update adapter logic.
-2. Update or add tests in tests/lib/session-adapters.test.js.
-3. Update related documentation in docs/SESSION-ADAPTER-CONTRACT.md.
+1. Create or update files in .claude/ (commands, skills, rules, team, identity, etc.)
+2. Optionally update .codex/agents/*.toml and .agents/skills/*
+3. Repeat for each bundle component as needed
 
 **Files typically involved**:
-- `scripts/lib/session-adapters/*.js`
-- `tests/lib/session-adapters.test.js`
-- `docs/SESSION-ADAPTER-CONTRACT.md`
+- `.claude/commands/*.md`
+- `.claude/skills/*/SKILL.md`
+- `.claude/rules/*.md`
+- `.claude/team/*.json`
+- `.claude/identity.json`
+- `.claude/ecc-tools.json`
+- `.codex/agents/*.toml`
+- `.agents/skills/*/SKILL.md`
+- `.agents/skills/*/agents/*.yaml`
 
 **Example commit sequence**:
 ```
-Edit scripts/lib/session-adapters/*.js to add or update adapter logic.
-Update or add tests in tests/lib/session-adapters.test.js.
-Update related documentation in docs/SESSION-ADAPTER-CONTRACT.md.
+Create or update files in .claude/ (commands, skills, rules, team, identity, etc.)
+Optionally update .codex/agents/*.toml and .agents/skills/*
+Repeat for each bundle component as needed
 ```
 
 
