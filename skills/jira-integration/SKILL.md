@@ -47,7 +47,7 @@ Install the `mcp-atlassian` MCP server. This exposes Jira tools directly to your
 
 ```bash
 export JIRA_URL="https://YOUR_ORG.atlassian.net"
-export JIRA_USERNAME="your.email@example.com"
+export JIRA_EMAIL="your.email@example.com"
 export JIRA_API_TOKEN="your-api-token"
 ```
 
@@ -64,7 +64,7 @@ If MCP is not available, use the Jira REST API v3 directly via `curl` or a helpe
 
 | Variable | Description |
 |----------|-------------|
-| `JIRA_BASE_URL` | Your Jira instance URL (e.g., `https://yourorg.atlassian.net`) |
+| `JIRA_URL` | Your Jira instance URL (e.g., `https://yourorg.atlassian.net`) |
 | `JIRA_EMAIL` | Your Atlassian account email |
 | `JIRA_API_TOKEN` | API token from id.atlassian.com |
 
@@ -95,7 +95,7 @@ When the `mcp-atlassian` MCP server is configured, these tools are available:
 ```bash
 curl -s -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
-  "$JIRA_BASE_URL/rest/api/3/issue/PROJ-1234" | jq '{
+  "$JIRA_URL/rest/api/3/issue/PROJ-1234" | jq '{
     key: .key,
     summary: .fields.summary,
     status: .fields.status.name,
@@ -112,7 +112,7 @@ curl -s -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
 ```bash
 curl -s -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
-  "$JIRA_BASE_URL/rest/api/3/issue/PROJ-1234?fields=comment" | jq '.fields.comment.comments[] | {
+  "$JIRA_URL/rest/api/3/issue/PROJ-1234?fields=comment" | jq '.fields.comment.comments[] | {
     author: .author.displayName,
     created: .created[:10],
     body: .body
@@ -134,7 +134,7 @@ curl -s -X POST -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
       }]
     }
   }' \
-  "$JIRA_BASE_URL/rest/api/3/issue/PROJ-1234/comment"
+  "$JIRA_URL/rest/api/3/issue/PROJ-1234/comment"
 ```
 
 ### Transition a Ticket
@@ -142,13 +142,13 @@ curl -s -X POST -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
 ```bash
 # 1. Get available transitions
 curl -s -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
-  "$JIRA_BASE_URL/rest/api/3/issue/PROJ-1234/transitions" | jq '.transitions[] | {id, name: .name}'
+  "$JIRA_URL/rest/api/3/issue/PROJ-1234/transitions" | jq '.transitions[] | {id, name: .name}'
 
 # 2. Execute transition (replace TRANSITION_ID)
 curl -s -X POST -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"transition": {"id": "TRANSITION_ID"}}' \
-  "$JIRA_BASE_URL/rest/api/3/issue/PROJ-1234/transitions"
+  "$JIRA_URL/rest/api/3/issue/PROJ-1234/transitions"
 ```
 
 ### Search with JQL
@@ -157,7 +157,7 @@ curl -s -X POST -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
 curl -s -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   --data-urlencode "jql=project = PROJ AND status = 'In Progress'" \
-  "$JIRA_BASE_URL/rest/api/3/search"
+  "$JIRA_URL/rest/api/3/search"
 ```
 
 ## Analyzing a Ticket
@@ -285,7 +285,7 @@ Coverage: XX%
 |---|---|---|
 | `401 Unauthorized` | Invalid or expired API token | Regenerate at id.atlassian.com |
 | `403 Forbidden` | Token lacks project permissions | Check token scopes and project access |
-| `404 Not Found` | Wrong ticket key or base URL | Verify `JIRA_BASE_URL` and ticket key |
+| `404 Not Found` | Wrong ticket key or base URL | Verify `JIRA_URL` and ticket key |
 | `spawn uvx ENOENT` | IDE cannot find `uvx` on PATH | Use full path (e.g., `~/.local/bin/uvx`) or set PATH in `~/.zprofile` |
 | Connection timeout | Network/VPN issue | Check VPN connection and firewall rules |
 
@@ -297,4 +297,3 @@ Coverage: XX%
 - Use @mentions if you need input from others
 - Check linked issues to understand full feature scope before starting
 - If acceptance criteria are vague, ask for clarification before writing code
-
