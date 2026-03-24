@@ -10,14 +10,14 @@ Use this workflow when working on **add-or-update-skill** in `everything-claude-
 
 ## Goal
 
-Adds or updates a skill, including its documentation and configuration.
+Adds or updates a skill in the everything-claude-code system, including documentation and configuration.
 
 ## Common Files
 
 - `.claude/commands/add-or-update-skill.md`
-- `.claude/skills/*/SKILL.md`
-- `.agents/skills/*/SKILL.md`
-- `.agents/skills/*/agents/*.yaml`
+- `.agents/skills/everything-claude-code/SKILL.md`
+- `.claude/skills/everything-claude-code/SKILL.md`
+- `.agents/skills/everything-claude-code/agents/openai.yaml`
 
 ## Suggested Sequence
 
@@ -29,9 +29,8 @@ Adds or updates a skill, including its documentation and configuration.
 ## Typical Commit Signals
 
 - Create or update .claude/commands/add-or-update-skill.md
-- Create or update .claude/skills/<skill-name>/SKILL.md
-- Optionally update .agents/skills/<skill-name>/SKILL.md
-- Optionally update .agents/skills/<skill-name>/agents/*.yaml
+- Create or update .agents/skills/everything-claude-code/SKILL.md and/or .claude/skills/everything-claude-code/SKILL.md
+- Optionally update .agents/skills/everything-claude-code/agents/openai.yaml
 
 ## Notes
 
