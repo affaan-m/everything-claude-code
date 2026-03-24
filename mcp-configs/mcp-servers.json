@@ -2,10 +2,10 @@
   "mcpServers": {
     "jira": {
       "command": "uvx",
-      "args": ["mcp-atlassian", "--jira-url", "YOUR_JIRA_URL_HERE"],
+      "args": ["mcp-atlassian"],
       "env": {
         "JIRA_URL": "YOUR_JIRA_URL_HERE",
-        "JIRA_EMAIL": "YOUR_JIRA_EMAIL_HERE",
+        "JIRA_USERNAME": "YOUR_JIRA_EMAIL_HERE",
         "JIRA_API_TOKEN": "YOUR_JIRA_API_TOKEN_HERE"
       },
       "description": "Jira issue tracking — search, create, update, comment, transition issues"
