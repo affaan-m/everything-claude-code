@@ -18,8 +18,11 @@ export function getHomeDir(): string;
 /** Get the Claude config directory (~/.claude) */
 export function getClaudeDir(): string;
 
-/** Get the sessions directory (~/.claude/sessions) */
+/** Get the sessions directory (~/.claude/ecc-sessions) */
 export function getSessionsDir(): string;
+
+/** Get the legacy sessions directory (~/.claude/sessions) for migration reads */
+export function getLegacySessionsDir(): string;
 
 /** Get the learned skills directory (~/.claude/skills/learned) */
 export function getLearnedSkillsDir(): string;

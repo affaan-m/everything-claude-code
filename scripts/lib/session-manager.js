@@ -2,7 +2,7 @@
  * Session Manager Library for Claude Code
  * Provides core session CRUD operations for listing, loading, and managing sessions
  *
- * Sessions are stored as markdown files in ~/.claude/sessions/ with format:
+ * Sessions are stored as markdown files in ~/.claude/ecc-sessions/ with format:
  * - YYYY-MM-DD-session.tmp (old format)
  * - YYYY-MM-DD-<short-id>-session.tmp (new format)
  */
@@ -12,6 +12,7 @@ const path = require('path');
 
 const {
   getSessionsDir,
+  getLegacySessionsDir,
   readFile,
   log
 } = require('./utils');
@@ -229,52 +230,65 @@ function getAllSessions(options = {}) {
   const limit = Number.isNaN(limitNum) ? 50 : Math.max(1, Math.floor(limitNum));
 
   const sessionsDir = getSessionsDir();
+  const legacyDir = getLegacySessionsDir();
 
-  if (!fs.existsSync(sessionsDir)) {
+  // Scan both current and legacy directories for session files
+  const dirsToScan = [sessionsDir, legacyDir].filter(d => fs.existsSync(d));
+
+  if (dirsToScan.length === 0) {
     return { sessions: [], total: 0, offset, limit, hasMore: false };
   }
 
-  const entries = fs.readdirSync(sessionsDir, { withFileTypes: true });
   const sessions = [];
+  const seenFilenames = new Set();
 
-  for (const entry of entries) {
-    // Skip non-files (only process .tmp files)
-    if (!entry.isFile() || !entry.name.endsWith('.tmp')) continue;
+  for (const dir of dirsToScan) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
 
-    const filename = entry.name;
-    const metadata = parseSessionFilename(filename);
+    for (const entry of entries) {
+      // Skip non-files (only process .tmp files)
+      if (!entry.isFile() || !entry.name.endsWith('.tmp')) continue;
 
-    if (!metadata) continue;
+      const filename = entry.name;
 
-    // Apply date filter
-    if (date && metadata.date !== date) {
-      continue;
+      // Deduplicate: prefer the file from the primary directory
+      if (seenFilenames.has(filename)) continue;
+      seenFilenames.add(filename);
+
+      const metadata = parseSessionFilename(filename);
+
+      if (!metadata) continue;
+
+      // Apply date filter
+      if (date && metadata.date !== date) {
+        continue;
+      }
+
+      // Apply search filter (search in short ID)
+      if (search && !metadata.shortId.includes(search)) {
+        continue;
+      }
+
+      const sessionPath = path.join(dir, filename);
+
+      // Get file stats (wrapped in try-catch to handle TOCTOU race where
+      // file is deleted between readdirSync and statSync)
+      let stats;
+      try {
+        stats = fs.statSync(sessionPath);
+      } catch {
+        continue; // File was deleted between readdir and stat
+      }
+
+      sessions.push({
+        ...metadata,
+        sessionPath,
+        hasContent: stats.size > 0,
+        size: stats.size,
+        modifiedTime: stats.mtime,
+        createdTime: stats.birthtime || stats.ctime
+      });
     }
-
-    // Apply search filter (search in short ID)
-    if (search && !metadata.shortId.includes(search)) {
-      continue;
-    }
-
-    const sessionPath = path.join(sessionsDir, filename);
-
-    // Get file stats (wrapped in try-catch to handle TOCTOU race where
-    // file is deleted between readdirSync and statSync)
-    let stats;
-    try {
-      stats = fs.statSync(sessionPath);
-    } catch {
-      continue; // File was deleted between readdir and stat
-    }
-
-    sessions.push({
-      ...metadata,
-      sessionPath,
-      hasContent: stats.size > 0,
-      size: stats.size,
-      modifiedTime: stats.mtime,
-      createdTime: stats.birthtime || stats.ctime
-    });
   }
 
   // Sort by modified time (newest first)
@@ -300,54 +314,60 @@ function getAllSessions(options = {}) {
  */
 function getSessionById(sessionId, includeContent = false) {
   const sessionsDir = getSessionsDir();
+  const legacyDir = getLegacySessionsDir();
 
-  if (!fs.existsSync(sessionsDir)) {
+  // Search both current and legacy directories
+  const dirsToScan = [sessionsDir, legacyDir].filter(d => fs.existsSync(d));
+
+  if (dirsToScan.length === 0) {
     return null;
   }
 
-  const entries = fs.readdirSync(sessionsDir, { withFileTypes: true });
+  for (const dir of dirsToScan) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
 
-  for (const entry of entries) {
-    if (!entry.isFile() || !entry.name.endsWith('.tmp')) continue;
+    for (const entry of entries) {
+      if (!entry.isFile() || !entry.name.endsWith('.tmp')) continue;
 
-    const filename = entry.name;
-    const metadata = parseSessionFilename(filename);
+      const filename = entry.name;
+      const metadata = parseSessionFilename(filename);
 
-    if (!metadata) continue;
+      if (!metadata) continue;
 
-    // Check if session ID matches (short ID or full filename without .tmp)
-    const shortIdMatch = sessionId.length > 0 && metadata.shortId !== 'no-id' && metadata.shortId.startsWith(sessionId);
-    const filenameMatch = filename === sessionId || filename === `${sessionId}.tmp`;
-    const noIdMatch = metadata.shortId === 'no-id' && filename === `${sessionId}-session.tmp`;
+      // Check if session ID matches (short ID or full filename without .tmp)
+      const shortIdMatch = sessionId.length > 0 && metadata.shortId !== 'no-id' && metadata.shortId.startsWith(sessionId);
+      const filenameMatch = filename === sessionId || filename === `${sessionId}.tmp`;
+      const noIdMatch = metadata.shortId === 'no-id' && filename === `${sessionId}-session.tmp`;
 
-    if (!shortIdMatch && !filenameMatch && !noIdMatch) {
-      continue;
+      if (!shortIdMatch && !filenameMatch && !noIdMatch) {
+        continue;
+      }
+
+      const sessionPath = path.join(dir, filename);
+      let stats;
+      try {
+        stats = fs.statSync(sessionPath);
+      } catch {
+        continue; // File was deleted between readdir and stat
+      }
+
+      const session = {
+        ...metadata,
+        sessionPath,
+        size: stats.size,
+        modifiedTime: stats.mtime,
+        createdTime: stats.birthtime || stats.ctime
+      };
+
+      if (includeContent) {
+        session.content = getSessionContent(sessionPath);
+        session.metadata = parseSessionMetadata(session.content);
+        // Pass pre-read content to avoid a redundant disk read
+        session.stats = getSessionStats(session.content || '');
+      }
+
+      return session;
     }
-
-    const sessionPath = path.join(sessionsDir, filename);
-    let stats;
-    try {
-      stats = fs.statSync(sessionPath);
-    } catch {
-      return null; // File was deleted between readdir and stat
-    }
-
-    const session = {
-      ...metadata,
-      sessionPath,
-      size: stats.size,
-      modifiedTime: stats.mtime,
-      createdTime: stats.birthtime || stats.ctime
-    };
-
-    if (includeContent) {
-      session.content = getSessionContent(sessionPath);
-      session.metadata = parseSessionMetadata(session.content);
-      // Pass pre-read content to avoid a redundant disk read
-      session.stats = getSessionStats(session.content || '');
-    }
-
-    return session;
   }
 
   return null;

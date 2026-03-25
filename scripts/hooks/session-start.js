@@ -11,6 +11,7 @@
 
 const {
   getSessionsDir,
+  getLegacySessionsDir,
   getLearnedSkillsDir,
   findFiles,
   ensureDir,
@@ -32,7 +33,14 @@ async function main() {
   ensureDir(learnedDir);
 
   // Check for recent session files (last 7 days)
-  const recentSessions = findFiles(sessionsDir, '*-session.tmp', { maxAge: 7 });
+  // Also check legacy directory (~/.claude/sessions/) for migration
+  let recentSessions = findFiles(sessionsDir, '*-session.tmp', { maxAge: 7 });
+  const legacyDir = getLegacySessionsDir();
+  const legacySessions = findFiles(legacyDir, '*-session.tmp', { maxAge: 7 });
+  if (legacySessions.length > 0) {
+    recentSessions = recentSessions.concat(legacySessions);
+    recentSessions.sort((a, b) => b.mtime - a.mtime);
+  }
 
   if (recentSessions.length > 0) {
     const latest = recentSessions[0];

@@ -64,11 +64,19 @@ function runTests() {
     assert.ok(claudeDir.includes('.claude'), 'Should contain .claude');
   })) passed++; else failed++;
 
-  if (test('getSessionsDir returns path under Claude dir', () => {
+  if (test('getSessionsDir returns ecc-sessions path under Claude dir', () => {
     const sessionsDir = utils.getSessionsDir();
     const claudeDir = utils.getClaudeDir();
     assert.ok(sessionsDir.startsWith(claudeDir), 'Sessions should be under Claude dir');
-    assert.ok(sessionsDir.includes('sessions'), 'Should contain sessions');
+    assert.ok(sessionsDir.includes('ecc-sessions'), 'Should contain ecc-sessions');
+  })) passed++; else failed++;
+
+  if (test('getLegacySessionsDir returns sessions path under Claude dir', () => {
+    const legacyDir = utils.getLegacySessionsDir();
+    const claudeDir = utils.getClaudeDir();
+    assert.ok(legacyDir.startsWith(claudeDir), 'Legacy sessions should be under Claude dir');
+    assert.ok(legacyDir.endsWith('sessions'), 'Should end with sessions');
+    assert.ok(!legacyDir.includes('ecc-sessions'), 'Should not contain ecc-sessions');
   })) passed++; else failed++;
 
   if (test('getTempDir returns valid temp directory', () => {

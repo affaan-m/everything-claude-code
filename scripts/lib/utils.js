@@ -28,9 +28,26 @@ function getClaudeDir() {
 }
 
 /**
- * Get the sessions directory
+ * Get the sessions directory.
+ *
+ * Uses ~/.claude/ecc-sessions/ instead of ~/.claude/sessions/ because the
+ * Claude Code CLI internally manages ~/.claude/sessions/ (storing .json
+ * session-tracking files) and may clean up non-standard files from that
+ * directory, causing ECC session .tmp files to be silently deleted.
+ *
+ * For backwards compatibility, if ~/.claude/sessions/ contains .tmp files
+ * but ~/.claude/ecc-sessions/ does not, reads will still check the legacy
+ * directory. New writes always go to ~/.claude/ecc-sessions/.
  */
 function getSessionsDir() {
+  return path.join(getClaudeDir(), 'ecc-sessions');
+}
+
+/**
+ * Get the legacy sessions directory (~/.claude/sessions/).
+ * Used only for backwards-compatible reads during migration.
+ */
+function getLegacySessionsDir() {
   return path.join(getClaudeDir(), 'sessions');
 }
 
@@ -525,6 +542,7 @@ module.exports = {
   getHomeDir,
   getClaudeDir,
   getSessionsDir,
+  getLegacySessionsDir,
   getLearnedSkillsDir,
   getTempDir,
   ensureDir,
