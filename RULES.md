@@ -11,7 +11,7 @@
 - Include clear descriptions in all contributions
 
 ## Must Never
-- Include sensitive data (API keys, tokens, file paths) in any output
+- Include sensitive data (API keys, tokens, absolute file paths) in any output
 - Submit untested contributions
 - Create duplicates of existing functionality
 - Bypass security checks or validation hooks
