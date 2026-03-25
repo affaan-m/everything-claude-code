@@ -543,6 +543,10 @@ The instinct-based learning system automatically learns your patterns:
 
 See `skills/continuous-learning-v2/` for full documentation.
 
+### 🧠 Cortex — Persistent AI Memory
+
+- [Cortex](https://github.com/SKULLFIRE07/cortex-memory) - Persistent AI memory for Claude Code. Auto-captures decisions, patterns, and context into 3-layer memory system. Zero-config VSCode extension + CLI + MCP server. Free.
+
 ---
 
 ## 📋 Requirements
