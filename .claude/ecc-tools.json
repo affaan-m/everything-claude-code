@@ -2,7 +2,7 @@
   "version": "1.3",
   "schemaVersion": "1.0",
   "generatedBy": "ecc-tools",
-  "generatedAt": "2026-03-20T12:07:36.496Z",
+  "generatedAt": "2026-03-25T05:30:36.700Z",
   "repo": "https://github.com/affaan-m/everything-claude-code",
   "profiles": {
     "requested": "full",
@@ -150,7 +150,7 @@
     ".claude/enterprise/controls.md",
     ".claude/commands/database-migration.md",
     ".claude/commands/feature-development.md",
-    ".claude/commands/add-language-rules.md"
+    ".claude/commands/add-new-skill.md"
   ],
   "packageFiles": {
     "runtime-core": [
@@ -180,7 +180,7 @@
     "workflow-pack": [
       ".claude/commands/database-migration.md",
       ".claude/commands/feature-development.md",
-      ".claude/commands/add-language-rules.md"
+      ".claude/commands/add-new-skill.md"
     ]
   },
   "moduleFiles": {
@@ -211,7 +211,7 @@
     "workflow-pack": [
       ".claude/commands/database-migration.md",
       ".claude/commands/feature-development.md",
-      ".claude/commands/add-language-rules.md"
+      ".claude/commands/add-new-skill.md"
     ]
   },
   "files": [
@@ -297,8 +297,8 @@
     },
     {
       "moduleId": "workflow-pack",
-      "path": ".claude/commands/add-language-rules.md",
-      "description": "Workflow command scaffold for add-language-rules."
+      "path": ".claude/commands/add-new-skill.md",
+      "description": "Workflow command scaffold for add-new-skill."
     }
   ],
   "workflows": [
@@ -311,8 +311,8 @@
       "path": ".claude/commands/feature-development.md"
     },
     {
-      "command": "add-language-rules",
-      "path": ".claude/commands/add-language-rules.md"
+      "command": "add-new-skill",
+      "path": ".claude/commands/add-new-skill.md"
     }
   ],
   "adapters": {
@@ -322,7 +322,7 @@
       "commandPaths": [
         ".claude/commands/database-migration.md",
         ".claude/commands/feature-development.md",
-        ".claude/commands/add-language-rules.md"
+        ".claude/commands/add-new-skill.md"
       ]
     },
     "codex": {
