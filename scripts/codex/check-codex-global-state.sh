@@ -96,8 +96,7 @@ if [[ -f "$CONFIG_FILE" ]]; then
   for section in \
     'mcp_servers.github' \
     'mcp_servers.memory' \
-    'mcp_servers.sequential-thinking' \
-    'mcp_servers.context7-mcp'
+    'mcp_servers.sequential-thinking'
   do
     if rg -n "^\[$section\]" "$CONFIG_FILE" >/dev/null 2>&1; then
       ok "MCP section [$section] exists"
@@ -106,10 +105,25 @@ if [[ -f "$CONFIG_FILE" ]]; then
     fi
   done
 
+  has_context7_legacy=0
+  has_context7_current=0
+
   if rg -n '^\[mcp_servers\.context7\]' "$CONFIG_FILE" >/dev/null 2>&1; then
-    warn "Duplicate [mcp_servers.context7] exists (context7-mcp is preferred)"
+    has_context7_legacy=1
+  fi
+
+  if rg -n '^\[mcp_servers\.context7-mcp\]' "$CONFIG_FILE" >/dev/null 2>&1; then
+    has_context7_current=1
+  fi
+
+  if [[ "$has_context7_legacy" -eq 1 || "$has_context7_current" -eq 1 ]]; then
+    ok "MCP section [mcp_servers.context7] or [mcp_servers.context7-mcp] exists"
   else
-    ok "No duplicate [mcp_servers.context7] section"
+    fail "MCP section [mcp_servers.context7] or [mcp_servers.context7-mcp] missing"
+  fi
+
+  if [[ "$has_context7_legacy" -eq 1 && "$has_context7_current" -eq 1 ]]; then
+    warn "Both [mcp_servers.context7] and [mcp_servers.context7-mcp] exist; prefer one name"
   fi
 fi
 

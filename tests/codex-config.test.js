@@ -25,6 +25,22 @@ const configPath = path.join(repoRoot, '.codex', 'config.toml');
 const config = fs.readFileSync(configPath, 'utf8');
 const codexAgentsDir = path.join(repoRoot, '.codex', 'agents');
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function getTomlSection(text, sectionName) {
+  const escapedSection = escapeRegExp(sectionName);
+  const headerPattern = new RegExp(`^\\s*\\[${escapedSection}\\]\\s*$`, 'm');
+  const headerMatch = headerPattern.exec(text);
+
+  assert.ok(headerMatch, `Expected TOML section to exist: [${sectionName}]`);
+
+  const afterHeader = text.slice(headerMatch.index + headerMatch[0].length);
+  const nextHeaderIndex = afterHeader.search(/^\s*\[/m);
+  return nextHeaderIndex === -1 ? afterHeader : afterHeader.slice(0, nextHeaderIndex);
+}
+
 let passed = 0;
 let failed = 0;
 
@@ -42,6 +58,37 @@ if (
       !/^model_provider\s*=/m.test(config),
       'Expected `.codex/config.toml` to inherit the CLI default provider',
     );
+  })
+)
+  passed++;
+else failed++;
+
+if (
+  test('reference config enables Codex multi-agent support', () => {
+    assert.ok(
+      /^\s*multi_agent\s*=\s*true\s*$/m.test(config),
+      'Expected `.codex/config.toml` to opt into Codex multi-agent collaboration',
+    );
+  })
+)
+  passed++;
+else failed++;
+
+if (
+  test('reference config wires the sample Codex role files', () => {
+    for (const roleFile of ['explorer.toml', 'reviewer.toml', 'docs-researcher.toml']) {
+      const rolePath = path.join(codexAgentsDir, roleFile);
+      const roleSection = roleFile.replace(/\.toml$/, '').replace(/-/g, '_');
+      const sectionBody = getTomlSection(config, `agents.${roleSection}`);
+
+      assert.ok(fs.existsSync(rolePath), `Expected role config to exist: ${roleFile}`);
+      assert.ok(
+        new RegExp(`^\\s*config_file\\s*=\\s*"agents\\/${escapeRegExp(roleFile)}"\\s*$`, 'm').test(
+          sectionBody,
+        ),
+        `Expected \`.codex/config.toml\` to reference ${roleFile} inside [agents.${roleSection}]`,
+      );
+    }
   })
 )
   passed++;
