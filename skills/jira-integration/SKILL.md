@@ -33,19 +33,18 @@ Install the `mcp-atlassian` MCP server. This exposes Jira tools directly to your
 {
   "jira": {
     "command": "uvx",
-    "args": ["mcp-atlassian"],
+    "args": ["mcp-atlassian==0.21.0"],
+    "env": {
+      "JIRA_URL": "https://YOUR_ORG.atlassian.net",
+      "JIRA_EMAIL": "your.email@example.com",
+      "JIRA_API_TOKEN": "your-api-token"
+    },
     "description": "Jira issue tracking — search, create, update, comment, transition"
   }
 }
 ```
 
-**Prefer environment variables** over inline tokens (never hardcode secrets):
-
-```bash
-export JIRA_URL="https://YOUR_ORG.atlassian.net"
-export JIRA_EMAIL="your.email@example.com"
-export JIRA_API_TOKEN="your-api-token"
-```
+> **Security:** Never hardcode secrets. Set `JIRA_URL`, `JIRA_EMAIL`, and `JIRA_API_TOKEN` via the `env` block above (or your system environment) — never as CLI flags or inline values.
 
 **To get a Jira API token:**
 1. Go to https://id.atlassian.com/manage-profile/security/api-tokens
@@ -150,8 +149,7 @@ curl -s -X POST -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
 ### Search with JQL
 
 ```bash
-curl -s -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
-  -H "Content-Type: application/json" \
+curl -s -G -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
   --data-urlencode "jql=project = PROJ AND status = 'In Progress'" \
   "$JIRA_URL/rest/api/3/search"
 ```
