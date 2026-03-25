@@ -1,0 +1,6 @@
+{
+  "name": "swift-dev",
+  "description": "Swift and SwiftUI development — concurrency, actors, protocol-oriented design and testing",
+  "version": "1.0.0",
+  "keywords": ["swift", "swiftui", "ios", "macos", "actors", "concurrency"]
+}

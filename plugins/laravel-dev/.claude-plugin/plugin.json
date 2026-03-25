@@ -1,0 +1,6 @@
+{
+  "name": "laravel-dev",
+  "description": "PHP, Laravel and Perl development — patterns, security, TDD and verification",
+  "version": "1.0.0",
+  "keywords": ["php", "laravel", "perl", "composer"]
+}

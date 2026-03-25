@@ -1,0 +1,6 @@
+{
+  "name": "go-dev",
+  "description": "Go development — reviewer, build resolver, idiomatic patterns and testing",
+  "version": "1.0.0",
+  "keywords": ["go", "golang", "modules", "goroutines"]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "java-dev",
+  "description": "Java, Kotlin, and Spring Boot development — reviewers, build resolvers, and coding standards",
+  "version": "1.0.0",
+  "keywords": ["java", "kotlin", "spring", "springboot", "gradle", "maven", "android"]
+}

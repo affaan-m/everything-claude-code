@@ -1,0 +1,6 @@
+{
+  "name": "python-dev",
+  "description": "Python and Django development — reviewer, patterns, testing, and security",
+  "version": "1.0.0",
+  "keywords": ["python", "django", "drf", "pytest", "pep8"]
+}

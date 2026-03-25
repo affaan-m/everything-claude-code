@@ -1,0 +1,6 @@
+{
+  "name": "rust-dev",
+  "description": "Rust development — reviewer, build resolver, patterns and testing",
+  "version": "1.0.0",
+  "keywords": ["rust", "cargo", "ownership", "async"]
+}

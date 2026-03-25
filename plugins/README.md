@@ -1,76 +1,67 @@
 # Plugins and Marketplaces
 
-Plugins extend Claude Code with new tools and capabilities. This guide covers installation only - see the [full article](https://x.com/affaanmustafa/status/2012378465664745795) for when and why to use them.
+This repo is a Claude Code plugin marketplace. Each plugin bundles language-specific agents and skills together — install only what you need.
 
 ---
 
-## Marketplaces
+## This Repo as a Marketplace
 
-Marketplaces are repositories of installable plugins.
-
-### Adding a Marketplace
+Add this repo as a marketplace, then install individual language plugins:
 
 ```bash
-# Add official Anthropic marketplace
-claude plugin marketplace add https://github.com/anthropics/claude-plugins-official
+# Add this repo as a marketplace
+/plugin marketplace add YOUR_GITHUB/my-everything-claude-code
 
-# Add community marketplaces (mgrep by @mixedbread-ai)
-claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
+# Install only what you need
+/plugin install java-dev@everything-claude-code
+/plugin install python-dev@everything-claude-code
+/plugin install go-dev@everything-claude-code
 ```
-
-### Recommended Marketplaces
-
-| Marketplace | Source |
-|-------------|--------|
-| claude-plugins-official | `anthropics/claude-plugins-official` |
-| claude-code-plugins | `anthropics/claude-code` |
-| Mixedbread-Grep (@mixedbread-ai) | `mixedbread-ai/mgrep` |
 
 ---
 
-## Installing Plugins
+## Available Plugins
 
-```bash
-# Open plugins browser
-/plugins
+| Plugin | Agents | Skills |
+|--------|--------|--------|
+| `java-dev` | java-reviewer, java-build-resolver, kotlin-reviewer, kotlin-build-resolver | java-coding-standards, springboot-*, jpa-patterns, kotlin-*, android, compose |
+| `python-dev` | python-reviewer | python-patterns, python-testing, django-* |
+| `go-dev` | go-reviewer, go-build-resolver | golang-patterns, golang-testing |
+| `rust-dev` | rust-reviewer, rust-build-resolver | rust-patterns, rust-testing |
+| `cpp-dev` | cpp-reviewer, cpp-build-resolver | cpp-coding-standards, cpp-testing |
+| `swift-dev` | — | swift-*, swiftui-patterns |
+| `web-dev` | — | frontend-patterns, nextjs-turbopack, backend-patterns |
+| `laravel-dev` | — | laravel-*, perl-* |
 
-# Or install directly
-claude plugin install typescript-lsp@claude-plugins-official
-```
-
-### Recommended Plugins
-
-**Development:**
-- `typescript-lsp` - TypeScript intelligence
-- `pyright-lsp` - Python type checking
-- `hookify` - Create hooks conversationally
-- `code-simplifier` - Refactor code
-
-**Code Quality:**
-- `code-review` - Code review
-- `pr-review-toolkit` - PR automation
-- `security-guidance` - Security checks
-
-**Search:**
-- `mgrep` - Enhanced search (better than ripgrep)
-- `context7` - Live documentation lookup
-
-**Workflow:**
-- `commit-commands` - Git workflow
-- `frontend-design` - UI patterns
-- `feature-dev` - Feature development
+Each plugin's agents have their domain skills **pre-wired** — no manual configuration needed.
 
 ---
 
-## Quick Setup
+## Plugin Structure
 
-```bash
-# Add marketplaces
-claude plugin marketplace add https://github.com/anthropics/claude-plugins-official
-claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
-
-# Open /plugins and install what you need
 ```
+plugins/
+├── java-dev/
+│   ├── .claude-plugin/plugin.json
+│   ├── agents/          ← java-reviewer, build-resolver, kotlin-*
+│   └── skills/          ← java-coding-standards, springboot-*, jpa-*, kotlin-*
+├── python-dev/
+│   ├── .claude-plugin/plugin.json
+│   ├── agents/          ← python-reviewer
+│   └── skills/          ← python-patterns, python-testing, django-*
+└── ...
+```
+
+Skills inside plugins have `user-invocable: false` and `disable-model-invocation: true` — they are reference material for agents only, not slash commands.
+
+---
+
+## Third-Party Marketplaces
+
+| Marketplace | Install |
+|-------------|---------|
+| Official Anthropic | `/plugin marketplace add anthropics/claude-plugins-official` |
+| Community (mgrep) | `/plugin marketplace add mixedbread-ai/mgrep` |
 
 ---
 
@@ -78,8 +69,7 @@ claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 
 ```
 ~/.claude/plugins/
-|-- cache/                    # Downloaded plugins
-|-- installed_plugins.json    # Installed list
-|-- known_marketplaces.json   # Added marketplaces
-|-- marketplaces/             # Marketplace data
+├── cache/                    # Downloaded plugins
+├── known_marketplaces.json   # Added marketplaces
+└── marketplaces/             # Marketplace data
 ```

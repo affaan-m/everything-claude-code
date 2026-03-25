@@ -1,49 +1,60 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "everything-claude-code",
-  "description": "Battle-tested Claude Code configurations from an Anthropic hackathon winner — agents, skills, hooks, commands, and rules evolved over 10+ months of intensive daily use",
   "owner": {
-    "name": "Affaan Mustafa",
-    "email": "me@affaanmustafa.com"
+    "name": "simo"
   },
   "metadata": {
-    "description": "Battle-tested Claude Code configurations from an Anthropic hackathon winner"
+    "description": "Production-ready agents, skills, hooks, and workflows for Claude Code — organized by language and domain.",
+    "pluginRoot": "./plugins"
   },
   "plugins": [
     {
-      "name": "everything-claude-code",
-      "source": "./",
-      "description": "The most comprehensive Claude Code plugin — 14+ agents, 56+ skills, 33+ commands, and production-ready hooks for TDD, security scanning, code review, and continuous learning",
-      "version": "1.8.0",
-      "author": {
-        "name": "Affaan Mustafa",
-        "email": "me@affaanmustafa.com"
-      },
-      "homepage": "https://github.com/affaan-m/everything-claude-code",
-      "repository": "https://github.com/affaan-m/everything-claude-code",
-      "license": "MIT",
-      "keywords": [
-        "agents",
-        "skills",
-        "hooks",
-        "commands",
-        "tdd",
-        "code-review",
-        "security",
-        "best-practices"
-      ],
-      "category": "workflow",
-      "tags": [
-        "agents",
-        "skills",
-        "hooks",
-        "commands",
-        "tdd",
-        "code-review",
-        "security",
-        "best-practices"
-      ],
-      "strict": false
+      "name": "java-dev",
+      "source": "./plugins/java-dev",
+      "description": "Java, Kotlin, and Spring Boot development — reviewers, build resolvers, and coding standards",
+      "keywords": ["java", "kotlin", "spring", "springboot", "gradle", "maven", "android"]
+    },
+    {
+      "name": "python-dev",
+      "source": "./plugins/python-dev",
+      "description": "Python and Django development — reviewer, patterns, testing, and security",
+      "keywords": ["python", "django", "drf", "pytest"]
+    },
+    {
+      "name": "go-dev",
+      "source": "./plugins/go-dev",
+      "description": "Go development — reviewer, build resolver, idiomatic patterns and testing",
+      "keywords": ["go", "golang", "modules", "goroutines"]
+    },
+    {
+      "name": "rust-dev",
+      "source": "./plugins/rust-dev",
+      "description": "Rust development — reviewer, build resolver, patterns and testing",
+      "keywords": ["rust", "cargo", "ownership", "async"]
+    },
+    {
+      "name": "cpp-dev",
+      "source": "./plugins/cpp-dev",
+      "description": "C/C++ development — reviewer, build resolver, coding standards and testing",
+      "keywords": ["cpp", "c++", "cmake", "clang"]
+    },
+    {
+      "name": "swift-dev",
+      "source": "./plugins/swift-dev",
+      "description": "Swift and SwiftUI development — concurrency, actors, protocol-oriented design and testing",
+      "keywords": ["swift", "swiftui", "ios", "macos", "actors"]
+    },
+    {
+      "name": "web-dev",
+      "source": "./plugins/web-dev",
+      "description": "Web development — frontend patterns, Next.js, and Node.js backend patterns",
+      "keywords": ["react", "nextjs", "typescript", "nodejs", "frontend"]
+    },
+    {
+      "name": "laravel-dev",
+      "source": "./plugins/laravel-dev",
+      "description": "PHP, Laravel and Perl development — patterns, security, TDD and verification",
+      "keywords": ["php", "laravel", "perl", "composer"]
     }
   ]
 }

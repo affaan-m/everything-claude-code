@@ -1,0 +1,6 @@
+{
+  "name": "cpp-dev",
+  "description": "C/C++ development — reviewer, build resolver, coding standards and testing",
+  "version": "1.0.0",
+  "keywords": ["cpp", "c++", "cmake", "clang", "gcc"]
+}

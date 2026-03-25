@@ -1,0 +1,6 @@
+{
+  "name": "web-dev",
+  "description": "Web development — frontend patterns, Next.js, backend patterns and Node.js",
+  "version": "1.0.0",
+  "keywords": ["react", "nextjs", "typescript", "nodejs", "frontend", "backend"]
+}
