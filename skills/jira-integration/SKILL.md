@@ -44,7 +44,7 @@ Install the `mcp-atlassian` MCP server. This exposes Jira tools directly to your
 }
 ```
 
-> **Security:** Never hardcode secrets. Set `JIRA_URL`, `JIRA_EMAIL`, and `JIRA_API_TOKEN` via the `env` block above (or your system environment) — never as CLI flags or inline values.
+> **Security:** Never hardcode secrets. Prefer setting `JIRA_URL`, `JIRA_EMAIL`, and `JIRA_API_TOKEN` in your system environment (or a secrets manager). Only use the MCP `env` block for local, uncommitted config files.
 
 **To get a Jira API token:**
 1. Go to https://id.atlassian.com/manage-profile/security/api-tokens
