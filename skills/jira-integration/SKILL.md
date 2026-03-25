@@ -33,11 +33,7 @@ Install the `mcp-atlassian` MCP server. This exposes Jira tools directly to your
 {
   "jira": {
     "command": "uvx",
-    "args": [
-      "mcp-atlassian",
-      "--jira-url", "https://YOUR_ORG.atlassian.net",
-      "--jira-personal-token", "YOUR_JIRA_API_TOKEN"
-    ],
+    "args": ["mcp-atlassian"],
     "description": "Jira issue tracking — search, create, update, comment, transition"
   }
 }
