@@ -39,5 +39,8 @@ jobs:
       - name: Validate skills
         run: node scripts/ci/validate-skills.js
 
+      - name: Validate install manifests
+        run: node scripts/ci/validate-install-manifests.js
+
       - name: Validate rules
         run: node scripts/ci/validate-rules.js

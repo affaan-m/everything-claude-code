@@ -1,5 +1,5 @@
 ---
-description: Load the most recent session file from ~/.claude/sessions/ and resume work with full context from where the last session ended.
+description: Load the most recent session file from ~/.claude/session-data/ and resume work with full context from where the last session ended.
 ---
 
 # Resume Session Command
@@ -17,10 +17,10 @@ This command is the counterpart to `/save-session`.
 ## Usage
 
 ```
-/resume-session                                                      # loads most recent file in ~/.claude/sessions/
+/resume-session                                                      # loads most recent file in ~/.claude/session-data/
 /resume-session 2024-01-15                                           # loads most recent session for that date
-/resume-session ~/.claude/sessions/2024-01-15-session.tmp           # loads a specific legacy-format file
-/resume-session ~/.claude/sessions/2024-01-15-abc123de-session.tmp  # loads a current short-id session file
+/resume-session ~/.claude/session-data/2024-01-15-abc123de-session.tmp  # loads a current short-id session file
+/resume-session ~/.claude/sessions/2024-01-15-session.tmp               # loads a specific legacy-format file
 ```
 
 ## Process
@@ -29,19 +29,20 @@ This command is the counterpart to `/save-session`.
 
 If no argument provided:
 
-1. Check `~/.claude/sessions/`
+1. Check `~/.claude/session-data/`
 2. Pick the most recently modified `*-session.tmp` file
 3. If the folder does not exist or has no matching files, tell the user:
    ```
-   No session files found in ~/.claude/sessions/
+   No session files found in ~/.claude/session-data/
    Run /save-session at the end of a session to create one.
    ```
    Then stop.
 
 If an argument is provided:
 
-- If it looks like a date (`YYYY-MM-DD`), search `~/.claude/sessions/` for files matching
-  `YYYY-MM-DD-session.tmp` (legacy format) or `YYYY-MM-DD-<shortid>-session.tmp` (current format)
+- If it looks like a date (`YYYY-MM-DD`), search `~/.claude/session-data/` first, then the legacy
+  `~/.claude/sessions/`, for files matching `YYYY-MM-DD-session.tmp` (legacy format) or
+  `YYYY-MM-DD-<shortid>-session.tmp` (current format)
   and load the most recently modified variant for that date
 - If it looks like a file path, read that file directly
 - If not found, report clearly and stop
@@ -114,7 +115,7 @@ Report: "Session file found but appears empty or unreadable. You may need to cre
 ## Example Output
 
 ```
-SESSION LOADED: /Users/you/.claude/sessions/2024-01-15-abc123de-session.tmp
+SESSION LOADED: /Users/you/.claude/session-data/2024-01-15-abc123de-session.tmp
 ════════════════════════════════════════════════
 
 PROJECT: my-app — JWT Authentication

@@ -19,7 +19,7 @@ tokio = { version = "1", features = ["full"] }
 rusqlite = { version = "0.32", features = ["bundled"] }
 
 # Git integration
-git2 = "0.19"
+git2 = "0.20"
 
 # Serialization
 serde = { version = "1", features = ["derive"] }
@@ -36,6 +36,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 # Error handling
 anyhow = "1"
 thiserror = "2"
+libc = "0.2"
 
 # Time
 chrono = { version = "0.4", features = ["serde"] }

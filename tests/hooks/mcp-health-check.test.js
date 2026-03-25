@@ -79,6 +79,25 @@ function runHook(input, env = {}) {
   };
 }
 
+function runRawHook(rawInput, env = {}) {
+  const result = spawnSync('node', [script], {
+    input: rawInput,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      ECC_HOOK_PROFILE: 'standard',
+      ...env
+    },
+    timeout: 15000,
+    stdio: ['pipe', 'pipe', 'pipe']
+  });
+
+  return {
+    code: result.status || 0,
+    stdout: result.stdout || '',
+    stderr: result.stderr || ''
+  };
+}
 async function runTests() {
   console.log('\n=== Testing mcp-health-check.js ===\n');
 
@@ -95,6 +114,19 @@ async function runTests() {
     assert.strictEqual(result.stderr, '', 'Expected no stderr for non-MCP tool');
   })) passed++; else failed++;
 
+  if (test('blocks truncated MCP hook input by default', () => {
+    const rawInput = JSON.stringify({ tool_name: 'mcp__flaky__search', tool_input: {} });
+    const result = runRawHook(rawInput, {
+      CLAUDE_HOOK_EVENT_NAME: 'PreToolUse',
+      ECC_HOOK_INPUT_TRUNCATED: '1',
+      ECC_HOOK_INPUT_MAX_BYTES: '512'
+    });
+
+    assert.strictEqual(result.code, 2, 'Expected truncated MCP input to block by default');
+    assert.strictEqual(result.stdout, rawInput, 'Expected raw input passthrough on stdout');
+    assert.ok(result.stderr.includes('Hook input exceeded 512 bytes'), `Expected size warning, got: ${result.stderr}`);
+    assert.ok(/blocking search/i.test(result.stderr), `Expected blocking message, got: ${result.stderr}`);
+  })) passed++; else failed++;
   if (await asyncTest('marks healthy command MCP servers and allows the tool call', async () => {
     const tempDir = createTempDir();
     const configPath = path.join(tempDir, 'claude.json');

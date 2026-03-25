@@ -13,7 +13,10 @@ pub enum MessageType {
     /// Response to a query
     Response { answer: String },
     /// Notification of completion
-    Completed { summary: String, files_changed: Vec<String> },
+    Completed {
+        summary: String,
+        files_changed: Vec<String>,
+    },
     /// Conflict detected (e.g., two agents editing the same file)
     Conflict { file: String, description: String },
 }

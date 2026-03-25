@@ -1,5 +1,7 @@
 pub mod daemon;
 pub mod manager;
+pub mod output;
+pub mod runtime;
 pub mod store;
 
 use chrono::{DateTime, Utc};
@@ -13,13 +15,14 @@ pub struct Session {
     pub task: String,
     pub agent_type: String,
     pub state: SessionState,
+    pub pid: Option<u32>,
     pub worktree: Option<WorktreeInfo>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub metrics: SessionMetrics,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SessionState {
     Pending,
     Running,
@@ -38,6 +41,46 @@ impl fmt::Display for SessionState {
             SessionState::Completed => write!(f, "completed"),
             SessionState::Failed => write!(f, "failed"),
             SessionState::Stopped => write!(f, "stopped"),
+        }
+    }
+}
+
+impl SessionState {
+    pub fn can_transition_to(&self, next: &Self) -> bool {
+        if self == next {
+            return true;
+        }
+
+        matches!(
+            (self, next),
+            (
+                SessionState::Pending,
+                SessionState::Running | SessionState::Failed | SessionState::Stopped
+            ) | (
+                SessionState::Running,
+                SessionState::Idle
+                    | SessionState::Completed
+                    | SessionState::Failed
+                    | SessionState::Stopped
+            ) | (
+                SessionState::Idle,
+                SessionState::Running
+                    | SessionState::Completed
+                    | SessionState::Failed
+                    | SessionState::Stopped
+            ) | (SessionState::Completed, SessionState::Stopped)
+                | (SessionState::Failed, SessionState::Stopped)
+        )
+    }
+
+    pub fn from_db_value(value: &str) -> Self {
+        match value {
+            "running" => SessionState::Running,
+            "idle" => SessionState::Idle,
+            "completed" => SessionState::Completed,
+            "failed" => SessionState::Failed,
+            "stopped" => SessionState::Stopped,
+            _ => SessionState::Pending,
         }
     }
 }

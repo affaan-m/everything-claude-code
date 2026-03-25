@@ -136,7 +136,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -lc 'input=$(cat); for root in \"${CLAUDE_PLUGIN_ROOT:-}\" \"$HOME/.claude/plugins/everything-claude-code\" \"$HOME/.claude/plugins/everything-claude-code@everything-claude-code\" \"$HOME/.claude/plugins/marketplace/everything-claude-code\"; do if [ -n \"$root\" ] && [ -f \"$root/scripts/hooks/run-with-flags.js\" ]; then printf \"%s\" \"$input\" | node \"$root/scripts/hooks/run-with-flags.js\" \"session:start\" \"scripts/hooks/session-start.js\" \"minimal,standard,strict\"; exit $?; fi; done; for parent in \"$HOME/.claude/plugins\" \"$HOME/.claude/plugins/marketplace\"; do if [ -d \"$parent\" ]; then candidate=$(find \"$parent\" -maxdepth 2 -type f -path \"*/scripts/hooks/run-with-flags.js\" 2>/dev/null | head -n 1); if [ -n \"$candidate\" ]; then root=$(dirname \"$(dirname \"$(dirname \"$candidate\")\")\"); printf \"%s\" \"$input\" | node \"$root/scripts/hooks/run-with-flags.js\" \"session:start\" \"scripts/hooks/session-start.js\" \"minimal,standard,strict\"; exit $?; fi; fi; done; echo \"[SessionStart] WARNING: could not resolve ECC plugin root; skipping session-start hook\" >&2; printf \"%s\" \"$input\"; exit 0'"
+            "command": "node -e \"const fs=require('fs');const path=require('path');const {spawnSync}=require('child_process');const raw=fs.readFileSync(0,'utf8');const rel=path.join('scripts','hooks','run-with-flags.js');const hasRunnerRoot=candidate=>{const value=typeof candidate==='string'?candidate.trim():'';return value.length>0&&fs.existsSync(path.join(path.resolve(value),rel));};const root=(()=>{const envRoot=process.env.CLAUDE_PLUGIN_ROOT||'';if(hasRunnerRoot(envRoot))return path.resolve(envRoot.trim());const home=require('os').homedir();const claudeDir=path.join(home,'.claude');if(hasRunnerRoot(claudeDir))return claudeDir;for(const candidate of [path.join(claudeDir,'plugins','everything-claude-code'),path.join(claudeDir,'plugins','everything-claude-code@everything-claude-code'),path.join(claudeDir,'plugins','marketplace','everything-claude-code')]){if(hasRunnerRoot(candidate))return candidate;}try{const cacheBase=path.join(claudeDir,'plugins','cache','everything-claude-code');for(const org of fs.readdirSync(cacheBase,{withFileTypes:true})){if(!org.isDirectory())continue;for(const version of fs.readdirSync(path.join(cacheBase,org.name),{withFileTypes:true})){if(!version.isDirectory())continue;const candidate=path.join(cacheBase,org.name,version.name);if(hasRunnerRoot(candidate))return candidate;}}}catch{}return claudeDir;})();const script=path.join(root,rel);if(fs.existsSync(script)){const result=spawnSync(process.execPath,[script,'session:start','scripts/hooks/session-start.js','minimal,standard,strict'],{input:raw,encoding:'utf8',env:process.env,cwd:process.cwd(),timeout:30000});const stdout=typeof result.stdout==='string'?result.stdout:'';if(stdout)process.stdout.write(stdout);else process.stdout.write(raw);if(result.stderr)process.stderr.write(result.stderr);if(result.error||result.status===null||result.signal){const reason=result.error?result.error.message:(result.signal?'signal '+result.signal:'missing exit status');process.stderr.write('[SessionStart] ERROR: session-start hook failed: '+reason+String.fromCharCode(10));process.exit(1);}process.exit(Number.isInteger(result.status)?result.status:0);}process.stderr.write('[SessionStart] WARNING: could not resolve ECC plugin root; skipping session-start hook'+String.fromCharCode(10));process.stdout.write(raw);\""
           }
         ],
         "description": "Load previous context and detect package manager on new session"
@@ -289,6 +289,18 @@
           }
         ],
         "description": "Track token and cost metrics per session"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"stop:desktop-notify\" \"scripts/hooks/desktop-notify.js\" \"standard,strict\"",
+            "async": true,
+            "timeout": 10
+          }
+        ],
+        "description": "Send macOS desktop notification with task summary when Claude responds"
       }
     ],
     "SessionEnd": [

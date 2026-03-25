@@ -32,6 +32,10 @@ pub async fn run(db: StateStore, cfg: Config) -> Result<()> {
                     (_, KeyCode::Char('q')) => break,
                     (_, KeyCode::Tab) => dashboard.next_pane(),
                     (KeyModifiers::SHIFT, KeyCode::BackTab) => dashboard.prev_pane(),
+                    (_, KeyCode::Char('+')) | (_, KeyCode::Char('=')) => {
+                        dashboard.increase_pane_size()
+                    }
+                    (_, KeyCode::Char('-')) => dashboard.decrease_pane_size(),
                     (_, KeyCode::Char('j')) | (_, KeyCode::Down) => dashboard.scroll_down(),
                     (_, KeyCode::Char('k')) | (_, KeyCode::Up) => dashboard.scroll_up(),
                     (_, KeyCode::Char('n')) => dashboard.new_session(),

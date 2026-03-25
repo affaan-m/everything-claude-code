@@ -48,6 +48,7 @@ User request → Claude picks a tool → PreToolUse hook runs → Tool executes 
 | **Session summary** | `Stop` | Persists session state when transcript path is available |
 | **Pattern extraction** | `Stop` | Evaluates session for extractable patterns (continuous learning) |
 | **Cost tracker** | `Stop` | Emits lightweight run-cost telemetry markers |
+| **Desktop notify** | `Stop` | Sends macOS desktop notification with task summary (standard+) |
 | **Session end marker** | `SessionEnd` | Lifecycle marker and cleanup log |
 
 ## Customizing Hooks

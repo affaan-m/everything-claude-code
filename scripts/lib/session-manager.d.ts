@@ -1,6 +1,7 @@
 /**
  * Session Manager Library for Claude Code.
- * Provides CRUD operations for session files stored as markdown in ~/.claude/sessions/.
+ * Provides CRUD operations for session files stored as markdown in
+ * ~/.claude/session-data/ with legacy read compatibility for ~/.claude/sessions/.
  */
 
 /** Parsed metadata from a session filename */

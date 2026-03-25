@@ -43,9 +43,11 @@ log() { printf '[ecc-sync] %s\n' "$*"; }
 
 run_or_echo() {
   if [[ "$MODE" == "dry-run" ]]; then
-    printf '[dry-run] %s\n' "$*"
+    printf '[dry-run]'
+    printf ' %q' "$@"
+    printf '\n'
   else
-    eval "$@"
+    "$@"
   fi
 }
 
@@ -149,10 +151,10 @@ log "Repo root: $REPO_ROOT"
 log "Codex home: $CODEX_HOME"
 
 log "Creating backup folder: $BACKUP_DIR"
-run_or_echo "mkdir -p \"$BACKUP_DIR\""
-run_or_echo "cp \"$CONFIG_FILE\" \"$BACKUP_DIR/config.toml\""
+run_or_echo mkdir -p "$BACKUP_DIR"
+run_or_echo cp "$CONFIG_FILE" "$BACKUP_DIR/config.toml"
 if [[ -f "$AGENTS_FILE" ]]; then
-  run_or_echo "cp \"$AGENTS_FILE\" \"$BACKUP_DIR/AGENTS.md\""
+  run_or_echo cp "$AGENTS_FILE" "$BACKUP_DIR/AGENTS.md"
 fi
 
 ECC_BEGIN_MARKER="<!-- BEGIN ECC -->"
@@ -234,19 +236,19 @@ else
 fi
 
 log "Syncing ECC Codex skills"
-run_or_echo "mkdir -p \"$SKILLS_DEST\""
+run_or_echo mkdir -p "$SKILLS_DEST"
 skills_count=0
 for skill_dir in "$SKILLS_SRC"/*; do
   [[ -d "$skill_dir" ]] || continue
   skill_name="$(basename "$skill_dir")"
   dest="$SKILLS_DEST/$skill_name"
-  run_or_echo "rm -rf \"$dest\""
-  run_or_echo "cp -R \"$skill_dir\" \"$dest\""
+  run_or_echo rm -rf "$dest"
+  run_or_echo cp -R "$skill_dir" "$dest"
   skills_count=$((skills_count + 1))
 done
 
 log "Generating prompt files from ECC commands"
-run_or_echo "mkdir -p \"$PROMPTS_DEST\""
+run_or_echo mkdir -p "$PROMPTS_DEST"
 manifest="$PROMPTS_DEST/ecc-prompts-manifest.txt"
 if [[ "$MODE" == "dry-run" ]]; then
   printf '[dry-run] > %s\n' "$manifest"

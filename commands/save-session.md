@@ -1,5 +1,5 @@
 ---
-description: Save current session state to a dated file in ~/.claude/sessions/ so work can be resumed in a future session with full context.
+description: Save current session state to a dated file in ~/.claude/session-data/ so work can be resumed in a future session with full context.
 ---
 
 # Save Session Command
@@ -29,19 +29,19 @@ Before writing the file, collect:
 Create the canonical sessions folder in the user's Claude home directory:
 
 ```bash
-mkdir -p ~/.claude/sessions
+mkdir -p ~/.claude/session-data
 ```
 
 ### Step 3: Write the session file
 
-Create `~/.claude/sessions/YYYY-MM-DD-<short-id>-session.tmp`, using today's actual date and a short-id that satisfies the rules enforced by `SESSION_FILENAME_REGEX` in `session-manager.js`:
+Create `~/.claude/session-data/YYYY-MM-DD-<short-id>-session.tmp`, using today's actual date and a short-id that satisfies the rules enforced by `SESSION_FILENAME_REGEX` in `session-manager.js`:
 
-- Allowed characters: lowercase `a-z`, digits `0-9`, hyphens `-`
-- Minimum length: 8 characters
-- No uppercase letters, no underscores, no spaces
+- Compatibility characters: letters `a-z` / `A-Z`, digits `0-9`, hyphens `-`, underscores `_`
+- Compatibility minimum length: 1 character
+- Recommended style for new files: lowercase letters, digits, and hyphens with 8+ characters to avoid collisions
 
-Valid examples: `abc123de`, `a1b2c3d4`, `frontend-worktree-1`
-Invalid examples: `ABC123de` (uppercase), `short` (under 8 chars), `test_id1` (underscore)
+Valid examples: `abc123de`, `a1b2c3d4`, `frontend-worktree-1`, `ChezMoi_2`
+Avoid for new files: `A`, `test_id1`, `ABC123de`
 
 Full valid filename example: `2024-01-15-abc123de-session.tmp`
 
@@ -271,5 +271,5 @@ Then test with Postman — the response should include a `Set-Cookie` header.
 - The "What Did NOT Work" section is the most critical — future sessions will blindly retry failed approaches without it
 - If the user asks to save mid-session (not just at the end), save what's known so far and mark in-progress items clearly
 - The file is meant to be read by Claude at the start of the next session via `/resume-session`
-- Use the canonical global session store: `~/.claude/sessions/`
+- Use the canonical global session store: `~/.claude/session-data/`
 - Prefer the short-id filename form (`YYYY-MM-DD-<short-id>-session.tmp`) for any new session file

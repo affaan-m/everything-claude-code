@@ -99,15 +99,21 @@ function saveState(filePath, state) {
 function readRawStdin() {
   return new Promise(resolve => {
     let raw = '';
+    let truncated = /^(1|true|yes)$/i.test(String(process.env.ECC_HOOK_INPUT_TRUNCATED || ''));
     process.stdin.setEncoding('utf8');
     process.stdin.on('data', chunk => {
       if (raw.length < MAX_STDIN) {
         const remaining = MAX_STDIN - raw.length;
         raw += chunk.substring(0, remaining);
+        if (chunk.length > remaining) {
+          truncated = true;
+        }
+      } else {
+        truncated = true;
       }
     });
-    process.stdin.on('end', () => resolve(raw));
-    process.stdin.on('error', () => resolve(raw));
+    process.stdin.on('end', () => resolve({ raw, truncated }));
+    process.stdin.on('error', () => resolve({ raw, truncated }));
   });
 }
 
@@ -153,6 +159,18 @@ function extractMcpTarget(input) {
     server: segments[0],
     tool: segments.slice(1).join('__')
   };
+}
+
+function extractMcpTargetFromRaw(raw) {
+  const toolNameMatch = raw.match(/"(?:tool_name|name)"\s*:\s*"([^"]+)"/);
+  const serverMatch = raw.match(/"(?:server|mcp_server|connector)"\s*:\s*"([^"]+)"/);
+  const toolMatch = raw.match(/"(?:tool|mcp_tool)"\s*:\s*"([^"]+)"/);
+
+  return extractMcpTarget({
+    tool_name: toolNameMatch ? toolNameMatch[1] : '',
+    server: serverMatch ? serverMatch[1] : undefined,
+    tool: toolMatch ? toolMatch[1] : undefined
+  });
 }
 
 function resolveServerConfig(serverName) {
@@ -559,13 +577,26 @@ async function handlePostToolUseFailure(rawInput, input, target, statePathValue,
 }
 
 async function main() {
-  const rawInput = await readRawStdin();
+  const { raw: rawInput, truncated } = await readRawStdin();
   const input = safeParse(rawInput);
-  const target = extractMcpTarget(input);
+  const target = extractMcpTarget(input) || (truncated ? extractMcpTargetFromRaw(rawInput) : null);
 
   if (!target) {
     process.stdout.write(rawInput);
     process.exit(0);
+    return;
+  }
+
+  if (truncated) {
+    const limit = Number(process.env.ECC_HOOK_INPUT_MAX_BYTES) || MAX_STDIN;
+    const logs = [
+      shouldFailOpen()
+        ? `[MCPHealthCheck] Hook input exceeded ${limit} bytes while checking ${target.server}; allowing ${target.tool || 'tool'} because fail-open mode is enabled`
+        : `[MCPHealthCheck] Hook input exceeded ${limit} bytes while checking ${target.server}; blocking ${target.tool || 'tool'} to avoid bypassing MCP health checks`
+    ];
+    emitLogs(logs);
+    process.stdout.write(rawInput);
+    process.exit(shouldFailOpen() ? 0 : 2);
     return;
   }
 
