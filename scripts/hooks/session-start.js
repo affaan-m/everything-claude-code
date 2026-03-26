@@ -16,12 +16,23 @@ const {
   ensureDir,
   readFile,
   stripAnsi,
-  log,
-  output
+  log
 } = require('../lib/utils');
 const { getPackageManager, getSelectionPrompt } = require('../lib/package-manager');
 const { listAliases } = require('../lib/session-aliases');
 const { detectProjectType } = require('../lib/project-detect');
+
+/**
+ * Write a single JSON envelope to stdout and exit.
+ * Claude Code SessionStart hooks must output exactly one JSON object to stdout —
+ * multiple writes or plain strings are silently discarded.
+ * See: https://github.com/affaan-m/everything-claude-code/issues/843
+ */
+function emitContext(additionalContext) {
+  const payload = { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext } };
+  process.stdout.write(JSON.stringify(payload, null, 2) + '\n');
+  process.exit(0);
+}
 
 async function main() {
   const sessionsDir = getSessionsDir();
@@ -38,6 +49,7 @@ async function main() {
     const latest = recentSessions[0];
     log(`[SessionStart] Found ${recentSessions.length} recent session(s)`);
     log(`[SessionStart] Latest: ${latest.path}`);
+<<<<<<< HEAD
 
     // Read and inject the latest session content into Claude's context.
     // Claude Code SessionStart hooks must output JSON with hookSpecificOutput
@@ -53,6 +65,8 @@ async function main() {
       };
       process.stdout.write(JSON.stringify(payload) + '\n');
     }
+=======
+>>>>>>> 25a1c45 (fix(#843): ecc-sessions dir + single hookSpecificOutput JSON envelope)
   }
 
   // Check for learned skills
@@ -92,6 +106,7 @@ async function main() {
       parts.push(`frameworks: ${projectInfo.frameworks.join(', ')}`);
     }
     log(`[SessionStart] Project detected — ${parts.join('; ')}`);
+<<<<<<< HEAD
     const projPayload = {
       hookSpecificOutput: {
         hookEventName: 'SessionStart',
@@ -99,11 +114,46 @@ async function main() {
       }
     };
     process.stdout.write(JSON.stringify(projPayload) + '\n');
+=======
+>>>>>>> 25a1c45 (fix(#843): ecc-sessions dir + single hookSpecificOutput JSON envelope)
   } else {
     log('[SessionStart] No specific project type detected');
   }
 
-  process.exit(0);
+  // Build a single context string from all collected information.
+  // This is emitted as ONE JSON object via hookSpecificOutput so Claude
+  // Code accepts it (plain stdout / multiple writes are silently discarded).
+  const lines = [];
+
+  if (recentSessions.length > 0) {
+    const latest = recentSessions[0];
+    const content = stripAnsi(readFile(latest.path));
+    if (content && !content.includes('[Session context goes here]')) {
+      lines.push(`Previous session summary:\n${content}`);
+    }
+  }
+
+  if (learnedSkills.length > 0) {
+    lines.push(`Note: ${learnedSkills.length} learned skill(s) are available in ${learnedDir}`);
+  }
+
+  if (aliases.length > 0) {
+    const aliasNames = aliases.map(a => a.name).join(', ');
+    lines.push(`Session aliases available: ${aliasNames} — use /sessions load <alias> to continue a previous session`);
+  }
+
+  if (projectInfo.languages.length > 0 || projectInfo.frameworks.length > 0) {
+    lines.push(`Project type: ${JSON.stringify(projectInfo)}`);
+  }
+
+  const additionalContext = lines.length > 0 ? lines.join('\n\n') : null;
+
+  if (additionalContext) {
+    emitContext(additionalContext);
+  } else {
+    // No context to inject — exit silently (don't write anything to stdout)
+    process.exit(0);
+  }
 }
 
 main().catch(err => {
