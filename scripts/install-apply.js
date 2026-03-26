@@ -132,8 +132,8 @@ function main() {
       printHumanPlan(result, false);
     }
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
+    console.error(`Error: ${error.message}\n`);
+    showHelp(1);
   }
 }
 

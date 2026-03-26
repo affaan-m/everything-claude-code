@@ -180,6 +180,11 @@ cd everything-claude-code
 npm install        # or: pnpm install | yarn install | bun install
 
 # macOS/Linux
+
+# Recommended: install everything (full profile)
+./install.sh --profile full
+
+# Or install for specific languages only
 ./install.sh typescript    # or python or golang or swift or php
 # ./install.sh typescript python golang swift php
 # ./install.sh --target cursor typescript
@@ -188,6 +193,11 @@ npm install        # or: pnpm install | yarn install | bun install
 
 ```powershell
 # Windows PowerShell
+
+# Recommended: install everything (full profile)
+.\install.ps1 --profile full
+
+# Or install for specific languages only
 .\install.ps1 typescript   # or python or golang or swift or php
 # .\install.ps1 typescript python golang swift php
 # .\install.ps1 --target cursor typescript
