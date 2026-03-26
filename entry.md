@@ -1,0 +1,1 @@
+- [flyai-env-guardian](https://github.com/openclaw/skills/tree/main/flyai-env-guardian) - Protect sensitive environment variables from accidental exposure in commits, logs, and CI pipelines with automated scanning and pre-commit validation. `security`
