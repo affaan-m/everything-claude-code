@@ -86,7 +86,7 @@ function dlxServer(name, pkg, extraFields, extraToml) {
 const ECC_SERVERS = {
   supabase: dlxServer('supabase', '@supabase/mcp-server-supabase@latest', { startup_timeout_sec: 20.0, tool_timeout_sec: 120.0 }, 'startup_timeout_sec = 20.0\ntool_timeout_sec = 120.0'),
   playwright: dlxServer('playwright', '@playwright/mcp@latest'),
-  context7: dlxServer('context7', '@upstash/context7-mcp'),
+  context7: dlxServer('context7', '@upstash/context7-mcp@latest'),
   exa: {
     fields: { url: 'https://mcp.exa.ai/mcp' },
     toml: `[mcp_servers.exa]\nurl = "https://mcp.exa.ai/mcp"`
@@ -253,6 +253,10 @@ function main() {
         raw = removeServerFromText(raw, resolvedLabel, existing);
         if (resolvedLabel !== name) {
           raw = removeServerFromText(raw, name, existing);
+        }
+        if (legacyName && hasCanonical) {
+          toRemoveLog.push(`mcp_servers.${legacyName}`);
+          raw = removeServerFromText(raw, legacyName, existing);
         }
         toAppend.push(spec.toml);
       } else {
