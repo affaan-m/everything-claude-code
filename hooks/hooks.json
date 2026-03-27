@@ -37,7 +37,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"const fs=require('fs');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const i=JSON.parse(d);const p=i.tool_input?.file_path||'';if(/\\.(md|txt)$/.test(p)&&/^(NOTES|TODO|SCRATCH|TEMP|DRAFT|BRAINSTORM|SPIKE|DEBUG|WIP)\\.(md|txt)$/.test(p.split('/').pop())&&!/\\/(docs|\\.claude|\\.github|commands|skills|benchmarks|templates)\\//i.test(p)){console.error('[Hook] BLOCKED: Ad-hoc documentation filename');console.error('[Hook] File: '+p);console.error('[Hook] Use structured paths: docs/specs/, docs/adr/, commands/, skills/');process.exit(2)}}catch{}console.log(d)})\""
+            "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const i=JSON.parse(d);const p=i.tool_input?.file_path||'';const n=p.replace(/\\\\\\\\/g,'/');const b=n.split('/').pop()||'';if(/\\.(md|txt)$/i.test(n)&&/^(NOTES|TODO|SCRATCH|TEMP|DRAFT|BRAINSTORM|SPIKE|DEBUG|WIP)\\.(md|txt)$/.test(b)&&!/(^|\\/)(docs|\\.claude|\\.github|commands|skills|benchmarks|templates)(\\/|$)/i.test(n)){console.error('[Hook] BLOCKED: Ad-hoc documentation filename');console.error('[Hook] File: '+p);console.error('[Hook] Use structured paths: docs/specs/, docs/adr/, commands/, skills/');process.exit(2)}}catch{}console.log(d)})\""
           }
         ],
         "description": "Block ad-hoc doc filenames (NOTES, TODO, SCRATCH, etc.) unless in structured paths"
