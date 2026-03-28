@@ -1,3 +1,9 @@
+---
+name: product-lens
+description: Use this skill to validate the "why" before building, run product diagnostics, and convert vague ideas into specs.
+origin: ECC
+---
+
 # Product Lens — Think Before You Build
 
 ## When to Use

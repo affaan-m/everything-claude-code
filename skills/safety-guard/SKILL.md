@@ -1,3 +1,9 @@
+---
+name: safety-guard
+description: Use this skill to prevent destructive operations when working on production systems or running agents autonomously.
+origin: ECC
+---
+
 # Safety Guard — Prevent Destructive Operations
 
 ## When to Use
