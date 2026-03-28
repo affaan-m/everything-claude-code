@@ -1,3 +1,9 @@
+---
+name: canary-watch
+description: Use this skill to monitor a deployed URL for regressions after deploys, merges, or dependency upgrades.
+origin: ECC
+---
+
 # Canary Watch — Post-Deploy Monitoring
 
 ## When to Use

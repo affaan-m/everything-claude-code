@@ -89,6 +89,9 @@
     "AGENTS.md",
     ".claude-plugin/plugin.json",
     ".claude-plugin/README.md",
+    ".codex-plugin/plugin.json",
+    ".codex-plugin/README.md",
+    ".mcp.json",
     "install.sh",
     "install.ps1",
     "llms.txt"
