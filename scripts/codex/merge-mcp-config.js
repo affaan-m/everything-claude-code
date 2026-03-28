@@ -86,7 +86,7 @@ function dlxServer(name, pkg, extraFields, extraToml) {
 const ECC_SERVERS = {
   supabase: dlxServer('supabase', '@supabase/mcp-server-supabase@latest', { startup_timeout_sec: 20.0, tool_timeout_sec: 120.0 }, 'startup_timeout_sec = 20.0\ntool_timeout_sec = 120.0'),
   playwright: dlxServer('playwright', '@playwright/mcp@latest'),
-  'context7-mcp': dlxServer('context7-mcp', '@upstash/context7-mcp'),
+  context7: dlxServer('context7', '@upstash/context7-mcp@latest'),
   exa: {
     fields: { url: 'https://mcp.exa.ai/mcp' },
     toml: `[mcp_servers.exa]\nurl = "https://mcp.exa.ai/mcp"`
@@ -104,9 +104,9 @@ ECC_SERVERS.supabase.fields.args.push('--features=account,docs,database,debuggin
 ECC_SERVERS.supabase.toml = ECC_SERVERS.supabase.toml.replace(/^(args = \[.*)\]$/m, '$1, "--features=account,docs,database,debugging,development,functions,storage,branching"]');
 
 // Legacy section names that should be treated as an existing ECC server.
-// e.g. old configs shipped [mcp_servers.context7] instead of [mcp_servers.context7-mcp].
+// e.g. older configs shipped [mcp_servers.context7-mcp] instead of [mcp_servers.context7].
 const LEGACY_ALIASES = {
-  'context7-mcp': ['context7']
+  context7: ['context7-mcp']
 };
 
 // ---------------------------------------------------------------------------
@@ -253,6 +253,10 @@ function main() {
         raw = removeServerFromText(raw, resolvedLabel, existing);
         if (resolvedLabel !== name) {
           raw = removeServerFromText(raw, name, existing);
+        }
+        if (legacyName && hasCanonical) {
+          toRemoveLog.push(`mcp_servers.${legacyName}`);
+          raw = removeServerFromText(raw, legacyName, existing);
         }
         toAppend.push(spec.toml);
       } else {

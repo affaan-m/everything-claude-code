@@ -41,6 +41,8 @@ args = ["-y", "@modelcontextprotocol/server-github"]
 
 [mcp_servers.context7]
 command = "npx"
+# Canonical Codex section name is `context7`; the package itself remains
+# `@upstash/context7-mcp`.
 args = ["-y", "@upstash/context7-mcp@latest"]
 
 [mcp_servers.exa]

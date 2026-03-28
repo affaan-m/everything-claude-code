@@ -97,7 +97,7 @@ if [[ -f "$CONFIG_FILE" ]]; then
     'mcp_servers.github' \
     'mcp_servers.memory' \
     'mcp_servers.sequential-thinking' \
-    'mcp_servers.context7-mcp'
+    'mcp_servers.context7'
   do
     if rg -n "^\[$section\]" "$CONFIG_FILE" >/dev/null 2>&1; then
       ok "MCP section [$section] exists"
@@ -106,10 +106,10 @@ if [[ -f "$CONFIG_FILE" ]]; then
     fi
   done
 
-  if rg -n '^\[mcp_servers\.context7\]' "$CONFIG_FILE" >/dev/null 2>&1; then
-    warn "Duplicate [mcp_servers.context7] exists (context7-mcp is preferred)"
+  if rg -n '^\[mcp_servers\.context7-mcp\]' "$CONFIG_FILE" >/dev/null 2>&1; then
+    warn "Legacy [mcp_servers.context7-mcp] exists (context7 is preferred)"
   else
-    ok "No duplicate [mcp_servers.context7] section"
+    ok "No legacy [mcp_servers.context7-mcp] section"
   fi
 fi
 

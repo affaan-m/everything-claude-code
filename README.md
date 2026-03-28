@@ -999,6 +999,8 @@ cp .codex/config.toml ~/.codex/config.toml
 
 The sync script safely merges ECC MCP servers into your existing `~/.codex/config.toml` using an **add-only** strategy — it never removes or modifies your existing servers. Run with `--dry-run` to preview changes, or `--update-mcp` to force-refresh ECC servers to the latest recommended config.
 
+For Context7, ECC uses the canonical Codex section name `[mcp_servers.context7]` while still launching the `@upstash/context7-mcp` package. If you already have a legacy `[mcp_servers.context7-mcp]` entry, `--update-mcp` migrates it to the canonical section name.
+
 Codex macOS app:
 - Open this repository as your workspace.
 - The root `AGENTS.md` is auto-detected.
