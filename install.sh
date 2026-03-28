@@ -14,4 +14,10 @@ while [ -L "$SCRIPT_PATH" ]; do
 done
 SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 
+# Auto-install Node dependencies when running from a git clone
+if [ ! -d "$SCRIPT_DIR/node_modules" ]; then
+    echo "[ECC] Installing dependencies..."
+    (cd "$SCRIPT_DIR" && npm install --no-audit --no-fund --loglevel=error)
+fi
+
 exec node "$SCRIPT_DIR/scripts/install-apply.js" "$@"
