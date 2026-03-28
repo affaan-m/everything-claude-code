@@ -142,6 +142,14 @@
         "CONFLUENCE_API_TOKEN": "YOUR_CONFLUENCE_TOKEN_HERE"
       },
       "description": "Confluence Cloud integration — search pages, retrieve content, explore spaces"
+    },
+    "evalview": {
+      "command": "python3",
+      "args": ["-m", "evalview", "mcp", "serve"],
+      "env": {
+        "OPENAI_API_KEY": "YOUR_OPENAI_API_KEY_HERE"
+      },
+      "description": "AI agent regression testing — snapshot behavior, detect regressions in tool calls and output quality. 8 tools: create_test, run_snapshot, run_check, list_tests, validate_skill, generate_skill_tests, run_skill_test, generate_visual_report. API key optional — deterministic checks (tool diff, output hash) work without it. Install: pip install \"evalview>=0.5,<1\""
     }
   },
   "_comments": {
