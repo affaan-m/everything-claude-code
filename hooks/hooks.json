@@ -43,6 +43,16 @@
         "description": "Reminder before git push to review changes"
       },
       {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:bash:commit-quality\" \"scripts/hooks/pre-bash-commit-quality.js\" \"strict\""
+          }
+        ],
+        "description": "Pre-commit quality check: lint staged files, validate commit message format, detect console.log/debugger/secrets before committing"
+      },
+      {
         "matcher": "Write",
         "hooks": [
           {
