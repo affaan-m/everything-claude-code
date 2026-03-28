@@ -11,34 +11,18 @@ const COMPONENT_FAMILY_PREFIXES = {
   framework: 'framework:',
   capability: 'capability:',
   agent: 'agent:',
-  skill: 'skill:',
+  skill: 'skill:'
 };
 const LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET = Object.freeze({
-  claude: [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-    'hooks-runtime',
-    'platform-configs',
-    'workflow-quality',
-  ],
-  cursor: [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-    'hooks-runtime',
-    'platform-configs',
-    'workflow-quality',
-  ],
-  antigravity: [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-  ],
+  claude: ['rules-core', 'agents-core', 'commands-core', 'hooks-runtime', 'platform-configs', 'workflow-quality'],
+  cursor: ['rules-core', 'agents-core', 'commands-core', 'hooks-runtime', 'platform-configs', 'workflow-quality'],
+  antigravity: ['rules-core', 'agents-core', 'commands-core']
 });
 const LEGACY_LANGUAGE_ALIAS_TO_CANONICAL = Object.freeze({
   cpp: 'cpp',
   csharp: 'csharp',
+  'c#': 'csharp',
+  dotnet: 'csharp',
   go: 'go',
   golang: 'go',
   java: 'java',
@@ -49,7 +33,7 @@ const LEGACY_LANGUAGE_ALIAS_TO_CANONICAL = Object.freeze({
   python: 'python',
   rust: 'rust',
   swift: 'swift',
-  typescript: 'typescript',
+  typescript: 'typescript'
 });
 const LEGACY_LANGUAGE_EXTRA_MODULE_IDS = Object.freeze({
   cpp: ['framework-language'],
@@ -61,7 +45,7 @@ const LEGACY_LANGUAGE_EXTRA_MODULE_IDS = Object.freeze({
   python: ['framework-language'],
   rust: ['framework-language'],
   swift: [],
-  typescript: ['framework-language'],
+  typescript: ['framework-language']
 });
 
 function readJson(filePath, label) {
@@ -77,8 +61,7 @@ function dedupeStrings(values) {
 }
 
 function assertKnownModuleIds(moduleIds, manifests) {
-  const unknownModuleIds = dedupeStrings(moduleIds)
-    .filter(moduleId => !manifests.modulesById.has(moduleId));
+  const unknownModuleIds = dedupeStrings(moduleIds).filter(moduleId => !manifests.modulesById.has(moduleId));
 
   if (unknownModuleIds.length === 1) {
     throw new Error(`Unknown install module: ${unknownModuleIds[0]}`);
@@ -94,16 +77,14 @@ function intersectTargets(modules) {
     return [];
   }
 
-  return SUPPORTED_INSTALL_TARGETS.filter(target => (
-    modules.every(module => Array.isArray(module.targets) && module.targets.includes(target))
-  ));
+  return SUPPORTED_INSTALL_TARGETS.filter(target => modules.every(module => Array.isArray(module.targets) && module.targets.includes(target)));
 }
 
 function getManifestPaths(repoRoot = DEFAULT_REPO_ROOT) {
   return {
     modulesPath: path.join(repoRoot, 'manifests', 'install-modules.json'),
     profilesPath: path.join(repoRoot, 'manifests', 'install-profiles.json'),
-    componentsPath: path.join(repoRoot, 'manifests', 'install-components.json'),
+    componentsPath: path.join(repoRoot, 'manifests', 'install-components.json')
   };
 }
 
@@ -117,13 +98,9 @@ function loadInstallManifests(options = {}) {
 
   const modulesData = readJson(modulesPath, 'install-modules.json');
   const profilesData = readJson(profilesPath, 'install-profiles.json');
-  const componentsData = fs.existsSync(componentsPath)
-    ? readJson(componentsPath, 'install-components.json')
-    : { version: null, components: [] };
+  const componentsData = fs.existsSync(componentsPath) ? readJson(componentsPath, 'install-components.json') : { version: null, components: [] };
   const modules = Array.isArray(modulesData.modules) ? modulesData.modules : [];
-  const profiles = profilesData && typeof profilesData.profiles === 'object'
-    ? profilesData.profiles
-    : {};
+  const profiles = profilesData && typeof profilesData.profiles === 'object' ? profilesData.profiles : {};
   const components = Array.isArray(componentsData.components) ? componentsData.components : [];
   const modulesById = new Map(modules.map(module => [module.id, module]));
   const componentsById = new Map(components.map(component => [component.id, component]));
@@ -140,7 +117,7 @@ function loadInstallManifests(options = {}) {
     componentsById,
     modulesVersion: modulesData.version,
     profilesVersion: profilesData.version,
-    componentsVersion: componentsData.version,
+    componentsVersion: componentsData.version
   };
 }
 
@@ -149,7 +126,7 @@ function listInstallProfiles(options = {}) {
   return Object.entries(manifests.profiles).map(([id, profile]) => ({
     id,
     description: profile.description,
-    moduleCount: Array.isArray(profile.modules) ? profile.modules.length : 0,
+    moduleCount: Array.isArray(profile.modules) ? profile.modules.length : 0
   }));
 }
 
@@ -163,7 +140,7 @@ function listInstallModules(options = {}) {
     defaultInstall: module.defaultInstall,
     cost: module.cost,
     stability: module.stability,
-    dependencyCount: Array.isArray(module.dependencies) ? module.dependencies.length : 0,
+    dependencyCount: Array.isArray(module.dependencies) ? module.dependencies.length : 0
   }));
 }
 
@@ -184,24 +161,18 @@ function listInstallComponents(options = {}) {
   const target = options.target || null;
 
   if (family && !Object.hasOwn(COMPONENT_FAMILY_PREFIXES, family)) {
-    throw new Error(
-      `Unknown component family: ${family}. Expected one of ${Object.keys(COMPONENT_FAMILY_PREFIXES).join(', ')}`
-    );
+    throw new Error(`Unknown component family: ${family}. Expected one of ${Object.keys(COMPONENT_FAMILY_PREFIXES).join(', ')}`);
   }
 
   if (target && !SUPPORTED_INSTALL_TARGETS.includes(target)) {
-    throw new Error(
-      `Unknown install target: ${target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`
-    );
+    throw new Error(`Unknown install target: ${target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`);
   }
 
   return manifests.components
     .filter(component => !family || component.family === family)
     .map(component => {
       const moduleIds = dedupeStrings(component.modules);
-      const modules = moduleIds
-        .map(moduleId => manifests.modulesById.get(moduleId))
-        .filter(Boolean);
+      const modules = moduleIds.map(moduleId => manifests.modulesById.get(moduleId)).filter(Boolean);
       const targets = intersectTargets(modules);
 
       return {
@@ -210,7 +181,7 @@ function listInstallComponents(options = {}) {
         description: component.description,
         moduleIds,
         moduleCount: moduleIds.length,
-        targets,
+        targets
       };
     })
     .filter(component => !target || component.targets.includes(target));
@@ -274,51 +245,36 @@ function resolveLegacyCompatibilitySelection(options = {}) {
   const target = options.target || null;
 
   if (target && !SUPPORTED_INSTALL_TARGETS.includes(target)) {
-    throw new Error(
-      `Unknown install target: ${target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`
-    );
+    throw new Error(`Unknown install target: ${target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`);
   }
 
-  const legacyLanguages = dedupeStrings(options.legacyLanguages)
-    .map(language => language.toLowerCase());
+  const legacyLanguages = dedupeStrings(options.legacyLanguages).map(language => language.toLowerCase());
   const normalizedLegacyLanguages = dedupeStrings(legacyLanguages);
 
   if (normalizedLegacyLanguages.length === 0) {
     throw new Error('No legacy languages were provided');
   }
 
-  const unknownLegacyLanguages = normalizedLegacyLanguages
-    .filter(language => !Object.hasOwn(LEGACY_LANGUAGE_ALIAS_TO_CANONICAL, language));
+  const unknownLegacyLanguages = normalizedLegacyLanguages.filter(language => !Object.hasOwn(LEGACY_LANGUAGE_ALIAS_TO_CANONICAL, language));
 
   if (unknownLegacyLanguages.length === 1) {
-    throw new Error(
-      `Unknown legacy language: ${unknownLegacyLanguages[0]}. Expected one of ${listLegacyCompatibilityLanguages().join(', ')}`
-    );
+    throw new Error(`Unknown legacy language: ${unknownLegacyLanguages[0]}. Expected one of ${listLegacyCompatibilityLanguages().join(', ')}`);
   }
 
   if (unknownLegacyLanguages.length > 1) {
-    throw new Error(
-      `Unknown legacy languages: ${unknownLegacyLanguages.join(', ')}. Expected one of ${listLegacyCompatibilityLanguages().join(', ')}`
-    );
+    throw new Error(`Unknown legacy languages: ${unknownLegacyLanguages.join(', ')}. Expected one of ${listLegacyCompatibilityLanguages().join(', ')}`);
   }
 
-  const canonicalLegacyLanguages = normalizedLegacyLanguages
-    .map(language => LEGACY_LANGUAGE_ALIAS_TO_CANONICAL[language]);
-  const baseModuleIds = LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET[target || 'claude']
-    || LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET.claude;
-  const moduleIds = dedupeStrings([
-    ...baseModuleIds,
-    ...(target === 'antigravity'
-      ? []
-      : canonicalLegacyLanguages.flatMap(language => LEGACY_LANGUAGE_EXTRA_MODULE_IDS[language] || [])),
-  ]);
+  const canonicalLegacyLanguages = normalizedLegacyLanguages.map(language => LEGACY_LANGUAGE_ALIAS_TO_CANONICAL[language]);
+  const baseModuleIds = LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET[target || 'claude'] || LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET.claude;
+  const moduleIds = dedupeStrings([...baseModuleIds, ...(target === 'antigravity' ? [] : canonicalLegacyLanguages.flatMap(language => LEGACY_LANGUAGE_EXTRA_MODULE_IDS[language] || []))]);
 
   assertKnownModuleIds(moduleIds, manifests);
 
   return {
     legacyLanguages: normalizedLegacyLanguages,
     canonicalLegacyLanguages,
-    moduleIds,
+    moduleIds
   };
 }
 
@@ -357,14 +313,10 @@ function resolveInstallPlan(options = {}) {
 
   const target = options.target || null;
   if (target && !SUPPORTED_INSTALL_TARGETS.includes(target)) {
-    throw new Error(
-      `Unknown install target: ${target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`
-    );
+    throw new Error(`Unknown install target: ${target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`);
   }
 
-  const effectiveRequestedIds = dedupeStrings(
-    requestedModuleIds.filter(moduleId => !excludedModuleOwners.has(moduleId))
-  );
+  const effectiveRequestedIds = dedupeStrings(requestedModuleIds.filter(moduleId => !excludedModuleOwners.has(moduleId)));
 
   if (requestedModuleIds.length === 0) {
     throw new Error('No install profile, module IDs, or included component IDs were provided');
@@ -389,9 +341,7 @@ function resolveInstallPlan(options = {}) {
     if (excludedModuleOwners.has(moduleId)) {
       if (dependencyOf) {
         const owners = excludedModuleOwners.get(moduleId) || [];
-        throw new Error(
-          `Module ${dependencyOf} depends on excluded module ${moduleId}${owners.length > 0 ? ` (excluded by ${owners.join(', ')})` : ''}`
-        );
+        throw new Error(`Module ${dependencyOf} depends on excluded module ${moduleId}${owners.length > 0 ? ` (excluded by ${owners.join(', ')})` : ''}`);
       }
       return;
     }
@@ -415,11 +365,7 @@ function resolveInstallPlan(options = {}) {
 
     visitingIds.add(moduleId);
     for (const dependencyId of module.dependencies) {
-      const dependencyResolved = resolveModule(
-        dependencyId,
-        moduleId,
-        rootRequesterId || moduleId
-      );
+      const dependencyResolved = resolveModule(dependencyId, moduleId, rootRequesterId || moduleId);
       if (!dependencyResolved) {
         visitingIds.delete(moduleId);
         if (!dependencyOf) {
@@ -443,12 +389,12 @@ function resolveInstallPlan(options = {}) {
   const excludedModules = manifests.modules.filter(module => excludedIds.has(module.id));
   const scaffoldPlan = target
     ? planInstallTargetScaffold({
-      target,
-      repoRoot: manifests.repoRoot,
-      projectRoot: options.projectRoot || manifests.repoRoot,
-      homeDir: options.homeDir || os.homedir(),
-      modules: selectedModules,
-    })
+        target,
+        repoRoot: manifests.repoRoot,
+        projectRoot: options.projectRoot || manifests.repoRoot,
+        homeDir: options.homeDir || os.homedir(),
+        modules: selectedModules
+      })
     : null;
 
   return {
@@ -468,7 +414,7 @@ function resolveInstallPlan(options = {}) {
     targetAdapterId: scaffoldPlan ? scaffoldPlan.adapter.id : null,
     targetRoot: scaffoldPlan ? scaffoldPlan.targetRoot : null,
     installStatePath: scaffoldPlan ? scaffoldPlan.installStatePath : null,
-    operations: scaffoldPlan ? scaffoldPlan.operations : [],
+    operations: scaffoldPlan ? scaffoldPlan.operations : []
   };
 }
 
@@ -484,5 +430,5 @@ module.exports = {
   listInstallProfiles,
   resolveInstallPlan,
   resolveLegacyCompatibilitySelection,
-  validateInstallModuleIds,
+  validateInstallModuleIds
 };
