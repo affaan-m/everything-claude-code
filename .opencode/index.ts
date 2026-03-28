@@ -60,6 +60,7 @@ export const metadata = {
       "tool.execute.after",
       "session.created",
       "session.idle",
+      "session.error",
       "session.deleted",
       "file.watcher.updated",
       "permission.ask",

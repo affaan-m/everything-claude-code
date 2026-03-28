@@ -14,6 +14,7 @@
  */
 
 import type { PluginInput } from "@opencode-ai/plugin"
+import { maybeNotify } from "./lib/desktop-notify.js"
 
 export const ECCHooksPlugin = async ({
   client,
@@ -271,15 +272,16 @@ export const ECCHooksPlugin = async ({
         log("info", "[ECC] Audit passed: No console.log statements found")
       }
 
-      // Desktop notification (macOS)
-      try {
-        await $`osascript -e 'display notification "Task completed!" with title "OpenCode ECC"' 2>/dev/null`
-      } catch {
-        // Notification not supported or failed
-      }
+      await maybeNotify("completion", "ECC", "Task completed", "normal")
 
-      // Clear tracked files for next task
       editedFiles.clear()
+    },
+
+    "session.error": async (event: { error?: unknown; properties?: { error?: { data?: { message?: string } } } }) => {
+      let msg = "Session error"
+      const err = event?.properties?.error?.data?.message ?? event?.error
+      if (typeof err === "string") msg = err
+      await maybeNotify("error", "ECC Error", msg.slice(0, 80), "critical")
     },
 
     /**
@@ -446,7 +448,7 @@ export const ECCHooksPlugin = async ({
         return { approved: true, reason: "Test execution" }
       }
 
-      // Everything else: let user decide
+      await maybeNotify("approval", "ECC Approval", `Permission needed for: ${event.tool}`, "critical")
       return { approved: undefined }
     },
   }
