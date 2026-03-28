@@ -3313,6 +3313,144 @@ async function runTests() {
     passed++;
   else failed++;
 
+  // ─── Session cleanup (#807) ───
+  console.log('\nsession-start.js (expired session cleanup #807):');
+
+  if (
+    await asyncTest('cleans up expired session files older than retention period', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-cleanup-${Date.now()}`);
+      const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      // Use a recent filename but old mtime to decouple filename from age (#5)
+      const expiredFile = path.join(sessionsDir, '2026-03-20-abcd1234-session.tmp');
+      fs.writeFileSync(expiredFile, '# Old Session\n');
+      const past = new Date(Date.now() - 45 * 24 * 60 * 60 * 1000);
+      fs.utimesSync(expiredFile, past, past);
+
+      const recentFile = path.join(sessionsDir, '2026-03-20-efgh5678-session.tmp');
+      fs.writeFileSync(recentFile, '# Recent Session\n');
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome,
+          ECC_SESSION_RETENTION_DAYS: '30'
+        });
+        assert.strictEqual(result.code, 0);
+        assert.ok(!fs.existsSync(expiredFile), 'Expired session file should be deleted');
+        assert.ok(fs.existsSync(recentFile), 'Recent session file should be kept');
+        assert.ok(result.stderr.includes('Cleaned up 1 expired session file'), 'Should log cleanup');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('falls back to 30-day retention for non-numeric ECC_SESSION_RETENTION_DAYS', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-cleanup-nan-${Date.now()}`);
+      const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const safeFile = path.join(sessionsDir, '2026-03-14-safe1234-session.tmp');
+      fs.writeFileSync(safeFile, '# Safe Session\n');
+      const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
+      fs.utimesSync(safeFile, tenDaysAgo, tenDaysAgo);
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome,
+          ECC_SESSION_RETENTION_DAYS: 'notanumber'
+        });
+        assert.strictEqual(result.code, 0);
+        assert.ok(fs.existsSync(safeFile), 'File should survive when env var is invalid (falls back to 30)');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('clamps retention to minimum 7 days — deletes 10-day file with ECC_SESSION_RETENTION_DAYS=3', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-cleanup-clamp-${Date.now()}`);
+      const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      // 5-day file — must survive (younger than clamped minimum of 7)
+      const youngFile = path.join(sessionsDir, '2026-03-19-young123-session.tmp');
+      fs.writeFileSync(youngFile, '# Young Session\n');
+      const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
+      fs.utimesSync(youngFile, fiveDaysAgo, fiveDaysAgo);
+
+      // 10-day file — must be deleted (older than clamped minimum of 7)
+      // This distinguishes clamp-to-7 from fallback-to-30 (#3)
+      const oldFile = path.join(sessionsDir, '2026-03-14-old12345-session.tmp');
+      fs.writeFileSync(oldFile, '# Old Session\n');
+      const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
+      fs.utimesSync(oldFile, tenDaysAgo, tenDaysAgo);
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome,
+          ECC_SESSION_RETENTION_DAYS: '3'
+        });
+        assert.strictEqual(result.code, 0);
+        assert.ok(fs.existsSync(youngFile), '5-day file survives (younger than clamped 7-day minimum)');
+        assert.ok(!fs.existsSync(oldFile), '10-day file deleted (older than clamped 7-day minimum)');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('logs failure count when deletion fails (non-blocking)', async () => {
+      // Skip on Windows and root — chmod-based failure won't occur
+      if (process.platform === 'win32') return;
+      if (process.getuid && process.getuid() === 0) return;
+
+      const isoHome = path.join(os.tmpdir(), `ecc-cleanup-fail-${Date.now()}`);
+      const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const lockedFile = path.join(sessionsDir, '2026-03-20-locked12-session.tmp');
+      fs.writeFileSync(lockedFile, '# Locked Session\n');
+      const past = new Date(Date.now() - 45 * 24 * 60 * 60 * 1000);
+      fs.utimesSync(lockedFile, past, past);
+
+      // Make directory read-only so unlinkSync fails
+      fs.chmodSync(sessionsDir, 0o555);
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome,
+          ECC_SESSION_RETENTION_DAYS: '30'
+        });
+        assert.strictEqual(result.code, 0, 'Should still exit 0 (non-blocking)');
+        assert.ok(result.stderr.includes('1 failed'), 'Should log failure count');
+      } finally {
+        fs.chmodSync(sessionsDir, 0o755);
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
   // ─── Round 25: post-edit-console-warn pass-through fix, check-console-log edge cases ───
   console.log('\nRound 25: post-edit-console-warn.js (pass-through fix):');
 

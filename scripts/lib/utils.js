@@ -195,13 +195,13 @@ function getDateTimeString() {
  * Find files matching a pattern in a directory (cross-platform alternative to find)
  * @param {string} dir - Directory to search
  * @param {string} pattern - File pattern (e.g., "*.tmp", "*.md")
- * @param {object} options - Options { maxAge: days, recursive: boolean }
+ * @param {object} options - Options { maxAge: days, minAge: days, recursive: boolean }
  */
 function findFiles(dir, pattern, options = {}) {
   if (!dir || typeof dir !== 'string') return [];
   if (!pattern || typeof pattern !== 'string') return [];
 
-  const { maxAge = null, recursive = false } = options;
+  const { maxAge = null, minAge = null, recursive = false } = options;
   const results = [];
 
   if (!fs.existsSync(dir)) {
@@ -231,14 +231,12 @@ function findFiles(dir, pattern, options = {}) {
             continue; // File deleted between readdir and stat
           }
 
-          if (maxAge !== null) {
-            const ageInDays = (Date.now() - stats.mtimeMs) / (1000 * 60 * 60 * 24);
-            if (ageInDays <= maxAge) {
-              results.push({ path: fullPath, mtime: stats.mtimeMs });
-            }
-          } else {
-            results.push({ path: fullPath, mtime: stats.mtimeMs });
-          }
+          const ageInDays = (Date.now() - stats.mtimeMs) / (1000 * 60 * 60 * 24);
+
+          if (maxAge !== null && ageInDays > maxAge) continue;
+          if (minAge !== null && ageInDays < minAge) continue;
+
+          results.push({ path: fullPath, mtime: stats.mtimeMs });
         } else if (entry.isDirectory() && recursive) {
           searchDir(fullPath);
         }
