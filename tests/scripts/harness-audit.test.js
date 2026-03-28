@@ -3,10 +3,13 @@
  */
 
 const assert = require('assert');
+const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'harness-audit.js');
+const TMP_BASE = process.env.TMPDIR || os.tmpdir();
 
 function run(args = []) {
   const stdout = execFileSync('node', [SCRIPT, ...args], {
@@ -77,6 +80,41 @@ function runTests() {
     const output = run(['repo']);
     assert.ok(output.includes('Harness Audit (repo):'));
     assert.ok(output.includes('Top 3 Actions:') || output.includes('Checks:'));
+  })) passed++; else failed++;
+
+  if (test('empty directory produces zero score', () => {
+    const tmpDir = fs.mkdtempSync(path.join(TMP_BASE, 'harness-audit-'));
+    try {
+      const stdout = execFileSync('node', [SCRIPT, 'repo', '--format', 'json'], {
+        cwd: tmpDir,
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+        timeout: 10000,
+      });
+      const parsed = JSON.parse(stdout);
+      assert.strictEqual(parsed.overall_score, 0);
+      assert.ok(parsed.checks.every(check => check.pass === false));
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
+  if (test('AUDIT_ROOT overrides cwd', () => {
+    const tmpDir = fs.mkdtempSync(path.join(TMP_BASE, 'harness-audit-'));
+    const eccRoot = path.join(__dirname, '..', '..');
+    try {
+      const stdout = execFileSync('node', [SCRIPT, 'repo', '--format', 'json'], {
+        cwd: tmpDir,
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+        timeout: 10000,
+        env: { ...process.env, AUDIT_ROOT: eccRoot },
+      });
+      const parsed = JSON.parse(stdout);
+      assert.ok(parsed.overall_score > 0);
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
   })) passed++; else failed++;
 
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);

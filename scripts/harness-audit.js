@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const REPO_ROOT = path.join(__dirname, '..');
+const REPO_ROOT = process.env.AUDIT_ROOT || process.cwd();
 
 const CATEGORIES = [
   'Tool Coverage',
@@ -118,7 +118,8 @@ function safeRead(relativePath) {
 }
 
 function getChecks() {
-  const packageJson = JSON.parse(readText('package.json'));
+  const packageRaw = safeRead('package.json');
+  const packageJson = packageRaw ? JSON.parse(packageRaw) : {};
   const commandPrimary = safeRead('commands/harness-audit.md').trim();
   const commandParity = safeRead('.opencode/commands/harness-audit.md').trim();
   const hooksJson = safeRead('hooks/hooks.json');
