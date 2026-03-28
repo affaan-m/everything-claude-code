@@ -131,8 +131,8 @@ jobs:
           case "${{ matrix.pm }}" in
             npm) npm ci ;;
             pnpm) pnpm install --no-frozen-lockfile ;;
-            # --ignore-engines required for Node 18 compat with some devDependencies (e.g., markdownlint-cli)
-            yarn) yarn install --ignore-engines ;;
+            # Yarn Berry (v4+) removed --ignore-engines; engine checking is no longer a core feature
+            yarn) yarn install ;;
             bun) bun install ;;
             *) echo "Unsupported package manager: ${{ matrix.pm }}" && exit 1 ;;
           esac
