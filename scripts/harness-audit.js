@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const REPO_ROOT = process.env.AUDIT_ROOT || process.cwd();
+const REPO_ROOT = process.env.AUDIT_ROOT || path.join(process.cwd(), '.claude');
 
 const CATEGORIES = [
   'Tool Coverage',

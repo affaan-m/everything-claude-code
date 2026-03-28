@@ -8,7 +8,7 @@ Run a deterministic repository harness audit and return a prioritized scorecard.
 
 - `scope` (optional): `repo` (default), `hooks`, `skills`, `commands`, `agents`
 - `--format`: output style (`text` default, `json` for automation)
-- `AUDIT_ROOT` (env var, optional): override the target directory (defaults to `cwd`)
+- `AUDIT_ROOT` (env var, optional): override the target directory (defaults to `cwd/.claude`)
 
 ## Deterministic Engine
 

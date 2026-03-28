@@ -9,14 +9,16 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'harness-audit.js');
+const ECC_ROOT = path.join(__dirname, '..', '..');
 const TMP_BASE = process.env.TMPDIR || os.tmpdir();
 
-function run(args = []) {
+function run(args = [], opts = {}) {
   const stdout = execFileSync('node', [SCRIPT, ...args], {
-    cwd: path.join(__dirname, '..', '..'),
+    cwd: ECC_ROOT,
     encoding: 'utf8',
     stdio: ['pipe', 'pipe', 'pipe'],
     timeout: 10000,
+    env: { ...process.env, AUDIT_ROOT: ECC_ROOT, ...opts.env },
   });
 
   return stdout;
