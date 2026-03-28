@@ -133,6 +133,11 @@
       "args": ["-y", "token-optimizer-mcp"],
       "description": "Token optimization for 95%+ context reduction via content deduplication and compression"
     },
+    "laraplugins": {
+      "type": "streamable-http",
+      "url": "https://laraplugins.io/mcp/plugins",
+      "description": "Laravel plugin discovery — search packages by keyword, health score, Laravel/PHP version compatibility. Use with laravel-plugin-discovery skill."
+    },
     "confluence": {
       "command": "npx",
       "args": ["-y", "confluence-mcp-server"],
