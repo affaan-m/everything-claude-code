@@ -94,3 +94,16 @@ ecc2/target/
 .opencode/package-lock.json
 .opencode/node_modules/
 assets/images/security/badrudi-exploit.mp4
+
+# Local environment dotfiles (leaked from home directory)
+.bash_profile
+.bashrc
+.zshrc
+.zprofile
+.profile
+.gitconfig
+.ripgreprc
+.gitmodules
+
+# Plugin state
+.omc/
