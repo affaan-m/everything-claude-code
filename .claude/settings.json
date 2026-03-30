@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "cpd-jarrodwatts-claude-hud-project": {
+      "source": {
+        "source": "directory",
+        "path": "/home/user/everything-claude-code/.claude/.cpd-wrappers/jarrodwatts-claude-hud-project"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "claude-hud@cpd-jarrodwatts-claude-hud-project": true
+  }
+}
