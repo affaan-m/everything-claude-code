@@ -22,14 +22,14 @@ const TITLE = 'Claude Code';
 const MAX_BODY_LENGTH = 100;
 
 /**
- * Check if running on WSL (Windows Subsystem for Linux).
+ * Memoized WSL detection at module load (avoids repeated /proc/version reads).
  */
-function isWSL() {
-  if (process.platform !== 'linux') return false;
+let isWSL = false;
+if (process.platform === 'linux') {
   try {
-    return require('fs').readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
+    isWSL = require('fs').readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
   } catch {
-    return false;
+    isWSL = false;
   }
 }
 
@@ -39,7 +39,7 @@ function isWSL() {
  * Returns { path, version } or null if none available.
  */
 function findPowerShell() {
-  if (!isWSL()) return null;
+  if (!isWSL) return null;
 
   const candidates = [
     'pwsh.exe',        // WSL interop resolves from Windows PATH
@@ -135,7 +135,7 @@ function run(raw) {
 
     if (isMacOS) {
       notifyMacOS(TITLE, summary);
-    } else if (isWSL()) {
+    } else if (isWSL) {
       // WSL: try PowerShell 7 first, then Windows PowerShell
       const ps = findPowerShell();
       if (ps && isBurntToastAvailable(ps.path)) {
