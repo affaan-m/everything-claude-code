@@ -14,9 +14,13 @@ set -euo pipefail
 # When globs match nothing, expand to empty list instead of the literal pattern
 shopt -s nullglob
 
-# Resolve the directory where this script lives (the repo root)
+# Resolve the directory where this script lives
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-SOURCE_KIRO="$SCRIPT_DIR/.kiro"
+
+# The script lives inside .kiro/, so SCRIPT_DIR *is* the source.
+# If invoked from the repo root (e.g., .kiro/install.sh), SCRIPT_DIR already
+# points to the .kiro directory — no need to append /.kiro again.
+SOURCE_KIRO="$SCRIPT_DIR"
 
 # Target directory: argument or current working directory
 TARGET="${1:-.}"
