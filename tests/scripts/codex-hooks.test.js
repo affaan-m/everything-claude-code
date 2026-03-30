@@ -116,8 +116,10 @@ if (
       fs.mkdirSync(codexDir, { recursive: true });
       fs.writeFileSync(configPath, config);
 
-      const syncResult = runBash(syncScript, [], { HOME: homeDir, CODEX_HOME: codexDir });
-      assert.strictEqual(syncResult.status, 0, syncResult.stderr || syncResult.stdout);
+      const syncResult = runBash(syncScript, ['--update-mcp'], { HOME: homeDir, CODEX_HOME: codexDir });
+      assert.strictEqual(syncResult.status, 0, `${syncResult.stdout}\n${syncResult.stderr}`);
+      const syncedConfig = fs.readFileSync(configPath, 'utf8');
+      assert.match(syncedConfig, /^\[mcp_servers\.context7\]$/m);
 
       const checkResult = runBash(checkScript, [], { HOME: homeDir, CODEX_HOME: codexDir });
       assert.strictEqual(checkResult.status, 0, checkResult.stderr || checkResult.stdout);
