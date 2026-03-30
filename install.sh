@@ -20,4 +20,13 @@ if [ ! -d "$SCRIPT_DIR/node_modules" ]; then
     (cd "$SCRIPT_DIR" && npm install --no-audit --no-fund --loglevel=error)
 fi
 
-exec node "$SCRIPT_DIR/scripts/install-apply.js" "$@"
+# On MSYS2/Git Bash, convert the POSIX path to a Windows path so Node.js
+# (a native Windows binary) receives a valid path instead of a doubled one
+# like G:\g\projects\... that results from Git Bash's auto path conversion.
+if command -v cygpath &>/dev/null; then
+    NODE_SCRIPT="$(cygpath -w "$SCRIPT_DIR/scripts/install-apply.js")"
+else
+    NODE_SCRIPT="$SCRIPT_DIR/scripts/install-apply.js"
+fi
+
+exec node "$NODE_SCRIPT" "$@"
