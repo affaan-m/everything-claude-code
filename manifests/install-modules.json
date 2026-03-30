@@ -334,6 +334,28 @@
       "stability": "beta"
     },
     {
+      "id": "openclaw-personas",
+      "kind": "skills",
+      "description": "OpenClaw persona and soul design skills.",
+      "paths": [
+        "skills/openclaw-persona-forge",
+        "skills/openclaw-soul-forge"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "beta"
+    },
+    {
       "id": "orchestration",
       "kind": "orchestration",
       "description": "Worktree/tmux orchestration runtime and workflow docs.",
