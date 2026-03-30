@@ -58,6 +58,33 @@ function cleanupTmpDirs() {
   tmpDirs.length = 0;
 }
 
+function withIsolatedHome(fn) {
+  const isolatedHome = fs.mkdtempSync(path.join(os.tmpdir(), 'resolve-fmt-home-'));
+  const originalHome = process.env.HOME;
+  const originalUserProfile = process.env.USERPROFILE;
+
+  process.env.HOME = isolatedHome;
+  process.env.USERPROFILE = isolatedHome;
+
+  try {
+    return fn(isolatedHome);
+  } finally {
+    if (originalHome !== undefined) {
+      process.env.HOME = originalHome;
+    } else {
+      delete process.env.HOME;
+    }
+
+    if (originalUserProfile !== undefined) {
+      process.env.USERPROFILE = originalUserProfile;
+    } else {
+      delete process.env.USERPROFILE;
+    }
+
+    fs.rmSync(isolatedHome, { recursive: true, force: true });
+  }
+}
+
 function runTests() {
   console.log('\n=== Testing resolve-formatter.js ===\n');
 
@@ -168,10 +195,12 @@ function runTests() {
 
   run('resolveFormatterBin: falls back to npx for biome', () => {
     const root = makeTmpDir();
-    const result = resolveFormatterBin(root, 'biome');
-    const expectedBin = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-    assert.strictEqual(result.bin, expectedBin);
-    assert.deepStrictEqual(result.prefix, ['@biomejs/biome']);
+    withIsolatedHome(() => {
+      const result = resolveFormatterBin(root, 'biome');
+      const expectedBin = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+      assert.strictEqual(result.bin, expectedBin);
+      assert.deepStrictEqual(result.prefix, ['@biomejs/biome']);
+    });
   });
 
   run('resolveFormatterBin: uses local prettier binary when available', () => {
@@ -188,10 +217,12 @@ function runTests() {
 
   run('resolveFormatterBin: falls back to npx for prettier', () => {
     const root = makeTmpDir();
-    const result = resolveFormatterBin(root, 'prettier');
-    const expectedBin = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-    assert.strictEqual(result.bin, expectedBin);
-    assert.deepStrictEqual(result.prefix, ['prettier']);
+    withIsolatedHome(() => {
+      const result = resolveFormatterBin(root, 'prettier');
+      const expectedBin = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+      assert.strictEqual(result.bin, expectedBin);
+      assert.deepStrictEqual(result.prefix, ['prettier']);
+    });
   });
 
   run('resolveFormatterBin: returns null for unknown formatter', () => {

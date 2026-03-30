@@ -1221,9 +1221,14 @@ async function runTests() {
       fs.writeFileSync(path.join(rootDir, '.prettierrc'), '{}');
       fs.writeFileSync(filePath, 'export const value = 1;\n');
       createCommandShim(binDir, 'npx', logFile);
+      const isolatedHome = path.join(testDir, 'isolated-home');
+      fs.mkdirSync(path.join(isolatedHome, '.claude'), { recursive: true });
 
       const stdinJson = JSON.stringify({ tool_input: { file_path: filePath } });
-      const result = await runScript(path.join(scriptsDir, 'post-edit-format.js'), stdinJson, withPrependedPath(binDir));
+      const result = await runScript(path.join(scriptsDir, 'post-edit-format.js'), stdinJson, withPrependedPath(binDir, {
+        HOME: isolatedHome,
+        USERPROFILE: isolatedHome
+      }));
 
       assert.strictEqual(result.code, 0, 'Should exit 0 for config-only repo');
       const logEntries = readCommandLog(logFile);
