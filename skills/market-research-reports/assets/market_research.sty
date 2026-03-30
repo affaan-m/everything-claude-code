@@ -1,0 +1,564 @@
+% market_research.sty - Professional Market Research Report Styling
+% For use with XeLaTeX or LuaLaTeX
+% Style inspired by top consulting firms (McKinsey, BCG, Gartner)
+
+\ProvidesPackage{market_research}[2024/01/01 Market Research Report Style]
+
+% ============================================================================
+% REQUIRED PACKAGES
+% ============================================================================
+
+% Page layout and geometry
+\RequirePackage[margin=1in]{geometry}
+\RequirePackage{setspace}
+
+% Typography
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+% Colors and graphics
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+
+% Tables
+\RequirePackage{longtable}
+\RequirePackage{booktabs}
+\RequirePackage{multirow}
+\RequirePackage{array}
+\RequirePackage{colortbl}
+
+% Lists and formatting
+\RequirePackage{enumitem}
+\RequirePackage{parskip}
+
+% Boxes and callouts
+\RequirePackage[most]{tcolorbox}
+
+% Headers and footers
+\RequirePackage{fancyhdr}
+\RequirePackage{titlesec}
+
+% Hyperlinks and references
+\RequirePackage{hyperref}
+\RequirePackage[numbers,sort&compress]{natbib}
+
+% Math (for financial projections)
+\RequirePackage{amsmath}
+
+% Captions
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+
+% ============================================================================
+% COLOR DEFINITIONS
+% ============================================================================
+
+% Primary colors (professional blue palette)
+\definecolor{primaryblue}{RGB}{0, 51, 102}        % Deep navy blue
+\definecolor{secondaryblue}{RGB}{51, 102, 153}    % Medium blue
+\definecolor{lightblue}{RGB}{173, 216, 230}       % Light blue for backgrounds
+\definecolor{accentblue}{RGB}{0, 120, 215}        % Bright accent blue
+
+% Secondary colors (complementary)
+\definecolor{accentgreen}{RGB}{0, 128, 96}        % Teal green
+\definecolor{lightgreen}{RGB}{200, 230, 201}      % Light green background
+\definecolor{darkgreen}{RGB}{27, 94, 32}          % Dark green
+
+% Warning and risk colors
+\definecolor{warningorange}{RGB}{255, 140, 0}     % Orange for warnings
+\definecolor{lightorange}{RGB}{255, 243, 224}     % Light orange background
+\definecolor{alertred}{RGB}{198, 40, 40}          % Red for critical items
+\definecolor{lightred}{RGB}{255, 235, 238}        % Light red background
+
+% Recommendation and action colors
+\definecolor{recommendpurple}{RGB}{103, 58, 183}  % Purple for recommendations
+\definecolor{lightpurple}{RGB}{237, 231, 246}     % Light purple background
+
+% Neutral colors
+\definecolor{darkgray}{RGB}{66, 66, 66}           % Dark gray for text
+\definecolor{mediumgray}{RGB}{117, 117, 117}      % Medium gray
+\definecolor{lightgray}{RGB}{240, 240, 240}       % Light gray backgrounds
+\definecolor{tablegray}{RGB}{250, 250, 250}       % Table row alternating
+\definecolor{tablealt}{RGB}{245, 247, 250}        % Alternating table row
+
+% Chart colors (colorblind-friendly palette)
+\definecolor{chart1}{RGB}{0, 114, 178}            % Blue
+\definecolor{chart2}{RGB}{230, 159, 0}            % Orange
+\definecolor{chart3}{RGB}{0, 158, 115}            % Green
+\definecolor{chart4}{RGB}{204, 121, 167}          % Pink
+\definecolor{chart5}{RGB}{86, 180, 233}           % Sky blue
+\definecolor{chart6}{RGB}{213, 94, 0}             % Vermillion
+\definecolor{chart7}{RGB}{240, 228, 66}           % Yellow
+
+% ============================================================================
+% HYPERLINK CONFIGURATION
+% ============================================================================
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primaryblue,
+    filecolor=primaryblue,
+    urlcolor=accentblue,
+    citecolor=secondaryblue,
+    pdftitle={Market Research Report},
+    pdfauthor={Market Intelligence},
+    pdfsubject={Market Analysis},
+}
+
+% ============================================================================
+% CHAPTER AND SECTION FORMATTING
+% ============================================================================
+
+% Chapter formatting - large number with colored title
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries\color{primaryblue}}
+{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-20pt}{40pt}
+
+% Section formatting
+\titleformat{\section}
+{\normalfont\Large\bfseries\color{primaryblue}}
+{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+
+% Subsection formatting
+\titleformat{\subsection}
+{\normalfont\large\bfseries\color{secondaryblue}}
+{\thesubsection}{1em}{}
+
+% Subsubsection formatting
+\titleformat{\subsubsection}
+{\normalfont\normalsize\bfseries\color{darkgray}}
+{\thesubsubsection}{1em}{}
+
+% Paragraph formatting
+\titleformat{\paragraph}[runin]
+{\normalfont\normalsize\bfseries\color{darkgray}}
+{\theparagraph}{1em}{}
+
+% ============================================================================
+% HEADER AND FOOTER CONFIGURATION
+% ============================================================================
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{\leftmark}}
+\fancyhead[R]{\small\textit{Market Research Report}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{primaryblue}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{lightgray}\leaders\hrule height \footrulewidth\hfill}}
+
+% Plain page style for chapter pages
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \fancyfoot[C]{\thepage}
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0.4pt}
+}
+
+% ============================================================================
+% BOX ENVIRONMENTS
+% ============================================================================
+
+% Key Insight Box (Blue) - For major findings and insights
+\newtcolorbox{keyinsightbox}[1][Key Insight]{
+    colback=lightblue!30,
+    colframe=primaryblue,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=primaryblue,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% Market Data Box (Green) - For market statistics and data highlights
+\newtcolorbox{marketdatabox}[1][Market Data]{
+    colback=lightgreen!50,
+    colframe=accentgreen,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=accentgreen,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% Risk Box (Orange/Warning) - For risk factors and warnings
+\newtcolorbox{riskbox}[1][Risk Factor]{
+    colback=lightorange,
+    colframe=warningorange,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=warningorange,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% Critical Risk Box (Red) - For critical/high-severity risks
+\newtcolorbox{criticalriskbox}[1][Critical Risk]{
+    colback=lightred,
+    colframe=alertred,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=alertred,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% Recommendation Box (Purple) - For strategic recommendations
+\newtcolorbox{recommendationbox}[1][Strategic Recommendation]{
+    colback=lightpurple,
+    colframe=recommendpurple,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=recommendpurple,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% Callout Box (Gray) - For definitions, notes, supplementary info
+\newtcolorbox{calloutbox}[1][Note]{
+    colback=lightgray,
+    colframe=mediumgray,
+    fonttitle=\bfseries\color{darkgray},
+    title=#1,
+    coltitle=darkgray,
+    colbacktitle=lightgray,
+    boxrule=0.5pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% Executive Summary Box (Special styling)
+\newtcolorbox{executivesummarybox}[1][Executive Summary]{
+    enhanced,
+    colback=white,
+    colframe=primaryblue,
+    fonttitle=\Large\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=primaryblue,
+    boxrule=2pt,
+    arc=5pt,
+    left=15pt,
+    right=15pt,
+    top=12pt,
+    bottom=12pt,
+    before skip=15pt,
+    after skip=15pt,
+    shadow={2mm}{-2mm}{0mm}{black!20},
+}
+
+% Opportunity Box (Teal) - For opportunities and positive findings
+\newtcolorbox{opportunitybox}[1][Opportunity]{
+    colback=lightblue!20,
+    colframe=accentblue,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=accentblue,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% ============================================================================
+% PULL QUOTE ENVIRONMENT
+% ============================================================================
+
+\newtcolorbox{pullquote}{
+    enhanced,
+    colback=lightgray,
+    colframe=lightgray,
+    boxrule=0pt,
+    borderline west={4pt}{0pt}{primaryblue},
+    arc=0pt,
+    left=15pt,
+    right=15pt,
+    top=10pt,
+    bottom=10pt,
+    before skip=15pt,
+    after skip=15pt,
+    fontupper=\large\itshape\color{darkgray},
+}
+
+% ============================================================================
+% STATISTIC HIGHLIGHT
+% ============================================================================
+
+\newcommand{\statbox}[2]{%
+    \begin{tcolorbox}[
+        colback=primaryblue,
+        colframe=primaryblue,
+        coltext=white,
+        arc=5pt,
+        boxrule=0pt,
+        width=0.3\textwidth,
+        halign=center,
+        valign=center,
+        before skip=10pt,
+        after skip=10pt,
+    ]
+    {\Huge\bfseries #1}\\[5pt]
+    {\small #2}
+    \end{tcolorbox}
+}
+
+% ============================================================================
+% TABLE STYLING
+% ============================================================================
+
+% Alternating row colors command
+\newcommand{\tablerowcolor}{\rowcolor{tablealt}}
+
+% Table header styling
+\newcommand{\tableheader}[1]{\textbf{\color{white}#1}}
+\newcommand{\tableheaderrow}{\rowcolor{primaryblue}}
+
+% Professional table environment
+\newenvironment{markettable}[2][htbp]{%
+    \begin{table}[#1]
+    \centering
+    \caption{#2}
+    \small
+}{%
+    \end{table}
+}
+
+% ============================================================================
+% FIGURE STYLING
+% ============================================================================
+
+% Caption formatting
+\captionsetup{
+    font=small,
+    labelfont={bf,color=primaryblue},
+    textfont={color=darkgray},
+    justification=centering,
+    margin=20pt,
+}
+
+% Figure with source attribution
+\newcommand{\figuresource}[1]{%
+    \par\vspace{-8pt}
+    {\small\textit{Source: #1}}
+}
+
+% ============================================================================
+% LIST STYLING
+% ============================================================================
+
+% Bullet list styling
+\setlist[itemize]{
+    leftmargin=*,
+    label=\textcolor{primaryblue}{\textbullet},
+    topsep=5pt,
+    itemsep=3pt,
+}
+
+% Numbered list styling
+\setlist[enumerate]{
+    leftmargin=*,
+    label=\textcolor{primaryblue}{\arabic*.},
+    topsep=5pt,
+    itemsep=3pt,
+}
+
+% ============================================================================
+% CUSTOM COMMANDS
+% ============================================================================
+
+% Highlight important text
+\newcommand{\highlight}[1]{\textbf{\textcolor{primaryblue}{#1}}}
+
+% Market size with formatting
+\newcommand{\marketsize}[1]{\textbf{\textcolor{accentgreen}{\$#1}}}
+
+% Growth rate with formatting
+\newcommand{\growthrate}[1]{\textbf{\textcolor{chart3}{#1\%}}}
+
+% Risk indicator
+\newcommand{\riskhigh}{\textbf{\textcolor{alertred}{HIGH}}}
+\newcommand{\riskmedium}{\textbf{\textcolor{warningorange}{MEDIUM}}}
+\newcommand{\risklow}{\textbf{\textcolor{accentgreen}{LOW}}}
+
+% Rating stars (1-5)
+\newcommand{\rating}[1]{%
+    \foreach \i in {1,...,5}{%
+        \ifnum\i>#1
+            \textcolor{lightgray}{$\star$}%
+        \else
+            \textcolor{warningorange}{$\star$}%
+        \fi
+    }%
+}
+
+% Trend indicators
+\newcommand{\trendup}{\textcolor{accentgreen}{$\blacktriangle$}}
+\newcommand{\trenddown}{\textcolor{alertred}{$\blacktriangledown$}}
+\newcommand{\trendflat}{\textcolor{mediumgray}{$\rightarrow$}}
+
+% ============================================================================
+% TITLE PAGE COMMAND
+% ============================================================================
+
+\newcommand{\makemarketreporttitle}[5]{%
+    % #1 = Report Title
+    % #2 = Subtitle
+    % #3 = Hero Image Path
+    % #4 = Date
+    % #5 = Prepared By
+    \begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    {\Huge\bfseries\color{primaryblue} #1\\[0.5cm]}
+    {\LARGE\bfseries #2\\[2cm]}
+    
+    \ifx&#3&
+        % No image provided
+        \vspace{4cm}
+    \else
+        \includegraphics[width=\textwidth]{#3}\\[2cm]
+    \fi
+    
+    {\Large\bfseries Market Research Report\\[3cm]}
+    
+    {\large
+    \textbf{Date:} #4\\[0.3cm]
+    \textbf{Prepared By:} #5\\[0.3cm]
+    \textbf{Classification:} Confidential
+    }
+    
+    \vfill
+    
+    {\footnotesize
+    \textit{This report contains market intelligence and strategic analysis. All data sources are cited and independently verifiable.}
+    }
+    
+    \end{titlepage}
+}
+
+% ============================================================================
+% APPENDIX SECTION COMMAND
+% ============================================================================
+
+\newcommand{\appendixsection}[1]{%
+    \section*{#1}
+    \addcontentsline{toc}{section}{#1}
+}
+
+% ============================================================================
+% FRAMEWORK BOXES
+% ============================================================================
+
+% SWOT Analysis Box
+\newtcolorbox{swotbox}[1][SWOT Analysis]{
+    enhanced,
+    colback=white,
+    colframe=secondaryblue,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=secondaryblue,
+    boxrule=1.5pt,
+    arc=5pt,
+    left=10pt,
+    right=10pt,
+    top=10pt,
+    bottom=10pt,
+    before skip=15pt,
+    after skip=15pt,
+}
+
+% Porter's Five Forces Box
+\newtcolorbox{porterbox}[1][Porter's Five Forces]{
+    enhanced,
+    colback=white,
+    colframe=primaryblue,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=primaryblue,
+    boxrule=1.5pt,
+    arc=5pt,
+    left=10pt,
+    right=10pt,
+    top=10pt,
+    bottom=10pt,
+    before skip=15pt,
+    after skip=15pt,
+}
+
+% ============================================================================
+% PAGE LAYOUT ADJUSTMENTS
+% ============================================================================
+
+% Spacing
+\setstretch{1.15}
+\setlength{\parskip}{0.5em}
+
+% Prevent orphans and widows
+\clubpenalty=10000
+\widowpenalty=10000
+
+% Float placement
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.7}
+
+% ============================================================================
+% END OF STYLE FILE
+% ============================================================================
+
+\endinput

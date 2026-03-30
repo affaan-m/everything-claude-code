@@ -1,0 +1,63 @@
+# Nature journal style
+# Usage: plt.style.use('nature.mplstyle')
+#
+# Optimized for Nature journal specifications:
+# - Single column: 89 mm
+# - Double column: 183 mm
+# - High resolution requirements
+
+# Figure properties
+figure.dpi: 100
+figure.facecolor: white
+figure.constrained_layout.use: True
+figure.figsize: 3.5, 2.625  # 89 mm single column, 3:4 aspect
+
+# Font properties (Nature prefers smaller fonts)
+font.size: 7
+font.family: sans-serif
+font.sans-serif: Arial, Helvetica
+
+# Axes properties
+axes.linewidth: 0.5
+axes.labelsize: 8
+axes.titlesize: 8
+axes.labelweight: normal
+axes.spines.top: False
+axes.spines.right: False
+axes.edgecolor: black
+axes.axisbelow: True
+axes.grid: False
+axes.prop_cycle: cycler('color', ['E69F00', '56B4E9', '009E73', 'F0E442', '0072B2', 'D55E00', 'CC79A7'])
+
+# Tick properties
+xtick.major.size: 2.5
+xtick.minor.size: 1.5
+xtick.major.width: 0.5
+xtick.minor.width: 0.4
+xtick.labelsize: 6
+xtick.direction: out
+ytick.major.size: 2.5
+ytick.minor.size: 1.5
+ytick.major.width: 0.5
+ytick.minor.width: 0.4
+ytick.labelsize: 6
+ytick.direction: out
+
+# Line properties
+lines.linewidth: 1.2
+lines.markersize: 3
+lines.markeredgewidth: 0.4
+
+# Legend properties
+legend.fontsize: 6
+legend.frameon: False
+
+# Save properties (Nature requirements)
+savefig.dpi: 600  # 1000 for line art, 600 for combination
+savefig.format: pdf
+savefig.bbox: tight
+savefig.pad_inches: 0.05
+savefig.facecolor: white
+
+# Image properties
+image.cmap: viridis

@@ -1,0 +1,222 @@
+% medical_treatment_plan.sty
+% Professional Medical Treatment Plan Style
+% Provides modern, clean styling for clinical treatment plans
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{medical_treatment_plan}[2025/11/05 Medical Treatment Plan Style]
+
+% Required packages
+\RequirePackage[margin=1in, top=1.2in, bottom=1.2in]{geometry}
+\RequirePackage{graphicx}
+\RequirePackage{xcolor}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{tikz}
+\RequirePackage{fontspec}
+\RequirePackage{fancyhdr}
+\RequirePackage{titlesec}
+\RequirePackage{enumitem}
+\RequirePackage{booktabs}
+\RequirePackage{longtable}
+\RequirePackage{array}
+\RequirePackage{colortbl}
+\RequirePackage{hyperref}
+\RequirePackage{natbib}
+
+% Color scheme - Professional medical blues and grays
+\definecolor{primaryblue}{RGB}{0, 102, 153}      % Deep medical blue
+\definecolor{secondaryblue}{RGB}{102, 178, 204}  % Light blue
+\definecolor{accentblue}{RGB}{0, 153, 204}       % Bright accent
+\definecolor{darkgray}{RGB}{64, 64, 64}          % Dark gray for text
+\definecolor{lightgray}{RGB}{245, 245, 245}      % Light background
+\definecolor{medgray}{RGB}{200, 200, 200}        % Medium gray
+\definecolor{warningred}{RGB}{204, 0, 0}         % For warnings
+\definecolor{successgreen}{RGB}{0, 153, 76}      % For success/goals
+
+% Fonts (if using XeLaTeX/LuaLaTeX) - use default fonts if custom fonts not available
+% \IfFileExists{lato}{\setmainfont{Lato}}{}
+% \IfFileExists{roboto}{\setsansfont{Roboto}}{}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primaryblue,
+    citecolor=primaryblue,
+    urlcolor=accentblue,
+    pdfborder={0 0 0}
+}
+
+% Header and footer styling
+\setlength{\headheight}{22pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\color{primaryblue}\sffamily\small\textbf{Diabetes Treatment Plan}}
+\fancyhead[R]{\color{darkgray}\sffamily\small Patient Age: 23}
+\fancyfoot[C]{\color{darkgray}\small\thepage}
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{primaryblue}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrulewidth}{0.5pt}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{medgray}\leaders\hrule height \footrulewidth\hfill}}
+
+% Section styling
+\titleformat{\section}
+  {\color{primaryblue}\Large\sffamily\bfseries}
+  {\thesection}{1em}{}
+  [\color{primaryblue}\titlerule]
+
+\titleformat{\subsection}
+  {\color{accentblue}\large\sffamily\bfseries}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\color{darkgray}\normalsize\sffamily\bfseries}
+  {\thesubsubsection}{1em}{}
+
+% Title page styling
+\renewcommand{\maketitle}{
+  \begin{tcolorbox}[
+    enhanced,
+    colback=primaryblue,
+    colframe=primaryblue,
+    arc=0mm,
+    boxrule=0pt,
+    left=20pt,
+    right=20pt,
+    top=30pt,
+    bottom=30pt,
+    width=\textwidth
+  ]
+    \color{white}
+    \begin{center}
+      {\Huge\sffamily\bfseries Individualized Diabetes\\Treatment Plan}\\[10pt]
+      {\Large\sffamily 23-Year-Old Male Patient with Type 2 Diabetes}\\[15pt]
+      {\large\sffamily Comprehensive Evidence-Based Care Plan}\\[8pt]
+      {\normalsize\sffamily\color{secondaryblue}\today}
+    \end{center}
+  \end{tcolorbox}
+  \vspace{1cm}
+}
+
+% Custom boxes for different content types
+% Info box
+\newtcolorbox{infobox}[1][]{
+  enhanced,
+  colback=lightgray,
+  colframe=primaryblue,
+  arc=3mm,
+  boxrule=1.5pt,
+  left=10pt,
+  right=10pt,
+  top=10pt,
+  bottom=10pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries,
+  coltitle=white,
+  colbacktitle=primaryblue
+}
+
+% Warning box
+\newtcolorbox{warningbox}[1][Warning]{
+  enhanced,
+  colback=yellow!10,
+  colframe=warningred,
+  arc=3mm,
+  boxrule=1.5pt,
+  left=10pt,
+  right=10pt,
+  top=10pt,
+  bottom=10pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries,
+  coltitle=white,
+  colbacktitle=warningred
+}
+
+% Goal box
+\newtcolorbox{goalbox}[1][Treatment Goals]{
+  enhanced,
+  colback=green!5,
+  colframe=successgreen,
+  arc=3mm,
+  boxrule=1.5pt,
+  left=10pt,
+  right=10pt,
+  top=10pt,
+  bottom=10pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries,
+  coltitle=white,
+  colbacktitle=successgreen
+}
+
+% Key points box
+\newtcolorbox{keybox}[1][Key Points]{
+  enhanced,
+  colback=secondaryblue!10,
+  colframe=accentblue,
+  arc=3mm,
+  boxrule=1.5pt,
+  left=10pt,
+  right=10pt,
+  top=10pt,
+  bottom=10pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries,
+  coltitle=white,
+  colbacktitle=accentblue
+}
+
+% Table styling
+\newcommand{\tableheadercolor}{\rowcolor{primaryblue}}
+\newcommand{\tablerowcolor}{\rowcolor{lightgray}}
+
+% Custom table environment
+\newenvironment{medtable}[1]{
+  \begin{table}[h]
+  \centering
+  \small\sffamily
+  \renewcommand{\arraystretch}{1.3}
+}{
+  \end{table}
+}
+
+% Patient info section style
+\newenvironment{patientinfo}{
+  \begin{tcolorbox}[
+    enhanced,
+    colback=white,
+    colframe=secondaryblue,
+    arc=2mm,
+    boxrule=1pt,
+    left=15pt,
+    right=15pt,
+    top=12pt,
+    bottom=12pt
+  ]
+  \sffamily
+}{
+  \end{tcolorbox}
+}
+
+% Custom list styling
+\setlist[itemize,1]{label=\textcolor{primaryblue}{\textbullet}, leftmargin=*, itemsep=3pt}
+\setlist[enumerate,1]{label=\textcolor{primaryblue}{\arabic*.}, leftmargin=*, itemsep=3pt}
+
+% Emergency contact box
+\newtcolorbox{emergencybox}{
+  enhanced,
+  colback=warningred!5,
+  colframe=warningred,
+  arc=3mm,
+  boxrule=2pt,
+  left=15pt,
+  right=15pt,
+  top=15pt,
+  bottom=15pt,
+  title=EMERGENCY CONTACTS,
+  fonttitle=\sffamily\bfseries\Large,
+  coltitle=white,
+  colbacktitle=warningred
+}
+
+\endinput
+

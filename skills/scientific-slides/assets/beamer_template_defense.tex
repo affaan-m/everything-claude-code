@@ -1,0 +1,906 @@
+\documentclass[aspectratio=169,12pt]{beamer}
+
+% Encoding
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Theme - professional and formal for defense
+\usetheme{Boadilla}
+\usecolortheme{whale}
+
+% Remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% Page numbers with total
+\setbeamertemplate{footline}{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+    \usebeamerfont{author in head/foot}\insertshortauthor
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}\insertshorttitle
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+    \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+    \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+% Section pages
+\AtBeginSection[]{
+  \begin{frame}
+    \vfill
+    \centering
+    \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+      \usebeamerfont{title}\insertsectionhead\par%
+    \end{beamercolorbox}
+    \vfill
+  \end{frame}
+}
+
+% Graphics
+\usepackage{graphicx}
+\graphicspath{{./figures/}}
+
+% Math
+\usepackage{amsmath, amssymb, amsthm}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{multirow}
+
+% Citations
+\usepackage[style=authoryear,maxcitenames=2,backend=biber]{biblatex}
+\addbibresource{references.bib}
+\renewcommand*{\bibfont}{\scriptsize}
+
+% Custom colors - conservative for formal defense
+\definecolor{universityblue}{RGB}{0,60,113}
+\definecolor{accentgold}{RGB}{179,136,12}
+
+\setbeamercolor{structure}{fg=universityblue}
+\setbeamercolor{title}{fg=universityblue}
+\setbeamercolor{frametitle}{fg=universityblue}
+\setbeamercolor{block title}{fg=white,bg=universityblue}
+
+% Title page information
+\title[Dissertation Defense]{Title of Your Dissertation:\\Comprehensive and Descriptive}
+\subtitle{Dissertation Defense}
+\author[Your Name]{Your Name, M.S.\\
+  \vspace{0.3cm}
+  Doctoral Candidate\\
+  Department of Your Field}
+\institute[University]{
+  University Name\\
+  \vspace{0.3cm}
+  \textbf{Dissertation Committee:}\\
+  Prof. Advisor Name (Chair)\\
+  Prof. Committee Member 2\\
+  Prof. Committee Member 3\\
+  Prof. Committee Member 4\\
+  Prof. External Member
+}
+\date{\today}
+
+% University logo
+% \logo{\includegraphics[height=0.8cm]{university_logo.png}}
+
+\begin{document}
+
+% Title slide
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% Committee and acknowledgments
+\begin{frame}{Dissertation Committee}
+  \begin{center}
+    \textbf{Committee Chair:}\\
+    Prof. Advisor Name, PhD\\
+    Department of Your Field
+    
+    \vspace{0.5cm}
+    
+    \textbf{Committee Members:}\\
+    Prof. Member 2, PhD -- Department of Related Field\\
+    Prof. Member 3, PhD -- Department of Your Field\\
+    Prof. Member 4, PhD -- Department of Statistics\\
+    Prof. External Member, PhD -- External Institution
+    
+    \vspace{0.8cm}
+    
+    \textit{Thank you to my committee for your guidance, support, and invaluable feedback throughout this dissertation research.}
+  \end{center}
+\end{frame}
+
+% Overview
+\begin{frame}{Dissertation Overview}
+  \begin{exampleblock}{Central Thesis}
+    Brief statement of the overarching thesis or argument that ties together all dissertation studies.
+  \end{exampleblock}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Dissertation Structure:}
+  \begin{itemize}
+    \item \textbf{Chapter 1:} Introduction and theoretical framework
+    \item \textbf{Chapter 2:} Study 1 -- [Brief description]
+    \item \textbf{Chapter 3:} Study 2 -- [Brief description]
+    \item \textbf{Chapter 4:} Study 3 -- [Brief description]
+    \item \textbf{Chapter 5:} General discussion and conclusions
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
+
+%==============================================
+% CHAPTER 1: INTRODUCTION
+%==============================================
+
+\section{Chapter 1: Introduction and Background}
+
+\begin{frame}{The Problem}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Real-World Significance:}
+      \begin{itemize}
+        \item Prevalence: X affects Y million people
+        \item Impact: Costs \$Z billion annually
+        \item Need: Current solutions inadequate
+        \item Opportunity: New approach needed
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{problem_figure.pdf}
+        \framebox[0.9\textwidth][c]{[Problem Illustration]}
+        \caption{Visualization of the problem}
+      \end{figure}
+    \end{column}
+    
+  \end{columns}
+  
+  \vspace{0.5cm}
+  
+  \begin{alertblock}{Central Question}
+    How can we understand and address this critical challenge using novel theoretical framework X?
+  \end{alertblock}
+\end{frame}
+
+\subsection{Theoretical Framework}
+
+\begin{frame}{Theoretical Background}
+  \textbf{Historical Development:}
+  \begin{itemize}
+    \item \textbf{Early theories (1950s-1980s):} Established foundational concepts \cite{foundational1975}
+    \item \textbf{Modern frameworks (1990s-2000s):} Refined understanding \cite{refinement2000}
+    \item \textbf{Recent advances (2010s-present):} Novel approaches emerge \cite{recent2018}
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Key Theoretical Constructs:}
+  \begin{enumerate}
+    \item \textbf{Construct A:} Describes mechanism X
+    \item \textbf{Construct B:} Explains process Y
+    \item \textbf{Construct C:} Predicts outcome Z
+  \end{enumerate}
+  
+  \vspace{0.5cm}
+  
+  \begin{block}{Theoretical Gap}
+    Existing theories fail to account for interaction between A and B under conditions C
+  \end{block}
+\end{frame}
+
+\begin{frame}{Literature Review: What We Know}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Established Findings:}
+      \begin{itemize}
+        \item Finding 1: Well-replicated
+        \item Finding 2: Meta-analytically supported
+        \item Finding 3: Cross-culturally validated
+        \item Finding 4: Mechanism partially understood
+      \end{itemize}
+      
+      \vspace{0.3cm}
+      
+      \textbf{Methodological Advances:}
+      \begin{itemize}
+        \item Technique A: Improved measurement
+        \item Technique B: Better controls
+        \item Technique C: Novel analysis
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Remaining Questions:}
+      \begin{itemize}
+        \item[\alert{?}] How does A interact with B?
+        \item[\alert{?}] What role does C play?
+        \item[\alert{?}] Does effect generalize to D?
+        \item[\alert{?}] What are boundary conditions?
+      \end{itemize}
+      
+      \vspace{0.3cm}
+      
+      \begin{exampleblock}{Dissertation Focus}
+        This dissertation addresses these gaps through three complementary studies
+      \end{exampleblock}
+    \end{column}
+    
+  \end{columns}
+\end{frame}
+
+\subsection{Dissertation Aims}
+
+\begin{frame}{Overarching Goals and Specific Aims}
+  \begin{block}{Overall Dissertation Goal}
+    To develop and test a comprehensive framework for understanding how X influences Y through mechanisms A, B, and C across contexts.
+  \end{block}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Specific Aims:}
+  
+  \begin{enumerate}
+    \item \textbf{Study 1:} Establish relationship between X and Y
+    \begin{itemize}
+      \item Method: Cross-sectional survey (n = 500)
+      \item Goal: Characterize X→Y relationship
+    \end{itemize}
+    
+    \item \textbf{Study 2:} Identify mediating mechanisms A and B
+    \begin{itemize}
+      \item Method: Longitudinal study (n = 250, 3 waves)
+      \item Goal: Test mediation and temporal precedence
+    \end{itemize}
+    
+    \item \textbf{Study 3:} Test causal model and generalizability
+    \begin{itemize}
+      \item Method: Experimental manipulation (n = 180)
+      \item Goal: Establish causality and boundary conditions
+    \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+%==============================================
+% CHAPTER 2: STUDY 1
+%==============================================
+
+\section{Chapter 2: Study 1}
+
+\begin{frame}{Study 1: Overview}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Research Question:}\\
+      Does X predict Y, and is this relationship moderated by individual difference Z?
+      
+      \vspace{0.5cm}
+      
+      \textbf{Hypotheses:}
+      \begin{enumerate}
+        \item H1: X positively predicts Y
+        \item H2: Z moderates X→Y
+        \item H3: Effect varies by demographic factors
+      \end{enumerate}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Design:}
+      \begin{itemize}
+        \item Cross-sectional survey
+        \item N = 500 participants
+        \item Online recruitment
+        \item Power: .95 for medium effects
+      \end{itemize}
+      
+      \vspace{0.3cm}
+      
+      \textbf{Measures:}
+      \begin{itemize}
+        \item X: Validated scale (α = .89)
+        \item Y: Performance measure
+        \item Z: Individual difference
+        \item Controls: Demographics
+      \end{itemize}
+    \end{column}
+    
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Study 1: Methods}
+  \textbf{Participants:}
+  \begin{itemize}
+    \item N = 500 (62\% female; Age: $M = 34.2$, $SD = 11.5$)
+    \item Recruited via university participant pool and online platforms
+    \item Inclusion: Ages 18-65, fluent in English
+    \item Exclusion: Prior participation in related studies
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Procedure:}
+  \begin{enumerate}
+    \item Informed consent and demographics
+    \item Battery of questionnaires (45 minutes)
+    \item Debriefing and compensation
+  \end{enumerate}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Analysis:}
+  \begin{itemize}
+    \item Hierarchical regression for H1 and H2
+    \item Moderation analysis using PROCESS macro
+    \item Subgroup analyses for H3
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Study 1: Results}
+  \begin{columns}[c]
+    
+    \begin{column}{0.6\textwidth}
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{study1_main_result.pdf}
+        \framebox[0.9\textwidth][c]{[Study 1: Main Result]}
+        \caption{X predicts Y ($\beta = 0.47$, $p < .001$, $R^2 = .22$)}
+      \end{figure}
+    \end{column}
+    
+    \begin{column}{0.4\textwidth}
+      \textbf{Key Findings:}
+      \begin{itemize}
+        \item H1 supported: Strong X→Y relationship
+        \item H2 supported: Z moderates effect
+        \item H3 partially supported: Age effects found
+      \end{itemize}
+      
+      \vspace{0.5cm}
+      
+      \begin{block}{Conclusion}
+        Study 1 establishes foundational X→Y relationship
+      \end{block}
+    \end{column}
+    
+  \end{columns}
+\end{frame}
+
+%==============================================
+% CHAPTER 3: STUDY 2
+%==============================================
+
+\section{Chapter 3: Study 2}
+
+\begin{frame}{Study 2: Overview}
+  \begin{exampleblock}{Research Question}
+    What mechanisms (A and B) mediate the X→Y relationship, and what is the temporal ordering?
+  \end{exampleblock}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Rationale:}
+  \begin{itemize}
+    \item Study 1 showed X→Y relationship exists
+    \item Need to identify mediating processes
+    \item Longitudinal design establishes temporal precedence
+    \item Tests proposed theoretical model
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Design:}
+  \begin{itemize}
+    \item Three-wave longitudinal study
+    \item N = 250, assessments 6 months apart
+    \item Measures: X (T1), A and B (T2), Y (T3)
+    \item Analysis: Cross-lagged panel model, mediation
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Study 2: Methods}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Sample:}
+      \begin{itemize}
+        \item N = 250 at baseline
+        \item Retention: 88\% at T2, 82\% at T3
+        \item Age: $M = 36.4$, $SD = 12.1$
+        \item 58\% female, diverse sample
+      \end{itemize}
+      
+      \vspace{0.5cm}
+      
+      \textbf{Timeline:}
+      \begin{itemize}
+        \item T1 (baseline): X measured
+        \item T2 (+6 months): A, B measured
+        \item T3 (+12 months): Y measured
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{study2_design.pdf}
+        \framebox[0.9\textwidth][c]{[Longitudinal Design]}
+        \caption{Three-wave design with proposed mediation model}
+      \end{figure}
+    \end{column}
+    
+  \end{columns}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Analysis:}
+  \begin{itemize}
+    \item Structural equation modeling for mediation
+    \item Cross-lagged panel model for temporal precedence
+    \item Missing data handled via FIML
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Study 2: Results}
+  \begin{figure}
+    \centering
+    % \includegraphics[width=0.8\textwidth]{study2_mediation.pdf}
+    \framebox[0.75\textwidth][c]{[Mediation Model with Path Coefficients]}
+    \caption{Serial mediation: X → A → B → Y}
+  \end{figure}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Path Coefficients:}
+  \begin{itemize}
+    \item X → A: $\beta = 0.42$, $p < .001$
+    \item A → B: $\beta = 0.35$, $p < .001$
+    \item B → Y: $\beta = 0.38$, $p < .001$
+    \item X → Y (direct): $\beta = 0.18$, $p = .032$
+    \item Indirect effect: $\beta = 0.29$, 95\% CI [0.19, 0.41]
+  \end{itemize}
+  
+  \alert{61\% of total effect mediated by A→B pathway}
+\end{frame}
+
+%==============================================
+% CHAPTER 4: STUDY 3
+%==============================================
+
+\section{Chapter 4: Study 3}
+
+\begin{frame}{Study 3: Overview}
+  \begin{alertblock}{Research Question}
+    Can we establish causality by experimentally manipulating X, and does the effect generalize across contexts?
+  \end{alertblock}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Motivation:}
+  \begin{itemize}
+    \item Studies 1-2 showed correlational evidence
+    \item Need experimental test for causality
+    \item Test generalizability to applied context
+    \item Examine boundary conditions
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Design:}
+  \begin{itemize}
+    \item 2 (X: low vs. high) × 2 (Context: lab vs. field) factorial
+    \item N = 180 (45 per condition)
+    \item Random assignment to conditions
+    \item Outcome: Y measured post-manipulation
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Study 3: Methods}
+  \textbf{Experimental Manipulation:}
+  \begin{itemize}
+    \item \textbf{Low X condition:} Control procedure
+    \item \textbf{High X condition:} Experimental manipulation designed to increase X
+    \item Manipulation check: Successful ($t(178) = 8.92$, $p < .001$, $d = 1.34$)
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Contexts:}
+  \begin{itemize}
+    \item \textbf{Lab context:} Controlled laboratory setting (original)
+    \item \textbf{Field context:} Applied real-world setting (generalization test)
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Measures:}
+  \begin{itemize}
+    \item Primary outcome Y (same as Studies 1-2)
+    \item Mediators A and B
+    \item Moderator Z
+    \item Potential confounds
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Study 3: Results}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{study3_results.pdf}
+        \framebox[0.9\textwidth][c]{[Experimental Results]}
+        \caption{Main effect of X on Y}
+      \end{figure}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{ANOVA Results:}
+      \begin{itemize}
+        \item Main effect of X: $F(1,176) = 45.2$, $p < .001$, $\eta^2_p = .20$
+        \item Main effect of Context: $F(1,176) = 2.1$, $p = .15$
+        \item X × Context: $F(1,176) = 0.8$, $p = .38$
+      \end{itemize}
+      
+      \vspace{0.5cm}
+      
+      \begin{block}{Key Finding}
+        Causal effect of X on Y confirmed; generalizes across contexts
+      \end{block}
+    \end{column}
+    
+  \end{columns}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Mediation:} Experimental mediation analysis confirmed A and B as mechanisms
+\end{frame}
+
+%==============================================
+% CHAPTER 5: GENERAL DISCUSSION
+%==============================================
+
+\section{Chapter 5: General Discussion}
+
+\begin{frame}{Synthesis Across Studies}
+  \begin{table}
+    \centering
+    \caption{Summary of findings across three studies}
+    \small
+    \begin{tabular}{lccc}
+      \toprule
+      \textbf{Finding} & \textbf{Study 1} & \textbf{Study 2} & \textbf{Study 3} \\
+      \midrule
+      X → Y relationship & Yes & Yes & Yes (causal) \\
+      Mediation by A & --- & Yes & Yes \\
+      Mediation by B & --- & Yes & Yes \\
+      Moderation by Z & Yes & Yes & Yes \\
+      Generalization & --- & --- & Yes \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Convergent Evidence:}
+  \begin{itemize}
+    \item Robust X→Y relationship across designs and samples
+    \item Consistent mediation by A→B pathway
+    \item Moderation by Z replicated
+    \item Effects generalize from lab to field
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Theoretical Contributions}
+  \begin{exampleblock}{Novel Theoretical Framework}
+    This dissertation proposes and validates the XYZ Model, which integrates constructs A, B, and C to explain how X influences Y.
+  \end{exampleblock}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Specific Contributions:}
+  \begin{enumerate}
+    \item \textbf{Integration:} Bridges previously separate literatures on A and B
+    \item \textbf{Mechanism:} Identifies A→B as key mediating pathway
+    \item \textbf{Boundary conditions:} Specifies role of moderator Z
+    \item \textbf{Generalizability:} Shows effects across contexts
+    \item \textbf{Causality:} Establishes X as causal factor
+  \end{enumerate}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Advances Beyond Prior Work:}
+  \begin{itemize}
+    \item More comprehensive than Theory 1 \cite{theory1}
+    \item Resolves contradictions between Studies A and B
+    \item Provides testable predictions for future research
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Practical Implications}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Clinical Applications:}
+      \begin{itemize}
+        \item Assessment: Screen for X
+        \item Intervention target: Increase A and B
+        \item Tailoring: Consider moderator Z
+        \item Outcome: Expect improvement in Y
+      \end{itemize}
+      
+      \vspace{0.5cm}
+      
+      \textbf{Implementation:}
+      \begin{itemize}
+        \item Feasibility demonstrated in field study
+        \item Scalable to larger populations
+        \item Cost-effective approach
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Policy Recommendations:}
+      \begin{enumerate}
+        \item Support programs targeting X
+        \item Fund interventions enhancing A
+        \item Consider individual differences Z
+        \item Monitor outcomes Y
+      \end{enumerate}
+      
+      \vspace{0.5cm}
+      
+      \begin{alertblock}{Impact}
+        Findings suggest potential to improve outcomes for population experiencing low X
+      \end{alertblock}
+    \end{column}
+    
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Limitations and Future Directions}
+  \textbf{Study Limitations:}
+  \begin{enumerate}
+    \item \textbf{Sample:} Primarily university-educated, young adults
+    \begin{itemize}
+      \item Future: Community samples, diverse populations
+    \end{itemize}
+    
+    \item \textbf{Measures:} Some reliance on self-report
+    \begin{itemize}
+      \item Future: Multi-method assessment (behavioral, biological)
+    \end{itemize}
+    
+    \item \textbf{Time frame:} Longest follow-up was 12 months
+    \begin{itemize}
+      \item Future: Longer-term longitudinal studies
+    \end{itemize}
+    
+    \item \textbf{Mechanisms:} Other pathways may exist
+    \begin{itemize}
+      \item Future: Explore alternative mediators
+    \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Future Research Program}
+  \begin{block}{Immediate Next Steps}
+    \begin{itemize}
+      \item Replicate in clinical populations
+      \item Develop intervention based on findings
+      \item Test with diverse samples
+      \item Examine individual differences in response
+    \end{itemize}
+  \end{block}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Long-Term Research Agenda:}
+  \begin{enumerate}
+    \item \textbf{Mechanism refinement:} Neural/biological underpinnings
+    \item \textbf{Intervention development:} RCT of theory-driven treatment
+    \item \textbf{Moderator exploration:} Genetic, environmental factors
+    \item \textbf{Translation:} Dissemination and implementation science
+    \item \textbf{Extension:} Apply framework to related phenomena
+  \end{enumerate}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Collaboration Opportunities:}
+  \begin{itemize}
+    \item Clinical partners for intervention trials
+    \item Neuroscientists for mechanism studies
+    \item Community organizations for implementation
+  \end{itemize}
+\end{frame}
+
+%==============================================
+% CONCLUSIONS
+%==============================================
+
+\section{Conclusions}
+
+\begin{frame}{Dissertation Conclusions}
+  \begin{exampleblock}{Central Thesis (Revisited)}
+    Through three complementary studies, this dissertation demonstrates that X influences Y through mechanisms A and B, moderated by Z, with effects generalizing across contexts.
+  \end{exampleblock}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Key Achievements:}
+  \begin{enumerate}
+    \item Established robust X→Y relationship across designs
+    \item Identified and validated A→B mediating pathway
+    \item Demonstrated causality via experimental manipulation
+    \item Showed generalizability from lab to field
+    \item Proposed novel XYZ theoretical framework
+  \end{enumerate}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Significance:}
+  \begin{itemize}
+    \item Theoretical advancement in understanding X→Y processes
+    \item Methodological contribution through multi-study design
+    \item Practical applications for intervention and policy
+    \item Foundation for sustained research program
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Final Thoughts}
+  \begin{block}{Take-Home Message}
+    This dissertation provides compelling converging evidence that X causes Y through mechanisms A and B, offering both theoretical understanding and practical pathways for intervention.
+  \end{block}
+  
+  \vspace{1cm}
+  
+  \textbf{Broader Impact:}
+  \begin{itemize}
+    \item Advances scientific understanding of fundamental process
+    \item Provides evidence-based framework for practitioners
+    \item Opens new avenues for future research
+    \item Demonstrates potential to improve outcomes for affected populations
+  \end{itemize}
+  
+  \vspace{1cm}
+  
+  \begin{center}
+    \textit{"The best way to predict the future is to create it."} \\
+    -- Peter Drucker
+  \end{center}
+\end{frame}
+
+\begin{frame}[plain]
+  \begin{center}
+    {\LARGE \textbf{Thank You}}
+    
+    \vspace{1cm}
+    
+    {\Large Questions from the Committee}
+    
+    \vspace{1.5cm}
+    
+    \textbf{Your Name, M.S.}\\
+    Doctoral Candidate\\
+    Department of Your Field\\
+    University Name\\
+    \texttt{yourname@university.edu}
+    
+    \vspace{1cm}
+    
+    {\footnotesize
+      \textbf{Funding Acknowledgment:}\\
+      This research was supported by [Grant Agency] Grant \#[Number],\\
+      [Fellowship Name], and [University] Dissertation Fellowship
+      
+      \vspace{0.5cm}
+      
+      \textbf{Special Thanks:}\\
+      My advisor Prof. [Name], committee members, lab colleagues,\\
+      study participants, and my family for their unwavering support
+    }
+  \end{center}
+\end{frame}
+
+%==============================================
+% BACKUP SLIDES
+%==============================================
+
+\appendix
+
+\begin{frame}{Backup: Study 1 Full Results}
+  \begin{table}
+    \centering
+    \caption{Complete regression results for Study 1}
+    \footnotesize
+    \begin{tabular}{lcccc}
+      \toprule
+      \textbf{Predictor} & $\boldsymbol{\beta}$ & \textbf{SE} & \textbf{$t$} & \textbf{$p$} \\
+      \midrule
+      \multicolumn{5}{l}{\textit{Step 1: Demographics}} \\
+      Age & 0.12 & 0.04 & 3.00 & .003 \\
+      Gender & 0.08 & 0.05 & 1.60 & .110 \\
+      Education & 0.15 & 0.04 & 3.75 & < .001 \\
+      \midrule
+      \multicolumn{5}{l}{\textit{Step 2: Main Effect}} \\
+      X & 0.47 & 0.04 & 11.75 & < .001 \\
+      \midrule
+      \multicolumn{5}{l}{\textit{Step 3: Moderation}} \\
+      Z & 0.18 & 0.04 & 4.50 & < .001 \\
+      X × Z & 0.12 & 0.04 & 3.00 & .003 \\
+      \bottomrule
+      \multicolumn{5}{l}{Final model: $R^2 = .28$, $F(6,493) = 32.1$, $p < .001$} \\
+    \end{tabular}
+  \end{table}
+\end{frame}
+
+\begin{frame}{Backup: Study 2 Model Fit}
+  \textbf{Structural Equation Model Fit Indices:}
+  
+  \begin{table}
+    \centering
+    \begin{tabular}{lcc}
+      \toprule
+      \textbf{Index} & \textbf{Value} & \textbf{Criterion} \\
+      \midrule
+      $\chi^2$/df & 2.34 & < 3.0 \\
+      CFI & 0.96 & > 0.95 \\
+      TLI & 0.95 & > 0.95 \\
+      RMSEA & 0.045 & < 0.06 \\
+      SRMR & 0.038 & < 0.08 \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Conclusion:} Excellent model fit, proposed model fits data well
+  
+  \vspace{0.5cm}
+  
+  \textbf{Alternative Models Tested:}
+  \begin{itemize}
+    \item Direct-only model: $\Delta\chi^2(2) = 45.6$, $p < .001$ (worse fit)
+    \item Reverse mediation: $\Delta\chi^2(2) = 38.2$, $p < .001$ (worse fit)
+    \item Proposed model provides best fit
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Backup: Study 3 Additional Analyses}
+  \textbf{Subgroup Effects:}
+  
+  \begin{figure}
+    \centering
+    % \includegraphics[width=0.7\textwidth]{study3_subgroups.pdf}
+    \framebox[0.65\textwidth][c]{[Subgroup Analysis Results]}
+    \caption{Effect of X on Y by moderator Z levels}
+  \end{figure}
+  
+  \begin{itemize}
+    \item High Z: $d = 0.95$, $p < .001$
+    \item Medium Z: $d = 0.72$, $p < .001$
+    \item Low Z: $d = 0.45$, $p = .008$
+    \item Moderation: $F(2,174) = 6.8$, $p = .001$
+  \end{itemize}
+\end{frame}
+
+%==============================================
+% REFERENCES
+%==============================================
+
+\begin{frame}[allowframebreaks]{References}
+  \printbibliography
+\end{frame}
+
+\end{document}

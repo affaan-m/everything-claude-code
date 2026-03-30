@@ -1,0 +1,317 @@
+% PLOS ONE Article Template
+% For submission to PLOS ONE and other PLOS journals
+% Last updated: 2024
+
+\documentclass[10pt,letterpaper]{article}
+
+% Packages
+\usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{changepage}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp,marvosym}
+\usepackage{cite}
+\usepackage{nameref,hyperref}
+\usepackage[right]{lineno}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{authblk}
+
+% Line numbering
+\linenumbers
+
+% Set up authblk for PLOS format
+\renewcommand\Authfont{\fontsize{12}{14}\selectfont}
+\renewcommand\Affilfont{\fontsize{9}{11}\selectfont}
+
+% Title
+\title{Your Article Title Here: Concise and Descriptive}
+
+% Authors and Affiliations
+\author[1]{First Author}
+\author[1,2]{Second Author}
+\author[2,$\dagger$]{Third Author}
+
+\affil[1]{Department of Biology, University Name, City, State, Country}
+\affil[2]{Institute of Research, Institution Name, City, Country}
+
+% Corresponding author
+\affil[$\dagger$]{Corresponding author. E-mail: [email protected]}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+% Abstract
+\begin{abstract}
+\noindent
+Write a structured or unstructured abstract of 250-300 words. The abstract should be accessible to a broad readership and should clearly state: (1) background/rationale, (2) objectives, (3) methods, (4) principal findings with key data, and (5) conclusions and significance. Do not include citations in the abstract.
+\end{abstract}
+
+% Introduction
+\section*{Introduction}
+
+Provide background and context for your study. The introduction should:
+\begin{itemize}
+    \item Present the rationale for your study
+    \item Clearly state what is currently known about the topic
+    \item Identify the knowledge gap your study addresses
+    \item State your research objectives or hypotheses
+    \item Explain the significance of the research
+\end{itemize}
+
+Review relevant literature \cite{smith2023,jones2022}, setting your work in context.
+
+State your main research question or objective at the end of the introduction.
+
+% Materials and Methods
+\section*{Materials and Methods}
+
+Provide sufficient detail to allow reproduction of your work.
+
+\subsection*{Study Design}
+Describe the overall study design (e.g., prospective cohort, randomized controlled trial, observational study, etc.).
+
+\subsection*{Participants/Samples}
+Describe your study population, sample collection, or experimental subjects:
+\begin{itemize}
+    \item Sample size and how it was determined (power analysis)
+    \item Inclusion and exclusion criteria
+    \item Demographic information
+    \item For animal studies: species, strain, age, sex, housing conditions
+\end{itemize}
+
+\subsection*{Procedures}
+Detail all experimental procedures, measurements, and interventions. Include:
+\begin{itemize}
+    \item Equipment and reagents (with manufacturer, catalog numbers)
+    \item Protocols and procedures (step-by-step if novel)
+    \item Controls used
+    \item Blinding and randomization (if applicable)
+\end{itemize}
+
+\subsection*{Data Collection}
+Describe how data were collected, including instruments, assays, and measurements.
+
+\subsection*{Statistical Analysis}
+Clearly describe statistical methods used:
+\begin{itemize}
+    \item Software and version (e.g., R 4.3.0, Python 3.9 with scipy 1.9.0)
+    \item Statistical tests performed (e.g., t-tests, ANOVA, regression)
+    \item Significance level ($\alpha$, typically 0.05)
+    \item Corrections for multiple testing
+    \item Sample size justification
+\end{itemize}
+
+\subsection*{Ethical Approval}
+Include relevant ethical approval statements:
+\begin{itemize}
+    \item Human subjects: IRB approval, protocol number, consent procedures
+    \item Animal research: IACUC approval, protocol number, welfare considerations
+    \item Field studies: Permits and permissions
+\end{itemize}
+
+Example: "This study was approved by the Institutional Review Board of University Name (Protocol \#12345). All participants provided written informed consent."
+
+% Results
+\section*{Results}
+
+Present your findings in a logical sequence. Refer to figures and tables as you describe results. Do not interpret results in this section (save for Discussion).
+
+\subsection*{First Major Finding}
+Describe your first key result. Statistical results should include effect sizes and confidence intervals in addition to p-values.
+
+As shown in Figure~\ref{fig:results1}, we observed a significant increase in [outcome variable] (mean $\pm$ SD: 45.2 $\pm$ 8.3 vs. 32.1 $\pm$ 6.9; t = 7.42, df = 48, p < 0.001).
+
+\begin{figure}[!ht]
+\centering
+% \includegraphics[width=0.75\textwidth]{figure1.png}
+\caption{{\bf Figure 1. Title of first figure.}
+Detailed figure legend describing what is shown. Include: (A) Description of panel A. (B) Description of panel B. Sample sizes (n), error bars represent [SD, SEM, 95\% CI], and statistical significance indicated by asterisks (* p < 0.05, ** p < 0.01, *** p < 0.001). Statistical test used should be stated.}
+\label{fig:results1}
+\end{figure}
+
+\subsection*{Second Major Finding}
+Describe your second key result, referencing Table~\ref{tab:results1}.
+
+\begin{table}[!ht]
+\centering
+\caption{{\bf Table 1. Title of table.}}
+\label{tab:results1}
+\begin{tabular}{lccc}
+\hline
+\textbf{Condition} & \textbf{Measurement 1} & \textbf{Measurement 2} & \textbf{p-value} \\
+\hline
+Control & 25.3 $\pm$ 3.1 & 48.2 $\pm$ 5.4 & -- \\
+Treatment A & 32.7 $\pm$ 2.8 & 55.1 $\pm$ 4.9 & 0.003 \\
+Treatment B & 41.2 $\pm$ 3.5 & 62.8 $\pm$ 6.2 & < 0.001 \\
+\hline
+\end{tabular}
+\begin{flushleft}
+Values shown as mean $\pm$ standard deviation (n = 20 per group). P-values from one-way ANOVA with Tukey's post-hoc test comparing to control.
+\end{flushleft}
+\end{table}
+
+\subsection*{Additional Results}
+Present additional findings as needed.
+
+% Discussion
+\section*{Discussion}
+
+Interpret your results and place them in the context of existing literature.
+
+\subsection*{Principal Findings}
+Summarize your main findings concisely.
+
+\subsection*{Interpretation}
+Interpret your findings and explain their significance. How do they advance understanding of the topic? Compare and contrast with previous studies \cite{brown2021,williams2020}.
+
+\subsection*{Strengths and Limitations}
+Discuss both strengths and limitations of your study honestly:
+
+\textbf{Strengths:}
+\begin{itemize}
+    \item Large sample size with adequate statistical power
+    \item Rigorous methodology with appropriate controls
+    \item Novel approach or finding
+\end{itemize}
+
+\textbf{Limitations:}
+\begin{itemize}
+    \item Cross-sectional design limits causal inference
+    \item Generalizability may be limited to [specific population]
+    \item Potential confounding variables not measured
+\end{itemize}
+
+\subsection*{Implications}
+Discuss the practical or theoretical implications of your findings.
+
+\subsection*{Future Directions}
+Suggest directions for future research.
+
+% Conclusions
+\section*{Conclusions}
+
+Provide a concise conclusion summarizing the main findings and their significance. Avoid repeating the abstract.
+
+% Acknowledgments
+\section*{Acknowledgments}
+
+Acknowledge individuals who contributed but do not meet authorship criteria, technical assistance, and writing assistance. Example: "We thank Dr. Jane Doe for technical assistance with microscopy and Dr. John Smith for helpful discussions."
+
+% References
+\section*{References}
+
+% Using BibTeX
+\bibliographystyle{plos2015}
+\bibliography{references}
+
+% Or manually formatted (Vancouver style, numbered):
+\begin{thebibliography}{99}
+
+\bibitem{smith2023}
+Smith JD, Johnson ML, Williams KR. Title of article. Journal Abbrev. 2023;45(3):301-318. doi:10.1371/journal.pone.1234567.
+
+\bibitem{jones2022}
+Jones AB, Brown CD. Another article title. PLoS ONE. 2022;17(8):e0234567. doi:10.1371/journal.pone.0234567.
+
+\bibitem{brown2021}
+Brown EF, Davis GH, Wilson IJ, Taylor JK. Comprehensive study title. Nat Commun. 2021;12:1234. doi:10.1038/s41467-021-12345-6.
+
+\bibitem{williams2020}
+Williams LM, Anderson NO. Previous work on topic. Science. 2020;368(6489):456-460. doi:10.1126/science.abc1234.
+
+\end{thebibliography}
+
+% Supporting Information
+\section*{Supporting Information}
+
+List all supporting information files (captions provided separately during submission):
+
+\paragraph{S1 Fig.}
+\textbf{Title of supplementary figure 1.} Brief description.
+
+\paragraph{S2 Fig.}
+\textbf{Title of supplementary figure 2.} Brief description.
+
+\paragraph{S1 Table.}
+\textbf{Title of supplementary table 1.} Brief description.
+
+\paragraph{S1 Dataset.}
+\textbf{Raw data.} Complete dataset used in analysis (CSV format).
+
+\paragraph{S1 File.}
+\textbf{Supplementary methods.} Additional methodological details.
+
+% Author Contributions (CRediT taxonomy recommended)
+\section*{Author Contributions}
+
+Use CRediT (Contributor Roles Taxonomy):
+\begin{itemize}
+    \item \textbf{Conceptualization:} FA, SA
+    \item \textbf{Data curation:} FA
+    \item \textbf{Formal analysis:} FA, SA
+    \item \textbf{Funding acquisition:} TA
+    \item \textbf{Investigation:} FA, SA
+    \item \textbf{Methodology:} FA, SA, TA
+    \item \textbf{Project administration:} TA
+    \item \textbf{Resources:} TA
+    \item \textbf{Software:} FA
+    \item \textbf{Supervision:} TA
+    \item \textbf{Validation:} FA, SA
+    \item \textbf{Visualization:} FA
+    \item \textbf{Writing – original draft:} FA
+    \item \textbf{Writing – review \& editing:} FA, SA, TA
+\end{itemize}
+
+(FA = First Author, SA = Second Author, TA = Third Author)
+
+% Data Availability Statement (REQUIRED)
+\section*{Data Availability}
+
+Choose one of the following:
+
+\textbf{Option 1 (Public repository):} 
+All data are available in the [repository name] repository at [URL/DOI].
+
+\textbf{Option 2 (Supporting Information):}
+All relevant data are within the paper and its Supporting Information files.
+
+\textbf{Option 3 (Available on request):}
+Data cannot be shared publicly because of [reason]. Data are available from the [institution/contact] (contact via [email]) for researchers who meet the criteria for access to confidential data.
+
+\textbf{Option 4 (Third-party):}
+Data are available from [third party] (contact: [details]) for researchers who meet criteria for access.
+
+% Funding Statement (REQUIRED)
+\section*{Funding}
+
+State all funding sources including grant numbers. If no funding, state "The authors received no specific funding for this work."
+
+Example: "This work was supported by the National Science Foundation (NSF) [grant number 123456 to TA] and the National Institutes of Health (NIH) [grant number R01-234567 to TA]. The funders had no role in study design, data collection and analysis, decision to publish, or preparation of the manuscript."
+
+% Competing Interests (REQUIRED)
+\section*{Competing Interests}
+
+Declare any financial or non-financial competing interests. If none, state: "The authors have declared that no competing interests exist."
+
+If competing interests exist, declare them explicitly: "Author TA is a consultant for Company X. This does not alter our adherence to PLOS ONE policies on sharing data and materials."
+
+\end{document}
+
+% Notes for Authors:
+% 1. PLOS ONE has no length limit - be concise but thorough
+% 2. Use Vancouver style for citations [1], [2], [3]
+% 3. Figures: TIFF or EPS format, 300-600 dpi
+% 4. All data must be made available (data availability statement required)
+% 5. Include line numbers for review
+% 6. PLOS ONE focuses on scientific rigor, not novelty or impact
+% 7. Reporting guidelines encouraged (CONSORT, STROBE, PRISMA, etc.)
+% 8. Ethical approval required for human/animal studies
+% 9. All authors must agree to submission
+% 10. Submit via PLOS online submission system
+

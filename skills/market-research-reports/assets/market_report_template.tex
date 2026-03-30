@@ -1,0 +1,1380 @@
+% !TEX program = xelatex
+% Market Research Report Template
+% Professional formatting for 50+ page comprehensive market reports
+% Use with market_research.sty style package
+
+\documentclass[11pt,letterpaper]{report}
+\usepackage{market_research}
+
+% ============================================================================
+% DOCUMENT METADATA - CUSTOMIZE THESE
+% ============================================================================
+\newcommand{\reporttitle}{[MARKET NAME]}
+\newcommand{\reportsubtitle}{Comprehensive Market Analysis Report}
+\newcommand{\reportdate}{\today}
+\newcommand{\reportauthor}{Market Intelligence Division}
+\newcommand{\reportclassification}{Confidential}
+
+% ============================================================================
+% PDF METADATA
+% ============================================================================
+\hypersetup{
+    pdftitle={\reporttitle{} - \reportsubtitle{}},
+    pdfauthor={\reportauthor{}},
+    pdfsubject={Market Research Report},
+    pdfkeywords={market research, market analysis, competitive landscape, strategic analysis}
+}
+
+% ============================================================================
+% DOCUMENT START
+% ============================================================================
+\begin{document}
+
+% ============================================================================
+% TITLE PAGE
+% ============================================================================
+% To use a hero image, replace the empty braces with the path:
+% \makemarketreporttitle{\reporttitle}{\reportsubtitle}{../figures/cover_image.png}{\reportdate}{\reportauthor}
+
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+
+{\Huge\bfseries\color{primaryblue} \reporttitle\\[0.5cm]}
+{\LARGE\bfseries \reportsubtitle\\[1.5cm]}
+
+% VISUAL: Generate hero/cover image
+% python skills/generate-image/scripts/generate_image.py "Professional executive summary infographic for [MARKET] market research report, showing key metrics in modern data visualization style, blue and green color scheme, clean minimalist design" --output figures/cover_image.png
+% Uncomment below when image is generated:
+% \includegraphics[width=\textwidth]{../figures/cover_image.png}\\[1.5cm]
+
+\vspace{4cm}
+
+{\Large\bfseries Comprehensive Market Research Report\\[0.5cm]}
+{\large Strategic Intelligence for Business Decision-Making\\[3cm]}
+
+{\large
+\textbf{Date:} \reportdate\\[0.3cm]
+\textbf{Prepared By:} \reportauthor\\[0.3cm]
+\textbf{Classification:} \reportclassification\\[0.3cm]
+\textbf{Report Type:} Full Market Analysis
+}
+
+\vfill
+
+{\footnotesize
+\textit{This report contains market intelligence and strategic analysis based on publicly available data and proprietary research. All sources are cited and independently verifiable.}
+}
+
+\end{titlepage}
+
+% ============================================================================
+% FRONT MATTER
+% ============================================================================
+\pagenumbering{roman}
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+% List of Figures
+\listoffigures
+\newpage
+
+% List of Tables
+\listoftables
+\newpage
+
+% ============================================================================
+% MAIN CONTENT
+% ============================================================================
+\pagenumbering{arabic}
+
+% ============================================================================
+% EXECUTIVE SUMMARY (2-3 pages)
+% ============================================================================
+\chapter{Executive Summary}
+
+\section{Report Overview}
+
+This comprehensive market analysis examines the \reporttitle{} market, providing strategic intelligence for investors, executives, and strategic planners. The report synthesizes data from authoritative sources including market research firms, regulatory agencies, industry associations, and enterprise surveys.
+
+% VISUAL: Executive summary infographic
+% python skills/scientific-schematics/scripts/generate_schematic.py "Executive summary infographic showing 4 key metrics: Market Size $XX.XB (2024), CAGR XX.X%, Top 3 Players, and Key Trend. Use blue boxes with white text, professional layout" -o figures/exec_summary_infographic.png --doc-type report
+
+\subsection{Market Snapshot}
+
+\begin{marketdatabox}[Market Snapshot: \reporttitle{}]
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Current Market Size (2024):} \marketsize{X.XX billion}
+    \item \textbf{Projected Market Size (2034):} \marketsize{XX.XX billion}
+    \item \textbf{Compound Annual Growth Rate (CAGR):} \growthrate{XX.X}
+    \item \textbf{Growth Multiple:} Xx increase over 10 years
+    \item \textbf{Largest Segment:} [Segment Name] (XX\% market share)
+    \item \textbf{Fastest Growing Region:} [Region] (\growthrate{XX.X} CAGR)
+    \item \textbf{Current Enterprise Adoption:} XX\%
+\end{itemize}
+\end{marketdatabox}
+
+\subsection{Investment Thesis}
+
+The convergence of multiple market catalysts creates a compelling opportunity for investment and strategic action in the \reporttitle{} market:
+
+\begin{keyinsightbox}[Key Investment Drivers]
+\begin{enumerate}
+    \item \textbf{[Driver 1]:} [Brief explanation of why this driver creates opportunity]
+    \item \textbf{[Driver 2]:} [Brief explanation]
+    \item \textbf{[Driver 3]:} [Brief explanation]
+    \item \textbf{[Driver 4]:} [Brief explanation]
+\end{enumerate}
+\end{keyinsightbox}
+
+\subsection{Key Findings}
+
+\paragraph{Market Dynamics}
+[Summarize the most important findings about market size, growth, and dynamics. Include 3-5 key statistics with sources.]
+
+\paragraph{Competitive Landscape}
+[Summarize competitive dynamics, market concentration, and key players. Include market share of top players.]
+
+\paragraph{Growth Drivers}
+[Summarize the primary factors driving market growth and their expected impact.]
+
+\paragraph{Risk Factors}
+[Summarize the key risks that could impact market development.]
+
+\subsection{Strategic Recommendations}
+
+Based on the comprehensive analysis presented in this report, we recommend the following strategic actions:
+
+\begin{recommendationbox}[Top Strategic Recommendations]
+\begin{enumerate}
+    \item \textbf{[Recommendation 1]:} [Action-oriented recommendation with expected outcome]
+    \item \textbf{[Recommendation 2]:} [Action-oriented recommendation with expected outcome]
+    \item \textbf{[Recommendation 3]:} [Action-oriented recommendation with expected outcome]
+    \item \textbf{[Recommendation 4]:} [Action-oriented recommendation with expected outcome]
+    \item \textbf{[Recommendation 5]:} [Action-oriented recommendation with expected outcome]
+\end{enumerate}
+\end{recommendationbox}
+
+% ============================================================================
+% CHAPTER 1: MARKET OVERVIEW & DEFINITION (4-5 pages)
+% ============================================================================
+\chapter{Market Overview \& Definition}
+
+\section{Market Definition}
+
+[Provide a clear, comprehensive definition of the market being analyzed. Include:
+- What products/services are included
+- What is explicitly excluded
+- How this market relates to adjacent markets
+- Industry classification codes if applicable (NAICS, SIC)]
+
+\begin{calloutbox}[Market Definition]
+The \reporttitle{} market encompasses [comprehensive definition]. This includes [included elements] and excludes [excluded elements].
+\end{calloutbox}
+
+\subsection{Scope and Boundaries}
+
+\paragraph{Geographic Scope}
+[Define the geographic boundaries of the analysis - global, regional, or specific countries.]
+
+\paragraph{Product/Service Scope}
+[Define what products and services are included in the market definition.]
+
+\paragraph{Time Horizon}
+[Specify the historical period analyzed and the forecast period.]
+
+\subsection{Market Classification}
+
+[Provide detailed market classification and taxonomy, including:
+- Market segments
+- Sub-segments
+- Categories]
+
+\section{Industry Ecosystem}
+
+% VISUAL: Industry ecosystem diagram
+% python skills/scientific-schematics/scripts/generate_schematic.py "Industry ecosystem diagram showing value chain from [Raw Materials/Inputs] on left through [Manufacturing/Processing] through [Distribution] to [End Users] on right. Include key players at each stage. Use blue boxes connected by arrows" -o figures/industry_ecosystem.png --doc-type report
+
+[Describe the industry ecosystem and value chain, including:
+- Key stakeholders and their roles
+- Relationships between stakeholders
+- Value creation at each stage
+- Information and money flows]
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.95\textwidth]{../figures/industry_ecosystem.png}
+\caption{Industry Ecosystem and Value Chain}
+\label{fig:ecosystem}
+\end{figure}
+
+\subsection{Key Stakeholders}
+
+[Describe each category of stakeholder:]
+
+\paragraph{Suppliers/Vendors}
+[Description of upstream suppliers and their role.]
+
+\paragraph{Manufacturers/Service Providers}
+[Description of core market participants.]
+
+\paragraph{Distributors/Channels}
+[Description of distribution and go-to-market channels.]
+
+\paragraph{End Users/Customers}
+[Description of customer segments and their needs.]
+
+\paragraph{Regulators and Industry Bodies}
+[Description of regulatory environment and industry associations.]
+
+\section{Market Structure}
+
+% VISUAL: Market structure diagram
+% python skills/scientific-schematics/scripts/generate_schematic.py "Market structure diagram showing industry layers: [Core Market] in center, surrounded by [Adjacent Markets], with [Enabling Technologies] as foundation and [Regulatory Framework] as overlay. Use concentric rectangles" -o figures/market_structure.png --doc-type report
+
+[Describe the structure of the market:]
+
+\subsection{Market Concentration}
+
+[Analyze market concentration using metrics like:
+- Herfindahl-Hirschman Index (HHI)
+- CR4/CR8 concentration ratios
+- Market fragmentation assessment]
+
+\subsection{Industry Lifecycle Stage}
+
+[Identify where the market is in its lifecycle:
+- Introduction
+- Growth
+- Maturity
+- Decline]
+
+\section{Historical Context}
+
+[Provide historical background on the market:
+- When did the market emerge?
+- Key milestones in market development
+- Major industry shifts and disruptions
+- How has the market evolved over time?]
+
+% ============================================================================
+% CHAPTER 2: MARKET SIZE & GROWTH ANALYSIS (6-8 pages)
+% ============================================================================
+\chapter{Market Size \& Growth Analysis}
+
+\section{Total Addressable Market (TAM)}
+
+The Total Addressable Market represents the total revenue opportunity available if 100\% market share was achieved. Based on comprehensive analysis from multiple research sources:
+
+% VISUAL: Market growth trajectory
+% python skills/scientific-schematics/scripts/generate_schematic.py "Bar chart showing market growth from 2020 to 2034. Historical bars (2020-2024) in dark blue, projected bars (2025-2034) in light blue. Y-axis in billions USD, X-axis showing years. Include CAGR label. Title: [MARKET] Market Growth Trajectory" -o figures/market_growth_trajectory.png --doc-type report
+
+\begin{table}[htbp]
+\centering
+\caption{Global \reporttitle{} Market Projections (2024-2034)}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Year} & \textbf{Market Size (USD)} & \textbf{YoY Growth} & \textbf{CAGR} \\
+\midrule
+2024 & \$X.XX B & -- & -- \\
+\rowcolor{tablealt} 2025 & \$X.XX B & XX.X\% & XX.X\% \\
+2026 & \$X.XX B & XX.X\% & XX.X\% \\
+\rowcolor{tablealt} 2027 & \$X.XX B & XX.X\% & XX.X\% \\
+2028 & \$X.XX B & XX.X\% & XX.X\% \\
+\rowcolor{tablealt} 2029 & \$X.XX B & XX.X\% & XX.X\% \\
+2030 & \$X.XX B & XX.X\% & XX.X\% \\
+\rowcolor{tablealt} 2031 & \$X.XX B & XX.X\% & XX.X\% \\
+2032 & \$X.XX B & XX.X\% & XX.X\% \\
+\rowcolor{tablealt} 2033 & \$X.XX B & XX.X\% & XX.X\% \\
+2034 & \$X.XX B & XX.X\% & XX.X\% \\
+\bottomrule
+\end{tabular}
+\label{tab:tam_projections}
+\end{table}
+
+\textbf{Source:} [Primary research source, year]
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.9\textwidth]{../figures/market_growth_trajectory.png}
+\caption{Market Growth Trajectory (2020-2034)}
+\label{fig:market_growth}
+\end{figure}
+
+\subsection{Historical Growth Analysis}
+
+[Analyze historical market performance over the past 5-10 years:
+- Historical CAGR
+- Key growth periods and drivers
+- Impact of major events (recessions, disruptions, etc.)
+- Comparison to overall economic growth]
+
+\subsection{Growth Projections Methodology}
+
+[Explain the methodology behind growth projections:
+- Key assumptions
+- Data sources
+- Modeling approach
+- Confidence intervals]
+
+\section{Serviceable Addressable Market (SAM)}
+
+The Serviceable Addressable Market represents the portion of TAM that can be served given current product offerings, geographic presence, and regulatory constraints.
+
+% VISUAL: TAM/SAM/SOM diagram
+% python skills/scientific-schematics/scripts/generate_schematic.py "TAM SAM SOM concentric circle diagram. Outer circle: TAM $XXB (Total Addressable Market). Middle circle: SAM $XXB (Serviceable Addressable Market). Inner circle: SOM $XXB (Serviceable Obtainable Market). Labels with arrows pointing to each. Professional blue color scheme" -o figures/tam_sam_som.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.8\textwidth]{../figures/tam_sam_som.png}
+\caption{TAM/SAM/SOM Market Opportunity Breakdown}
+\label{fig:tam_sam_som}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Market Segments Within SAM (2024 vs 2034)}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Segment} & \textbf{2024 Value} & \textbf{2034 Value} & \textbf{CAGR} & \textbf{Share} \\
+\midrule
+Segment A & \$X.XX B & \$XX.XX B & XX.X\% & XX\% \\
+\rowcolor{tablealt} Segment B & \$X.XX B & \$XX.XX B & XX.X\% & XX\% \\
+Segment C & \$X.XX B & \$XX.XX B & XX.X\% & XX\% \\
+\rowcolor{tablealt} Segment D & \$X.XX B & \$XX.XX B & XX.X\% & XX\% \\
+Segment E & \$X.XX B & \$XX.XX B & XX.X\% & XX\% \\
+\midrule
+\textbf{Total SAM} & \textbf{\$X.XX B} & \textbf{\$XX.XX B} & \textbf{XX.X\%} & \textbf{100\%} \\
+\bottomrule
+\end{tabular}
+\label{tab:sam_segments}
+\end{table}
+
+\section{Serviceable Obtainable Market (SOM)}
+
+The Serviceable Obtainable Market represents the realistic market share capture based on competitive dynamics, go-to-market capabilities, and strategic positioning.
+
+\begin{keyinsightbox}[SOM Projections (2034)]
+\textbf{Conservative Scenario (XX\% Market Share):} \marketsize{X.X billion}
+\begin{itemize}
+    \item Assumes competitive market with multiple major players
+    \item Typical XX-XX month enterprise sales cycles
+    \item Focus on [specific segments]
+\end{itemize}
+
+\textbf{Base Case Scenario (XX\% Market Share):} \marketsize{X.X billion}
+\begin{itemize}
+    \item Captures first-mover advantages in key segments
+    \item Strong product-market fit
+    \item Established partnership ecosystem
+\end{itemize}
+
+\textbf{Optimistic Scenario (XX\% Market Share):} \marketsize{X.X billion}
+\begin{itemize}
+    \item Market leadership position
+    \item Platform effects and network advantages
+    \item Proprietary advantages and moats
+\end{itemize}
+\end{keyinsightbox}
+
+\section{Regional Market Analysis}
+
+% VISUAL: Regional breakdown
+% python skills/scientific-schematics/scripts/generate_schematic.py "Pie chart or treemap showing regional market breakdown. North America XX%, Europe XX%, Asia-Pacific XX%, Latin America XX%, Middle East & Africa XX%. Use distinct colors for each region. Include both percentage and dollar values" -o figures/regional_breakdown.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.8\textwidth]{../figures/regional_breakdown.png}
+\caption{Market Size by Region (2024)}
+\label{fig:regional_breakdown}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Regional Market Size and Growth}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Region} & \textbf{2024 Size} & \textbf{Share} & \textbf{CAGR} & \textbf{2034 Size} \\
+\midrule
+North America & \$X.XX B & XX.X\% & XX.X\% & \$XX.XX B \\
+\rowcolor{tablealt} Europe & \$X.XX B & XX.X\% & XX.X\% & \$XX.XX B \\
+Asia-Pacific & \$X.XX B & XX.X\% & XX.X\% & \$XX.XX B \\
+\rowcolor{tablealt} Latin America & \$X.XX B & XX.X\% & XX.X\% & \$XX.XX B \\
+Middle East \& Africa & \$X.XX B & XX.X\% & XX.X\% & \$XX.XX B \\
+\midrule
+\textbf{Global Total} & \textbf{\$X.XX B} & \textbf{100\%} & \textbf{XX.X\%} & \textbf{\$XX.XX B} \\
+\bottomrule
+\end{tabular}
+\label{tab:regional_market}
+\end{table}
+
+\subsection{North America}
+[Detailed analysis of North American market including US and Canada specifics.]
+
+\subsection{Europe}
+[Detailed analysis of European market including key country breakdowns.]
+
+\subsection{Asia-Pacific}
+[Detailed analysis of APAC market with focus on China, Japan, India, and emerging markets.]
+
+\subsection{Rest of World}
+[Analysis of Latin America, Middle East, and Africa markets.]
+
+\section{Segment Analysis}
+
+% VISUAL: Segment growth comparison
+% python skills/scientific-schematics/scripts/generate_schematic.py "Horizontal bar chart comparing segment growth rates. Segments listed on Y-axis, CAGR percentage on X-axis. Bars colored from green (highest growth) to blue (lowest growth). Include data labels on each bar" -o figures/segment_growth.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.9\textwidth]{../figures/segment_growth.png}
+\caption{Segment Growth Rate Comparison (CAGR 2024-2034)}
+\label{fig:segment_growth}
+\end{figure}
+
+[Provide detailed analysis of each market segment including:
+- Current size and market share
+- Growth trajectory
+- Key drivers for each segment
+- Competitive dynamics within segment]
+
+% ============================================================================
+% CHAPTER 3: INDUSTRY DRIVERS & TRENDS (5-6 pages)
+% ============================================================================
+\chapter{Industry Drivers \& Trends}
+
+\section{Primary Growth Drivers}
+
+[Identify and analyze the key factors driving market growth:]
+
+% VISUAL: Driver impact matrix
+% python skills/scientific-schematics/scripts/generate_schematic.py "2x2 matrix showing market drivers. X-axis: Impact (Low to High). Y-axis: Likelihood (Low to High). Plot 8-10 drivers as circles. Upper-right quadrant labeled 'Critical Drivers', lower-right 'Watch Carefully', upper-left 'Monitor', lower-left 'Lower Priority'. Professional blue and green colors" -o figures/driver_impact_matrix.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.85\textwidth]{../figures/driver_impact_matrix.png}
+\caption{Market Driver Impact Assessment Matrix}
+\label{fig:driver_matrix}
+\end{figure}
+
+\subsection{Driver 1: [Name]}
+[Detailed analysis of this driver including:
+- How it affects the market
+- Quantified impact
+- Timeline for impact
+- Supporting evidence and data]
+
+\subsection{Driver 2: [Name]}
+[Detailed analysis]
+
+\subsection{Driver 3: [Name]}
+[Detailed analysis]
+
+\subsection{Driver 4: [Name]}
+[Detailed analysis]
+
+\subsection{Driver 5: [Name]}
+[Detailed analysis]
+
+\section{PESTLE Analysis}
+
+% VISUAL: PESTLE diagram
+% python skills/scientific-schematics/scripts/generate_schematic.py "PESTLE analysis diagram with center hexagon labeled 'Market' surrounded by 6 hexagons: Political (red), Economic (blue), Social (green), Technological (orange), Legal (purple), Environmental (teal). Each outer hexagon contains 2-3 bullet points of key factors" -o figures/pestle_analysis.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.9\textwidth]{../figures/pestle_analysis.png}
+\caption{PESTLE Analysis Framework}
+\label{fig:pestle}
+\end{figure}
+
+\subsection{Political Factors}
+[Analysis of political factors affecting the market:
+- Government policies
+- Political stability
+- Trade policies
+- Tax regulations]
+
+\subsection{Economic Factors}
+[Analysis of economic factors:
+- Economic growth
+- Interest rates
+- Inflation
+- Exchange rates
+- Consumer spending]
+
+\subsection{Social Factors}
+[Analysis of social factors:
+- Demographics
+- Cultural trends
+- Consumer attitudes
+- Workforce trends]
+
+\subsection{Technological Factors}
+[Analysis of technological factors:
+- Technology adoption
+- R\&D activity
+- Automation
+- Digital transformation]
+
+\subsection{Legal Factors}
+[Analysis of legal factors:
+- Industry regulations
+- Compliance requirements
+- Intellectual property
+- Employment laws]
+
+\subsection{Environmental Factors}
+[Analysis of environmental factors:
+- Sustainability requirements
+- Environmental regulations
+- Climate impact
+- Resource availability]
+
+\section{Emerging Trends}
+
+% VISUAL: Trends timeline
+% python skills/scientific-schematics/scripts/generate_schematic.py "Horizontal timeline showing emerging trends from 2024 to 2030. Mark 6-8 trends at different points on timeline with icons and labels. Use different colors for Technology trends (blue), Market trends (green), and Regulatory trends (orange). Include brief descriptions below each trend" -o figures/trends_timeline.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=\textwidth]{../figures/trends_timeline.png}
+\caption{Emerging Industry Trends Timeline}
+\label{fig:trends}
+\end{figure}
+
+[Identify and analyze emerging trends that will shape the market:]
+
+\subsection{Trend 1: [Name]}
+[Detailed trend analysis]
+
+\subsection{Trend 2: [Name]}
+[Detailed trend analysis]
+
+\subsection{Trend 3: [Name]}
+[Detailed trend analysis]
+
+\section{Growth Inhibitors}
+
+[Identify factors that could slow market growth:
+- Market barriers
+- Resource constraints
+- Adoption challenges
+- Competitive pressures]
+
+% ============================================================================
+% CHAPTER 4: COMPETITIVE LANDSCAPE (6-8 pages)
+% ============================================================================
+\chapter{Competitive Landscape}
+
+\section{Market Structure Analysis}
+
+[Analyze the competitive structure of the market:]
+
+\subsection{Market Concentration}
+
+[Provide market concentration analysis:
+- Number of competitors
+- Market share distribution
+- Concentration metrics (HHI, CR4)]
+
+\section{Porter's Five Forces Analysis}
+
+% VISUAL: Porter's Five Forces
+% python skills/scientific-schematics/scripts/generate_schematic.py "Porter's Five Forces diagram. Center box labeled 'Competitive Rivalry: [HIGH/MEDIUM/LOW]'. Four boxes around it connected by arrows: 'Threat of New Entrants: [RATING]' (top), 'Bargaining Power of Suppliers: [RATING]' (left), 'Bargaining Power of Buyers: [RATING]' (right), 'Threat of Substitutes: [RATING]' (bottom). Color code by rating: High=red, Medium=orange, Low=green" -o figures/porters_five_forces.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.85\textwidth]{../figures/porters_five_forces.png}
+\caption{Porter's Five Forces Analysis}
+\label{fig:porter}
+\end{figure}
+
+\begin{porterbox}[Porter's Five Forces Summary]
+\begin{tabular}{@{}ll@{}}
+\textbf{Force} & \textbf{Rating} \\
+\midrule
+Threat of New Entrants & \riskmedium{} \\
+Bargaining Power of Suppliers & \risklow{} \\
+Bargaining Power of Buyers & \riskhigh{} \\
+Threat of Substitutes & \risklow{} \\
+Competitive Rivalry & \riskhigh{} \\
+\end{tabular}
+\end{porterbox}
+
+\subsection{Threat of New Entrants}
+[Detailed analysis of barriers to entry and threat level]
+
+\subsection{Bargaining Power of Suppliers}
+[Detailed analysis of supplier power dynamics]
+
+\subsection{Bargaining Power of Buyers}
+[Detailed analysis of buyer power dynamics]
+
+\subsection{Threat of Substitutes}
+[Detailed analysis of substitute products/services]
+
+\subsection{Competitive Rivalry}
+[Detailed analysis of competitive intensity]
+
+\section{Market Share Analysis}
+
+% VISUAL: Market share chart
+% python skills/scientific-schematics/scripts/generate_schematic.py "Pie chart showing market share of top 10 companies. Company A XX%, Company B XX%, Company C XX%, [etc.], Others XX%. Use distinct colors for each company. Include legend with company names and percentages" -o figures/market_share.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.8\textwidth]{../figures/market_share.png}
+\caption{Market Share by Company (2024)}
+\label{fig:market_share}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Top 10 Companies by Market Share}
+\begin{tabular}{@{}clrrr@{}}
+\toprule
+\textbf{Rank} & \textbf{Company} & \textbf{Revenue} & \textbf{Share} & \textbf{YoY Growth} \\
+\midrule
+1 & Company A & \$X.XX B & XX.X\% & \trendup{} XX\% \\
+\rowcolor{tablealt} 2 & Company B & \$X.XX B & XX.X\% & \trendup{} XX\% \\
+3 & Company C & \$X.XX B & XX.X\% & \trendflat{} XX\% \\
+\rowcolor{tablealt} 4 & Company D & \$X.XX B & XX.X\% & \trendup{} XX\% \\
+5 & Company E & \$X.XX B & XX.X\% & \trenddown{} XX\% \\
+\rowcolor{tablealt} 6 & Company F & \$X.XX B & XX.X\% & \trendup{} XX\% \\
+7 & Company G & \$X.XX B & XX.X\% & \trendup{} XX\% \\
+\rowcolor{tablealt} 8 & Company H & \$X.XX B & XX.X\% & \trendflat{} XX\% \\
+9 & Company I & \$X.XX B & XX.X\% & \trendup{} XX\% \\
+\rowcolor{tablealt} 10 & Company J & \$X.XX B & XX.X\% & \trenddown{} XX\% \\
+\midrule
+& Others & \$X.XX B & XX.X\% & -- \\
+\bottomrule
+\end{tabular}
+\label{tab:market_share}
+\end{table}
+
+\section{Competitive Positioning}
+
+% VISUAL: Competitive positioning matrix
+% python skills/scientific-schematics/scripts/generate_schematic.py "2x2 competitive positioning matrix. X-axis: 'Market Focus' from Niche (left) to Broad (right). Y-axis: 'Solution Approach' from Product (bottom) to Platform (top). Plot 8-10 companies as labeled circles of varying sizes (representing market share). Include quadrant labels" -o figures/competitive_positioning.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.9\textwidth]{../figures/competitive_positioning.png}
+\caption{Competitive Positioning Matrix}
+\label{fig:competitive_positioning}
+\end{figure}
+
+[Analyze how competitors are positioned in the market based on key dimensions:]
+
+\subsection{Strategic Groups}
+
+% VISUAL: Strategic group map
+% python skills/scientific-schematics/scripts/generate_schematic.py "Strategic group map with circles representing different strategic groups. X-axis: Geographic Scope (Regional to Global). Y-axis: Product Breadth (Narrow to Broad). Each circle contains multiple company names and is sized by collective market share. 4-5 distinct groups" -o figures/strategic_groups.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.85\textwidth]{../figures/strategic_groups.png}
+\caption{Strategic Group Mapping}
+\label{fig:strategic_groups}
+\end{figure}
+
+[Identify and describe strategic groups within the competitive landscape]
+
+\section{Competitive Dynamics}
+
+[Analyze competitive behaviors and dynamics:
+- Recent M\&A activity
+- Partnership announcements
+- Product launches
+- Pricing trends
+- Geographic expansion]
+
+\section{Barriers to Entry}
+
+[Analyze barriers that protect incumbents and challenge new entrants:
+- Capital requirements
+- Regulatory barriers
+- Technology barriers
+- Brand and reputation
+- Distribution access
+- Economies of scale]
+
+% ============================================================================
+% CHAPTER 5: CUSTOMER ANALYSIS & SEGMENTATION (4-5 pages)
+% ============================================================================
+\chapter{Customer Analysis \& Segmentation}
+
+\section{Customer Segmentation}
+
+% VISUAL: Customer segmentation
+% python skills/scientific-schematics/scripts/generate_schematic.py "Treemap or pie chart showing customer segments. Segment A XX% (large enterprises), Segment B XX% (mid-market), Segment C XX% (SMB), Segment D XX% (other). Size represents market share. Use distinct colors" -o figures/customer_segments.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.85\textwidth]{../figures/customer_segments.png}
+\caption{Customer Segmentation by Market Share}
+\label{fig:customer_segments}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Customer Segment Analysis}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Segment} & \textbf{Size} & \textbf{Growth} & \textbf{Avg. Deal} & \textbf{CAC} \\
+\midrule
+Large Enterprise & \$X.XX B & XX\% & \$XXX K & \$XX K \\
+\rowcolor{tablealt} Mid-Market & \$X.XX B & XX\% & \$XX K & \$X K \\
+SMB & \$X.XX B & XX\% & \$X K & \$X K \\
+\rowcolor{tablealt} Consumer & \$X.XX B & XX\% & \$XXX & \$XX \\
+\bottomrule
+\end{tabular}
+\label{tab:customer_segments}
+\end{table}
+
+\subsection{Segment A: [Large Enterprise]}
+[Detailed segment analysis including:
+- Segment characteristics
+- Buying behavior
+- Key needs and pain points
+- Decision-making process
+- Willingness to pay]
+
+\subsection{Segment B: [Mid-Market]}
+[Detailed segment analysis]
+
+\subsection{Segment C: [SMB]}
+[Detailed segment analysis]
+
+\subsection{Segment D: [Other]}
+[Detailed segment analysis]
+
+\section{Segment Attractiveness}
+
+% VISUAL: Segment attractiveness matrix
+% python skills/scientific-schematics/scripts/generate_schematic.py "2x2 segment attractiveness matrix. X-axis: Segment Size (Small to Large). Y-axis: Growth Rate (Low to High). Plot customer segments as circles. Upper-right: 'Priority', Upper-left: 'Invest to Grow', Lower-right: 'Harvest', Lower-left: 'Deprioritize'. Include segment labels" -o figures/segment_attractiveness.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.85\textwidth]{../figures/segment_attractiveness.png}
+\caption{Customer Segment Attractiveness Matrix}
+\label{fig:segment_attractiveness}
+\end{figure}
+
+[Analyze which segments are most attractive for investment and focus]
+
+\section{Customer Needs Analysis}
+
+[Identify and prioritize customer needs by segment:
+- Functional needs
+- Emotional needs
+- Social needs
+- Pain points
+- Unmet needs]
+
+\section{Buying Behavior}
+
+[Analyze how customers buy in this market:
+- Purchase triggers
+- Decision-making process
+- Key influencers
+- Evaluation criteria
+- Purchase channels]
+
+% VISUAL: Customer journey
+% python skills/scientific-schematics/scripts/generate_schematic.py "Customer journey diagram showing 5 stages: Awareness → Consideration → Decision → Implementation → Advocacy. Each stage shows key activities, pain points, and touchpoints. Use horizontal flow with icons for each stage" -o figures/customer_journey.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=\textwidth]{../figures/customer_journey.png}
+\caption{Customer Journey Map}
+\label{fig:customer_journey}
+\end{figure}
+
+% ============================================================================
+% CHAPTER 6: TECHNOLOGY & INNOVATION LANDSCAPE (4-5 pages)
+% ============================================================================
+\chapter{Technology \& Innovation Landscape}
+
+\section{Current Technology Stack}
+
+[Describe the technology infrastructure and stack commonly used in the market]
+
+\section{Technology Roadmap}
+
+% VISUAL: Technology roadmap
+% python skills/scientific-schematics/scripts/generate_schematic.py "Technology roadmap timeline from 2024 to 2030. Show 3 parallel tracks: Core Technology (blue), Emerging Technology (green), and Enabling Technology (orange). Mark key milestones and technology introductions on each track. Use horizontal timeline format" -o figures/technology_roadmap.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=\textwidth]{../figures/technology_roadmap.png}
+\caption{Technology Evolution Roadmap (2024-2030)}
+\label{fig:tech_roadmap}
+\end{figure}
+
+[Describe how technology is expected to evolve:
+- Near-term (1-2 years)
+- Medium-term (3-5 years)
+- Long-term (5-10 years)]
+
+\section{Emerging Technologies}
+
+[Analyze emerging technologies that could impact the market:
+- Technology description
+- Current maturity level
+- Expected timeline to mainstream adoption
+- Potential impact on market]
+
+\subsection{Technology 1: [Name]}
+[Detailed analysis]
+
+\subsection{Technology 2: [Name]}
+[Detailed analysis]
+
+\subsection{Technology 3: [Name]}
+[Detailed analysis]
+
+\section{Innovation Trends}
+
+% VISUAL: Innovation matrix
+% python skills/scientific-schematics/scripts/generate_schematic.py "Innovation adoption curve or hype cycle diagram showing where key technologies sit. From left to right: Innovation Trigger, Peak of Inflated Expectations, Trough of Disillusionment, Slope of Enlightenment, Plateau of Productivity. Plot 6-8 technologies at different points" -o figures/innovation_curve.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=\textwidth]{../figures/innovation_curve.png}
+\caption{Technology Adoption Curve / Hype Cycle}
+\label{fig:innovation}
+\end{figure}
+
+[Analyze innovation trends and R\&D activity:
+- R\&D investment levels
+- Patent filing trends
+- Startup activity
+- Corporate innovation initiatives]
+
+\section{Technology Adoption Barriers}
+
+[Identify barriers to technology adoption:
+- Technical complexity
+- Integration challenges
+- Cost barriers
+- Skills gaps
+- Security/privacy concerns]
+
+% ============================================================================
+% CHAPTER 7: REGULATORY & POLICY ENVIRONMENT (3-4 pages)
+% ============================================================================
+\chapter{Regulatory \& Policy Environment}
+
+\section{Current Regulatory Framework}
+
+[Describe the current regulatory landscape:
+- Key regulations
+- Regulatory bodies
+- Compliance requirements
+- Enforcement mechanisms]
+
+\section{Regulatory Timeline}
+
+% VISUAL: Regulatory timeline
+% python skills/scientific-schematics/scripts/generate_schematic.py "Regulatory timeline from 2020 to 2028. Show key regulatory milestones as markers on horizontal timeline. Past events in dark blue, future/upcoming in light blue. Include regulation names and effective dates. Mark current date with vertical line" -o figures/regulatory_timeline.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=\textwidth]{../figures/regulatory_timeline.png}
+\caption{Regulatory Development Timeline}
+\label{fig:regulatory_timeline}
+\end{figure}
+
+[Chronological analysis of regulatory developments]
+
+\section{Regulatory Impact Analysis}
+
+[Analyze how regulations impact the market:
+- Compliance costs
+- Market access implications
+- Competitive implications
+- Product/service requirements]
+
+\section{Policy Trends}
+
+[Identify policy trends that could affect the market:
+- Government priorities
+- Funding initiatives
+- Trade policies
+- Environmental policies]
+
+\section{Regional Regulatory Differences}
+
+[Compare regulatory environments across regions:
+- North America
+- Europe
+- Asia-Pacific
+- Other regions]
+
+% ============================================================================
+% CHAPTER 8: RISK ANALYSIS (3-4 pages)
+% ============================================================================
+\chapter{Risk Analysis}
+
+\section{Risk Overview}
+
+[Provide overview of key risks facing market participants]
+
+\section{Risk Assessment}
+
+% VISUAL: Risk heatmap
+% python skills/scientific-schematics/scripts/generate_schematic.py "Risk heatmap matrix. X-axis: Impact (Low to Critical). Y-axis: Probability (Unlikely to Very Likely). Plot 10-12 risks as labeled circles. Color code: Green (low risk), Yellow (medium), Orange (high), Red (critical). Include risk labels" -o figures/risk_heatmap.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.9\textwidth]{../figures/risk_heatmap.png}
+\caption{Risk Assessment Heatmap}
+\label{fig:risk_heatmap}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Risk Register Summary}
+\begin{tabular}{@{}llccl@{}}
+\toprule
+\textbf{Risk} & \textbf{Category} & \textbf{Probability} & \textbf{Impact} & \textbf{Rating} \\
+\midrule
+Risk 1 & Market & High & High & \riskhigh{} \\
+\rowcolor{tablealt} Risk 2 & Regulatory & Medium & High & \riskhigh{} \\
+Risk 3 & Technology & Medium & Medium & \riskmedium{} \\
+\rowcolor{tablealt} Risk 4 & Competitive & High & Medium & \riskmedium{} \\
+Risk 5 & Operational & Low & High & \riskmedium{} \\
+\rowcolor{tablealt} Risk 6 & Financial & Low & Medium & \risklow{} \\
+\bottomrule
+\end{tabular}
+\label{tab:risk_register}
+\end{table}
+
+\subsection{Market Risks}
+[Detailed analysis of market-related risks]
+
+\subsection{Competitive Risks}
+[Detailed analysis of competitive risks]
+
+\subsection{Regulatory Risks}
+[Detailed analysis of regulatory risks]
+
+\subsection{Technology Risks}
+[Detailed analysis of technology risks]
+
+\subsection{Operational Risks}
+[Detailed analysis of operational risks]
+
+\subsection{Financial Risks}
+[Detailed analysis of financial risks]
+
+\section{Risk Mitigation Strategies}
+
+% VISUAL: Risk mitigation matrix
+% python skills/scientific-schematics/scripts/generate_schematic.py "Risk mitigation matrix showing risks in left column and corresponding mitigation strategies in right column. Connect risks to mitigations with arrows. Color code by risk severity. Include both prevention and response strategies" -o figures/risk_mitigation.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.9\textwidth]{../figures/risk_mitigation.png}
+\caption{Risk Mitigation Framework}
+\label{fig:risk_mitigation}
+\end{figure}
+
+[Describe strategies to mitigate identified risks]
+
+\begin{riskbox}[Risk Mitigation Summary]
+\begin{enumerate}
+    \item \textbf{[Risk 1]:} [Mitigation strategy]
+    \item \textbf{[Risk 2]:} [Mitigation strategy]
+    \item \textbf{[Risk 3]:} [Mitigation strategy]
+    \item \textbf{[Risk 4]:} [Mitigation strategy]
+\end{enumerate}
+\end{riskbox}
+
+% ============================================================================
+% CHAPTER 9: STRATEGIC OPPORTUNITIES & RECOMMENDATIONS (4-5 pages)
+% ============================================================================
+\chapter{Strategic Opportunities \& Recommendations}
+
+\section{Opportunity Analysis}
+
+% VISUAL: Opportunity matrix
+% python skills/scientific-schematics/scripts/generate_schematic.py "2x2 opportunity matrix. X-axis: Market Attractiveness (Low to High). Y-axis: Ability to Win (Low to High). Plot 6-8 opportunities as labeled circles of varying sizes. Upper-right: 'Pursue Aggressively', Upper-left: 'Selective Investment', Lower-right: 'Build Capabilities', Lower-left: 'Avoid'" -o figures/opportunity_matrix.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.9\textwidth]{../figures/opportunity_matrix.png}
+\caption{Strategic Opportunity Assessment Matrix}
+\label{fig:opportunity_matrix}
+\end{figure}
+
+[Identify and analyze strategic opportunities in the market]
+
+\subsection{Opportunity 1: [Name]}
+\begin{opportunitybox}[Opportunity: [Name]]
+\textbf{Description:} [Brief description]
+
+\textbf{Market Size:} \marketsize{X.X billion}
+
+\textbf{Growth Rate:} \growthrate{XX.X}
+
+\textbf{Strategic Fit:} \rating{4}
+
+\textbf{Investment Required:} \$XX million
+\end{opportunitybox}
+
+[Detailed analysis of the opportunity]
+
+\subsection{Opportunity 2: [Name]}
+[Detailed analysis]
+
+\subsection{Opportunity 3: [Name]}
+[Detailed analysis]
+
+\section{Strategic Options Analysis}
+
+[Analyze different strategic approaches:
+- Build (organic development)
+- Buy (M\&A)
+- Partner (strategic alliances)
+- Ignore (not pursue)]
+
+\section{Prioritized Recommendations}
+
+% VISUAL: Recommendation priority matrix
+% python skills/scientific-schematics/scripts/generate_schematic.py "Priority matrix showing recommendations. X-axis: Effort/Investment (Low to High). Y-axis: Impact/Value (Low to High). Plot 6-8 recommendations. Upper-left: 'Quick Wins', Upper-right: 'Major Projects', Lower-left: 'Fill-ins', Lower-right: 'Thankless Tasks'. Label each recommendation" -o figures/recommendation_priority.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.85\textwidth]{../figures/recommendation_priority.png}
+\caption{Recommendation Priority Framework}
+\label{fig:recommendations}
+\end{figure}
+
+\begin{recommendationbox}[Strategic Recommendations]
+\textbf{Tier 1: Immediate Priority}
+\begin{enumerate}
+    \item \textbf{[Recommendation 1]:} [Detailed action with expected outcome, timeline, and investment]
+    \item \textbf{[Recommendation 2]:} [Detailed action]
+\end{enumerate}
+
+\textbf{Tier 2: Near-Term (6-12 months)}
+\begin{enumerate}[start=3]
+    \item \textbf{[Recommendation 3]:} [Detailed action]
+    \item \textbf{[Recommendation 4]:} [Detailed action]
+\end{enumerate}
+
+\textbf{Tier 3: Medium-Term (1-2 years)}
+\begin{enumerate}[start=5]
+    \item \textbf{[Recommendation 5]:} [Detailed action]
+    \item \textbf{[Recommendation 6]:} [Detailed action]
+\end{enumerate}
+\end{recommendationbox}
+
+\section{Success Factors}
+
+[Identify critical success factors for implementing recommendations:
+- Organizational capabilities
+- Resource requirements
+- Timing considerations
+- External dependencies]
+
+% ============================================================================
+% CHAPTER 10: IMPLEMENTATION ROADMAP (3-4 pages)
+% ============================================================================
+\chapter{Implementation Roadmap}
+
+\section{Implementation Overview}
+
+[Provide overview of implementation approach and timeline]
+
+\section{Phased Implementation Plan}
+
+% VISUAL: Implementation timeline
+% python skills/scientific-schematics/scripts/generate_schematic.py "Gantt chart style implementation timeline showing 4 phases over 24 months. Phase 1: Foundation (months 1-6), Phase 2: Build (months 4-12), Phase 3: Scale (months 10-18), Phase 4: Optimize (months 16-24). Show overlapping phases with key milestones marked. Use different colors for each phase" -o figures/implementation_timeline.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=\textwidth]{../figures/implementation_timeline.png}
+\caption{Implementation Roadmap Timeline}
+\label{fig:implementation}
+\end{figure}
+
+\subsection{Phase 1: Foundation (Months 1-6)}
+[Detailed activities and deliverables for Phase 1]
+
+\subsection{Phase 2: Build (Months 4-12)}
+[Detailed activities and deliverables for Phase 2]
+
+\subsection{Phase 3: Scale (Months 10-18)}
+[Detailed activities and deliverables for Phase 3]
+
+\subsection{Phase 4: Optimize (Months 16-24)}
+[Detailed activities and deliverables for Phase 4]
+
+\section{Key Milestones}
+
+% VISUAL: Milestone tracker
+% python skills/scientific-schematics/scripts/generate_schematic.py "Milestone tracker showing 8-10 key milestones on a horizontal timeline. Each milestone has a date, name, and status indicator (completed=green checkmark, in-progress=yellow circle, upcoming=gray circle). Group by phase" -o figures/milestone_tracker.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=\textwidth]{../figures/milestone_tracker.png}
+\caption{Key Implementation Milestones}
+\label{fig:milestones}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Implementation Milestones}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Milestone} & \textbf{Target Date} & \textbf{Owner} & \textbf{Success Criteria} \\
+\midrule
+Milestone 1 & Month 3 & [Owner] & [Criteria] \\
+\rowcolor{tablealt} Milestone 2 & Month 6 & [Owner] & [Criteria] \\
+Milestone 3 & Month 9 & [Owner] & [Criteria] \\
+\rowcolor{tablealt} Milestone 4 & Month 12 & [Owner] & [Criteria] \\
+Milestone 5 & Month 18 & [Owner] & [Criteria] \\
+\rowcolor{tablealt} Milestone 6 & Month 24 & [Owner] & [Criteria] \\
+\bottomrule
+\end{tabular}
+\label{tab:milestones}
+\end{table}
+
+\section{Resource Requirements}
+
+[Detail resource requirements for implementation:
+- Team structure
+- Budget allocation
+- Technology requirements
+- External support needs]
+
+\section{Governance Structure}
+
+[Define governance for implementation:
+- Decision-making authority
+- Reporting structure
+- Review cadence
+- Escalation paths]
+
+% ============================================================================
+% CHAPTER 11: INVESTMENT THESIS & FINANCIAL PROJECTIONS (3-4 pages)
+% ============================================================================
+\chapter{Investment Thesis \& Financial Projections}
+
+\section{Investment Summary}
+
+[Summarize the investment opportunity:
+- Key value drivers
+- Expected returns
+- Investment timeline
+- Risk-adjusted assessment]
+
+\begin{executivesummarybox}[Investment Thesis]
+The \reporttitle{} market presents a compelling investment opportunity characterized by:
+
+\begin{itemize}
+    \item \textbf{Large Market:} \marketsize{XX billion} TAM growing at \growthrate{XX.X} CAGR
+    \item \textbf{Favorable Dynamics:} [Key market dynamics]
+    \item \textbf{Strong Drivers:} [Key growth drivers]
+    \item \textbf{Manageable Risks:} [Risk summary]
+    \item \textbf{Clear Path to Value:} [Value creation summary]
+\end{itemize}
+\end{executivesummarybox}
+
+\section{Financial Projections}
+
+% VISUAL: Financial projections
+% python skills/scientific-schematics/scripts/generate_schematic.py "Financial projections chart showing revenue growth over 5 years. Bar chart for revenue with line overlay for growth rate. Three scenarios: Conservative (gray bars), Base Case (blue bars), Optimistic (green bars). Y-axis dual: Revenue ($M) and Growth (%). Include data labels" -o figures/financial_projections.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.9\textwidth]{../figures/financial_projections.png}
+\caption{Financial Projections (5-Year)}
+\label{fig:financials}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Financial Projections Summary}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Metric} & \textbf{Year 1} & \textbf{Year 2} & \textbf{Year 3} & \textbf{Year 4} & \textbf{Year 5} \\
+\midrule
+Revenue (\$M) & \$XX & \$XX & \$XX & \$XX & \$XX \\
+\rowcolor{tablealt} Growth Rate & XX\% & XX\% & XX\% & XX\% & XX\% \\
+Gross Margin & XX\% & XX\% & XX\% & XX\% & XX\% \\
+\rowcolor{tablealt} EBITDA (\$M) & \$XX & \$XX & \$XX & \$XX & \$XX \\
+EBITDA Margin & XX\% & XX\% & XX\% & XX\% & XX\% \\
+\bottomrule
+\end{tabular}
+\label{tab:financials}
+\end{table}
+
+\section{Scenario Analysis}
+
+% VISUAL: Scenario comparison
+% python skills/scientific-schematics/scripts/generate_schematic.py "Scenario comparison chart showing 3 scenarios (Conservative, Base, Optimistic) across key metrics. Use grouped bar chart with metrics on X-axis (Revenue Y5, EBITDA Y5, Market Share, ROI) and values on Y-axis. Color code by scenario" -o figures/scenario_analysis.png --doc-type report
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.85\textwidth]{../figures/scenario_analysis.png}
+\caption{Scenario Analysis Comparison}
+\label{fig:scenarios}
+\end{figure}
+
+\subsection{Conservative Scenario}
+[Detailed assumptions and outcomes for conservative case]
+
+\subsection{Base Case Scenario}
+[Detailed assumptions and outcomes for base case]
+
+\subsection{Optimistic Scenario}
+[Detailed assumptions and outcomes for optimistic case]
+
+\section{Key Assumptions}
+
+[Document key assumptions underlying financial projections:
+- Market growth assumptions
+- Pricing assumptions
+- Cost assumptions
+- Competitive assumptions
+- Timing assumptions]
+
+\section{Sensitivity Analysis}
+
+[Analyze sensitivity of projections to key variables:
+- Revenue sensitivity to market growth
+- Margin sensitivity to pricing
+- Returns sensitivity to timing]
+
+\section{Return Expectations}
+
+[Summarize expected returns:
+- ROI projections
+- Payback period
+- IRR estimates
+- Multiple analysis]
+
+% ============================================================================
+% APPENDICES
+% ============================================================================
+\appendix
+
+% ============================================================================
+% APPENDIX A: METHODOLOGY & DATA SOURCES
+% ============================================================================
+\chapter{Methodology \& Data Sources}
+
+\section{Research Methodology}
+
+[Describe the research methodology used:
+- Primary research methods
+- Secondary research sources
+- Data collection timeframe
+- Analytical frameworks applied]
+
+\section{Data Sources}
+
+[List all data sources used in the report:
+- Market research reports
+- Industry databases
+- Government statistics
+- Company reports
+- Expert interviews
+- Academic publications]
+
+\section{Limitations}
+
+[Acknowledge limitations of the analysis:
+- Data availability constraints
+- Methodological limitations
+- Forecast uncertainty
+- Scope limitations]
+
+% ============================================================================
+% APPENDIX B: DETAILED MARKET DATA
+% ============================================================================
+\chapter{Detailed Market Data}
+
+\section{Historical Market Data}
+
+[Provide detailed historical market data tables]
+
+\section{Regional Data Breakdown}
+
+[Provide detailed regional market data]
+
+\section{Segment Data Details}
+
+[Provide detailed segment-level data]
+
+\section{Competitive Data}
+
+[Provide detailed competitive data tables]
+
+% ============================================================================
+% APPENDIX C: COMPANY PROFILES
+% ============================================================================
+\chapter{Company Profiles}
+
+\section{Company A}
+
+\begin{calloutbox}[Company Profile: Company A]
+\textbf{Headquarters:} [Location]
+
+\textbf{Revenue:} \$X.X billion (FY2024)
+
+\textbf{Employees:} X,XXX
+
+\textbf{Market Position:} [Position description]
+
+\textbf{Key Products/Services:} [List]
+
+\textbf{Recent Developments:} [Summary]
+\end{calloutbox}
+
+[Brief narrative description of company strategy and positioning]
+
+\section{Company B}
+[Company profile]
+
+\section{Company C}
+[Company profile]
+
+\section{Company D}
+[Company profile]
+
+\section{Company E}
+[Company profile]
+
+% ============================================================================
+% REFERENCES
+% ============================================================================
+\newpage
+\bibliographystyle{plainnat}
+\bibliography{../references/references}
+
+% Alternative: Manual bibliography if not using BibTeX
+% \begin{thebibliography}{99}
+% 
+% \bibitem{source1}
+% Author1, A.B. (2024). 
+% Title of report or article. 
+% \textit{Publisher/Source}. 
+% URL
+% 
+% \bibitem{source2}
+% [Continue with all references...]
+%
+% \end{thebibliography}
+
+% ============================================================================
+% END OF DOCUMENT
+% ============================================================================
+\end{document}

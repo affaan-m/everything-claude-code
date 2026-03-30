@@ -1,0 +1,380 @@
+\documentclass[10pt,letterpaper]{article}
+
+% Packages
+\usepackage[margin=0.5in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+
+% Color definitions
+\definecolor{headerblue}{RGB}{0,102,204}
+\definecolor{tier1green}{RGB}{0,153,76}
+\definecolor{tier2orange}{RGB}{255,152,0}
+\definecolor{tier3gray}{RGB}{158,158,158}
+\definecolor{mutationred}{RGB}{244,67,54}
+\definecolor{amplificationblue}{RGB}{33,150,243}
+\definecolor{fusionpurple}{RGB}{156,39,176}
+\definecolor{highlightgray}{RGB}{240,240,240}
+
+% Section formatting
+\titleformat{\section}{\normalfont\fontsize{11}{12}\bfseries\color{headerblue}}{\thesection}{0.5em}{}
+\titlespacing*{\section}{0pt}{4pt}{2pt}
+
+\titleformat{\subsection}{\normalfont\fontsize{10}{11}\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{3pt}{1pt}
+
+% List formatting
+\setlist[itemize]{leftmargin=*,itemsep=0pt,parsep=0pt,topsep=1pt}
+\setlist[enumerate]{leftmargin=*,itemsep=0pt,parsep=0pt,topsep=1pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt}
+
+% Header/footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize \textbf{Genomic Profile Report: [PATIENT ID]}}
+\fancyhead[R]{\footnotesize Page \thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\fancyfoot[C]{\footnotesize Confidential Laboratory Report - CLIA/CAP Certified}
+
+\begin{document}
+
+% Title block
+\begin{center}
+{\fontsize{14}{16}\selectfont\bfseries\color{headerblue} COMPREHENSIVE GENOMIC PROFILING REPORT}\\[2pt]
+{\fontsize{10}{12}\selectfont [Laboratory Name] | CLIA \#: [Number] | CAP \#: [Number]}
+\end{center}
+
+\vspace{2pt}
+
+% Patient/Specimen Information
+\begin{tcolorbox}[colback=highlightgray,colframe=black]
+\begin{minipage}{0.48\textwidth}
+{\small
+\textbf{Patient Information}\\
+Patient ID: [De-identified ID]\\
+Date of Birth: [De-identified/Age only]\\
+Sex: [M/F]\\
+Ordering Physician: [Name, MD]
+}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+{\small
+\textbf{Specimen Information}\\
+Specimen Type: [Tissue/Blood/Other]\\
+Collection Date: [Date]\\
+Received Date: [Date]\\
+Report Date: [Date]
+}
+\end{minipage}
+\end{tcolorbox}
+
+\vspace{2pt}
+
+% Diagnosis
+\textbf{Diagnosis}: [Cancer type, stage, histology]
+
+\textbf{Testing Performed}: [Assay name - e.g., FoundationOne CDx, NGS Panel]
+
+\vspace{2pt}
+
+% Results Summary Box
+\begin{tcolorbox}[enhanced,colback=tier1green!10,colframe=tier1green,
+title=\textbf{RESULTS SUMMARY},fonttitle=\bfseries,coltitle=black]
+{\small
+\textbf{Actionable Findings}: [X] alteration(s) detected
+\begin{itemize}
+\item \textbf{Tier 1}: [Number] FDA-approved therapy target(s)
+\item \textbf{Tier 2}: [Number] clinical trial or off-label option(s)
+\item \textbf{Tier 3}: [Number] variant(s) of uncertain significance
+\end{itemize}
+
+\textbf{Additional Biomarkers}:
+\begin{itemize}
+\item Tumor Mutational Burden (TMB): [X.X] mutations/Mb - [High/Intermediate/Low]
+\item Microsatellite Status: [MSI-H / MSS / Not assessed]
+\item PD-L1 Expression: [X\% TPS / Not assessed]
+\end{itemize}
+}
+\end{tcolorbox}
+
+\section{Tier 1: FDA-Approved Targeted Therapies}
+
+\begin{tcolorbox}[enhanced,colback=tier1green!5,colframe=tier1green,
+title={\colorbox{mutationred!60}{\textcolor{white}{\textbf{MUTATION}}} \textbf{[Gene Name] [Alteration]} \hfill \textbf{TIER 1 - ACTIONABLE}},
+fonttitle=\bfseries\small,coltitle=black]
+{\small
+\textbf{Alteration}: [Gene] [Specific variant - e.g., EGFR p.L858R (c.2573T>G)]\\
+\textbf{Variant Allele Frequency (VAF)}: XX\% (suggests [clonal/subclonal] mutation)\\
+\textbf{Classification}: [Pathogenic / Likely Pathogenic] (ClinVar, OncoKB)
+
+\textbf{Clinical Significance}: \textcolor{tier1green}{\textbf{ACTIONABLE - FDA-APPROVED THERAPY AVAILABLE}}
+
+\textbf{FDA-Approved Therapy}:
+\begin{itemize}
+\item \textbf{Drug}: [Drug name (brand name)] XX mg [PO/IV] [schedule]
+\item \textbf{Indication}: [Specific disease, line of therapy]
+\item \textbf{Evidence}: [Pivotal trial] - [Key results with HR, ORR, median survival]
+\item \textbf{Guideline}: NCCN Category [1/2A], [ESMO/ASCO recommendation]
+\item \textbf{Expected Outcomes}: ORR XX\%, median PFS XX months
+\end{itemize}
+
+\textbf{Alternative Therapies}:
+\begin{itemize}
+\item [Alternative drug] - [Indication, evidence level]
+\end{itemize}
+
+\textbf{Recommendation}: \textbf{STRONG} - Consider [drug name] as [first-line/second-line] therapy (GRADE 1A)
+}
+\end{tcolorbox}
+
+\vspace{3pt}
+
+\begin{tcolorbox}[enhanced,colback=tier1green!5,colframe=tier1green,
+title={\colorbox{amplificationblue!60}{\textcolor{white}{\textbf{AMPLIFICATION}}} \textbf{[Gene] Amplification} \hfill \textbf{TIER 1}},
+fonttitle=\bfseries\small,coltitle=black]
+{\small
+\textbf{Alteration}: [Gene name] amplification\\
+\textbf{Copy Number}: [X.X] copies per cell (threshold for positivity: ≥[Y])\\
+\textbf{Method}: [NGS copy number analysis / FISH]
+
+\textbf{Clinical Significance}: \textcolor{tier1green}{\textbf{ACTIONABLE - COMPANION DIAGNOSTIC}}
+
+\textbf{Therapy Options}: [Similar structure as mutation section]
+}
+\end{tcolorbox}
+
+\section{Tier 2: Clinical Trial or Guideline-Recommended Off-Label}
+
+\begin{tcolorbox}[enhanced,colback=tier2orange!5,colframe=tier2orange,
+title={\colorbox{fusionpurple!60}{\textcolor{white}{\textbf{FUSION}}} \textbf{[Gene] Rearrangement} \hfill \textbf{TIER 2 - INVESTIGATIONAL}},
+fonttitle=\bfseries\small,coltitle=black]
+{\small
+\textbf{Alteration}: [Gene A]-[Gene B] fusion detected\\
+\textbf{Method}: [RNA-seq / DNA NGS / FISH]
+
+\textbf{Clinical Significance}: \textcolor{tier2orange}{\textbf{INVESTIGATIONAL - CLINICAL TRIAL PREFERRED}}
+
+\textbf{Treatment Options}:
+\begin{itemize}
+\item \textbf{Clinical Trial}: [Specific trial or trial search guidance]
+\item \textbf{Off-Label Option}: [Drug] - NCCN Category 2A recommendation
+\item \textbf{Evidence}: [Phase 2 data, basket trial results, case series]
+\end{itemize}
+
+\textbf{Recommendation}: \textbf{CONDITIONAL} - Consider clinical trial enrollment or off-label use after standard therapy (GRADE 2B)
+}
+\end{tcolorbox}
+
+\section{Tier 3: Variants of Uncertain Significance (VUS)}
+
+\begin{tcolorbox}[colback=tier3gray!10,colframe=tier3gray]
+{\small
+\textbf{[Gene] [Variant]}: [Description]\\
+\textbf{Classification}: Variant of Uncertain Significance (VUS)\\
+\textbf{Clinical Actionability}: None currently - insufficient evidence\\
+\textbf{Recommendation}: No treatment change based on this finding; may be reclassified as evidence emerges
+}
+\end{tcolorbox}
+
+\section{Biomarkers Assessed - Negative}
+
+\textbf{No Alterations Detected in}:
+\begin{multicols}{3}
+\begin{itemize}
+\item [Gene 1]
+\item [Gene 2]
+\item [Gene 3]
+\item [Gene 4]
+\item [Gene 5]
+\item [Gene 6]
+\end{itemize}
+\end{multicols}
+
+\section{Additional Biomarkers}
+
+\subsection{Tumor Mutational Burden (TMB)}
+
+\textbf{TMB}: [X.X] mutations per megabase
+
+\textbf{Classification}:
+\begin{itemize}
+\item $\geq$10 mut/Mb: TMB-high (potential immunotherapy benefit)
+\item 6-9 mut/Mb: TMB-intermediate
+\item <6 mut/Mb: TMB-low
+\end{itemize}
+
+\textbf{Result}: [TMB-high / TMB-intermediate / TMB-low]
+
+\textbf{Clinical Implication}:
+\begin{itemize}
+\item TMB-high: Consider immunotherapy; pembrolizumab FDA-approved for TMB-H ($\geq$10) solid tumors
+\item TMB-intermediate/low: Standard chemotherapy or biomarker-directed therapy
+\end{itemize}
+
+\subsection{Microsatellite Instability (MSI)}
+
+\textbf{MSI Status}: [MSI-H / MSI-L / MSS]
+
+\textbf{Method}: [NGS-based MSI calling / PCR-based assay]
+
+\textbf{Clinical Implication}:
+\begin{itemize}
+\item MSI-H: Immunotherapy highly effective (ORR 30-60\%); pembrolizumab, nivolumab approved
+\item MSS: Standard therapy; MSI-H-specific therapies not indicated
+\item If MSI-H + [relevant cancer] + young age: Consider germline Lynch syndrome testing
+\end{itemize}
+
+\section{Integrated Treatment Recommendations}
+
+\begin{tcolorbox}[enhanced,colback=stronggreen!10,colframe=tier1green,
+title=\textbf{PERSONALIZED TREATMENT PLAN},fonttitle=\bfseries,coltitle=black]
+{\small
+Based on the genomic profile, the following treatment approach is recommended:
+
+\textbf{Primary Recommendation (GRADE 1A)}:
+\begin{itemize}
+\item \textbf{[Drug targeting identified alteration]}
+\item Dosing: [Specific dose and schedule]
+\item Evidence: [Supporting data]
+\item Expected outcomes: ORR XX\%, median PFS XX months
+\end{itemize}
+
+\textbf{If Primary Recommendation Contraindicated}:
+\begin{itemize}
+\item Alternative 1: [Second-line biomarker-directed option]
+\item Alternative 2: [Standard therapy if targeted therapy ineligible]
+\end{itemize}
+
+\textbf{At Progression}:
+\begin{itemize}
+\item Repeat molecular profiling (liquid biopsy or tissue) for resistance mechanisms
+\item Expected resistance alterations: [e.g., EGFR T790M, MET amplification]
+\item Sequential targeted therapy if secondary actionable alteration identified
+\end{itemize}
+
+\textbf{Clinical Trial Matching}:
+\begin{itemize}
+\item [List relevant trials based on identified alterations]
+\item ClinicalTrials.gov search terms: [Suggested keywords]
+\end{itemize}
+}
+\end{tcolorbox}
+
+\section{Clinical Trial Matching}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{llll}
+\toprule
+\textbf{Trial} & \textbf{Intervention} & \textbf{Biomarker} & \textbf{Phase} \\
+\midrule
+[NCT Number] & [Drug/regimen] & [Matching biomarker] & Phase [1/2/3] \\
+[NCT Number] & [Drug/regimen] & [Matching biomarker] & Phase [1/2/3] \\
+\bottomrule
+\end{tabular}
+\caption{Potential clinical trials based on molecular profile (as of [date])}
+\end{table}
+
+\textit{Note: Trial availability changes frequently. Search ClinicalTrials.gov for current options.}
+
+\section{Methodology}
+
+\subsection{Assay Information}
+
+\textbf{Test Name}: [FoundationOne CDx / Custom NGS Panel / Other]\\
+\textbf{Methodology}: Next-generation sequencing (NGS)\\
+\textbf{Genes Analyzed}: [Number] genes for SNVs, indels, CNVs, and rearrangements\\
+\textbf{Coverage Depth}: [XXX]x median coverage\\
+\textbf{Limit of Detection}: [X\%] variant allele frequency
+
+\textbf{Specimen Details}:
+\begin{itemize}
+\item Specimen type: [FFPE tissue block / Blood (ctDNA)]
+\item Tumor content: [XX\%] (minimum 20\% required for optimal sensitivity)
+\item DNA quality: [Adequate / Suboptimal]
+\item DNA quantity: [XX ng] (minimum [Y ng] required)
+\end{itemize}
+
+\subsection{Interpretation}
+
+\textbf{Variant Classification}:
+\begin{itemize}
+\item Pathogenic: Disease-causing, clinically significant
+\item Likely Pathogenic: Probably disease-causing based on available evidence
+\item VUS: Uncertain significance, insufficient evidence for classification
+\item Likely Benign: Probably not disease-causing
+\item Benign: Not disease-causing
+\end{itemize}
+
+\textbf{Databases Referenced}:
+\begin{itemize}
+\item OncoKB (Memorial Sloan Kettering)
+\item CIViC (Clinical Interpretations of Variants in Cancer)
+\item ClinVar (NCBI)
+\item COSMIC (Catalogue of Somatic Mutations in Cancer)
+\item [Others - PMKB, CGI, etc.]
+\end{itemize}
+
+\section{Limitations}
+
+\begin{itemize}
+\item This test analyzes [somatic/germline] alterations in tumor tissue. [If somatic: Results not informative for inherited cancer risk]
+\item Negative result does not exclude presence of alterations in genes not covered by this panel
+\item Low VAF alterations (<5\%) may not be detected due to assay sensitivity limits
+\item Copy number analysis limited for small amplifications or deletions
+\item Structural variants detection depends on breakpoint location within sequenced regions
+\item TMB and MSI calculations are estimate-based; consider orthogonal testing if borderline
+\end{itemize}
+
+\section{Recommendations for Referring Clinician}
+
+\begin{enumerate}
+\item \textbf{[Action 1]}: [e.g., Initiate targeted therapy with drug X based on detected alteration]
+\item \textbf{[Action 2]}: [e.g., Consider clinical trial enrollment for Tier 2 alteration]
+\item \textbf{[Action 3]}: [e.g., Repeat molecular profiling at progression to identify resistance mechanisms]
+\item \textbf{[Action 4]}: [e.g., If MSI-H detected and patient <50 years, refer for genetic counseling for Lynch syndrome]
+\item \textbf{[Action 5]}: [e.g., Share report with molecular tumor board for complex decision-making]
+\end{enumerate}
+
+\section{References}
+
+\begin{enumerate}
+\item [FDA Label for companion diagnostic]
+\item [Key clinical trial supporting biomarker-therapy association]
+\item [NCCN Guideline reference]
+\item [OncoKB database version]
+\item [Assay validation publication]
+\end{enumerate}
+
+\vspace{10pt}
+
+\hrule
+\vspace{4pt}
+{\footnotesize
+\textbf{Laboratory Director}: [Name, MD, PhD] | [Board certifications]\\
+\textbf{Report Authorized By}: [Name, credentials] | Date: [Date]\\
+\textbf{Laboratory}: [Name, address]\\
+\textbf{CLIA \#}: [Number] | \textbf{CAP \#}: [Number]\\
+\textbf{Questions}: Contact [Name] at [Phone] or [Email]
+
+\vspace{2pt}
+
+\textit{This report is intended for use by qualified healthcare professionals. The information provided is based on current scientific literature and databases. Interpretation and treatment decisions should be made by qualified physicians in consultation with the patient. This test was performed in a CLIA-certified, CAP-accredited laboratory.}
+}
+
+\end{document}
+

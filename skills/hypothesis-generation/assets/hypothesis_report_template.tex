@@ -1,0 +1,572 @@
+% !TEX program = xelatex
+\documentclass[11pt,letterpaper]{article}
+\usepackage{hypothesis_generation}
+\usepackage{natbib}
+
+% Document metadata
+\title{[Phenomenon Name]}
+\author{Scientific Hypothesis Generation}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% ============================================================================
+% EXECUTIVE SUMMARY
+% ============================================================================
+% NOTE: Keep main text to 4 pages maximum. All details go to appendices.
+% Executive Summary: 0.5-1 page
+
+\section*{Executive Summary}
+\addcontentsline{toc}{section}{Executive Summary}
+
+\begin{summarybox}[Executive Summary]
+\textbf{Phenomenon:} [One paragraph: What was observed? Why is it important?]
+
+\vspace{0.2cm}
+\textbf{Key Question:} [Single sentence stating the central question]
+
+\vspace{0.2cm}
+\textbf{Competing Hypotheses:}
+\begin{enumerate}
+  \item \textbf{[H1 Title]:} [One sentence mechanistic summary]
+  \item \textbf{[H2 Title]:} [One sentence mechanistic summary]
+  \item \textbf{[H3 Title]:} [One sentence mechanistic summary]
+  \item \textbf{[Add H4 \& H5 if applicable]}
+\end{enumerate}
+
+\vspace{0.2cm}
+\textbf{Recommended Approach:} [One sentence on priority experiments]
+
+\end{summarybox}
+
+\vspace{0.3cm}
+
+% ============================================================================
+% COMPETING HYPOTHESES
+% ============================================================================
+% NOTE: Keep this section to 2-2.5 pages for 3-5 hypotheses
+% Each hypothesis: 1-2 brief paragraphs + 2-3 key evidence points + 1-2 assumptions
+% Detailed explanations and additional evidence go to Appendix A
+
+\section{Competing Hypotheses}
+
+This section presents [3-5] distinct mechanistic hypotheses. Detailed literature review and comprehensive evidence are in Appendix A.
+
+\subsection*{Hypothesis 1: [Concise Descriptive Title]}
+
+\begin{hypothesisbox1}[Hypothesis 1: [Title]]
+
+\textbf{Mechanistic Explanation:}
+
+[Provide a BRIEF mechanistic explanation (1-2 paragraphs) of HOW and WHY. Keep concise - main text is limited to 4 pages total. Include only the essential mechanism. All detailed explanations go to Appendix A.
+
+Example: "This hypothesis proposes that [mechanism X] operates through [pathway Y], resulting in [outcome Z]. The process initiates when [trigger], activating [component A] and ultimately producing the observed [phenomenon] \citep{key-ref}."
+]
+
+\vspace{0.2cm}
+
+\textbf{Key Supporting Evidence:}
+\begin{itemize}
+  \item [Most essential evidence point 1 \citep{author2023}]
+  \item [Most essential evidence point 2 \citep{author2022}]
+  \item [Most essential evidence point 3 \citep{author2021}]
+\end{itemize}
+
+\vspace{0.2cm}
+
+\textbf{Core Assumptions:}
+\begin{enumerate}
+  \item [Most critical assumption 1]
+  \item [Most critical assumption 2]
+\end{enumerate}
+
+\end{hypothesisbox1}
+
+\vspace{0.3cm}
+
+\subsection*{Hypothesis 2: [Concise Descriptive Title]}
+
+\begin{hypothesisbox2}[Hypothesis 2: [Title]]
+
+\textbf{Mechanistic Explanation:}
+
+[BRIEF mechanistic explanation (1-2 paragraphs) distinct from Hypothesis 1. Keep concise.]
+
+\vspace{0.2cm}
+
+\textbf{Key Supporting Evidence:}
+\begin{itemize}
+  \item [Essential evidence point 1 with citation]
+  \item [Essential evidence point 2 with citation]
+  \item [Essential evidence point 3 with citation]
+\end{itemize}
+
+\vspace{0.2cm}
+
+\textbf{Core Assumptions:}
+\begin{enumerate}
+  \item [Critical assumption 1]
+  \item [Critical assumption 2]
+\end{enumerate}
+
+\end{hypothesisbox2}
+
+\vspace{0.3cm}
+
+\subsection*{Hypothesis 3: [Concise Descriptive Title]}
+
+\begin{hypothesisbox3}[Hypothesis 3: [Title]]
+
+\textbf{Mechanistic Explanation:}
+
+[BRIEF mechanistic explanation (1-2 paragraphs) distinct from previous hypotheses.]
+
+\vspace{0.2cm}
+
+\textbf{Key Supporting Evidence:}
+\begin{itemize}
+  \item [Essential evidence point 1 with citation]
+  \item [Essential evidence point 2 with citation]
+  \item [Essential evidence point 3 with citation]
+\end{itemize}
+
+\vspace{0.2cm}
+
+\textbf{Core Assumptions:}
+\begin{enumerate}
+  \item [Critical assumption 1]
+  \item [Critical assumption 2]
+\end{enumerate}
+
+\end{hypothesisbox3}
+
+\vspace{0.3cm}
+
+% Optional: Include Hypothesis 4 and 5 if needed
+% \subsection*{Hypothesis 4: [Title]}
+% \begin{hypothesisbox4}[Hypothesis 4: [Title]]
+% [Content following same structure]
+% \end{hypothesisbox4}
+
+% \subsection*{Hypothesis 5: [Title]}
+% \begin{hypothesisbox5}[Hypothesis 5: [Title]]
+% [Content following same structure]
+% \end{hypothesisbox5}
+
+% ============================================================================
+% TESTABLE PREDICTIONS
+% ============================================================================
+% NOTE: Keep this section to 0.5-1 page
+% Include only 1-2 most critical predictions per hypothesis
+% Additional predictions go to Appendix B with experimental designs
+
+\section{Testable Predictions}
+
+Key predictions from each hypothesis. Full prediction details and additional predictions in Appendix B.
+
+\subsection*{Predictions from Hypothesis 1}
+
+\begin{predictionbox}[Predictions: Hypothesis 1]
+
+\textbf{Prediction 1.1:} [Most critical prediction]
+\begin{itemize}
+  \item \textbf{Expected Outcome:} [Specific result with magnitude if possible]
+  \item \textbf{Falsification:} [What would disprove it]
+\end{itemize}
+
+\vspace{0.15cm}
+
+\textbf{Prediction 1.2:} [Second most critical prediction]
+\begin{itemize}
+  \item \textbf{Expected Outcome:} [Specific result]
+  \item \textbf{Falsification:} [What would disprove it]
+\end{itemize}
+
+\end{predictionbox}
+
+\vspace{0.3cm}
+
+\subsection*{Predictions from Hypothesis 2}
+
+\begin{predictionbox}[Predictions: Hypothesis 2]
+
+\textbf{Prediction 2.1:} [Most critical prediction]
+\begin{itemize}
+  \item \textbf{Expected Outcome:} [Specific result]
+  \item \textbf{Falsification:} [What would disprove it]
+\end{itemize}
+
+\vspace{0.15cm}
+
+\textbf{Prediction 2.2:} [Second most critical prediction]
+\begin{itemize}
+  \item \textbf{Expected Outcome:} [Specific result]
+  \item \textbf{Falsification:} [What would disprove it]
+\end{itemize}
+
+\end{predictionbox}
+
+\vspace{0.3cm}
+
+\subsection*{Predictions from Hypothesis 3}
+
+\begin{predictionbox}[Predictions: Hypothesis 3]
+
+[1-2 most critical predictions only, following same brief structure]
+
+\end{predictionbox}
+
+% Add prediction boxes for Hypotheses 4 and 5 if applicable
+
+% ============================================================================
+% CRITICAL COMPARISONS
+% ============================================================================
+% NOTE: Keep this section to 0.5-1 page
+% Include only the HIGHEST PRIORITY comparison
+% Additional comparisons go to Appendix B
+
+\section{Critical Comparisons}
+
+Highest priority comparison for distinguishing hypotheses. Additional comparisons in Appendix B.
+
+\subsection*{Priority Comparison: Hypothesis 1 vs. Hypothesis 2}
+
+\begin{comparisonbox}[H1 vs. H2: Key Distinction]
+
+\textbf{Fundamental Difference:} [One sentence on core mechanistic difference]
+
+\vspace{0.2cm}
+
+\textbf{Discriminating Experiment:} [Brief description of key experiment to distinguish them]
+
+\vspace{0.2cm}
+
+\textbf{Outcome Interpretation:}
+\begin{itemize}
+  \item \textbf{If [Result A]:} H1 supported
+  \item \textbf{If [Result B]:} H2 supported
+\end{itemize}
+
+\end{comparisonbox}
+
+\vspace{0.3cm}
+
+\textbf{Highest Priority Test:} [Name of single most important experiment]
+
+\textbf{Justification:} [2-3 sentences on why this is highest priority considering informativeness and feasibility. Full experimental details in Appendix B.]
+
+% ============================================================================
+% APPENDICES
+% ============================================================================
+\newpage
+\appendix
+
+% ============================================================================
+% APPENDIX A: COMPREHENSIVE LITERATURE REVIEW
+% ============================================================================
+\appendixsection{Appendix A: Comprehensive Literature Review}
+
+This appendix provides detailed synthesis of existing literature, extensive background context, and comprehensive citations supporting the hypotheses presented in this report.
+
+\subsection*{A.1 Phenomenon Background and Context}
+
+[Provide extensive background on the phenomenon. This section should be comprehensive, including:
+\begin{itemize}
+  \item Historical context and when the phenomenon was first observed
+  \item Detailed description of what is known about the phenomenon
+  \item Why this phenomenon is scientifically important
+  \item Practical or clinical implications if applicable
+  \item Current debates or controversies in the field
+\end{itemize}
+
+Include extensive citations throughout. Aim for 10-15 citations in this subsection alone.]
+
+\subsection*{A.2 Current Understanding and Established Mechanisms}
+
+[Synthesize what is currently understood about this phenomenon:
+\begin{itemize}
+  \item Established theories or frameworks that may apply
+  \item Known mechanisms from related systems or analogous phenomena
+  \item Molecular, cellular, or systemic processes that are well-characterized
+  \item Population-level patterns that have been documented
+  \item Computational or theoretical models that have been proposed
+\end{itemize}
+
+Include 15-20 citations covering recent reviews, primary research papers, and foundational studies.]
+
+\subsection*{A.3 Evidence Supporting Hypothesis 1}
+
+[Provide detailed discussion of all evidence supporting Hypothesis 1. This goes beyond the brief bullet points in the main text:
+\begin{itemize}
+  \item Detailed findings from key papers
+  \item Mechanistic studies showing relevant pathways
+  \item Data from analogous systems
+  \item Theoretical support
+  \item Any preliminary or indirect evidence
+\end{itemize}
+
+Include 8-12 citations specific to this hypothesis.]
+
+\subsection*{A.4 Evidence Supporting Hypothesis 2}
+
+[Same structure as A.3, focused on Hypothesis 2. Include 8-12 citations.]
+
+\subsection*{A.5 Evidence Supporting Hypothesis 3}
+
+[Same structure as A.3, focused on Hypothesis 3. Include 8-12 citations.]
+
+% Add A.6, A.7 for Hypotheses 4 and 5 if applicable
+
+\subsection*{A.6 Conflicting Findings and Unresolved Debates}
+
+[Discuss contradictions in the literature:
+\begin{itemize}
+  \item Studies with conflicting results
+  \item Ongoing debates about mechanisms
+  \item Alternative interpretations of existing data
+  \item Methodological issues that complicate interpretation
+  \item Areas where consensus has not been reached
+\end{itemize}
+
+Include 5-10 citations highlighting key controversies.]
+
+\subsection*{A.7 Knowledge Gaps and Limitations}
+
+[Identify what is still unknown:
+\begin{itemize}
+  \item Aspects of the phenomenon that lack clear explanation
+  \item Missing data or unstudied conditions
+  \item Limitations of current methods or approaches
+  \item Questions that remain unanswered
+  \item Assumptions that have not been tested
+\end{itemize}
+
+Include 3-5 citations discussing limitations or identifying gaps.]
+
+% ============================================================================
+% APPENDIX B: DETAILED EXPERIMENTAL DESIGNS
+% ============================================================================
+\newpage
+\appendixsection{Appendix B: Detailed Experimental Designs}
+
+This appendix provides comprehensive experimental protocols for testing each hypothesis, including methods, controls, sample sizes, statistical approaches, and feasibility assessments.
+
+\subsection*{B.1 Experiments for Testing Hypothesis 1}
+
+\subsubsection*{Experiment 1A: [Descriptive Title]}
+
+\textbf{Design Type:} [e.g., In vitro dose-response / In vivo knockout / Clinical RCT / Observational cohort / Computational model]
+
+\textbf{Objective:} [What specific aspect of Hypothesis 1 does this experiment test? What question does it answer?]
+
+\textbf{Detailed Methods:}
+\begin{itemize}
+  \item \textbf{System/Model:} [What system, organism, cell type, or population will be studied? Include species, strains, patient populations, etc.]
+  \item \textbf{Intervention/Manipulation:} [What will be varied or manipulated? Include specific treatments, genetic modifications, interventions, etc.]
+  \item \textbf{Measurements:} [What outcomes will be measured? Include primary and secondary endpoints, measurement techniques, timing of measurements]
+  \item \textbf{Controls:} [What control conditions will be included? Negative controls, positive controls, vehicle controls, sham procedures, etc.]
+  \item \textbf{Sample Size:} [Estimated n per group with power analysis justification if possible. Include assumptions about effect size and variability.]
+  \item \textbf{Randomization \& Blinding:} [How will subjects be randomized? Who will be blinded?]
+  \item \textbf{Statistical Analysis:} [Specific statistical tests planned, correction for multiple comparisons, significance thresholds]
+\end{itemize}
+
+\textbf{Expected Timeline:} [Rough estimate of duration from start to completion]
+
+\textbf{Resource Requirements:}
+\begin{itemize}
+  \item \textbf{Equipment:} [Specialized equipment needed]
+  \item \textbf{Materials:} [Key reagents, animals, human subjects]
+  \item \textbf{Expertise:} [Specialized skills or training required]
+  \item \textbf{Estimated Cost:} [Rough cost estimate if applicable]
+\end{itemize}
+
+\textbf{Feasibility Assessment:} [High/Medium/Low with justification. Consider technical challenges, resource availability, ethical considerations]
+
+\textbf{Potential Confounds and Mitigation:}
+\begin{itemize}
+  \item [Confound 1 and how to address it]
+  \item [Confound 2 and how to address it]
+  \item [Confound 3 and how to address it]
+\end{itemize}
+
+\vspace{0.5cm}
+
+\subsubsection*{Experiment 1B: [Alternative or Complementary Approach]}
+
+[Follow same detailed structure as Experiment 1A. This should be an alternative method to test the same aspect of Hypothesis 1, or a complementary experiment that tests a different aspect.]
+
+\vspace{0.5cm}
+
+\subsection*{B.2 Experiments for Testing Hypothesis 2}
+
+\subsubsection*{Experiment 2A: [Descriptive Title]}
+
+[Follow same detailed structure as above]
+
+\subsubsection*{Experiment 2B: [Alternative or Complementary Approach]}
+
+[Follow same detailed structure as above]
+
+\vspace{0.5cm}
+
+\subsection*{B.3 Experiments for Testing Hypothesis 3}
+
+[Continue with same structure for all hypotheses]
+
+\vspace{0.5cm}
+
+\subsection*{B.4 Discriminating Experiments}
+
+[Provide detailed protocols for the priority experiments identified in Section 4 that distinguish between hypotheses]
+
+% ============================================================================
+% APPENDIX C: QUALITY ASSESSMENT
+% ============================================================================
+\newpage
+\appendixsection{Appendix C: Quality Assessment}
+
+This appendix provides detailed evaluation of each hypothesis against established quality criteria.
+
+\subsection*{C.1 Comparative Quality Assessment}
+
+\begin{hypotable}{Hypothesis Quality Criteria Evaluation}
+\begin{tabular}{|p{2.5cm}|p{3cm}|p{3cm}|p{3cm}|}
+\hline
+\tableheadercolor
+\textcolor{white}{\textbf{Criterion}} & \textcolor{white}{\textbf{Hypothesis 1}} & \textcolor{white}{\textbf{Hypothesis 2}} & \textcolor{white}{\textbf{Hypothesis 3}} \\
+\hline
+\textbf{Testability} & [Strong/Moderate/Weak] [Brief note: why?] & [Rating \& note] & [Rating \& note] \\
+\hline
+\tablerowcolor
+\textbf{Falsifiability} & [Rating \& note] & [Rating \& note] & [Rating \& note] \\
+\hline
+\textbf{Parsimony} & [Rating \& note] & [Rating \& note] & [Rating \& note] \\
+\hline
+\tablerowcolor
+\textbf{Explanatory Power} & [Rating \& note] & [Rating \& note] & [Rating \& note] \\
+\hline
+\textbf{Scope} & [Rating \& note] & [Rating \& note] & [Rating \& note] \\
+\hline
+\tablerowcolor
+\textbf{Consistency} & [Rating \& note] & [Rating \& note] & [Rating \& note] \\
+\hline
+\textbf{Novelty} & [Rating \& note] & [Rating \& note] & [Rating \& note] \\
+\hline
+\end{tabular}
+\caption{Comparative assessment of hypotheses across quality criteria. Strong = meets criterion very well; Moderate = partially meets criterion; Weak = does not meet criterion well.}
+\end{hypotable}
+
+\subsection*{C.2 Detailed Evaluation: Hypothesis 1}
+
+\textbf{Strengths:}
+\begin{enumerate}
+  \item [Specific strength 1 with explanation of why this is advantageous]
+  \item [Specific strength 2]
+  \item [Specific strength 3]
+  \item [Additional strengths as applicable]
+\end{enumerate}
+
+\textbf{Weaknesses:}
+\begin{enumerate}
+  \item [Specific weakness 1 with explanation of the limitation]
+  \item [Specific weakness 2]
+  \item [Specific weakness 3]
+  \item [Additional weaknesses as applicable]
+\end{enumerate}
+
+\textbf{Overall Assessment:}
+
+[Provide a comprehensive 1-2 paragraph assessment of Hypothesis 1's quality and viability. Consider:
+\begin{itemize}
+  \item How well does it balance the various quality criteria?
+  \item What are the key trade-offs?
+  \item Under what conditions would this be the most promising hypothesis?
+  \item What are the major challenges to testing or validating it?
+  \item How does it compare overall to competing hypotheses?
+\end{itemize}]
+
+\subsection*{C.3 Detailed Evaluation: Hypothesis 2}
+
+[Follow same structure as C.2]
+
+\subsection*{C.4 Detailed Evaluation: Hypothesis 3}
+
+[Follow same structure as C.2]
+
+% Add C.5, C.6 for Hypotheses 4 and 5 if applicable
+
+\subsection*{C.5 Recommendations Based on Quality Assessment}
+
+[Synthesize the quality assessments to provide recommendations:
+\begin{itemize}
+  \item Which hypothesis appears most promising overall?
+  \item Which hypothesis should be tested first? Why?
+  \item Are there scenarios where different hypotheses would be preferred?
+  \item Could multiple hypotheses be partially correct?
+  \item What would need to be true for each hypothesis to be viable?
+\end{itemize}]
+
+% ============================================================================
+% APPENDIX D: SUPPLEMENTARY EVIDENCE
+% ============================================================================
+\newpage
+\appendixsection{Appendix D: Supplementary Evidence}
+
+This appendix provides additional supporting information, including analogous mechanisms, relevant data, and context that further informs the hypotheses.
+
+\subsection*{D.1 Analogous Mechanisms in Related Systems}
+
+[Discuss similar mechanisms or phenomena in related systems that provide insight:
+\begin{itemize}
+  \item How do analogous systems behave?
+  \item What mechanisms operate in those systems?
+  \item How might lessons from related systems apply here?
+  \item What similarities and differences exist?
+\end{itemize}
+
+Include citations to relevant comparative studies.]
+
+\subsection*{D.2 Preliminary Data or Observations}
+
+[If applicable, discuss any preliminary data, pilot studies, or anecdotal observations that informed hypothesis generation but weren't formally published or well-documented.]
+
+\subsection*{D.3 Theoretical Frameworks}
+
+[Discuss broader theoretical frameworks that relate to the hypotheses:
+\begin{itemize}
+  \item What general principles or theories apply?
+  \item How do the hypotheses fit within established frameworks?
+  \item Are there mathematical or computational models that support any hypothesis?
+\end{itemize}]
+
+\subsection*{D.4 Historical Context and Evolution of Ideas}
+
+[Provide historical perspective on how thinking about this phenomenon has evolved, what previous hypotheses have been proposed and tested, and what lessons have been learned from past attempts to explain the phenomenon.]
+
+% ============================================================================
+% REFERENCES
+% ============================================================================
+\newpage
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+% Alternatively, manually format references if not using BibTeX:
+% \begin{thebibliography}{99}
+% 
+% \bibitem{author2023}
+% Author1, A.B., \& Author2, C.D. (2023). 
+% Title of paper. 
+% \textit{Journal Name}, \textit{Volume}(Issue), pages. 
+% DOI or URL
+% 
+% \bibitem{author2022}
+% [Continue with all references...]
+%
+% [Target: 50+ references covering all citations in main text and appendices]
+%
+% \end{thebibliography}
+
+\end{document}
+

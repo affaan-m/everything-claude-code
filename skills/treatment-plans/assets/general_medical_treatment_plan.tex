@@ -1,0 +1,547 @@
+% General Medical Treatment Plan Template
+% For primary care and chronic disease management
+% Last updated: 2025
+
+\documentclass[11pt,letterpaper]{article}
+
+% Packages
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{tabularx}
+\usepackage[most]{tcolorbox}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{General Medical Treatment Plan}
+\rhead{Page \thepage\ of \pageref{LastPage}}
+\lfoot{Date Created: \today}
+\rfoot{Confidential Patient Information}
+
+% Title formatting
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% Title
+\begin{center}
+{\Large\bfseries MEDICAL TREATMENT PLAN}\\[0.5em]
+{\large General Medicine \& Chronic Disease Management}\\[0.5em]
+\rule{\textwidth}{1pt}
+\end{center}
+
+\vspace{1em}
+
+% ===== TREATMENT PLAN HIGHLIGHTS (Foundation Medicine Model) =====
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{TREATMENT PLAN HIGHLIGHTS},fonttitle=\bfseries\large]
+
+\textbf{Key Diagnosis:} [Primary diagnosis with ICD-10 code, severity/stage]
+
+\vspace{0.3em}
+\textbf{Primary Treatment Goals:}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item [Goal 1 - e.g., Reduce HbA1c from 8.5\% to $<$7\% within 3 months]
+    \item [Goal 2 - e.g., Achieve blood pressure $<$130/80 mmHg within 8 weeks]
+    \item [Goal 3 - e.g., Weight loss of 7-10\% body weight over 6 months]
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{Main Interventions:}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item \textit{Pharmacological:} [Key medications - e.g., Metformin 1000mg BID, Lisinopril 10mg daily]
+    \item \textit{Non-pharmacological:} [Lifestyle modifications - e.g., Mediterranean diet, 150 min/week exercise]
+    \item \textit{Monitoring:} [Key parameters - e.g., HbA1c every 3 months, home BP daily]
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{Timeline:} [Duration - e.g., Intensive initiation (4 weeks), Adjustment phase (8 weeks), Maintenance (ongoing)]
+
+\end{tcolorbox}
+
+\vspace{1em}
+
+% ===== SECTION 1: PATIENT INFORMATION =====
+\section*{1. Patient Information}
+
+\textbf{HIPAA Notice}: All identifiable information must be removed or de-identified per Safe Harbor method before sharing this document. Remove: name, dates (except year), addresses, phone/fax, email, SSN, medical record numbers, account numbers, photos, and other unique identifiers.
+
+\vspace{0.5em}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Patient ID} & [De-identified code, e.g., PT-001] \\ \hline
+\textbf{Age Range} & [e.g., 55-60 years] \\ \hline
+\textbf{Sex} & [Male/Female/Other] \\ \hline
+\textbf{Race/Ethnicity} & [If relevant to treatment] \\ \hline
+\textbf{Date of Plan} & [Month/Year only] \\ \hline
+\textbf{Provider} & [Name, MD/DO/NP/PA, Credentials] \\ \hline
+\textbf{Facility} & [Healthcare facility name] \\ \hline
+\end{tabularx}
+
+\vspace{1em}
+
+\subsection*{Active Medical Conditions}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Primary Diagnosis}: [Condition with ICD-10 code]
+    \item \textbf{Secondary Diagnoses}:
+    \begin{itemize}
+        \item [Comorbidity 1 with ICD-10 code]
+        \item [Comorbidity 2 with ICD-10 code]
+        \item [Additional conditions as needed]
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Current Medications}
+\begin{longtable}{|p{3.5cm}|p{2cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Medication} & \textbf{Dose} & \textbf{Frequency} & \textbf{Indication} \\ \hline
+\endfirsthead
+\hline
+\textbf{Medication} & \textbf{Dose} & \textbf{Frequency} & \textbf{Indication} \\ \hline
+\endhead
+Medication 1 & [e.g., 10mg] & [e.g., daily] & [Indication] \\ \hline
+Medication 2 & [e.g., 50mg] & [e.g., BID] & [Indication] \\ \hline
+[Add rows as needed] & & & \\ \hline
+\end{longtable}
+
+\subsection*{Allergies}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Drug Allergies}: [List medications and reactions, or NKDA]
+    \item \textbf{Food/Environmental}: [If relevant to treatment]
+\end{itemize}
+
+\subsection*{Baseline Assessment}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Functional Status}: [Independent/requires assistance/dependent for ADLs]
+    \item \textbf{Cognitive Status}: [Alert and oriented/impairment if present]
+    \item \textbf{Social Support}: [Lives alone/with family, support system]
+    \item \textbf{Key Baseline Values}: [e.g., HbA1c 8.5\%, BP 145/90, BMI 32, eGFR 55]
+\end{itemize}
+
+% ===== SECTION 2: DIAGNOSIS AND ASSESSMENT =====
+\section*{2. Diagnosis and Assessment Summary}
+
+\subsection*{Primary Diagnosis}
+\textbf{Diagnosis}: [Full diagnosis name]\\
+\textbf{ICD-10 Code}: [e.g., E11.9 for Type 2 Diabetes Mellitus without complications]\\
+\textbf{Severity}: [Mild/Moderate/Severe or stage classification]\\
+\textbf{Duration}: [Time since diagnosis]
+
+\subsection*{Clinical Presentation}
+[Describe current symptoms, functional limitations, and impact on quality of life. Include relevant exam findings and diagnostic test results.]
+
+\subsection*{Risk Stratification}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Cardiovascular Risk}: [e.g., ASCVD 10-year risk 15\%]
+    \item \textbf{Complications Risk}: [e.g., high risk for diabetic nephropathy]
+    \item \textbf{Other Risk Factors}: [e.g., fall risk, frailty, polypharmacy]
+\end{itemize}
+
+\subsection*{Prognostic Considerations}
+[Discuss expected disease course, factors affecting prognosis, and rationale for treatment intensity.]
+
+% ===== SECTION 3: TREATMENT GOALS =====
+\section*{3. Treatment Goals (SMART Format)}
+
+\textbf{SMART Criteria}: All goals should be \textbf{S}pecific, \textbf{M}easurable, \textbf{A}chievable, \textbf{R}elevant, and \textbf{T}ime-bound.
+
+\subsection*{Short-Term Goals (1-3 months)}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Goal 1}: [e.g., Reduce HbA1c from 8.5\% to $<$7.5\%]
+    \begin{itemize}
+        \item \textit{Specific}: Reduce HbA1c by at least 1 percentage point
+        \item \textit{Measurable}: HbA1c lab value
+        \item \textit{Achievable}: With medication initiation and lifestyle changes
+        \item \textit{Relevant}: Reduce microvascular complication risk
+        \item \textit{Time-bound}: Achieve within 3 months (next follow-up)
+    \end{itemize}
+    
+    \item \textbf{Goal 2}: [e.g., Decrease systolic blood pressure to $<$130 mmHg]
+    \begin{itemize}
+        \item \textit{Specific}: Achieve BP $<$130/80 mmHg
+        \item \textit{Measurable}: Office and home BP measurements
+        \item \textit{Achievable}: With medication optimization
+        \item \textit{Relevant}: Reduce cardiovascular event risk
+        \item \textit{Time-bound}: Within 8 weeks
+    \end{itemize}
+    
+    \item \textbf{Goal 3}: [Additional short-term goal]
+\end{enumerate}
+
+\subsection*{Long-Term Goals (6-12 months)}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Goal 1}: [e.g., Maintain HbA1c $<$7\% and prevent diabetic complications]
+    \begin{itemize}
+        \item \textit{Success criteria}: HbA1c $<$7\%, no new retinopathy/nephropathy/neuropathy
+        \item \textit{Timeline}: Ongoing, assessed every 3-6 months
+    \end{itemize}
+    
+    \item \textbf{Goal 2}: [e.g., Weight loss of 15 pounds (7\% body weight)]
+    \begin{itemize}
+        \item \textit{Success criteria}: BMI reduction from 32 to $<$30
+        \item \textit{Timeline}: 6-12 months at 1-2 lbs/week
+    \end{itemize}
+    
+    \item \textbf{Goal 3}: [e.g., Achieve LDL cholesterol $<$70 mg/dL]
+    
+    \item \textbf{Goal 4}: [Additional long-term goal as needed]
+\end{enumerate}
+
+\subsection*{Patient-Centered Goals}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Patient Priority 1}: [e.g., "Feel more energetic throughout the day"]
+    \item \textbf{Patient Priority 2}: [e.g., "Avoid insulin injections if possible"]
+    \item \textbf{Patient Priority 3}: [e.g., "Continue working full-time"]
+\end{itemize}
+
+% ===== SECTION 4: INTERVENTIONS =====
+\section*{4. Interventions}
+
+\subsection*{4.1 Pharmacological Interventions}
+
+\begin{longtable}{|p{3cm}|p{2cm}|p{2cm}|p{6.5cm}|}
+\hline
+\textbf{Medication} & \textbf{Dose} & \textbf{Frequency} & \textbf{Instructions \& Rationale} \\ \hline
+\endfirsthead
+\hline
+\textbf{Medication} & \textbf{Dose} & \textbf{Frequency} & \textbf{Instructions \& Rationale} \\ \hline
+\endhead
+
+[e.g., Metformin] & 500mg & BID & \textbf{Start:} Take with meals to reduce GI upset. \textbf{Titration:} Increase to 1000mg BID after 2 weeks if tolerated. \textbf{Target:} 2000mg daily. \textbf{Rationale:} First-line for T2DM, reduces hepatic glucose production. \\ \hline
+
+[e.g., Lisinopril] & 10mg & Daily & \textbf{Instructions:} Take in morning. Monitor BP at home. \textbf{Titration:} May increase to 20mg if BP not at goal in 4 weeks. \textbf{Rationale:} ACE inhibitor for HTN and renal protection in diabetes. \\ \hline
+
+[Additional medications] & & & \\ \hline
+\end{longtable}
+
+\textbf{Medication Safety Considerations}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Drug Interactions}: [List relevant interactions to monitor]
+    \item \textbf{Adverse Effects to Monitor}: [e.g., metformin - GI upset, lactic acidosis; lisinopril - cough, hyperkalemia, angioedema]
+    \item \textbf{Contraindications}: [e.g., metformin if eGFR $<$30]
+    \item \textbf{Pregnancy Category}: [If relevant to patient]
+\end{itemize}
+
+\subsection*{4.2 Non-Pharmacological Interventions}
+
+\textbf{Lifestyle Modifications}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Diet}:
+    \begin{itemize}
+        \item Mediterranean or DASH diet pattern
+        \item Carbohydrate counting: 45-60g per meal
+        \item Reduce saturated fat $<$7\% of calories
+        \item Sodium restriction $<$2300mg daily
+        \item Referral to registered dietitian
+    \end{itemize}
+    
+    \item \textbf{Exercise}:
+    \begin{itemize}
+        \item Aerobic exercise: 150 minutes/week moderate intensity (e.g., brisk walking 30 min 5x/week)
+        \item Resistance training: 2-3 sessions/week
+        \item Reduce sedentary time, stand/move every 30 minutes
+    \end{itemize}
+    
+    \item \textbf{Smoking Cessation}: [If applicable]
+    \begin{itemize}
+        \item Nicotine replacement therapy (patch, gum, lozenge)
+        \item Consider varenicline or bupropion
+        \item Behavioral counseling: 1-800-QUIT-NOW
+        \item Target quit date: [specific date within 1 month]
+    \end{itemize}
+    
+    \item \textbf{Weight Management}:
+    \begin{itemize}
+        \item Target: 7-10\% body weight loss over 6 months
+        \item Caloric deficit: 500-750 kcal/day
+        \item Weekly self-weighing and food diary
+        \item Consider weight loss program or app
+    \end{itemize}
+    
+    \item \textbf{Sleep Hygiene}:
+    \begin{itemize}
+        \item Target 7-9 hours nightly
+        \item Consistent sleep schedule
+        \item Screen for sleep apnea if indicated
+    \end{itemize}
+    
+    \item \textbf{Stress Management}:
+    \begin{itemize}
+        \item Mindfulness or meditation practice
+        \item Stress reduction techniques
+        \item Adequate social support
+    \end{itemize}
+\end{itemize}
+
+\textbf{Self-Management and Monitoring}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Blood Glucose Monitoring}: [Frequency, e.g., fasting and 2hr post-prandial 3x/week]
+    \item \textbf{Home Blood Pressure}: [Frequency, e.g., daily in AM, record in log]
+    \item \textbf{Weight Tracking}: [e.g., weekly on same day/time]
+    \item \textbf{Symptom Diary}: [Track relevant symptoms]
+    \item \textbf{Medication Adherence}: [Pill box, reminder app]
+\end{itemize}
+
+\subsection*{4.3 Procedural and Referral Interventions}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Specialist Referrals}:
+    \begin{itemize}
+        \item [e.g., Endocrinology consultation for diabetes management]
+        \item [e.g., Ophthalmology for annual dilated eye exam]
+        \item [e.g., Podiatry for diabetic foot exam]
+        \item [e.g., Nephrology if eGFR $<$30 or proteinuria]
+    \end{itemize}
+    
+    \item \textbf{Diagnostic Testing Schedule}:
+    \begin{itemize}
+        \item [e.g., HbA1c every 3 months until at goal, then every 6 months]
+        \item [e.g., Lipid panel annually]
+        \item [e.g., Urine albumin-to-creatinine ratio annually]
+        \item [e.g., Comprehensive metabolic panel every 6 months]
+    \end{itemize}
+    
+    \item \textbf{Preventive Care}:
+    \begin{itemize}
+        \item Influenza vaccine annually
+        \item Pneumococcal vaccines (PCV20 or PCV15+PPSV23)
+        \item COVID-19 vaccination per current guidelines
+        \item Age-appropriate cancer screenings
+        \item [Other preventive measures as indicated]
+    \end{itemize}
+\end{itemize}
+
+% ===== SECTION 5: TIMELINE AND SCHEDULE =====
+\section*{5. Timeline and Schedule}
+
+\subsection*{Treatment Phases}
+
+\begin{tabularx}{\textwidth}{|l|X|X|}
+\hline
+\textbf{Phase} & \textbf{Timeframe} & \textbf{Focus} \\ \hline
+Intensive Initiation & Weeks 1-4 & Medication titration, lifestyle education, baseline monitoring \\ \hline
+Adjustment & Weeks 5-12 & Optimize medications, reinforce lifestyle changes, assess goal progress \\ \hline
+Maintenance & Months 4-12 & Sustain improvements, prevent complications, long-term adherence \\ \hline
+Ongoing & $>$12 months & Chronic disease management, annual assessments, update goals \\ \hline
+\end{tabularx}
+
+\subsection*{Appointment Schedule}
+
+\begin{tabularx}{\textwidth}{|l|X|X|}
+\hline
+\textbf{Timepoint} & \textbf{Visit Type} & \textbf{Key Activities} \\ \hline
+Week 2 & Phone/telehealth & Check medication tolerance, answer questions \\ \hline
+Week 4 & Office visit & Medication adjustment, BP check, labs, review monitoring \\ \hline
+Week 8 & Office visit & Assess progress toward goals, reinforce lifestyle \\ \hline
+Month 3 & Office visit & HbA1c, comprehensive assessment, goal evaluation \\ \hline
+Month 6 & Office visit & Reassess all goals, update plan, labs \\ \hline
+Month 12 & Annual exam & Comprehensive evaluation, preventive care, specialty referrals \\ \hline
+Ongoing & Every 3-6 months & Per chronic disease management protocol \\ \hline
+\end{tabularx}
+
+\subsection*{Milestone Assessments}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Month 1}: Medication tolerance, lifestyle initiation, home monitoring established
+    \item \textbf{Month 3}: HbA1c $<$7.5\%, BP $<$130/80, 3-5 lb weight loss
+    \item \textbf{Month 6}: HbA1c $<$7\%, sustained BP control, 8-10 lb weight loss
+    \item \textbf{Month 12}: All long-term goals achieved or revised, complication screening complete
+\end{itemize}
+
+% ===== SECTION 6: MONITORING PARAMETERS =====
+\section*{6. Monitoring Parameters}
+
+\subsection*{Clinical Outcomes to Track}
+
+\begin{longtable}{|p{4cm}|p{3cm}|p{3cm}|p{4cm}|}
+\hline
+\textbf{Parameter} & \textbf{Baseline} & \textbf{Target} & \textbf{Frequency} \\ \hline
+\endfirsthead
+\hline
+\textbf{Parameter} & \textbf{Baseline} & \textbf{Target} & \textbf{Frequency} \\ \hline
+\endhead
+
+HbA1c & [e.g., 8.5\%] & $<$7\% & Every 3 months until stable, then every 6 months \\ \hline
+Fasting Glucose & [e.g., 165 mg/dL] & 80-130 mg/dL & Home monitoring per schedule \\ \hline
+Blood Pressure & [e.g., 145/90] & $<$130/80 mmHg & Daily home, every office visit \\ \hline
+Weight/BMI & [e.g., 210 lb, BMI 32] & 195 lb, BMI $<$30 & Weekly at home, every visit \\ \hline
+LDL Cholesterol & [e.g., 135 mg/dL] & $<$70 mg/dL & Every 6-12 months \\ \hline
+eGFR & [e.g., 55 mL/min] & Stable, $>$45 & Every 6 months \\ \hline
+Urine ACR & [e.g., normal] & $<$30 mg/g & Annually \\ \hline
+[Add additional parameters] & & & \\ \hline
+\end{longtable}
+
+\subsection*{Assessment Tools and Scales}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Diabetes Distress Scale}: [Assess emotional burden of diabetes management]
+    \item \textbf{SF-12 or PROMIS}: [Quality of life assessment]
+    \item \textbf{Medication Adherence}: [Morisky scale or refill tracking]
+    \item \textbf{[Other relevant scales]}: [e.g., PHQ-2 for depression screening]
+\end{itemize}
+
+\subsection*{Safety Monitoring}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Hypoglycemia}: Frequency of blood glucose $<$70 mg/dL, symptoms
+    \item \textbf{Medication Adverse Effects}: GI upset, cough, dizziness, other symptoms
+    \item \textbf{Hyperkalemia}: Potassium level if on ACE inhibitor/ARB
+    \item \textbf{Renal Function}: Monitor eGFR for metformin safety, ACE/ARB effects
+\end{itemize}
+
+\subsection*{Thresholds for Intervention}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Urgent}: Blood glucose $>$300 or $<$50, BP $>$180/110, chest pain, severe symptoms
+    \item \textbf{Escalate Treatment}: No improvement in HbA1c after 3 months, BP above goal after 8 weeks
+    \item \textbf{Modify Plan}: Intolerable side effects, patient preference change, new comorbidities
+\end{itemize}
+
+% ===== SECTION 7: EXPECTED OUTCOMES =====
+\section*{7. Expected Outcomes and Prognosis}
+
+\textbf{Anticipated Treatment Response}: With adherence, expect HbA1c reduction of 1-1.5\%, BP reduction of 10-15 mmHg, and 5-10\% weight loss over 6 months. Improvements visible at 4-8 weeks (BP, glucose), with HbA1c changes by 3 months.
+
+\vspace{0.5em}
+\textbf{Long-Term Benefits}: Reduced complication risk (cardiovascular events, retinopathy, nephropathy), improved quality of life, maintained independence and functional status.
+
+% ===== SECTION 8: FOLLOW-UP PLAN =====
+\section*{8. Follow-Up Plan}
+
+\subsection*{Scheduled Appointments}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Next Visit}: [Date/timeframe - e.g., 4 weeks from today]
+    \item \textbf{Visit Purpose}: [Medication adjustment, lab review, goal assessment]
+    \item \textbf{Ongoing Schedule}: See Appointment Schedule in Section 5
+\end{itemize}
+
+\subsection*{Communication Plan}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Between-Visit Contact}: Phone call at 2 weeks to assess medication tolerance
+    \item \textbf{Lab Results}: Will call with results within 3-5 business days
+    \item \textbf{Questions}: Call office at [phone], patient portal messaging
+    \item \textbf{Prescription Refills}: Via patient portal or pharmacy automated refill
+\end{itemize}
+
+\subsection*{Emergency Procedures}
+
+\textbf{Call 911 immediately for}:
+\begin{itemize}[leftmargin=*]
+    \item Chest pain, shortness of breath, or stroke symptoms
+    \item Severe hypoglycemia with confusion or loss of consciousness
+    \item Severe allergic reaction (angioedema, anaphylaxis)
+\end{itemize}
+
+\textbf{Call office same day for}:
+\begin{itemize}[leftmargin=*]
+    \item Blood glucose consistently $>$300 or $<$60 mg/dL
+    \item Blood pressure $>$180/110 mmHg
+    \item Persistent severe medication side effects
+    \item Fever, infection, or acute illness (may need medication adjustment)
+\end{itemize}
+
+\subsection*{Transition Planning}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{If Hospitalized}: Provide this treatment plan to hospital team, resume medications on discharge
+    \item \textbf{Specialist Co-Management}: Share plan with all specialists, coordinate medication changes
+    \item \textbf{Future Considerations}: [e.g., may need insulin if oral medications insufficient]
+\end{itemize}
+
+% ===== SECTION 9: PATIENT EDUCATION =====
+\section*{9. Patient Education and Self-Management}
+
+\textbf{Key Education Topics}: Disease understanding, complication risks, treatment rationale, self-monitoring techniques (glucose, BP), medication administration, diet/nutrition basics, exercise safety, sick day management.
+
+\vspace{0.5em}
+\textbf{Critical Warning Signs}:
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item \textit{Emergency (call 911)}: Chest pain, severe hypoglycemia with confusion, stroke symptoms
+    \item \textit{Call office same day}: Glucose $>$300 or $<$60 mg/dL, BP $>$180/110, severe medication side effects
+    \item \textit{Urgent evaluation}: Diabetic foot wounds, severe hyperglycemia with symptoms
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Support Resources}: DSMES referral, registered dietitian, educational materials, support groups, tracking technology, financial assistance programs as needed.
+
+% ===== SECTION 10: RISK MITIGATION AND SAFETY =====
+\section*{10. Risk Mitigation and Safety}
+
+\textbf{Key Medication Safety Concerns}:
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item \textit{Metformin}: Monitor eGFR every 6 months; hold if eGFR $<$30, during acute illness, or 48 hours before contrast
+    \item \textit{ACE inhibitor}: Check K+ and creatinine at 1-2 weeks, then every 6 months; hold during dehydration/AKI
+    \item \textit{Hypoglycemia}: Low risk without insulin/sulfonylureas; educate on recognition and 15-15 rule
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Complication Prevention}: Annual eye exam, foot exam, and urine ACR; aspirin if ASCVD risk $>$10\%; BP and glucose control reduces cardiovascular, retinopathy, nephropathy, and neuropathy risks.
+
+\vspace{0.5em}
+\textbf{Emergency Actions}: Severe hypoglycemia ($<$50, confusion) - glucagon then 911; chest pain/stroke - call 911; hyperglycemia $>$300 with symptoms - hydrate and call office; severe medication side effects - stop medication, call same day.
+
+% ===== SECTION 11: PROVIDER SIGNATURE =====
+\vspace{2em}
+
+\section*{11. Provider Signature and Attestation}
+
+I have reviewed this treatment plan with the patient. The patient demonstrates understanding of the diagnosis, treatment rationale, goals, interventions, self-management requirements, warning signs, and when to seek emergency care. The patient agrees to this treatment plan and has had the opportunity to ask questions. Shared decision-making was employed, and patient preferences were incorporated.
+
+\vspace{1em}
+
+\begin{tabular}{ll}
+Provider Signature: & \rule{7cm}{0.5pt} \\[1em]
+Provider Name/Credentials: & \rule{7cm}{0.5pt} \\[1em]
+Date: & \rule{4cm}{0.5pt} \\[2em]
+\end{tabular}
+
+\subsection*{Patient Acknowledgment (Optional)}
+
+I have reviewed this treatment plan with my healthcare provider. I understand my diagnosis, treatment goals, medications, lifestyle recommendations, self-monitoring requirements, and when to seek medical attention. I agree to follow this plan and contact my provider with questions or concerns.
+
+\vspace{1em}
+
+\begin{tabular}{ll}
+Patient/Representative Signature: & \rule{7cm}{0.5pt} \\[1em]
+Date: & \rule{4cm}{0.5pt} \\
+\end{tabular}
+
+\vspace{2em}
+\begin{center}
+\rule{\textwidth}{1pt}\\
+\textbf{End of Treatment Plan}\\
+This document contains confidential patient information protected by HIPAA.
+\end{center}
+
+\end{document}
+
+% ========== NOTES FOR USERS ==========
+%
+% CUSTOMIZATION INSTRUCTIONS:
+% 1. Replace all bracketed placeholders [like this] with patient-specific information
+% 2. Remove or add sections as appropriate for the clinical condition
+% 3. Ensure all SMART goals meet criteria (Specific, Measurable, Achievable, Relevant, Time-bound)
+% 4. Include evidence-based interventions per current clinical guidelines
+% 5. De-identify all protected health information before sharing
+%
+% COMPILATION:
+% pdflatex general_medical_treatment_plan.tex
+%
+% VALIDATION:
+% Run check_completeness.py and validate_treatment_plan.py before finalizing
+

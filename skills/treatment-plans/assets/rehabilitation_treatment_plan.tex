@@ -1,0 +1,756 @@
+% Rehabilitation Treatment Plan Template
+% For physical therapy, occupational therapy, and rehabilitation services
+% Last updated: 2025
+
+\documentclass[11pt,letterpaper]{article}
+
+% Packages
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage[most]{tcolorbox}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Rehabilitation Treatment Plan}
+\rhead{Page \thepage\ of \pageref{LastPage}}
+\lfoot{Date Created: \today}
+\rfoot{Confidential Patient Information}
+
+% Title formatting
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% Title
+\begin{center}
+{\Large\bfseries REHABILITATION TREATMENT PLAN}\\[0.5em]
+{\large Physical Therapy | Occupational Therapy | Speech-Language Pathology}\\[0.5em]
+\rule{\textwidth}{1pt}
+\end{center}
+
+\vspace{1em}
+
+% ===== TREATMENT PLAN HIGHLIGHTS (Foundation Medicine Model) =====
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{TREATMENT PLAN HIGHLIGHTS},fonttitle=\bfseries\large]
+
+\textbf{Key Diagnosis:} [Primary condition requiring rehabilitation - e.g., Post-stroke hemiparesis, Total knee replacement]
+
+\vspace{0.3em}
+\textbf{Primary Functional Goals:}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item [Goal 1 - e.g., Independent ambulation with assistive device within 8 weeks]
+    \item [Goal 2 - e.g., Return to independent ADLs (bathing, dressing) within 12 weeks]
+    \item [Goal 3 - e.g., Improve upper extremity strength to 4/5 for functional tasks]
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{Main Interventions:}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item \textit{Physical Therapy:} [Focus - e.g., Gait training, strengthening, balance exercises 3x/week]
+    \item \textit{Occupational Therapy:} [Focus - e.g., ADL training, adaptive equipment, 2x/week]
+    \item \textit{Home Exercise Program:} [Key exercises - e.g., Daily strengthening and ROM exercises]
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{Timeline:} [Duration - e.g., Acute phase (4 weeks), Active rehab (8 weeks), Maintenance (ongoing)]
+
+\end{tcolorbox}
+
+\vspace{1em}
+
+% ===== SECTION 1: PATIENT INFORMATION =====
+\section*{1. Patient Information}
+
+\textbf{HIPAA Notice}: De-identify per Safe Harbor method. Remove all 18 HIPAA identifiers before sharing.
+
+\vspace{0.5em}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Patient ID} & [De-identified code, e.g., PT-RH-001] \\ \hline
+\textbf{Age Range} & [e.g., 65-70 years] \\ \hline
+\textbf{Sex} & [Male/Female/Other] \\ \hline
+\textbf{Date of Plan} & [Month/Year only] \\ \hline
+\textbf{Referring Provider} & [Name, Credentials] \\ \hline
+\textbf{Primary Therapist} & [PT/OT/SLP Name, Credentials] \\ \hline
+\textbf{Facility} & [Rehabilitation center/Clinic name] \\ \hline
+\end{tabularx}
+
+\vspace{1em}
+
+\subsection*{Diagnosis and Medical History}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Primary Diagnosis}: [e.g., Right hip fracture status post ORIF] (ICD-10: [code])
+    \item \textbf{Secondary Diagnoses}:
+    \begin{itemize}
+        \item [e.g., Osteoporosis] (ICD-10: [code])
+        \item [e.g., Hypertension] (ICD-10: [code])
+        \item [Additional relevant conditions]
+    \end{itemize}
+    \item \textbf{Date of Injury/Surgery}: [Month/Year]
+    \item \textbf{Surgical Procedure}: [e.g., Open reduction internal fixation right hip]
+    \item \textbf{Precautions/Restrictions}: [e.g., Weight-bearing as tolerated, hip flexion $<$90 degrees]
+\end{itemize}
+
+\subsection*{Current Medications}
+
+Medications affecting rehabilitation:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Pain Management}: [e.g., Oxycodone 5mg Q6H PRN - may affect alertness]
+    \item \textbf{Anticoagulation}: [e.g., Enoxaparin 40mg daily - fall precautions]
+    \item \textbf{Other Relevant Medications}: [e.g., Beta-blocker - monitor HR during exercise]
+\end{itemize}
+
+\subsection*{Living Situation and Support}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Living Environment}: [e.g., Two-story home, bedroom upstairs, 4 steps to entry]
+    \item \textbf{Social Support}: [e.g., Lives with spouse, adult children nearby]
+    \item \textbf{Prior Functional Level}: [e.g., Independent in all ADLs, community ambulation]
+    \item \textbf{Occupation/Activities}: [e.g., Retired teacher, enjoys gardening and walking]
+\end{itemize}
+
+% ===== SECTION 2: FUNCTIONAL ASSESSMENT =====
+\section*{2. Initial Functional Assessment}
+
+\subsection*{2.1 Functional Independence Measure (FIM) or Similar}
+
+\textbf{Date of Assessment}: [Date]
+
+\begin{tabularx}{\textwidth}{|l|c|c|X|}
+\hline
+\textbf{Domain} & \textbf{Score} & \textbf{Goal} & \textbf{Notes} \\ \hline
+Self-Care & [e.g., 28/42] & [35/42] & Requires assist with lower body dressing, bathing \\ \hline
+Sphincter Control & [42/42] & [42/42] & Independent \\ \hline
+Transfers & [e.g., 12/21] & [18/21] & Moderate assist bed/chair, toilet \\ \hline
+Locomotion & [e.g., 8/14] & [12/14] & Contact guard ambulation 50ft with walker \\ \hline
+Communication & [14/14] & [14/14] & Independent \\ \hline
+Social Cognition & [21/21] & [21/21] & Independent \\ \hline
+\textbf{TOTAL FIM} & \textbf{[125/126]} & \textbf{[142/126]} & \\ \hline
+\end{tabularx}
+
+\vspace{0.5em}
+\textit{FIM Scoring: 7=Complete Independence, 6=Modified Independence, 5=Supervision, 4=Minimal Assist, 3=Moderate Assist, 2=Maximal Assist, 1=Total Assist}
+
+\subsection*{2.2 Physical Therapy Assessment}
+
+\textbf{Range of Motion}:
+\begin{longtable}{|l|c|c|c|}
+\hline
+\textbf{Joint/Motion} & \textbf{Baseline} & \textbf{Goal} & \textbf{Normal Range} \\ \hline
+\endfirsthead
+\hline
+\textbf{Joint/Motion} & \textbf{Baseline} & \textbf{Goal} & \textbf{Normal Range} \\ \hline
+\endhead
+Right hip flexion & 70° (pain at end range) & 110° pain-free & 120° \\ \hline
+Right hip extension & 5° & 15° & 20° \\ \hline
+Right hip abduction & 20° & 35° & 45° \\ \hline
+Right knee flexion & 100° & 125° & 130° \\ \hline
+Right ankle DF/PF & 5°/35° & 10°/40° & 15°/50° \\ \hline
+[Additional joints] & & & \\ \hline
+\end{longtable}
+
+\textbf{Muscle Strength (Manual Muscle Testing - MMT)}:
+\begin{longtable}{|l|c|c|}
+\hline
+\textbf{Muscle Group} & \textbf{Baseline} & \textbf{Goal} \\ \hline
+\endfirsthead
+\hline
+\textbf{Muscle Group} & \textbf{Baseline} & \textbf{Goal} \\ \hline
+\endhead
+Right hip flexors & 3/5 (fair) & 4+/5 (good+) \\ \hline
+Right hip extensors & 3/5 (fair) & 4+/5 (good+) \\ \hline
+Right hip abductors & 2+/5 (poor+) & 4/5 (good) \\ \hline
+Right quadriceps & 4-/5 (good-) & 5/5 (normal) \\ \hline
+Right ankle DF/PF & 4/5 / 4/5 & 5/5 / 5/5 \\ \hline
+Core stability & Fair & Good \\ \hline
+[Additional muscles] & & \\ \hline
+\end{longtable}
+
+\textit{MMT Scale: 5=Normal, 4=Good, 3=Fair, 2=Poor, 1=Trace, 0=Zero}
+
+\textbf{Balance Assessment}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Berg Balance Scale}: [e.g., 38/56 - Moderate fall risk]
+    \item \textbf{Goal Berg Score}: [e.g., $>$45/56 - Low fall risk]
+    \item \textbf{Static Standing Balance}: [e.g., Able to stand 30 sec with walker, not independent]
+    \item \textbf{Dynamic Balance}: [e.g., Unable to step over obstacles safely]
+    \item \textbf{Single Leg Stance}: [e.g., Unable, requires support]
+\end{itemize}
+
+\textbf{Gait Assessment}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Assistive Device}: [e.g., Front-wheeled walker]
+    \item \textbf{Weight-Bearing Status}: [e.g., WBAT (weight-bearing as tolerated)]
+    \item \textbf{Gait Distance}: [e.g., 50 feet with contact guard, requires 1 rest break]
+    \item \textbf{Gait Speed}: [e.g., 0.4 m/s (severely impaired, normal $>$1.0 m/s)]
+    \item \textbf{Gait Deviations}: [e.g., Shortened stance phase right, Trendelenburg gait, decreased step length]
+    \item \textbf{Stairs}: [e.g., Unable to attempt, 4 steps required for home access]
+\end{itemize}
+
+\textbf{Endurance}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{6-Minute Walk Test}: [e.g., 150 feet - severely impaired]
+    \item \textbf{Goal Distance}: [e.g., 300+ feet]
+    \item \textbf{Perceived Exertion}: [e.g., 5/10 after 50 feet]
+    \item \textbf{Vital Signs Response}: [e.g., HR increases 85→105, appropriate response]
+\end{itemize}
+
+\textbf{Pain Assessment}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Pain Location}: [e.g., Right hip, groin region]
+    \item \textbf{Pain at Rest}: [e.g., 2/10]
+    \item \textbf{Pain with Activity}: [e.g., 6/10 with weight-bearing, 4/10 with ROM]
+    \item \textbf{Pain Impact}: [e.g., Limits therapy participation, improves with rest]
+\end{itemize}
+
+\subsection*{2.3 Occupational Therapy Assessment}
+
+\textbf{Activities of Daily Living (ADLs)}:
+\begin{longtable}{|l|c|X|}
+\hline
+\textbf{Activity} & \textbf{Level} & \textbf{Description} \\ \hline
+\endfirsthead
+\hline
+\textbf{Activity} & \textbf{Level} & \textbf{Description} \\ \hline
+\endhead
+Bathing & Mod A & Requires assist entering/exiting shower, reaching lower extremities \\ \hline
+Dressing - Upper Body & I & Independent \\ \hline
+Dressing - Lower Body & Mod A & Requires assist donning socks, shoes, pants due to hip precautions \\ \hline
+Toileting & Min A & Requires assist with clothing management \\ \hline
+Grooming & I & Independent \\ \hline
+Feeding & I & Independent \\ \hline
+Functional Mobility & CG & Contact guard for bed mobility, transfers \\ \hline
+\end{longtable}
+
+\textit{I=Independent, SV=Supervision, CG=Contact Guard, Min A=Minimal Assist, Mod A=Moderate Assist, Max A=Maximal Assist}
+
+\textbf{Instrumental Activities of Daily Living (IADLs)}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Meal Preparation}: Not assessed, not safe for standing tasks currently
+    \item \textbf{Housekeeping}: Dependent, unable to perform
+    \item \textbf{Laundry}: Dependent
+    \item \textbf{Shopping}: Dependent
+    \item \textbf{Home Management}: Requires complete assistance
+\end{itemize}
+
+\textbf{Upper Extremity Function}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Grip Strength}: Right [kg], Left [kg] (compared to normative data)
+    \item \textbf{Coordination}: [e.g., Within normal limits bilaterally]
+    \item \textbf{Sensation}: [e.g., Intact to light touch, proprioception]
+\end{itemize}
+
+\subsection*{2.4 Cognitive and Perceptual Assessment}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Alertness/Orientation}: [e.g., Alert, oriented x3]
+    \item \textbf{Memory}: [e.g., Intact for short and long-term]
+    \item \textbf{Safety Awareness}: [e.g., Good insight into limitations, follows precautions]
+    \item \textbf{Executive Function}: [e.g., Able to problem-solve, sequence tasks appropriately]
+    \item \textbf{Visual-Perceptual Skills}: [e.g., Within normal limits]
+\end{itemize}
+
+\subsection*{2.5 Environmental Assessment}
+
+\textbf{Home Safety Concerns}:
+\begin{itemize}[leftmargin=*]
+    \item 4 steps to enter home - needs stair training
+    \item Bedroom/bathroom upstairs - may need temporary bedroom on main floor
+    \item Shower stall (no tub) - needs shower chair, grab bars
+    \item Scatter rugs - fall hazard, recommend removal
+    \item Adequate lighting - satisfactory
+\end{itemize}
+
+% ===== SECTION 3: REHABILITATION GOALS =====
+\section*{3. Rehabilitation Goals (SMART Format)}
+
+\subsection*{3.1 Short-Term Goals (2-4 weeks)}
+
+\textbf{Impairment-Level Goals}:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Range of Motion}: Increase right hip flexion from 70° to 90° pain-free within 2 weeks to improve functional mobility.
+    
+    \item \textbf{Strength}: Improve right hip abductor strength from 2+/5 to 3+/5 within 3 weeks to reduce Trendelenburg gait.
+    
+    \item \textbf{Balance}: Increase Berg Balance Scale from 38/56 to 42/56 within 4 weeks to reduce fall risk.
+\end{enumerate}
+
+\textbf{Activity-Level Goals}:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Ambulation}: Ambulate 150 feet with front-wheeled walker, supervision level, within 3 weeks.
+    
+    \item \textbf{Transfers}: Perform bed-to-chair and toilet transfers with supervision (no physical assist) within 2 weeks.
+    
+    \item \textbf{Stairs}: Ascend/descend 4 stairs with handrail and supervision within 4 weeks for home access.
+    
+    \item \textbf{Lower Body Dressing}: Don socks and shoes with adaptive equipment (reacher, sock aid) with minimal assist within 3 weeks.
+    
+    \item \textbf{Bathing}: Shower independently using shower chair and grab bars with setup assistance within 4 weeks.
+\end{enumerate}
+
+\subsection*{3.2 Long-Term Goals (6-12 weeks)}
+
+\textbf{Participation-Level Goals}:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Community Ambulation}: Walk independently 300+ feet with assistive device on varied terrain within 8 weeks to enable community outings.
+    
+    \item \textbf{ADL Independence}: Achieve independence in all basic ADLs (bathing, dressing, toileting, transfers) within 8 weeks for safe home discharge.
+    
+    \item \textbf{Home Management}: Return to light homemaking tasks (meal prep, laundry) with modified techniques within 12 weeks.
+    
+    \item \textbf{Recreational Activities}: Resume gardening with adaptive techniques and equipment within 12 weeks.
+    
+    \item \textbf{Fall Prevention}: Demonstrate safety awareness and fall prevention strategies for independent home functioning within 8 weeks.
+\end{enumerate}
+
+\textbf{Discharge Goals}:
+\begin{itemize}[leftmargin=*]
+    \item Safe discharge home with appropriate DME (durable medical equipment)
+    \item Independent or supervision level for all ADLs
+    \item Community ambulation with assistive device
+    \item Patient and family educated on home exercise program
+    \item Fall risk minimized with environmental modifications
+\end{itemize}
+
+\subsection*{3.3 Patient-Centered Goals}
+
+Patient's top priorities:
+\begin{enumerate}[leftmargin=*]
+    \item "I want to go home and not need help from my family"
+    \item "I want to be able to go to the grocery store again"
+    \item "I want to get back to my garden this spring"
+\end{enumerate}
+
+% ===== SECTION 4: TREATMENT INTERVENTIONS =====
+\section*{4. Treatment Interventions}
+
+\subsection*{4.1 Physical Therapy Interventions}
+
+\textbf{Frequency}: 3 sessions per week, 45-60 minutes per session, for 8-12 weeks
+
+\textbf{Therapeutic Exercise}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Strengthening}:
+    \begin{itemize}
+        \item Hip abduction in sidelying with resistance band: 3 sets x 10 reps
+        \item Hip extension prone: 3 sets x 10 reps
+        \item Quadriceps sets and straight leg raises: 3 sets x 10 reps
+        \item Standing hip abduction at parallel bars: 2 sets x 10 reps
+        \item Step-ups (2-inch platform progressing to 6-inch): 2 sets x 10 reps
+        \item Squats (partial, with walker for support): 2 sets x 10 reps
+    \end{itemize}
+    
+    \item \textbf{Range of Motion}:
+    \begin{itemize}
+        \item Active-assisted hip flexion supine: 3 sets x 10 reps
+        \item Hip flexor stretching (modified, respecting precautions): 3 x 30 sec holds
+        \item Ankle pumps and circles: 3 sets x 10 reps
+    \end{itemize}
+    
+    \item \textbf{Core Stabilization}:
+    \begin{itemize}
+        \item Abdominal bracing: 10 x 10 sec holds
+        \item Pelvic tilts: 2 sets x 10 reps
+        \item Dead bug progression (modified): 2 sets x 8 reps
+    \end{itemize}
+\end{itemize}
+
+\textbf{Balance Training}:
+\begin{itemize}[leftmargin=*]
+    \item Static standing balance exercises at parallel bars
+    \item Weight shifting activities (anterior-posterior, medial-lateral)
+    \item Tandem stance progression
+    \item Single-leg stance (holding support as needed)
+    \item Reaching activities outside base of support
+    \item Step-over obstacles
+\end{itemize}
+
+\textbf{Gait Training}:
+\begin{itemize}[leftmargin=*]
+    \item Gait training with front-wheeled walker on level surfaces
+    \item Focus on step length symmetry, heel strike, push-off
+    \item Progress from contact guard to supervision to modified independence
+    \item Advance distance as tolerated (goal 300+ feet)
+    \item Outdoor gait training on varied terrain (grass, gravel, curbs)
+    \item Reduce assistive device as appropriate (walker → cane → no device)
+\end{itemize}
+
+\textbf{Stair Training}:
+\begin{itemize}[leftmargin=*]
+    \item Stair negotiation with handrail (step-to pattern initially)
+    \item 4 steps ascending/descending to match home environment
+    \item Progress to step-over-step pattern
+    \item Practice with carrying objects
+\end{itemize}
+
+\textbf{Modalities (as indicated)}:
+\begin{itemize}[leftmargin=*]
+    \item Ice after therapy sessions for pain management
+    \item Electrical stimulation for hip abductor muscle re-education (if indicated)
+    \item Ultrasound for soft tissue mobility (if indicated)
+\end{itemize}
+
+\textbf{Patient Education}:
+\begin{itemize}[leftmargin=*]
+    \item Hip precautions education and review
+    \item Fall prevention strategies
+    \item Proper use of assistive device
+    \item Pain management techniques
+    \item Activity pacing and energy conservation
+\end{itemize}
+
+\subsection*{4.2 Occupational Therapy Interventions}
+
+\textbf{Frequency}: 3 sessions per week, 45 minutes per session, for 6-8 weeks
+
+\textbf{ADL Training}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Bathing}: Practice shower transfers with grab bars and shower chair, long-handled sponge technique
+    \item \textbf{Lower Body Dressing}: Training with reacher, sock aid, elastic shoelaces, dressing stick
+    \item \textbf{Toileting}: Practice with raised toilet seat and grab bars
+    \item \textbf{Bed Mobility}: Log-roll technique, use of bed rail if needed
+    \item \textbf{Kitchen Tasks}: Safe standing tolerance, use of walker basket to carry items
+\end{itemize}
+
+\textbf{Adaptive Equipment Training}:
+\begin{itemize}[leftmargin=*]
+    \item Reacher (32-inch) for dressing, picking up objects
+    \item Sock aid and dressing stick for lower extremity dressing
+    \item Long-handled shoe horn
+    \item Long-handled sponge/bath brush
+    \item Shower chair with back
+    \item Raised toilet seat with arms
+    \item Bedside commode (if bedroom upstairs initially)
+\end{itemize}
+
+\textbf{Home Management Training}:
+\begin{itemize}[leftmargin=*]
+    \item Light meal preparation (seated when possible)
+    \item Laundry (modified techniques, avoid lifting heavy baskets)
+    \item Safe reaching and bending techniques
+    \item Organization strategies to minimize unnecessary walking
+\end{itemize}
+
+\textbf{Upper Extremity Strengthening}:
+\begin{itemize}[leftmargin=*]
+    \item Therapeutic putty for grip strength
+    \item Weighted exercises for shoulder stability (needed for walker use)
+    \item Fine motor coordination activities
+\end{itemize}
+
+\textbf{Energy Conservation and Work Simplification}:
+\begin{itemize}[leftmargin=*]
+    \item Activity pacing strategies
+    \item Prioritization of daily tasks
+    \item Use of rest breaks
+    \item Organization to reduce unnecessary steps
+\end{itemize}
+
+\subsection*{4.3 Home Exercise Program (HEP)}
+
+Patient provided with illustrated HEP to perform daily at home:
+
+\begin{longtable}{|p{4cm}|p{4cm}|p{5cm}|}
+\hline
+\textbf{Exercise} & \textbf{Dosage} & \textbf{Instructions} \\ \hline
+\endfirsthead
+\hline
+\textbf{Exercise} & \textbf{Dosage} & \textbf{Instructions} \\ \hline
+\endhead
+Ankle pumps & 3 x 10, 3x daily & Seated or lying, point toes up/down \\ \hline
+Quadriceps sets & 3 x 10, 2x daily & Tighten thigh muscle, hold 5 sec \\ \hline
+Hip abduction sidelying & 2 x 10, 1x daily & Lift top leg, hold 2 sec, lower slowly \\ \hline
+Sit-to-stand & 2 x 10, 2x daily & Use walker, stand fully, sit slowly \\ \hline
+Standing hip flexion & 2 x 10, 1x daily & Lift knee (respect 90° precaution) \\ \hline
+Balance - standing & 3 x 30 sec, 2x daily & Stand at counter, reduce hand support as able \\ \hline
+Walking & 10 min, 2-3x daily & With walker, gradually increase distance \\ \hline
+\end{longtable}
+
+\textbf{HEP Instructions}:
+\begin{itemize}[leftmargin=*]
+    \item Perform exercises on non-therapy days
+    \item Stop if pain exceeds 4/10
+    \item Maintain hip precautions at all times
+    \item Progress per therapist instruction only
+    \item Record completion in exercise log
+\end{itemize}
+
+\subsection*{4.4 Durable Medical Equipment (DME)}
+
+\textbf{Recommended Equipment}:
+\begin{itemize}[leftmargin=*]
+    \item Front-wheeled walker (standard adult)
+    \item Shower chair with back (adjustable height)
+    \item Grab bars for shower (2 bars - vertical and horizontal)
+    \item Raised toilet seat with arms
+    \item Reacher (32-inch)
+    \item Sock aid
+    \item Long-handled shoe horn
+    \item Long-handled sponge
+    \item Bedside commode (if needed initially)
+    \item Non-slip bath mat
+\end{itemize}
+
+% ===== SECTION 5: TREATMENT SCHEDULE =====
+\section*{5. Treatment Schedule and Timeline}
+
+\subsection*{Treatment Phases}
+
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\textbf{Phase} & \textbf{Duration} & \textbf{Focus} \\ \hline
+Acute/Early & Weeks 1-2 & Pain management, basic mobility, ADL training with equipment, safety \\ \hline
+Intermediate & Weeks 3-6 & Strength/ROM progression, advanced balance, stair training, ADL refinement \\ \hline
+Advanced & Weeks 7-10 & Community ambulation, IADL training, HEP independence, discharge prep \\ \hline
+Transition & Weeks 11-12 & Reduce frequency, monitor independence, finalize home setup \\ \hline
+\end{tabularx}
+
+\subsection*{Session Frequency and Duration}
+
+\begin{tabularx}{\textwidth}{|l|X|X|}
+\hline
+\textbf{Discipline} & \textbf{Frequency} & \textbf{Duration} \\ \hline
+Physical Therapy & 3x/week & 45-60 min/session, 8-12 weeks total \\ \hline
+Occupational Therapy & 3x/week & 45 min/session, 6-8 weeks total \\ \hline
+Home Exercise Program & Daily (non-therapy days) & 30 min/day \\ \hline
+\end{tabularx}
+
+\subsection*{Progress Assessments}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Weekly}: Informal progress monitoring, pain levels, exercise tolerance
+    \item \textbf{Biweekly}: Reassess key impairments (ROM, strength, balance measures)
+    \item \textbf{Week 4}: Formal reassessment, FIM score, goal progress review, plan modification if needed
+    \item \textbf{Week 8}: Comprehensive reassessment, discharge planning, final goal review
+    \item \textbf{Discharge}: Final outcomes documentation, HEP review, follow-up recommendations
+\end{itemize}
+
+% ===== SECTION 6: OUTCOME MEASURES =====
+\section*{6. Outcome Measures and Monitoring}
+
+\subsection*{Standardized Assessments}
+
+\begin{longtable}{|p{4.5cm}|p{3cm}|p{3cm}|p{3cm}|}
+\hline
+\textbf{Measure} & \textbf{Baseline} & \textbf{Goal} & \textbf{Frequency} \\ \hline
+\endfirsthead
+\hline
+\textbf{Measure} & \textbf{Baseline} & \textbf{Goal} & \textbf{Frequency} \\ \hline
+\endhead
+FIM Score & [125/126] & [142/126] & Week 0, 4, 8, discharge \\ \hline
+Berg Balance Scale & [38/56] & [$>$45/56] & Week 0, 4, 8, discharge \\ \hline
+6-Minute Walk Test & [150 feet] & [$>$300 feet] & Week 0, 4, 8, discharge \\ \hline
+Gait Speed & [0.4 m/s] & [$>$0.8 m/s] & Week 0, 4, 8, discharge \\ \hline
+Pain (NRS 0-10) & [6/10 with activity] & [$<$3/10] & Each session \\ \hline
+ROM - Hip Flexion & [70°] & [110°] & Biweekly \\ \hline
+Strength - Hip Abductors & [2+/5] & [4/5] & Biweekly \\ \hline
+\end{longtable}
+
+\subsection*{Progress Indicators}
+
+\textbf{Positive Progress}:
+\begin{itemize}[leftmargin=*]
+    \item Increasing ambulation distance
+    \item Reduced level of assistance for ADLs
+    \item Improved balance scores
+    \item Decreased pain with activity
+    \item Increased strength/ROM measurements
+    \item Patient confidence and self-efficacy improving
+\end{itemize}
+
+\textbf{Barriers to Progress}:
+\begin{itemize}[leftmargin=*]
+    \item Inadequate pain control
+    \item Poor therapy attendance or compliance
+    \item Medical complications or setbacks
+    \item Psychosocial factors (depression, anxiety, lack of support)
+    \item Cognitive impairment affecting learning
+\end{itemize}
+
+% ===== SECTION 7: EXPECTED OUTCOMES =====
+\section*{7. Expected Outcomes and Prognosis}
+
+\subsection*{Rehabilitation Potential}
+
+\textbf{Overall Prognosis}: [e.g., Good] - Patient is motivated, has good social support, no significant cognitive impairment, and appropriate medical management.
+
+\textbf{Expected Functional Outcome}:
+\begin{itemize}[leftmargin=*]
+    \item Independent or supervision level for all basic ADLs
+    \item Community ambulation with assistive device (walker or cane)
+    \item Ability to negotiate stairs for home access
+    \item Safe discharge home with DME and environmental modifications
+    \item Return to modified IADL participation
+\end{itemize}
+
+\subsection*{Timeline for Key Milestones}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Week 2}: Transfers with supervision, basic ADLs with minimal assist
+    \item \textbf{Week 4}: Ambulation 150 feet with walker/supervision, improved pain control
+    \item \textbf{Week 6}: Stairs with handrail/supervision, ADLs mostly independent with equipment
+    \item \textbf{Week 8}: Community ambulation 300+ feet, all ADLs independent, ready for discharge
+\end{itemize}
+
+% ===== SECTION 8: FOLLOW-UP AND DISCHARGE PLANNING =====
+\section*{8. Follow-Up and Discharge Planning}
+
+\subsection*{Discharge Criteria}
+
+Patient ready for discharge when:
+\begin{itemize}[leftmargin=*]
+    \item Safe for home environment (with or without DME)
+    \item Independent or supervision level for ADLs
+    \item Patient/caregiver educated on HEP and safety
+    \item DME obtained and home modifications completed
+    \item Functional goals achieved or plateau reached
+\end{itemize}
+
+\subsection*{Discharge Recommendations}
+
+\begin{itemize}[leftmargin=*]
+    \item Continue HEP as prescribed, progress as tolerated
+    \item Follow up with orthopedic surgeon at [timeframe]
+    \item Consider outpatient therapy if continued progress expected
+    \item Home health PT/OT if unable to access outpatient services
+    \item Transition to community exercise program (e.g., senior center, aquatics)
+\end{itemize}
+
+\subsection*{Home Modifications and Safety}
+
+\begin{itemize}[leftmargin=*]
+    \item Install grab bars in shower (vertical and horizontal)
+    \item Ensure adequate lighting, especially on stairs
+    \item Remove scatter rugs and clutter
+    \item Consider temporary bedroom on main floor if stairs difficult
+    \item Rearrange furniture to create clear pathways
+    \item Store frequently used items at accessible heights
+\end{itemize}
+
+\subsection*{Follow-Up Communication}
+
+\begin{itemize}[leftmargin=*]
+    \item Progress reports sent to referring physician biweekly
+    \item Final discharge summary to all providers
+    \item Home safety assessment completed
+    \item DME delivered and training completed
+    \item Emergency contact: Therapy department [phone]
+\end{itemize}
+
+% ===== SECTION 9: SAFETY AND PRECAUTIONS =====
+\section*{9. Safety Considerations and Precautions}
+
+\subsection*{Medical Precautions}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Hip Precautions} (post-ORIF):
+    \begin{itemize}
+        \item No hip flexion $>$90 degrees for 6-8 weeks
+        \item No hip adduction past midline
+        \item No internal rotation
+        \item Sleep with abduction pillow
+        \item Use elevated toilet seat and shower chair
+    \end{itemize}
+    
+    \item \textbf{Weight-Bearing Status}: [e.g., WBAT - Weight-bearing as tolerated]
+    
+    \item \textbf{Anticoagulation}: On enoxaparin - use fall precautions, report bruising/bleeding
+    
+    \item \textbf{Pain Management}: Opioid use may cause drowsiness - schedule therapy before pain medication if possible
+\end{itemize}
+
+\subsection*{Fall Risk Management}
+
+\textbf{Fall Risk Factors}:
+\begin{itemize}[leftmargin=*]
+    \item Recent surgery/hospitalization
+    \item Impaired balance (Berg 38/56)
+    \item Use of walker
+    \item Pain medication (opioids)
+    \item Environmental hazards at home
+\end{itemize}
+
+\textbf{Fall Prevention Strategies}:
+\begin{itemize}[leftmargin=*]
+    \item Consistent use of walker
+    \item Non-slip footwear with closed heel
+    \item Call for assistance for transfers initially
+    \item Adequate lighting
+    \item Avoid carrying items while walking (use walker basket)
+    \item Balance training in therapy
+    \item Home safety modifications
+\end{itemize}
+
+\subsection*{Contraindications to Treatment}
+
+Hold or modify therapy if:
+\begin{itemize}[leftmargin=*]
+    \item Fever $>$101°F or signs of infection
+    \item Uncontrolled pain ($>$7/10)
+    \item Excessive swelling, warmth, redness at surgical site
+    \item Chest pain, severe shortness of breath
+    \item Dizziness, lightheadedness, abnormal vital signs
+    \item Patient refusal or excessive fatigue
+\end{itemize}
+
+\subsection*{Emergency Procedures}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Fall During Therapy}: Assess for injury, vital signs, notify physician, incident report
+    \item \textbf{Chest Pain/SOB}: Stop activity, call 911, notify physician
+    \item \textbf{Excessive Pain}: Stop activity, apply ice, notify physician, reassess treatment plan
+\end{itemize}
+
+% ===== SECTION 10: PROVIDER SIGNATURE =====
+\vspace{2em}
+
+\section*{10. Rehabilitation Team Signatures}
+
+\textbf{Physical Therapist}:\\[0.5em]
+Signature: \rule{6cm}{0.5pt} \quad Date: \rule{3cm}{0.5pt}\\
+Name/Credentials: \rule{6cm}{0.5pt}\\[1em]
+
+\textbf{Occupational Therapist}:\\[0.5em]
+Signature: \rule{6cm}{0.5pt} \quad Date: \rule{3cm}{0.5pt}\\
+Name/Credentials: \rule{6cm}{0.5pt}\\[1em]
+
+\textbf{Referring Physician Approval}:\\[0.5em]
+Signature: \rule{6cm}{0.5pt} \quad Date: \rule{3cm}{0.5pt}\\
+Name/Credentials: \rule{6cm}{0.5pt}\\
+
+\vspace{2em}
+\begin{center}
+\rule{\textwidth}{1pt}\\
+\textbf{End of Rehabilitation Treatment Plan}\\
+This document contains confidential patient information protected by HIPAA.
+\end{center}
+
+\end{document}
+
+% ========== NOTES FOR USERS ==========
+%
+% CUSTOMIZATION:
+% - Replace all bracketed placeholders with patient-specific information
+% - Adjust goals based on baseline assessment
+% - Modify exercises based on patient tolerance and precautions
+% - Update DME recommendations as needed
+%
+% COMPILATION:
+% pdflatex rehabilitation_treatment_plan.tex
+

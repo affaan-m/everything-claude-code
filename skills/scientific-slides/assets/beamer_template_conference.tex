@@ -1,0 +1,407 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+
+% Encoding
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Theme and colors
+\usetheme{Madrid}
+\usecolortheme{beaver}
+
+% Remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% Page numbers in footer
+\setbeamertemplate{footline}[frame number]
+
+% Graphics
+\usepackage{graphicx}
+\graphicspath{{./figures/}}
+
+% Math
+\usepackage{amsmath, amssymb}
+
+% Tables
+\usepackage{booktabs}
+
+% Citations
+\usepackage[style=authoryear,maxcitenames=2,backend=biber]{biblatex}
+\addbibresource{references.bib}
+\renewcommand*{\bibfont}{\tiny}
+
+% Colors (customize these)
+\definecolor{primaryblue}{RGB}{0,90,156}
+\definecolor{secondaryorange}{RGB}{228,108,10}
+
+% Custom colors for theme elements
+\setbeamercolor{structure}{fg=primaryblue}
+\setbeamercolor{title}{fg=primaryblue}
+\setbeamercolor{frametitle}{fg=primaryblue}
+\setbeamercolor{block title}{fg=white,bg=primaryblue}
+
+% Title page information
+\title[Short Title]{Full Presentation Title:\\Descriptive and Specific}
+\subtitle{Optional Subtitle}
+\author[Author Name]{Author Name\inst{1}}
+\institute[Institution]{
+  \inst{1}
+  Department of XYZ\\
+  University Name\\
+  \vspace{0.2cm}
+  \texttt{email@university.edu}
+}
+\date{Conference Name\\Month Day, Year}
+
+% Optional: Logo
+% \logo{\includegraphics[height=0.8cm]{logo.png}}
+
+\begin{document}
+
+% Title slide
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% Outline (optional for conference talks)
+% \begin{frame}{Outline}
+%   \tableofcontents
+% \end{frame}
+
+%==============================================
+% INTRODUCTION
+%==============================================
+
+\section{Introduction}
+
+\begin{frame}{The Problem}
+  \begin{itemize}
+    \item<1-> Start with a compelling hook or problem statement
+    \item<2-> Establish why this research matters
+    \item<3-> Set up the knowledge gap
+    \item<4-> Preview your contribution
+  \end{itemize}
+  
+  \vfill
+  
+  \uncover<4->{
+    \begin{block}{Research Question}
+      State your specific research question or hypothesis clearly
+    \end{block}
+  }
+\end{frame}
+
+\begin{frame}{Background and Context}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Prior Work:}
+      \begin{itemize}
+        \item Key finding 1 \cite{reference1}
+        \item Key finding 2 \cite{reference2}
+        \item Knowledge gap identified
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      % Example figure
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{context_figure.pdf}
+        \framebox[0.9\textwidth][c]{[Figure: Context or Prior Work]}
+        \caption{Illustration of the problem}
+      \end{figure}
+    \end{column}
+    
+  \end{columns}
+\end{frame}
+
+%==============================================
+% METHODS
+%==============================================
+
+\section{Methods}
+
+\begin{frame}{Study Design}
+  \begin{columns}[T]
+    
+    \begin{column}{0.6\textwidth}
+      \textbf{Approach:}
+      \begin{itemize}
+        \item Study type/design
+        \item Participants/sample (n = X)
+        \item Key procedures
+        \item Analysis strategy
+      \end{itemize}
+      
+      \vspace{0.5cm}
+      
+      \begin{alertblock}{Key Innovation}
+        Highlight what makes your approach novel or improved
+      \end{alertblock}
+    \end{column}
+    
+    \begin{column}{0.4\textwidth}
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{methods_schematic.pdf}
+        \framebox[0.9\textwidth][c]{[Methods Diagram]}
+        \caption{Experimental design}
+      \end{figure}
+    \end{column}
+    
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Analysis Overview}
+  \begin{itemize}
+    \item \textbf{Primary outcome:} What you measured
+    \item \textbf{Statistical approach:} Tests used
+    \item \textbf{Sample size justification:} Power analysis (if applicable)
+    \item \textbf{Software:} Tools and versions used
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  % Optional: Show key equation
+  \begin{exampleblock}{Key Model}
+    \begin{equation}
+      Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \epsilon
+    \end{equation}
+  \end{exampleblock}
+\end{frame}
+
+%==============================================
+% RESULTS
+%==============================================
+
+\section{Results}
+
+\begin{frame}{Main Finding 1}
+  \begin{figure}
+    \centering
+    % \includegraphics[width=0.85\textwidth]{result1.pdf}
+    \framebox[0.8\textwidth][c]{[Figure: Main Result 1]}
+    \caption{Primary outcome showing significant effect ($p < 0.001$)}
+  \end{figure}
+  
+  \vspace{0.3cm}
+  
+  \begin{itemize}
+    \item<2-> Key observation: Description of pattern
+    \item<3-> Statistical result: Effect size and significance
+    \item<4-> Interpretation: What this means
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Main Finding 2}
+  \begin{columns}[c]
+    
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{result2a.pdf}
+        \framebox[0.9\textwidth][c]{[Result 2A]}
+        \caption{Condition A}
+      \end{figure}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{result2b.pdf}
+        \framebox[0.9\textwidth][c]{[Result 2B]}
+        \caption{Condition B}
+      \end{figure}
+    \end{column}
+    
+  \end{columns}
+  
+  \vspace{0.5cm}
+  
+  \begin{itemize}
+    \item Comparison shows: Key difference
+    \item Statistical test: $t(50) = 3.4, p = 0.001$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Supporting Evidence}
+  \begin{table}
+    \centering
+    \caption{Summary of key results across conditions}
+    \begin{tabular}{lccc}
+      \toprule
+      \textbf{Condition} & \textbf{Metric 1} & \textbf{Metric 2} & \textbf{$p$-value} \\
+      \midrule
+      Control    & 45.2 $\pm$ 3.1 & 0.65 & --- \\
+      Treatment  & 67.8 $\pm$ 2.9 & 0.82 & $< 0.001$ \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  
+  \vspace{0.5cm}
+  
+  \begin{itemize}
+    \item Consistent pattern across multiple metrics
+    \item Effect robust to various controls
+  \end{itemize}
+\end{frame}
+
+%==============================================
+% DISCUSSION
+%==============================================
+
+\section{Discussion}
+
+\begin{frame}{Interpretation}
+  \textbf{Key Findings:}
+  \begin{enumerate}
+    \item First main result and its significance
+    \item Second main result and its implications
+    \item Supporting evidence strengthens conclusions
+  \end{enumerate}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Relation to Prior Work:}
+  \begin{itemize}
+    \item Consistent with \cite{reference1}
+    \item Extends beyond \cite{reference2}
+    \item Resolves controversy from \cite{reference3}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Implications and Impact}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Scientific Impact:}
+      \begin{itemize}
+        \item Advances understanding of X
+        \item Provides new framework for Y
+        \item Opens avenue for Z research
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Practical Applications:}
+      \begin{itemize}
+        \item Clinical relevance
+        \item Policy implications
+        \item Technological applications
+      \end{itemize}
+    \end{column}
+    
+  \end{columns}
+  
+  \vspace{0.5cm}
+  
+  \begin{block}{Limitations}
+    \begin{itemize}
+      \item Acknowledge key limitation 1
+      \item Note limitation 2 and how future work addresses it
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+%==============================================
+% CONCLUSION
+%==============================================
+
+\section{Conclusion}
+
+\begin{frame}{Conclusions}
+  \begin{block}{Key Takeaways}
+    \begin{enumerate}
+      \item \textbf{First main finding:} Brief statement
+      \item \textbf{Second main finding:} Brief statement
+      \item \textbf{Broader impact:} Significance for field
+    \end{enumerate}
+  \end{block}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Future Directions:}
+  \begin{itemize}
+    \item Extend to population/context Y
+    \item Investigate mechanism Z
+    \item Collaborate with domain X
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[plain]
+  \begin{center}
+    {\Large \textbf{Thank You}}
+    
+    \vspace{1cm}
+    
+    {\large Questions?}
+    
+    \vspace{1cm}
+    
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \textbf{Contact:}\\
+        Author Name\\
+        \texttt{email@university.edu}\\
+        \url{https://yourwebsite.edu}
+      \end{column}
+      
+      \begin{column}{0.5\textwidth}
+        % Optional: QR code to paper or website
+        % \includegraphics[width=3cm]{qrcode.png}\\
+        % {\small Scan for paper/code}
+      \end{column}
+    \end{columns}
+    
+    \vspace{0.5cm}
+    
+    {\footnotesize
+      Funding: Grant Agency Award \#12345\\
+      Collaborators: Colleague 1, Colleague 2
+    }
+  \end{center}
+\end{frame}
+
+%==============================================
+% BACKUP SLIDES
+%==============================================
+
+\appendix
+
+\begin{frame}{Backup: Additional Data}
+  \begin{figure}
+    \centering
+    % \includegraphics[width=0.7\textwidth]{supplementary_figure.pdf}
+    \framebox[0.6\textwidth][c]{[Supplementary Analysis]}
+    \caption{Additional analysis for questions}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Backup: Methodological Details}
+  \textbf{Detailed Procedure:}
+  \begin{itemize}
+    \item Step-by-step protocol details
+    \item Equipment specifications
+    \item Parameter settings
+    \item Quality control measures
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Alternative Analyses:}
+  \begin{itemize}
+    \item Sensitivity analysis results
+    \item Different statistical approaches
+    \item Subgroup analyses
+  \end{itemize}
+\end{frame}
+
+%==============================================
+% REFERENCES
+%==============================================
+
+\begin{frame}[allowframebreaks]{References}
+  \printbibliography
+\end{frame}
+
+\end{document}

@@ -1,0 +1,870 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+
+% Encoding
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Theme and colors
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+
+% Remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% Section pages
+\AtBeginSection[]{
+  \begin{frame}
+    \vfill
+    \centering
+    \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+      \usebeamerfont{title}\insertsectionhead\par%
+    \end{beamercolorbox}
+    \vfill
+  \end{frame}
+}
+
+% Graphics
+\usepackage{graphicx}
+\graphicspath{{./figures/}}
+
+% Math
+\usepackage{amsmath, amssymb, amsthm}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{multirow}
+
+% Citations
+\usepackage[style=authoryear,maxcitenames=2,backend=biber]{biblatex}
+\addbibresource{references.bib}
+\renewcommand*{\bibfont}{\tiny}
+
+% Algorithms
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% Code
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{orange},
+  numbers=left,
+  numberstyle=\tiny,
+  frame=single,
+  breaklines=true
+}
+
+% Custom colors
+\definecolor{darkblue}{RGB}{0,75,135}
+\definecolor{lightblue}{RGB}{100,150,200}
+
+\setbeamercolor{structure}{fg=darkblue}
+\setbeamercolor{title}{fg=darkblue}
+\setbeamercolor{frametitle}{fg=darkblue}
+
+% Title information
+\title[Short Title for Footer]{Full Title of Your Research:\\Comprehensive and Descriptive}
+\subtitle{Research Seminar Presentation}
+\author[Your Name]{Your Name, PhD Candidate\\
+  Advisor: Prof. Advisor Name}
+\institute[University]{
+  Department of Your Field\\
+  University Name\\
+  \vspace{0.2cm}
+  \texttt{yourname@university.edu}
+}
+\date{\today}
+
+% Logo (optional)
+% \logo{\includegraphics[height=0.8cm]{university_logo.png}}
+
+\begin{document}
+
+% Title slide
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% Outline
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
+
+%==============================================
+% INTRODUCTION
+%==============================================
+
+\section{Introduction}
+
+\begin{frame}{Motivation}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{The Big Picture:}
+      \begin{itemize}
+        \item Why this research area matters
+        \item Real-world impact and applications
+        \item Current challenges in the field
+        \item Opportunity for advancement
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{motivation_figure.pdf}
+        \framebox[0.9\textwidth][c]{[Motivating Figure]}
+        \caption{Illustration of the problem or impact}
+      \end{figure}
+    \end{column}
+    
+  \end{columns}
+  
+  \vspace{0.5cm}
+  
+  \begin{block}{Central Question}
+    How can we address this important challenge using novel approach X?
+  \end{block}
+\end{frame}
+
+\subsection{Background}
+
+\begin{frame}{Prior Work: Overview}
+  \textbf{Historical Development:}
+  \begin{itemize}
+    \item Early work established foundation \cite{seminal1990}
+    \item Key advances in 2000s \cite{advance2005,advance2007}
+    \item Recent developments \cite{recent2020,recent2022}
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Current State of Knowledge:}
+  \begin{enumerate}
+    \item We know that X affects Y
+    \item Evidence suggests mechanism involves Z
+    \item However, questions remain about W
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Knowledge Gap}
+  \begin{columns}[c]
+    
+    \begin{column}{0.6\textwidth}
+      \textbf{What We Know:}
+      \begin{itemize}
+        \item Point 1: Established finding
+        \item Point 2: Replicated result
+        \item Point 3: General consensus
+      \end{itemize}
+      
+      \vspace{0.5cm}
+      
+      \textbf{What Remains Unknown:}
+      \begin{itemize}
+        \item \alert{Gap 1:} Critical unknown
+        \item \alert{Gap 2:} Methodological limitation
+        \item \alert{Gap 3:} Unexplored context
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.4\textwidth}
+      \begin{alertblock}{The Problem}
+        Existing approaches fail to account for X, limiting our understanding of Y and preventing application to Z.
+      \end{alertblock}
+    \end{column}
+    
+  \end{columns}
+\end{frame}
+
+\subsection{Research Questions}
+
+\begin{frame}{Research Objectives}
+  \begin{exampleblock}{Overall Goal}
+    To investigate how X influences Y under conditions Z, and develop a framework for understanding mechanism W.
+  \end{exampleblock}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Specific Aims:}
+  \begin{enumerate}
+    \item \textbf{Aim 1:} Characterize relationship between X and Y
+    \begin{itemize}
+      \item Hypothesis: X positively correlates with Y
+    \end{itemize}
+    
+    \item \textbf{Aim 2:} Identify mechanism W mediating X→Y
+    \begin{itemize}
+      \item Hypothesis: W explains the X-Y relationship
+    \end{itemize}
+    
+    \item \textbf{Aim 3:} Test generalizability to context Z
+    \begin{itemize}
+      \item Hypothesis: Effect persists across conditions
+    \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+%==============================================
+% METHODS
+%==============================================
+
+\section{Methods}
+
+\subsection{Study Design}
+
+\begin{frame}{Overall Approach}
+  \begin{figure}
+    \centering
+    % \includegraphics[width=0.9\textwidth]{study_design.pdf}
+    \framebox[0.8\textwidth][c]{[Study Design Schematic]}
+    \caption{Three-phase experimental design}
+  \end{figure}
+  
+  \begin{itemize}
+    \item \textbf{Phase 1:} Observational study (n = 150)
+    \item \textbf{Phase 2:} Controlled experiment (n = 80)
+    \item \textbf{Phase 3:} Validation in new context (n = 120)
+  \end{itemize}
+\end{frame}
+
+\subsection{Participants and Materials}
+
+\begin{frame}{Sample Characteristics}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Inclusion Criteria:}
+      \begin{itemize}
+        \item Age 18-65 years
+        \item Criterion 2
+        \item Criterion 3
+      \end{itemize}
+      
+      \vspace{0.3cm}
+      
+      \textbf{Exclusion Criteria:}
+      \begin{itemize}
+        \item Confound 1
+        \item Confound 2
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \begin{table}
+        \centering
+        \caption{Sample demographics}
+        \small
+        \begin{tabular}{lc}
+          \toprule
+          \textbf{Variable} & \textbf{Value} \\
+          \midrule
+          N & 150 \\
+          Age (years) & 32.5 $\pm$ 8.2 \\
+          Female (\%) & 58 \\
+          Education (years) & 15.2 $\pm$ 2.1 \\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+    \end{column}
+    
+  \end{columns}
+  
+  \vspace{0.3cm}
+  
+  \footnotesize Recruitment: University community and online platforms
+\end{frame}
+
+\subsection{Procedures}
+
+\begin{frame}{Experimental Procedure}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Session 1 (60 min):}
+      \begin{enumerate}
+        \item Informed consent
+        \item Baseline measures
+        \item Training phase (20 min)
+        \item Test phase (30 min)
+      \end{enumerate}
+      
+      \vspace{0.5cm}
+      
+      \textbf{Session 2 (45 min):}
+      \begin{enumerate}
+        \setcounter{enumi}{4}
+        \item Follow-up measures
+        \item Manipulation (15 min)
+        \item Final assessment (25 min)
+      \end{enumerate}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{procedure_timeline.pdf}
+        \framebox[0.9\textwidth][c]{[Timeline Diagram]}
+        \caption{Experimental timeline}
+      \end{figure}
+      
+      \vspace{0.5cm}
+      
+      \begin{alertblock}{Key Innovation}
+        Novel manipulation technique combining approach A with method B
+      \end{alertblock}
+    \end{column}
+    
+  \end{columns}
+\end{frame}
+
+\subsection{Analysis}
+
+\begin{frame}{Statistical Analysis Plan}
+  \textbf{Primary Analyses:}
+  \begin{itemize}
+    \item \textbf{Aim 1:} Linear regression: $Y = \beta_0 + \beta_1 X + \epsilon$
+    \item \textbf{Aim 2:} Mediation analysis using bootstrapping (5000 iterations)
+    \item \textbf{Aim 3:} Mixed-effects model accounting for context effects
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Secondary Analyses:}
+  \begin{itemize}
+    \item Sensitivity analyses with different covariates
+    \item Subgroup analyses by demographic factors
+    \item Exploratory analyses of individual differences
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  \begin{block}{Software}
+    R 4.2.1 (lme4, lavaan packages); Python 3.10 (scikit-learn); SPSS 28
+  \end{block}
+\end{frame}
+
+%==============================================
+% RESULTS
+%==============================================
+
+\section{Results}
+
+\subsection{Preliminary Analyses}
+
+\begin{frame}{Data Quality and Assumptions}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Data Screening:}
+      \begin{itemize}
+        \item Missing data: < 5\% per variable
+        \item Outliers: 3 cases removed
+        \item Assumptions: All met
+      \end{itemize}
+      
+      \vspace{0.3cm}
+      
+      \textbf{Descriptive Statistics:}
+      \begin{itemize}
+        \item Variable X: $M = 45.2$, $SD = 8.1$
+        \item Variable Y: $M = 67.8$, $SD = 12.3$
+        \item Correlation: $r = 0.54$, $p < .001$
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{descriptives.pdf}
+        \framebox[0.9\textwidth][c]{[Descriptive Plots]}
+        \caption{Variable distributions}
+      \end{figure}
+    \end{column}
+    
+  \end{columns}
+\end{frame}
+
+\subsection{Aim 1 Results}
+
+\begin{frame}{Aim 1: X Predicts Y}
+  \begin{columns}[c]
+    
+    \begin{column}{0.6\textwidth}
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{aim1_result.pdf}
+        \framebox[0.9\textwidth][c]{[Regression Plot]}
+        \caption{Relationship between X and Y ($R^2 = 0.29$, $p < .001$)}
+      \end{figure}
+    \end{column}
+    
+    \begin{column}{0.4\textwidth}
+      \begin{table}
+        \centering
+        \caption{Regression results}
+        \tiny
+        \begin{tabular}{lccc}
+          \toprule
+          \textbf{Predictor} & $\boldsymbol{\beta}$ & \textbf{SE} & \textbf{$p$} \\
+          \midrule
+          Intercept & 12.45 & 3.21 & < .001 \\
+          X & 0.54 & 0.08 & < .001 \\
+          Age & 0.12 & 0.05 & .018 \\
+          Gender & 2.34 & 1.12 & .038 \\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+      
+      \vspace{0.3cm}
+      
+      \begin{block}{Key Finding}
+        X significantly predicts Y, controlling for demographics
+      \end{block}
+    \end{column}
+    
+  \end{columns}
+\end{frame}
+
+\subsection{Aim 2 Results}
+
+\begin{frame}{Aim 2: Mediation by W}
+  \begin{figure}
+    \centering
+    % \includegraphics[width=0.8\textwidth]{mediation_model.pdf}
+    \framebox[0.7\textwidth][c]{[Mediation Diagram]}
+    \caption{Mediation analysis showing W mediates X→Y relationship}
+  \end{figure}
+  
+  \begin{itemize}
+    \item \textbf{Direct effect:} $c' = 0.31$, $p = .021$ (reduced from $c = 0.54$)
+    \item \textbf{Indirect effect:} $ab = 0.23$, 95\% CI [0.14, 0.35]
+    \item \textbf{Proportion mediated:} 43\% of total effect
+  \end{itemize}
+  
+  \vspace{0.3cm}
+  
+  \alert{W partially mediates the relationship between X and Y}
+\end{frame}
+
+\subsection{Aim 3 Results}
+
+\begin{frame}{Aim 3: Generalization to Context Z}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{aim3_context1.pdf}
+        \framebox[0.9\textwidth][c]{[Context 1]}
+        \caption{Original context}
+      \end{figure}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        % \includegraphics[width=\textwidth]{aim3_context2.pdf}
+        \framebox[0.9\textwidth][c]{[Context 2]}
+        \caption{New context Z}
+      \end{figure}
+    \end{column}
+    
+  \end{columns}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Mixed-Effects Model Results:}
+  \begin{itemize}
+    \item Main effect of X: $\beta = 0.51$, $p < .001$
+    \item Context × X interaction: $\beta = -0.08$, $p = .231$ (ns)
+    \item \alert{Effect generalizes across contexts}
+  \end{itemize}
+\end{frame}
+
+\subsection{Additional Analyses}
+
+\begin{frame}{Sensitivity and Robustness Checks}
+  \textbf{Alternative Specifications:}
+  \begin{itemize}
+    \item Result robust to different model specifications
+    \item Consistent across multiple imputation methods
+    \item Findings hold with/without covariates
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Subgroup Analyses:}
+  \begin{table}
+    \centering
+    \caption{Effect sizes by subgroup}
+    \small
+    \begin{tabular}{lccc}
+      \toprule
+      \textbf{Subgroup} & \textbf{$n$} & $\boldsymbol{\beta}$ & \textbf{$p$} \\
+      \midrule
+      Young (< 30) & 67 & 0.58 & < .001 \\
+      Older ($\geq$ 30) & 83 & 0.49 & < .001 \\
+      Male & 63 & 0.52 & < .001 \\
+      Female & 87 & 0.55 & < .001 \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  
+  Effect consistent across demographic groups
+\end{frame}
+
+%==============================================
+% DISCUSSION
+%==============================================
+
+\section{Discussion}
+
+\subsection{Summary of Findings}
+
+\begin{frame}{Key Results Recap}
+  \begin{exampleblock}{Main Findings}
+    \begin{enumerate}
+      \item X significantly predicts Y ($\beta = 0.54$, $p < .001$), explaining 29\% of variance
+      \item W mediates 43\% of the X→Y relationship
+      \item Effect generalizes to new context Z
+      \item Results robust across subgroups and specifications
+    \end{enumerate}
+  \end{exampleblock}
+  
+  \vspace{0.5cm}
+  
+  \textbf{These findings:}
+  \begin{itemize}
+    \item Support our hypotheses
+    \item Provide evidence for mechanism W
+    \item Extend previous work to new domains
+    \item Have implications for theory and practice
+  \end{itemize}
+\end{frame}
+
+\subsection{Interpretation}
+
+\begin{frame}{Relation to Previous Research}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Consistent With:}
+      \begin{itemize}
+        \item Prior findings on X→Y \cite{jones2020}
+        \item Theoretical predictions \cite{smith2019}
+        \item Meta-analytic trends \cite{meta2021}
+      \end{itemize}
+      
+      \vspace{0.5cm}
+      
+      \textbf{Extensions Beyond:}
+      \begin{itemize}
+        \item Identifies mechanism W (new)
+        \item Tests in context Z (novel)
+        \item Larger sample than prior work
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Resolves Contradictions:}
+      \begin{itemize}
+        \item Explains why Study A found X
+        \item Reconciles Studies B and C
+        \item Clarifies conditions for effect
+      \end{itemize}
+      
+      \vspace{0.5cm}
+      
+      \begin{alertblock}{Novel Contribution}
+        First study to demonstrate W as mediator and show generalization to Z
+      \end{alertblock}
+    \end{column}
+    
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Mechanisms and Explanations}
+  \textbf{Why does X affect Y through W?}
+  
+  \vspace{0.3cm}
+  
+  \begin{enumerate}
+    \item<1-> \textbf{Hypothesis 1:} X activates process W
+    \begin{itemize}
+      \item<1-> Evidence: Temporal precedence in data
+      \item<1-> Consistent with neurobiological models
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    
+    \item<2-> \textbf{Hypothesis 2:} W is necessary for Y
+    \begin{itemize}
+      \item<2-> Evidence: Mediation analysis results
+      \item<2-> Supported by experimental manipulations
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    
+    \item<3-> \textbf{Integrated Model:} X → W → Y pathway
+    \begin{itemize}
+      \item<3-> Explains 43\% of total effect
+      \item<3-> Other pathways remain to be identified
+    \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+\subsection{Implications}
+
+\begin{frame}{Theoretical Implications}
+  \textbf{Advances to Theory:}
+  \begin{itemize}
+    \item Refines existing framework by identifying W
+    \item Suggests revision of Model XYZ
+    \item Provides testable predictions for future work
+    \item Integrates previously separate literatures
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Broader Scientific Impact:}
+  \begin{itemize}
+    \item Methodology can be applied to related domains
+    \item Framework generalizable to other contexts
+    \item Opens new research directions
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Practical Applications}
+  \begin{columns}[T]
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Clinical/Applied:}
+      \begin{itemize}
+        \item Intervention target: W
+        \item Assessment tool: Measure X
+        \item Treatment planning: Consider Z
+        \item Expected benefit: Improvement in Y
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Policy Implications:}
+      \begin{itemize}
+        \item Recommendation 1
+        \item Recommendation 2
+        \item Implementation considerations
+        \item Cost-benefit analysis
+      \end{itemize}
+    \end{column}
+    
+  \end{columns}
+  
+  \vspace{0.5cm}
+  
+  \begin{exampleblock}{Translational Path}
+    Findings suggest feasibility of intervention targeting W to improve Y in population experiencing X
+  \end{exampleblock}
+\end{frame}
+
+\subsection{Limitations and Future Directions}
+
+\begin{frame}{Limitations}
+  \textbf{Study Limitations:}
+  \begin{enumerate}
+    \item \textbf{Cross-sectional design}: Cannot establish causality definitively
+    \begin{itemize}
+      \item Future: Longitudinal or experimental design
+    \end{itemize}
+    
+    \item \textbf{Sample characteristics}: University students, may limit generalizability
+    \begin{itemize}
+      \item Future: Community sample, diverse populations
+    \end{itemize}
+    
+    \item \textbf{Measurement}: Self-report bias possible for some variables
+    \begin{itemize}
+      \item Future: Incorporate objective measures
+    \end{itemize}
+    
+    \item \textbf{Unmeasured confounds}: Other factors could explain relationships
+    \begin{itemize}
+      \item Future: Control for additional variables
+    \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Future Research Directions}
+  \begin{block}{Immediate Next Steps}
+    \begin{itemize}
+      \item Replicate in independent sample
+      \item Test causal model experimentally
+      \item Examine boundary conditions
+    \end{itemize}
+  \end{block}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Longer-Term Goals:}
+  \begin{itemize}
+    \item Develop intervention based on findings
+    \item Investigate neural mechanisms
+    \item Explore individual differences
+    \item Translate to applied settings
+  \end{itemize}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Collaborations Sought:}
+  \begin{itemize}
+    \item Experts in domain A for validation
+    \item Clinical partners for translation
+    \item Methodologists for advanced analyses
+  \end{itemize}
+\end{frame}
+
+%==============================================
+% CONCLUSION
+%==============================================
+
+\section{Conclusion}
+
+\begin{frame}{Conclusions}
+  \begin{exampleblock}{Key Contributions}
+    \begin{enumerate}
+      \item Demonstrated robust X→Y relationship
+      \item Identified W as mediating mechanism
+      \item Showed generalizability across contexts
+      \item Provided framework for future research
+    \end{enumerate}
+  \end{exampleblock}
+  
+  \vspace{0.5cm}
+  
+  \begin{block}{Take-Home Message}
+    Our findings reveal that X influences Y through mechanism W, providing new understanding of this important process and suggesting potential intervention targets.
+  \end{block}
+  
+  \vspace{0.5cm}
+  
+  \textbf{Impact:}
+  \begin{itemize}
+    \item Theoretical advancement in understanding X→Y
+    \item Practical implications for interventions
+    \item Foundation for future research program
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[plain]
+  \begin{center}
+    {\LARGE \textbf{Thank You}}
+    
+    \vspace{1cm}
+    
+    {\Large Questions \& Discussion}
+    
+    \vspace{1.5cm}
+    
+    \begin{columns}
+      \begin{column}{0.6\textwidth}
+        \textbf{Contact Information:}\\
+        Your Name\\
+        Department of Your Field\\
+        University Name\\
+        \texttt{yourname@university.edu}\\
+        \url{https://yourlab.university.edu}
+      \end{column}
+      
+      \begin{column}{0.4\textwidth}
+        % QR code to lab website or paper
+        % \includegraphics[width=4cm]{qrcode_website.png}\\
+        % {\small Scan for more info}
+      \end{column}
+    \end{columns}
+    
+    \vspace{1cm}
+    
+    {\footnotesize
+      \textbf{Acknowledgments:}\\
+      Funding: NSF Grant \#12345, NIH Grant R01-67890\\
+      Lab Members: Person A, Person B, Person C\\
+      Collaborators: Prof. X (University Y), Dr. Z (Institution W)
+    }
+  \end{center}
+\end{frame}
+
+%==============================================
+% BACKUP SLIDES
+%==============================================
+
+\appendix
+
+\begin{frame}{Backup: Full Regression Table}
+  \begin{table}
+    \centering
+    \caption{Complete regression results with all covariates}
+    \footnotesize
+    \begin{tabular}{lcccc}
+      \toprule
+      \textbf{Predictor} & $\boldsymbol{\beta}$ & \textbf{SE} & \textbf{$t$} & \textbf{$p$} \\
+      \midrule
+      Intercept & 12.45 & 3.21 & 3.88 & < .001 \\
+      X (primary predictor) & 0.54 & 0.08 & 6.75 & < .001 \\
+      Age & 0.12 & 0.05 & 2.40 & .018 \\
+      Gender (female) & 2.34 & 1.12 & 2.09 & .038 \\
+      Education & 0.45 & 0.31 & 1.45 & .149 \\
+      Covariate Z & -0.18 & 0.09 & -2.00 & .047 \\
+      \midrule
+      $R^2$ & \multicolumn{4}{c}{0.35} \\
+      Adjusted $R^2$ & \multicolumn{4}{c}{0.32} \\
+      $F$(5,144) & \multicolumn{4}{c}{15.48, $p < .001$} \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+\end{frame}
+
+\begin{frame}{Backup: Alternative Analysis}
+  \begin{figure}
+    \centering
+    % \includegraphics[width=0.75\textwidth]{sensitivity_analysis.pdf}
+    \framebox[0.7\textwidth][c]{[Sensitivity Analysis Results]}
+    \caption{Results robust across different model specifications}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Backup: Detailed Methods}
+  \textbf{Measurement Details:}
+  \begin{itemize}
+    \item \textbf{Variable X:} Scale name (Author, Year)
+    \begin{itemize}
+      \item 12 items, 5-point Likert scale
+      \item Cronbach's $\alpha = 0.89$
+      \item Example item: "Statement here"
+    \end{itemize}
+    
+    \item \textbf{Variable Y:} Assessment tool
+    \begin{itemize}
+      \item Performance-based measure
+      \item Inter-rater reliability: ICC = 0.92
+      \item Range: 0-100
+    \end{itemize}
+    
+    \item \textbf{Mediator W:} Experimental manipulation check
+    \begin{itemize}
+      \item Manipulation successful: $t(149) = 8.45$, $p < .001$
+      \item Effect size: $d = 1.38$
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%==============================================
+% REFERENCES
+%==============================================
+
+\begin{frame}[allowframebreaks]{References}
+  \printbibliography
+\end{frame}
+
+\end{document}

@@ -1,0 +1,606 @@
+% scientific_report.sty - Professional Scientific Report Styling
+% For use with XeLaTeX or LuaLaTeX
+% Designed for research reports, technical reports, white papers, and similar documents
+% NOT for journal manuscripts (use venue-templates for those)
+
+\ProvidesPackage{scientific_report}[2024/01/01 Scientific Report Style]
+
+% ============================================================================
+% REQUIRED PACKAGES
+% ============================================================================
+
+% Page layout and geometry
+\RequirePackage[margin=1in, headheight=14pt]{geometry}
+\RequirePackage{setspace}
+
+% Typography - Helvetica font family
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+% Colors and graphics
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+
+% Tables
+\RequirePackage{longtable}
+\RequirePackage{booktabs}
+\RequirePackage{multirow}
+\RequirePackage{array}
+\RequirePackage{colortbl}
+\RequirePackage{tabularx}
+
+% Lists and formatting
+\RequirePackage{enumitem}
+\RequirePackage{parskip}
+
+% Boxes and callouts
+\RequirePackage[most]{tcolorbox}
+
+% Headers and footers
+\RequirePackage{fancyhdr}
+\RequirePackage{titlesec}
+
+% Hyperlinks and references
+\RequirePackage{hyperref}
+\RequirePackage[numbers,sort&compress]{natbib}
+
+% Math and scientific notation
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\RequirePackage{siunitx}
+
+% Captions
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+
+% ============================================================================
+% COLOR DEFINITIONS - PROFESSIONAL SCIENTIFIC PALETTE
+% ============================================================================
+
+% Primary colors (professional blue palette)
+\definecolor{primaryblue}{RGB}{0, 51, 102}        % Deep navy blue - headers, titles
+\definecolor{secondaryblue}{RGB}{74, 144, 226}    % Medium blue - subsections
+\definecolor{lightblue}{RGB}{220, 235, 252}       % Light blue for backgrounds
+\definecolor{accentblue}{RGB}{0, 120, 215}        % Bright accent blue
+
+% Scientific accent colors
+\definecolor{sciencegreen}{RGB}{0, 168, 150}      % Teal green - positive findings
+\definecolor{lightgreen}{RGB}{220, 245, 240}      % Light green background
+\definecolor{darkgreen}{RGB}{0, 128, 96}          % Dark green for emphasis
+
+% Warning and caution colors
+\definecolor{cautionorange}{RGB}{255, 140, 66}    % Orange for warnings/limitations
+\definecolor{lightorange}{RGB}{255, 243, 224}     % Light orange background
+\definecolor{criticalred}{RGB}{198, 40, 40}       % Red for critical items
+\definecolor{lightred}{RGB}{255, 235, 238}        % Light red background
+
+% Recommendation and action colors
+\definecolor{recommendpurple}{RGB}{103, 58, 183}  % Purple for recommendations
+\definecolor{lightpurple}{RGB}{237, 231, 246}     % Light purple background
+
+% Neutral colors
+\definecolor{darkgray}{RGB}{66, 66, 66}           % Dark gray for body text
+\definecolor{mediumgray}{RGB}{117, 117, 117}      % Medium gray for secondary text
+\definecolor{lightgray}{RGB}{245, 245, 245}       % Light gray backgrounds
+\definecolor{tablealt}{RGB}{248, 250, 252}        % Alternating table row color
+\definecolor{tableborder}{RGB}{200, 200, 200}     % Table border color
+
+% ============================================================================
+% HYPERLINK CONFIGURATION
+% ============================================================================
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primaryblue,
+    filecolor=primaryblue,
+    urlcolor=accentblue,
+    citecolor=secondaryblue,
+    pdftitle={Scientific Report},
+    pdfauthor={},
+    pdfsubject={Scientific Research},
+}
+
+% ============================================================================
+% CHAPTER AND SECTION FORMATTING
+% ============================================================================
+
+% Chapter formatting - large number with colored title
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries\color{primaryblue}}
+{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-20pt}{40pt}
+
+% Section formatting
+\titleformat{\section}
+{\normalfont\Large\bfseries\color{primaryblue}}
+{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+
+% Subsection formatting
+\titleformat{\subsection}
+{\normalfont\large\bfseries\color{secondaryblue}}
+{\thesubsection}{1em}{}
+
+% Subsubsection formatting
+\titleformat{\subsubsection}
+{\normalfont\normalsize\bfseries\color{darkgray}}
+{\thesubsubsection}{1em}{}
+
+% Paragraph formatting
+\titleformat{\paragraph}[runin]
+{\normalfont\normalsize\bfseries\color{darkgray}}
+{\theparagraph}{1em}{}
+
+% ============================================================================
+% HEADER AND FOOTER CONFIGURATION
+% ============================================================================
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{\leftmark}}
+\fancyhead[R]{\small\textit{Scientific Report}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{primaryblue}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{lightgray}\leaders\hrule height \footrulewidth\hfill}}
+
+% Plain page style for chapter pages
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \fancyfoot[C]{\thepage}
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0.4pt}
+}
+
+% ============================================================================
+% BOX ENVIRONMENTS - SCIENTIFIC CONTENT ORGANIZATION
+% ============================================================================
+
+% Key Findings Box (Blue) - For major findings and discoveries
+\newtcolorbox{keyfindings}[1][Key Findings]{
+    colback=lightblue,
+    colframe=primaryblue,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=primaryblue,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% Methodology Box (Green) - For methods and procedures
+\newtcolorbox{methodology}[1][Methodology]{
+    colback=lightgreen,
+    colframe=sciencegreen,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=sciencegreen,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% Results Box (Blue-Green) - For highlighting key results
+\newtcolorbox{resultsbox}[1][Results Highlight]{
+    colback=lightblue!50!lightgreen!50,
+    colframe=darkgreen,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=darkgreen,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% Recommendations Box (Purple) - For recommendations and implications
+\newtcolorbox{recommendations}[1][Recommendations]{
+    colback=lightpurple,
+    colframe=recommendpurple,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=recommendpurple,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% Warning/Limitations Box (Orange) - For limitations, cautions, caveats
+\newtcolorbox{limitations}[1][Limitations]{
+    colback=lightorange,
+    colframe=cautionorange,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=cautionorange,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% Critical Notice Box (Red) - For critical warnings or important notices
+\newtcolorbox{criticalnotice}[1][Critical Notice]{
+    colback=lightred,
+    colframe=criticalred,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=criticalred,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% Definition Box (Gray) - For definitions, notes, supplementary info
+\newtcolorbox{definition}[1][Definition]{
+    colback=lightgray,
+    colframe=mediumgray,
+    fonttitle=\bfseries\color{darkgray},
+    title=#1,
+    coltitle=darkgray,
+    colbacktitle=lightgray,
+    boxrule=0.5pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% Executive Summary Box (Special styling with shadow)
+\newtcolorbox{executivesummary}[1][Executive Summary]{
+    enhanced,
+    colback=white,
+    colframe=primaryblue,
+    fonttitle=\Large\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=primaryblue,
+    boxrule=2pt,
+    arc=5pt,
+    left=15pt,
+    right=15pt,
+    top=12pt,
+    bottom=12pt,
+    before skip=15pt,
+    after skip=15pt,
+    shadow={2mm}{-2mm}{0mm}{black!20},
+}
+
+% Hypothesis Box (Light blue with border) - For stating hypotheses
+\newtcolorbox{hypothesis}[1][Hypothesis]{
+    enhanced,
+    colback=lightblue!50,
+    colframe=accentblue,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=white,
+    colbacktitle=accentblue,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+}
+
+% ============================================================================
+% PULL QUOTE ENVIRONMENT
+% ============================================================================
+
+\newtcolorbox{pullquote}{
+    enhanced,
+    colback=lightgray,
+    colframe=lightgray,
+    boxrule=0pt,
+    borderline west={4pt}{0pt}{primaryblue},
+    arc=0pt,
+    left=15pt,
+    right=15pt,
+    top=10pt,
+    bottom=10pt,
+    before skip=15pt,
+    after skip=15pt,
+    fontupper=\large\itshape\color{darkgray},
+}
+
+% ============================================================================
+% STATISTIC HIGHLIGHT BOX
+% ============================================================================
+
+\newcommand{\statbox}[2]{%
+    \begin{tcolorbox}[
+        colback=primaryblue,
+        colframe=primaryblue,
+        coltext=white,
+        arc=5pt,
+        boxrule=0pt,
+        width=0.3\textwidth,
+        halign=center,
+        valign=center,
+        before skip=10pt,
+        after skip=10pt,
+    ]
+    {\Huge\bfseries #1}\\[5pt]
+    {\small #2}
+    \end{tcolorbox}
+}
+
+% ============================================================================
+% TABLE STYLING
+% ============================================================================
+
+% Alternating row colors command
+\newcommand{\tablerowcolor}{\rowcolor{tablealt}}
+
+% Table header styling
+\newcommand{\tableheader}[1]{\textbf{\color{white}#1}}
+\newcommand{\tableheaderrow}{\rowcolor{primaryblue}}
+
+% Professional table environment
+\newenvironment{sciencetable}[2][htbp]{%
+    \begin{table}[#1]
+    \centering
+    \caption{#2}
+    \small
+}{%
+    \end{table}
+}
+
+% ============================================================================
+% FIGURE STYLING
+% ============================================================================
+
+% Caption formatting
+\captionsetup{
+    font=small,
+    labelfont={bf,color=primaryblue},
+    textfont={color=darkgray},
+    justification=centering,
+    margin=20pt,
+}
+
+% Figure with source attribution
+\newcommand{\figuresource}[1]{%
+    \par\vspace{-8pt}
+    {\small\textit{Source: #1}}
+}
+
+% Figure note
+\newcommand{\figurenote}[1]{%
+    \par\vspace{-8pt}
+    {\small\textit{Note: #1}}
+}
+
+% ============================================================================
+% LIST STYLING
+% ============================================================================
+
+% Bullet list styling with blue bullets
+\setlist[itemize]{
+    leftmargin=*,
+    label=\textcolor{primaryblue}{\textbullet},
+    topsep=5pt,
+    itemsep=3pt,
+}
+
+% Numbered list styling with blue numbers
+\setlist[enumerate]{
+    leftmargin=*,
+    label=\textcolor{primaryblue}{\arabic*.},
+    topsep=5pt,
+    itemsep=3pt,
+}
+
+% ============================================================================
+% SCIENTIFIC NOTATION COMMANDS
+% ============================================================================
+
+% Highlight important text
+\newcommand{\highlight}[1]{\textbf{\textcolor{primaryblue}{#1}}}
+
+% P-value formatting (with significance indicators)
+\newcommand{\pvalue}[1]{%
+    \textit{p}~=~#1%
+}
+
+% Significant p-value (bold)
+\newcommand{\psig}[1]{%
+    \textbf{\textit{p}~=~#1}%
+}
+
+% Confidence interval
+\newcommand{\CI}[2]{%
+    95\% CI [#1, #2]%
+}
+
+% Effect size formatting
+\newcommand{\effectsize}[2]{%
+    #1~=~#2%
+}
+
+% Sample size
+\newcommand{\samplesize}[1]{%
+    \textit{n}~=~#1%
+}
+
+% Mean with SD
+\newcommand{\meansd}[2]{%
+    #1~$\pm$~#2%
+}
+
+% Significance indicators
+\newcommand{\sigone}{\textsuperscript{*}}          % p < 0.05
+\newcommand{\sigtwo}{\textsuperscript{**}}         % p < 0.01
+\newcommand{\sigthree}{\textsuperscript{***}}      % p < 0.001
+\newcommand{\signs}{\textsuperscript{ns}}          % not significant
+
+% Significance legend (for table footnotes)
+\newcommand{\siglegend}{%
+    \textsuperscript{*}\textit{p}~<~0.05; 
+    \textsuperscript{**}\textit{p}~<~0.01; 
+    \textsuperscript{***}\textit{p}~<~0.001; 
+    \textsuperscript{ns}not significant%
+}
+
+% ============================================================================
+% STATUS INDICATORS
+% ============================================================================
+
+% Trend indicators
+\newcommand{\trendup}{\textcolor{darkgreen}{$\blacktriangle$}}
+\newcommand{\trenddown}{\textcolor{criticalred}{$\blacktriangledown$}}
+\newcommand{\trendflat}{\textcolor{mediumgray}{$\rightarrow$}}
+
+% Quality/Rating indicators
+\newcommand{\qualityhigh}{\textbf{\textcolor{darkgreen}{HIGH}}}
+\newcommand{\qualitymedium}{\textbf{\textcolor{cautionorange}{MEDIUM}}}
+\newcommand{\qualitylow}{\textbf{\textcolor{criticalred}{LOW}}}
+
+% Evidence strength
+\newcommand{\evidencestrong}{\textbf{\textcolor{darkgreen}{Strong}}}
+\newcommand{\evidencemoderate}{\textbf{\textcolor{cautionorange}{Moderate}}}
+\newcommand{\evidenceweak}{\textbf{\textcolor{criticalred}{Weak}}}
+
+% ============================================================================
+% TITLE PAGE COMMAND
+% ============================================================================
+
+\newcommand{\makereporttitle}[5]{%
+    % #1 = Report Title
+    % #2 = Subtitle
+    % #3 = Author(s)
+    % #4 = Institution/Organization
+    % #5 = Date
+    \begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Huge\bfseries\color{primaryblue} #1\\[0.5cm]}
+    {\LARGE #2\\[2cm]}
+    
+    \vspace{2cm}
+    
+    {\Large\bfseries #3\\[0.5cm]}
+    {\large #4\\[2cm]}
+    
+    {\large\bfseries Date: #5\\[0.3cm]}
+    
+    \vfill
+    
+    \begin{tikzpicture}
+        \fill[primaryblue] (0,0) rectangle (\textwidth,0.5);
+    \end{tikzpicture}
+    
+    \end{titlepage}
+}
+
+% Alternative title page with image
+\newcommand{\makereporttitlewithimage}[6]{%
+    % #1 = Report Title
+    % #2 = Subtitle
+    % #3 = Hero Image Path
+    % #4 = Author(s)
+    % #5 = Institution/Organization
+    % #6 = Date
+    \begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    {\Huge\bfseries\color{primaryblue} #1\\[0.5cm]}
+    {\LARGE #2\\[1.5cm]}
+    
+    \ifx&#3&
+        \vspace{4cm}
+    \else
+        \includegraphics[width=0.8\textwidth]{#3}\\[1.5cm]
+    \fi
+    
+    {\Large\bfseries #4\\[0.5cm]}
+    {\large #5\\[1.5cm]}
+    
+    {\large\bfseries Date: #6}
+    
+    \vfill
+    
+    \begin{tikzpicture}
+        \fill[primaryblue] (0,0) rectangle (\textwidth,0.5);
+    \end{tikzpicture}
+    
+    \end{titlepage}
+}
+
+% ============================================================================
+% APPENDIX SECTION COMMAND
+% ============================================================================
+
+\newcommand{\appendixsection}[1]{%
+    \section*{#1}
+    \addcontentsline{toc}{section}{#1}
+}
+
+% ============================================================================
+% PAGE LAYOUT ADJUSTMENTS
+% ============================================================================
+
+% Spacing
+\setstretch{1.15}
+\setlength{\parskip}{0.5em}
+
+% Prevent orphans and widows
+\clubpenalty=10000
+\widowpenalty=10000
+
+% Float placement
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.7}
+
+% ============================================================================
+% END OF STYLE FILE
+% ============================================================================
+
+\endinput
+

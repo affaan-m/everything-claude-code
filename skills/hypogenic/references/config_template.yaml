@@ -1,0 +1,150 @@
+# HypoGeniC Configuration Template
+# Complete example configuration for hypothesis generation and testing
+
+# Dataset paths
+data:
+  train: "data/train.json"
+  validation: "data/val.json"
+  test: "data/test.json"
+
+  # Dataset should contain:
+  # - text_features_1, text_features_2, ... text_features_n (lists of strings)
+  # - label (list of strings)
+
+# Model configuration
+model:
+  name: "gpt-4"  # or "gpt-3.5-turbo", "claude-3", etc.
+  api_key_env: "OPENAI_API_KEY"  # Environment variable for API key
+  temperature: 0.7
+  max_tokens: 2048
+
+# Redis caching (optional - reduces API costs)
+cache:
+  enabled: true
+  host: "localhost"
+  port: 6832
+
+# Hypothesis generation parameters
+generation:
+  method: "hypogenic"  # Options: "hypogenic", "hyporefine", "union"
+  num_hypotheses: 20
+  batch_size: 5
+  max_iterations: 10
+
+  # For HypoRefine method
+  literature:
+    papers_directory: "papers/"  # Directory containing PDF files
+    num_papers: 10
+
+  # For Union methods
+  union:
+    literature_hypotheses: "literature_hypotheses.json"
+    deduplicate: true
+
+# Prompt templates
+prompts:
+  # Observations prompt - generates initial observations from data
+  observations: |
+    Analyze the following data samples and identify patterns:
+
+    {data_samples}
+
+    Generate 5 distinct observations about patterns that distinguish between the two classes.
+    Focus on specific, testable characteristics.
+
+  # Batched generation prompt - creates hypotheses from observations
+  batched_generation: |
+    Based on these observations about the data:
+
+    {observations}
+
+    Generate {num_hypotheses} distinct, testable hypotheses that could explain the differences between classes.
+    Each hypothesis should:
+    1. Be specific and measurable
+    2. Focus on a single characteristic or pattern
+    3. Be falsifiable through empirical testing
+
+    Format each hypothesis as: "Hypothesis X: [clear statement]"
+
+  # Inference prompt - tests hypotheses against data
+  inference: |
+    Hypothesis: {hypothesis}
+
+    Data sample:
+    {sample_text}
+
+    Does this sample support or contradict the hypothesis?
+    Respond with: SUPPORT, CONTRADICT, or NEUTRAL
+
+    Explanation: [brief reasoning]
+
+  # Relevance checking prompt - filters hypotheses
+  relevance_check: |
+    Hypothesis: {hypothesis}
+    Task: {task_description}
+
+    Is this hypothesis relevant and testable for the given task?
+    Respond with: RELEVANT or NOT_RELEVANT
+
+    Reasoning: [brief explanation]
+
+  # Adaptive refinement prompt - for HypoRefine
+  adaptive_refinement: |
+    Current hypothesis: {hypothesis}
+
+    This hypothesis performed poorly on these challenging examples:
+    {challenging_examples}
+
+    Generate an improved hypothesis that addresses these failures while maintaining the core insight.
+
+    Improved hypothesis: [statement]
+
+# Inference configuration
+inference:
+  method: "voting"  # Options: "voting", "weighted", "ensemble"
+  confidence_threshold: 0.7
+  max_samples: 1000  # Limit for large test sets
+
+# Output configuration
+output:
+  directory: "output/"
+  save_intermediate: true  # Save hypotheses after each iteration
+  format: "json"  # Options: "json", "csv"
+  verbose: true
+
+# Custom label extraction (optional)
+# Define a custom function in your code to parse specific output formats
+label_extraction:
+  pattern: "PREDICTION: {label}"  # Regex pattern for extracting predictions
+  valid_labels: ["0", "1"]  # Expected label values
+
+# Task-specific settings
+task:
+  name: "example_task"
+  description: "Binary classification task for [describe your specific domain]"
+  features:
+    - name: "text_features_1"
+      description: "Primary text content"
+    - name: "text_features_2"
+      description: "Additional contextual information"
+  labels:
+    - name: "0"
+      description: "Negative class"
+    - name: "1"
+      description: "Positive class"
+
+# Evaluation metrics
+evaluation:
+  metrics:
+    - "accuracy"
+    - "precision"
+    - "recall"
+    - "f1"
+  cross_validation: false
+  num_folds: 5
+
+# Logging
+logging:
+  level: "INFO"  # Options: "DEBUG", "INFO", "WARNING", "ERROR"
+  file: "logs/hypogenic.log"
+  console: true

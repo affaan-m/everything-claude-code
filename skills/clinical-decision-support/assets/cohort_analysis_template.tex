@@ -1,0 +1,359 @@
+\documentclass[10pt,letterpaper]{article}
+
+% Packages
+\usepackage[margin=0.5in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{float}
+
+% Color definitions
+\definecolor{headerblue}{RGB}{0,102,204}
+\definecolor{highlightgreen}{RGB}{0,153,76}
+\definecolor{warningred}{RGB}{204,0,0}
+\definecolor{highlightgray}{RGB}{240,240,240}
+\definecolor{biomarkerblue}{RGB}{51,102,204}
+
+% Section formatting - compact
+\titleformat{\section}{\normalfont\fontsize{11}{12}\bfseries\color{headerblue}}{\thesection}{0.5em}{}
+\titlespacing*{\section}{0pt}{4pt}{2pt}
+
+\titleformat{\subsection}{\normalfont\fontsize{10}{11}\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{3pt}{1pt}
+
+% List formatting - ultra compact
+\setlist[itemize]{leftmargin=*,itemsep=0pt,parsep=0pt,topsep=1pt}
+\setlist[enumerate]{leftmargin=*,itemsep=0pt,parsep=0pt,topsep=1pt}
+
+% Remove paragraph indentation
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt}
+
+% Header/footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize \textbf{Clinical Decision Support: [COHORT NAME]}}
+\fancyhead[R]{\footnotesize Page \thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\fancyfoot[C]{\footnotesize Confidential Medical Document - For Professional Use Only}
+
+\begin{document}
+
+% Title block - compact
+\begin{center}
+{\fontsize{14}{16}\selectfont\bfseries\color{headerblue} PATIENT COHORT ANALYSIS REPORT}\\[2pt]
+{\fontsize{12}{14}\selectfont\bfseries [Cohort Description - e.g., NSCLC Patients Stratified by PD-L1 Expression]}\\[2pt]
+{\fontsize{10}{12}\selectfont [Institution/Study Name]}\\[1pt]
+{\fontsize{9}{11}\selectfont Report Date: [Date]}
+\end{center}
+
+\vspace{4pt}
+
+% Executive Summary Box
+\begin{tcolorbox}[colback=highlightgray,colframe=headerblue,title=\textbf{Executive Summary},fonttitle=\bfseries\small,coltitle=black]
+{\small
+\textbf{Cohort}: [n=XX] patients with [disease] stratified by [biomarker/characteristic]
+
+\textbf{Key Findings}:
+\begin{itemize}
+\item [Primary finding - e.g., Biomarker+ patients had significantly longer PFS]
+\item [Secondary finding - e.g., ORR 45\% vs 30\%, p=0.023]
+\item [Safety finding - e.g., Similar toxicity profiles between groups]
+\end{itemize}
+
+\textbf{Clinical Implications}: [Treatment recommendations based on findings]
+}
+\end{tcolorbox}
+
+\vspace{2pt}
+
+\section{Cohort Characteristics}
+
+\subsection{Patient Demographics}
+
+[Narrative description of cohort composition, inclusion/exclusion criteria, time period]
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Characteristic} & \textbf{Group A (n=XX)} & \textbf{Group B (n=XX)} & \textbf{p-value} \\
+\midrule
+Age, years (median [IQR]) & XX [XX-XX] & XX [XX-XX] & X.XX \\
+Sex, n (\%) & & & \\
+\quad Male & XX (XX\%) & XX (XX\%) & X.XX \\
+\quad Female & XX (XX\%) & XX (XX\%) & \\
+ECOG PS, n (\%) & & & \\
+\quad 0-1 & XX (XX\%) & XX (XX\%) & X.XX \\
+\quad 2 & XX (XX\%) & XX (XX\%) & \\
+Disease Stage, n (\%) & & & \\
+\quad III & XX (XX\%) & XX (XX\%) & X.XX \\
+\quad IV & XX (XX\%) & XX (XX\%) & \\
+Prior Lines of Therapy & & & \\
+\quad 0 (treatment-naïve) & XX (XX\%) & XX (XX\%) & X.XX \\
+\quad 1-2 & XX (XX\%) & XX (XX\%) & \\
+\quad $\geq$3 & XX (XX\%) & XX (XX\%) & \\
+\bottomrule
+\end{tabular}
+\caption{Baseline patient demographics and clinical characteristics}
+\end{table}
+
+\subsection{Biomarker Profile}
+
+\begin{tcolorbox}[colback=biomarkerblue!10,colframe=biomarkerblue,title=\textbf{Biomarker Stratification},fonttitle=\bfseries\small]
+{\small
+\textbf{Classification Method}: [e.g., IHC for PD-L1 expression, NGS for mutations, gene expression clustering]
+
+\textbf{Group Definitions}:
+\begin{itemize}
+\item \textbf{Group A (Biomarker+)}: [n=XX] - [Definition, e.g., PD-L1 TPS $\geq$50\%, or Mesenchymal-Immune-Active subtype]
+\item \textbf{Group B (Biomarker-)}: [n=XX] - [Definition, e.g., PD-L1 TPS <50\%]
+\end{itemize}
+
+\textbf{Molecular Features of Group A}:
+\begin{itemize}
+\item [Feature 1]: XX\% (n=XX) - [Clinical significance]
+\item [Feature 2]: XX\% (n=XX) - [Clinical significance]
+\item [Feature 3]: Elevated/decreased [marker] (median [value])
+\end{itemize}
+}
+\end{tcolorbox}
+
+\section{Treatment Exposures}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Treatment Received} & \textbf{Group A, n (\%)} & \textbf{Group B, n (\%)} \\
+\midrule
+[Treatment regimen 1] & XX (XX\%) & XX (XX\%) \\
+[Treatment regimen 2] & XX (XX\%) & XX (XX\%) \\
+[Treatment regimen 3] & XX (XX\%) & XX (XX\%) \\
+Median cycles received (range) & X (X-X) & X (X-X) \\
+\bottomrule
+\end{tabular}
+\caption{Treatment exposures by biomarker group}
+\end{table}
+
+\section{Treatment Outcomes}
+
+\subsection{Response Rates}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Response Category} & \textbf{Group A (n=XX)} & \textbf{Group B (n=XX)} & \textbf{p-value} \\
+\midrule
+Objective Response Rate (ORR) & XX\% [95\% CI] & XX\% [95\% CI] & X.XXX \\
+\quad Complete Response (CR) & XX (XX\%) & XX (XX\%) & \\
+\quad Partial Response (PR) & XX (XX\%) & XX (XX\%) & \\
+Disease Control Rate (DCR) & XX\% [95\% CI] & XX\% [95\% CI] & X.XXX \\
+\quad Stable Disease (SD) & XX (XX\%) & XX (XX\%) & \\
+Progressive Disease (PD) & XX (XX\%) & XX (XX\%) & \\
+\midrule
+Median Duration of Response (months) & X.X (95\% CI X.X-X.X) & X.X (95\% CI X.X-X.X) & X.XXX \\
+\bottomrule
+\end{tabular}
+\caption{Best overall response by biomarker group (RECIST v1.1 criteria)}
+\end{table}
+
+\subsection{Survival Outcomes}
+
+\textbf{Progression-Free Survival (PFS)}:
+\begin{itemize}
+\item Group A: Median X.X months (95\% CI X.X-X.X), 12-month PFS rate: XX\%
+\item Group B: Median X.X months (95\% CI X.X-X.X), 12-month PFS rate: XX\%
+\item Hazard Ratio: X.XX (95\% CI X.XX-X.XX), log-rank p = X.XXX
+\item \textit{[Interpretation: Group A had XX\% reduction in risk of progression compared to Group B]}
+\end{itemize}
+
+\textbf{Overall Survival (OS)}:
+\begin{itemize}
+\item Group A: Median XX.X months (95\% CI XX.X-XX.X), 12-month OS rate: XX\%
+\item Group B: Median XX.X months (95\% CI XX.X-XX.X), 12-month OS rate: XX\%
+\item Hazard Ratio: X.XX (95\% CI X.XX-X.XX), log-rank p = X.XXX
+\item \textit{[Interpretation: XX\% reduction in risk of death for Group A]}
+\end{itemize}
+
+% Note: Include Kaplan-Meier curves as figures if available
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=0.9\textwidth]{figures/pfs_by_biomarker.pdf}
+% \caption{Progression-free survival by biomarker status}
+% \end{figure}
+
+\section{Safety and Tolerability}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+\multirow{2}{*}{\textbf{Adverse Event}} & \multicolumn{2}{c}{\textbf{Any Grade, n (\%)}} & \multicolumn{2}{c}{\textbf{Grade 3-4, n (\%)}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+& Group A & Group B & Group A & Group B \\
+\midrule
+[AE 1 - e.g., Fatigue] & XX (XX\%) & XX (XX\%) & X (X\%) & X (X\%) \\
+[AE 2 - e.g., Nausea] & XX (XX\%) & XX (XX\%) & X (X\%) & X (X\%) \\
+[AE 3 - e.g., Neutropenia] & XX (XX\%) & XX (XX\%) & X (X\%) & X (X\%) \\
+[AE 4 - e.g., Diarrhea] & XX (XX\%) & XX (XX\%) & X (X\%) & X (X\%) \\
+[AE 5 - immune-related] & XX (XX\%) & XX (XX\%) & X (X\%) & X (X\%) \\
+\midrule
+Treatment discontinuation & XX (XX\%) & XX (XX\%) & \multicolumn{2}{c}{-} \\
+Dose reductions & XX (XX\%) & XX (XX\%) & \multicolumn{2}{c}{-} \\
+\bottomrule
+\end{tabular}
+\caption{Treatment-emergent adverse events by biomarker group (CTCAE v5.0)}
+\end{table}
+
+\section{Statistical Analysis}
+
+\subsection{Methods}
+
+\textbf{Study Design}: [Retrospective cohort analysis / Prospective cohort / Post-hoc analysis of clinical trial]
+
+\textbf{Statistical Tests}:
+\begin{itemize}
+\item Continuous variables: [t-test / Mann-Whitney U test], reported as [mean $\pm$ SD / median [IQR]]
+\item Categorical variables: Chi-square test or Fisher's exact test (if expected count <5)
+\item Survival analysis: Kaplan-Meier method, log-rank test, Cox proportional hazards regression
+\item Significance level: Two-sided p<0.05 considered statistically significant
+\item Software: [R version X.X.X, survival package / SAS / Stata / Python lifelines]
+\end{itemize}
+
+\subsection{Multivariable Analysis}
+
+Cox regression model adjusting for baseline prognostic factors:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Variable} & \textbf{Hazard Ratio} & \textbf{95\% CI} & \textbf{p-value} \\
+\midrule
+Biomarker+ (vs Biomarker-) & X.XX & X.XX-X.XX & X.XXX \\
+Age (per 10 years) & X.XX & X.XX-X.XX & X.XXX \\
+ECOG PS 2 (vs 0-1) & X.XX & X.XX-X.XX & X.XXX \\
+Stage IV (vs III) & X.XX & X.XX-X.XX & X.XXX \\
+[Additional variable] & X.XX & X.XX-X.XX & X.XXX \\
+\bottomrule
+\end{tabular}
+\caption{Multivariable Cox regression for progression-free survival}
+\end{table}
+
+\textbf{Interpretation}: After adjusting for age, performance status, and disease stage, [biomarker status] remained an independent predictor of [PFS/OS] (HR X.XX, 95\% CI X.XX-X.XX, p=X.XXX).
+
+\section{Clinical Implications}
+
+\begin{tcolorbox}[colback=highlightgreen!10,colframe=highlightgreen,title=\textbf{Treatment Recommendations},fonttitle=\bfseries\small]
+{\small
+\textbf{For Biomarker-Positive Patients (Group A)}:
+
+\textbf{Preferred Regimen} (GRADE 1A):
+\begin{itemize}
+\item [Specific treatment based on biomarker]
+\item Evidence: [Trial name/data showing benefit in biomarker+ population]
+\item Expected outcomes: ORR XX\%, median PFS XX months
+\end{itemize}
+
+\textbf{Monitoring}:
+\begin{itemize}
+\item Imaging every [X weeks] for response assessment
+\item [Specific lab monitoring for biomarker+ patients]
+\item Watch for [specific toxicities more common in this group]
+\end{itemize}
+
+\textbf{For Biomarker-Negative Patients (Group B)}:
+
+\textbf{Standard Regimen} (GRADE 1B):
+\begin{itemize}
+\item [Standard therapy for biomarker- population]
+\item Expected outcomes: ORR XX\%, median PFS XX months
+\item Consider [alternative approaches or clinical trial enrollment]
+\end{itemize}
+}
+\end{tcolorbox}
+
+\section{Subgroup Analyses}
+
+\textbf{Interaction Testing}: Treatment effect by biomarker subgroup (p-interaction = X.XXX)
+
+[Describe whether treatment benefit differs by biomarker status - i.e., predictive biomarker]
+
+Additional exploratory subgroups:
+\begin{itemize}
+\item Age <65 vs $\geq$65 years
+\item Sex (male vs female)
+\item Prior lines of therapy (0 vs 1+ prior treatments)
+\item Disease burden (high vs low tumor burden)
+\end{itemize}
+
+\section{Strengths and Limitations}
+
+\subsection{Strengths}
+\begin{itemize}
+\item [e.g., Biomarker-stratified analysis with prospectively defined groups]
+\item [e.g., Adequate sample size for statistical power]
+\item [e.g., Standardized response assessment using RECIST v1.1]
+\item [e.g., Multivariable analysis adjusting for confounders]
+\end{itemize}
+
+\subsection{Limitations}
+\begin{itemize}
+\item [e.g., Retrospective design with potential selection bias]
+\item [e.g., Single-institution cohort may limit generalizability]
+\item [e.g., Biomarker testing not available for all patients (XX\% tested)]
+\item [e.g., Limited follow-up for OS (median X months)]
+\item [e.g., Heterogeneous treatment regimens across cohort]
+\end{itemize}
+
+\section{Conclusions}
+
+[Paragraph summarizing key findings]
+
+[Biomarker-positive patients demonstrated [significantly better/worse] outcomes compared to biomarker-negative patients, with [outcome metric] of [values] (HR X.XX, p=X.XXX). These findings support [biomarker-guided therapy selection / routine biomarker testing / specific treatment approach].]
+
+[Future directions: Prospective validation in independent cohort, investigation of mechanisms, clinical trial design implications]
+
+\section{References}
+
+\begin{enumerate}
+\item [Reference 1 - Key clinical trial]
+\item [Reference 2 - Biomarker validation study]
+\item [Reference 3 - Guideline reference (NCCN, ASCO, ESMO)]
+\item [Reference 4 - Statistical methods reference]
+\item [Reference 5 - Additional supporting evidence]
+\end{enumerate}
+
+\vspace{10pt}
+
+\hrule
+\vspace{4pt}
+{\footnotesize
+\textbf{Report Prepared By}: [Name, Title]\\
+\textbf{Date}: [Date]\\
+\textbf{Contact}: [Email/Phone]\\
+\textbf{Institutional Review}: [IRB approval number if applicable]\\
+\textbf{Data Cut-Off Date}: [Date]\\
+\textbf{Confidentiality}: This document contains proprietary clinical data. Distribution restricted to authorized personnel only.
+}
+
+\end{document}
+

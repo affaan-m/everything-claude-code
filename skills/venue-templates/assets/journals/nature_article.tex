@@ -1,0 +1,171 @@
+% Nature Journal Article Template
+% For submission to Nature family journals
+% Last updated: 2024
+
+\documentclass[12pt]{article}
+
+% Packages
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{lineno}  % Line numbers for review
+\usepackage[super]{natbib}  % Superscript citations
+
+% Line numbering (required for submission)
+\linenumbers
+
+% Title and Authors
+\title{Insert Your Title Here: Concise and Descriptive}
+
+\author{
+First Author\textsuperscript{1}, Second Author\textsuperscript{1,2}, Third Author\textsuperscript{2,*}
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+% Affiliations
+\noindent
+\textsuperscript{1}Department Name, Institution Name, City, State/Province, Postal Code, Country \\
+\textsuperscript{2}Second Department/Institution \\
+\textsuperscript{*}Correspondence: [email protected]
+
+% Abstract
+\begin{abstract}
+\noindent
+Write a concise abstract of 150-200 words summarizing the main findings, significance, and conclusions of your work. The abstract should be self-contained and understandable without reading the full paper. Focus on what you did, what you found, and why it matters. Avoid jargon and abbreviations where possible.
+\end{abstract}
+
+% Main Text
+\section*{Introduction}
+% 2-3 paragraphs setting the context
+Provide background on the research area, establish the importance of the problem, and identify the knowledge gap your work addresses. Nature papers should emphasize broad significance beyond a narrow specialty.
+
+State your main research question or objective clearly.
+
+Briefly preview your approach and key findings.
+
+\section*{Results}
+% Primary results section
+% Organize by finding, not by experiment
+% Reference figures/tables as you describe results
+
+\subsection*{First major finding}
+Describe your first key result. Reference Figure~\ref{fig:example} to support your findings.
+
+\begin{figure}[ht]
+\centering
+% Include your figure here
+% \includegraphics[width=0.7\textwidth]{figure1.pdf}
+\caption{{\bf Figure title in bold.} Detailed figure caption explaining what is shown, experimental conditions, sample sizes (n), statistical tests, and significance levels. Panels should be labeled (a), (b), etc. if multiple panels are present.}
+\label{fig:example}
+\end{figure}
+
+\subsection*{Second major finding}
+Describe your second key result objectively, without interpretation.
+
+\subsection*{Third major finding}
+Describe additional results as needed.
+
+\section*{Discussion}
+% Interpret results, compare to literature, acknowledge limitations
+
+\subsection*{Main findings and interpretation}
+Summarize your key findings and explain their significance. How do they advance our understanding?
+
+\subsection*{Comparison to previous work}
+Compare and contrast your results with existing literature\cite{example2023}.
+
+\subsection*{Implications}
+Discuss the broader implications of your work for the field and beyond.
+
+\subsection*{Limitations and future directions}
+Honestly acknowledge limitations and suggest future research directions.
+
+\section*{Conclusions}
+Provide a concise conclusion summarizing the main take-home messages of your work.
+
+\section*{Methods}
+% Detailed methods allowing reproducibility
+% Can be placed after main text in Nature
+
+\subsection*{Experimental design}
+Describe overall experimental design, including controls.
+
+\subsection*{Sample preparation}
+Detail procedures for sample collection, preparation, and handling.
+
+\subsection*{Data collection}
+Describe instrumentation, measurement procedures, and data collection protocols.
+
+\subsection*{Data analysis}
+Explain analytical methods, statistical tests, and software used. State sample sizes, replication, and significance thresholds.
+
+\subsection*{Ethical approval}
+Include relevant ethical approval statements (human subjects, animal use, biosafety).
+
+\section*{Data availability}
+State where data supporting the findings can be accessed (repository, supplementary files, available on request).
+
+\section*{Code availability}
+If applicable, provide information on code availability (GitHub, Zenodo, etc.).
+
+\section*{Acknowledgements}
+Acknowledge funding sources, technical assistance, and other contributions. List grant numbers.
+
+\section*{Author contributions}
+Describe contributions of each author using CRediT taxonomy or similar (conceptualization, methodology, investigation, writing, etc.).
+
+\section*{Competing interests}
+Declare any financial or non-financial competing interests. If none, state "The authors declare no competing interests."
+
+% References
+\bibliographystyle{naturemag}  % Nature bibliography style
+\bibliography{references}  % Your .bib file
+
+% Alternatively, manually format references:
+\begin{thebibliography}{99}
+
+\bibitem{example2023}
+Smith, J. D., Jones, M. L. \& Williams, K. R. Groundbreaking discovery in the field. \textit{Nature} \textbf{600}, 123--130 (2023).
+
+\bibitem{author2022}
+Author, A. A. \& Coauthor, B. B. Another important paper. \textit{Nat. Methods} \textbf{19}, 456--
+
+460 (2022).
+
+% Add more references as needed
+
+\end{thebibliography}
+
+% Figure Legends (if not included with figures)
+\section*{Figure Legends}
+
+\textbf{Figure 1 | Figure title.} Comprehensive figure legend describing all panels, experimental conditions, sample sizes, and statistical analyses.
+
+\textbf{Figure 2 | Second figure title.} Another detailed legend.
+
+% Extended Data Figures (optional - supplementary figures)
+\section*{Extended Data}
+
+\textbf{Extended Data Figure 1 | Supplementary data title.} Description of supplementary figure supporting main findings.
+
+\end{document}
+
+% Notes for Authors:
+% 1. Nature articles are typically ~3,000 words excluding Methods, References, Figure Legends
+% 2. Use superscript numbered citations (1, 2, 3)
+% 3. Figures should be high resolution (300+ dpi for photos, 1000 dpi for line art)
+% 4. Submit figures as separate files (TIFF, EPS, or PDF)
+% 5. Double-space the manuscript for review
+% 6. Include line numbers using \linenumbers
+% 7. Follow Nature's specific author guidelines for your target journal
+% 8. Methods section can be quite detailed and placed after main text
+% 9. Check word limits and specific requirements for your Nature family journal
+

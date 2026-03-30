@@ -1,0 +1,799 @@
+% Pain Management Plan Template
+% For acute and chronic pain treatment
+% Last updated: 2025
+
+\documentclass[11pt,letterpaper]{article}
+
+% Packages
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{tabularx}
+\usepackage[most]{tcolorbox}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Pain Management Plan}
+\rhead{Page \thepage\ of \pageref{LastPage}}
+\lfoot{Date Created: \today}
+\rfoot{Confidential Patient Information}
+
+% Title formatting
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% Title
+\begin{center}
+{\Large\bfseries PAIN MANAGEMENT PLAN}\\[0.5em]
+{\large Comprehensive Multimodal Pain Treatment}\\[0.5em]
+\rule{\textwidth}{1pt}
+\end{center}
+
+\vspace{1em}
+
+% ===== TREATMENT PLAN HIGHLIGHTS (Foundation Medicine Model) =====
+\begin{tcolorbox}[colback=yellow!10!white,colframe=yellow!75!black,title=\textbf{TREATMENT PLAN HIGHLIGHTS},fonttitle=\bfseries\large]
+
+\textbf{Pain Diagnosis:} [Primary pain condition - e.g., Chronic low back pain, nociceptive/neuropathic mixed]
+
+\vspace{0.3em}
+\textbf{Primary Treatment Goals:}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item [Goal 1 - e.g., Reduce pain from 8/10 to $<$5/10 within 8 weeks]
+    \item [Goal 2 - e.g., Return to work with accommodations within 12 weeks]
+    \item [Goal 3 - e.g., Improve physical function - walk 30 minutes without significant pain]
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{Main Interventions:}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item \textit{Multimodal Pharmacotherapy:} [Medications - e.g., Acetaminophen, duloxetine, topical lidocaine]
+    \item \textit{Physical Interventions:} [Therapies - e.g., PT 2x/week, core strengthening, heat/ice]
+    \item \textit{Behavioral:} [Approaches - e.g., CBT for pain, relaxation techniques, activity pacing]
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{Timeline:} [Phases - e.g., Intensive treatment (8 weeks), Optimization (12 weeks), Long-term management]
+
+\end{tcolorbox}
+
+\vspace{1em}
+
+% ===== SECTION 1: PATIENT AND PAIN INFORMATION =====
+\section*{1. Patient Information and Pain Assessment}
+
+\textbf{HIPAA Notice}: De-identify all protected health information before sharing.
+
+\vspace{0.5em}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Patient ID} & [De-identified code, e.g., PM-001] \\ \hline
+\textbf{Age Range} & [e.g., 45-50 years] \\ \hline
+\textbf{Sex} & [Male/Female/Other] \\ \hline
+\textbf{Date of Plan} & [Month/Year only] \\ \hline
+\textbf{Pain Specialist} & [Name, MD, Credentials] \\ \hline
+\textbf{Referring Provider} & [Name, MD/NP/PA] \\ \hline
+\textbf{Facility} & [Pain clinic/hospital name] \\ \hline
+\end{tabularx}
+
+\vspace{1em}
+
+\subsection*{Pain Characteristics}
+
+\textbf{Pain Type}: [e.g., Chronic low back pain] ☐ Acute ☑ Chronic
+
+\textbf{Primary Pain Diagnosis}: [e.g., Chronic lumbar radiculopathy] (ICD-10: [M54.16])
+
+\textbf{Secondary Pain Diagnoses}:
+\begin{itemize}[leftmargin=*]
+    \item [e.g., Lumbar spinal stenosis] (ICD-10: [M48.06])
+    \item [e.g., Degenerative disc disease L4-L5] (ICD-10: [M51.36])
+\end{itemize}
+
+\textbf{Duration}: [e.g., 3 years of chronic pain, worsening past 6 months]
+
+\textbf{Pain Location}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Primary}: Lower back (lumbar region L4-L5)
+    \item \textbf{Radiation}: Right leg, posterior thigh to calf (sciatic distribution)
+    \item \textbf{Secondary}: [Other pain sites if applicable]
+\end{itemize}
+
+\textbf{Pain Quality}: [e.g., Sharp, shooting pain in leg; dull ache in back]
+
+\textbf{Pain Intensity}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Current}: [e.g., 7/10 numeric rating scale (NRS)]
+    \item \textbf{Average (past week)}: [e.g., 6/10]
+    \item \textbf{Worst}: [e.g., 9/10]
+    \item \textbf{Best}: [e.g., 4/10 with rest]
+    \item \textbf{At night}: [e.g., 6/10, disrupts sleep]
+\end{itemize}
+
+\textbf{Temporal Pattern}:
+\begin{itemize}[leftmargin=*]
+    \item ☐ Constant ☑ Intermittent ☐ Episodic
+    \item \textbf{Frequency}: Daily, worse with activity
+    \item \textbf{Duration of episodes}: Varies, 2-6 hours of severe pain
+    \item \textbf{Breakthrough pain}: [e.g., Yes, with bending, lifting, prolonged sitting]
+\end{itemize}
+
+\textbf{Aggravating Factors}:
+\begin{itemize}[leftmargin=*]
+    \item Prolonged sitting ($>$30 minutes)
+    \item Bending forward
+    \item Lifting objects $>$10 lbs
+    \item Prolonged standing
+    \item Coughing, sneezing (increases radicular pain)
+\end{itemize}
+
+\textbf{Alleviating Factors}:
+\begin{itemize}[leftmargin=*]
+    \item Lying supine with knees elevated
+    \item Heat application to lower back
+    \item Walking short distances (5-10 minutes)
+    \item Current pain medications (partial relief)
+\end{itemize}
+
+\subsection*{Pain Impact Assessment}
+
+\textbf{Functional Interference} (Brief Pain Inventory - BPI):
+
+\begin{tabularx}{\textwidth}{|l|c|X|}
+\hline
+\textbf{Domain} & \textbf{Score (0-10)} & \textbf{Description} \\ \hline
+General Activity & 7/10 & Significantly limited household tasks \\ \hline
+Mood & 6/10 & Frustration, irritability, mild depression \\ \hline
+Walking Ability & 8/10 & Can walk only 5-10 minutes before pain \\ \hline
+Work & 9/10 & Unable to work (construction job), on disability \\ \hline
+Relationships & 5/10 & Decreased social engagement \\ \hline
+Sleep & 7/10 & Difficulty falling asleep, awakens with pain \\ \hline
+Enjoyment of Life & 8/10 & Cannot participate in hobbies (fishing, gardening) \\ \hline
+\end{tabularx}
+
+\textbf{Quality of Life Impact}:
+\begin{itemize}[leftmargin=*]
+    \item Unable to work for 1 year
+    \item Difficulty with ADLs (bathing, dressing due to bending limitations)
+    \item Social isolation, stopped attending family events
+    \item Stopped recreational activities (fishing, yard work)
+    \item Relationship strain with spouse
+\end{itemize}
+
+\textbf{Psychological Impact}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Depression Screening} (PHQ-9): [e.g., 12/27 - Moderate depression]
+    \item \textbf{Anxiety Screening} (GAD-7): [e.g., 10/21 - Moderate anxiety]
+    \item \textbf{Pain Catastrophizing}: [e.g., Moderate - frequent thoughts that pain won't improve]
+    \item \textbf{Sleep Disturbance}: [e.g., 5-6 hours/night, poor quality]
+\end{itemize}
+
+\subsection*{Previous Pain Treatments}
+
+\textbf{Medications Tried}:
+\begin{longtable}{|p{3cm}|p{2.5cm}|p{7.5cm}|}
+\hline
+\textbf{Medication} & \textbf{Duration} & \textbf{Response} \\ \hline
+NSAIDs (ibuprofen) & 2 years & Partial relief initially, GI upset, ineffective now \\ \hline
+Acetaminophen & 1 year & Minimal benefit \\ \hline
+Cyclobenzaprine & 6 months & Sedation, minimal pain relief, discontinued \\ \hline
+Gabapentin & 3 months & Tried up to 1800mg/day, minimal benefit, dizziness \\ \hline
+Tramadol & 1 year & Partial relief, nausea, stopped working \\ \hline
+[List others] & & \\ \hline
+\end{longtable}
+
+\textbf{Interventional Procedures}:
+\begin{itemize}[leftmargin=*]
+    \item Lumbar epidural steroid injection (ESI) x2 - Last [6 months ago], temporary relief (3-4 weeks)
+    \item Physical therapy: 3 months, minimal sustained benefit
+    \item Chiropractic care: 6 months, temporary relief only
+\end{itemize}
+
+\textbf{Non-pharmacological}:
+\begin{itemize}[leftmargin=*]
+    \item Physical therapy, home exercise program (partial compliance)
+    \item Heat/ice application
+    \item TENS unit (limited benefit)
+\end{itemize}
+
+\subsection*{Medical and Surgical History}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Relevant Comorbidities}: Hypertension, GERD, obesity (BMI 33)
+    \item \textbf{Previous Surgeries}: None on spine
+    \item \textbf{Imaging}:
+    \begin{itemize}
+        \item Lumbar MRI [6 months ago]: L4-L5 disc herniation, moderate central stenosis, right foraminal narrowing
+        \item No surgical candidacy per neurosurgery consultation
+    \end{itemize}
+    \item \textbf{Current Medications}: Lisinopril 20mg daily, omeprazole 20mg daily
+    \item \textbf{Allergies}: NKDA
+\end{itemize}
+
+\subsection*{Substance Use and Risk Assessment}
+
+\textbf{Alcohol}: [e.g., Social use, 2-3 drinks/week]
+
+\textbf{Tobacco}: [e.g., 10 pack-year history, quit 2 years ago]
+
+\textbf{Illicit Drugs}: [e.g., Denies current or past use]
+
+\textbf{Opioid Risk Tool (ORT) Score}: [e.g., 3 points - Moderate risk]
+\begin{itemize}[leftmargin=*]
+    \item Family history of substance abuse: Yes (1 point)
+    \item Personal history of substance abuse: No
+    \item Age 16-45: No (patient is 45-50)
+    \item History of preadolescent sexual abuse: No
+    \item Psychological disease: Depression (2 points)
+\end{itemize}
+
+\textbf{Urine Drug Screen (UDS)}: [e.g., Negative - Baseline before starting controlled substances]
+
+\textbf{Prescription Drug Monitoring Program (PDMP)}: [e.g., Checked - No other controlled substance prescriptions]
+
+% ===== SECTION 2: PAIN MANAGEMENT GOALS =====
+\section*{2. Pain Management Goals (SMART Format)}
+
+\textbf{Realistic Expectations Discussed}: Complete pain elimination unlikely; goal is meaningful pain reduction and improved function.
+
+\subsection*{2.1 Short-Term Goals (4-8 weeks)}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Pain Intensity}: Reduce average pain from 6-7/10 to 4-5/10 using multimodal analgesia within 6 weeks.
+    
+    \item \textbf{Functional Improvement}: Increase walking tolerance from 5-10 minutes to 20-30 minutes within 8 weeks.
+    
+    \item \textbf{Sleep}: Improve sleep quality from 5-6 hours to 7 hours per night with fewer pain-related awakenings within 4 weeks.
+    
+    \item \textbf{Medication Optimization}: Establish effective multimodal regimen with minimal side effects within 4 weeks.
+\end{enumerate}
+
+\subsection*{2.2 Long-Term Goals (3-6 months)}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Pain Reduction}: Achieve average pain level of 3-4/10, allowing engagement in daily activities within 3 months.
+    
+    \item \textbf{Return to Work}: Explore modified duty or vocational rehabilitation with goal of returning to some form of employment within 6 months.
+    
+    \item \textbf{Functional Activities}: Resume light recreational activities (fishing, light gardening with modifications) within 4 months.
+    
+    \item \textbf{Psychological Well-being}: Reduce depression (PHQ-9 $<$10) and anxiety (GAD-7 $<$8) through pain relief and CBT within 3 months.
+    
+    \item \textbf{Reduced Pain Interference}: Improve BPI interference scores by 30-40\% across all domains within 6 months.
+    
+    \item \textbf{Opioid Reduction}: If opioids initiated, taper to lowest effective dose or discontinue if alternative strategies successful.
+\end{enumerate}
+
+\subsection*{2.3 Patient-Identified Goals}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Priority 1}: "I want to be able to play with my grandkids without being in agony"
+    \item \textbf{Priority 2}: "I want to sleep through the night"
+    \item \textbf{Priority 3}: "I want to do some kind of work, even if not my old job"
+    \item \textbf{Priority 4}: "I don't want to be on pain pills forever"
+\end{itemize}
+
+% ===== SECTION 3: MULTIMODAL TREATMENT PLAN =====
+\section*{3. Comprehensive Multimodal Treatment Plan}
+
+\textbf{Approach}: Opioid-sparing multimodal analgesia with combination pharmacologic, interventional, physical, and psychological therapies.
+
+\subsection*{3.1 Pharmacological Management}
+
+\textbf{First-Line Non-Opioid Analgesics}:
+
+\begin{longtable}{|p{3cm}|p{2cm}|p{2cm}|p{6.5cm}|}
+\hline
+\textbf{Medication} & \textbf{Dose} & \textbf{Frequency} & \textbf{Rationale \& Instructions} \\ \hline
+\endfirsthead
+\hline
+\textbf{Medication} & \textbf{Dose} & \textbf{Frequency} & \textbf{Rationale \& Instructions} \\ \hline
+\endhead
+
+Duloxetine (Cymbalta) & 30mg, titrate to 60mg & Daily & \textbf{Rationale}: SNRI approved for chronic MSK pain, also treats comorbid depression. \textbf{Start}: 30mg daily x 1 week, then 60mg daily. \textbf{Benefit}: Pain reduction + mood improvement. \textbf{Monitor}: Nausea (take with food), BP, suicidal ideation first weeks. \\ \hline
+
+Meloxicam & 15mg & Daily & \textbf{Rationale}: NSAID for inflammatory component. \textbf{Instructions}: Take with food. \textbf{Monitor}: GI symptoms (on PPI already), renal function, BP. \textbf{Duration}: Trial 4-8 weeks, reassess if benefit vs. risk. \\ \hline
+
+Acetaminophen ER & 1300mg & TID (scheduled) & \textbf{Rationale}: Baseline analgesic, opioid-sparing. \textbf{Max}: 4000mg/day. Safe with liver function normal. Scheduled, not PRN for chronic pain. \\ \hline
+
+Tizanidine & 2-4mg & QHS & \textbf{Rationale}: Muscle relaxant for muscle spasm component. \textbf{Start}: 2mg QHS, may increase to 4mg. \textbf{SE}: Sedation (beneficial for sleep), dry mouth. \textbf{Monitor}: BP (can lower), LFTs. \\ \hline
+
+[Add as needed] & & & \\ \hline
+\end{longtable}
+
+\textbf{Adjuvant Analgesics} (If first-line insufficient):
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Pregabalin (Lyrica)}: If neuropathic component predominates
+    \begin{itemize}
+        \item Start 75mg BID, titrate to 150mg BID over 1-2 weeks
+        \item Monitor: Dizziness, sedation, weight gain, peripheral edema
+        \item More effective than gabapentin, better tolerability for many patients
+    \end{itemize}
+\end{itemize}
+
+\textbf{Topical Therapies}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Diclofenac gel 1\%}: Apply to lower back QID (NSAID, local effect)
+    \item \textbf{Lidocaine patches 5\%}: Apply to painful area up to 12 hours daily
+    \item \textbf{Compounded creams}: [If appropriate - ketoprofen/baclofen/cyclobenzaprine cream]
+\end{itemize}
+
+\textbf{Opioid Therapy} (If conservative measures inadequate):
+
+\textit{Note: Opioids considered only after multimodal non-opioid therapies trialed. CDC guidelines followed.}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Indication}: Severe functional impairment despite aggressive non-opioid multimodal therapy
+    \item \textbf{Risk-Benefit Discussion}: Documented - risks (dependence, tolerance, side effects, overdose) vs. benefits (functional improvement)
+    \item \textbf{Informed Consent}: Opioid treatment agreement signed
+    \item \textbf{Starting Opioid}: [e.g., Oxycodone 5mg Q6H PRN] - Lowest effective dose, short-acting initially
+    \item \textbf{Morphine Milligram Equivalent (MME)}: Start $<$50 MME/day, avoid $>$90 MME/day if possible
+    \item \textbf{Monitoring Plan}:
+    \begin{itemize}
+        \item UDS every 3-6 months
+        \item PDMP check every prescription
+        \item Reassess pain and function every 1-3 months
+        \item Naloxone co-prescribed for overdose reversal
+        \item Pain contract/opioid agreement
+    \end{itemize}
+    \item \textbf{Taper Plan}: If goals not met or risks outweigh benefits, slow taper (10-25\% per week to month)
+\end{itemize}
+
+\subsection*{3.2 Interventional Pain Procedures}
+
+\textbf{Recommended Procedures}:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Lumbar Epidural Steroid Injection (ESI)} - Repeat series
+    \begin{itemize}
+        \item \textbf{Indication}: Radicular pain from disc herniation/stenosis
+        \item \textbf{Approach}: Transforaminal at L4-L5 right (fluoroscopy-guided)
+        \item \textbf{Timing}: Can repeat if previous 3-4 week relief, up to 3-4 injections/year
+        \item \textbf{Expected Benefit}: 50-70\% experience significant short-term relief
+    \end{itemize}
+    
+    \item \textbf{Medial Branch Blocks (MBB)} - Diagnostic
+    \begin{itemize}
+        \item \textbf{Indication}: Assess facet joint contribution to pain
+        \item \textbf{Target}: L3-L4, L4-L5 facets bilaterally
+        \item \textbf{Next Step}: If $>$50\% relief x2 blocks, proceed to radiofrequency ablation (RFA)
+    \end{itemize}
+    
+    \item \textbf{Radiofrequency Ablation (RFA)} - If MBB positive
+    \begin{itemize}
+        \item \textbf{Indication}: Facet-mediated pain confirmed by diagnostic blocks
+        \item \textbf{Expected Duration}: 6-12 months of relief
+        \item \textbf{Repeatable}: Can repeat when pain returns
+    \end{itemize}
+    
+    \item \textbf{Spinal Cord Stimulation (SCS)} - If refractory
+    \begin{itemize}
+        \item \textbf{Indication}: Failed conservative management, not surgical candidate
+        \item \textbf{Trial First}: Percutaneous trial x 5-7 days
+        \item \textbf{Permanent Implant}: If trial successful ($>$50\% pain relief, functional improvement)
+        \item \textbf{Success Rate}: 50-60\% achieve sustained benefit
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Procedure Timeline}:
+\begin{itemize}[leftmargin=*]
+    \item Month 1: ESI series (up to 3 injections, 2 weeks apart)
+    \item Month 2: Evaluate ESI response, if inadequate → MBB diagnostic blocks
+    \item Month 3: If MBB positive ($>$50\% relief) → RFA
+    \item Month 4-6: Reassess, if still refractory → consider SCS trial
+\end{itemize}
+
+\subsection*{3.3 Physical and Rehabilitation Therapies}
+
+\textbf{Physical Therapy} (Comprehensive program):
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Frequency}: 2-3x/week x 8-12 weeks
+    \item \textbf{Focus Areas}:
+    \begin{itemize}
+        \item Core strengthening (abdominals, paraspinals)
+        \item Hip and leg strengthening (reduce spinal load)
+        \item Flexibility and stretching (hamstrings, hip flexors)
+        \item Posture and body mechanics training
+        \item Aerobic conditioning (aquatic therapy, stationary bike)
+    \end{itemize}
+    \item \textbf{Manual Therapy}: Soft tissue mobilization, joint mobilization
+    \item \textbf{Modalities}: Heat, ice, TENS as adjuncts
+    \item \textbf{Functional Training}: Sit-to-stand, lifting mechanics, ADL adaptations
+\end{itemize}
+
+\textbf{Home Exercise Program}:
+\begin{itemize}[leftmargin=*]
+    \item Daily core exercises (planks, bird-dogs, bridges)
+    \item Stretching routine (30 min daily)
+    \item Walking program: Start 10 min 2x/day, gradually increase to 30 min continuous
+    \item Aquatic exercise if accessible (lower impact)
+\end{itemize}
+
+\textbf{Activity Modifications}:
+\begin{itemize}[leftmargin=*]
+    \item Avoid prolonged sitting ($>$30 min without breaks)
+    \item Lifting restrictions: No lifting $>$20 lbs, use proper mechanics
+    \item Ergonomic adjustments: Lumbar support, standing desk option
+    \item Pacing strategies: Alternate activity with rest
+\end{itemize}
+
+\textbf{Weight Management}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Current BMI}: 33 (obese)
+    \item \textbf{Goal}: 10\% weight loss (reduce spinal loading)
+    \item \textbf{Referral}: Registered dietitian for nutrition counseling
+    \item \textbf{Exercise}: Low-impact aerobic activity as tolerated
+\end{itemize}
+
+\subsection*{3.4 Psychological and Behavioral Interventions}
+
+\textbf{Cognitive Behavioral Therapy for Chronic Pain (CBT-CP)}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Frequency}: Weekly 50-min sessions x 8-12 weeks
+    \item \textbf{Therapist}: Pain psychologist or licensed therapist trained in CBT-CP
+    \item \textbf{Components}:
+    \begin{itemize}
+        \item Pain education and reconceptualization
+        \item Cognitive restructuring (address catastrophizing, all-or-nothing thinking)
+        \item Activity pacing and graded exposure
+        \item Relaxation techniques (progressive muscle relaxation, diaphragmatic breathing)
+        \item Sleep hygiene
+        \item Stress management
+        \item Goal-setting and problem-solving
+    \end{itemize}
+\end{itemize}
+
+\textbf{Mindfulness-Based Stress Reduction (MBSR)}:
+\begin{itemize}[leftmargin=*]
+    \item 8-week program, group format
+    \item Meditation, body scanning, mindful movement
+    \item Reduce pain catastrophizing and improve pain acceptance
+\end{itemize}
+
+\textbf{Acceptance and Commitment Therapy (ACT)}:
+\begin{itemize}[leftmargin=*]
+    \item Alternative to CBT if patient prefers
+    \item Focus on acceptance, values-based living despite pain
+\end{itemize}
+
+\textbf{Sleep Hygiene and Sleep Optimization}:
+\begin{itemize}[leftmargin=*]
+    \item Regular sleep schedule (11 PM - 6 AM)
+    \item Sleep environment optimization
+    \item Avoid screens 1 hour before bed
+    \item Consider trazodone 50mg QHS if sleep remains impaired (dual benefit: antidepressant + sleep aid)
+\end{itemize}
+
+\textbf{Depression and Anxiety Management}:
+\begin{itemize}[leftmargin=*]
+    \item Duloxetine addresses both pain and depression
+    \item Consider additional therapy if PHQ-9/GAD-7 not improving
+    \item Psychiatry referral if severe or refractory
+\end{itemize}
+
+\subsection*{3.5 Complementary and Alternative Therapies}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Acupuncture}: Trial 8-10 sessions (evidence for chronic low back pain)
+    \item \textbf{Massage Therapy}: 1-2x/week for muscle tension, relaxation
+    \item \textbf{Yoga or Tai Chi}: Gentle movement, mind-body connection
+    \item \textbf{Chiropractic Care}: Patient had some benefit previously, can continue if helpful
+\end{itemize}
+
+% ===== SECTION 4: MONITORING AND REASSESSMENT =====
+\section*{4. Monitoring Plan and Outcome Tracking}
+
+\subsection*{4.1 Regular Monitoring}
+
+\begin{tabularx}{\textwidth}{|l|c|X|}
+\hline
+\textbf{Parameter} & \textbf{Frequency} & \textbf{Method} \\ \hline
+Pain Intensity (NRS) & Daily (patient log) & 0-10 scale: average, worst, least daily \\ \hline
+Functional Interference (BPI) & Monthly & Brief Pain Inventory - 7 interference items \\ \hline
+Opioid Adherence (if prescribed) & Every visit & Pill counts, PDMP, UDS \\ \hline
+Medication Side Effects & Every visit & Systematic review \\ \hline
+Depression (PHQ-9) & Monthly & 9-item questionnaire \\ \hline
+Anxiety (GAD-7) & Monthly & 7-item questionnaire \\ \hline
+Sleep Quality & Weekly (patient log) & Hours slept, quality rating \\ \hline
+Physical Activity & Weekly (patient log) & Minutes walked, exercise completed \\ \hline
+Work Status & Monthly & Hours worked, restrictions \\ \hline
+\end{tabularx}
+
+\subsection*{4.2 Follow-Up Schedule}
+
+\begin{longtable}{|l|l|X|}
+\hline
+\textbf{Timeframe} & \textbf{Provider} & \textbf{Purpose} \\ \hline
+Week 2 & Pain clinic (phone) & Medication tolerance check, early side effects \\ \hline
+Week 4 & Pain specialist & Medication adjustment, assess early response, plan interventions \\ \hline
+Week 8 & Pain specialist & Comprehensive reassessment, BPI, goal progress review \\ \hline
+Month 3 & Pain specialist & Evaluate treatment response, modify plan if needed \\ \hline
+Month 6 & Pain specialist & Long-term goal assessment, maintenance planning \\ \hline
+Ongoing & Every 1-3 months & Chronic pain management, medication refills (if opioids: monthly) \\ \hline
+Physical Therapy & 2-3x/week x 8-12 weeks & See PT plan \\ \hline
+Psychology (CBT) & Weekly x 8-12 weeks & See psychological interventions \\ \hline
+\end{longtable}
+
+\subsection*{4.3 Treatment Response Criteria}
+
+\textbf{Success Criteria} (Re-evaluate at 3 months):
+\begin{itemize}[leftmargin=*]
+    \item Pain reduction $\geq$30\% (clinically meaningful)
+    \item Functional improvement: BPI interference reduced $\geq$30\%
+    \item Improved quality of life: Return to valued activities
+    \item Acceptable side effect profile
+\end{itemize}
+
+\textbf{If Goals Not Met}: Modify treatment plan
+\begin{itemize}[leftmargin=*]
+    \item Adjust medications (change dose, switch agents, add adjuvants)
+    \item Add or modify interventional procedures
+    \item Intensify physical therapy or psychological therapy
+    \item Consider multidisciplinary pain rehabilitation program
+    \item Reassess diagnosis (imaging, specialist consultation)
+\end{itemize}
+
+% ===== SECTION 5: SAFETY AND RISK MITIGATION =====
+\section*{5. Safety Planning and Risk Mitigation}
+
+\subsection*{Opioid Safety (If Opioids Prescribed)}
+
+\textbf{Opioid Treatment Agreement}: Patient signed agreement outlining:
+\begin{itemize}[leftmargin=*]
+    \item Single prescriber and pharmacy
+    \item No early refills
+    \item Lost/stolen medications not replaced
+    \item UDS and PDMP monitoring compliance
+    \item Consequences of aberrant behavior
+\end{itemize}
+
+\textbf{Naloxone Prescription}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Naloxone (Narcan) nasal spray}: Prescribed to all patients on opioids
+    \item \textbf{Education}: Family member trained on use for overdose reversal
+    \item \textbf{Keep at Home}: Readily accessible
+\end{itemize}
+
+\textbf{Monitoring for Aberrant Behaviors}:
+\begin{itemize}[leftmargin=*]
+    \item Early refill requests
+    \item Multiple lost prescriptions
+    \item Obtaining opioids from other sources (PDMP)
+    \item Positive UDS for non-prescribed substances
+    \item Diversion suspected
+    \item \textit{Action}: If concerning behaviors → reassess, taper, refer to addiction specialist
+\end{itemize}
+
+\subsection*{Medication Safety}
+
+\textbf{Drug Interactions}:
+\begin{itemize}[leftmargin=*]
+    \item Duloxetine + NSAIDs: Increased bleeding risk (monitor)
+    \item Tizanidine + alcohol: Enhanced sedation (educate patient to avoid)
+    \item Multiple CNS depressants: Additive sedation (avoid benzodiazepines with opioids)
+\end{itemize}
+
+\textbf{Renal and Hepatic Function}:
+\begin{itemize}[leftmargin=*]
+    \item Baseline labs: BMP, LFTs
+    \item Monitor every 6-12 months (NSAIDs nephrotoxic, duloxetine hepatotoxic rare)
+\end{itemize}
+
+\textbf{GI Protection}:
+\begin{itemize}[leftmargin=*]
+    \item Already on omeprazole (PPI) for GERD
+    \item Adequate protection for NSAID use
+\end{itemize}
+
+\subsection*{Emergency Procedures}
+
+\textbf{Patient to call office or seek care if}:
+\begin{itemize}[leftmargin=*]
+    \item New or worsening neurologic symptoms (weakness, numbness, bowel/bladder dysfunction - cauda equina)
+    \item Severe uncontrolled pain despite medications
+    \item Signs of medication overdose (excessive sedation, confusion, slow breathing)
+    \item Allergic reaction to medications
+    \item Severe side effects (GI bleeding, liver problems)
+\end{itemize}
+
+\textbf{Call 911 for}:
+\begin{itemize}[leftmargin=*]
+    \item Suspected opioid overdose (unresponsive, slow/no breathing)
+    \item Sudden onset severe back pain with leg weakness/paralysis
+    \item Loss of bowel or bladder control (possible cauda equina syndrome)
+\end{itemize}
+
+% ===== SECTION 6: PATIENT EDUCATION =====
+\section*{6. Patient Education}
+
+\subsection*{Understanding Chronic Pain}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Pain Neurobiology}: Central sensitization, pain pathways, why pain persists
+    \item \textbf{Biopsychosocial Model}: Pain influenced by physical, psychological, and social factors
+    \item \textbf{Realistic Expectations}: Complete pain elimination unlikely, but significant improvement possible
+    \item \textbf{Active Participation}: Patient role in treatment (exercise, pacing, therapy homework) essential
+\end{itemize}
+
+\subsection*{Medication Education}
+
+\begin{itemize}[leftmargin=*]
+    \item How each medication works
+    \item Expected timeline for benefit (SNRIs take 4-6 weeks)
+    \item Common side effects and management
+    \item Importance of adherence (scheduled medications work better than PRN for chronic pain)
+    \item Risks of opioids if prescribed (dependence, tolerance, side effects)
+\end{itemize}
+
+\subsection*{Self-Management Skills}
+
+\begin{itemize}[leftmargin=*]
+    \item Activity pacing (alternate activity with rest, avoid overexertion)
+    \item Proper body mechanics (lifting, bending)
+    \item Home exercise program compliance
+    \item Pain flare management (rest, ice/heat, medication adjustment)
+    \item Stress reduction techniques
+    \item Sleep hygiene practices
+\end{itemize}
+
+\subsection*{Red Flags - When to Seek Immediate Care}
+
+\begin{itemize}[leftmargin=*]
+    \item New leg weakness or foot drop
+    \item Loss of bowel or bladder control
+    \item Numbness in saddle/groin area
+    \item Severe pain not responsive to usual medications
+    \item Fever with back pain (infection concern)
+\end{itemize}
+
+% ===== SECTION 7: MULTIDISCIPLINARY COORDINATION =====
+\section*{7. Care Coordination}
+
+\textbf{Care Team}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Pain Specialist}: Medication management, interventional procedures
+    \item \textbf{Primary Care Provider}: Overall health, comorbidity management, coordinate referrals
+    \item \textbf{Physical Therapist}: Functional restoration, exercise program
+    \item \textbf{Pain Psychologist}: CBT-CP, coping skills
+    \item \textbf{Interventional Radiologist}: Perform injections (ESI, MBB, RFA)
+    \item \textbf{Vocational Rehabilitation}: Return-to-work planning
+    \item [Neurosurgery/Spine Surgeon: Consult if surgical candidacy changes]
+\end{itemize}
+
+\textbf{Communication Plan}:
+\begin{itemize}[leftmargin=*]
+    \item All providers share treatment plan
+    \item Pain specialist sends notes to PCP after each visit
+    \item PT and psychologist provide progress reports monthly
+    \item Patient carries medication list and pain diary
+\end{itemize}
+
+% ===== SECTION 8: DISCHARGE/TRANSITION PLANNING =====
+\section*{8. Long-Term Management and Transition}
+
+\subsection*{If Goals Achieved}
+
+\begin{itemize}[leftmargin=*]
+    \item Transition to maintenance phase
+    \item Reduce visit frequency (every 3-6 months)
+    \item Continue home exercise program indefinitely
+    \item Taper medications if possible (especially opioids)
+    \item Relapse prevention plan
+\end{itemize}
+
+\subsection*{If Refractory to Treatment}
+
+\begin{itemize}[leftmargin=*]
+    \item Consider multidisciplinary pain rehabilitation program (intensive 3-4 week program)
+    \item Re-evaluate for surgical candidacy
+    \item Advanced interventions (SCS, intrathecal pump if appropriate)
+    \item Palliative care consultation for severe refractory pain
+    \item Vocational rehabilitation for permanent disability if unable to return to work
+\end{itemize}
+
+% ===== SECTION 9: INFORMED CONSENT =====
+\section*{9. Informed Consent and Agreement}
+
+\textbf{Risks and Benefits Discussed}:
+
+\textbf{Benefits of Treatment Plan}:
+\begin{itemize}[leftmargin=*]
+    \item Pain reduction (goal 30-50\% reduction)
+    \item Improved function and quality of life
+    \item Better sleep
+    \item Reduced depression and anxiety
+    \item Potential return to work
+\end{itemize}
+
+\textbf{Risks}:
+\begin{itemize}[leftmargin=*]
+    \item Medication side effects (GI upset, sedation, others)
+    \item Opioid risks if prescribed (dependence, tolerance, overdose)
+    \item Injection risks (infection, bleeding, nerve injury - rare)
+    \item Treatment may not be fully effective
+\end{itemize}
+
+\textbf{Patient Responsibilities}:
+\begin{itemize}[leftmargin=*]
+    \item Take medications as prescribed
+    \item Attend all therapy appointments (PT, psychology)
+    \item Complete home exercise program
+    \item Keep pain diary
+    \item Communicate openly about pain and side effects
+    \item If on opioids: Comply with opioid agreement, UDS, PDMP
+\end{itemize}
+
+Patient demonstrates understanding, questions answered, agrees to proceed with comprehensive pain management plan.
+
+% ===== SECTION 10: SIGNATURES =====
+\vspace{2em}
+
+\section*{10. Provider Signature and Attestation}
+
+This comprehensive pain management plan has been reviewed with the patient. The patient understands the multimodal approach, realistic expectations, risks and benefits of treatments, and their responsibilities in pain management. If opioid therapy is included, an opioid treatment agreement has been signed separately.
+
+\vspace{1em}
+
+\begin{tabular}{ll}
+Provider Signature: & \rule{7cm}{0.5pt} \\[1em]
+Provider Name/Credentials: & \rule{7cm}{0.5pt} \\[1em]
+Date: & \rule{4cm}{0.5pt} \\[2em]
+\end{tabular}
+
+\subsection*{Patient Acknowledgment}
+
+I have reviewed this pain management plan with my provider. I understand the treatments recommended, realistic expectations for pain relief, and my role in managing my pain. I agree to participate actively in this plan.
+
+\vspace{1em}
+
+\begin{tabular}{ll}
+Patient Signature: & \rule{7cm}{0.5pt} \\[1em]
+Date: & \rule{4cm}{0.5pt} \\
+\end{tabular}
+
+\vspace{2em}
+\begin{center}
+\rule{\textwidth}{1pt}\\
+\textbf{End of Pain Management Plan}\\
+This document contains confidential patient information protected by HIPAA.
+\end{center}
+
+\end{document}
+
+% ========== NOTES FOR USERS ==========
+%
+% KEY PRINCIPLES:
+% - Multimodal opioid-sparing approach
+% - CDC opioid prescribing guidelines compliance
+% - Functional improvement as primary goal (not just pain scores)
+% - Biopsychosocial model of pain
+% - Patient education and self-management emphasis
+%
+% CUSTOMIZATION:
+% - Adjust medications based on pain type (nociceptive vs. neuropathic)
+% - Select interventions appropriate for pain generator
+% - Modify based on patient comorbidities and contraindications
+% - Adapt psychological interventions to patient preference
+%
+% OPIOID CONSIDERATIONS:
+% - Use only after non-opioid therapies inadequate
+% - Lowest effective dose, short-acting preferred initially
+% - Close monitoring, UDS, PDMP
+% - Naloxone co-prescription
+% - Reassess regularly, taper if not meeting goals
+%
+% COMPILATION:
+% pdflatex pain_management_plan.tex
+

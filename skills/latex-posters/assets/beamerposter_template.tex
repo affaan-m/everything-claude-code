@@ -1,0 +1,244 @@
+% ==============================================================================
+% Research Poster Template - beamerposter
+% ==============================================================================
+% A professional academic poster template using beamerposter
+% Customize colors, content, and layout as needed
+% ==============================================================================
+
+\documentclass[final,t]{beamer}
+\usepackage[size=a0,scale=1.4,orientation=portrait]{beamerposter}
+\usetheme{Berlin}
+\usecolortheme{beaver}
+
+% Remove default margins for full page coverage
+\setbeamersize{text margin left=5mm, text margin right=5mm}
+\usepackage[margin=10mm]{geometry}
+
+% Remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% Packages
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{multicol}
+\usepackage{qrcode}
+\usepackage{hyperref}
+
+% Font configuration
+\setbeamerfont{title}{size=\VeryHuge,series=\bfseries}
+\setbeamerfont{author}{size=\Large}
+\setbeamerfont{institute}{size=\normalsize}
+\setbeamerfont{block title}{size=\huge,series=\bfseries}
+\setbeamerfont{block body}{size=\LARGE}
+
+% Custom colors (customize to match your institution)
+\definecolor{primarycolor}{RGB}{0,51,102}      % Dark blue
+\definecolor{secondarycolor}{RGB}{204,0,0}     % Red
+\definecolor{accentcolor}{RGB}{255,204,0}      % Gold
+
+\setbeamercolor{structure}{fg=primarycolor}
+\setbeamercolor{block title}{bg=primarycolor,fg=white}
+\setbeamercolor{block body}{bg=primarycolor!10,fg=black}
+
+% ==============================================================================
+% POSTER CONTENT - CUSTOMIZE BELOW
+% ==============================================================================
+
+\title{Your Research Title: Concise and Descriptive}
+\author{Author One\textsuperscript{1}, Author Two\textsuperscript{2}, \underline{Presenting Author}\textsuperscript{1}}
+\institute{
+  \textsuperscript{1}Department, University Name\\
+  \textsuperscript{2}Research Institute Name
+}
+
+\begin{document}
+
+\begin{frame}[t]
+  
+  % ============================================================================
+  % HEADER
+  % ============================================================================
+  \begin{block}{}
+    \begin{columns}[T]
+      \begin{column}{.15\linewidth}
+        % Left logo
+        \includegraphics[width=0.9\linewidth]{logo1.pdf}
+      \end{column}
+      
+      \begin{column}{.7\linewidth}
+        \centering
+        \usebeamerfont{title}\inserttitle\\[0.5cm]
+        \usebeamerfont{author}\insertauthor\\[0.3cm]
+        \usebeamerfont{institute}\insertinstitute
+      \end{column}
+      
+      \begin{column}{.15\linewidth}
+        % Right logo
+        \includegraphics[width=0.9\linewidth]{logo2.pdf}
+      \end{column}
+    \end{columns}
+  \end{block}
+  
+  \vspace{1cm}
+  
+  % ============================================================================
+  % MAIN CONTENT - 3 COLUMN LAYOUT
+  % ============================================================================
+  
+  \begin{columns}[t]
+    
+    % ==========================================================================
+    % LEFT COLUMN
+    % ==========================================================================
+    \begin{column}{.3\linewidth}
+      
+      \begin{block}{Introduction}
+        \textbf{Background:} Brief context about your research area (1-2 sentences).
+        
+        \vspace{0.5cm}
+        
+        \textbf{Problem:} What gap or challenge does your work address? (1-2 sentences)
+        
+        \vspace{0.5cm}
+        
+        \textbf{Objective:} Clear statement of your research goal (1 sentence).
+      \end{block}
+      
+      \vspace{1cm}
+      
+      \begin{block}{Methods}
+        \textbf{Study Design:}
+        \begin{itemize}
+          \item Experimental approach or design
+          \item Sample size and population
+          \item Key procedures
+        \end{itemize}
+        
+        \vspace{0.5cm}
+        
+        \textbf{Analysis:}
+        \begin{itemize}
+          \item Statistical methods
+          \item Software/tools used
+          \item Validation approach
+        \end{itemize}
+        
+        \vspace{0.5cm}
+        
+        % Optional: Methods flowchart
+        \begin{center}
+          \includegraphics[width=0.9\linewidth]{methods_flowchart.pdf}
+        \end{center}
+      \end{block}
+      
+    \end{column}
+    
+    % ==========================================================================
+    % MIDDLE COLUMN
+    % ==========================================================================
+    \begin{column}{.3\linewidth}
+      
+      \begin{block}{Results}
+        \textbf{Finding 1:} Brief description
+        
+        \begin{center}
+          \includegraphics[width=0.95\linewidth]{figure1.pdf}
+          \small Figure 1: Descriptive caption with key statistics (n=X, p<0.01).
+        \end{center}
+        
+        \vspace{1cm}
+        
+        \textbf{Finding 2:} Brief description
+        
+        \begin{center}
+          \includegraphics[width=0.95\linewidth]{figure2.pdf}
+          \small Figure 2: Another key result showing comparison or trend.
+        \end{center}
+      \end{block}
+      
+    \end{column}
+    
+    % ==========================================================================
+    % RIGHT COLUMN
+    % ==========================================================================
+    \begin{column}{.3\linewidth}
+      
+      \begin{block}{Results (continued)}
+        \textbf{Finding 3:} Brief description
+        
+        \begin{center}
+          \includegraphics[width=0.95\linewidth]{figure3.pdf}
+          \small Figure 3: Additional important result or validation.
+        \end{center}
+      \end{block}
+      
+      \vspace{1cm}
+      
+      \begin{block}{Conclusions}
+        \textbf{Key Findings:}
+        \begin{itemize}
+          \item Main conclusion 1 with impact
+          \item Main conclusion 2 with significance
+          \item Main conclusion 3 with implications
+        \end{itemize}
+        
+        \vspace{0.5cm}
+        
+        \textbf{Limitations:}
+        \begin{itemize}
+          \item Brief acknowledgment of constraints
+          \item Context for interpretation
+        \end{itemize}
+        
+        \vspace{0.5cm}
+        
+        \textbf{Future Directions:}
+        \begin{itemize}
+          \item Next steps or ongoing work
+          \item Broader applications
+        \end{itemize}
+      \end{block}
+      
+    \end{column}
+    
+  \end{columns}
+  
+  \vspace{1cm}
+  
+  % ============================================================================
+  % FOOTER
+  % ============================================================================
+  
+  \begin{block}{}
+    \footnotesize
+    \begin{columns}[T]
+      \begin{column}{.75\linewidth}
+        \textbf{References}
+        \begin{enumerate}
+          \item Author A et al. (2023). Title. \textit{Journal}, 10(2), 123-145.
+          \item Author B et al. (2024). Title. \textit{Conference Proceedings}.
+          \item Author C et al. (2022). Title. \textit{Journal}, 15(3), 456-478.
+        \end{enumerate}
+        
+        \vspace{0.3cm}
+        
+        \textbf{Acknowledgments:} Funded by Grant Agency (Grant \#12345). Thanks to collaborators and facility staff.
+        
+        \vspace{0.3cm}
+        
+        \textbf{Contact:} presenter.email@university.edu | Lab Website: labname.university.edu
+      \end{column}
+      
+      \begin{column}{.2\linewidth}
+        \centering
+        \qrcode[height=3.5cm]{https://doi.org/10.1234/your-paper}\\
+        \tiny Scan for full paper
+      \end{column}
+    \end{columns}
+  \end{block}
+  
+\end{frame}
+
+\end{document}
+

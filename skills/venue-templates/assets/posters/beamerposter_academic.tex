@@ -1,0 +1,311 @@
+% Academic Research Poster Template using beamerposter
+% For conference presentations
+% Last updated: 2024
+
+\documentclass[final]{beamer}
+
+% Poster size and scale
+% Common sizes: a0, a1, a2, a3, a4
+% Custom size: size=custom,width=XX,height=YY
+\usepackage[size=a0,scale=1.24,orientation=portrait]{beamerposter}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsthm,amssymb,latexsym}
+\usepackage{graphicx}
+\usepackage{booktabs,array}
+\usepackage{multirow}
+\usepackage{qrcode}  % For QR codes
+\usepackage{tikz}
+\usepackage{lipsum}  % For placeholder text (remove in final version)
+
+% Beamer theme
+\usetheme{Berlin}
+% Other themes: default, AnnArbor, Antibes, Bergen, Berkeley, Berlin, Boadilla, CambridgeUS, Copenhagen, Darmstadt, Dresden, Frankfurt, Goettingen, Hannover, Ilmenau, JuanLesPins, Luebeck, Madrid, Malmoe, Marburg, Montpellier, PaloAlto, Pittsburgh, Rochester, Singapore, Szeged, Warsaw
+
+% Color theme
+\usecolortheme{seahorse}
+% Other color themes: default, albatross, beaver, beetle, crane, dolphin, dove, fly, lily, orchid, rose, seagull, seahorse, whale, wolverine
+
+% Custom colors (Okabe-Ito colorblind-safe palette)
+\definecolor{OIorange}{RGB}{230,159,0}
+\definecolor{OIblue}{RGB}{86,180,233}
+\definecolor{OIgreen}{RGB}{0,158,115}
+\definecolor{OIyellow}{RGB}{240,228,66}
+\definecolor{OIdarkblue}{RGB}{0,114,178}
+\definecolor{OIvermillion}{RGB}{213,94,0}
+\definecolor{OIpurple}{RGB}{204,121,167}
+
+% Set custom colors
+\setbeamercolor{block title}{fg=white,bg=OIdarkblue}
+\setbeamercolor{block body}{fg=black,bg=white}
+\setbeamercolor{block alerted title}{fg=white,bg=OIvermillion}
+\setbeamercolor{block alerted body}{fg=black,bg=white}
+
+% Fonts
+\setbeamerfont{title}{size=\VERYHuge,series=\bfseries}
+\setbeamerfont{author}{size=\Large}
+\setbeamerfont{institute}{size=\large}
+\setbeamerfont{block title}{size=\large,series=\bfseries}
+\setbeamerfont{block body}{size=\normalsize}
+
+% Remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% Title, authors, and affiliations
+\title{Your Research Title Here:\\A Concise and Descriptive Title}
+
+\author{First Author\inst{1}, Second Author\inst{1,2}, Third Author\inst{2}}
+
+\institute[shortinst]{
+\inst{1} Department of Science, University Name, City, State, Country\\
+\inst{2} Institute of Research, Institution Name, City, Country
+}
+
+% Footer
+\setbeamertemplate{footline}{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.33\paperwidth,ht=4ex,dp=2ex,left]{author in head/foot}%
+    \hspace{1em}\usebeamerfont{author in head/foot}Contact: [email protected]
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.34\paperwidth,ht=4ex,dp=2ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}Conference Name 2024
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.33\paperwidth,ht=4ex,dp=2ex,right]{date in head/foot}%
+    \usebeamerfont{date in head/foot}University Logo\hspace{1em}
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+\begin{document}
+
+\begin{frame}[t]
+\begin{columns}[t]
+
+% Left Column
+\begin{column}{.48\textwidth}
+
+% Introduction/Background
+\begin{block}{Introduction}
+\begin{itemize}
+    \item \textbf{Background:} Provide context for your research. What is the broader problem or area of study?
+    \item \textbf{Gap:} What is currently unknown or inadequately addressed?
+    \item \textbf{Objective:} Clearly state your research question or hypothesis
+    \item \textbf{Significance:} Why does this work matter?
+\end{itemize}
+
+\vspace{0.5cm}
+\textbf{Hypothesis:} State your main hypothesis clearly in one sentence.
+\end{block}
+
+\vspace{1cm}
+
+% Methods
+\begin{block}{Methods}
+
+\textbf{Study Design:} Brief description of overall approach.
+
+\vspace{0.5cm}
+
+\textbf{Participants/Samples:}
+\begin{itemize}
+    \item Sample size: n = XX
+    \item Key characteristics
+    \item Inclusion/exclusion criteria
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{Procedures:}
+\begin{enumerate}
+    \item Data collection procedure
+    \item Experimental intervention or measurement
+    \item Analysis approach
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% Optional: Methods flowchart
+\begin{center}
+\begin{tikzpicture}[node distance=1.5cm, auto,
+    box/.style={rectangle, draw, fill=OIblue!20, text width=8cm, text centered, minimum height=1cm}]
+    \node [box] (step1) {Step 1: Participant Recruitment};
+    \node [box, below of=step1] (step2) {Step 2: Baseline Assessment};
+    \node [box, below of=step2] (step3) {Step 3: Intervention};
+    \node [box, below of=step3] (step4) {Step 4: Follow-up Assessment};
+    \node [box, below of=step4] (step5) {Step 5: Data Analysis};
+    
+    \draw [->] (step1) -- (step2);
+    \draw [->] (step2) -- (step3);
+    \draw [->] (step3) -- (step4);
+    \draw [->] (step4) -- (step5);
+\end{tikzpicture}
+\end{center}
+
+\textbf{Statistical Analysis:}
+\begin{itemize}
+    \item Statistical test used (e.g., t-test, ANOVA, regression)
+    \item Software: R 4.3.0, Python 3.9
+    \item Significance level: $\alpha = 0.05$
+\end{itemize}
+
+\end{block}
+
+\end{column}
+
+% Right Column
+\begin{column}{.48\textwidth}
+
+% Results
+\begin{block}{Results}
+
+\textbf{Finding 1: Main Result}
+
+\vspace{0.5cm}
+
+% Figure 1
+\begin{figure}
+\centering
+% \includegraphics[width=0.9\textwidth]{figure1.pdf}
+\caption{Figure 1. Main result showing significant effect. Error bars represent standard deviation. * p < 0.05, ** p < 0.01, *** p < 0.001.}
+\end{figure}
+
+\vspace{0.5cm}
+
+\textbf{Finding 2: Secondary Analysis}
+
+\vspace{0.5cm}
+
+% Table or second figure
+\begin{table}
+\centering
+\caption{Summary of key results}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Condition} & \textbf{Mean} & \textbf{SD} & \textbf{n} & \textbf{p-value} \\
+\midrule
+Control & 25.3 & 3.1 & 30 & -- \\
+Treatment A & 32.7 & 2.8 & 30 & 0.003 \\
+Treatment B & 41.2 & 3.5 & 30 & < 0.001 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.5cm}
+
+\textbf{Finding 3: Additional Observation}
+
+Describe third key finding with reference to supporting data.
+
+\end{block}
+
+\vspace{1cm}
+
+% Discussion/Conclusions
+\begin{block}{Discussion \& Conclusions}
+
+\textbf{Main Findings:}
+\begin{itemize}
+    \item Summary of first key result
+    \item Summary of second key result
+    \item Summary of third key result
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{Interpretation:}
+\begin{itemize}
+    \item How do these findings advance understanding?
+    \item How do they compare to previous work?
+    \item What are the mechanisms or explanations?
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{Limitations:}
+\begin{itemize}
+    \item Acknowledge key limitations honestly
+    \item Discuss how they might affect interpretation
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{Future Directions:}
+\begin{itemize}
+    \item Next steps for research
+    \item Potential applications
+\end{itemize}
+
+\vspace{0.5cm}
+
+\begin{alertblock}{Key Takeaway}
+\textbf{One-sentence summary of most important finding or implication.}
+\end{alertblock}
+
+\end{block}
+
+\vspace{1cm}
+
+% References and QR Code
+\begin{block}{References \& Contact}
+
+\begin{minipage}[t]{0.65\textwidth}
+\small
+\textbf{Selected References:}
+\begin{enumerate}
+    \item Smith et al. (2023). \textit{Journal Name}, 45:123-130.
+    \item Jones \& Brown (2022). \textit{Another Journal}, 12:456-467.
+    \item Williams et al. (2021). \textit{Third Journal}, 8:789-801.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\textbf{Acknowledgments:} Funding from [Agency] Grant \#12345. Thanks to [collaborators].
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\textwidth}
+\begin{center}
+\qrcode[height=3cm]{https://yourlab.university.edu/paper}\\
+\small Scan for full paper\\and supplementary materials
+\end{center}
+\end{minipage}
+
+\end{block}
+
+\end{column}
+
+\end{columns}
+\end{frame}
+
+\end{document}
+
+% Notes for Poster Design:
+% 1. Font sizes (for A0 poster):
+%    - Title: 80-100pt
+%    - Authors: 60pt
+%    - Section headers: 50-60pt
+%    - Body text: 32-36pt (set by beamerposter scale)
+%    - Captions: 28-32pt
+% 
+% 2. Use colorblind-safe colors (Okabe-Ito palette provided)
+% 
+% 3. Keep text minimal - use bullets, not paragraphs
+% 
+% 4. Make figures large and clear
+% 
+% 5. Use white space effectively - don't crowd
+% 
+% 6. Test readability from 6 feet (2 meters) away
+% 
+% 7. Include QR code linking to paper, lab website, or supplementary materials
+% 
+% 8. Print at professional print shop (FedEx Office, university print center)
+% 
+% 9. Common poster sizes:
+%    - A0: 841 × 1189 mm (33.1 × 46.8 in)
+%    - 36" × 48" (914 × 1219 mm)
+%    - Check conference requirements!
+% 
+% 10. Compile with: pdflatex beamerposter_academic.tex
+

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Research Poster Template - 36x48 inches</title>
+<style>
+/* PPTX POSTER TEMPLATE
+   Generate images FIRST:
+   - Hero: python scripts/generate_image.py "scientific banner" -o figures/hero.png
+   - Workflow: python scripts/generate_schematic.py "workflow diagram" -o figures/workflow.png
+   - Results: python scripts/generate_image.py "data visualization" -o figures/results.png
+*/
+
+html { background: #f0f4f8; }
+
+body {
+  width: 2592pt;
+  height: 3456pt;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+  background-color: #f7fafc;
+}
+
+.header {
+  height: 420pt;
+  background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 50%, #3182ce 100%);
+  display: flex;
+  align-items: center;
+  padding: 50pt 80pt;
+  gap: 60pt;
+}
+
+.header-text { flex: 1; }
+
+.poster-title {
+  color: #ffffff;
+  font-size: 108pt;
+  font-weight: bold;
+  line-height: 1.1;
+  margin: 0 0 35pt 0;
+}
+
+.authors {
+  color: #e2e8f0;
+  font-size: 48pt;
+  margin: 0 0 20pt 0;
+}
+
+.affiliations {
+  color: #a0aec0;
+  font-size: 38pt;
+  margin: 0;
+}
+
+.hero-image {
+  width: 650pt;
+  height: 380pt;
+  border-radius: 24pt;
+  object-fit: cover;
+  box-shadow: 0 8pt 40pt rgba(0,0,0,0.3);
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  gap: 50pt;
+  padding: 60pt 80pt;
+}
+
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 50pt;
+}
+
+.block {
+  background: #ffffff;
+  border-radius: 24pt;
+  padding: 45pt;
+  box-shadow: 0 4pt 24pt rgba(0,0,0,0.08);
+  border-left: 8pt solid #3182ce;
+}
+
+.block-title {
+  font-size: 52pt;
+  font-weight: bold;
+  color: #1a365d;
+  margin: 0 0 30pt 0;
+  padding-bottom: 20pt;
+  border-bottom: 3pt solid #e2e8f0;
+}
+
+.block-content {
+  font-size: 34pt;
+  line-height: 1.5;
+  color: #2d3748;
+}
+
+.block-image {
+  width: 100%;
+  border-radius: 16pt;
+  margin: 25pt 0;
+}
+
+ul {
+  margin: 20pt 0;
+  padding-left: 60pt;
+}
+
+li {
+  font-size: 34pt;
+  line-height: 1.6;
+  color: #2d3748;
+  margin-bottom: 18pt;
+}
+
+.key-finding {
+  background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+  border-radius: 16pt;
+  padding: 30pt;
+  margin: 25pt 0;
+  border-left: 6pt solid #3182ce;
+}
+
+.key-finding p {
+  font-size: 36pt;
+  font-weight: 600;
+  color: #2b6cb0;
+  margin: 0;
+}
+
+.placeholder {
+  background: #edf2f7;
+  border-radius: 16pt;
+  border: 3pt dashed #a0aec0;
+}
+
+.footer {
+  height: 220pt;
+  background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+  display: flex;
+  align-items: center;
+  padding: 0 80pt;
+  gap: 60pt;
+}
+
+.references {
+  flex: 2;
+  color: #e2e8f0;
+  font-size: 24pt;
+}
+
+.contact {
+  flex: 1;
+  text-align: right;
+  color: #ffffff;
+  font-size: 28pt;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-text">
+    <h1 class="poster-title">Your Research Title Here</h1>
+    <p class="authors">Author One¹*, Author Two², Author Three¹</p>
+    <p class="affiliations">¹University of Example · ²Research Institute</p>
+  </div>
+  <img src="figures/hero.png" class="hero-image">
+</div>
+
+<div class="main-content">
+  <div class="column">
+    <div class="block">
+      <h2 class="block-title">Introduction</h2>
+      <div class="block-content">
+        <img src="figures/intro.png" class="block-image">
+        <p><b>Background:</b> Context about your research problem.</p>
+        <p><b>Objective:</b> What you aimed to accomplish.</p>
+      </div>
+    </div>
+    <div class="block" style="border-left-color: #38a169;">
+      <h2 class="block-title">Methods</h2>
+      <div class="block-content">
+        <img src="figures/workflow.png" class="block-image">
+        <ul>
+          <li>Study design overview</li>
+          <li>Key methodology</li>
+          <li>Analysis approach</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="column">
+    <div class="block" style="flex: 1; border-left-color: #ed8936;">
+      <h2 class="block-title">Results</h2>
+      <div class="block-content">
+        <div class="key-finding">
+          <p>Key Finding: Your main result in one sentence</p>
+        </div>
+        <div id="chart1" class="placeholder" style="width: 100%; height: 400pt;"></div>
+        <img src="figures/results.png" class="block-image">
+        <ul>
+          <li><b>Finding 1:</b> Description (p &lt; 0.001)</li>
+          <li><b>Finding 2:</b> Description with effect size</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="column">
+    <div class="block">
+      <h2 class="block-title">Discussion</h2>
+      <div class="block-content">
+        <ul>
+          <li>Interpretation of findings</li>
+          <li>Comparison to prior work</li>
+          <li>Practical applications</li>
+        </ul>
+      </div>
+    </div>
+    <div class="block" style="border-left-color: #805ad5;">
+      <h2 class="block-title">Conclusions</h2>
+      <div class="block-content">
+        <ul>
+          <li><b>Conclusion 1:</b> Clear takeaway</li>
+          <li><b>Conclusion 2:</b> Clear takeaway</li>
+          <li><b>Future:</b> Next steps</li>
+        </ul>
+      </div>
+    </div>
+    <div class="block" style="border-left-color: #718096;">
+      <h2 class="block-title" style="font-size: 42pt;">Acknowledgments</h2>
+      <div class="block-content" style="font-size: 28pt;">
+        <p>Funded by Grant #XXX. Thanks to collaborators.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="references">
+    <p><b>References:</b> 1. Author (2024) Journal. 2. Author (2023) Journal.</p>
+  </div>
+  <div class="contact">
+    <p>Contact: author@university.edu</p>
+    <p>Lab: labwebsite.edu</p>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,307 @@
+% hypothesis_generation.sty
+% Professional Scientific Hypothesis Generation Report Style
+% Provides modern, color-coded styling for hypothesis generation documents
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{hypothesis_generation}[2025/11/17 Hypothesis Generation Report Style]
+
+% Required packages
+\RequirePackage[margin=1in, top=1.2in, bottom=1.2in]{geometry}
+\RequirePackage{graphicx}
+\RequirePackage{xcolor}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{tikz}
+\RequirePackage{fontspec}
+\RequirePackage{fancyhdr}
+\RequirePackage{titlesec}
+\RequirePackage{enumitem}
+\RequirePackage{booktabs}
+\RequirePackage{longtable}
+\RequirePackage{array}
+\RequirePackage{colortbl}
+\RequirePackage{hyperref}
+\RequirePackage{natbib}
+
+% Color scheme - Distinct colors for each hypothesis plus utility colors
+\definecolor{hypothesis1}{RGB}{0, 102, 153}      % Deep Blue
+\definecolor{hypothesis2}{RGB}{0, 128, 96}       % Forest Green
+\definecolor{hypothesis3}{RGB}{102, 51, 153}     % Royal Purple
+\definecolor{hypothesis4}{RGB}{0, 128, 128}      % Teal
+\definecolor{hypothesis5}{RGB}{204, 85, 0}       % Burnt Orange
+\definecolor{predictioncolor}{RGB}{255, 191, 0}  % Amber
+\definecolor{evidencecolor}{RGB}{102, 178, 204}  % Light Blue
+\definecolor{comparisoncolor}{RGB}{108, 117, 125} % Steel Gray
+\definecolor{limitationcolor}{RGB}{220, 53, 69}  % Coral Red
+\definecolor{darkgray}{RGB}{64, 64, 64}          % Dark gray for text
+\definecolor{lightgray}{RGB}{245, 245, 245}      % Light background
+
+% Fonts (if using XeLaTeX/LuaLaTeX)
+% Comment these out if fonts are not available
+% \setmainfont{Lato}
+% \setsansfont{Roboto}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=hypothesis1,
+    citecolor=hypothesis1,
+    urlcolor=evidencecolor,
+    pdfborder={0 0 0}
+}
+
+% Header and footer styling
+\setlength{\headheight}{22pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\color{hypothesis1}\sffamily\small\textbf{Hypothesis Generation Report}}
+\fancyhead[R]{\color{darkgray}\sffamily\small\thepage}
+\fancyfoot[C]{\color{darkgray}\small Generated: \today}
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{hypothesis1}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrulewidth}{0.5pt}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{lightgray}\leaders\hrule height \footrulewidth\hfill}}
+
+% Section styling
+\titleformat{\section}
+  {\color{hypothesis1}\Large\sffamily\bfseries}
+  {\thesection}{1em}{}
+  [\color{hypothesis1}\titlerule]
+
+\titleformat{\subsection}
+  {\color{evidencecolor}\large\sffamily\bfseries}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\color{darkgray}\normalsize\sffamily\bfseries}
+  {\thesubsubsection}{1em}{}
+
+% Title page styling
+\renewcommand{\maketitle}{
+  \begin{tcolorbox}[
+    enhanced,
+    colback=hypothesis1,
+    colframe=hypothesis1,
+    arc=0mm,
+    boxrule=0pt,
+    left=20pt,
+    right=20pt,
+    top=30pt,
+    bottom=30pt,
+    width=\textwidth
+  ]
+    \color{white}
+    \begin{center}
+      {\Huge\sffamily\bfseries Scientific Hypothesis\\Generation Report}\\[10pt]
+      {\Large\sffamily\@title}\\[15pt]
+      {\large\sffamily Evidence-Based Competing Hypotheses}\\[8pt]
+      {\normalsize\sffamily\color{evidencecolor}\today}
+    \end{center}
+  \end{tcolorbox}
+  \vspace{1cm}
+}
+
+% Custom boxes for hypotheses (5 different colors)
+\newtcolorbox{hypothesisbox1}[1][Hypothesis 1]{
+  enhanced,
+  colback=hypothesis1!5,
+  colframe=hypothesis1,
+  arc=3mm,
+  boxrule=2pt,
+  left=12pt,
+  right=12pt,
+  top=12pt,
+  bottom=12pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries\large,
+  coltitle=white,
+  colbacktitle=hypothesis1,
+  attach boxed title to top left={yshift=-3mm, xshift=5mm},
+  boxed title style={arc=2mm}
+}
+
+\newtcolorbox{hypothesisbox2}[1][Hypothesis 2]{
+  enhanced,
+  colback=hypothesis2!5,
+  colframe=hypothesis2,
+  arc=3mm,
+  boxrule=2pt,
+  left=12pt,
+  right=12pt,
+  top=12pt,
+  bottom=12pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries\large,
+  coltitle=white,
+  colbacktitle=hypothesis2,
+  attach boxed title to top left={yshift=-3mm, xshift=5mm},
+  boxed title style={arc=2mm}
+}
+
+\newtcolorbox{hypothesisbox3}[1][Hypothesis 3]{
+  enhanced,
+  colback=hypothesis3!5,
+  colframe=hypothesis3,
+  arc=3mm,
+  boxrule=2pt,
+  left=12pt,
+  right=12pt,
+  top=12pt,
+  bottom=12pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries\large,
+  coltitle=white,
+  colbacktitle=hypothesis3,
+  attach boxed title to top left={yshift=-3mm, xshift=5mm},
+  boxed title style={arc=2mm}
+}
+
+\newtcolorbox{hypothesisbox4}[1][Hypothesis 4]{
+  enhanced,
+  colback=hypothesis4!5,
+  colframe=hypothesis4,
+  arc=3mm,
+  boxrule=2pt,
+  left=12pt,
+  right=12pt,
+  top=12pt,
+  bottom=12pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries\large,
+  coltitle=white,
+  colbacktitle=hypothesis4,
+  attach boxed title to top left={yshift=-3mm, xshift=5mm},
+  boxed title style={arc=2mm}
+}
+
+\newtcolorbox{hypothesisbox5}[1][Hypothesis 5]{
+  enhanced,
+  colback=hypothesis5!5,
+  colframe=hypothesis5,
+  arc=3mm,
+  boxrule=2pt,
+  left=12pt,
+  right=12pt,
+  top=12pt,
+  bottom=12pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries\large,
+  coltitle=white,
+  colbacktitle=hypothesis5,
+  attach boxed title to top left={yshift=-3mm, xshift=5mm},
+  boxed title style={arc=2mm}
+}
+
+% Prediction box (amber)
+\newtcolorbox{predictionbox}[1][Testable Predictions]{
+  enhanced,
+  colback=predictioncolor!10,
+  colframe=predictioncolor!80!black,
+  arc=3mm,
+  boxrule=1.5pt,
+  left=10pt,
+  right=10pt,
+  top=10pt,
+  bottom=10pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries,
+  coltitle=black,
+  colbacktitle=predictioncolor
+}
+
+% Evidence/Support box (light blue)
+\newtcolorbox{evidencebox}[1][Supporting Evidence]{
+  enhanced,
+  colback=evidencecolor!8,
+  colframe=evidencecolor,
+  arc=3mm,
+  boxrule=1.5pt,
+  left=10pt,
+  right=10pt,
+  top=10pt,
+  bottom=10pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries,
+  coltitle=white,
+  colbacktitle=evidencecolor
+}
+
+% Comparison box (steel gray)
+\newtcolorbox{comparisonbox}[1][Critical Comparison]{
+  enhanced,
+  colback=comparisoncolor!8,
+  colframe=comparisoncolor,
+  arc=3mm,
+  boxrule=1.5pt,
+  left=10pt,
+  right=10pt,
+  top=10pt,
+  bottom=10pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries,
+  coltitle=white,
+  colbacktitle=comparisoncolor
+}
+
+% Limitation box (coral red)
+\newtcolorbox{limitationbox}[1][Limitations \& Challenges]{
+  enhanced,
+  colback=limitationcolor!8,
+  colframe=limitationcolor,
+  arc=3mm,
+  boxrule=1.5pt,
+  left=10pt,
+  right=10pt,
+  top=10pt,
+  bottom=10pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries,
+  coltitle=white,
+  colbacktitle=limitationcolor
+}
+
+% Executive summary box (using evidence color for consistency)
+\newtcolorbox{summarybox}[1][Executive Summary]{
+  enhanced,
+  colback=evidencecolor!15,
+  colframe=hypothesis1,
+  arc=3mm,
+  boxrule=2pt,
+  left=15pt,
+  right=15pt,
+  top=15pt,
+  bottom=15pt,
+  title=#1,
+  fonttitle=\sffamily\bfseries\Large,
+  coltitle=white,
+  colbacktitle=hypothesis1
+}
+
+% Table styling
+\newcommand{\tableheadercolor}{\rowcolor{hypothesis1}}
+\newcommand{\tablerowcolor}{\rowcolor{lightgray}}
+
+% Custom table environment
+\newenvironment{hypotable}[1]{
+  \begin{table}[h]
+  \centering
+  \small\sffamily
+  \renewcommand{\arraystretch}{1.3}
+}{
+  \end{table}
+}
+
+% Custom list styling
+\setlist[itemize,1]{label=\textcolor{hypothesis1}{\textbullet}, leftmargin=*, itemsep=3pt}
+\setlist[enumerate,1]{label=\textcolor{hypothesis1}{\arabic*.}, leftmargin=*, itemsep=3pt}
+
+% Appendix styling
+\newcommand{\appendixsection}[1]{
+  \section*{#1}
+  \addcontentsline{toc}{section}{#1}
+}
+
+% Citation styling helper
+\newcommand{\citehighlight}[1]{\textcolor{evidencecolor}{\citep{#1}}}
+
+\endinput
+

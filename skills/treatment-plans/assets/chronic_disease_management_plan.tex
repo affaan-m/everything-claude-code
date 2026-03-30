@@ -1,0 +1,665 @@
+% Chronic Disease Management Plan Template
+% For long-term management of multiple chronic conditions
+% Last updated: 2025
+
+\documentclass[11pt,letterpaper]{article}
+
+% Packages
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{tabularx}
+\usepackage[most]{tcolorbox}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Chronic Disease Management Plan}
+\rhead{Page \thepage\ of \pageref{LastPage}}
+\lfoot{Date Created: \today}
+\rfoot{Confidential Patient Information}
+
+% Title formatting
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% Title
+\begin{center}
+{\Large\bfseries CHRONIC DISEASE MANAGEMENT PLAN}\\[0.5em]
+{\large Comprehensive Long-Term Care Coordination}\\[0.5em]
+\rule{\textwidth}{1pt}
+\end{center}
+
+\vspace{1em}
+
+% ===== TREATMENT PLAN HIGHLIGHTS (Foundation Medicine Model) =====
+\begin{tcolorbox}[colback=orange!5!white,colframe=orange!75!black,title=\textbf{TREATMENT PLAN HIGHLIGHTS},fonttitle=\bfseries\large]
+
+\textbf{Key Diagnoses:} [Primary chronic conditions - e.g., Type 2 Diabetes, CHF (NYHA II), CKD Stage 3]
+
+\vspace{0.3em}
+\textbf{Primary Treatment Goals:}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item [Goal 1 - e.g., Maintain HbA1c $<$7.5\% and prevent diabetic complications]
+    \item [Goal 2 - e.g., Optimize heart failure management, prevent hospitalizations]
+    \item [Goal 3 - e.g., Slow CKD progression, maintain eGFR $>$45 mL/min]
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{Main Interventions:}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item \textit{Medications:} [Core regimen - e.g., Metformin, Lisinopril, Furosemide, statin therapy]
+    \item \textit{Lifestyle:} [Key modifications - e.g., Low-sodium diet, fluid restriction, regular exercise]
+    \item \textit{Monitoring:} [Essential tracking - e.g., Daily weights, BP, glucose; quarterly labs]
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{Timeline:} [Care model - e.g., Monthly visits initially, then quarterly; annual comprehensive review]
+
+\end{tcolorbox}
+
+\vspace{1em}
+
+% ===== SECTION 1: PATIENT INFORMATION =====
+\section*{1. Patient Information and Problem List}
+
+\textbf{HIPAA Notice}: De-identify all protected health information before sharing.
+
+\vspace{0.5em}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Patient ID} & [De-identified code, e.g., CDM-001] \\ \hline
+\textbf{Age Range} & [e.g., 60-65 years] \\ \hline
+\textbf{Sex} & [Male/Female/Other] \\ \hline
+\textbf{Date of Plan} & [Month/Year only] \\ \hline
+\textbf{Primary Care Provider} & [Name, MD/DO, Credentials] \\ \hline
+\textbf{Care Coordinator} & [Name, RN/NP/PA, if applicable] \\ \hline
+\textbf{Facility/System} & [Healthcare organization] \\ \hline
+\end{tabularx}
+
+\vspace{1em}
+
+\subsection*{Active Problem List (Prioritized)}
+
+\begin{longtable}{|c|p{4cm}|c|p{3cm}|p{3.5cm}|}
+\hline
+\textbf{\#} & \textbf{Condition} & \textbf{ICD-10} & \textbf{Status} & \textbf{Specialists} \\ \hline
+\endfirsthead
+\hline
+\textbf{\#} & \textbf{Condition} & \textbf{ICD-10} & \textbf{Status} & \textbf{Specialists} \\ \hline
+\endhead
+1 & Type 2 Diabetes Mellitus & E11.65 & Suboptimal control (HbA1c 8.2\%) & Endocrinology \\ \hline
+2 & Chronic Heart Failure (HFrEF) & I50.22 & Stable, NYHA Class II & Cardiology \\ \hline
+3 & Chronic Kidney Disease Stage 3b & N18.31 & Stable, eGFR 38 & Nephrology (as needed) \\ \hline
+4 & Hypertension & I10 & Well-controlled on meds & PCP \\ \hline
+5 & Hyperlipidemia & E78.5 & On statin, LDL at goal & PCP \\ \hline
+6 & Obstructive Sleep Apnea & G47.33 & On CPAP, adherent & Sleep Medicine \\ \hline
+7 & Obesity & E66.9 & BMI 34, stable weight & PCP, Nutrition \\ \hline
+8 & Osteoarthritis, bilateral knees & M17.0 & Managed conservatively & Ortho (prn) \\ \hline
+[Add rows] & & & & \\ \hline
+\end{longtable}
+
+\subsection*{Current Medication List}
+
+\textit{Reconciled as of [Date]. Total: [X] medications}
+
+\begin{longtable}{|p{3cm}|p{2cm}|p{1.8cm}|p{3cm}|p{3.5cm}|}
+\hline
+\textbf{Medication} & \textbf{Dose} & \textbf{Frequency} & \textbf{Indication} & \textbf{Prescriber} \\ \hline
+\endfirsthead
+\hline
+\textbf{Medication} & \textbf{Dose} & \textbf{Frequency} & \textbf{Indication} & \textbf{Prescriber} \\ \hline
+\endhead
+Metformin ER & 1000mg & BID & Diabetes & PCP \\ \hline
+Insulin glargine & 24 units & QHS & Diabetes & Endocrinology \\ \hline
+Carvedilol & 12.5mg & BID & Heart failure, HTN & Cardiology \\ \hline
+Lisinopril & 40mg & Daily & Heart failure, HTN, CKD protection & Cardiology \\ \hline
+Furosemide & 40mg & Daily & Heart failure (diuresis) & Cardiology \\ \hline
+Atorvastatin & 40mg & QHS & Hyperlipidemia, ASCVD prevention & PCP \\ \hline
+Aspirin & 81mg & Daily & ASCVD prevention & PCP \\ \hline
+[Continue list] & & & & \\ \hline
+\end{longtable}
+
+\subsection*{Care Team and Specialists}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Primary Care Provider}: [Name, practice] - Coordinates overall care
+    \item \textbf{Cardiology}: [Name] - Heart failure management
+    \item \textbf{Endocrinology}: [Name] - Diabetes optimization
+    \item \textbf{Nephrology}: [Name if engaged] - CKD monitoring
+    \item \textbf{Care Coordinator/Navigator}: [Name] - Appointment coordination, patient education
+    \item \textbf{Pharmacist}: [Clinical pharmacist if available] - Medication reconciliation, optimization
+    \item \textbf{Registered Dietitian}: [Name] - Medical nutrition therapy
+    \item \textbf{Social Worker}: [Name if engaged] - Psychosocial support, resources
+\end{itemize}
+
+% ===== SECTION 2: DISEASE-SPECIFIC ASSESSMENTS =====
+\section*{2. Disease-Specific Assessments and Status}
+
+\subsection*{2.1 Type 2 Diabetes Mellitus}
+
+\textbf{Current Status}: Suboptimal control
+\begin{itemize}[leftmargin=*]
+    \item \textbf{HbA1c}: 8.2\% (target $<$7\%)
+    \item \textbf{Fasting Glucose}: Average 165 mg/dL (target 80-130)
+    \item \textbf{Time in Range}: Approximately 55\% (target $>$70\%)
+    \item \textbf{Hypoglycemia}: Infrequent, 1-2 episodes/month (BG 65-70)
+    \item \textbf{Duration}: 12 years
+    \item \textbf{Complications Screening}:
+    \begin{itemize}
+        \item Retinopathy: Mild NPDR, followed by ophthalmology
+        \item Nephropathy: CKD stage 3b, urine ACR 180 mg/g (albuminuria)
+        \item Neuropathy: Mild peripheral neuropathy, no foot ulcers
+        \item Cardiovascular: History of heart failure
+    \end{itemize}
+\end{itemize}
+
+\subsection*{2.2 Chronic Heart Failure (HFrEF)}
+
+\textbf{Current Status}: Stable, NYHA Class II
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Ejection Fraction}: 35\% (reduced, HFrEF)
+    \item \textbf{Etiology}: Ischemic cardiomyopathy (prior MI 5 years ago)
+    \item \textbf{NYHA Class}: II - Slight limitation, comfortable at rest, symptoms with ordinary activity
+    \item \textbf{Symptoms}: Mild dyspnea on exertion, no orthopnea/PND, occasional LE edema
+    \item \textbf{Weight}: Stable, patient monitors daily
+    \item \textbf{GDMT Status}:
+    \begin{itemize}
+        \item ACE inhibitor: Lisinopril 40mg daily (at target dose)
+        \item Beta-blocker: Carvedilol 12.5mg BID (target 25mg BID - limited by fatigue)
+        \item Diuretic: Furosemide 40mg daily
+        \item Need to consider: SGLT2 inhibitor (also beneficial for diabetes), ARNI
+    \end{itemize}
+    \item \textbf{Device Therapy}: No ICD/CRT currently, discussed with cardiology
+\end{itemize}
+
+\subsection*{2.3 Chronic Kidney Disease Stage 3b}
+
+\textbf{Current Status}: Stable
+\begin{itemize}[leftmargin=*]
+    \item \textbf{eGFR}: 38 mL/min/1.73m² (Stage 3b, moderate-severe decrease)
+    \item \textbf{Creatinine}: 1.8 mg/dL (stable)
+    \item \textbf{Urine Albumin}: ACR 180 mg/g (albuminuria, from diabetes)
+    \item \textbf{Etiology}: Diabetic nephropathy, hypertensive nephropathy
+    \item \textbf{Progression Risk}: Moderate-high (diabetes, albuminuria)
+    \item \textbf{Complications}: Anemia (Hgb 11.2), managed with iron supplementation
+    \item \textbf{Renal Protection}: ACE inhibitor, BP control, glucose control, limit nephrotoxins
+\end{itemize}
+
+\subsection*{2.4 Additional Conditions Summary}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Hypertension}: Well-controlled, average home BP 128/78 mmHg
+    \item \textbf{Hyperlipidemia}: LDL 65 mg/dL (at goal $<$70 for ASCVD), on statin
+    \item \textbf{Obstructive Sleep Apnea}: On CPAP nightly, AHI reduced from 32 to 4, good adherence
+    \item \textbf{Obesity}: BMI 34, weight stable, difficulty with weight loss due to HF exercise limitations
+    \item \textbf{Osteoarthritis}: Bilateral knee pain, managed with acetaminophen, PT, avoid NSAIDs (CKD)
+\end{itemize}
+
+% ===== SECTION 3: INTEGRATED GOALS =====
+\section*{3. Integrated Treatment Goals (SMART Format)}
+
+\subsection*{3.1 Short-Term Goals (3-6 months)}
+
+\textbf{Diabetes Goals}:
+\begin{enumerate}[leftmargin=*]
+    \item Reduce HbA1c from 8.2\% to $<$7.5\% within 3 months by optimizing insulin dosing and medication adherence.
+    \item Improve fasting glucose to 100-140 mg/dL range through medication adjustment and dietary changes within 3 months.
+    \item Complete annual diabetic eye exam and foot exam within 1 month.
+\end{enumerate}
+
+\textbf{Heart Failure Goals}:
+\begin{enumerate}[leftmargin=*]
+    \item Maintain NYHA Class II status (no worsening) with daily weight monitoring and adherence to fluid/sodium restrictions.
+    \item Add SGLT2 inhibitor for dual diabetes and heart failure benefit within 1 month.
+    \item Improve exercise tolerance: Walk 15 minutes daily without dyspnea within 3 months.
+\end{enumerate}
+
+\textbf{CKD Goals}:
+\begin{enumerate}[leftmargin=*]
+    \item Maintain eGFR stability ($\pm$5 mL/min from baseline 38) over 6 months.
+    \item Reduce urine albumin-to-creatinine ratio from 180 to $<$100 mg/g with BP and glucose control.
+    \item Avoid nephrotoxic agents (NSAIDs, contrast without prophylaxis).
+\end{enumerate}
+
+\textbf{Cross-Cutting Goals}:
+\begin{enumerate}[leftmargin=*]
+    \item Medication adherence $>$90\% measured by refill rates and pill counts within 3 months.
+    \item Weight loss of 5\% body weight (10 lbs) through diet modification within 6 months.
+    \item Blood pressure maintenance at $<$130/80 mmHg (home average).
+\end{enumerate}
+
+\subsection*{3.2 Long-Term Goals (6-12 months)}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Diabetes}: Achieve HbA1c $<$7\% and prevent progression of microvascular complications.
+    \item \textbf{Heart Failure}: Optimize GDMT, prevent hospitalizations, maintain functional status.
+    \item \textbf{CKD}: Slow progression (goal: $<$2 mL/min/year eGFR decline), delay need for dialysis.
+    \item \textbf{Quality of Life}: Maintain independence in ADLs, engage in meaningful activities (gardening, grandchildren visits).
+    \item \textbf{Prevention}: Up-to-date with all preventive care (vaccinations, cancer screenings).
+    \item \textbf{Coordination}: Seamless care transitions, all providers aware of care plan, no conflicting treatments.
+\end{enumerate}
+
+\subsection*{3.3 Patient-Centered Priorities}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Priority 1}: "I don't want to end up on dialysis like my brother"
+    \item \textbf{Priority 2}: "I want to keep up with my grandkids"
+    \item \textbf{Priority 3}: "I want to reduce my medications if possible" (pill burden concern)
+    \item \textbf{Priority 4}: "I want to avoid being hospitalized again"
+\end{itemize}
+
+% ===== SECTION 4: COMPREHENSIVE INTERVENTIONS =====
+\section*{4. Comprehensive Interventions}
+
+\subsection*{4.1 Medication Management and Optimization}
+
+\textbf{Current Regimen Optimization}:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{ADD: Empagliflozin (Jardiance) 10mg daily}
+    \begin{itemize}
+        \item \textit{Rationale}: SGLT2 inhibitor provides dual benefit - improves diabetes control AND reduces HF hospitalizations/mortality (EMPEROR-Reduced trial). Also slows CKD progression.
+        \item \textit{Monitoring}: eGFR (hold if $<$20), volume status, UTI symptoms, DKA risk (low in T2DM)
+        \item \textit{Expected benefit}: HbA1c reduction 0.5-0.8\%, reduced HF events 25-30\%
+    \end{itemize}
+    
+    \item \textbf{TITRATE: Insulin glargine}
+    \begin{itemize}
+        \item \textit{Current}: 24 units QHS, fasting BG averaging 165
+        \item \textit{Plan}: Increase by 2 units every 3 days until fasting BG 100-130, patient to self-titrate with daily phone/portal check-ins
+        \item \textit{Expected dose}: Likely 30-36 units
+    \end{itemize}
+    
+    \item \textbf{OPTIMIZE: Beta-blocker (carvedilol)}
+    \begin{itemize}
+        \item \textit{Current}: 12.5mg BID (patient reports fatigue at higher doses)
+        \item \textit{Plan}: Trial slow up-titration to 18.75mg BID, monitor for tolerance
+        \item \textit{Goal}: Target dose 25mg BID for HFrEF mortality benefit
+        \item \textit{Alternative}: Consider switching to different beta-blocker if intolerable
+    \end{itemize}
+    
+    \item \textbf{CONTINUE}: ACE inhibitor (lisinopril 40mg) - at target dose
+    
+    \item \textbf{CONSIDER FUTURE}: Sacubitril/valsartan (Entresto) to replace lisinopril if HF symptoms progress
+\end{enumerate}
+
+\textbf{Medication Safety}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Polypharmacy Review}: Current medication count [X], review quarterly for deprescribing opportunities
+    \item \textbf{Renal Dosing}: All medications reviewed for CKD Stage 3b, adjust as needed
+    \item \textbf{Drug Interactions}: Monitor K+ with ACE + diuretic, avoid NSAIDs (CKD, HF)
+    \item \textbf{Adherence Support}: Pill organizer, medication list wallet card, automatic refills, pharmacy synchronization
+\end{itemize}
+
+\subsection*{4.2 Lifestyle and Self-Management Interventions}
+
+\textbf{Dietary Management}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Diabetes}:
+    \begin{itemize}
+        \item Carbohydrate consistency: 45-60g per meal
+        \item Mediterranean diet pattern
+        \item Limit refined sugars and processed carbohydrates
+    \end{itemize}
+    \item \textbf{Heart Failure}:
+    \begin{itemize}
+        \item Sodium restriction: $<$2000mg daily (low-sodium products, avoid processed foods)
+        \item Fluid restriction: 1.5-2L daily if needed for volume management
+    \end{itemize}
+    \item \textbf{CKD}:
+    \begin{itemize}
+        \item Moderate protein intake: 0.8-1.0 g/kg/day
+        \item Phosphorus and potassium awareness (but not severely restricted at Stage 3b)
+    \end{itemize}
+    \item \textbf{Weight Loss}: 500 kcal/day deficit for gradual weight loss
+    \item \textbf{Referral}: Registered dietitian for medical nutrition therapy
+\end{itemize}
+
+\textbf{Physical Activity}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Goal}: 150 min/week moderate activity (walking, swimming)
+    \item \textbf{Heart Failure Considerations}: Start with 10-15 min sessions, gradually increase, monitor symptoms
+    \item \textbf{Diabetes Benefits}: Improves insulin sensitivity, glucose control
+    \item \textbf{Cardiac Rehabilitation}: Consider referral if not previously completed
+    \item \textbf{Progression}: Track with pedometer/activity tracker, goal 7000-10,000 steps daily
+\end{itemize}
+
+\textbf{Self-Monitoring}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Daily}:
+    \begin{itemize}
+        \item Weight (same time, same scale) - report gain $>$2-3 lbs in 2 days
+        \item Blood glucose: Fasting and pre-dinner
+        \item Blood pressure: Morning and evening
+    \end{itemize}
+    \item \textbf{Weekly}:
+    \begin{itemize}
+        \item Symptom check (dyspnea, edema, chest pain, hypoglycemia frequency)
+        \item Medication adherence review
+    \end{itemize}
+    \item \textbf{Recording}: Use logbook or smartphone app (MyChart, Apple Health)
+\end{itemize}
+
+\textbf{Other Lifestyle Factors}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{CPAP Adherence}: Continue nightly use, download compliance data quarterly
+    \item \textbf{Smoking}: [If applicable - cessation interventions]
+    \item \textbf{Alcohol}: Limit to $\leq$1 drink/day (heart failure, diabetes management)
+    \item \textbf{Stress Management}: Mindfulness, adequate sleep, social engagement
+\end{itemize}
+
+\subsection*{4.3 Disease-Specific Monitoring and Screening}
+
+\textbf{Diabetes Monitoring}:
+\begin{itemize}[leftmargin=*]
+    \item HbA1c every 3 months until at goal, then every 6 months
+    \item Lipid panel annually
+    \item Urine albumin-to-creatinine ratio annually
+    \item Comprehensive foot exam every visit, monofilament testing annually
+    \item Dilated eye exam annually (ophthalmology)
+    \item Dental exam every 6 months (periodontal disease link)
+\end{itemize}
+
+\textbf{Heart Failure Monitoring}:
+\begin{itemize}[leftmargin=*]
+    \item Daily weights, report significant changes
+    \item BNP or NT-proBNP when symptoms change
+    \item Echocardiogram annually or if clinical change
+    \item EKG annually
+    \item Functional assessment (6-minute walk test) periodically
+\end{itemize}
+
+\textbf{CKD Monitoring}:
+\begin{itemize}[leftmargin=*]
+    \item eGFR and creatinine every 3-6 months
+    \item Urine ACR annually
+    \item CBC (anemia), CMP (electrolytes, calcium, phosphorus) every 6 months
+    \item Vitamin D, PTH if indicated
+    \item Bone density scan (increased fracture risk)
+\end{itemize}
+
+\textbf{Preventive Care}:
+\begin{itemize}[leftmargin=*]
+    \item Influenza vaccine annually
+    \item Pneumococcal vaccines (PCV20 or PCV15+PPSV23) per ACIP guidelines
+    \item COVID-19 vaccination per current recommendations
+    \item Zoster vaccine (Shingrix)
+    \item Colorectal cancer screening per age guidelines
+    \item [Other age/sex-appropriate screenings]
+\end{itemize}
+
+% ===== SECTION 5: CARE COORDINATION =====
+\section*{5. Care Coordination and Communication}
+
+\subsection*{Provider Communication Plan}
+
+\begin{tabularx}{\textwidth}{|l|X|X|}
+\hline
+\textbf{Provider} & \textbf{Visit Frequency} & \textbf{Communication/Coordination} \\ \hline
+Primary Care & Every 3 months & Care plan coordinator, medication reconciliation, preventive care \\ \hline
+Cardiology & Every 4-6 months & HF medication optimization, EF monitoring, device consideration \\ \hline
+Endocrinology & Every 3-4 months & Diabetes management, insulin titration, complications screening \\ \hline
+Nephrology & As needed (if eGFR $<$30 or rapid decline) & CKD management, dialysis planning if needed \\ \hline
+Dietitian & Monthly x3, then quarterly & Nutrition counseling, meal planning \\ \hline
+Pharmacist & Quarterly & Medication review, adherence counseling, cost optimization \\ \hline
+Care Coordinator & Monthly phone check-in & Appointment scheduling, barrier identification, education \\ \hline
+\end{tabularx}
+
+\subsection*{Information Sharing}
+
+\begin{itemize}[leftmargin=*]
+    \item Shared EHR access for all providers in health system
+    \item Medication reconciliation after each specialist visit
+    \item Lab results shared via patient portal and provider notifications
+    \item Care plan accessible to all team members
+    \item Patient carries medication list and problem list
+\end{itemize}
+
+\subsection*{Care Transitions Management}
+
+\textbf{Hospital Discharge Protocol}:
+\begin{itemize}[leftmargin=*]
+    \item PCP notified within 24 hours of admission and discharge
+    \item Follow-up appointment within 7 days of discharge
+    \item Medication reconciliation at discharge and first follow-up
+    \item Red flags review: HF exacerbation signs, hyperglycemia, AKI
+\end{itemize}
+
+\textbf{Specialty Referral Coordination}:
+\begin{itemize}[leftmargin=*]
+    \item Care coordinator ensures specialist appointments scheduled
+    \item Specialist notes reviewed by PCP within 1 week
+    \item Treatment recommendations integrated into care plan
+    \item Conflicting recommendations discussed among providers
+\end{itemize}
+
+% ===== SECTION 6: MONITORING AND OUTCOMES =====
+\section*{6. Monitoring Parameters and Quality Measures}
+
+\subsection*{Clinical Outcomes Dashboard}
+
+\begin{longtable}{|p{3.5cm}|p{2.5cm}|p{2cm}|p{2cm}|p{3cm}|}
+\hline
+\textbf{Parameter} & \textbf{Baseline} & \textbf{Target} & \textbf{Current} & \textbf{Frequency} \\ \hline
+\endfirsthead
+\hline
+\textbf{Parameter} & \textbf{Baseline} & \textbf{Target} & \textbf{Current} & \textbf{Frequency} \\ \hline
+\endhead
+HbA1c & 8.2\% & $<$7\% & [update] & Q3-6 months \\ \hline
+Fasting Glucose & 165 mg/dL & 100-130 & [update] & Daily (patient), labs Q3mo \\ \hline
+Blood Pressure & 142/86 & $<$130/80 & [update] & Daily (patient), each visit \\ \hline
+LDL Cholesterol & 65 mg/dL & $<$70 & At goal & Annually \\ \hline
+eGFR & 38 mL/min & Stable ($\pm$5) & [update] & Every 3-6 months \\ \hline
+Urine ACR & 180 mg/g & $<$100 & [update] & Annually \\ \hline
+Weight & [baseline] lbs & -10 lbs (5\%) & [update] & Daily (patient), each visit \\ \hline
+BNP/NT-proBNP & [if available] & Stable & [update] & When symptomatic \\ \hline
+Ejection Fraction & 35\% & Monitor & [date of last echo] & Annually or if change \\ \hline
+\end{longtable}
+
+\subsection*{Quality Measure Tracking (HEDIS/CMS)}
+
+\begin{itemize}[leftmargin=*]
+    \item ✓ Diabetes HbA1c testing (every 6 months)
+    \item ☐ Diabetes HbA1c control ($<$8\%) - \textit{Target: achieve}
+    \item ✓ Diabetes eye exam (annual dilated)
+    \item ☐ Diabetes medical attention for nephropathy (urine ACR) - \textit{Due [month]}
+    \item ✓ Blood pressure control ($<$140/90 for diabetes)
+    \item ✓ Statin therapy for ASCVD
+    \item ✓ ACE/ARB therapy for diabetes with hypertension
+    \item ✓ Beta-blocker for HFrEF
+    \item ☐ Flu vaccine current year - \textit{Due [month]}
+    \item ✓ Pneumococcal vaccine
+\end{itemize}
+
+% ===== SECTION 7: PATIENT EDUCATION AND ACTIVATION =====
+\section*{7. Patient Education and Self-Management Support}
+
+\subsection*{Disease Education Completed}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Diabetes}: Pathophysiology, complications, importance of glucose control, hypoglycemia recognition
+    \item \textbf{Heart Failure}: How heart failure affects body, medication importance, fluid/sodium restrictions, warning signs
+    \item \textbf{CKD}: Kidney function, progression risk, renal protection strategies, medication precautions
+    \item \textbf{Medication Purposes}: Why each medication is prescribed, expected benefits
+    \item \textbf{Lifestyle Impact}: How diet, exercise, weight loss benefit all conditions
+\end{itemize}
+
+\subsection*{Self-Management Skills Training}
+
+\begin{itemize}[leftmargin=*]
+    \item ✓ Blood glucose monitoring technique
+    \item ✓ Insulin injection technique and storage
+    \item ✓ Home blood pressure monitoring
+    \item ✓ Daily weight tracking and interpretation
+    \item ✓ Symptom recognition (HF exacerbation, hypoglycemia, hyperglycemia)
+    \item ✓ Medication organization (pill box use)
+    \item ☐ Dietary skills: Carb counting, label reading, low-sodium food selection
+    \item ☐ Sick day management (when to call, medication adjustments)
+\end{itemize}
+
+\subsection*{Warning Signs - When to Call Provider}
+
+\textbf{Call office same day or go to ED if}:
+\begin{itemize}[leftmargin=*]
+    \item Weight gain $>$2-3 lbs in 2 days or 5 lbs in 1 week (heart failure)
+    \item Increased shortness of breath, cannot lie flat, new leg swelling
+    \item Chest pain or pressure
+    \item Blood glucose consistently $>$300 or $<$60 mg/dL
+    \item Decreased urine output, dark urine, swelling
+    \item Dizziness, lightheadedness, syncope
+\end{itemize}
+
+\subsection*{Resources and Support}
+
+\begin{itemize}[leftmargin=*]
+    \item Diabetes self-management education program (DSMES)
+    \item Cardiac rehabilitation program
+    \item Patient portal for lab results, messaging, educational materials
+    \item American Diabetes Association (diabetes.org) resources
+    \item American Heart Association (heart.org) HF information
+    \item National Kidney Foundation (kidney.org) CKD education
+    \item Local support groups [if available]
+\end{itemize}
+
+% ===== SECTION 8: CONTINGENCY PLANNING =====
+\section*{8. Contingency Planning and Risk Mitigation}
+
+\subsection*{Hospital Readmission Prevention}
+
+\textbf{High-Risk Period}: 30 days post-discharge
+
+\textbf{Prevention Strategies}:
+\begin{itemize}[leftmargin=*]
+    \item Early follow-up appointment (within 7 days)
+    \item Medication reconciliation and adherence check
+    \item Symptom monitoring escalation
+    \item Care coordinator phone call within 48 hours of discharge
+    \item Access to nurse advice line 24/7
+\end{itemize}
+
+\subsection*{Disease Progression Planning}
+
+\textbf{If CKD progresses to Stage 4-5}:
+\begin{itemize}[leftmargin=*]
+    \item Nephrology referral for CKD education and dialysis planning
+    \item Vascular access planning if eGFR $<$20
+    \item Medication adjustments for reduced renal clearance
+    \item Anemia management optimization (ESA if needed)
+    \item Advance care planning discussions
+\end{itemize}
+
+\textbf{If HF worsens to NYHA Class III-IV}:
+\begin{itemize}[leftmargin=*]
+    \item Consider ICD/CRT device evaluation
+    \item Advanced therapies discussion (LVAD, transplant evaluation if appropriate)
+    \item Palliative care consultation for symptom management
+    \item Home health nursing for weight/symptom monitoring
+\end{itemize}
+
+\subsection*{Advance Care Planning}
+
+\begin{itemize}[leftmargin=*]
+    \item Goals of care discussion: [Patient preferences documented]
+    \item Healthcare proxy: [Name, relationship] designated
+    \item Advance directive: ☐ Completed / ☐ To complete
+    \item CPR preferences: [Discussed, documented in chart]
+    \item Dialysis preferences: Patient expresses desire to avoid if possible
+\end{itemize}
+
+% ===== SECTION 9: FOLLOW-UP SCHEDULE =====
+\section*{9. Follow-Up and Reassessment Schedule}
+
+\subsection*{Appointment Calendar}
+
+\begin{longtable}{|l|l|p{7cm}|}
+\hline
+\textbf{Timeframe} & \textbf{Provider} & \textbf{Purpose} \\ \hline
+\endfirsthead
+\hline
+\textbf{Timeframe} & \textbf{Provider} & \textbf{Purpose} \\ \hline
+\endhead
+Week 2 & Care Coordinator (phone) & Check medication tolerability, answer questions, reinforce education \\ \hline
+Month 1 & PCP & Add empagliflozin, assess insulin titration, review home monitoring logs \\ \hline
+Month 2 & Dietitian & Nutrition counseling, meal planning, sodium/carb education \\ \hline
+Month 3 & PCP & HbA1c check, labs (CMP, lipids), medication review, preventive care update \\ \hline
+Month 3-4 & Cardiology & HF assessment, beta-blocker titration, consider ARNI \\ \hline
+Month 3-4 & Endocrinology & Diabetes management review, complications screening \\ \hline
+Month 6 & PCP & Comprehensive reassessment, all labs, update care plan, goal review \\ \hline
+Ongoing & Quarterly PCP & Chronic disease management visits \\ \hline
+\end{longtable}
+
+\subsection*{Plan Reassessment}
+
+This care plan will be formally reassessed and updated:
+\begin{itemize}[leftmargin=*]
+    \item Every 6 months (routine)
+    \item After hospitalization or ED visit
+    \item With significant change in clinical status
+    \item When new diagnoses are added
+    \item When treatment goals are achieved or modified
+    \item At patient or provider request
+\end{itemize}
+
+% ===== SECTION 10: SIGNATURES =====
+\vspace{2em}
+
+\section*{10. Provider Signature and Attestation}
+
+This comprehensive chronic disease management plan has been reviewed with the patient. The patient demonstrates understanding of all chronic conditions, treatment goals, medications, lifestyle recommendations, self-monitoring requirements, warning signs, and when to seek care. Patient's values and preferences have been incorporated through shared decision-making.
+
+\vspace{1em}
+
+\begin{tabular}{ll}
+Provider Signature: & \rule{7cm}{0.5pt} \\[1em]
+Provider Name/Credentials: & \rule{7cm}{0.5pt} \\[1em]
+Date: & \rule{4cm}{0.5pt} \\[2em]
+\end{tabular}
+
+\subsection*{Care Team Acknowledgment (Optional)}
+
+Care team members have reviewed this integrated care plan and will coordinate care accordingly.
+
+\vspace{0.5em}
+
+\textit{[Additional signature lines for cardiologist, endocrinologist, care coordinator as appropriate]}
+
+\vspace{2em}
+\begin{center}
+\rule{\textwidth}{1pt}\\
+\textbf{End of Chronic Disease Management Plan}\\
+This document contains confidential patient information protected by HIPAA.
+\end{center}
+
+\end{document}
+
+% ========== NOTES FOR USERS ==========
+%
+% KEY FEATURES:
+% - Integrates multiple chronic conditions into unified plan
+% - Addresses medication interactions and contraindications across conditions
+% - Coordinates care across multiple specialistsUtilizes shared goals when conditions overlap (e.g., SGLT2i for DM + HF + CKD)
+% - Emphasizes patient self-management and activation
+% - Tracks quality measures and outcomes
+%
+% CUSTOMIZATION:
+% - Adjust problem list based on patient's specific conditions
+% - Modify goals for disease severity and patient capabilities
+% - Adapt medication regimen to formulary and patient tolerance
+% - Coordinate specialist involvement based on availability and need
+%
+% COMPILATION:
+% pdflatex chronic_disease_management_plan.tex
+

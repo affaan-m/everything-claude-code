@@ -1,0 +1,449 @@
+% Scientific Report Template
+% Uses scientific_report.sty for professional formatting
+% Compile with: xelatex or lualatex
+%
+% This template demonstrates the full capabilities of the scientific_report.sty
+% style package for creating professional research reports, technical reports,
+% and white papers.
+
+\documentclass[11pt,letterpaper]{report}
+
+% Load the scientific report style package
+\usepackage{scientific_report}
+
+% Additional packages (optional, add as needed)
+\usepackage{lipsum}  % For placeholder text - remove in actual documents
+
+% ============================================================================
+% DOCUMENT METADATA
+% ============================================================================
+
+\hypersetup{
+    pdftitle={Research Report Title},
+    pdfauthor={Author Name},
+    pdfsubject={Research Subject},
+    pdfkeywords={keyword1, keyword2, keyword3}
+}
+
+% ============================================================================
+% DOCUMENT BEGIN
+% ============================================================================
+
+\begin{document}
+
+% ----------------------------------------------------------------------------
+% TITLE PAGE
+% ----------------------------------------------------------------------------
+
+\makereporttitle
+    {Research Report Title}                    % Title
+    {A Comprehensive Analysis of [Topic]}      % Subtitle
+    {Author Name, PhD}                         % Author(s)
+    {Research Institution / Organization}     % Institution
+    {January 2025}                             % Date
+
+% Alternative: Title page with cover image
+% \makereporttitlewithimage
+%     {Research Report Title}
+%     {A Comprehensive Analysis of [Topic]}
+%     {../figures/cover_image.png}
+%     {Author Name, PhD}
+%     {Research Institution / Organization}
+%     {January 2025}
+
+% ----------------------------------------------------------------------------
+% FRONT MATTER
+% ----------------------------------------------------------------------------
+
+\pagenumbering{roman}
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+% List of Figures
+\listoffigures
+\newpage
+
+% List of Tables
+\listoftables
+\newpage
+
+% ----------------------------------------------------------------------------
+% EXECUTIVE SUMMARY
+% ----------------------------------------------------------------------------
+
+\chapter*{Executive Summary}
+\addcontentsline{toc}{chapter}{Executive Summary}
+
+\begin{executivesummary}[Report Overview]
+This report presents a comprehensive analysis of [topic]. Our investigation reveals significant findings that have implications for [field/application]. The research was conducted using [methodology] and involved [sample/data description].
+\end{executivesummary}
+
+\subsection*{Key Findings}
+
+\begin{keyfindings}
+\begin{enumerate}
+    \item \textbf{Finding 1:} Description of the first major finding with supporting data (\pvalue{0.001}, \samplesize{250}).
+    \item \textbf{Finding 2:} Description of the second major finding with effect size (\effectsize{d}{0.75}).
+    \item \textbf{Finding 3:} Description of the third major finding (\meansd{42.5}{8.3}).
+\end{enumerate}
+\end{keyfindings}
+
+\subsection*{Recommendations}
+
+\begin{recommendations}
+\begin{enumerate}
+    \item Implement [specific action] to address [issue].
+    \item Allocate resources for [specific initiative].
+    \item Conduct follow-up research on [topic].
+\end{enumerate}
+\end{recommendations}
+
+\newpage
+\pagenumbering{arabic}
+
+% ----------------------------------------------------------------------------
+% CHAPTER 1: INTRODUCTION
+% ----------------------------------------------------------------------------
+
+\chapter{Introduction}
+
+\section{Background}
+
+This section provides context for the research. Include relevant background information, the current state of knowledge, and the rationale for the study.
+
+\begin{definition}[Key Term]
+A \textbf{key term} is defined as [definition]. This concept is fundamental to understanding the research presented in this report.
+\end{definition}
+
+\section{Research Objectives}
+
+The primary objectives of this research are:
+
+\begin{enumerate}
+    \item To investigate [objective 1]
+    \item To analyze [objective 2]
+    \item To evaluate [objective 3]
+\end{enumerate}
+
+\section{Hypotheses}
+
+\begin{hypothesis}[Primary Hypothesis]
+We hypothesize that [independent variable] will have a significant effect on [dependent variable], such that [expected direction of effect].
+\end{hypothesis}
+
+\section{Scope and Limitations}
+
+\begin{limitations}[Study Scope]
+This research focuses on [specific scope]. The following limitations should be considered when interpreting the results:
+\begin{itemize}
+    \item Geographic limitation: [description]
+    \item Temporal limitation: [description]
+    \item Sample limitation: [description]
+\end{itemize}
+\end{limitations}
+
+% ----------------------------------------------------------------------------
+% CHAPTER 2: METHODOLOGY
+% ----------------------------------------------------------------------------
+
+\chapter{Methodology}
+
+\section{Study Design}
+
+\begin{methodology}[Research Design Overview]
+This study employed a [type] design to investigate [research question]. The methodology was selected based on [rationale] and follows established guidelines for [type of research].
+\end{methodology}
+
+\section{Participants}
+
+A total of \samplesize{500} participants were recruited from [population]. Table~\ref{tab:demographics} presents the demographic characteristics of the sample.
+
+\begin{table}[htbp]
+\centering
+\caption{Participant Demographics}
+\label{tab:demographics}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\tableheader{Characteristic} & \tableheader{n} & \tableheader{\%} \\
+\midrule
+\textbf{Gender} & & \\
+\quad Male & 245 & 49.0 \\
+\rowcolor{tablealt} \quad Female & 255 & 51.0 \\
+\textbf{Age Group} & & \\
+\quad 18--30 & 150 & 30.0 \\
+\rowcolor{tablealt} \quad 31--45 & 200 & 40.0 \\
+\quad 46--60 & 120 & 24.0 \\
+\rowcolor{tablealt} \quad 60+ & 30 & 6.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Instruments}
+
+\subsection{Primary Measures}
+
+The following instruments were used to collect data:
+
+\begin{itemize}
+    \item \textbf{Instrument 1:} Description and psychometric properties
+    \item \textbf{Instrument 2:} Description and psychometric properties
+    \item \textbf{Instrument 3:} Description and psychometric properties
+\end{itemize}
+
+\section{Procedures}
+
+Data collection occurred between [dates]. The procedure involved the following steps:
+
+\begin{enumerate}
+    \item Informed consent was obtained from all participants.
+    \item Baseline assessments were administered.
+    \item Intervention/treatment was delivered (if applicable).
+    \item Follow-up assessments were conducted at [timepoints].
+\end{enumerate}
+
+\section{Statistical Analysis}
+
+Data were analyzed using [software] version [X.X]. The following analyses were performed:
+
+\begin{itemize}
+    \item Descriptive statistics for all variables
+    \item [Analysis type] to test hypothesis 1
+    \item [Analysis type] to test hypothesis 2
+\end{itemize}
+
+Statistical significance was set at $\alpha = 0.05$. Effect sizes were calculated using [method] and interpreted according to [guidelines].
+
+% ----------------------------------------------------------------------------
+% CHAPTER 3: RESULTS
+% ----------------------------------------------------------------------------
+
+\chapter{Results}
+
+\section{Descriptive Statistics}
+
+Table~\ref{tab:descriptives} presents the descriptive statistics for the primary outcome measures.
+
+\begin{table}[htbp]
+\centering
+\caption{Descriptive Statistics for Primary Outcome Measures}
+\label{tab:descriptives}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\tableheader{Variable} & \tableheader{n} & \tableheader{Mean} & \tableheader{SD} & \tableheader{Min} & \tableheader{Max} \\
+\midrule
+Outcome 1 & 500 & 42.5 & 8.3 & 18 & 72 \\
+\rowcolor{tablealt} Outcome 2 & 498 & 3.7 & 1.2 & 1 & 7 \\
+Outcome 3 & 495 & 128.4 & 24.7 & 68 & 195 \\
+\rowcolor{tablealt} Outcome 4 & 500 & 0.68 & 0.15 & 0.28 & 0.95 \\
+\bottomrule
+\end{tabular}
+\figurenote{SD = Standard Deviation}
+\end{table}
+
+\section{Primary Analyses}
+
+\subsection{Hypothesis 1}
+
+\begin{resultsbox}[Primary Finding]
+Analysis revealed a significant effect of [IV] on [DV], \effectsize{F(2, 497)}{12.45}, \psig{< 0.001}, $\eta^2$ = 0.048. Post-hoc comparisons indicated that [specific findings].
+\end{resultsbox}
+
+The results support our primary hypothesis. As shown in Figure~\ref{fig:main_results}, participants in the experimental condition demonstrated significantly higher scores compared to the control group.
+
+% Placeholder for figure
+\begin{figure}[htbp]
+\centering
+\fbox{\parbox{0.8\textwidth}{\centering\vspace{3cm}[Figure: Main Results Comparison]\\Bar chart showing group differences\vspace{3cm}}}
+\caption{Comparison of Outcome Scores by Experimental Condition}
+\label{fig:main_results}
+\figuresource{Study data}
+\end{figure}
+
+\subsection{Hypothesis 2}
+
+Results indicated a moderate positive correlation between [variable 1] and [variable 2], \effectsize{r}{0.45}, \psig{< 0.001}, \CI{0.38}{0.52}.
+
+\section{Secondary Analyses}
+
+Table~\ref{tab:regression} presents the results of the regression analysis predicting [outcome].
+
+\begin{table}[htbp]
+\centering
+\caption{Multiple Regression Analysis Predicting Outcome}
+\label{tab:regression}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\tableheader{Predictor} & \tableheader{B} & \tableheader{SE} & \tableheader{$\beta$} & \tableheader{p} \\
+\midrule
+(Intercept) & 12.45 & 2.34 & --- & < .001 \\
+\rowcolor{tablealt} Predictor 1 & 0.58 & 0.12 & 0.28\sigthree & < .001 \\
+Predictor 2 & 0.34 & 0.09 & 0.22\sigtwo & .002 \\
+\rowcolor{tablealt} Predictor 3 & 0.15 & 0.11 & 0.08\signs & .172 \\
+Predictor 4 & -0.42 & 0.14 & -0.18\sigtwo & .003 \\
+\midrule
+\multicolumn{5}{l}{$R^2$ = 0.34, Adjusted $R^2$ = 0.33, \effectsize{F(4, 495)}{63.82}\sigthree} \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+{\small \siglegend}
+\end{table}
+
+% ----------------------------------------------------------------------------
+% CHAPTER 4: DISCUSSION
+% ----------------------------------------------------------------------------
+
+\chapter{Discussion}
+
+\section{Summary of Findings}
+
+\begin{keyfindings}[Key Takeaways]
+\begin{enumerate}
+    \item The primary hypothesis was \highlight{supported}, with significant effects observed for [variables].
+    \item Evidence quality for the main findings is \evidencestrong, based on effect sizes and replication potential.
+    \item Unexpected finding: [description of any surprising results].
+\end{enumerate}
+\end{keyfindings}
+
+\section{Interpretation}
+
+The findings from this study contribute to our understanding of [topic] in several important ways. First, the significant effect of [IV] on [DV] suggests that [interpretation]. This aligns with previous research by [Author] (Year), who found similar patterns in [context].
+
+\begin{pullquote}
+``These findings represent a significant advancement in our understanding of [topic] and have direct implications for [application/practice].''
+\end{pullquote}
+
+Second, the correlation between [variables] indicates that [interpretation]. This relationship has important implications for [field/practice].
+
+\section{Implications}
+
+\subsection{Theoretical Implications}
+
+The results have several theoretical implications:
+
+\begin{itemize}
+    \item Support for [theory/model]
+    \item Extension of [existing framework]
+    \item Challenge to [alternative perspective]
+\end{itemize}
+
+\subsection{Practical Implications}
+
+\begin{recommendations}[Practical Applications]
+Based on our findings, we recommend the following practical applications:
+\begin{enumerate}
+    \item \textbf{For practitioners:} [specific recommendation]
+    \item \textbf{For policymakers:} [specific recommendation]
+    \item \textbf{For researchers:} [specific recommendation]
+\end{enumerate}
+\end{recommendations}
+
+\section{Limitations}
+
+\begin{limitations}[Study Limitations]
+Several limitations should be considered when interpreting these findings:
+\begin{itemize}
+    \item \textbf{Sample:} The sample was drawn from [population], which may limit generalizability to [other populations].
+    \item \textbf{Design:} The [cross-sectional/correlational] design precludes causal inference.
+    \item \textbf{Measurement:} Self-report measures may be subject to [bias type].
+\end{itemize}
+\end{limitations}
+
+\section{Future Directions}
+
+Future research should address the following questions:
+
+\begin{enumerate}
+    \item Does the effect generalize to [different population/context]?
+    \item What mechanisms underlie the relationship between [variables]?
+    \item How do [moderating factors] influence the observed effects?
+\end{enumerate}
+
+% ----------------------------------------------------------------------------
+% CHAPTER 5: CONCLUSIONS
+% ----------------------------------------------------------------------------
+
+\chapter{Conclusions}
+
+\begin{executivesummary}[Conclusion]
+This research investigated [topic] using [methodology] with a sample of \samplesize{500} participants. The findings demonstrate that [main conclusion]. These results have important implications for [field/practice] and suggest that [recommendation]. Future research should continue to explore [direction].
+\end{executivesummary}
+
+\section{Key Contributions}
+
+\begin{keyfindings}[Research Contributions]
+This study makes the following key contributions:
+\begin{enumerate}
+    \item \textbf{Empirical contribution:} First demonstration of [finding] in [context].
+    \item \textbf{Methodological contribution:} Novel application of [method] to study [phenomenon].
+    \item \textbf{Practical contribution:} Evidence-based recommendations for [application].
+\end{enumerate}
+\end{keyfindings}
+
+% ----------------------------------------------------------------------------
+% REFERENCES
+% ----------------------------------------------------------------------------
+
+\chapter*{References}
+\addcontentsline{toc}{chapter}{References}
+
+% If using BibTeX:
+% \bibliographystyle{apalike}
+% \bibliography{references}
+
+% Manual references for template demonstration:
+\noindent
+\hangindent=0.5in Author, A. A. (Year). Title of article. \textit{Journal Name}, \textit{Volume}(Issue), pages. https://doi.org/xxxxx
+
+\vspace{0.5em}
+\noindent
+\hangindent=0.5in Author, B. B., \& Author, C. C. (Year). \textit{Title of book}. Publisher.
+
+% ----------------------------------------------------------------------------
+% APPENDICES
+% ----------------------------------------------------------------------------
+
+\appendix
+
+\chapter{Supplementary Materials}
+
+\appendixsection{Additional Tables}
+
+Table~\ref{tab:appendix1} presents additional descriptive statistics not included in the main text.
+
+\begin{table}[htbp]
+\centering
+\caption{Supplementary Descriptive Statistics}
+\label{tab:appendix1}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\tableheader{Variable} & \tableheader{Mean} & \tableheader{SD} & \tableheader{n} \\
+\midrule
+Variable A & 15.2 & 3.4 & 500 \\
+\rowcolor{tablealt} Variable B & 22.8 & 5.1 & 498 \\
+Variable C & 8.9 & 2.2 & 495 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\appendixsection{Instruments}
+
+Full text of instruments used in this study:
+
+\begin{enumerate}
+    \item \textbf{Instrument Name 1:} [Description or full text]
+    \item \textbf{Instrument Name 2:} [Description or full text]
+\end{enumerate}
+
+\appendixsection{Additional Figures}
+
+[Include any supplementary figures here]
+
+% ============================================================================
+% END DOCUMENT
+% ============================================================================
+
+\end{document}
+

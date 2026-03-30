@@ -1,0 +1,753 @@
+% Perioperative Care Plan Template
+% For surgical and procedural patient management
+% Last updated: 2025
+
+\documentclass[11pt,letterpaper]{article}
+
+% Packages
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{tabularx}
+\usepackage[most]{tcolorbox}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Perioperative Care Plan}
+\rhead{Page \thepage\ of \pageref{LastPage}}
+\lfoot{Date Created: \today}
+\rfoot{Confidential Patient Information}
+
+% Title formatting
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% Title
+\begin{center}
+{\Large\bfseries PERIOPERATIVE CARE PLAN}\\[0.5em]
+{\large Surgical \& Procedural Patient Management}\\[0.5em]
+\rule{\textwidth}{1pt}
+\end{center}
+
+\vspace{1em}
+
+% ===== TREATMENT PLAN HIGHLIGHTS (Foundation Medicine Model) =====
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=\textbf{TREATMENT PLAN HIGHLIGHTS},fonttitle=\bfseries\large]
+
+\textbf{Procedure:} [Planned surgery/procedure - e.g., Laparoscopic cholecystectomy for symptomatic cholelithiasis]
+
+\vspace{0.3em}
+\textbf{Primary Perioperative Goals:}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item [Goal 1 - e.g., Safe completion of procedure with minimal complications]
+    \item [Goal 2 - e.g., Discharge within 24 hours (outpatient procedure)]
+    \item [Goal 3 - e.g., Return to normal activities within 2 weeks]
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{Key Perioperative Elements:}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item \textit{Preoperative:} [Optimization - e.g., ASA class II, medical clearance obtained, NPO after midnight]
+    \item \textit{Intraoperative:} [Approach - e.g., General anesthesia, standard laparoscopic technique]
+    \item \textit{Postoperative:} [Recovery - e.g., Early mobilization, multimodal analgesia, same-day discharge]
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{Timeline:} [Schedule - e.g., Surgery date [XX/XX], follow-up at 2 weeks, full recovery 4-6 weeks]
+
+\end{tcolorbox}
+
+\vspace{1em}
+
+% ===== SECTION 1: PATIENT AND PROCEDURE INFORMATION =====
+\section*{1. Patient and Procedure Information}
+
+\textbf{HIPAA Notice}: De-identify all protected health information before sharing.
+
+\vspace{0.5em}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Patient ID} & [De-identified code, e.g., SURG-001] \\ \hline
+\textbf{Age Range} & [e.g., 65-70 years] \\ \hline
+\textbf{Sex} & [Male/Female/Other] \\ \hline
+\textbf{Date of Plan} & [Month/Year only] \\ \hline
+\textbf{Surgeon} & [Name, MD, Specialty] \\ \hline
+\textbf{Anesthesiologist} & [Name, MD or assigned team] \\ \hline
+\textbf{Planned Procedure} & [e.g., Elective total knee arthroplasty, right] \\ \hline
+\textbf{CPT Code} & [e.g., 27447] \\ \hline
+\textbf{Scheduled Date} & [Month/Year or "Within 2-4 weeks"] \\ \hline
+\textbf{Facility} & [Hospital/Surgery center name] \\ \hline
+\textbf{Expected LOS} & [e.g., 2-3 days] \\ \hline
+\end{tabularx}
+
+\vspace{1em}
+
+\subsection*{Surgical Indication}
+
+\textbf{Primary Diagnosis}: [e.g., Severe osteoarthritis, right knee] (ICD-10: [M17.11])
+
+\textbf{Indication for Surgery}:
+[e.g., Patient has severe right knee pain (8/10) limiting mobility and function despite conservative management including physical therapy, weight loss, and analgesics. Radiographs demonstrate bone-on-bone contact, osteophytes, and joint space narrowing. Failed conservative treatment for 12+ months. Patient desires surgical intervention to improve quality of life and function.]
+
+\textbf{Previous Treatments}:
+\begin{itemize}[leftmargin=*]
+    \item Physical therapy (6 months, minimal benefit)
+    \item Weight loss (15 lbs, ongoing)
+    \item NSAIDs, acetaminophen (limited efficacy)
+    \item Intra-articular corticosteroid injections (3 injections, temporary relief only)
+\end{itemize}
+
+\subsection*{Medical History and Comorbidities}
+
+\textbf{Active Medical Conditions}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Hypertension}: Well-controlled on lisinopril 20mg daily
+    \item \textbf{Type 2 Diabetes}: HbA1c 6.8\%, well-controlled on metformin
+    \item \textbf{Hyperlipidemia}: On atorvastatin 40mg
+    \item \textbf{Obesity}: BMI 32 (down from 35 with weight loss efforts)
+    \item [List additional conditions]
+\end{itemize}
+
+\textbf{Current Medications}:
+\begin{longtable}{|p{3cm}|p{2cm}|p{2cm}|p{6cm}|}
+\hline
+\textbf{Medication} & \textbf{Dose} & \textbf{Frequency} & \textbf{Perioperative Plan} \\ \hline
+Lisinopril & 20mg & Daily & Hold day of surgery, resume POD 1 if BP stable \\ \hline
+Metformin & 1000mg & BID & Hold 24 hours before surgery, resume when eating \\ \hline
+Atorvastatin & 40mg & QHS & Continue through surgery \\ \hline
+Aspirin & 81mg & Daily & Discuss with surgeon - likely continue \\ \hline
+Ibuprofen & 600mg & PRN & Discontinue 5-7 days before surgery \\ \hline
+[Add medications] & & & \\ \hline
+\end{longtable}
+
+\textbf{Allergies}: [NKDA or list medication allergies and reactions]
+
+\subsection*{Preoperative Risk Assessment}
+
+\textbf{ASA Physical Status Classification}: [e.g., ASA Class II - Mild systemic disease (HTN, DM)]
+
+\textbf{Cardiac Risk} (Revised Cardiac Risk Index - RCRI):
+\begin{itemize}[leftmargin=*]
+    \item High-risk surgery: ☐ Yes ☑ No (orthopedic is intermediate-risk)
+    \item Ischemic heart disease: ☐ Yes ☑ No
+    \item Heart failure: ☐ Yes ☑ No
+    \item Cerebrovascular disease: ☐ Yes ☑ No
+    \item Diabetes on insulin: ☐ Yes ☑ No
+    \item Creatinine $>$2 mg/dL: ☐ Yes ☑ No
+    \item \textbf{RCRI Score}: 0 (Low risk $<$1\% cardiac event)
+\end{itemize}
+
+\textbf{Pulmonary Risk}:
+\begin{itemize}[leftmargin=*]
+    \item No active pulmonary disease
+    \item No smoking history
+    \item Room air oxygen saturation 98\%
+    \item Low risk for postoperative pulmonary complications
+\end{itemize}
+
+\textbf{VTE Risk} (Caprini Score):
+\begin{itemize}[leftmargin=*]
+    \item Age 65-70: 2 points
+    \item Major surgery ($>$45 min): 2 points
+    \item BMI $>$30: 1 point
+    \item \textbf{Total Score}: 5 (Moderate-high risk)
+    \item \textbf{Prophylaxis Plan}: Pharmacologic (enoxaparin) + mechanical (SCDs)
+\end{itemize}
+
+\textbf{Bleeding Risk}: Low (no anticoagulation, normal coagulation studies)
+
+% ===== SECTION 2: PREOPERATIVE OPTIMIZATION =====
+\section*{2. Preoperative Optimization and Preparation}
+
+\subsection*{2.1 Medical Optimization}
+
+\textbf{Diabetes Management}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Goal}: HbA1c $<$7-8\% for elective surgery (current 6.8\% - optimized)
+    \item \textbf{Preop Day}: Hold metformin 24 hours before surgery
+    \item \textbf{Morning of Surgery}: NPO, no oral hypoglycemics
+    \item \textbf{Glucose Monitoring}: Check fasting glucose morning of surgery, target 100-180 mg/dL
+    \item \textbf{Perioperative Protocol}: Insulin sliding scale if glucose $>$180 mg/dL
+\end{itemize}
+
+\textbf{Hypertension Management}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Goal}: BP $<$140/90 preoperatively (current 128/76 - controlled)
+    \item \textbf{Medication Plan}: Hold lisinopril morning of surgery (avoid intraop hypotension)
+    \item \textbf{Beta-blockers}: [If on beta-blocker, continue through surgery]
+    \item \textbf{Postop}: Resume home BP medications when tolerating oral intake
+\end{itemize}
+
+\textbf{Cardiac Clearance}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Assessment}: Low cardiac risk (RCRI 0), intermediate-risk surgery
+    \item \textbf{Functional Capacity}: $>$4 METs (can climb 1 flight of stairs)
+    \item \textbf{EKG}: Normal sinus rhythm, no acute changes
+    \item \textbf{Additional Testing}: Not needed (low risk, good functional capacity)
+    \item \textbf{Cardiology Consultation}: Not indicated
+    \item \textbf{Cleared for Surgery}: Yes
+\end{itemize}
+
+\textbf{Pulmonary Optimization}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Smoking Cessation}: N/A (non-smoker)
+    \item \textbf{Incentive Spirometry}: Education provided, will use postoperatively
+    \item \textbf{Pulmonary Function Tests}: Not indicated (no pulmonary disease)
+\end{itemize}
+
+\textbf{Nutritional Status}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Albumin}: [e.g., 4.0 g/dL - normal]
+    \item \textbf{BMI}: 32 (obese, but weight loss of 15 lbs achieved)
+    \item \textbf{Nutritional Optimization}: Adequate, no protein supplementation needed
+\end{itemize}
+
+\textbf{Anemia Screening and Management}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Preop Hemoglobin}: [e.g., 13.2 g/dL - normal]
+    \item \textbf{Iron Studies}: [If low Hgb - check iron, ferritin, TIBC]
+    \item \textbf{Optimization}: No anemia present, no intervention needed
+    \item \textbf{Transfusion Threshold}: Hgb $<$7-8 g/dL postoperatively (restrictive strategy)
+\end{itemize}
+
+\subsection*{2.2 Medication Management}
+
+\textbf{Medications to Continue}:
+\begin{itemize}[leftmargin=*]
+    \item Statin (atorvastatin)
+    \item Aspirin 81mg (after surgeon confirmation - typically continued for orthopedic)
+    \item [Other chronic medications per anesthesia recommendations]
+\end{itemize}
+
+\textbf{Medications to Hold}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{NSAIDs}: Discontinue 5-7 days before surgery (ibuprofen)
+    \item \textbf{ACE Inhibitors}: Hold day of surgery (lisinopril)
+    \item \textbf{Metformin}: Hold 24 hours before, resume when eating normally
+    \item \textbf{[Other medications]}: [Specific instructions]
+\end{itemize}
+
+\textbf{Anticoagulation Management}:
+\begin{itemize}[leftmargin=*]
+    \item Not applicable (patient not on anticoagulation)
+    \item [If on warfarin: bridge with LMWH, target INR $<$1.5]
+    \item [If on DOAC: hold 24-48 hours based on renal function]
+\end{itemize}
+
+\subsection*{2.3 Preoperative Testing and Clearance}
+
+\textbf{Laboratory Tests}:
+\begin{itemize}[leftmargin=*]
+    \item CBC: [Results - Hgb, platelets]
+    \item BMP: [Results - creatinine, glucose, electrolytes]
+    \item HbA1c: 6.8\% (within 3 months)
+    \item Coagulation studies (PT/INR, PTT): [If indicated]
+    \item Type and screen: [Completed, blood available if needed]
+\end{itemize}
+
+\textbf{Imaging}:
+\begin{itemize}[leftmargin=*]
+    \item Chest X-ray: [If indicated - age $>$50 with cardiac/pulmonary disease]
+    \item Preop knee X-rays: Confirm diagnosis, surgical planning
+\end{itemize}
+
+\textbf{Medical Clearance}: ☑ Cleared for surgery by PCP [Date]
+
+\subsection*{2.4 Enhanced Recovery After Surgery (ERAS) Protocol}
+
+\textbf{Preoperative ERAS Elements}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Patient Education}: Provided ERAS booklet, reviewed expectations
+    \item \textbf{Nutritional Optimization}: Carbohydrate loading (clear carb drink 2 hours before surgery)
+    \item \textbf{Fasting Guidelines}: NPO solid food 6 hours, clear liquids until 2 hours before
+    \item \textbf{Preoperative Bathing}: Chlorhexidine shower night before and morning of surgery
+    \item \textbf{No Premedication}: Avoid long-acting sedatives (faster recovery)
+\end{itemize}
+
+% ===== SECTION 3: PERIOPERATIVE GOALS =====
+\section*{3. Perioperative Goals}
+
+\subsection*{3.1 Immediate Perioperative Goals (Day 0-1)}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Pain Control}: Achieve pain $\leq$4/10 at rest, $\leq$6/10 with movement using multimodal analgesia by POD 0.
+    
+    \item \textbf{Early Mobilization}: Out of bed to chair within 4-6 hours post-surgery (day of surgery if morning case).
+    
+    \item \textbf{Nausea/Vomiting Prevention}: No or minimal PONV with multimodal antiemetic prophylaxis.
+    
+    \item \textbf{Glucose Control}: Maintain blood glucose 100-180 mg/dL perioperatively.
+    
+    \item \textbf{Hemodynamic Stability}: Maintain BP within 20\% of baseline, avoid hypo/hypertension.
+\end{enumerate}
+
+\subsection*{3.2 Early Postoperative Goals (POD 1-3)}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Mobilization}: Ambulate with physical therapy 50+ feet with walker by POD 1, progress to 150 feet by POD 2.
+    
+    \item \textbf{ROM}: Achieve knee flexion $>$70 degrees and full extension by POD 2.
+    
+    \item \textbf{Pain Management}: Transition to oral multimodal analgesia, pain $\leq$5/10, minimize opioid use.
+    
+    \item \textbf{Diet Advancement}: Resume regular diet POD 1, adequate oral intake.
+    
+    \item \textbf{Bowel Function}: Return of bowel sounds, pass flatus by POD 2.
+    
+    \item \textbf{Urinary Function}: Foley catheter removed POD 0-1, spontaneous void within 6-8 hours.
+    
+    \item \textbf{Prevent Complications}: No surgical site infection, DVT, PE, or other major complications.
+\end{enumerate}
+
+\subsection*{3.3 Discharge Goals (POD 2-3)}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Functional Mobility}: Independent transfers, ambulate 150+ feet with assistive device, negotiate stairs if needed for home.
+    
+    \item \textbf{Pain Control}: Adequate pain control on oral medications, pain $<$5/10.
+    
+    \item \textbf{Safety}: Patient/family demonstrate understanding of precautions, medications, wound care.
+    
+    \item \textbf{Discharge Readiness}: Stable vital signs, no complications, safe for discharge home (with home health if needed).
+\end{enumerate}
+
+% ===== SECTION 4: INTRAOPERATIVE MANAGEMENT =====
+\section*{4. Intraoperative Management Plan}
+
+\subsection*{Anesthesia Plan}
+
+\textbf{Anesthesia Type}: [e.g., Spinal anesthesia + sedation] (surgeon/anesthesia preference)
+
+\textbf{Alternatives Discussed}:
+\begin{itemize}[leftmargin=*]
+    \item General anesthesia
+    \item Regional anesthesia (spinal/epidural)
+    \item Peripheral nerve block (femoral, adductor canal block)
+\end{itemize}
+
+\textbf{Multimodal Analgesia - Intraoperative}:
+\begin{itemize}[leftmargin=*]
+    \item Regional anesthesia (spinal/block) as primary analgesic
+    \item IV acetaminophen 1g intraoperatively
+    \item Ketorolac 15-30mg IV (if no contraindication)
+    \item Local anesthetic infiltration at surgical site (surgeon)
+    \item Minimize intraop opioids (opioid-sparing approach)
+\end{itemize}
+
+\textbf{PONV Prophylaxis}:
+\begin{itemize}[leftmargin=*]
+    \item Ondansetron 4mg IV
+    \item Dexamethasone 4-8mg IV
+    \item Scopolamine patch (if high PONV risk)
+    \item Avoid volatile anesthetics if possible (TIVA preferred)
+\end{itemize}
+
+\subsection*{Surgical Approach}
+
+\textbf{Procedure}: Total knee arthroplasty, cemented components
+
+\textbf{Antibiotic Prophylaxis}:
+\begin{itemize}[leftmargin=*]
+    \item Cefazolin 2g IV within 60 minutes of incision (3g if weight $>$120 kg)
+    \item Redose if surgery $>$4 hours or blood loss $>$1500 mL
+    \item Discontinue within 24 hours post-surgery
+\end{itemize}
+
+\textbf{VTE Prophylaxis - Intraoperative}:
+\begin{itemize}[leftmargin=*]
+    \item Sequential compression devices (SCDs) applied before induction
+    \item Continue SCDs throughout hospitalization and at rest at home
+\end{itemize}
+
+\textbf{Surgical Site Infection Prevention}:
+\begin{itemize}[leftmargin=*]
+    \item Chlorhexidine-alcohol skin prep
+    \item Maintain normothermia (goal temp $>$36°C)
+    \item Glucose control (intraop glucose $<$180 mg/dL)
+    \item Surgical time minimize (planned $<$2 hours)
+\end{itemize}
+
+\textbf{Blood Management}:
+\begin{itemize}[leftmargin=*]
+    \item Tranexamic acid 1-2g IV (reduce blood loss)
+    \item Cell saver if appropriate
+    \item Restrictive transfusion strategy (Hgb $<$7-8 g/dL)
+\end{itemize}
+
+% ===== SECTION 5: POSTOPERATIVE MANAGEMENT =====
+\section*{5. Postoperative Management Plan}
+
+\subsection*{5.1 Pain Management (Multimodal Analgesia)}
+
+\textbf{ERAS Pain Protocol} (opioid-minimizing):
+
+\begin{longtable}{|p{3.5cm}|p{2.5cm}|p{7cm}|}
+\hline
+\textbf{Medication} & \textbf{Dose/Frequency} & \textbf{Instructions} \\ \hline
+\textbf{Acetaminophen} & 1000mg Q6H & Scheduled (not PRN), around-the-clock for 48 hours \\ \hline
+\textbf{Celecoxib} or \textbf{Meloxicam} & 200mg BID or 15mg daily & NSAID (if no contraindication), scheduled x 7-14 days \\ \hline
+\textbf{Gabapentin} & 300mg TID & Neuropathic pain adjuvant, start preop or POD 0 \\ \hline
+\textbf{Ice therapy} & Q2H while awake & Local cooling, reduces swelling and pain \\ \hline
+\textbf{Oxycodone} & 5mg Q4H PRN & Breakthrough pain only, goal minimize use \\ \hline
+\end{longtable}
+
+\textbf{Pain Assessment}: Numeric rating scale (0-10) every 4 hours, before and after ambulation
+
+\textbf{Pain Goals}: $\leq$4/10 at rest, $\leq$6/10 with PT/activity
+
+\subsection*{5.2 Early Mobilization and Physical Therapy}
+
+\textbf{ERAS Mobility Protocol}:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{POD 0 (Day of Surgery)}: Out of bed to chair 4-6 hours post-op, stand at bedside
+    \item \textbf{POD 1}:
+    \begin{itemize}
+        \item PT evaluation and gait training
+        \item Ambulate 50+ feet with walker x2
+        \item Begin ROM exercises (CPM machine or therapist-assisted)
+        \item Stair practice if needed for home
+    \end{itemize}
+    \item \textbf{POD 2}:
+    \begin{itemize}
+        \item Ambulate 150+ feet with walker x2-3
+        \item ROM: Goal flexion $>$90 degrees
+        \item Independent bed mobility and transfers
+        \item Stairs if required
+    \end{itemize}
+    \item \textbf{Discharge Criteria}: Ambulate 150 feet, transfers independently, stairs if applicable
+\end{itemize}
+
+\textbf{Fall Precautions}: High risk post-surgery - bed alarm, non-slip socks, walker, call for assist
+
+\subsection*{5.3 Nausea and Vomiting Management}
+
+\textbf{Multimodal Antiemetic Protocol}:
+\begin{itemize}[leftmargin=*]
+    \item Ondansetron 4mg IV/PO Q6H PRN
+    \item Metoclopramide 10mg IV Q6H PRN (if ondansetron insufficient)
+    \item Scopolamine patch (continue 72 hours if applied)
+    \item Non-pharmacologic: Ginger ale, acupressure bands, avoid rapid position changes
+\end{itemize}
+
+\subsection*{5.4 Nutrition and Diet Advancement}
+
+\textbf{ERAS Nutrition}:
+\begin{itemize}[leftmargin=*]
+    \item Resume diet as tolerated POD 0-1 (no prolonged NPO)
+    \item Protein-rich diet (wound healing)
+    \item Adequate hydration
+    \item No routine NG tube
+\end{itemize}
+
+\subsection*{5.5 VTE Prophylaxis}
+
+\textbf{Pharmacologic} (High-risk orthopedic surgery):
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Enoxaparin 40mg SC daily} starting POD 1, continue 10-14 days
+    \item \textit{Alternative}: Apixaban 2.5mg BID x 12 days (extended prophylaxis)
+    \item Hold first dose if neuraxial anesthesia (spinal/epidural) until catheter removal + 12 hours
+\end{itemize}
+
+\textbf{Mechanical}:
+\begin{itemize}[leftmargin=*]
+    \item SCDs while in bed throughout hospitalization
+    \item Early mobilization (most important)
+\end{itemize}
+
+\textbf{Duration}: Minimum 10-14 days, consider up to 35 days for high-risk patients
+
+\subsection*{5.6 Urinary Catheter Management}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Foley Catheter}: Typically placed intraoperatively
+    \item \textbf{Removal}: POD 0 or POD 1 morning (early removal to prevent CAUTI)
+    \item \textbf{Voiding Trial}: Must void within 6-8 hours of catheter removal
+    \item \textbf{Retention Protocol}: If unable to void or bladder scan $>$400 mL, straight cath or replace Foley temporarily
+\end{itemize}
+
+\subsection*{5.7 Wound Care and Drain Management}
+
+\textbf{Surgical Drain}:
+\begin{itemize}[leftmargin=*]
+    \item Hemovac or JP drain typically placed
+    \item Monitor output, remove when $<$30 mL/8 hours (usually POD 1-2)
+\end{itemize}
+
+\textbf{Dressing}:
+\begin{itemize}[leftmargin=*]
+    \item Keep clean and dry
+    \item First dressing change POD 2 or per surgeon
+    \item Assess for signs of infection daily
+\end{itemize}
+
+\subsection*{5.8 Glycemic Control}
+
+\textbf{Postoperative Glucose Management}:
+\begin{itemize}[leftmargin=*]
+    \item Target glucose 100-180 mg/dL
+    \item Check glucose Q6H while NPO or on IV fluids
+    \item Insulin sliding scale (SSI) if glucose $>$180 mg/dL
+    \item Resume metformin when tolerating regular diet and creatinine stable
+\end{itemize}
+
+\subsection*{5.9 Complication Surveillance}
+
+\textbf{Monitor for}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Surgical site infection}: Fever, wound erythema, purulent drainage, increased pain
+    \item \textbf{DVT/PE}: Unilateral leg swelling, chest pain, dyspnea, hypoxia
+    \item \textbf{Acute kidney injury}: Decreased UOP, rising creatinine
+    \item \textbf{Cardiovascular events}: Chest pain, EKG changes, troponin elevation
+    \item \textbf{Delirium}: Especially in elderly, multimodal prevention
+\end{itemize}
+
+% ===== SECTION 6: DISCHARGE PLANNING =====
+\section*{6. Discharge Planning and Criteria}
+
+\subsection*{Discharge Criteria (Typically POD 2-3)}
+
+Patient ready for discharge when ALL met:
+\begin{itemize}[leftmargin=*]
+    \item ☐ Adequate pain control on oral medications (pain $<$5/10)
+    \item ☐ Functional mobility: Ambulate 150+ feet, transfers, stairs if needed
+    \item ☐ Tolerating regular diet, adequate oral intake
+    \item ☐ Voiding spontaneously without catheter
+    \item ☐ Stable vital signs, no fever $>$38.5°C x 24 hours
+    \item ☐ No complications requiring continued hospitalization
+    \item ☐ Adequate home support and DME arranged
+    \item ☐ Patient/family education completed, demonstrate understanding
+\end{itemize}
+
+\subsection*{Discharge Medications}
+
+\begin{longtable}{|p{3cm}|p{2cm}|p{2cm}|p{6cm}|}
+\hline
+\textbf{Medication} & \textbf{Dose} & \textbf{Frequency} & \textbf{Duration/Instructions} \\ \hline
+Oxycodone & 5mg & Q4-6H PRN & Pain, 20 tablets (minimize use) \\ \hline
+Acetaminophen & 1000mg & Q6H & Scheduled x 2 weeks \\ \hline
+Meloxicam & 15mg & Daily & x 2 weeks (NSAID) \\ \hline
+Enoxaparin & 40mg SC & Daily & x 10-14 days (VTE prophylaxis) \\ \hline
+Colace & 100mg & BID & Constipation prevention while on opioids \\ \hline
+[Resume home meds] & & & Resume lisinopril, metformin, atorvastatin \\ \hline
+\end{longtable}
+
+\subsection*{Durable Medical Equipment (DME)}
+
+\begin{itemize}[leftmargin=*]
+    \item Walker (front-wheeled, standard adult)
+    \item Raised toilet seat with arms
+    \item Shower chair or bath bench
+    \item Reacher (32-inch)
+    \item Ice machine or ice packs (for knee)
+    \item Long-handled shoe horn (hip precautions if applicable)
+\end{itemize}
+
+\subsection*{Home Services}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Home Health Physical Therapy}: 2-3x/week x 2-3 weeks, then transition to outpatient PT
+    \item \textbf{Home Health Nursing}: PRN for wound check, drain removal if not removed before discharge, medication teaching (enoxaparin injections)
+    \item [If high needs: Home health aide for ADL assistance]
+\end{itemize}
+
+\subsection*{Patient Education Completed}
+
+\begin{itemize}[leftmargin=*]
+    \item ✓ Wound care and dressing changes
+    \item ✓ Signs of infection (fever, redness, drainage, increased pain)
+    \item ✓ Pain medication use and weaning plan
+    \item ✓ Enoxaparin self-injection technique (or family member trained)
+    \item ✓ DVT/PE warning signs (leg swelling, chest pain, shortness of breath)
+    \item ✓ Activity restrictions and precautions
+    \item ✓ Home exercise program
+    \item ✓ Use of DME (walker, raised toilet seat, etc.)
+    \item ✓ When to call surgeon (fever $>$101.5°F, severe pain, wound concerns)
+    \item ✓ Follow-up appointments scheduled
+\end{itemize}
+
+\subsection*{Activity Restrictions}
+
+\begin{itemize}[leftmargin=*]
+    \item Use walker for ambulation x 2-4 weeks (per PT recommendation)
+    \item No driving until off opioid pain medications and cleared by surgeon (typically 2-4 weeks)
+    \item No prolonged sitting $>$30-45 min without getting up and moving
+    \item Avoid kneeling on operative knee
+    \item Gradual return to activities as tolerated
+\end{itemize}
+
+\subsection*{Follow-Up Appointments}
+
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\textbf{Provider} & \textbf{Timing} & \textbf{Purpose} \\ \hline
+Surgeon & 10-14 days & Wound check, staple/suture removal, assess progress \\ \hline
+Surgeon & 6 weeks & X-ray, functional assessment, advance activities \\ \hline
+Surgeon & 3 months, 6 months, 1 year & Long-term follow-up, outcomes \\ \hline
+PCP & 1-2 weeks & Resume chronic disease management, BP/DM check \\ \hline
+PT (outpatient) & After home health complete & Continue strengthening, ROM, return to function \\ \hline
+\end{tabularx}
+
+% ===== SECTION 7: EMERGENCY PROCEDURES =====
+\section*{7. Postoperative Emergency Procedures}
+
+\textbf{Call surgeon immediately or go to ED if}:
+\begin{itemize}[leftmargin=*]
+    \item Fever $>$101.5°F (38.6°C)
+    \item Severe uncontrolled pain ($>$7/10 despite medications)
+    \item Wound: Excessive drainage, purulent discharge, wound dehiscence, foul odor
+    \item Increased redness, warmth, or swelling at surgical site
+    \item DVT symptoms: Unilateral leg swelling, pain, warmth, redness
+    \item PE symptoms: Sudden chest pain, shortness of breath, rapid heart rate
+    \item Numbness, tingling, or weakness in leg (nerve injury concern)
+    \item Inability to urinate
+    \item Excessive bleeding from surgical site
+\end{itemize}
+
+\textbf{Call 911 for}:
+\begin{itemize}[leftmargin=*]
+    \item Chest pain or pressure
+    \item Severe shortness of breath
+    \item Loss of consciousness
+    \item Signs of stroke (facial droop, arm weakness, speech difficulty)
+\end{itemize}
+
+\textbf{Surgeon Contact Information}:
+\begin{itemize}[leftmargin=*]
+    \item Office: [Phone number]
+    \item After-hours/Emergency: [On-call service number]
+\end{itemize}
+
+% ===== SECTION 8: REHABILITATION AND RECOVERY =====
+\section*{8. Rehabilitation Plan and Expected Recovery}
+
+\subsection*{Recovery Timeline}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Timeframe} & \textbf{Expected Progress} \\ \hline
+Week 1-2 & Wound healing, pain decreasing, ambulation with walker improving, ROM exercises \\ \hline
+Week 3-6 & Transition from walker to cane, ROM improving (goal flexion $>$100°), less pain \\ \hline
+Week 6-12 & Progress to independent ambulation (no assistive device), ROM 110-120° flexion, strengthening phase \\ \hline
+3-6 months & Return to most activities, continued strengthening, ROM optimization, minimal pain \\ \hline
+6-12 months & Full recovery, return to all desired activities, final ROM achieved \\ \hline
+\end{tabularx}
+
+\subsection*{Physical Therapy Goals}
+
+\textbf{Short-term} (0-6 weeks):
+\begin{itemize}[leftmargin=*]
+    \item ROM: Flexion $>$90° by week 2, $>$110° by week 6, full extension
+    \item Strength: Quadriceps, hamstrings, hip abductors
+    \item Ambulation: Progress from walker to cane to independent
+    \item Stairs: Negotiate safely
+\end{itemize}
+
+\textbf{Long-term} (6 weeks - 3 months):
+\begin{itemize}[leftmargin=*]
+    \item ROM: Maximum flexion (goal 120-125°)
+    \item Strength: Near-normal lower extremity strength
+    \item Function: Return to ADLs, hobbies, light sports
+    \item Gait: Normal gait pattern without assistive device
+\end{itemize}
+
+\subsection*{Home Exercise Program}
+
+\textit{Provided by PT, to be performed 2-3x daily}:
+\begin{itemize}[leftmargin=*]
+    \item Ankle pumps
+    \item Quad sets
+    \item Straight leg raises
+    \item Hamstring curls
+    \item Hip abduction
+    \item Knee flexion/extension ROM exercises
+    \item Heel slides
+    \item Stationary bike (when cleared)
+\end{itemize}
+
+% ===== SECTION 9: INFORMED CONSENT =====
+\section*{9. Informed Consent Documentation}
+
+\textbf{Risks and Benefits Discussed}:
+
+\textbf{Benefits}:
+\begin{itemize}[leftmargin=*]
+    \item Pain relief (90\% significant improvement)
+    \item Improved function and mobility
+    \item Enhanced quality of life
+    \item Return to desired activities
+\end{itemize}
+
+\textbf{Risks}:
+\begin{itemize}[leftmargin=*]
+    \item Infection ($<$2\%)
+    \item DVT/PE (2-3\% despite prophylaxis)
+    \item Bleeding, hematoma
+    \item Nerve or blood vessel injury (rare)
+    \item Stiffness, limited ROM
+    \item Implant loosening, wear (long-term)
+    \item Need for revision surgery (10-15\% lifetime risk)
+    \item Anesthesia risks
+\end{itemize}
+
+\textbf{Alternatives Discussed}:
+\begin{itemize}[leftmargin=*]
+    \item Continued conservative management (PT, medications, injections)
+    \item Partial knee replacement (if eligible)
+    \item No treatment
+\end{itemize}
+
+Patient demonstrates understanding, all questions answered, consents to proceed with surgery.
+
+% ===== SECTION 10: SIGNATURES =====
+\vspace{2em}
+
+\section*{10. Provider Signatures}
+
+\textbf{Surgeon}:\\[0.5em]
+Signature: \rule{6cm}{0.5pt} \quad Date: \rule{3cm}{0.5pt}\\
+Name/Credentials: \rule{6cm}{0.5pt}\\[1em]
+
+\textbf{Anesthesiologist}:\\[0.5em]
+Signature: \rule{6cm}{0.5pt} \quad Date: \rule{3cm}{0.5pt}\\
+Name/Credentials: \rule{6cm}{0.5pt}\\[1em]
+
+\textbf{Patient Consent}:\\[0.5em]
+I have reviewed this perioperative care plan. I understand the procedure, risks, benefits, and alternatives. My questions have been answered. I consent to the planned surgery.\\[0.5em]
+Signature: \rule{6cm}{0.5pt} \quad Date: \rule{3cm}{0.5pt}\\
+
+\vspace{2em}
+\begin{center}
+\rule{\textwidth}{1pt}\\
+\textbf{End of Perioperative Care Plan}\\
+This document contains confidential patient information protected by HIPAA.
+\end{center}
+
+\end{document}
+
+% ========== NOTES FOR USERS ==========
+%
+% This template emphasizes Enhanced Recovery After Surgery (ERAS) principles
+% Key ERAS elements: preop carbohydrate loading, minimal fasting, multimodal analgesia,
+% early mobilization, early feeding, minimizing tubes/drains, VTE prophylaxis
+%
+% CUSTOMIZATION:
+% - Adjust for specific surgical procedure
+% - Modify based on patient comorbidities
+% - Update medication protocols per institutional guidelines
+% - Adapt ERAS elements based on evidence and surgeon preference
+%
+% COMPILATION:
+% pdflatex perioperative_care_plan.tex
+

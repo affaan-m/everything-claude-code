@@ -1,0 +1,193 @@
+% One-Page Treatment Plan Template
+% Concise, clinician-focused treatment recommendation
+% Modeled after precision oncology reports and clinical decision support cards
+% Last updated: 2025
+
+\documentclass[10pt,letterpaper]{article}
+
+% Minimal packages for clean, dense layout
+\usepackage[top=0.5in,bottom=0.5in,left=0.6in,right=0.6in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{tabularx}
+\usepackage[most]{tcolorbox}
+\usepackage{multicol}
+
+% Compact spacing
+\setlist{nosep,leftmargin=*,itemsep=0pt,topsep=2pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+% No page numbers for single page
+\pagestyle{empty}
+
+% Section formatting - compact
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{8pt}{4pt}
+\titlespacing*{\subsection}{0pt}{6pt}{3pt}
+\titleformat{\section}{\normalsize\bfseries\sffamily}{\thesection}{0em}{}
+\titleformat{\subsection}{\small\bfseries\sffamily}{\thesubsection}{0em}{}
+
+% Color scheme
+\definecolor{headerblue}{RGB}{0,102,153}
+\definecolor{lightgray}{RGB}{240,240,240}
+\definecolor{darkgray}{RGB}{80,80,80}
+
+\begin{document}
+
+% ========== TITLE ==========
+\begin{center}
+{\small\textit{PRECISION MEDICINE / CLINICAL RECOMMENDATION}}\\[2pt]
+{\Large\bfseries\sffamily [Treatment Type]}\\[1pt]
+{\normalsize\textit{[Condition/Disease Name]}}
+\end{center}
+
+\vspace{-8pt}
+
+% ========== PATIENT/CASE INFO BOX ==========
+\begin{tcolorbox}[
+    colback=lightgray,
+    colframe=headerblue,
+    boxrule=0.5pt,
+    arc=2pt,
+    left=4pt,right=4pt,top=3pt,bottom=3pt,
+    fontupper=\small
+]
+\textbf{Patient ID:} [De-identified ID] \hfill \textbf{Date:} \today\\
+\textbf{Diagnosis:} [Primary diagnosis + ICD-10] \hfill \textbf{Stage/Grade:} [If applicable]\\
+\textbf{Age/Sex:} [Age range, sex] \hfill \textbf{Molecular Profile:} [Key biomarkers or cluster, if applicable]
+\end{tcolorbox}
+
+\vspace{4pt}
+
+% ========== TWO-COLUMN LAYOUT FOR EFFICIENCY ==========
+\begin{multicols}{2}
+
+% ========== LEFT COLUMN ==========
+
+\section*{TARGET PATIENT POPULATION}
+{\small
+\textbf{Number of Patients:} [N (\% of cohort)]\\
+\textbf{Key Features:} [Brief demographic or clinical features]\\
+\textbf{Inclusion Criteria:} [1-2 key criteria]
+}
+
+\section*{PRIMARY TREATMENT REGIMEN}
+{\small
+\begin{enumerate}[leftmargin=12pt]
+    \item \textbf{[Intervention 1]:} [Specific details]
+    \begin{itemize}
+        \item Dose: [specific dosing]
+        \item Frequency: [schedule]
+        \item Duration: [timeframe]
+    \end{itemize}
+    
+    \item \textbf{[Intervention 2]:} [Specific details]
+    \begin{itemize}
+        \item [Key parameters]
+    \end{itemize}
+    
+    \item \textbf{[Intervention 3]:} [Optional, if needed]
+    \begin{itemize}
+        \item [Key parameters]
+    \end{itemize}
+\end{enumerate}
+}
+
+\section*{SUPPORTIVE CARE}
+{\small
+\begin{itemize}
+    \item \textbf{[Supportive Med 1]:} [dose/frequency]
+    \item \textbf{[Supportive Med 2]:} [dose/frequency]
+    \item \textbf{[Other support]:} [brief description]
+\end{itemize}
+}
+
+\section*{RATIONALE}
+{\small
+[1-3 sentences explaining why this regimen is appropriate for this patient. Include key pathophysiology, guideline alignment, or molecular rationale if applicable.]
+}
+
+\columnbreak
+
+% ========== RIGHT COLUMN ==========
+
+\section*{MOLECULAR TARGETS / RISK FACTORS}
+{\small
+\begin{itemize}
+    \item \textbf{[Target/Factor 1]:} [Value/status]
+    \item \textbf{[Target/Factor 2]:} [Value/status]
+    \item \textbf{[Target/Factor 3]:} [Value/status]
+\end{itemize}
+}
+
+\section*{EVIDENCE LEVEL}
+{\small
+\textbf{[Level designation - e.g., Level 1, FDA approved]}\\
+\textbf{Supporting Evidence:} [Guideline name/year or key trial]\\
+\textbf{References:} [1-2 key citations in abbreviated format]
+}
+
+\section*{MONITORING REQUIREMENTS}
+{\small
+\begin{tabular}{@{}ll@{}}
+\textbf{Parameter} & \textbf{Frequency} \\
+\hline
+[Lab/vital 1] & [e.g., Weekly x 4 weeks] \\
+[Lab/vital 2] & [e.g., Monthly x 3 months] \\
+[Lab/vital 3] & [e.g., Every 3 months] \\
+[Assessment tool] & [e.g., Baseline, 3 mo, 6 mo] \\
+\end{tabular}
+}
+
+\section*{EXPECTED CLINICAL BENEFIT}
+{\small
+\textbf{Primary Outcome:} [e.g., Median OS 20.9 months]\\
+\textbf{Timeline:} [e.g., Response assessment at 12 weeks]\\
+\textbf{Success Criteria:} [Specific metrics for goal achievement]
+}
+
+\section*{CRITICAL DECISION POINTS}
+{\small
+\begin{itemize}
+    \item \textbf{Hold treatment if:} [Specific criteria]
+    \item \textbf{Dose modify for:} [Specific criteria]
+    \item \textbf{Discontinue if:} [Specific criteria]
+\end{itemize}
+}
+
+\end{multicols}
+
+\vspace{4pt}
+
+% ========== BOTTOM SECTION - FULL WIDTH ==========
+\begin{tcolorbox}[
+    colback=yellow!10,
+    colframe=red!60!black,
+    boxrule=0.8pt,
+    arc=2pt,
+    left=4pt,right=4pt,top=3pt,bottom=3pt,
+    fontupper=\small\bfseries
+]
+\textbf{EMERGENCY CONTACTS / URGENT CONCERNS:} \\
+{\small\normalfont
+Call [clinic/provider] immediately for: [List 2-3 red flag symptoms]. \\
+Emergency: 911 | Clinic: [phone] | After-hours: [phone] | Pharmacy: [phone]
+}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+{\footnotesize\textit{
+Prepared by: [Provider name, credentials] | Plan created: \today | Next review: [date] \\
+HIPAA Notice: This document contains de-identified patient information per Safe Harbor standards.
+}}
+
+\end{document}
+

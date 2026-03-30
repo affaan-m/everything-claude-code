@@ -1,0 +1,90 @@
+# DiffDock Custom Inference Configuration Template
+# Copy and modify this file to customize inference parameters
+
+# Model paths (usually don't need to change these)
+model_dir: ./workdir/v1.1/score_model
+confidence_model_dir: ./workdir/v1.1/confidence_model
+ckpt: best_ema_inference_epoch_model.pt
+confidence_ckpt: best_model_epoch75.pt
+
+# Model version flags
+old_score_model: false  # Set to true to use original DiffDock instead of DiffDock-L
+old_filtering_model: true
+
+# Inference steps
+inference_steps: 20  # Increase for potentially better accuracy (e.g., 25-30)
+actual_steps: 19
+no_final_step_noise: true
+
+# Sampling parameters
+samples_per_complex: 10  # Increase for difficult cases (e.g., 20-40)
+sigma_schedule: expbeta
+initial_noise_std_proportion: 1.46
+
+# Temperature controls - Adjust these to balance exploration vs accuracy
+# Higher values = more diverse predictions, lower values = more focused predictions
+
+# Sampling temperatures
+temp_sampling_tr: 1.17   # Translation sampling temperature
+temp_sampling_rot: 2.06  # Rotation sampling temperature
+temp_sampling_tor: 7.04  # Torsion sampling temperature (increase for flexible ligands)
+
+# Psi angle temperatures
+temp_psi_tr: 0.73
+temp_psi_rot: 0.90
+temp_psi_tor: 0.59
+
+# Sigma data temperatures
+temp_sigma_data_tr: 0.93
+temp_sigma_data_rot: 0.75
+temp_sigma_data_tor: 0.69
+
+# Feature flags
+no_model: false
+no_random: false
+ode: false  # Set to true to use ODE solver instead of SDE
+different_schedules: false
+limit_failures: 5
+
+# Output settings
+# save_visualisation: true  # Uncomment to save SDF files
+
+# ============================================================================
+# Configuration Presets for Common Use Cases
+# ============================================================================
+
+# PRESET 1: High Accuracy (slower, more thorough)
+# samples_per_complex: 30
+# inference_steps: 25
+# temp_sampling_tr: 1.0
+# temp_sampling_rot: 1.8
+# temp_sampling_tor: 6.5
+
+# PRESET 2: Fast Screening (faster, less thorough)
+# samples_per_complex: 5
+# inference_steps: 15
+# temp_sampling_tr: 1.3
+# temp_sampling_rot: 2.2
+# temp_sampling_tor: 7.5
+
+# PRESET 3: Flexible Ligands (more conformational diversity)
+# samples_per_complex: 20
+# inference_steps: 20
+# temp_sampling_tr: 1.2
+# temp_sampling_rot: 2.1
+# temp_sampling_tor: 8.5  # Increased torsion temperature
+
+# PRESET 4: Rigid Ligands (more focused predictions)
+# samples_per_complex: 10
+# inference_steps: 20
+# temp_sampling_tr: 1.1
+# temp_sampling_rot: 2.0
+# temp_sampling_tor: 6.0  # Decreased torsion temperature
+
+# ============================================================================
+# Usage Example
+# ============================================================================
+# python -m inference \
+#   --config custom_inference_config.yaml \
+#   --protein_ligand_csv input.csv \
+#   --out_dir results/

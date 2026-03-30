@@ -1,0 +1,59 @@
+{
+  "description": "Synthetic retail sales data with covariates for TimesFM XReg demo",
+  "note_on_real_data": "For real datasets (e.g., Kaggle Rossmann Store Sales), download to tempfile.mkdtemp() -- do NOT commit to this repo.",
+  "stores": {
+    "store_A": {
+      "type": "premium",
+      "region": "urban",
+      "base_sales": 1000,
+      "mean_sales_context": 1148.7
+    },
+    "store_B": {
+      "type": "standard",
+      "region": "suburban",
+      "base_sales": 750,
+      "mean_sales_context": 907.0
+    },
+    "store_C": {
+      "type": "discount",
+      "region": "rural",
+      "base_sales": 500,
+      "mean_sales_context": 645.3
+    }
+  },
+  "dimensions": {
+    "context_length": 24,
+    "horizon_length": 12,
+    "total_length": 36,
+    "num_stores": 3,
+    "csv_rows": 108
+  },
+  "covariates": {
+    "dynamic_numerical": [
+      "price"
+    ],
+    "dynamic_categorical": [
+      "promotion",
+      "holiday",
+      "day_of_week"
+    ],
+    "static_categorical": [
+      "store_type",
+      "region"
+    ]
+  },
+  "effect_magnitudes": {
+    "holiday": "+200 units per holiday week",
+    "promotion": "+150 units per promotion week",
+    "price": "-20 units per $1 above base price"
+  },
+  "xreg_modes": {
+    "xreg + timesfm": "Regression on TimesFM residuals (default)",
+    "timesfm + xreg": "TimesFM on regression residuals"
+  },
+  "bug_fixes_history": [
+    "v1: Variable-shadowing -- all stores had identical covariates",
+    "v2: Fixed shadowing; CONTEXT_LEN 48->24",
+    "v3: Added component decomposition (base, price/promo/holiday effects); 2x2 sharex viz"
+  ]
+}

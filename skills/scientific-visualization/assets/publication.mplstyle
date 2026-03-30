@@ -1,0 +1,68 @@
+# Publication-quality matplotlib style
+# Usage: plt.style.use('publication.mplstyle')
+#
+# This style provides clean, professional formatting suitable
+# for most scientific journals
+
+# Figure properties
+figure.dpi: 100
+figure.facecolor: white
+figure.autolayout: False
+figure.constrained_layout.use: True
+figure.figsize: 3.5, 2.5
+
+# Font properties
+font.size: 8
+font.family: sans-serif
+font.sans-serif: Arial, Helvetica, DejaVu Sans
+
+# Axes properties
+axes.linewidth: 0.5
+axes.labelsize: 9
+axes.titlesize: 9
+axes.labelweight: normal
+axes.spines.top: False
+axes.spines.right: False
+axes.spines.left: True
+axes.spines.bottom: True
+axes.edgecolor: black
+axes.labelcolor: black
+axes.axisbelow: True
+axes.grid: False
+axes.prop_cycle: cycler('color', ['E69F00', '56B4E9', '009E73', 'F0E442', '0072B2', 'D55E00', 'CC79A7', '000000'])
+
+# Tick properties
+xtick.major.size: 3
+xtick.minor.size: 2
+xtick.major.width: 0.5
+xtick.minor.width: 0.5
+xtick.labelsize: 7
+xtick.direction: out
+ytick.major.size: 3
+ytick.minor.size: 2
+ytick.major.width: 0.5
+ytick.minor.width: 0.5
+ytick.labelsize: 7
+ytick.direction: out
+
+# Line properties
+lines.linewidth: 1.5
+lines.markersize: 4
+lines.markeredgewidth: 0.5
+
+# Legend properties
+legend.fontsize: 7
+legend.frameon: False
+legend.loc: best
+
+# Save properties
+savefig.dpi: 300
+savefig.format: pdf
+savefig.bbox: tight
+savefig.pad_inches: 0.05
+savefig.transparent: False
+savefig.facecolor: white
+
+# Image properties
+image.cmap: viridis
+image.aspect: auto

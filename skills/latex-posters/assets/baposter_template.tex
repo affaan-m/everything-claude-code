@@ -1,0 +1,257 @@
+% ==============================================================================
+% Research Poster Template - baposter
+% ==============================================================================
+% A structured, professional poster template using baposter
+% Excellent for multi-column layouts with automatic positioning
+% ==============================================================================
+
+\documentclass[a0paper,portrait,fontscale=0.285]{baposter}
+
+% Packages
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{multicol}
+\usepackage{qrcode}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+% Set list spacing
+\setlist{nosep}
+
+% ==============================================================================
+% POSTER CONTENT - CUSTOMIZE BELOW
+% ==============================================================================
+
+\begin{document}
+
+\begin{poster}{
+  % ============================================================================
+  % POSTER CONFIGURATION
+  % ============================================================================
+  
+  % Grid and columns
+  grid=false,                    % Set to true for debugging layout
+  columns=3,                     % Number of columns
+  colspacing=1.5em,              % Space between columns
+  
+  % Background
+  background=plain,              % plain, shadetb, shadelr
+  bgColorOne=white,
+  bgColorTwo=white,
+  
+  % Borders
+  borderColor=blue!50!black,
+  linewidth=2pt,
+  
+  % Header
+  headerColorOne=blue!70!black,
+  headerColorTwo=blue!60!black,
+  headerFontColor=white,
+  headerheight=0.12\textheight,
+  headershape=roundedright,      % rectangle, rounded, roundedright, roundedleft
+  headershade=plain,             % plain, shadetb, shadelr
+  headerborder=closed,           % open, closed
+  headerfont=\Large\sf\bf,
+  
+  % Boxes
+  boxColorOne=white,
+  boxColorTwo=blue!10,
+  boxshade=plain,
+  textborder=roundedleft,        % none, rectangle, rounded, roundedleft, roundedright
+  
+  % Eye catcher
+  eyecatcher=true
+}
+% ============================================================================
+% HEADER CONTENT
+% ============================================================================
+% Eye Catcher (Left Logo)
+{
+  \includegraphics[height=6em]{logo1.pdf}
+}
+% Title
+{
+  \sf\bf Your Research Title: Concise and Descriptive
+}
+% Authors
+{
+  \vspace{0.3em}
+  Author One\textsuperscript{1}, Author Two\textsuperscript{2}, \underline{Presenting Author}\textsuperscript{1}\\[0.3em]
+  {\small
+  \textsuperscript{1}Department, University Name, City, Country\\
+  \textsuperscript{2}Research Institute Name, City, Country}
+}
+% University Logo (Right)
+{
+  \includegraphics[height=6em]{logo2.pdf}
+}
+
+% ==============================================================================
+% LEFT COLUMN
+% ==============================================================================
+
+\headerbox{Introduction}{name=intro,column=0,row=0}{
+  \textbf{Background}
+  
+  Brief context establishing the importance of your research area (1-2 sentences).
+  
+  \vspace{0.3cm}
+  
+  \textbf{Problem Statement}
+  
+  What gap or challenge does your work address? (1-2 sentences)
+  
+  \vspace{0.3cm}
+  
+  \textbf{Objective}
+  
+  Clear statement of your research goal (1 sentence).
+}
+
+\headerbox{Methods}{name=methods,column=0,below=intro}{
+  \textbf{Study Design}
+  \begin{itemize}
+    \item Experimental approach or study type
+    \item Sample: n = X participants/samples
+    \item Key procedures
+  \end{itemize}
+  
+  \vspace{0.3cm}
+  
+  \textbf{Analysis}
+  \begin{itemize}
+    \item Statistical methods
+    \item Software: R 4.3, Python 3.10
+    \item Significance: p < 0.05
+  \end{itemize}
+  
+  \vspace{0.3cm}
+  
+  \begin{center}
+    \includegraphics[width=0.9\linewidth]{methods_flowchart.pdf}
+  \end{center}
+}
+
+% ==============================================================================
+% MIDDLE COLUMN (SPANS 2 COLUMNS FOR LARGE RESULT)
+% ==============================================================================
+
+\headerbox{Results: Main Finding}{name=results1,column=1,row=0,span=2}{
+  Brief description of your primary result. What is the key observation?
+  
+  \vspace{0.3cm}
+  
+  \begin{center}
+    \includegraphics[width=0.95\linewidth]{figure1.pdf}
+  \end{center}
+  
+  \textbf{Figure 1:} Descriptive caption explaining the main result. Include statistics (Mean ± SD, n=X, **p<0.01).
+}
+
+% ==============================================================================
+% MIDDLE COLUMN (CONTINUES BELOW)
+% ==============================================================================
+
+\headerbox{Results: Finding 2}{name=results2,column=1,below=results1}{
+  Brief description of second key result.
+  
+  \begin{center}
+    \includegraphics[width=0.9\linewidth]{figure2.pdf}
+  \end{center}
+  
+  \textbf{Figure 2:} Supporting result or comparison.
+}
+
+% ==============================================================================
+% RIGHT COLUMN
+% ==============================================================================
+
+\headerbox{Results: Finding 3}{name=results3,column=2,below=results1}{
+  Brief description of third result or validation.
+  
+  \begin{center}
+    \includegraphics[width=0.9\linewidth]{figure3.pdf}
+  \end{center}
+  
+  \textbf{Figure 3:} Additional finding.
+}
+
+% ==============================================================================
+% BOTTOM ROW (SPANS ALL COLUMNS)
+% ==============================================================================
+
+\headerbox{Conclusions}{name=conclusions,column=0,span=2,above=bottom}{
+  \begin{multicols}{2}
+    \textbf{Key Findings}
+    \begin{itemize}
+      \item Main conclusion 1 with significance
+      \item Main conclusion 2 with impact
+      \item Main conclusion 3 with implications
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    
+    \textbf{Limitations}
+    \begin{itemize}
+      \item Study constraints
+      \item Interpretation context
+    \end{itemize}
+    
+    \columnbreak
+    
+    \textbf{Future Directions}
+    \begin{itemize}
+      \item Ongoing studies
+      \item Broader applications
+      \item Next research questions
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    
+    \textbf{Clinical/Practical Implications}
+    \begin{itemize}
+      \item Real-world applications
+      \item Impact on practice
+    \end{itemize}
+  \end{multicols}
+}
+
+\headerbox{Scan for More}{name=qr,column=2,above=bottom}{
+  \begin{center}
+    \qrcode[height=4cm]{https://doi.org/10.1234/your-paper}\\
+    \vspace{0.3cm}
+    \small Full paper, code \& data
+  \end{center}
+}
+
+% ==============================================================================
+% FOOTER (FULL WIDTH AT BOTTOM)
+% ==============================================================================
+
+\headerbox{}{name=footer,column=0,span=3,above=bottom,below=conclusions}{
+  \footnotesize
+  \begin{multicols}{2}
+    \textbf{References}
+    \begin{enumerate}
+      \item Author A et al. (2023). Title. \textit{Journal}, 10(2), 123-145.
+      \item Author B et al. (2024). Title. \textit{Conference}.
+      \item Author C et al. (2022). Title. \textit{Journal}, 15(3), 456-478.
+    \end{enumerate}
+    
+    \columnbreak
+    
+    \textbf{Acknowledgments}
+    
+    Funded by Grant Agency (Grant \#12345). Thanks to collaborators at Institution X.
+    
+    \vspace{0.3cm}
+    
+    \textbf{Contact:} presenter.email@university.edu | labname.university.edu
+  \end{multicols}
+}
+
+\end{poster}
+
+\end{document}
+

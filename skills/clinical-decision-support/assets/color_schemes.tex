@@ -1,0 +1,149 @@
+% Clinical Decision Support Color Schemes
+% For use in LaTeX documents
+
+% ============================================================================
+% PRIMARY THEME COLORS
+% ============================================================================
+
+% Header and structural elements
+\definecolor{headerblue}{RGB}{0,102,204}        % Section headers, titles
+\definecolor{highlightgray}{RGB}{240,240,240}   % Background boxes
+
+% ============================================================================
+% RECOMMENDATION STRENGTH COLORS
+% ============================================================================
+
+% Strong recommendations (benefits clearly outweigh risks)
+\definecolor{stronggreen}{RGB}{0,153,76}        % Grade 1A, 1B
+\definecolor{strongdark}{RGB}{0,120,60}         % Darker variant for emphasis
+
+% Conditional recommendations (trade-offs exist)
+\definecolor{conditionalyellow}{RGB}{255,193,7} % Grade 2A, 2B, 2C
+\definecolor{conditionalamber}{RGB}{255,160,0}  % Darker variant
+
+% Research/Investigational (insufficient evidence)
+\definecolor{researchblue}{RGB}{33,150,243}     % Clinical trials
+\definecolor{researchdark}{RGB}{25,118,210}     % Darker variant
+
+% Not recommended / Contraindicated
+\definecolor{warningred}{RGB}{204,0,0}          % Strong recommendation against
+\definecolor{dangerred}{RGB}{220,20,60}         % Critical warnings, urgent actions
+
+% ============================================================================
+% URGENCY LEVELS (Clinical Pathways)
+% ============================================================================
+
+\definecolor{urgentred}{RGB}{220,20,60}         % Immediate action (<1 hour)
+\definecolor{semiurgent}{RGB}{255,152,0}        % Action within 24 hours  
+\definecolor{routineblue}{RGB}{100,181,246}     % Routine care (>24 hours)
+\definecolor{actiongreen}{RGB}{0,153,76}        % Standard interventions
+
+% ============================================================================
+% BIOMARKER CATEGORIES
+% ============================================================================
+
+% Alteration types
+\definecolor{mutationred}{RGB}{244,67,54}       % Point mutations, SNVs
+\definecolor{amplificationblue}{RGB}{33,150,243} % Copy number gains
+\definecolor{deletionpurple}{RGB}{156,39,176}   % Copy number losses
+\definecolor{fusionpurple}{RGB}{156,39,176}     % Gene fusions/rearrangements
+\definecolor{expressionorange}{RGB}{255,152,0}  % Expression alterations
+
+% Actionability tiers
+\definecolor{tier1green}{RGB}{0,153,76}         % FDA-approved therapy
+\definecolor{tier2orange}{RGB}{255,152,0}       % Clinical trial/off-label
+\definecolor{tier3gray}{RGB}{158,158,158}       % VUS, no action
+
+% ============================================================================
+% STATISTICAL SIGNIFICANCE
+% ============================================================================
+
+\definecolor{significant}{RGB}{0,153,76}        % p < 0.05, statistically significant
+\definecolor{trending}{RGB}{255,193,7}          % p = 0.05-0.10, trending
+\definecolor{nonsignificant}{RGB}{158,158,158}  % p > 0.10, not significant
+
+% ============================================================================
+% OUTCOME CATEGORIES
+% ============================================================================
+
+% Response assessment (RECIST)
+\definecolor{completeresponse}{RGB}{0,153,76}   % CR (complete response)
+\definecolor{partialresponse}{RGB}{76,175,80}   % PR (partial response)
+\definecolor{stabledisease}{RGB}{255,193,7}     % SD (stable disease)
+\definecolor{progressivedisease}{RGB}{244,67,54} % PD (progressive disease)
+
+% Survival outcomes
+\definecolor{survivedgreen}{RGB}{0,153,76}      % Patient alive
+\definecolor{eventred}{RGB}{244,67,54}          % Event occurred (death, progression)
+\definecolor{censoredgray}{RGB}{158,158,158}    % Censored observation
+
+% ============================================================================
+% ADVERSE EVENT SEVERITY (CTCAE)
+% ============================================================================
+
+\definecolor{grade1}{RGB}{255,235,59}           % Mild
+\definecolor{grade2}{RGB}{255,193,7}            % Moderate
+\definecolor{grade3}{RGB}{255,152,0}            % Severe
+\definecolor{grade4}{RGB}{244,67,54}            % Life-threatening
+\definecolor{grade5}{RGB}{198,40,40}            % Fatal
+
+% ============================================================================
+% COLORBLIND-SAFE PALETTE (Okabe-Ito)
+% ============================================================================
+% Use these for graphs/figures to ensure accessibility
+
+\definecolor{okabe1}{RGB}{230,159,0}            % Orange
+\definecolor{okabe2}{RGB}{86,180,233}           % Sky blue
+\definecolor{okabe3}{RGB}{0,158,115}            % Bluish green
+\definecolor{okabe4}{RGB}{240,228,66}           % Yellow
+\definecolor{okabe5}{RGB}{0,114,178}            % Blue
+\definecolor{okabe6}{RGB}{213,94,0}             % Vermillion
+\definecolor{okabe7}{RGB}{204,121,167}          % Reddish purple
+
+% ============================================================================
+% USAGE EXAMPLES
+% ============================================================================
+
+% Example 1: Strong recommendation box
+% \begin{tcolorbox}[enhanced,colback=stronggreen!10,colframe=stronggreen,
+%   title={\textbf{STRONG RECOMMENDATION} \hfill \textbf{GRADE: 1A}}]
+%   We recommend osimertinib for EGFR-mutated NSCLC...
+% \end{tcolorbox}
+
+% Example 2: Conditional recommendation box
+% \begin{tcolorbox}[enhanced,colback=conditionalyellow!10,colframe=conditionalyellow,
+%   title={\textbf{CONDITIONAL RECOMMENDATION} \hfill \textbf{GRADE: 2B}}]
+%   We suggest considering maintenance therapy...
+% \end{tcolorbox}
+
+% Example 3: Biomarker alteration
+% \colorbox{mutationred!60}{\textcolor{white}{\textbf{MUTATION}}}
+
+% Example 4: Statistical significance in table
+% \cellcolor{significant!20} p < 0.001
+
+% Example 5: Adverse event severity
+% \textcolor{grade3}{Grade 3} or \colorbox{grade3!30}{Grade 3}
+
+% ============================================================================
+% ACCESSIBILITY NOTES
+% ============================================================================
+
+% 1. Always use sufficient color contrast (4.5:1 ratio for normal text)
+% 2. Do not rely on color alone - use symbols/text as well
+% 3. Test in grayscale to ensure readability
+% 4. Use Okabe-Ito palette for colorblind accessibility in figures
+% 5. Add text labels to colored boxes ("STRONG", "CONDITIONAL", etc.)
+
+% ============================================================================
+% STYLE CONSISTENCY
+% ============================================================================
+
+% Font: Helvetica (sans-serif) for clinical documents
+% Margins: 0.5 inches for compact professional appearance
+% Font sizes: 10pt body, 11pt subsections, 12-14pt headers
+% Line spacing: Compact (minimal whitespace for dense information)
+% Boxes: tcolorbox with rounded corners, colored backgrounds at 10-20% opacity
+
+% End of color scheme definitions
+
