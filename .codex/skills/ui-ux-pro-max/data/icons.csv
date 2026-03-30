@@ -1,0 +1,101 @@
+No,Category,Icon Name,Keywords,Library,Import Code,Usage,Best For,Style
+1,Navigation,menu,hamburger menu navigation toggle bars,Lucide,import { Menu } from 'lucide-react',<Menu />,Mobile navigation drawer toggle sidebar,Outline
+2,Navigation,arrow-left,back previous return navigate,Lucide,import { ArrowLeft } from 'lucide-react',<ArrowLeft />,Back button breadcrumb navigation,Outline
+3,Navigation,arrow-right,next forward continue navigate,Lucide,import { ArrowRight } from 'lucide-react',<ArrowRight />,Forward button next step CTA,Outline
+4,Navigation,chevron-down,dropdown expand accordion select,Lucide,import { ChevronDown } from 'lucide-react',<ChevronDown />,Dropdown toggle accordion header,Outline
+5,Navigation,chevron-up,collapse close accordion minimize,Lucide,import { ChevronUp } from 'lucide-react',<ChevronUp />,Accordion collapse minimize,Outline
+6,Navigation,home,homepage main dashboard start,Lucide,import { Home } from 'lucide-react',<Home />,Home navigation main page,Outline
+7,Navigation,x,close cancel dismiss remove exit,Lucide,import { X } from 'lucide-react',<X />,Modal close dismiss button,Outline
+8,Navigation,external-link,open new tab external link,Lucide,import { ExternalLink } from 'lucide-react',<ExternalLink />,External link indicator,Outline
+9,Action,plus,add create new insert,Lucide,import { Plus } from 'lucide-react',<Plus />,Add button create new item,Outline
+10,Action,minus,remove subtract decrease delete,Lucide,import { Minus } from 'lucide-react',<Minus />,Remove item quantity decrease,Outline
+11,Action,trash-2,delete remove discard bin,Lucide,import { Trash2 } from 'lucide-react',<Trash2 />,Delete action destructive,Outline
+12,Action,edit,pencil modify change update,Lucide,import { Edit } from 'lucide-react',<Edit />,Edit button modify content,Outline
+13,Action,save,disk store persist save,Lucide,import { Save } from 'lucide-react',<Save />,Save button persist changes,Outline
+14,Action,download,export save file download,Lucide,import { Download } from 'lucide-react',<Download />,Download file export,Outline
+15,Action,upload,import file attach upload,Lucide,import { Upload } from 'lucide-react',<Upload />,Upload file import,Outline
+16,Action,copy,duplicate clipboard paste,Lucide,import { Copy } from 'lucide-react',<Copy />,Copy to clipboard,Outline
+17,Action,share,social distribute send,Lucide,import { Share } from 'lucide-react',<Share />,Share button social,Outline
+18,Action,search,find lookup filter query,Lucide,import { Search } from 'lucide-react',<Search />,Search input bar,Outline
+19,Action,filter,sort refine narrow options,Lucide,import { Filter } from 'lucide-react',<Filter />,Filter dropdown sort,Outline
+20,Action,settings,gear cog preferences config,Lucide,import { Settings } from 'lucide-react',<Settings />,Settings page configuration,Outline
+21,Status,check,success done complete verified,Lucide,import { Check } from 'lucide-react',<Check />,Success state checkmark,Outline
+22,Status,check-circle,success verified approved complete,Lucide,import { CheckCircle } from 'lucide-react',<CheckCircle />,Success badge verified,Outline
+23,Status,x-circle,error failed cancel rejected,Lucide,import { XCircle } from 'lucide-react',<XCircle />,Error state failed,Outline
+24,Status,alert-triangle,warning caution attention danger,Lucide,import { AlertTriangle } from 'lucide-react',<AlertTriangle />,Warning message caution,Outline
+25,Status,alert-circle,info notice information help,Lucide,import { AlertCircle } from 'lucide-react',<AlertCircle />,Info notice alert,Outline
+26,Status,info,information help tooltip details,Lucide,import { Info } from 'lucide-react',<Info />,Information tooltip help,Outline
+27,Status,loader,loading spinner processing wait,Lucide,import { Loader } from 'lucide-react',<Loader className="animate-spin" />,Loading state spinner,Outline
+28,Status,clock,time schedule pending wait,Lucide,import { Clock } from 'lucide-react',<Clock />,Pending time schedule,Outline
+29,Communication,mail,email message inbox letter,Lucide,import { Mail } from 'lucide-react',<Mail />,Email contact inbox,Outline
+30,Communication,message-circle,chat comment bubble conversation,Lucide,import { MessageCircle } from 'lucide-react',<MessageCircle />,Chat comment message,Outline
+31,Communication,phone,call mobile telephone contact,Lucide,import { Phone } from 'lucide-react',<Phone />,Phone contact call,Outline
+32,Communication,send,submit dispatch message airplane,Lucide,import { Send } from 'lucide-react',<Send />,Send message submit,Outline
+33,Communication,bell,notification alert ring reminder,Lucide,import { Bell } from 'lucide-react',<Bell />,Notification bell alert,Outline
+34,User,user,profile account person avatar,Lucide,import { User } from 'lucide-react',<User />,User profile account,Outline
+35,User,users,team group people members,Lucide,import { Users } from 'lucide-react',<Users />,Team group members,Outline
+36,User,user-plus,add invite new member,Lucide,import { UserPlus } from 'lucide-react',<UserPlus />,Add user invite,Outline
+37,User,log-in,signin authenticate enter,Lucide,import { LogIn } from 'lucide-react',<LogIn />,Login signin,Outline
+38,User,log-out,signout exit leave logout,Lucide,import { LogOut } from 'lucide-react',<LogOut />,Logout signout,Outline
+39,Media,image,photo picture gallery thumbnail,Lucide,import { Image } from 'lucide-react',<Image />,Image photo gallery,Outline
+40,Media,video,movie film play record,Lucide,import { Video } from 'lucide-react',<Video />,Video player media,Outline
+41,Media,play,start video audio media,Lucide,import { Play } from 'lucide-react',<Play />,Play button video audio,Outline
+42,Media,pause,stop halt video audio,Lucide,import { Pause } from 'lucide-react',<Pause />,Pause button media,Outline
+43,Media,volume-2,sound audio speaker music,Lucide,import { Volume2 } from 'lucide-react',<Volume2 />,Volume audio sound,Outline
+44,Media,mic,microphone record voice audio,Lucide,import { Mic } from 'lucide-react',<Mic />,Microphone voice record,Outline
+45,Media,camera,photo capture snapshot picture,Lucide,import { Camera } from 'lucide-react',<Camera />,Camera photo capture,Outline
+46,Commerce,shopping-cart,cart checkout basket buy,Lucide,import { ShoppingCart } from 'lucide-react',<ShoppingCart />,Shopping cart e-commerce,Outline
+47,Commerce,shopping-bag,purchase buy store bag,Lucide,import { ShoppingBag } from 'lucide-react',<ShoppingBag />,Shopping bag purchase,Outline
+48,Commerce,credit-card,payment card checkout stripe,Lucide,import { CreditCard } from 'lucide-react',<CreditCard />,Payment credit card,Outline
+49,Commerce,dollar-sign,money price currency cost,Lucide,import { DollarSign } from 'lucide-react',<DollarSign />,Price money currency,Outline
+50,Commerce,tag,label price discount sale,Lucide,import { Tag } from 'lucide-react',<Tag />,Price tag label,Outline
+51,Commerce,gift,present reward bonus offer,Lucide,import { Gift } from 'lucide-react',<Gift />,Gift reward offer,Outline
+52,Commerce,percent,discount sale offer promo,Lucide,import { Percent } from 'lucide-react',<Percent />,Discount percentage sale,Outline
+53,Data,bar-chart,analytics statistics graph metrics,Lucide,import { BarChart } from 'lucide-react',<BarChart />,Bar chart analytics,Outline
+54,Data,pie-chart,statistics distribution breakdown,Lucide,import { PieChart } from 'lucide-react',<PieChart />,Pie chart distribution,Outline
+55,Data,trending-up,growth increase positive trend,Lucide,import { TrendingUp } from 'lucide-react',<TrendingUp />,Growth trend positive,Outline
+56,Data,trending-down,decline decrease negative trend,Lucide,import { TrendingDown } from 'lucide-react',<TrendingDown />,Decline trend negative,Outline
+57,Data,activity,pulse heartbeat monitor live,Lucide,import { Activity } from 'lucide-react',<Activity />,Activity monitor pulse,Outline
+58,Data,database,storage server data backend,Lucide,import { Database } from 'lucide-react',<Database />,Database storage,Outline
+59,Files,file,document page paper doc,Lucide,import { File } from 'lucide-react',<File />,File document,Outline
+60,Files,file-text,document text page article,Lucide,import { FileText } from 'lucide-react',<FileText />,Text document article,Outline
+61,Files,folder,directory organize group files,Lucide,import { Folder } from 'lucide-react',<Folder />,Folder directory,Outline
+62,Files,folder-open,expanded browse files view,Lucide,import { FolderOpen } from 'lucide-react',<FolderOpen />,Open folder browse,Outline
+63,Files,paperclip,attachment attach file link,Lucide,import { Paperclip } from 'lucide-react',<Paperclip />,Attachment paperclip,Outline
+64,Files,link,url hyperlink chain connect,Lucide,import { Link } from 'lucide-react',<Link />,Link URL hyperlink,Outline
+65,Files,clipboard,paste copy buffer notes,Lucide,import { Clipboard } from 'lucide-react',<Clipboard />,Clipboard paste,Outline
+66,Layout,grid,tiles gallery layout dashboard,Lucide,import { Grid } from 'lucide-react',<Grid />,Grid layout gallery,Outline
+67,Layout,list,rows table lines items,Lucide,import { List } from 'lucide-react',<List />,List view rows,Outline
+68,Layout,columns,layout split dual sidebar,Lucide,import { Columns } from 'lucide-react',<Columns />,Column layout split,Outline
+69,Layout,maximize,fullscreen expand enlarge zoom,Lucide,import { Maximize } from 'lucide-react',<Maximize />,Fullscreen maximize,Outline
+70,Layout,minimize,reduce shrink collapse exit,Lucide,import { Minimize } from 'lucide-react',<Minimize />,Minimize reduce,Outline
+71,Layout,sidebar,panel drawer navigation menu,Lucide,import { Sidebar } from 'lucide-react',<Sidebar />,Sidebar panel,Outline
+72,Social,heart,like love favorite wishlist,Lucide,import { Heart } from 'lucide-react',<Heart />,Like favorite love,Outline
+73,Social,star,rating review favorite bookmark,Lucide,import { Star } from 'lucide-react',<Star />,Star rating favorite,Outline
+74,Social,thumbs-up,like approve agree positive,Lucide,import { ThumbsUp } from 'lucide-react',<ThumbsUp />,Like approve thumb,Outline
+75,Social,thumbs-down,dislike disapprove disagree negative,Lucide,import { ThumbsDown } from 'lucide-react',<ThumbsDown />,Dislike disapprove,Outline
+76,Social,bookmark,save later favorite mark,Lucide,import { Bookmark } from 'lucide-react',<Bookmark />,Bookmark save,Outline
+77,Social,flag,report mark important highlight,Lucide,import { Flag } from 'lucide-react',<Flag />,Flag report,Outline
+78,Device,smartphone,mobile phone device touch,Lucide,import { Smartphone } from 'lucide-react',<Smartphone />,Mobile smartphone,Outline
+79,Device,tablet,ipad device touch screen,Lucide,import { Tablet } from 'lucide-react',<Tablet />,Tablet device,Outline
+80,Device,monitor,desktop screen computer display,Lucide,import { Monitor } from 'lucide-react',<Monitor />,Desktop monitor,Outline
+81,Device,laptop,notebook computer portable device,Lucide,import { Laptop } from 'lucide-react',<Laptop />,Laptop computer,Outline
+82,Device,printer,print document output paper,Lucide,import { Printer } from 'lucide-react',<Printer />,Printer print,Outline
+83,Security,lock,secure password protected private,Lucide,import { Lock } from 'lucide-react',<Lock />,Lock secure,Outline
+84,Security,unlock,open access unsecure public,Lucide,import { Unlock } from 'lucide-react',<Unlock />,Unlock open,Outline
+85,Security,shield,protection security safe guard,Lucide,import { Shield } from 'lucide-react',<Shield />,Shield protection,Outline
+86,Security,key,password access unlock login,Lucide,import { Key } from 'lucide-react',<Key />,Key password,Outline
+87,Security,eye,view show visible password,Lucide,import { Eye } from 'lucide-react',<Eye />,Show password view,Outline
+88,Security,eye-off,hide invisible password hidden,Lucide,import { EyeOff } from 'lucide-react',<EyeOff />,Hide password,Outline
+89,Location,map-pin,location marker place address,Lucide,import { MapPin } from 'lucide-react',<MapPin />,Location pin marker,Outline
+90,Location,map,directions navigate geography location,Lucide,import { Map } from 'lucide-react',<Map />,Map directions,Outline
+91,Location,navigation,compass direction pointer arrow,Lucide,import { Navigation } from 'lucide-react',<Navigation />,Navigation compass,Outline
+92,Location,globe,world international global web,Lucide,import { Globe } from 'lucide-react',<Globe />,Globe world,Outline
+93,Time,calendar,date schedule event appointment,Lucide,import { Calendar } from 'lucide-react',<Calendar />,Calendar date,Outline
+94,Time,refresh-cw,reload sync update refresh,Lucide,import { RefreshCw } from 'lucide-react',<RefreshCw />,Refresh reload,Outline
+95,Time,rotate-ccw,undo back revert history,Lucide,import { RotateCcw } from 'lucide-react',<RotateCcw />,Undo revert,Outline
+96,Time,rotate-cw,redo forward repeat history,Lucide,import { RotateCw } from 'lucide-react',<RotateCw />,Redo forward,Outline
+97,Development,code,develop programming syntax html,Lucide,import { Code } from 'lucide-react',<Code />,Code development,Outline
+98,Development,terminal,console cli command shell,Lucide,import { Terminal } from 'lucide-react',<Terminal />,Terminal console,Outline
+99,Development,git-branch,version control branch merge,Lucide,import { GitBranch } from 'lucide-react',<GitBranch />,Git branch,Outline
+100,Development,github,repository code open source,Lucide,import { Github } from 'lucide-react',<Github />,GitHub repository,Outline
