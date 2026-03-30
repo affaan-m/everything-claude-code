@@ -24,6 +24,7 @@ claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 |-------------|--------|
 | claude-plugins-official | `anthropics/claude-plugins-official` |
 | claude-code-plugins | `anthropics/claude-code` |
+| Everything Claude Code | `affaan-m/everything-claude-code` |
 | Mixedbread-Grep (@mixedbread-ai) | `mixedbread-ai/mgrep` |
 
 ---
@@ -67,7 +68,11 @@ claude plugin install typescript-lsp@claude-plugins-official
 ```bash
 # Add marketplaces
 claude plugin marketplace add https://github.com/anthropics/claude-plugins-official
+claude plugin marketplace add https://github.com/affaan-m/everything-claude-code
 claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
+
+# Install everything-claude-code plugin
+claude plugin install everything-claude-code@everything-claude-code
 
 # Open /plugins and install what you need
 ```

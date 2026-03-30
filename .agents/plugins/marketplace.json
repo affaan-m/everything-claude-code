@@ -7,8 +7,10 @@
     {
       "name": "everything-claude-code",
       "source": {
-        "source": "local",
-        "path": "../.."
+        "source": "github",
+        "owner": "affaan-m",
+        "repo": "everything-claude-code",
+        "path": "./"
       },
       "policy": {
         "installation": "AVAILABLE",

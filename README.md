@@ -220,7 +220,7 @@ For manual install instructions see the README in the `rules/` folder. When copy
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**That's it!** You now have access to 30 agents, 135 skills, and 60 commands.
+**That's it!** You now have access to 30 agents, 136 skills, and 60 commands.
 
 ### Multi-model commands require additional setup
 
@@ -1111,7 +1111,7 @@ The configuration is automatically detected from `.opencode/opencode.json`.
 |---------|-------------|----------|--------|
 | Agents | PASS: 30 agents | PASS: 12 agents | **Claude Code leads** |
 | Commands | PASS: 60 commands | PASS: 31 commands | **Claude Code leads** |
-| Skills | PASS: 135 skills | PASS: 37 skills | **Claude Code leads** |
+| Skills | PASS: 136 skills | PASS: 37 skills | **Claude Code leads** |
 | Hooks | PASS: 8 event types | PASS: 11 events | **OpenCode has more!** |
 | Rules | PASS: 29 rules | PASS: 13 instructions | **Claude Code leads** |
 | MCP Servers | PASS: 14 servers | PASS: Full | **Full parity** |
