@@ -61,6 +61,10 @@ function dedupeRecentSessions(searchDirs) {
  *   **Project:** my-project
  *   **Worktree:** /path/to/project
  *
+ * This function reads each session file once, caching its content, and
+ * returns both the selected session object and its already-read content
+ * to avoid duplicate I/O in the caller.
+ *
  * Priority (highest to lowest):
  *   1. Exact worktree (cwd) match — most recent
  *   2. Same project name match — most recent
@@ -68,13 +72,27 @@ function dedupeRecentSessions(searchDirs) {
  *
  * Sessions are already sorted newest-first, so the first match in each
  * category wins.
+ *
+ * @param {Array<Object>} sessions - Deduplicated session list, sorted newest-first.
+ * @param {string} cwd - Current working directory (process.cwd()).
+ * @param {string} currentProject - Current project name from getProjectName().
+ * @returns {{ session: Object, content: string, matchReason: string } | null}
+ *   The best matching session with its cached content and match reason,
+ *   or null if the sessions array is empty or all files are unreadable.
  */
 function selectMatchingSession(sessions, cwd, currentProject) {
+  if (sessions.length === 0) return null;
+
   let projectMatch = null;
+  let projectMatchContent = null;
+  let fallbackContent = null;
 
   for (const session of sessions) {
     const content = readFile(session.path);
     if (!content) continue;
+
+    // Cache first readable content for fallback
+    if (!fallbackContent) fallbackContent = content;
 
     // Extract **Worktree:** field
     const worktreeMatch = content.match(/\*\*Worktree:\*\*\s*(.+)$/m);
@@ -82,8 +100,7 @@ function selectMatchingSession(sessions, cwd, currentProject) {
 
     // Exact worktree match — best possible, return immediately
     if (sessionWorktree && sessionWorktree === cwd) {
-      session._matchReason = 'worktree';
-      return session;
+      return { session, content, matchReason: 'worktree' };
     }
 
     // Project name match — keep searching for a worktree match
@@ -92,16 +109,22 @@ function selectMatchingSession(sessions, cwd, currentProject) {
       const sessionProject = projectFieldMatch ? projectFieldMatch[1].trim() : '';
       if (sessionProject && sessionProject === currentProject) {
         projectMatch = session;
-        projectMatch._matchReason = 'project';
+        projectMatchContent = content;
       }
     }
   }
 
-  if (projectMatch) return projectMatch;
+  if (projectMatch) {
+    return { session: projectMatch, content: projectMatchContent, matchReason: 'project' };
+  }
 
-  // Fallback: most recent session (original behavior)
-  sessions[0]._matchReason = 'recency-fallback';
-  return sessions[0];
+  // Fallback: most recent session with readable content (original behavior)
+  if (fallbackContent) {
+    return { session: sessions[0], content: fallbackContent, matchReason: 'recency-fallback' };
+  }
+
+  log('[SessionStart] All session files were unreadable');
+  return null;
 }
 
 async function main() {
@@ -125,14 +148,18 @@ async function main() {
     const cwd = process.cwd();
     const currentProject = getProjectName() || '';
 
-    const selected = selectMatchingSession(recentSessions, cwd, currentProject);
-    log(`[SessionStart] Selected: ${selected.path} (match: ${selected._matchReason})`);
+    const result = selectMatchingSession(recentSessions, cwd, currentProject);
 
-    // Read and inject the selected session content into Claude's context
-    const content = stripAnsi(readFile(selected.path));
-    if (content && !content.includes('[Session context goes here]')) {
-      // Only inject if the session has actual content (not the blank template)
-      additionalContextParts.push(`Previous session summary:\n${content}`);
+    if (result) {
+      log(`[SessionStart] Selected: ${result.session.path} (match: ${result.matchReason})`);
+
+      // Use the already-read content from selectMatchingSession (no duplicate I/O)
+      const content = stripAnsi(result.content);
+      if (content && !content.includes('[Session context goes here]')) {
+        additionalContextParts.push(`Previous session summary:\n${content}`);
+      }
+    } else {
+      log('[SessionStart] No matching session found');
     }
   }
 
