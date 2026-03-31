@@ -59,7 +59,10 @@ test('dmux adapter normalizes orchestration snapshots into canonical form', () =
   const recordingDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-session-recordings-'));
 
   try {
+    const recentUpdated = new Date(Date.now() - 60000).toISOString();
+
     const adapter = createDmuxTmuxAdapter({
+      loadStateStoreImpl: () => null,
       collectSessionSnapshotImpl: () => ({
         sessionName: 'workflow-visual-proof',
         coordinationDir: '/tmp/.claude/orchestration/workflow-visual-proof',
@@ -85,7 +88,7 @@ test('dmux adapter normalizes orchestration snapshots into canonical form', () =
           workerDir: '/tmp/.claude/orchestration/workflow-visual-proof/seed-check',
           status: {
             state: 'running',
-            updated: '2026-03-13T00:00:00Z',
+            updated: recentUpdated,
             branch: 'feature/seed-check',
             worktree: '/tmp/worktree',
             taskFile: '/tmp/task.md',
@@ -125,6 +128,7 @@ test('dmux adapter normalizes orchestration snapshots into canonical form', () =
     assert.strictEqual(snapshot.session.state, 'active');
     assert.strictEqual(snapshot.session.sourceTarget.type, 'session');
     assert.strictEqual(snapshot.aggregates.workerCount, 1);
+    assert.strictEqual(snapshot.workers[0].health, 'healthy');
     assert.strictEqual(snapshot.workers[0].runtime.kind, 'tmux-pane');
     assert.strictEqual(snapshot.workers[0].outputs.remainingRisks[0], 'No screenshot yet');
     assert.strictEqual(persisted.latest.session.state, 'active');
@@ -140,6 +144,7 @@ test('dmux adapter marks finished sessions as completed and records history', ()
 
   try {
     const adapter = createDmuxTmuxAdapter({
+      loadStateStoreImpl: () => null,
       collectSessionSnapshotImpl: () => ({
         sessionName: 'workflow-visual-proof',
         coordinationDir: '/tmp/.claude/orchestration/workflow-visual-proof',
@@ -213,6 +218,8 @@ test('dmux adapter marks finished sessions as completed and records history', ()
 
     assert.strictEqual(snapshot.session.state, 'completed');
     assert.strictEqual(snapshot.aggregates.states.completed, 2);
+    assert.strictEqual(snapshot.workers[0].health, 'healthy');
+    assert.strictEqual(snapshot.workers[1].health, 'healthy');
     assert.strictEqual(persisted.latest.session.state, 'completed');
     assert.strictEqual(persisted.history.length, 1);
   } finally {
@@ -225,6 +232,7 @@ test('fallback recording does not append duplicate history entries for unchanged
 
   try {
     const adapter = createDmuxTmuxAdapter({
+      loadStateStoreImpl: () => null,
       collectSessionSnapshotImpl: () => ({
         sessionName: 'workflow-visual-proof',
         coordinationDir: '/tmp/.claude/orchestration/workflow-visual-proof',
@@ -314,7 +322,10 @@ test('claude-history adapter loads the latest recorded session', () => {
 
   try {
     withHome(homeDir, () => {
-      const adapter = createClaudeHistoryAdapter({ recordingDir });
+      const adapter = createClaudeHistoryAdapter({
+        loadStateStoreImpl: () => null,
+        recordingDir
+      });
       const snapshot = adapter.open('claude:latest').getSnapshot();
       const recordingPath = getFallbackSessionRecordingPath(snapshot, { recordingDir });
       const persisted = JSON.parse(fs.readFileSync(recordingPath, 'utf8'));
@@ -361,6 +372,7 @@ test('adapter registry routes plan files to dmux and explicit claude targets to 
       const registry = createAdapterRegistry({
         adapters: [
           createDmuxTmuxAdapter({
+            loadStateStoreImpl: () => null,
             collectSessionSnapshotImpl: () => ({
               sessionName: 'workflow-visual-proof',
               coordinationDir: path.join(repoRoot, '.claude', 'orchestration', 'workflow-visual-proof'),
@@ -374,7 +386,7 @@ test('adapter registry routes plan files to dmux and explicit claude targets to 
               workers: []
             })
           }),
-          createClaudeHistoryAdapter()
+          createClaudeHistoryAdapter({ loadStateStoreImpl: () => null })
         ]
       });
 
@@ -412,6 +424,7 @@ test('adapter registry resolves structured target types into the correct adapter
       const registry = createAdapterRegistry({
         adapters: [
           createDmuxTmuxAdapter({
+            loadStateStoreImpl: () => null,
             collectSessionSnapshotImpl: () => ({
               sessionName: 'workflow-typed-proof',
               coordinationDir: path.join(repoRoot, '.claude', 'orchestration', 'workflow-typed-proof'),
@@ -425,7 +438,7 @@ test('adapter registry resolves structured target types into the correct adapter
               workers: []
             })
           }),
-          createClaudeHistoryAdapter()
+          createClaudeHistoryAdapter({ loadStateStoreImpl: () => null })
         ]
       });
 
@@ -514,6 +527,7 @@ test('persistence only falls back when the state-store module is missing', () =>
       id: 'a1b2c3d4',
       label: 'Session Review',
       state: 'recorded',
+      health: 'healthy',
       branch: null,
       worktree: null,
       runtime: {
@@ -541,6 +555,9 @@ test('persistence only falls back when the state-store module is missing', () =>
       workerCount: 1,
       states: {
         recorded: 1
+      },
+      healths: {
+        healthy: 1
       }
     }
   };

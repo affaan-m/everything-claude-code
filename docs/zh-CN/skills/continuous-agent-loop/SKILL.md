@@ -13,11 +13,11 @@ origin: ECC
 ```text
 Start
   |
-  +-- Need strict CI/PR control? -- yes --> continuous-pr
-  |                                    
-  +-- Need RFC decomposition? -- yes --> rfc-dag
+  +-- 需要严格的 CI/PR 控制？ -- yes --> continuous-pr
   |
-  +-- Need exploratory parallel generation? -- yes --> infinite
+  +-- 需要 RFC 分解？ -- yes --> rfc-dag
+  |
+  +-- 需要探索性并行生成？ -- yes --> infinite
   |
   +-- default --> sequential
 ```

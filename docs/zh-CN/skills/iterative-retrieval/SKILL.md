@@ -38,15 +38,15 @@ origin: ECC
 ┌─────────────────────────────────────────────┐
 │                                             │
 │   ┌──────────┐      ┌──────────┐            │
-│   │ DISPATCH │─────▶│ EVALUATE │            │
+│   │  调度    │─────│  评估    │            │
 │   └──────────┘      └──────────┘            │
 │        ▲                  │                 │
 │        │                  ▼                 │
 │   ┌──────────┐      ┌──────────┐            │
-│   │   LOOP   │◀─────│  REFINE  │            │
+│   │  循环    │─────│  优化    │            │
 │   └──────────┘      └──────────┘            │
 │                                             │
-│        Max 3 cycles, then proceed           │
+│        最多3次循环，然后继续                 │
 └─────────────────────────────────────────────┘
 ```
 
@@ -148,42 +148,42 @@ async function iterativeRetrieve(task, maxCycles = 3) {
 ### 示例 1：错误修复上下文
 
 ```
-Task: "Fix the authentication token expiry bug"
+任务："修复身份验证令牌过期错误"
 
-Cycle 1:
-  DISPATCH: Search for "token", "auth", "expiry" in src/**
-  EVALUATE: Found auth.ts (0.9), tokens.ts (0.8), user.ts (0.3)
-  REFINE: Add "refresh", "jwt" keywords; exclude user.ts
+循环 1:
+  分发：在 src/** 中搜索 "token"、"auth"、"expiry"
+  评估：找到 auth.ts (0.9)、tokens.ts (0.8)、user.ts (0.3)
+  优化：添加 "refresh"、"jwt" 关键词；排除 user.ts
 
-Cycle 2:
-  DISPATCH: Search refined terms
-  EVALUATE: Found session-manager.ts (0.95), jwt-utils.ts (0.85)
-  REFINE: Sufficient context (2 high-relevance files)
+循环 2:
+  分发：搜索优化后的关键词
+  评估：找到 session-manager.ts (0.95)、jwt-utils.ts (0.85)
+  优化：上下文已充分（2 个高相关文件）
 
-Result: auth.ts, tokens.ts, session-manager.ts, jwt-utils.ts
+结果：auth.ts、tokens.ts、session-manager.ts、jwt-utils.ts
 ```
 
 ### 示例 2：功能实现
 
 ```
-Task: "Add rate limiting to API endpoints"
+任务："为API端点添加速率限制"
 
-Cycle 1:
-  DISPATCH: Search "rate", "limit", "api" in routes/**
-  EVALUATE: No matches - codebase uses "throttle" terminology
-  REFINE: Add "throttle", "middleware" keywords
+周期 1：
+  分发：在 routes/** 中搜索 "rate"、"limit"、"api"
+  评估：无匹配项 - 代码库使用 "throttle" 术语
+  优化：添加 "throttle"、"middleware" 关键词
 
-Cycle 2:
-  DISPATCH: Search refined terms
-  EVALUATE: Found throttle.ts (0.9), middleware/index.ts (0.7)
-  REFINE: Need router patterns
+周期 2：
+  分发：搜索优化后的术语
+  评估：找到 throttle.ts (0.9)、middleware/index.ts (0.7)
+  优化：需要路由模式
 
-Cycle 3:
-  DISPATCH: Search "router", "express" patterns
-  EVALUATE: Found router-setup.ts (0.8)
-  REFINE: Sufficient context
+周期 3：
+  分发：搜索 "router"、"express" 模式
+  评估：找到 router-setup.ts (0.8)
+  优化：上下文已足够
 
-Result: throttle.ts, middleware/index.ts, router-setup.ts
+结果：throttle.ts、middleware/index.ts、router-setup.ts
 ```
 
 ## 与智能体集成

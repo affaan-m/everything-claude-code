@@ -22,24 +22,24 @@ Plankton（作者：@alxfazio）的集成参考，这是一个用于 Claude Code
 每次 Claude Code 编辑或写入文件时，Plankton 的 `multi_linter.sh` PostToolUse 钩子都会运行：
 
 ```
-Phase 1: Auto-Format (Silent)
-├─ Runs formatters (ruff format, biome, shfmt, taplo, markdownlint)
-├─ Fixes 40-50% of issues silently
-└─ No output to main agent
+阶段 1：自动格式化（静默）
+├─ 运行格式化工具（ruff format、biome、shfmt、taplo、markdownlint）
+├─ 静默修复 40-50% 的问题
+└─ 无输出至主代理
 
-Phase 2: Collect Violations (JSON)
-├─ Runs linters and collects unfixable violations
-├─ Returns structured JSON: {line, column, code, message, linter}
-└─ Still no output to main agent
+阶段 2：收集违规项（JSON）
+├─ 运行 linter 并收集无法修复的违规项
+├─ 返回结构化 JSON：{line, column, code, message, linter}
+└─ 仍无输出至主代理
 
-Phase 3: Delegate + Verify
-├─ Spawns claude -p subprocess with violations JSON
-├─ Routes to model tier based on violation complexity:
-│   ├─ Haiku: formatting, imports, style (E/W/F codes) — 120s timeout
-│   ├─ Sonnet: complexity, refactoring (C901, PLR codes) — 300s timeout
-│   └─ Opus: type system, deep reasoning (unresolved-attribute) — 600s timeout
-├─ Re-runs Phase 1+2 to verify fixes
-└─ Exit 0 if clean, Exit 2 if violations remain (reported to main agent)
+阶段 3：委托 + 验证
+├─ 生成带有违规项 JSON 的 claude -p 子进程
+├─ 根据违规项复杂度路由至模型层级：
+│   ├─ Haiku：格式化、导入、样式（E/W/F 代码）—— 120 秒超时
+│   ├─ Sonnet：复杂度、重构（C901、PLR 代码）—— 300 秒超时
+│   └─ Opus：类型系统、深度推理（unresolved-attribute）—— 600 秒超时
+├─ 重新运行阶段 1+2 以验证修复
+└─ 若清理完毕则退出码 0，若违规项仍存在则退出码 2（报告至主代理）
 ```
 
 ### 主代理看到的内容

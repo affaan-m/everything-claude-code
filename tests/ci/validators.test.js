@@ -52,6 +52,44 @@ function writeInstallComponentsManifest(testDir, components) {
   });
 }
 
+function stripShebang(source) {
+  let s = source;
+  if (s.charCodeAt(0) === 0xFEFF) s = s.slice(1);
+  if (s.startsWith('#!')) {
+    const nl = s.indexOf('\n');
+    s = nl === -1 ? '' : s.slice(nl + 1);
+  }
+  return s;
+}
+
+/**
+ * Run modified source via a temp file (avoids Windows node -e shebang issues).
+ * The temp file is written inside the repo so require() can resolve node_modules.
+ * @param {string} source - JavaScript source to execute
+ * @returns {{code: number, stdout: string, stderr: string}}
+ */
+function runSourceViaTempFile(source) {
+  const tmpFile = path.join(repoRoot, `.tmp-validator-${Date.now()}-${Math.random().toString(36).slice(2)}.js`);
+  try {
+    fs.writeFileSync(tmpFile, source, 'utf8');
+    const stdout = execFileSync('node', [tmpFile], {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+      timeout: 10000,
+      cwd: repoRoot,
+    });
+    return { code: 0, stdout, stderr: '' };
+  } catch (err) {
+    return {
+      code: err.status || 1,
+      stdout: err.stdout || '',
+      stderr: err.stderr || '',
+    };
+  } finally {
+    try { fs.unlinkSync(tmpFile); } catch (_) { /* ignore cleanup errors */ }
+  }
+}
+
 /**
  * Run a validator script via a wrapper that overrides its directory constant.
  * This allows testing error cases without modifying real project files.
@@ -67,27 +105,14 @@ function runValidatorWithDir(validatorName, dirConstant, overridePath) {
   // Read the validator source, replace the directory constant, and run as a wrapper
   let source = fs.readFileSync(validatorPath, 'utf8');
 
-  // Remove the shebang line
-  source = source.replace(/^#!.*\n/, '');
+  // Remove the shebang line so wrappers also work against CRLF-checked-out files on Windows.
+  source = stripShebang(source);
 
   // Replace the directory constant with our override path
   const dirRegex = new RegExp(`const ${dirConstant} = .*?;`);
   source = source.replace(dirRegex, `const ${dirConstant} = ${JSON.stringify(overridePath)};`);
 
-  try {
-    const stdout = execFileSync('node', ['-e', source], {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-      timeout: 10000,
-    });
-    return { code: 0, stdout, stderr: '' };
-  } catch (err) {
-    return {
-      code: err.status || 1,
-      stdout: err.stdout || '',
-      stderr: err.stderr || '',
-    };
-  }
+  return runSourceViaTempFile(source);
 }
 
 /**
@@ -98,25 +123,12 @@ function runValidatorWithDir(validatorName, dirConstant, overridePath) {
 function runValidatorWithDirs(validatorName, overrides) {
   const validatorPath = path.join(validatorsDir, `${validatorName}.js`);
   let source = fs.readFileSync(validatorPath, 'utf8');
-  source = source.replace(/^#!.*\n/, '');
+  source = stripShebang(source);
   for (const [constant, overridePath] of Object.entries(overrides)) {
     const dirRegex = new RegExp(`const ${constant} = .*?;`);
     source = source.replace(dirRegex, `const ${constant} = ${JSON.stringify(overridePath)};`);
   }
-  try {
-    const stdout = execFileSync('node', ['-e', source], {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-      timeout: 10000,
-    });
-    return { code: 0, stdout, stderr: '' };
-  } catch (err) {
-    return {
-      code: err.status || 1,
-      stdout: err.stdout || '',
-      stderr: err.stderr || '',
-    };
-  }
+  return runSourceViaTempFile(source);
 }
 
 /**
@@ -143,7 +155,7 @@ function runValidator(validatorName) {
 function runCatalogValidator(overrides = {}) {
   const validatorPath = path.join(validatorsDir, 'catalog.js');
   let source = fs.readFileSync(validatorPath, 'utf8');
-  source = source.replace(/^#!.*\n/, '');
+  source = stripShebang(source);
   source = `process.argv.push('--text');\n${source}`;
 
   const resolvedOverrides = {
@@ -158,20 +170,7 @@ function runCatalogValidator(overrides = {}) {
     source = source.replace(dirRegex, `const ${constant} = ${JSON.stringify(overridePath)};`);
   }
 
-  try {
-    const stdout = execFileSync('node', ['-e', source], {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-      timeout: 10000,
-    });
-    return { code: 0, stdout, stderr: '' };
-  } catch (err) {
-    return {
-      code: err.status || 1,
-      stdout: err.stdout || '',
-      stderr: err.stderr || '',
-    };
-  }
+  return runSourceViaTempFile(source);
 }
 
 function writeCatalogFixture(testDir, options = {}) {
@@ -196,7 +195,7 @@ function writeCatalogFixture(testDir, options = {}) {
   fs.writeFileSync(path.join(testDir, 'commands', 'plan.md'), '---\ndescription: Plan\n---\n# Plan');
   fs.writeFileSync(path.join(testDir, 'skills', 'demo-skill', 'SKILL.md'), '---\nname: demo-skill\ndescription: Demo skill\norigin: ECC\n---\n# Demo Skill');
 
-  fs.writeFileSync(readmePath, `Access to ${readmeCounts.agents} agents, ${readmeCounts.skills} skills, and ${readmeCounts.commands} commands.\n| Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |\n|---------|------------|------------|-----------|----------|\n| Agents | ✅ ${readmeCounts.agents} agents | Shared | Shared | 1 |\n| Commands | ✅ ${readmeCounts.commands} commands | Shared | Shared | 1 |\n| Skills | ✅ ${readmeCounts.skills} skills | Shared | Shared | 1 |\n`);
+  fs.writeFileSync(readmePath, `Access to ${readmeCounts.agents} agents, ${readmeCounts.skills} skills, and ${readmeCounts.commands} commands.\n| Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |\n|---------|------------|------------|-----------|----------|\n| Agents | PASS: ${readmeCounts.agents} agents | Shared | Shared | 1 |\n| Commands | PASS: ${readmeCounts.commands} commands | Shared | Shared | 1 |\n| Skills | PASS: ${readmeCounts.skills} skills | Shared | Shared | 1 |\n`);
   fs.writeFileSync(agentsPath, `This is a **production-ready AI coding plugin** providing ${summaryCounts.agents} specialized agents, ${summaryCounts.skills} skills, ${summaryCounts.commands} commands, and automated hook workflows for software development.\n\n\`\`\`\n${structureLines.join('\n')}\n\`\`\`\n`);
 
   return { readmePath, agentsPath };
@@ -212,6 +211,11 @@ function runTests() {
   // validate-agents.js
   // ==========================================
   console.log('validate-agents.js:');
+
+  if (test('strips CRLF shebangs before writing temp wrappers', () => {
+    const source = '#!/usr/bin/env node\r\nconsole.log("ok");';
+    assert.strictEqual(stripShebang(source), 'console.log("ok");');
+  })) passed++; else failed++;
 
   if (test('passes on real project agents', () => {
     const result = runValidator('validate-agents');

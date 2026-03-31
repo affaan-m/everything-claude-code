@@ -103,12 +103,12 @@ c) 影響度別に優先順位付け
 
 **パターン 1: 型推論の失敗**
 ```typescript
-// ❌ エラー: Parameter 'x' implicitly has an 'any' type
+// FAIL: エラー: Parameter 'x' implicitly has an 'any' type
 function add(x, y) {
   return x + y
 }
 
-// ✅ 修正: 型アノテーションを追加
+// PASS: 修正: 型アノテーションを追加
 function add(x: number, y: number): number {
   return x + y
 }
@@ -116,25 +116,25 @@ function add(x: number, y: number): number {
 
 **パターン 2: Null/Undefinedエラー**
 ```typescript
-// ❌ エラー: Object is possibly 'undefined'
+// FAIL: エラー: Object is possibly 'undefined'
 const name = user.name.toUpperCase()
 
-// ✅ 修正: オプショナルチェーン
+// PASS: 修正: オプショナルチェーン
 const name = user?.name?.toUpperCase()
 
-// ✅ または: Nullチェック
+// PASS: または: Nullチェック
 const name = user && user.name ? user.name.toUpperCase() : ''
 ```
 
 **パターン 3: プロパティの欠落**
 ```typescript
-// ❌ エラー: Property 'age' does not exist on type 'User'
+// FAIL: エラー: Property 'age' does not exist on type 'User'
 interface User {
   name: string
 }
 const user: User = { name: 'John', age: 30 }
 
-// ✅ 修正: インターフェースにプロパティを追加
+// PASS: 修正: インターフェースにプロパティを追加
 interface User {
   name: string
   age?: number // 常に存在しない場合はオプショナル
@@ -143,10 +143,10 @@ interface User {
 
 **パターン 4: インポートエラー**
 ```typescript
-// ❌ エラー: Cannot find module '@/lib/utils'
+// FAIL: エラー: Cannot find module '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 
-// ✅ 修正1: tsconfigのパスが正しいか確認
+// PASS: 修正1: tsconfigのパスが正しいか確認
 {
   "compilerOptions": {
     "paths": {
@@ -155,38 +155,38 @@ import { formatDate } from '@/lib/utils'
   }
 }
 
-// ✅ 修正2: 相対インポートを使用
+// PASS: 修正2: 相対インポートを使用
 import { formatDate } from '../lib/utils'
 
-// ✅ 修正3: 欠落しているパッケージをインストール
+// PASS: 修正3: 欠落しているパッケージをインストール
 npm install @/lib/utils
 ```
 
 **パターン 5: 型の不一致**
 ```typescript
-// ❌ エラー: Type 'string' is not assignable to type 'number'
+// FAIL: エラー: Type 'string' is not assignable to type 'number'
 const age: number = "30"
 
-// ✅ 修正: 文字列を数値にパース
+// PASS: 修正: 文字列を数値にパース
 const age: number = parseInt("30", 10)
 
-// ✅ または: 型を変更
+// PASS: または: 型を変更
 const age: string = "30"
 ```
 
 **パターン 6: ジェネリック制約**
 ```typescript
-// ❌ エラー: Type 'T' is not assignable to type 'string'
+// FAIL: エラー: Type 'T' is not assignable to type 'string'
 function getLength<T>(item: T): number {
   return item.length
 }
 
-// ✅ 修正: 制約を追加
+// PASS: 修正: 制約を追加
 function getLength<T extends { length: number }>(item: T): number {
   return item.length
 }
 
-// ✅ または: より具体的な制約
+// PASS: または: より具体的な制約
 function getLength<T extends string | any[]>(item: T): number {
   return item.length
 }
@@ -194,14 +194,14 @@ function getLength<T extends string | any[]>(item: T): number {
 
 **パターン 7: React Hookエラー**
 ```typescript
-// ❌ エラー: React Hook "useState" cannot be called in a function
+// FAIL: エラー: React Hook "useState" cannot be called in a function
 function MyComponent() {
   if (condition) {
     const [state, setState] = useState(0) // エラー!
   }
 }
 
-// ✅ 修正: フックをトップレベルに移動
+// PASS: 修正: フックをトップレベルに移動
 function MyComponent() {
   const [state, setState] = useState(0)
 
@@ -215,12 +215,12 @@ function MyComponent() {
 
 **パターン 8: Async/Awaitエラー**
 ```typescript
-// ❌ エラー: 'await' expressions are only allowed within async functions
+// FAIL: エラー: 'await' expressions are only allowed within async functions
 function fetchData() {
   const data = await fetch('/api/data')
 }
 
-// ✅ 修正: asyncキーワードを追加
+// PASS: 修正: asyncキーワードを追加
 async function fetchData() {
   const data = await fetch('/api/data')
 }
@@ -228,14 +228,14 @@ async function fetchData() {
 
 **パターン 9: モジュールが見つからない**
 ```typescript
-// ❌ エラー: Cannot find module 'react' or its corresponding type declarations
+// FAIL: エラー: Cannot find module 'react' or its corresponding type declarations
 import React from 'react'
 
-// ✅ 修正: 依存関係をインストール
+// PASS: 修正: 依存関係をインストール
 npm install react
 npm install --save-dev @types/react
 
-// ✅ 確認: package.jsonに依存関係があることを確認
+// PASS: 確認: package.jsonに依存関係があることを確認
 {
   "dependencies": {
     "react": "^19.0.0"
@@ -248,18 +248,18 @@ npm install --save-dev @types/react
 
 **パターン 10: Next.js固有のエラー**
 ```typescript
-// ❌ エラー: Fast Refresh had to perform a full reload
+// FAIL: エラー: Fast Refresh had to perform a full reload
 // 通常、コンポーネント以外のエクスポートが原因
 
-// ✅ 修正: エクスポートを分離
-// ❌ 間違い: file.tsx
+// PASS: 修正: エクスポートを分離
+// FAIL: 間違い: file.tsx
 export const MyComponent = () => <div />
 export const someConstant = 42 // フルリロードの原因
 
-// ✅ 正しい: component.tsx
+// PASS: 正しい: component.tsx
 export const MyComponent = () => <div />
 
-// ✅ 正しい: constants.ts
+// PASS: 正しい: constants.ts
 export const someConstant = 42
 ```
 
@@ -267,7 +267,7 @@ export const someConstant = 42
 
 ### Next.js 15 + React 19の互換性
 ```typescript
-// ❌ エラー: React 19の型変更
+// FAIL: エラー: React 19の型変更
 import { FC } from 'react'
 
 interface Props {
@@ -278,7 +278,7 @@ const Component: FC<Props> = ({ children }) => {
   return <div>{children}</div>
 }
 
-// ✅ 修正: React 19ではFCは不要
+// PASS: 修正: React 19ではFCは不要
 interface Props {
   children: React.ReactNode
 }
@@ -290,12 +290,12 @@ const Component = ({ children }: Props) => {
 
 ### Supabaseクライアントの型
 ```typescript
-// ❌ エラー: Type 'any' not assignable
+// FAIL: エラー: Type 'any' not assignable
 const { data } = await supabase
   .from('markets')
   .select('*')
 
-// ✅ 修正: 型アノテーションを追加
+// PASS: 修正: 型アノテーションを追加
 interface Market {
   id: string
   name: string
@@ -310,10 +310,10 @@ const { data } = await supabase
 
 ### Redis Stackの型
 ```typescript
-// ❌ エラー: Property 'ft' does not exist on type 'RedisClientType'
+// FAIL: エラー: Property 'ft' does not exist on type 'RedisClientType'
 const results = await client.ft.search('idx:markets', query)
 
-// ✅ 修正: 適切なRedis Stackの型を使用
+// PASS: 修正: 適切なRedis Stackの型を使用
 import { createClient } from 'redis'
 
 const client = createClient({
@@ -328,10 +328,10 @@ const results = await client.ft.search('idx:markets', query)
 
 ### Solana Web3.jsの型
 ```typescript
-// ❌ エラー: Argument of type 'string' not assignable to 'PublicKey'
+// FAIL: エラー: Argument of type 'string' not assignable to 'PublicKey'
 const publicKey = wallet.address
 
-// ✅ 修正: PublicKeyコンストラクタを使用
+// PASS: 修正: PublicKeyコンストラクタを使用
 import { PublicKey } from '@solana/web3.js'
 const publicKey = new PublicKey(wallet.address)
 ```
@@ -341,34 +341,34 @@ const publicKey = new PublicKey(wallet.address)
 **重要: できる限り最小限の変更を行う**
 
 ### すべきこと:
-✅ 欠落している型アノテーションを追加
-✅ 必要な箇所にnullチェックを追加
-✅ インポート/エクスポートを修正
-✅ 欠落している依存関係を追加
-✅ 型定義を更新
-✅ 設定ファイルを修正
+PASS: 欠落している型アノテーションを追加
+PASS: 必要な箇所にnullチェックを追加
+PASS: インポート/エクスポートを修正
+PASS: 欠落している依存関係を追加
+PASS: 型定義を更新
+PASS: 設定ファイルを修正
 
 ### してはいけないこと:
-❌ 関連のないコードをリファクタリング
-❌ アーキテクチャを変更
-❌ 変数/関数の名前を変更（エラーの原因でない限り）
-❌ 新機能を追加
-❌ ロジックフローを変更（エラー修正以外）
-❌ パフォーマンスを最適化
-❌ コードスタイルを改善
+FAIL: 関連のないコードをリファクタリング
+FAIL: アーキテクチャを変更
+FAIL: 変数/関数の名前を変更（エラーの原因でない限り）
+FAIL: 新機能を追加
+FAIL: ロジックフローを変更（エラー修正以外）
+FAIL: パフォーマンスを最適化
+FAIL: コードスタイルを改善
 
 **最小差分の例:**
 
 ```typescript
 // ファイルは200行あり、45行目にエラーがある
 
-// ❌ 間違い: ファイル全体をリファクタリング
+// FAIL: 間違い: ファイル全体をリファクタリング
 // - 変数の名前変更
 // - 関数の抽出
 // - パターンの変更
 // 結果: 50行変更
 
-// ✅ 正しい: エラーのみを修正
+// PASS: 正しい: エラーのみを修正
 // - 45行目に型アノテーションを追加
 // 結果: 1行変更
 
@@ -376,12 +376,12 @@ function processData(data) { // 45行目 - エラー: 'data' implicitly has 'any
   return data.map(item => item.value)
 }
 
-// ✅ 最小限の修正:
+// PASS: 最小限の修正:
 function processData(data: any[]) { // この行のみを変更
   return data.map(item => item.value)
 }
 
-// ✅ より良い最小限の修正（型が既知の場合）:
+// PASS: より良い最小限の修正（型が既知の場合）:
 function processData(data: Array<{ value: number }>) {
   return data.map(item => item.value)
 }
@@ -396,7 +396,7 @@ function processData(data: Array<{ value: number }>) {
 **ビルド対象:** Next.jsプロダクション / TypeScriptチェック / ESLint
 **初期エラー数:** X
 **修正済みエラー数:** Y
-**ビルドステータス:** ✅ 成功 / ❌ 失敗
+**ビルドステータス:** PASS: 成功 / FAIL: 失敗
 
 ## 修正済みエラー
 
@@ -430,17 +430,17 @@ Parameter 'market' implicitly has an 'any' type.
 
 ## 検証手順
 
-1. ✅ TypeScriptチェック成功: `npx tsc --noEmit`
-2. ✅ Next.jsビルド成功: `npm run build`
-3. ✅ ESLintチェック成功: `npx eslint .`
-4. ✅ 新しいエラーが導入されていない
-5. ✅ 開発サーバー起動: `npm run dev`
+1. PASS: TypeScriptチェック成功: `npx tsc --noEmit`
+2. PASS: Next.jsビルド成功: `npm run build`
+3. PASS: ESLintチェック成功: `npx eslint .`
+4. PASS: 新しいエラーが導入されていない
+5. PASS: 開発サーバー起動: `npm run dev`
 
 ## まとめ
 
 - 解決されたエラー総数: X
 - 変更行数総数: Y
-- ビルドステータス: ✅ 成功
+- ビルドステータス: PASS: 成功
 - 修正時間: Z 分
 - ブロッキング問題: 0 件残存
 
@@ -470,19 +470,19 @@ Parameter 'market' implicitly has an 'any' type.
 
 ## ビルドエラーの優先度レベル
 
-### 🔴 クリティカル（即座に修正）
+### クリティカル（即座に修正）
 - ビルドが完全に壊れている
 - 開発サーバーが起動しない
 - プロダクションデプロイがブロックされている
 - 複数のファイルが失敗している
 
-### 🟡 高（早急に修正）
+### 高（早急に修正）
 - 単一ファイルの失敗
 - 新しいコードの型エラー
 - インポートエラー
 - 重要でないビルド警告
 
-### 🟢 中（可能な時に修正）
+### 中（可能な時に修正）
 - リンター警告
 - 非推奨APIの使用
 - 非厳格な型の問題
@@ -521,13 +521,13 @@ npm install
 ## 成功指標
 
 ビルドエラー解決後:
-- ✅ `npx tsc --noEmit` が終了コード0で終了
-- ✅ `npm run build` が正常に完了
-- ✅ 新しいエラーが導入されていない
-- ✅ 最小限の行数変更（影響を受けたファイルの5%未満）
-- ✅ ビルド時間が大幅に増加していない
-- ✅ 開発サーバーがエラーなく動作
-- ✅ テストが依然として成功
+- PASS: `npx tsc --noEmit` が終了コード0で終了
+- PASS: `npm run build` が正常に完了
+- PASS: 新しいエラーが導入されていない
+- PASS: 最小限の行数変更（影響を受けたファイルの5%未満）
+- PASS: ビルド時間が大幅に増加していない
+- PASS: 開発サーバーがエラーなく動作
+- PASS: テストが依然として成功
 
 ---
 

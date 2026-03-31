@@ -60,8 +60,8 @@ firecrawl_search(query: "<sub-question keywords>", limit: 8)
 **使用 exa：**
 
 ```
-web_search_exa(query: "<sub-question keywords>", numResults: 8)
-web_search_advanced_exa(query: "<keywords>", numResults: 5, startPublishedDate: "2025-01-01")
+web_search_exa(query: "<子问题关键词>", numResults: 8)
+web_search_advanced_exa(query: "<关键词>", numResults: 5, startPublishedDate: "2025-01-01")
 ```
 
 **搜索策略：**
@@ -135,10 +135,10 @@ crawling_exa(url: "<url>", tokensNum: 5000)
 对于广泛的主题，使用 Claude Code 的 Task 工具进行并行处理：
 
 ```
-Launch 3 research agents in parallel:
-1. Agent 1: Research sub-questions 1-2
-2. Agent 2: Research sub-questions 3-4
-3. Agent 3: Research sub-question 5 + cross-cutting themes
+并行启动3个研究代理：
+1. 代理1：研究子问题1-2
+2. 代理2：研究子问题3-4
+3. 代理3：研究子问题5 + 交叉主题
 ```
 
 每个代理负责搜索、阅读来源并返回发现结果。主会话将其综合成最终报告。
@@ -155,9 +155,9 @@ Launch 3 research agents in parallel:
 ## 示例
 
 ```
-"Research the current state of nuclear fusion energy"
-"Deep dive into Rust vs Go for backend services in 2026"
-"Research the best strategies for bootstrapping a SaaS business"
-"What's happening with the US housing market right now?"
-"Investigate the competitive landscape for AI code editors"
+"研究核聚变能源的当前现状"
+"深入探讨 2026 年 Rust 与 Go 在后端服务中的对比"
+"研究自举 SaaS 业务的最佳策略"
+"美国房地产市场目前情况如何？"
+"调查 AI 代码编辑器的竞争格局"
 ```

@@ -14,7 +14,7 @@ origin: ECC
 metadata:
   author: evos
   clawdbot:
-    emoji: "🤝"
+    emoji: ""
 ---
 
 # Carrier Relationship Management

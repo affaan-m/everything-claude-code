@@ -17,9 +17,9 @@
 ### 黄金法则
 
 ```text
-Each slide = exactly one viewport height.
-Too much content = split into more slides.
-Never scroll inside a slide.
+每个幻灯片 = 恰好一个视口高度。
+内容过多 = 分割成更多幻灯片。
+切勿在幻灯片内部滚动。
 ```
 
 ### 内容密度限制

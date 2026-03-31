@@ -112,14 +112,14 @@ c) データ保護
 **影響:** 大きなテーブルで100〜1000倍高速なクエリ
 
 ```sql
--- ❌ 悪い: 外部キーにインデックスがない
+-- FAIL: 悪い: 外部キーにインデックスがない
 CREATE TABLE orders (
   id bigint PRIMARY KEY,
   customer_id bigint REFERENCES customers(id)
   -- インデックスが欠落！
 );
 
--- ✅ 良い: 外部キーにインデックス
+-- PASS: 良い: 外部キーにインデックス
 CREATE TABLE orders (
   id bigint PRIMARY KEY,
   customer_id bigint REFERENCES customers(id)
@@ -137,11 +137,11 @@ CREATE INDEX orders_customer_id_idx ON orders (customer_id);
 | **Hash** | 等価のみ | `=`（B-treeより若干高速） |
 
 ```sql
--- ❌ 悪い: JSONB包含のためのB-tree
+-- FAIL: 悪い: JSONB包含のためのB-tree
 CREATE INDEX products_attrs_idx ON products (attributes);
 SELECT * FROM products WHERE attributes @> '{"color": "red"}';
 
--- ✅ 良い: JSONBのためのGIN
+-- PASS: 良い: JSONBのためのGIN
 CREATE INDEX products_attrs_idx ON products USING gin (attributes);
 ```
 
@@ -150,11 +150,11 @@ CREATE INDEX products_attrs_idx ON products USING gin (attributes);
 **影響:** 複数列クエリで5〜10倍高速
 
 ```sql
--- ❌ 悪い: 個別のインデックス
+-- FAIL: 悪い: 個別のインデックス
 CREATE INDEX orders_status_idx ON orders (status);
 CREATE INDEX orders_created_idx ON orders (created_at);
 
--- ✅ 良い: 複合インデックス（等価列を最初に、次に範囲）
+-- PASS: 良い: 複合インデックス（等価列を最初に、次に範囲）
 CREATE INDEX orders_status_created_idx ON orders (status, created_at);
 ```
 
@@ -170,11 +170,11 @@ CREATE INDEX orders_status_created_idx ON orders (status, created_at);
 **影響:** テーブルルックアップを回避することで2〜5倍高速なクエリ
 
 ```sql
--- ❌ 悪い: テーブルからnameを取得する必要がある
+-- FAIL: 悪い: テーブルからnameを取得する必要がある
 CREATE INDEX users_email_idx ON users (email);
 SELECT email, name FROM users WHERE email = 'user@example.com';
 
--- ✅ 良い: すべての列がインデックスに含まれる
+-- PASS: 良い: すべての列がインデックスに含まれる
 CREATE INDEX users_email_idx ON users (email) INCLUDE (name, created_at);
 ```
 
@@ -183,10 +183,10 @@ CREATE INDEX users_email_idx ON users (email) INCLUDE (name, created_at);
 **影響:** 5〜20倍小さいインデックス、高速な書き込みとクエリ
 
 ```sql
--- ❌ 悪い: 完全なインデックスには削除された行が含まれる
+-- FAIL: 悪い: 完全なインデックスには削除された行が含まれる
 CREATE INDEX users_email_idx ON users (email);
 
--- ✅ 良い: 部分インデックスは削除された行を除外
+-- PASS: 良い: 部分インデックスは削除された行を除外
 CREATE INDEX users_active_email_idx ON users (email) WHERE deleted_at IS NULL;
 ```
 
@@ -202,7 +202,7 @@ CREATE INDEX users_active_email_idx ON users (email) WHERE deleted_at IS NULL;
 ### 1. データ型の選択
 
 ```sql
--- ❌ 悪い: 不適切な型選択
+-- FAIL: 悪い: 不適切な型選択
 CREATE TABLE users (
   id int,                           -- 21億でオーバーフロー
   email varchar(255),               -- 人為的な制限
@@ -211,7 +211,7 @@ CREATE TABLE users (
   balance float                     -- 精度の損失
 );
 
--- ✅ 良い: 適切な型
+-- PASS: 良い: 適切な型
 CREATE TABLE users (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   email text NOT NULL,
@@ -224,18 +224,18 @@ CREATE TABLE users (
 ### 2. 主キー戦略
 
 ```sql
--- ✅ 単一データベース: IDENTITY（デフォルト、推奨）
+-- PASS: 単一データベース: IDENTITY（デフォルト、推奨）
 CREATE TABLE users (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY
 );
 
--- ✅ 分散システム: UUIDv7（時間順）
+-- PASS: 分散システム: UUIDv7（時間順）
 CREATE EXTENSION IF NOT EXISTS pg_uuidv7;
 CREATE TABLE orders (
   id uuid DEFAULT uuid_generate_v7() PRIMARY KEY
 );
 
--- ❌ 避ける: ランダムUUIDはインデックスの断片化を引き起こす
+-- FAIL: 避ける: ランダムUUIDはインデックスの断片化を引き起こす
 CREATE TABLE events (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY  -- 断片化した挿入！
 );
@@ -246,7 +246,7 @@ CREATE TABLE events (
 **使用する場合:** テーブル > 1億行、時系列データ、古いデータを削除する必要がある
 
 ```sql
--- ✅ 良い: 月ごとにパーティション化
+-- PASS: 良い: 月ごとにパーティション化
 CREATE TABLE events (
   id bigint GENERATED ALWAYS AS IDENTITY,
   created_at timestamptz NOT NULL,
@@ -266,11 +266,11 @@ DROP TABLE events_2023_01;  -- 数時間かかるDELETEではなく即座に
 ### 4. 小文字の識別子を使用
 
 ```sql
--- ❌ 悪い: 引用符付きの混合ケースは至る所で引用符が必要
+-- FAIL: 悪い: 引用符付きの混合ケースは至る所で引用符が必要
 CREATE TABLE "Users" ("userId" bigint, "firstName" text);
 SELECT "firstName" FROM "Users";  -- 引用符が必須！
 
--- ✅ 良い: 小文字は引用符なしで機能
+-- PASS: 良い: 小文字は引用符なしで機能
 CREATE TABLE users (user_id bigint, first_name text);
 SELECT first_name FROM users;
 ```
@@ -284,11 +284,11 @@ SELECT first_name FROM users;
 **影響:** 重要 - データベースで強制されるテナント分離
 
 ```sql
--- ❌ 悪い: アプリケーションのみのフィルタリング
+-- FAIL: 悪い: アプリケーションのみのフィルタリング
 SELECT * FROM orders WHERE user_id = $current_user_id;
 -- バグはすべての注文が露出することを意味する！
 
--- ✅ 良い: データベースで強制されるRLS
+-- PASS: 良い: データベースで強制されるRLS
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders FORCE ROW LEVEL SECURITY;
 
@@ -308,11 +308,11 @@ CREATE POLICY orders_user_policy ON orders
 **影響:** 5〜10倍高速なRLSクエリ
 
 ```sql
--- ❌ 悪い: 関数が行ごとに呼び出される
+-- FAIL: 悪い: 関数が行ごとに呼び出される
 CREATE POLICY orders_policy ON orders
   USING (auth.uid() = user_id);  -- 100万行に対して100万回呼び出される！
 
--- ✅ 良い: SELECTでラップ（キャッシュされ、一度だけ呼び出される）
+-- PASS: 良い: SELECTでラップ（キャッシュされ、一度だけ呼び出される）
 CREATE POLICY orders_policy ON orders
   USING ((SELECT auth.uid()) = user_id);  -- 100倍高速
 
@@ -323,10 +323,10 @@ CREATE INDEX orders_user_id_idx ON orders (user_id);
 ### 3. 最小権限アクセス
 
 ```sql
--- ❌ 悪い: 過度に許可的
+-- FAIL: 悪い: 過度に許可的
 GRANT ALL PRIVILEGES ON ALL TABLES TO app_user;
 
--- ✅ 良い: 最小限の権限
+-- PASS: 良い: 最小限の権限
 CREATE ROLE app_readonly NOLOGIN;
 GRANT USAGE ON SCHEMA public TO app_readonly;
 GRANT SELECT ON public.products, public.categories TO app_readonly;
@@ -378,14 +378,14 @@ SELECT pg_reload_conf();
 ### 1. トランザクションを短く保つ
 
 ```sql
--- ❌ 悪い: 外部APIコール中にロックを保持
+-- FAIL: 悪い: 外部APIコール中にロックを保持
 BEGIN;
 SELECT * FROM orders WHERE id = 1 FOR UPDATE;
 -- HTTPコールに5秒かかる...
 UPDATE orders SET status = 'paid' WHERE id = 1;
 COMMIT;
 
--- ✅ 良い: 最小限のロック期間
+-- PASS: 良い: 最小限のロック期間
 -- トランザクション外で最初にAPIコールを実行
 BEGIN;
 UPDATE orders SET status = 'paid', payment_id = $1
@@ -397,12 +397,12 @@ COMMIT;  -- ミリ秒でロックを保持
 ### 2. デッドロックを防ぐ
 
 ```sql
--- ❌ 悪い: 一貫性のないロック順序がデッドロックを引き起こす
+-- FAIL: 悪い: 一貫性のないロック順序がデッドロックを引き起こす
 -- トランザクションA: 行1をロック、次に行2
 -- トランザクションB: 行2をロック、次に行1
 -- デッドロック！
 
--- ✅ 良い: 一貫したロック順序
+-- PASS: 良い: 一貫したロック順序
 BEGIN;
 SELECT * FROM accounts WHERE id IN (1, 2) ORDER BY id FOR UPDATE;
 -- これで両方の行がロックされ、任意の順序で更新可能
@@ -416,10 +416,10 @@ COMMIT;
 **影響:** ワーカーキューで10倍のスループット
 
 ```sql
--- ❌ 悪い: ワーカーが互いを待つ
+-- FAIL: 悪い: ワーカーが互いを待つ
 SELECT * FROM jobs WHERE status = 'pending' LIMIT 1 FOR UPDATE;
 
--- ✅ 良い: ワーカーはロックされた行をスキップ
+-- PASS: 良い: ワーカーはロックされた行をスキップ
 UPDATE jobs
 SET status = 'processing', worker_id = $1, started_at = now()
 WHERE id = (
@@ -441,36 +441,36 @@ RETURNING *;
 **影響:** バルク挿入が10〜50倍高速
 
 ```sql
--- ❌ 悪い: 個別の挿入
+-- FAIL: 悪い: 個別の挿入
 INSERT INTO events (user_id, action) VALUES (1, 'click');
 INSERT INTO events (user_id, action) VALUES (2, 'view');
 -- 1000回のラウンドトリップ
 
--- ✅ 良い: バッチ挿入
+-- PASS: 良い: バッチ挿入
 INSERT INTO events (user_id, action) VALUES
   (1, 'click'),
   (2, 'view'),
   (3, 'click');
 -- 1回のラウンドトリップ
 
--- ✅ 最良: 大きなデータセットにはCOPY
+-- PASS: 最良: 大きなデータセットにはCOPY
 COPY events (user_id, action) FROM '/path/to/data.csv' WITH (FORMAT csv);
 ```
 
 ### 2. N+1クエリの排除
 
 ```sql
--- ❌ 悪い: N+1パターン
+-- FAIL: 悪い: N+1パターン
 SELECT id FROM users WHERE active = true;  -- 100件のIDを返す
 -- 次に100回のクエリ:
 SELECT * FROM orders WHERE user_id = 1;
 SELECT * FROM orders WHERE user_id = 2;
 -- ... 98回以上
 
--- ✅ 良い: ANYを使用した単一クエリ
+-- PASS: 良い: ANYを使用した単一クエリ
 SELECT * FROM orders WHERE user_id = ANY(ARRAY[1, 2, 3, ...]);
 
--- ✅ 良い: JOIN
+-- PASS: 良い: JOIN
 SELECT u.id, u.name, o.*
 FROM users u
 LEFT JOIN orders o ON o.user_id = u.id
@@ -482,11 +482,11 @@ WHERE u.active = true;
 **影響:** ページの深さに関係なく一貫したO(1)パフォーマンス
 
 ```sql
--- ❌ 悪い: OFFSETは深さとともに遅くなる
+-- FAIL: 悪い: OFFSETは深さとともに遅くなる
 SELECT * FROM products ORDER BY id LIMIT 20 OFFSET 199980;
 -- 200,000行をスキャン！
 
--- ✅ 良い: カーソルベース（常に高速）
+-- PASS: 良い: カーソルベース（常に高速）
 SELECT * FROM products WHERE id > 199980 ORDER BY id LIMIT 20;
 -- インデックスを使用、O(1)
 ```
@@ -494,11 +494,11 @@ SELECT * FROM products WHERE id > 199980 ORDER BY id LIMIT 20;
 ### 4. 挿入または更新のためのUPSERT
 
 ```sql
--- ❌ 悪い: 競合状態
+-- FAIL: 悪い: 競合状態
 SELECT * FROM settings WHERE user_id = 123 AND key = 'theme';
 -- 両方のスレッドが何も見つけず、両方が挿入、一方が失敗
 
--- ✅ 良い: アトミックなUPSERT
+-- PASS: 良い: アトミックなUPSERT
 INSERT INTO settings (user_id, key, value)
 VALUES (123, 'theme', 'dark')
 ON CONFLICT (user_id, key)
@@ -605,27 +605,27 @@ ORDER BY rank DESC;
 
 ## フラグを立てるべきアンチパターン
 
-### ❌ クエリアンチパターン
+### FAIL: クエリアンチパターン
 - 本番コードでの`SELECT *`
 - WHERE/JOIN列にインデックスがない
 - 大きなテーブルでのOFFSETページネーション
 - N+1クエリパターン
 - パラメータ化されていないクエリ（SQLインジェクションリスク）
 
-### ❌ スキーマアンチパターン
+### FAIL: スキーマアンチパターン
 - IDに`int`（`bigint`を使用）
 - 理由なく`varchar(255)`（`text`を使用）
 - タイムゾーンなしの`timestamp`（`timestamptz`を使用）
 - 主キーとしてのランダムUUID（UUIDv7またはIDENTITYを使用）
 - 引用符を必要とする混合ケースの識別子
 
-### ❌ セキュリティアンチパターン
+### FAIL: セキュリティアンチパターン
 - アプリケーションユーザーへの`GRANT ALL`
 - マルチテナントテーブルでRLSが欠落
 - 行ごとに関数を呼び出すRLSポリシー（SELECTでラップされていない）
 - RLSポリシー列にインデックスがない
 
-### ❌ 接続アンチパターン
+### FAIL: 接続アンチパターン
 - 接続プーリングなし
 - アイドルタイムアウトなし
 - トランザクションモードプーリングでのプリペアドステートメント

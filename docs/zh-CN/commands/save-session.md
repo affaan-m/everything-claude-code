@@ -56,9 +56,9 @@ mkdir -p ~/.claude/sessions
 写入后，显示完整内容并询问：
 
 ```
-Session saved to [actual resolved path to the session file]
+会话已保存至 [实际解析的会话文件路径]
 
-Does this look accurate? Anything to correct or add before we close?
+这看起来准确吗？在关闭之前，还有什么需要纠正或补充的吗？
 ```
 
 等待确认。如果用户要求，进行编辑。
@@ -122,10 +122,10 @@ Does this look accurate? Anything to correct or add before we close?
 
 | 文件              | 状态           | 备注                         |
 | ----------------- | -------------- | ---------------------------- |
-| `path/to/file.ts` | ✅ 完成        | [其作用]                     |
-| `path/to/file.ts` | 🔄 进行中      | [已完成什么，剩余什么]       |
-| `path/to/file.ts` | ❌ 损坏        | [问题所在]                   |
-| `path/to/file.ts` | 🗒️ 未开始      | [计划但尚未接触]             |
+| `path/to/file.ts` | PASS: 完成        | [其作用]                     |
+| `path/to/file.ts` |  进行中      | [已完成什么，剩余什么]       |
+| `path/to/file.ts` | FAIL: 损坏        | [问题所在]                   |
+| `path/to/file.ts` |  未开始      | [计划但尚未接触]             |
 
 如果未修改任何文件："本次会话未修改任何文件。"
 
@@ -213,11 +213,11 @@ Does this look accurate? Anything to correct or add before we close?
 
 | 文件                             | 状态           | 备注                                           |
 | -------------------------------- | -------------- | ----------------------------------------------- |
-| `app/api/auth/register/route.ts` | ✅ 已完成    | 工作正常，已测试                                   |
-| `app/api/auth/login/route.ts`    | 🔄 进行中 | 令牌已生成但尚未设置 cookie      |
-| `lib/auth.ts`                    | ✅ 已完成    | JWT 辅助函数，全部已测试                         |
-| `middleware.ts`                  | 🗒️ 未开始 | 路由保护，需要先实现 cookie 读取逻辑 |
-| `app/login/page.tsx`             | 🗒️ 未开始 | UI 尚未开始                                  |
+| `app/api/auth/register/route.ts` | PASS: 已完成    | 工作正常，已测试                                   |
+| `app/api/auth/login/route.ts`    |  进行中 | 令牌已生成但尚未设置 cookie      |
+| `lib/auth.ts`                    | PASS: 已完成    | JWT 辅助函数，全部已测试                         |
+| `middleware.ts`                  |  未开始 | 路由保护，需要先实现 cookie 读取逻辑 |
+| `app/login/page.tsx`             |  未开始 | UI 尚未开始                                  |
 
 ---
 

@@ -26,6 +26,11 @@
       "args": ["-y", "@modelcontextprotocol/server-memory"],
       "description": "Persistent memory across sessions"
     },
+    "omega-memory": {
+      "command": "uvx",
+      "args": ["omega-memory", "serve"],
+      "description": "Persistent agent memory with semantic search, multi-agent coordination, and knowledge graphs — run via uvx (richer than the basic memory store)"
+    },
     "sequential-thinking": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
@@ -132,6 +137,11 @@
       "command": "npx",
       "args": ["-y", "token-optimizer-mcp"],
       "description": "Token optimization for 95%+ context reduction via content deduplication and compression"
+    },
+    "laraplugins": {
+      "type": "http",
+      "url": "https://laraplugins.io/mcp/plugins",
+      "description": "Laravel plugin discovery — search packages by keyword, health score, Laravel/PHP version compatibility. Use with laravel-plugin-discovery skill."
     },
     "confluence": {
       "command": "npx",

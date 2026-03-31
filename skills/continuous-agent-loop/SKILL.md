@@ -14,7 +14,7 @@ This is the v1.8+ canonical loop skill name. It supersedes `autonomous-loops` wh
 Start
   |
   +-- Need strict CI/PR control? -- yes --> continuous-pr
-  |                                    
+  |
   +-- Need RFC decomposition? -- yes --> rfc-dag
   |
   +-- Need exploratory parallel generation? -- yes --> infinite

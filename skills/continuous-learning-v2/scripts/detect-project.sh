@@ -85,7 +85,7 @@ _clv2_detect_project() {
   # fall back to path hash (machine-specific but still useful)
   local remote_url=""
   if command -v git &>/dev/null; then
-    if [ "$source_hint" = "git" ] || [ -d "${project_root}/.git" ]; then
+    if [ "$source_hint" = "git" ] || [ -e "${project_root}/.git" ]; then
       remote_url=$(git -C "$project_root" remote get-url origin 2>/dev/null || true)
     fi
   fi

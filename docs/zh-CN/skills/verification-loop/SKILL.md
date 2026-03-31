@@ -99,19 +99,19 @@ git diff HEAD~1 --name-only
 运行所有阶段后，生成验证报告：
 
 ```
-VERIFICATION REPORT
+验证报告
 ==================
 
-Build:     [PASS/FAIL]
-Types:     [PASS/FAIL] (X errors)
-Lint:      [PASS/FAIL] (X warnings)
-Tests:     [PASS/FAIL] (X/Y passed, Z% coverage)
-Security:  [PASS/FAIL] (X issues)
-Diff:      [X files changed]
+构建:     [通过/失败]
+类型:     [通过/失败] (X 处错误)
+代码检查:  [通过/失败] (X 条警告)
+测试:     [通过/失败] (X/Y 通过，覆盖率 Z%)
+安全:     [通过/失败] (X 个问题)
+差异:      [X 个文件被修改]
 
-Overall:   [READY/NOT READY] for PR
+总体:     [就绪/未就绪] 提交 PR
 
-Issues to Fix:
+待修复问题:
 1. ...
 2. ...
 ```

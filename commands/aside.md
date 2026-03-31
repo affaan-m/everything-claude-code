@@ -78,7 +78,7 @@ Flag it clearly before resuming:
 ```
 ASIDE: [answer]
 
-⚠️ Note: This answer suggests [issue] with the current approach. Want to address this before continuing, or proceed as planned?
+WARNING: Note: This answer suggests [issue] with the current approach. Want to address this before continuing, or proceed as planned?
 ```
 Wait for the user's decision before resuming.
 
@@ -119,7 +119,7 @@ Note the change needed but do not make it during the aside:
 ```
 ASIDE: [answer]
 
-📝 Worth fixing: [what should be changed]. I'll flag this after the current task unless you want to address it now.
+ Worth fixing: [what should be changed]. I'll flag this after the current task unless you want to address it now.
 ```
 
 **Question is ambiguous or too vague:**
@@ -150,7 +150,7 @@ No — the shared cache object in src/cache/store.ts:34 is mutated without locki
 Under concurrent requests this is a race condition. It's low risk in a single-process
 Node.js server but would be a real problem with worker threads or clustering.
 
-⚠️ Note: This could affect the feature we're building. Want to address this now or continue and fix it in a follow-up?
+WARNING: Note: This could affect the feature we're building. Want to address this now or continue and fix it in a follow-up?
 ```
 
 ---

@@ -14,7 +14,7 @@
       "name": "everything-claude-code",
       "source": "./",
       "description": "The most comprehensive Claude Code plugin — 14+ agents, 56+ skills, 33+ commands, and production-ready hooks for TDD, security scanning, code review, and continuous learning",
-      "version": "1.8.0",
+      "version": "1.9.0",
       "author": {
         "name": "Affaan Mustafa",
         "email": "me@affaanmustafa.com"

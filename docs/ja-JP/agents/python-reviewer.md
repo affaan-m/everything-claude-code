@@ -399,9 +399,9 @@ model: opus
 各問題について:
 ```text
 [CRITICAL] SQLインジェクション脆弱性
-File: app/routes/user.py:42
-Issue: ユーザー入力がSQLクエリに直接補間されている
-Fix: パラメータ化クエリを使用
+ファイル: app/routes/user.py:42
+問題: ユーザー入力がSQLクエリに直接補間されている
+修正: パラメータ化クエリを使用
 
 query = f"SELECT * FROM users WHERE id = {user_id}"  # Bad
 query = "SELECT * FROM users WHERE id = %s"          # Good

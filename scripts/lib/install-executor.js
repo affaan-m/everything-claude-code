@@ -1,4 +1,5 @@
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
@@ -442,7 +443,7 @@ function planAntigravityLegacyInstall(context) {
 function createLegacyInstallPlan(options = {}) {
   const sourceRoot = options.sourceRoot || getSourceRoot();
   const projectRoot = options.projectRoot || process.cwd();
-  const homeDir = options.homeDir || process.env.HOME;
+  const homeDir = options.homeDir || process.env.HOME || os.homedir();
   const target = options.target || 'claude';
 
   validateLegacyTarget(target);

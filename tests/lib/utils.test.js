@@ -7,6 +7,7 @@
 const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
+const { spawnSync } = require('child_process');
 
 // Import the module
 const utils = require('../../scripts/lib/utils');
@@ -26,6 +27,8 @@ function test(name, fn) {
 
 // Test suite
 function runTests() {
+  const rocketParty = String.fromCodePoint(0x1F680, 0x1F389);
+  const partyEmoji = String.fromCodePoint(0x1F389);
   console.log('\n=== Testing utils.js ===\n');
 
   let passed = 0;
@@ -68,7 +71,13 @@ function runTests() {
     const sessionsDir = utils.getSessionsDir();
     const claudeDir = utils.getClaudeDir();
     assert.ok(sessionsDir.startsWith(claudeDir), 'Sessions should be under Claude dir');
-    assert.ok(sessionsDir.includes('sessions'), 'Should contain sessions');
+    assert.ok(sessionsDir.endsWith(path.join('.claude', 'session-data')) || sessionsDir.endsWith('/.claude/session-data'), 'Should use canonical session-data directory');
+  })) passed++; else failed++;
+
+  if (test('getSessionSearchDirs includes canonical and legacy paths', () => {
+    const searchDirs = utils.getSessionSearchDirs();
+    assert.strictEqual(searchDirs[0], utils.getSessionsDir(), 'Canonical session dir should be searched first');
+    assert.strictEqual(searchDirs[1], utils.getLegacySessionsDir(), 'Legacy session dir should be searched second');
   })) passed++; else failed++;
 
   if (test('getTempDir returns valid temp directory', () => {
@@ -118,17 +127,94 @@ function runTests() {
     assert.ok(name && name.length > 0);
   })) passed++; else failed++;
 
+  // sanitizeSessionId tests
+  console.log('\nsanitizeSessionId:');
+
+  if (test('sanitizeSessionId strips leading dots', () => {
+    assert.strictEqual(utils.sanitizeSessionId('.claude'), 'claude');
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId replaces dots and spaces', () => {
+    assert.strictEqual(utils.sanitizeSessionId('my.project'), 'my-project');
+    assert.strictEqual(utils.sanitizeSessionId('my project'), 'my-project');
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId replaces special chars and collapses runs', () => {
+    assert.strictEqual(utils.sanitizeSessionId('project@v2'), 'project-v2');
+    assert.strictEqual(utils.sanitizeSessionId('a...b'), 'a-b');
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId preserves valid chars', () => {
+    assert.strictEqual(utils.sanitizeSessionId('my-project_123'), 'my-project_123');
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId appends hash suffix for all Windows reserved device names', () => {
+    for (const reservedName of ['CON', 'prn', 'Aux', 'nul', 'COM1', 'lpt9']) {
+      const sanitized = utils.sanitizeSessionId(reservedName);
+      assert.ok(sanitized, `Expected sanitized output for ${reservedName}`);
+      assert.notStrictEqual(sanitized.toUpperCase(), reservedName.toUpperCase());
+      assert.ok(/-[a-f0-9]{6}$/i.test(sanitized), `Expected deterministic hash suffix for ${reservedName}, got ${sanitized}`);
+    }
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId returns null for empty or punctuation-only values', () => {
+    assert.strictEqual(utils.sanitizeSessionId(''), null);
+    assert.strictEqual(utils.sanitizeSessionId(null), null);
+    assert.strictEqual(utils.sanitizeSessionId(undefined), null);
+    assert.strictEqual(utils.sanitizeSessionId('...'), null);
+    assert.strictEqual(utils.sanitizeSessionId('…'), null);
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId returns stable hashes for non-ASCII values', () => {
+    const chinese = utils.sanitizeSessionId('我的项目');
+    const cyrillic = utils.sanitizeSessionId('проект');
+    const emoji = utils.sanitizeSessionId(rocketParty);
+    assert.ok(/^[a-f0-9]{8}$/.test(chinese), `Expected 8-char hash, got: ${chinese}`);
+    assert.ok(/^[a-f0-9]{8}$/.test(cyrillic), `Expected 8-char hash, got: ${cyrillic}`);
+    assert.ok(/^[a-f0-9]{8}$/.test(emoji), `Expected 8-char hash, got: ${emoji}`);
+    assert.notStrictEqual(chinese, cyrillic);
+    assert.notStrictEqual(chinese, emoji);
+    assert.strictEqual(utils.sanitizeSessionId('日本語プロジェクト'), utils.sanitizeSessionId('日本語プロジェクト'));
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId disambiguates mixed-script names from pure ASCII', () => {
+    const mixed = utils.sanitizeSessionId('我的app');
+    const mixedTwo = utils.sanitizeSessionId('他的app');
+    const pure = utils.sanitizeSessionId('app');
+    assert.strictEqual(pure, 'app');
+    assert.ok(mixed.startsWith('app-'), `Expected mixed-script prefix, got: ${mixed}`);
+    assert.notStrictEqual(mixed, pure);
+    assert.notStrictEqual(mixed, mixedTwo);
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId is idempotent', () => {
+    for (const input of ['.claude', 'my.project', 'project@v2', 'a...b', 'my-project_123']) {
+      const once = utils.sanitizeSessionId(input);
+      const twice = utils.sanitizeSessionId(once);
+      assert.strictEqual(once, twice, `Expected idempotent result for ${input}`);
+    }
+  })) passed++; else failed++;
+
+  if (test('sanitizeSessionId preserves readable prefixes for Windows reserved device names', () => {
+    const con = utils.sanitizeSessionId('CON');
+    const aux = utils.sanitizeSessionId('aux');
+    assert.ok(con.startsWith('CON-'), `Expected CON to get a suffix, got: ${con}`);
+    assert.ok(aux.startsWith('aux-'), `Expected aux to get a suffix, got: ${aux}`);
+    assert.notStrictEqual(utils.sanitizeSessionId('COM1'), 'COM1');
+  })) passed++; else failed++;
+
   // Session ID tests
   console.log('\nSession ID Functions:');
 
-  if (test('getSessionIdShort falls back to project name', () => {
+  if (test('getSessionIdShort falls back to sanitized project name', () => {
     const original = process.env.CLAUDE_SESSION_ID;
     delete process.env.CLAUDE_SESSION_ID;
     try {
       const shortId = utils.getSessionIdShort();
-      assert.strictEqual(shortId, utils.getProjectName());
+      assert.strictEqual(shortId, utils.sanitizeSessionId(utils.getProjectName()));
     } finally {
-      if (original) process.env.CLAUDE_SESSION_ID = original;
+      if (original !== undefined) process.env.CLAUDE_SESSION_ID = original;
+      else delete process.env.CLAUDE_SESSION_ID;
     }
   })) passed++; else failed++;
 
@@ -152,6 +238,28 @@ function runTests() {
       if (original) process.env.CLAUDE_SESSION_ID = original;
       else delete process.env.CLAUDE_SESSION_ID;
     }
+  })) passed++; else failed++;
+
+  if (test('getSessionIdShort sanitizes explicit fallback parameter', () => {
+    if (process.platform === 'win32') {
+      console.log('    (skipped — root CWD differs on Windows)');
+      return true;
+    }
+
+    const utilsPath = path.join(__dirname, '..', '..', 'scripts', 'lib', 'utils.js');
+    const script = `
+      const utils = require('${utilsPath.replace(/'/g, "\\'")}');
+      process.stdout.write(utils.getSessionIdShort('my.fallback'));
+    `;
+    const result = spawnSync('node', ['-e', script], {
+      encoding: 'utf8',
+      cwd: '/',
+      env: { ...process.env, CLAUDE_SESSION_ID: '' },
+      timeout: 10000
+    });
+
+    assert.strictEqual(result.status, 0, `Expected exit 0, got ${result.status}. stderr: ${result.stderr}`);
+    assert.strictEqual(result.stdout, 'my-fallback');
   })) passed++; else failed++;
 
   // File operations tests
@@ -601,7 +709,7 @@ function runTests() {
   if (test('writeFile handles unicode content', () => {
     const testFile = path.join(utils.getTempDir(), `utils-test-${Date.now()}.txt`);
     try {
-      const unicode = '日本語テスト 🚀 émojis';
+      const unicode = `日本語テスト ${String.fromCodePoint(0x1F680)} émojis`;
       utils.writeFile(testFile, unicode);
       const content = utils.readFile(testFile);
       assert.strictEqual(content, unicode);
@@ -1415,25 +1523,26 @@ function runTests() {
   // ── Round 97: getSessionIdShort with whitespace-only CLAUDE_SESSION_ID ──
   console.log('\nRound 97: getSessionIdShort (whitespace-only session ID):');
 
-  if (test('getSessionIdShort returns whitespace when CLAUDE_SESSION_ID is all spaces', () => {
-    // utils.js line 116: if (sessionId && sessionId.length > 0) — '   ' is truthy
-    // and has length > 0, so it passes the check instead of falling back.
-    const original = process.env.CLAUDE_SESSION_ID;
-    try {
-      process.env.CLAUDE_SESSION_ID = '          ';  // 10 spaces
-      const result = utils.getSessionIdShort('fallback');
-      // slice(-8) on 10 spaces returns 8 spaces — not the expected fallback
-      assert.strictEqual(result, '        ',
-        'Whitespace-only ID should return 8 trailing spaces (no trim check)');
-      assert.strictEqual(result.trim().length, 0,
-        'Result should be entirely whitespace (demonstrating the missing trim)');
-    } finally {
-      if (original !== undefined) {
-        process.env.CLAUDE_SESSION_ID = original;
-      } else {
-        delete process.env.CLAUDE_SESSION_ID;
-      }
+  if (test('getSessionIdShort sanitizes whitespace-only CLAUDE_SESSION_ID to fallback', () => {
+    if (process.platform === 'win32') {
+      console.log('    (skipped — root CWD differs on Windows)');
+      return true;
     }
+
+    const utilsPath = path.join(__dirname, '..', '..', 'scripts', 'lib', 'utils.js');
+    const script = `
+      const utils = require('${utilsPath.replace(/'/g, "\\'")}');
+      process.stdout.write(utils.getSessionIdShort('fallback'));
+    `;
+    const result = spawnSync('node', ['-e', script], {
+      encoding: 'utf8',
+      cwd: '/',
+      env: { ...process.env, CLAUDE_SESSION_ID: '          ' },
+      timeout: 10000
+    });
+
+    assert.strictEqual(result.status, 0, `Expected exit 0, got ${result.status}. stderr: ${result.stderr}`);
+    assert.strictEqual(result.stdout, 'fallback');
   })) passed++; else failed++;
 
   // ── Round 97: countInFile with same RegExp object called twice (lastIndex reuse) ──
@@ -1770,8 +1879,8 @@ function runTests() {
     const tmpDir = fs.mkdtempSync(path.join(utils.getTempDir(), 'r108-grep-unicode-'));
     const testFile = path.join(tmpDir, 'test.txt');
     try {
-      fs.writeFileSync(testFile, '🎉 celebration\nnormal line\n🎉 party\n日本語テスト');
-      const emojiResults = utils.grepFile(testFile, /🎉/);
+      fs.writeFileSync(testFile, `${partyEmoji} celebration\nnormal line\n${partyEmoji} party\n日本語テスト`);
+      const emojiResults = utils.grepFile(testFile, new RegExp(partyEmoji, 'u'));
       assert.strictEqual(emojiResults.length, 2,
         'Should find emoji on 2 lines (lines 1 and 3)');
       assert.strictEqual(emojiResults[0].lineNumber, 1);
@@ -2422,6 +2531,65 @@ function runTests() {
     } finally {
       console.log = origLog;
     }
+  })) passed++; else failed++;
+
+  // ─── stripAnsi ───
+  console.log('\nstripAnsi:');
+
+  if (test('strips SGR color codes (\\x1b[...m)', () => {
+    assert.strictEqual(utils.stripAnsi('\x1b[31mRed text\x1b[0m'), 'Red text');
+    assert.strictEqual(utils.stripAnsi('\x1b[1;36mBold cyan\x1b[0m'), 'Bold cyan');
+  })) passed++; else failed++;
+
+  if (test('strips cursor movement sequences (\\x1b[H, \\x1b[2J, \\x1b[3J)', () => {
+    // These are the exact sequences reported in issue #642
+    assert.strictEqual(utils.stripAnsi('\x1b[H\x1b[2J\x1b[3JHello'), 'Hello');
+    assert.strictEqual(utils.stripAnsi('before\x1b[Hafter'), 'beforeafter');
+  })) passed++; else failed++;
+
+  if (test('strips cursor position sequences (\\x1b[row;colH)', () => {
+    assert.strictEqual(utils.stripAnsi('\x1b[5;10Hplaced'), 'placed');
+  })) passed++; else failed++;
+
+  if (test('strips erase line sequences (\\x1b[K, \\x1b[2K)', () => {
+    assert.strictEqual(utils.stripAnsi('line\x1b[Kend'), 'lineend');
+    assert.strictEqual(utils.stripAnsi('line\x1b[2Kend'), 'lineend');
+  })) passed++; else failed++;
+
+  if (test('strips OSC sequences (window title, hyperlinks)', () => {
+    // OSC terminated by BEL (\x07)
+    assert.strictEqual(utils.stripAnsi('\x1b]0;My Title\x07content'), 'content');
+    // OSC terminated by ST (\x1b\\)
+    assert.strictEqual(utils.stripAnsi('\x1b]8;;https://example.com\x1b\\link\x1b]8;;\x1b\\'), 'link');
+  })) passed++; else failed++;
+
+  if (test('strips charset selection (\\x1b(B)', () => {
+    assert.strictEqual(utils.stripAnsi('\x1b(Bnormal'), 'normal');
+  })) passed++; else failed++;
+
+  if (test('strips bare ESC + letter (\\x1bM reverse index)', () => {
+    assert.strictEqual(utils.stripAnsi('line\x1bMup'), 'lineup');
+  })) passed++; else failed++;
+
+  if (test('handles mixed ANSI sequences in one string', () => {
+    const input = '\x1b[H\x1b[2J\x1b[1;36mSession\x1b[0m summary\x1b[K';
+    assert.strictEqual(utils.stripAnsi(input), 'Session summary');
+  })) passed++; else failed++;
+
+  if (test('returns empty string for non-string input', () => {
+    assert.strictEqual(utils.stripAnsi(null), '');
+    assert.strictEqual(utils.stripAnsi(undefined), '');
+    assert.strictEqual(utils.stripAnsi(42), '');
+  })) passed++; else failed++;
+
+  if (test('preserves string with no ANSI codes', () => {
+    assert.strictEqual(utils.stripAnsi('plain text'), 'plain text');
+    assert.strictEqual(utils.stripAnsi(''), '');
+  })) passed++; else failed++;
+
+  if (test('handles CSI with question mark parameter (DEC private modes)', () => {
+    // e.g. \x1b[?25h (show cursor), \x1b[?25l (hide cursor)
+    assert.strictEqual(utils.stripAnsi('\x1b[?25hvisible\x1b[?25l'), 'visible');
   })) passed++; else failed++;
 
   // Summary

@@ -146,22 +146,22 @@ e) テストがまだ合格することを確認
 
 ### 1. 未使用のインポート
 ```typescript
-// ❌ 未使用のインポートを削除
+// FAIL: 未使用のインポートを削除
 import { useState, useEffect, useMemo } from 'react' // useStateのみ使用
 
-// ✅ 使用されているもののみを保持
+// PASS: 使用されているもののみを保持
 import { useState } from 'react'
 ```
 
 ### 2. デッドコードブランチ
 ```typescript
-// ❌ 到達不可能なコードを削除
+// FAIL: 到達不可能なコードを削除
 if (false) {
   // これは決して実行されない
   doSomething()
 }
 
-// ❌ 未使用の関数を削除
+// FAIL: 未使用の関数を削除
 export function unusedHelper() {
   // コードベースに参照なし
 }
@@ -169,18 +169,18 @@ export function unusedHelper() {
 
 ### 3. 重複コンポーネント
 ```typescript
-// ❌ 複数の類似コンポーネント
+// FAIL: 複数の類似コンポーネント
 components/Button.tsx
 components/PrimaryButton.tsx
 components/NewButton.tsx
 
-// ✅ 1つに統合
+// PASS: 1つに統合
 components/Button.tsx (variantプロップ付き)
 ```
 
 ### 4. 未使用の依存関係
 ```json
-// ❌ インストールされているがインポートされていないパッケージ
+// FAIL: インストールされているがインポートされていないパッケージ
 {
   "dependencies": {
     "lodash": "^4.17.21",  // どこでも使用されていない
@@ -240,7 +240,7 @@ components/Button.tsx (variantプロップ付き)
 - 依存関係: -Xパッケージ
 
 ### リスクレベル
-🟢 低 - 検証可能な未使用コードのみを削除
+ 低 - 検証可能な未使用コードのみを削除
 
 詳細はDELETION_LOG.mdを参照してください。
 ```
@@ -294,12 +294,12 @@ components/Button.tsx (variantプロップ付き)
 ## 成功指標
 
 クリーンアップセッション後:
-- ✅ すべてのテストが合格
-- ✅ ビルドが成功
-- ✅ コンソールエラーなし
-- ✅ DELETION_LOG.mdが更新された
-- ✅ バンドルサイズが削減された
-- ✅ 本番環境で回帰なし
+- PASS: すべてのテストが合格
+- PASS: ビルドが成功
+- PASS: コンソールエラーなし
+- PASS: DELETION_LOG.mdが更新された
+- PASS: バンドルサイズが削減された
+- PASS: 本番環境で回帰なし
 
 ---
 

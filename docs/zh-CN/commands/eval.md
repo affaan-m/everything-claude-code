@@ -54,9 +54,9 @@
 ```
 EVAL CHECK: feature-name
 ========================
-Capability: X/Y passing
-Regression: X/Y passing
-Status: IN PROGRESS / READY
+功能：X/Y 通过
+回归测试：X/Y 通过
+状态：进行中 / 就绪
 ```
 
 ## 报告评估
@@ -68,31 +68,31 @@ Status: IN PROGRESS / READY
 ```
 EVAL REPORT: feature-name
 =========================
-Generated: $(date)
+生成时间: $(date)
 
-CAPABILITY EVALS
+能力评估
 ----------------
-[eval-1]: PASS (pass@1)
-[eval-2]: PASS (pass@2) - required retry
-[eval-3]: FAIL - see notes
+[eval-1]: 通过 (pass@1)
+[eval-2]: 通过 (pass@2) - 需要重试
+[eval-3]: 失败 - 参见备注
 
-REGRESSION EVALS
+回归测试
 ----------------
-[test-1]: PASS
-[test-2]: PASS
-[test-3]: PASS
+[test-1]: 通过
+[test-2]: 通过
+[test-3]: 通过
 
-METRICS
+指标
 -------
-Capability pass@1: 67%
-Capability pass@3: 100%
-Regression pass^3: 100%
+能力 pass@1: 67%
+能力 pass@3: 100%
+回归 pass^3: 100%
 
-NOTES
+备注
 -----
-[Any issues, edge cases, or observations]
+[任何问题、边界情况或观察结果]
 
-RECOMMENDATION
+建议
 --------------
 [SHIP / NEEDS WORK / BLOCKED]
 ```
@@ -104,11 +104,11 @@ RECOMMENDATION
 显示所有评估定义：
 
 ```
-EVAL DEFINITIONS
+功能模块定义
 ================
-feature-auth      [3/5 passing] IN PROGRESS
-feature-search    [5/5 passing] READY
-feature-export    [0/4 passing] NOT STARTED
+feature-auth      [3/5 通过] 进行中
+feature-search    [5/5 通过] 就绪
+feature-export    [0/4 通过] 未开始
 ```
 
 ## 参数

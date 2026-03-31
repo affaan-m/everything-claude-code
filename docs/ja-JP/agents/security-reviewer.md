@@ -184,12 +184,12 @@ APIセキュリティ:
 ### 1. ハードコードされたシークレット（重要）
 
 ```javascript
-// ❌ 重要: ハードコードされたシークレット
+// FAIL: 重要: ハードコードされたシークレット
 const apiKey = "sk-proj-xxxxx"
 const password = "admin123"
 const token = "ghp_xxxxxxxxxxxx"
 
-// ✅ 正しい: 環境変数
+// PASS: 正しい: 環境変数
 const apiKey = process.env.OPENAI_API_KEY
 if (!apiKey) {
   throw new Error('OPENAI_API_KEY not configured')
@@ -199,11 +199,11 @@ if (!apiKey) {
 ### 2. SQLインジェクション（重要）
 
 ```javascript
-// ❌ 重要: SQLインジェクションの脆弱性
+// FAIL: 重要: SQLインジェクションの脆弱性
 const query = `SELECT * FROM users WHERE id = ${userId}`
 await db.query(query)
 
-// ✅ 正しい: パラメータ化されたクエリ
+// PASS: 正しい: パラメータ化されたクエリ
 const { data } = await supabase
   .from('users')
   .select('*')
@@ -213,11 +213,11 @@ const { data } = await supabase
 ### 3. コマンドインジェクション（重要）
 
 ```javascript
-// ❌ 重要: コマンドインジェクション
+// FAIL: 重要: コマンドインジェクション
 const { exec } = require('child_process')
 exec(`ping ${userInput}`, callback)
 
-// ✅ 正しい: シェルコマンドではなくライブラリを使用
+// PASS: 正しい: シェルコマンドではなくライブラリを使用
 const dns = require('dns')
 dns.lookup(userInput, callback)
 ```
@@ -225,10 +225,10 @@ dns.lookup(userInput, callback)
 ### 4. クロスサイトスクリプティング（XSS）（高）
 
 ```javascript
-// ❌ 高: XSS脆弱性
+// FAIL: 高: XSS脆弱性
 element.innerHTML = userInput
 
-// ✅ 正しい: textContentを使用またはサニタイズ
+// PASS: 正しい: textContentを使用またはサニタイズ
 element.textContent = userInput
 // または
 import DOMPurify from 'dompurify'
@@ -238,10 +238,10 @@ element.innerHTML = DOMPurify.sanitize(userInput)
 ### 5. サーバーサイドリクエストフォージェリ（SSRF）（高）
 
 ```javascript
-// ❌ 高: SSRF脆弱性
+// FAIL: 高: SSRF脆弱性
 const response = await fetch(userProvidedUrl)
 
-// ✅ 正しい: URLを検証してホワイトリスト
+// PASS: 正しい: URLを検証してホワイトリスト
 const allowedDomains = ['api.example.com', 'cdn.example.com']
 const url = new URL(userProvidedUrl)
 if (!allowedDomains.includes(url.hostname)) {
@@ -253,10 +253,10 @@ const response = await fetch(url.toString())
 ### 6. 安全でない認証（重要）
 
 ```javascript
-// ❌ 重要: 平文パスワード比較
+// FAIL: 重要: 平文パスワード比較
 if (password === storedPassword) { /* ログイン */ }
 
-// ✅ 正しい: ハッシュ化されたパスワード比較
+// PASS: 正しい: ハッシュ化されたパスワード比較
 import bcrypt from 'bcrypt'
 const isValid = await bcrypt.compare(password, hashedPassword)
 ```
@@ -264,13 +264,13 @@ const isValid = await bcrypt.compare(password, hashedPassword)
 ### 7. 不十分な認可（重要）
 
 ```javascript
-// ❌ 重要: 認可チェックなし
+// FAIL: 重要: 認可チェックなし
 app.get('/api/user/:id', async (req, res) => {
   const user = await getUser(req.params.id)
   res.json(user)
 })
 
-// ✅ 正しい: ユーザーがリソースにアクセスできることを確認
+// PASS: 正しい: ユーザーがリソースにアクセスできることを確認
 app.get('/api/user/:id', authenticateUser, async (req, res) => {
   if (req.user.id !== req.params.id && !req.user.isAdmin) {
     return res.status(403).json({ error: 'Forbidden' })
@@ -283,13 +283,13 @@ app.get('/api/user/:id', authenticateUser, async (req, res) => {
 ### 8. 金融操作の競合状態（重要）
 
 ```javascript
-// ❌ 重要: 残高チェックの競合状態
+// FAIL: 重要: 残高チェックの競合状態
 const balance = await getBalance(userId)
 if (balance >= amount) {
   await withdraw(userId, amount) // 別のリクエストが並行して出金できる！
 }
 
-// ✅ 正しい: ロック付きアトミックトランザクション
+// PASS: 正しい: ロック付きアトミックトランザクション
 await db.transaction(async (trx) => {
   const balance = await trx('balances')
     .where({ user_id: userId })
@@ -309,13 +309,13 @@ await db.transaction(async (trx) => {
 ### 9. 不十分なレート制限（高）
 
 ```javascript
-// ❌ 高: レート制限なし
+// FAIL: 高: レート制限なし
 app.post('/api/trade', async (req, res) => {
   await executeTrade(req.body)
   res.json({ success: true })
 })
 
-// ✅ 正しい: レート制限
+// PASS: 正しい: レート制限
 import rateLimit from 'express-rate-limit'
 
 const tradeLimiter = rateLimit({
@@ -333,10 +333,10 @@ app.post('/api/trade', tradeLimiter, async (req, res) => {
 ### 10. 機密データのロギング（中）
 
 ```javascript
-// ❌ 中: 機密データのロギング
+// FAIL: 中: 機密データのロギング
 console.log('User login:', { email, password, apiKey })
 
-// ✅ 正しい: ログをサニタイズ
+// PASS: 正しい: ログをサニタイズ
 console.log('User login:', {
   email: email.replace(/(?<=.).(?=.*@)/g, '*'),
   passwordProvided: !!password
@@ -358,7 +358,7 @@ console.log('User login:', {
 - **高い問題:** Y
 - **中程度の問題:** Z
 - **低い問題:** W
-- **リスクレベル:** 🔴 高 / 🟡 中 / 🟢 低
+- **リスクレベル:**  高 /  中 /  低
 
 ## 重要な問題（即座に修正）
 
@@ -380,7 +380,7 @@ console.log('User login:', {
 
 **修復:**
 ```javascript
-// ✅ 安全な実装
+// PASS: 安全な実装
 ```
 
 **参考資料:**
@@ -433,7 +433,7 @@ PRをレビューする際、インラインコメントを投稿:
 ## セキュリティレビュー
 
 **レビューアー:** security-reviewer agent
-**リスクレベル:** 🔴 高 / 🟡 中 / 🟢 低
+**リスクレベル:**  高 /  中 /  低
 
 ### ブロッキング問題
 - [ ] **重要**: [説明] @ `file:line`
@@ -532,13 +532,13 @@ npm install --save-dev audit-ci
 ## 成功指標
 
 セキュリティレビュー後:
-- ✅ 重要な問題が見つからない
-- ✅ すべての高い問題が対処されている
-- ✅ セキュリティチェックリストが完了
-- ✅ コードにシークレットがない
-- ✅ 依存関係が最新
-- ✅ テストにセキュリティシナリオが含まれている
-- ✅ ドキュメントが更新されている
+- PASS: 重要な問題が見つからない
+- PASS: すべての高い問題が対処されている
+- PASS: セキュリティチェックリストが完了
+- PASS: コードにシークレットがない
+- PASS: 依存関係が最新
+- PASS: テストにセキュリティシナリオが含まれている
+- PASS: ドキュメントが更新されている
 
 ---
 

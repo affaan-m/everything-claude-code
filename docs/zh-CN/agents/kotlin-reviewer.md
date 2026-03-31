@@ -127,15 +127,15 @@ Button(onClick = onClick)
 ## 输出格式
 
 ```
-[CRITICAL] Domain module imports Android framework
-File: domain/src/main/kotlin/com/app/domain/UserUseCase.kt:3
-Issue: `import android.content.Context` — domain must be pure Kotlin with no framework dependencies.
-Fix: Move Context-dependent logic to data or platforms layer. Pass data via repository interface.
+[CRITICAL] Domain 模块导入了 Android 框架
+文件: domain/src/main/kotlin/com/app/domain/UserUseCase.kt:3
+问题: `import android.content.Context` — domain 层必须是纯 Kotlin，不能有框架依赖。
+修复: 将依赖 Context 的逻辑移到 data 层或 platforms 层。通过 repository 接口传递数据。
 
-[HIGH] StateFlow holding mutable list
-File: presentation/src/main/kotlin/com/app/ui/ListViewModel.kt:25
-Issue: `_state.value.items.add(newItem)` mutates the list inside StateFlow — Compose won't detect the change.
-Fix: Use `_state.update { it.copy(items = it.items + newItem) }`
+[HIGH] StateFlow 持有可变列表
+文件: presentation/src/main/kotlin/com/app/ui/ListViewModel.kt:25
+问题: `_state.value.items.add(newItem)` 在 StateFlow 内部修改了列表 — Compose 将无法检测到此更改。
+修复: 使用 `_state.update { it.copy(items = it.items + newItem) }`
 ```
 
 ## 摘要格式
@@ -143,16 +143,16 @@ Fix: Use `_state.update { it.copy(items = it.items + newItem) }`
 每次审查结束时附上：
 
 ```
-## Review Summary
+## 审查摘要
 
-| Severity | Count | Status |
+| 严重程度 | 数量 | 状态 |
 |----------|-------|--------|
-| CRITICAL | 0     | pass   |
-| HIGH     | 1     | block  |
-| MEDIUM   | 2     | info   |
-| LOW      | 0     | note   |
+| CRITICAL | 0     | 通过   |
+| HIGH     | 1     | 阻止   |
+| MEDIUM   | 2     | 信息   |
+| LOW      | 0     | 备注   |
 
-Verdict: BLOCK — HIGH issues must be fixed before merge.
+裁决：阻止 — 必须修复 HIGH 级别问题后方可合并。
 ```
 
 ## 批准标准

@@ -18,30 +18,27 @@ origin: ECC
 ## 决策框架
 
 ```
-Is the text format consistent and repeating?
-├── Yes (>90% follows a pattern) → Start with Regex
-│   ├── Regex handles 95%+ → Done, no LLM needed
-│   └── Regex handles <95% → Add LLM for edge cases only
-└── No (free-form, highly variable) → Use LLM directly
+文本格式是否一致且重复？
+├── 是 (>90% 遵循某种模式) → 从正则表达式开始
+│   ├── 正则表达式处理 95%+ → 完成，无需 LLM
+│   └── 正则表达式处理 <95% → 仅为边缘情况添加 LLM
+└── 否 (自由格式，高度可变) → 直接使用 LLM
 ```
 
 ## 架构模式
 
 ```
-Source Text
+[正则表达式解析器] ─── 提取结构（95-98% 准确率）
     │
     ▼
-[Regex Parser] ─── Extracts structure (95-98% accuracy)
+[文本清理器] ─── 去除噪声（标记、页码、伪影）
     │
     ▼
-[Text Cleaner] ─── Removes noise (markers, page numbers, artifacts)
+[置信度评分器] ─── 标记低置信度提取项
     │
-    ▼
-[Confidence Scorer] ─── Flags low-confidence extractions
+    ├── 高置信度（≥0.95）→ 直接输出
     │
-    ├── High confidence (≥0.95) → Direct output
-    │
-    └── Low confidence (<0.95) → [LLM Validator] → Output
+    └── 低置信度（<0.95）→ [LLM 验证器] → 输出
 ```
 
 ## 实现

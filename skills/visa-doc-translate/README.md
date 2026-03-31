@@ -4,11 +4,11 @@ Automatically translate visa application documents from images to professional E
 
 ## Features
 
-- 🔄 **Automatic OCR**: Tries multiple OCR methods (macOS Vision, EasyOCR, Tesseract)
-- 📄 **Bilingual PDF**: Original image + professional English translation
-- 🌍 **Multi-language**: Supports Chinese, and other languages
-- 📋 **Professional Format**: Suitable for official visa applications
-- 🚀 **Fully Automated**: No manual intervention required
+- **Automatic OCR**: Tries multiple OCR methods (macOS Vision, EasyOCR, Tesseract)
+- **Bilingual PDF**: Original image + professional English translation
+- **Multi-language**: Supports Chinese, and other languages
+- **Professional Format**: Suitable for official visa applications
+- **Fully Automated**: No manual intervention required
 
 ## Supported Documents
 
@@ -75,11 +75,11 @@ pip install pytesseract
 
 ## Perfect For
 
-- 🇦🇺 Australia visa applications
-- 🇺🇸 USA visa applications
-- 🇨🇦 Canada visa applications
-- 🇬🇧 UK visa applications
-- 🇪🇺 EU visa applications
+- Australia visa applications
+- USA visa applications
+- Canada visa applications
+- UK visa applications
+- EU visa applications
 
 ## License
 

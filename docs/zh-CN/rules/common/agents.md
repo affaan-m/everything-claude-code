@@ -4,7 +4,7 @@
 
 位于 `~/.claude/agents/` 中：
 
-| 智能体 | 用途 | 使用时机 |
+| 代理 | 用途 | 使用时机 |
 |-------|---------|-------------|
 | planner | 实现规划 | 复杂功能、重构 |
 | architect | 系统设计 | 架构决策 |
@@ -14,7 +14,8 @@
 | build-error-resolver | 修复构建错误 | 构建失败时 |
 | e2e-runner | 端到端测试 | 关键用户流程 |
 | refactor-cleaner | 清理死代码 | 代码维护 |
-| doc-updater | 文档 | 更新文档时 |
+| doc-updater | 文档 | 更新文档 |
+| rust-reviewer | Rust 代码审查 | Rust 项目 |
 
 ## 即时智能体使用
 

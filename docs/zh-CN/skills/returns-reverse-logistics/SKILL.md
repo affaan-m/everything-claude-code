@@ -7,7 +7,7 @@ origin: ECC
 metadata:
   author: evos
   clawdbot:
-    emoji: "🔄"
+    emoji: ""
 ---
 
 # 退货与逆向物流

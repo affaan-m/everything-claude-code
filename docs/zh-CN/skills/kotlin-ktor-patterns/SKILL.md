@@ -24,28 +24,28 @@ origin: ECC
 ```text
 src/main/kotlin/
 ├── com/example/
-│   ├── Application.kt           # Entry point, module configuration
+│   ├── Application.kt           # 入口点，模块配置
 │   ├── plugins/
-│   │   ├── Routing.kt           # Route definitions
-│   │   ├── Serialization.kt     # Content negotiation setup
-│   │   ├── Authentication.kt    # Auth configuration
-│   │   ├── StatusPages.kt       # Error handling
-│   │   └── CORS.kt              # CORS configuration
+│   │   ├── Routing.kt           # 路由定义
+│   │   ├── Serialization.kt     # 内容协商设置
+│   │   ├── Authentication.kt    # 认证配置
+│   │   ├── StatusPages.kt       # 错误处理
+│   │   └── CORS.kt              # CORS 配置
 │   ├── routes/
-│   │   ├── UserRoutes.kt        # /users endpoints
-│   │   ├── AuthRoutes.kt        # /auth endpoints
-│   │   └── HealthRoutes.kt      # /health endpoints
+│   │   ├── UserRoutes.kt        # /users 端点
+│   │   ├── AuthRoutes.kt        # /auth 端点
+│   │   └── HealthRoutes.kt      # /health 端点
 │   ├── models/
-│   │   ├── User.kt              # Domain models
-│   │   └── ApiResponse.kt       # Response envelopes
+│   │   ├── User.kt              # 领域模型
+│   │   └── ApiResponse.kt       # 响应封装
 │   ├── services/
-│   │   ├── UserService.kt       # Business logic
-│   │   └── AuthService.kt       # Auth logic
+│   │   ├── UserService.kt       # 业务逻辑
+│   │   └── AuthService.kt       # 认证逻辑
 │   ├── repositories/
-│   │   ├── UserRepository.kt    # Data access interface
+│   │   ├── UserRepository.kt    # 数据访问接口
 │   │   └── ExposedUserRepository.kt
 │   └── di/
-│       └── AppModule.kt         # Koin modules
+│       └── AppModule.kt         # Koin 模块
 src/test/kotlin/
 ├── com/example/
 │   ├── routes/

@@ -62,7 +62,7 @@ description: 테스트 커버리지를 분석하고, 80% 이상을 목표로 누
 src/services/auth.ts         45%     88%
 src/utils/validation.ts      32%     82%
 ──────────────────────────────
-전체:                        67%     84%  ✅
+전체:                        67%     84%  PASS:
 ```
 
 ## 집중 영역

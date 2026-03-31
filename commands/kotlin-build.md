@@ -131,7 +131,7 @@ $ ./gradlew test
 | Files modified | 2 |
 | Remaining issues | 0 |
 
-Build Status: ✅ SUCCESS
+Build Status: PASS: SUCCESS
 ````
 
 ## Common Errors Fixed

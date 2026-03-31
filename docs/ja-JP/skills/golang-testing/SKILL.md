@@ -113,7 +113,7 @@ mypackage/
 ├── testdata/             # テストフィクスチャ
 │   ├── valid_user.json
 │   └── invalid_user.json
-└── export_test.go        # 内部のテストのための非公開のエクスポート
+└── export_test.go        # 内部テスト用の非公開エクスポート
 ```
 
 ### テストパッケージ

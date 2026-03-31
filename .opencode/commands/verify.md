@@ -47,17 +47,17 @@ Execute comprehensive verification:
 ## Verification Report
 
 ### Summary
-- Status: ✅ PASS / ❌ FAIL
+- Status: PASS: PASS / FAIL: FAIL
 - Score: X/Y checks passed
 
 ### Details
 | Check | Status | Notes |
 |-------|--------|-------|
-| TypeScript | ✅/❌ | [details] |
-| Lint | ✅/❌ | [details] |
-| Tests | ✅/❌ | [details] |
-| Coverage | ✅/❌ | XX% (target: 80%) |
-| Build | ✅/❌ | [details] |
+| TypeScript | PASS:/FAIL: | [details] |
+| Lint | PASS:/FAIL: | [details] |
+| Tests | PASS:/FAIL: | [details] |
+| Coverage | PASS:/FAIL: | XX% (target: 80%) |
+| Build | PASS:/FAIL: | [details] |
 
 ### Action Items
 [If FAIL, list what needs to be fixed]

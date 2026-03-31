@@ -42,6 +42,7 @@ Every adapter MUST return a JSON-serializable object with this top-level shape:
       "id": "seed-check",
       "label": "seed-check",
       "state": "running",
+      "health": "healthy",
       "branch": "feature/seed-check",
       "worktree": "/tmp/worktree",
       "runtime": {
@@ -71,6 +72,9 @@ Every adapter MUST return a JSON-serializable object with this top-level shape:
     "workerCount": 1,
     "states": {
       "running": 1
+    },
+    "healths": {
+      "healthy": 1
     }
   }
 }
@@ -110,7 +114,8 @@ Every adapter MUST return a JSON-serializable object with this top-level shape:
 | --- | --- | --- |
 | `id` | string | Stable worker identifier in adapter scope |
 | `label` | string | Operator-facing label |
-| `state` | string | Canonical worker state |
+| `state` | string | Canonical worker state (lifecycle) |
+| `health` | string | Canonical worker health (operational condition) |
 | `runtime` | object | Execution/runtime metadata |
 | `intent` | object | Why this worker/session exists |
 | `outputs` | object | Structured outcomes and checks |
@@ -145,6 +150,7 @@ Every adapter MUST return a JSON-serializable object with this top-level shape:
 | --- | --- | --- |
 | `workerCount` | integer | MUST equal `workers.length` |
 | `states` | object | Count map derived from `workers[].state` |
+| `healths` | object | Count map derived from `workers[].health` |
 
 ## Optional Fields
 
@@ -189,6 +195,7 @@ degrade gracefully.
 - adding new optional nested fields
 - adding new adapter ids
 - adding new state string values
+- adding new health string values
 - adding new artifact keys inside `workers[].artifacts`
 
 ### Requires a new schema version
@@ -214,6 +221,7 @@ Every ECC session adapter MUST:
    documented nested objects.
 5. Ensure `aggregates.workerCount === workers.length`.
 6. Ensure `aggregates.states` matches the emitted worker states.
+7. Ensure `aggregates.healths` matches the emitted worker health values.
 7. Produce plain JSON-serializable values only.
 8. Validate the canonical shape before persistence or downstream use.
 9. Persist the normalized canonical snapshot through the session recording shim.

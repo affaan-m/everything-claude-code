@@ -56,42 +56,24 @@ console.log('--- observe.sh signal throttling ---');
 
 test('observe.sh contains SIGNAL_EVERY_N throttle variable', () => {
   const content = fs.readFileSync(observeShPath, 'utf8');
-  assert.ok(
-    content.includes('SIGNAL_EVERY_N'),
-    'observe.sh should define SIGNAL_EVERY_N for throttling'
-  );
+  assert.ok(content.includes('SIGNAL_EVERY_N'), 'observe.sh should define SIGNAL_EVERY_N for throttling');
 });
 
 test('observe.sh uses a counter file instead of signaling every call', () => {
   const content = fs.readFileSync(observeShPath, 'utf8');
-  assert.ok(
-    content.includes('.observer-signal-counter'),
-    'observe.sh should use a signal counter file'
-  );
+  assert.ok(content.includes('.observer-signal-counter'), 'observe.sh should use a signal counter file');
 });
 
 test('observe.sh only signals when counter reaches threshold', () => {
   const content = fs.readFileSync(observeShPath, 'utf8');
-  assert.ok(
-    content.includes('should_signal=0'),
-    'observe.sh should default should_signal to 0'
-  );
-  assert.ok(
-    content.includes('should_signal=1'),
-    'observe.sh should set should_signal=1 when threshold reached'
-  );
-  assert.ok(
-    content.includes('if [ "$should_signal" -eq 1 ]'),
-    'observe.sh should gate kill -USR1 behind should_signal check'
-  );
+  assert.ok(content.includes('should_signal=0'), 'observe.sh should default should_signal to 0');
+  assert.ok(content.includes('should_signal=1'), 'observe.sh should set should_signal=1 when threshold reached');
+  assert.ok(content.includes('if [ "$should_signal" -eq 1 ]'), 'observe.sh should gate kill -USR1 behind should_signal check');
 });
 
 test('observe.sh default throttle is 20 observations per signal', () => {
   const content = fs.readFileSync(observeShPath, 'utf8');
-  assert.ok(
-    content.includes('ECC_OBSERVER_SIGNAL_EVERY_N:-20'),
-    'Default signal frequency should be every 20 observations'
-  );
+  assert.ok(content.includes('ECC_OBSERVER_SIGNAL_EVERY_N:-20'), 'Default signal frequency should be every 20 observations');
 });
 
 // ──────────────────────────────────────────────────────
@@ -102,22 +84,13 @@ console.log('\n--- observer-loop.sh re-entrancy guard ---');
 
 test('observer-loop.sh defines ANALYZING guard variable', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
-  assert.ok(
-    content.includes('ANALYZING=0'),
-    'observer-loop.sh should initialize ANALYZING=0'
-  );
+  assert.ok(content.includes('ANALYZING=0'), 'observer-loop.sh should initialize ANALYZING=0');
 });
 
 test('on_usr1 checks ANALYZING before starting analysis', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
-  assert.ok(
-    content.includes('if [ "$ANALYZING" -eq 1 ]'),
-    'on_usr1 should check ANALYZING flag'
-  );
-  assert.ok(
-    content.includes('Analysis already in progress, skipping signal'),
-    'on_usr1 should log when skipping due to re-entrancy'
-  );
+  assert.ok(content.includes('if [ "$ANALYZING" -eq 1 ]'), 'on_usr1 should check ANALYZING flag');
+  assert.ok(content.includes('Analysis already in progress, skipping signal'), 'on_usr1 should log when skipping due to re-entrancy');
 });
 
 test('on_usr1 sets ANALYZING=1 before and ANALYZING=0 after analysis', () => {
@@ -139,30 +112,18 @@ console.log('\n--- observer-loop.sh cooldown throttle ---');
 
 test('observer-loop.sh defines ANALYSIS_COOLDOWN', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
-  assert.ok(
-    content.includes('ANALYSIS_COOLDOWN'),
-    'observer-loop.sh should define ANALYSIS_COOLDOWN'
-  );
+  assert.ok(content.includes('ANALYSIS_COOLDOWN'), 'observer-loop.sh should define ANALYSIS_COOLDOWN');
 });
 
 test('on_usr1 enforces cooldown between analyses', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
-  assert.ok(
-    content.includes('LAST_ANALYSIS_EPOCH'),
-    'Should track last analysis time'
-  );
-  assert.ok(
-    content.includes('Analysis cooldown active'),
-    'Should log when cooldown prevents analysis'
-  );
+  assert.ok(content.includes('LAST_ANALYSIS_EPOCH'), 'Should track last analysis time');
+  assert.ok(content.includes('Analysis cooldown active'), 'Should log when cooldown prevents analysis');
 });
 
 test('default cooldown is 60 seconds', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
-  assert.ok(
-    content.includes('ECC_OBSERVER_ANALYSIS_COOLDOWN:-60'),
-    'Default cooldown should be 60 seconds'
-  );
+  assert.ok(content.includes('ECC_OBSERVER_ANALYSIS_COOLDOWN:-60'), 'Default cooldown should be 60 seconds');
 });
 
 // ──────────────────────────────────────────────────────
@@ -173,32 +134,38 @@ console.log('\n--- observer-loop.sh tail-based sampling ---');
 
 test('analyze_observations uses tail to sample recent observations', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
-  assert.ok(
-    content.includes('tail -n "$MAX_ANALYSIS_LINES"'),
-    'Should use tail to limit observations sent to LLM'
-  );
+  assert.ok(content.includes('tail -n "$MAX_ANALYSIS_LINES"'), 'Should use tail to limit observations sent to LLM');
 });
 
 test('default max analysis lines is 500', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
-  assert.ok(
-    content.includes('ECC_OBSERVER_MAX_ANALYSIS_LINES:-500'),
-    'Default should sample last 500 lines'
-  );
+  assert.ok(content.includes('ECC_OBSERVER_MAX_ANALYSIS_LINES:-500'), 'Default should sample last 500 lines');
 });
 
 test('analysis temp file is created and cleaned up', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
-  assert.ok(
-    content.includes('ecc-observer-analysis'),
-    'Should create a temp analysis file'
-  );
-  assert.ok(
-    content.includes('rm -f "$prompt_file" "$analysis_file"'),
-    'Should clean up both prompt and analysis temp files'
-  );
+  assert.ok(content.includes('ecc-observer-analysis'), 'Should create a temp analysis file');
+  assert.ok(content.includes('rm -f "$prompt_file" "$analysis_file"'), 'Should clean up both prompt and analysis temp files');
 });
 
+test('observer-loop uses project-local temp directory for analysis artifacts', () => {
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  assert.ok(content.includes('observer_tmp_dir="${PROJECT_DIR}/.observer-tmp"'), 'Should keep observer temp files inside the project');
+  assert.ok(content.includes('mktemp "${observer_tmp_dir}/ecc-observer-analysis.'), 'Analysis temp file should use the project temp dir');
+  assert.ok(content.includes('mktemp "${observer_tmp_dir}/ecc-observer-prompt.'), 'Prompt temp file should use the project temp dir');
+});
+
+test('observer-loop prompt requires direct instinct writes without asking permission', () => {
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  const heredocStart = content.indexOf('cat > "$prompt_file" <<PROMPT');
+  const heredocEnd = content.indexOf('\nPROMPT', heredocStart + 1);
+  assert.ok(heredocStart > 0, 'Should find prompt heredoc start');
+  assert.ok(heredocEnd > heredocStart, 'Should find prompt heredoc end');
+  const promptSection = content.substring(heredocStart, heredocEnd);
+  assert.ok(promptSection.includes('MUST write an instinct file directly'), 'Prompt should require direct file creation');
+  assert.ok(promptSection.includes('Do NOT ask for permission'), 'Prompt should forbid permission-seeking');
+  assert.ok(promptSection.includes('write or update the instinct file in this run'), 'Prompt should require same-run writes');
+});
 test('prompt references analysis_file not full OBSERVATIONS_FILE', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
   // The prompt heredoc should reference analysis_file for the Read instruction.
@@ -208,10 +175,7 @@ test('prompt references analysis_file not full OBSERVATIONS_FILE', () => {
   assert.ok(heredocStart > 0, 'Should find prompt heredoc start');
   assert.ok(heredocEnd > heredocStart, 'Should find prompt heredoc end');
   const promptSection = content.substring(heredocStart, heredocEnd);
-  assert.ok(
-    promptSection.includes('${analysis_file}'),
-    'Prompt should point Claude at the sampled analysis file, not the full observations file'
-  );
+  assert.ok(promptSection.includes('${analysis_relpath}'), 'Prompt should point Claude at the sampled analysis file (via relative path), not the full observations file');
 });
 
 // ──────────────────────────────────────────────────────
@@ -270,6 +234,10 @@ test('counter file handles missing/corrupt file gracefully', () => {
 console.log('\n--- observe.sh end-to-end throttle (shell execution) ---');
 
 test('observe.sh creates counter file and increments on each call', () => {
+  if (process.platform === 'win32') {
+    return;
+  }
+
   // This test runs observe.sh with minimal input to verify counter behavior.
   // We need python3, bash, and a valid project dir to test the full flow.
   // We use ECC_SKIP_OBSERVE=0 and minimal JSON so observe.sh processes but
@@ -287,22 +255,22 @@ test('observe.sh creates counter file and increments on each call', () => {
   fs.mkdirSync(hooksDir, { recursive: true });
 
   // Minimal detect-project.sh stub
-  fs.writeFileSync(path.join(scriptsDir, 'detect-project.sh'), [
-    '#!/bin/bash',
-    `PROJECT_ID="test-project"`,
-    `PROJECT_NAME="test-project"`,
-    `PROJECT_ROOT="${projectDir}"`,
-    `PROJECT_DIR="${projectDir}"`,
-    `CLV2_PYTHON_CMD="${process.platform === 'win32' ? 'python' : 'python3'}"`,
-    ''
-  ].join('\n'));
+  fs.writeFileSync(
+    path.join(scriptsDir, 'detect-project.sh'),
+    [
+      '#!/bin/bash',
+      `PROJECT_ID="test-project"`,
+      `PROJECT_NAME="test-project"`,
+      `PROJECT_ROOT="${projectDir}"`,
+      `PROJECT_DIR="${projectDir}"`,
+      `CLV2_PYTHON_CMD="${process.platform === 'win32' ? 'python' : 'python3'}"`,
+      ''
+    ].join('\n')
+  );
 
   // Copy observe.sh but patch SKILL_ROOT to our test dir
   let observeContent = fs.readFileSync(observeShPath, 'utf8');
-  observeContent = observeContent.replace(
-    'SKILL_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"',
-    `SKILL_ROOT="${skillRoot}"`
-  );
+  observeContent = observeContent.replace('SKILL_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"', `SKILL_ROOT="${skillRoot}"`);
   const testObserve = path.join(hooksDir, 'observe.sh');
   fs.writeFileSync(testObserve, observeContent, { mode: 0o755 });
 
@@ -333,10 +301,7 @@ test('observe.sh creates counter file and increments on each call', () => {
   if (fs.existsSync(counterFile)) {
     const val = fs.readFileSync(counterFile, 'utf8').trim();
     const counterVal = parseInt(val, 10);
-    assert.ok(
-      counterVal >= 1 && counterVal <= 2,
-      `Counter should be 1 or 2 after 2 calls, got ${counterVal}`
-    );
+    assert.ok(counterVal >= 1 && counterVal <= 2, `Counter should be 1 or 2 after 2 calls, got ${counterVal}`);
   } else {
     // If python3 is not available the hook exits early - that is acceptable
     const hasPython = spawnSync('python3', ['--version']).status === 0;
@@ -346,6 +311,44 @@ test('observe.sh creates counter file and increments on each call', () => {
   }
 
   cleanupDir(testDir);
+});
+
+// ──────────────────────────────────────────────────────
+// Test group 7: Observer Haiku invocation flags
+// ──────────────────────────────────────────────────────
+
+console.log('\n--- Observer Haiku invocation flags ---');
+
+test('claude invocation includes --allowedTools flag', () => {
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  assert.ok(content.includes('--allowedTools'), 'observer-loop.sh should include --allowedTools flag in claude invocation');
+});
+
+test('allowedTools includes Read permission', () => {
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  const match = content.match(/--allowedTools\s+"([^"]+)"/);
+  assert.ok(match, 'Should find --allowedTools with quoted value');
+  assert.ok(match[1].includes('Read'), `allowedTools should include Read, got: ${match[1]}`);
+});
+
+test('allowedTools includes Write permission', () => {
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  const match = content.match(/--allowedTools\s+"([^"]+)"/);
+  assert.ok(match, 'Should find --allowedTools with quoted value');
+  assert.ok(match[1].includes('Write'), `allowedTools should include Write, got: ${match[1]}`);
+});
+
+test('claude invocation still includes ECC_SKIP_OBSERVE and ECC_HOOK_PROFILE guards', () => {
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  // Find the claude execution line(s)
+  const lines = content.split('\n');
+  const claudeLine = lines.find(l => l.includes('claude --model haiku'));
+  assert.ok(claudeLine, 'Should find claude --model haiku invocation line');
+  // The env vars are on the same line as the claude command
+  const claudeLineIndex = lines.indexOf(claudeLine);
+  const fullCommand = lines.slice(Math.max(0, claudeLineIndex - 1), claudeLineIndex + 3).join(' ');
+  assert.ok(fullCommand.includes('ECC_SKIP_OBSERVE=1'), 'claude invocation should include ECC_SKIP_OBSERVE=1 guard');
+  assert.ok(fullCommand.includes('ECC_HOOK_PROFILE=minimal'), 'claude invocation should include ECC_HOOK_PROFILE=minimal guard');
 });
 
 // ──────────────────────────────────────────────────────

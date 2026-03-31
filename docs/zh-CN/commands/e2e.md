@@ -38,24 +38,24 @@ e2e-runner 代理将：
 ## 使用示例
 
 ````
-User: /e2e Test the market search and view flow
+用户：/e2e 测试市场搜索和查看流程
 
-Agent (e2e-runner):
-# E2E Test Generation: Market Search and View Flow
+代理（e2e-runner）：
+# E2E 测试生成：市场搜索和查看流程
 
-## Test Scenario Identified
+## 已识别测试场景
 
-**User Journey:** Market Search → View Results → Click Market → View Details
+**用户旅程：** 市场搜索 → 查看结果 → 点击市场 → 查看详情
 
-**Test Coverage:**
-1. Navigate to markets page
-2. Perform semantic search
-3. Verify search results
-4. Click on first result
-5. Verify market details page loads
-6. Verify chart renders
+**测试覆盖范围：**
+1. 导航至市场页面
+2. 执行语义搜索
+3. 验证搜索结果
+4. 点击第一个结果
+5. 验证市场详情页面加载
+6. 验证图表渲染
 
-## Generated Test Code
+## 生成的测试代码
 
 ```typescript
 // tests/e2e/markets/search-and-view.spec.ts
@@ -155,6 +155,7 @@ test.describe('Market Search and View Flow', () => {
     expect(finalCount).toBe(initialCount)
   })
 })
+
 ````
 
 ## 运行测试
@@ -181,55 +182,55 @@ Artifacts generated:
 
 ```
 ╔══════════════════════════════════════════════════════════════╗
-║                    E2E Test Results                          ║
+║                    E2E 测试结果                          ║
 ╠══════════════════════════════════════════════════════════════╣
-║ Status:     ✅ ALL TESTS PASSED                              ║
-║ Total:      3 tests                                          ║
-║ Passed:     3 (100%)                                         ║
-║ Failed:     0                                                ║
-║ Flaky:      0                                                ║
-║ Duration:   9.1s                                             ║
+║ 状态：     PASS: 所有测试通过                              ║
+║ 总计：      3 项测试                                          ║
+║ 通过：     3 (100%)                                         ║
+║ 失败：     0                                                ║
+║ 不稳定：    0                                                ║
+║ 耗时：   9.1s                                             ║
 ╚══════════════════════════════════════════════════════════════╝
 
-Artifacts:
-📸 Screenshots: 2 files
-📹 Videos: 0 files (only on failure)
-🔍 Traces: 0 files (only on failure)
-📊 HTML Report: playwright-report/index.html
+产物：
+ 截图： 2 个文件
+ 视频： 0 个文件（仅在失败时生成）
+ 追踪文件： 0 个文件（仅在失败时生成）
+ HTML 报告： playwright-report/index.html
 
-View report: npx playwright show-report
+查看报告： npx playwright show-report
 ```
 
-✅ E2E 测试套件已准备好进行 CI/CD 集成！
+PASS: E2E 测试套件已准备好进行 CI/CD 集成！
 
 ````
+## 测试产物
 
-## Test Artifacts
+当测试运行时，会捕获以下产物：
 
-When tests run, the following artifacts are captured:
+**所有测试：**
+- 包含时间线和结果的 HTML 报告
+- 用于 CI 集成的 JUnit XML 文件
 
-**On All Tests:**
-- HTML Report with timeline and results
-- JUnit XML for CI integration
+**仅在失败时：**
+- 失败状态的截图
+- 测试的视频录制
+- 用于调试的追踪文件（逐步重放）
+- 网络日志
+- 控制台日志
 
-**On Failure Only:**
-- Screenshot of the failing state
-- Video recording of the test
-- Trace file for debugging (step-by-step replay)
-- Network logs
-- Console logs
-
-## Viewing Artifacts
+## 查看产物
 
 ```bash
-# View HTML report in browser
+# 在浏览器中查看 HTML 报告
 npx playwright show-report
 
-# View specific trace file
+# 查看特定的追踪文件
 npx playwright show-trace artifacts/trace-abc123.zip
 
-# Screenshots are saved in artifacts/ directory
+# 截图保存在 artifacts/ 目录中
 open artifacts/search-results.png
+
 ````
 
 ## 不稳定测试检测
@@ -237,30 +238,30 @@ open artifacts/search-results.png
 如果测试间歇性失败：
 
 ```
-⚠️  FLAKY TEST DETECTED: tests/e2e/markets/trade.spec.ts
+WARNING:  FLAKY TEST DETECTED: tests/e2e/markets/trade.spec.ts
 
-Test passed 7/10 runs (70% pass rate)
+测试通过了 7/10 次运行 (70% 通过率)
 
-Common failure:
-"Timeout waiting for element '[data-testid="confirm-btn"]'"
+常见失败原因:
+"等待元素 '[data-testid="confirm-btn"]' 超时"
 
-Recommended fixes:
-1. Add explicit wait: await page.waitForSelector('[data-testid="confirm-btn"]')
-2. Increase timeout: { timeout: 10000 }
-3. Check for race conditions in component
-4. Verify element is not hidden by animation
+推荐修复方法:
+1. 添加显式等待: await page.waitForSelector('[data-testid="confirm-btn"]')
+2. 增加超时时间: { timeout: 10000 }
+3. 检查组件中的竞争条件
+4. 确认元素未被动画遮挡
 
-Quarantine recommendation: Mark as test.fixme() until fixed
+隔离建议: 在修复前标记为 test.fixme()
 ```
 
 ## 浏览器配置
 
 默认情况下，测试在多个浏览器上运行：
 
-* ✅ Chromium（桌面版 Chrome）
-* ✅ Firefox（桌面版）
-* ✅ WebKit（桌面版 Safari）
-* ✅ 移动版 Chrome（可选）
+* PASS: Chromium（桌面版 Chrome）
+* PASS: Firefox（桌面版）
+* PASS: WebKit（桌面版 Safari）
+* PASS: 移动版 Chrome（可选）
 
 在 `playwright.config.ts` 中配置以调整浏览器。
 
@@ -288,7 +289,7 @@ Quarantine recommendation: Mark as test.fixme() until fixed
 
 对于 PMX，请优先考虑以下 E2E 测试：
 
-**🔴 关键（必须始终通过）：**
+**关键（必须始终通过）：**
 
 1. 用户可以连接钱包
 2. 用户可以浏览市场
@@ -298,7 +299,7 @@ Quarantine recommendation: Mark as test.fixme() until fixed
 6. 市场正确结算
 7. 用户可以提取资金
 
-**🟡 重要：**
+**重要：**
 
 1. 市场创建流程
 2. 用户资料更新
@@ -311,21 +312,21 @@ Quarantine recommendation: Mark as test.fixme() until fixed
 
 **应该：**
 
-* ✅ 使用页面对象模型以提高可维护性
-* ✅ 使用 data-testid 属性作为选择器
-* ✅ 等待 API 响应，而不是使用任意超时
-* ✅ 测试关键用户旅程的端到端
-* ✅ 在合并到主分支前运行测试
-* ✅ 在测试失败时审查工件
+* PASS: 使用页面对象模型以提高可维护性
+* PASS: 使用 data-testid 属性作为选择器
+* PASS: 等待 API 响应，而不是使用任意超时
+* PASS: 测试关键用户旅程的端到端
+* PASS: 在合并到主分支前运行测试
+* PASS: 在测试失败时审查工件
 
 **不应该：**
 
-* ❌ 使用不稳定的选择器（CSS 类可能会改变）
-* ❌ 测试实现细节
-* ❌ 针对生产环境运行测试
-* ❌ 忽略不稳定测试
-* ❌ 在失败时跳过工件审查
-* ❌ 使用 E2E 测试每个边缘情况（使用单元测试）
+* FAIL: 使用不稳定的选择器（CSS 类可能会改变）
+* FAIL: 测试实现细节
+* FAIL: 针对生产环境运行测试
+* FAIL: 忽略不稳定测试
+* FAIL: 在失败时跳过工件审查
+* FAIL: 使用 E2E 测试每个边缘情况（使用单元测试）
 
 ## 重要注意事项
 

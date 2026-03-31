@@ -45,18 +45,16 @@ go mod tidy -v
 ## 示例会话
 
 ````text
-User: /go-build
+# Go Build 解析
 
-Agent:
-# Go Build Resolution
-
-## Initial Diagnostics
+## 初始诊断
 
 ```bash
 $ go build ./...
 internal/service/user.go:25:15: undefined: UserRepository
 internal/handler/api.go:42:9: cannot use x (type string) as type int
 internal/handler/api.go:58:2: missing return at end of function
+
 ````
 
 发现错误：3
@@ -141,47 +139,45 @@ ok      project/internal/handler   0.023s
 | 已修改的文件 | 2 |
 | 剩余问题 | 0 |
 
-构建状态：✅ 成功
+构建状态：PASS: 成功
 
 ```
+## 常见错误修复
 
-## Common Errors Fixed
-
-| Error | Typical Fix |
+| 错误 | 典型修复 |
 |-------|-------------|
-| `undefined: X` | Add import or fix typo |
-| `cannot use X as Y` | Type conversion or fix assignment |
-| `missing return` | Add return statement |
-| `X does not implement Y` | Add missing method |
-| `import cycle` | Restructure packages |
-| `declared but not used` | Remove or use variable |
-| `cannot find package` | `go get` or `go mod tidy` |
+| `undefined: X` | 添加导入或修正拼写错误 |
+| `cannot use X as Y` | 类型转换或修正赋值 |
+| `missing return` | 添加返回语句 |
+| `X does not implement Y` | 添加缺失的方法 |
+| `import cycle` | 重构包结构 |
+| `declared but not used` | 移除或使用变量 |
+| `cannot find package` | `go get` 或 `go mod tidy` |
 
-## Fix Strategy
+## 修复策略
 
-1. **Build errors first** - Code must compile
-2. **Vet warnings second** - Fix suspicious constructs
-3. **Lint warnings third** - Style and best practices
-4. **One fix at a time** - Verify each change
-5. **Minimal changes** - Don't refactor, just fix
+1. **优先处理构建错误** - 代码必须能够编译
+2. **其次处理 vet 警告** - 修复可疑结构
+3. **再次处理 lint 警告** - 风格和最佳实践
+4. **一次修复一个问题** - 验证每个更改
+5. **最小化更改** - 不要重构，只修复
 
-## Stop Conditions
+## 停止条件
 
-The agent will stop and report if:
-- Same error persists after 3 attempts
-- Fix introduces more errors
-- Requires architectural changes
-- Missing external dependencies
+在以下情况下，代理将停止并报告：
+- 相同错误经过 3 次尝试后仍然存在
+- 修复引入了更多错误
+- 需要架构性更改
+- 缺少外部依赖
 
-## Related Commands
+## 相关命令
 
-- `/go-test` - Run tests after build succeeds
-- `/go-review` - Review code quality
-- `/verify` - Full verification loop
+- `/go-test` - 构建成功后运行测试
+- `/go-review` - 审查代码质量
+- `/verify` - 完整验证循环
 
-## Related
+## 相关
 
-- Agent: `agents/go-build-resolver.md`
-- Skill: `skills/golang-patterns/`
-
+- 代理: `agents/go-build-resolver.md`
+- 技能: `skills/golang-patterns/`
 ```

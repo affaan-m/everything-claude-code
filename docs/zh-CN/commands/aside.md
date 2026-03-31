@@ -81,7 +81,7 @@ What would you like to know? (ask your question and I'll answer without losing t
 ```
 ASIDE: [answer]
 
-⚠️ Note: This answer suggests [issue] with the current approach. Want to address this before continuing, or proceed as planned?
+WARNING: Note: This answer suggests [issue] with the current approach. Want to address this before continuing, or proceed as planned?
 ```
 
 等待用户的决定后再恢复。
@@ -128,7 +128,7 @@ That's the short version. Want a deeper explanation after we finish [current tas
 ```
 ASIDE: [answer]
 
-📝 Worth fixing: [what should be changed]. I'll flag this after the current task unless you want to address it now.
+ Worth fixing: [what should be changed]. I'll flag this after the current task unless you want to address it now.
 ```
 
 **问题含糊不清或过于笼统：**
@@ -159,7 +159,7 @@ No — the shared cache object in src/cache/store.ts:34 is mutated without locki
 Under concurrent requests this is a race condition. It's low risk in a single-process
 Node.js server but would be a real problem with worker threads or clustering.
 
-⚠️ Note: This could affect the feature we're building. Want to address this now or continue and fix it in a follow-up?
+WARNING: Note: This could affect the feature we're building. Want to address this now or continue and fix it in a follow-up?
 ```
 
 ***

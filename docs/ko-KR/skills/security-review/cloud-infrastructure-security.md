@@ -24,7 +24,7 @@
 #### 최소 권한 원칙
 
 ```yaml
-# ✅ CORRECT: Minimal permissions
+# PASS: CORRECT: Minimal permissions
 iam_role:
   permissions:
     - s3:GetObject  # Only read access
@@ -32,7 +32,7 @@ iam_role:
   resources:
     - arn:aws:s3:::my-bucket/*  # Specific bucket only
 
-# ❌ WRONG: Overly broad permissions
+# FAIL: WRONG: Overly broad permissions
 iam_role:
   permissions:
     - s3:*  # All S3 actions
@@ -65,14 +65,14 @@ aws iam enable-mfa-device \
 #### 클라우드 시크릿 매니저
 
 ```typescript
-// ✅ CORRECT: Use cloud secrets manager
+// PASS: CORRECT: Use cloud secrets manager
 import { SecretsManager } from '@aws-sdk/client-secrets-manager';
 
 const client = new SecretsManager({ region: 'us-east-1' });
 const secret = await client.getSecretValue({ SecretId: 'prod/api-key' });
 const apiKey = JSON.parse(secret.SecretString).key;
 
-// ❌ WRONG: Hardcoded or in environment variables only
+// FAIL: WRONG: Hardcoded or in environment variables only
 const apiKey = process.env.API_KEY; // Not rotated, not audited
 ```
 
@@ -99,7 +99,7 @@ aws secretsmanager rotate-secret \
 #### VPC 및 방화벽 구성
 
 ```terraform
-# ✅ CORRECT: Restricted security group
+# PASS: CORRECT: Restricted security group
 resource "aws_security_group" "app" {
   name = "app-sg"
 
@@ -118,7 +118,7 @@ resource "aws_security_group" "app" {
   }
 }
 
-# ❌ WRONG: Open to the internet
+# FAIL: WRONG: Open to the internet
 resource "aws_security_group" "bad" {
   ingress {
     from_port   = 0
@@ -142,7 +142,7 @@ resource "aws_security_group" "bad" {
 #### CloudWatch/로깅 구성
 
 ```typescript
-// ✅ CORRECT: Comprehensive logging
+// PASS: CORRECT: Comprehensive logging
 import { CloudWatchLogsClient, CreateLogStreamCommand } from '@aws-sdk/client-cloudwatch-logs';
 
 const logSecurityEvent = async (event: SecurityEvent) => {
@@ -177,7 +177,7 @@ const logSecurityEvent = async (event: SecurityEvent) => {
 #### 보안 파이프라인 구성
 
 ```yaml
-# ✅ CORRECT: Secure GitHub Actions workflow
+# PASS: CORRECT: Secure GitHub Actions workflow
 name: Deploy
 
 on:
@@ -237,7 +237,7 @@ jobs:
 #### Cloudflare 보안 구성
 
 ```typescript
-// ✅ CORRECT: Cloudflare Workers with security headers
+// PASS: CORRECT: Cloudflare Workers with security headers
 export default {
   async fetch(request: Request): Promise<Response> {
     const response = await fetch(request);
@@ -281,7 +281,7 @@ export default {
 #### 자동 백업
 
 ```terraform
-# ✅ CORRECT: Automated RDS backups
+# PASS: CORRECT: Automated RDS backups
 resource "aws_db_instance" "main" {
   allocated_storage     = 20
   engine               = "postgres"
@@ -327,10 +327,10 @@ resource "aws_db_instance" "main" {
 ### S3 버킷 노출
 
 ```bash
-# ❌ WRONG: Public bucket
+# FAIL: WRONG: Public bucket
 aws s3api put-bucket-acl --bucket my-bucket --acl public-read
 
-# ✅ CORRECT: Private bucket with specific access
+# PASS: CORRECT: Private bucket with specific access
 aws s3api put-bucket-acl --bucket my-bucket --acl private
 aws s3api put-bucket-policy --bucket my-bucket --policy file://policy.json
 ```
@@ -338,12 +338,12 @@ aws s3api put-bucket-policy --bucket my-bucket --policy file://policy.json
 ### RDS 공개 접근
 
 ```terraform
-# ❌ WRONG
+# FAIL: WRONG
 resource "aws_db_instance" "bad" {
   publicly_accessible = true  # NEVER do this!
 }
 
-# ✅ CORRECT
+# PASS: CORRECT
 resource "aws_db_instance" "good" {
   publicly_accessible = false
   vpc_security_group_ids = [aws_security_group.db.id]

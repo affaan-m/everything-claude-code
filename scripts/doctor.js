@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const os = require('os');
 const { buildDoctorReport } = require('./lib/install-lifecycle');
 const { SUPPORTED_INSTALL_TARGETS } = require('./lib/install-manifests');
 
@@ -88,7 +89,7 @@ function main() {
 
     const report = buildDoctorReport({
       repoRoot: require('path').join(__dirname, '..'),
-      homeDir: process.env.HOME,
+      homeDir: process.env.HOME || os.homedir(),
       projectRoot: process.cwd(),
       targets: options.targets,
     });

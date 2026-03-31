@@ -33,7 +33,7 @@ Blueprint 自动检测 git/gh 可用性。如果具备 git + GitHub CLI，它会
 ### 基本用法
 
 ```
-/blueprint myapp "migrate database to PostgreSQL"
+/blueprint myapp "将数据库迁移到PostgreSQL"
 ```
 
 生成 `plans/myapp-migrate-database-to-postgresql.md`，包含类似以下的步骤：
@@ -47,7 +47,7 @@ Blueprint 自动检测 git/gh 可用性。如果具备 git + GitHub CLI，它会
 ### 多代理项目
 
 ```
-/blueprint chatbot "extract LLM providers into a plugin system"
+/blueprint chatbot "将LLM提供商提取到插件系统中"
 ```
 
 生成一个尽可能包含并行步骤的计划（例如，在插件接口步骤完成后，“实现 Anthropic 插件”和“实现 OpenAI 插件”可以并行运行），分配模型层级（接口设计步骤使用最强模型，实现步骤使用默认模型），并在每个步骤后验证不变量（例如“所有现有测试通过”、“核心模块无提供商导入”）。

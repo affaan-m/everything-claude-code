@@ -12,7 +12,7 @@ const { spawnSync } = require('child_process');
 
 const dashboard = require('../../scripts/lib/skill-evolution/dashboard');
 const versioning = require('../../scripts/lib/skill-evolution/versioning');
-const provenance = require('../../scripts/lib/skill-evolution/provenance');
+const _provenance = require('../../scripts/lib/skill-evolution/provenance');
 
 const HEALTH_SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'skills-health.js');
 

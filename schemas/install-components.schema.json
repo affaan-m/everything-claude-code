@@ -26,7 +26,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^(baseline|lang|framework|capability):[a-z0-9-]+$"
+            "pattern": "^(baseline|lang|framework|capability|agent|skill):[a-z0-9-]+$"
           },
           "family": {
             "type": "string",
@@ -34,7 +34,9 @@
               "baseline",
               "language",
               "framework",
-              "capability"
+              "capability",
+              "agent",
+              "skill"
             ]
           },
           "description": {

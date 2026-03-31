@@ -8,16 +8,14 @@ origin: ECC
 
 将内容分发到多个社交平台，并适配各平台原生风格。
 
-## 何时使用
+## 何时激活
 
 * 用户希望将内容发布到多个平台
 * 在社交媒体上发布公告、产品发布或更新
 * 将某个平台的内容改编后发布到其他平台
 * 用户提及“跨平台发布”、“到处发帖”、“分享到所有平台”或“分发这个”
 
-## 运作方式
-
-### 核心规则
+## 核心规则
 
 1. **切勿在不同平台发布相同内容。** 每个平台都应获得原生适配版本。
 2. **主平台优先。** 先发布到主平台，再为其他平台适配。
@@ -25,7 +23,7 @@ origin: ECC
 4. **每条帖子一个核心思想。** 如果源内容包含多个想法，请拆分成多条帖子。
 5. **注明出处很重要。** 如果转发他人的内容，请注明来源。
 
-### 平台规格
+## 平台规范
 
 | 平台 | 最大长度 | 链接处理 | 话题标签 | 媒体 |
 |----------|-----------|---------------|----------|-------|
@@ -34,7 +32,7 @@ origin: ECC
 | Threads | 500 字符 | 独立的链接附件 | 通常不使用 | 图片、视频 |
 | Bluesky | 300 字符 | 通过 Facets (富文本) | 无 (使用 Feeds) | 图片 |
 
-### 工作流程
+## 工作流程
 
 ### 步骤 1：创建源内容
 
@@ -97,42 +95,42 @@ origin: ECC
 * 错开发布时间 (不要同时发布 — 间隔 30-60 分钟)
 * 在适当的地方包含跨平台引用 (例如，“在 X 上有更长的 Thread”等)
 
-## 示例
+## 内容适配示例
 
 ### 源内容：产品发布
 
 **X 版本：**
 
 ```
-We just shipped [feature].
+我们刚刚发布了 [feature]。
 
-[One specific thing it does that's impressive]
+[它所实现的某个具体且令人印象深刻的功能]
 
-[Link]
+[链接]
 ```
 
 **LinkedIn 版本：**
 
 ```
-Excited to share: we just launched [feature] at [Company].
+激动地宣布：我们刚刚在[Company]推出了[feature]。
 
-Here's why it matters:
+以下是其重要意义：
 
-[2-3 short paragraphs with context]
+[2-3段简短背景说明]
 
-[Takeaway for the audience]
+[对受众的核心启示]
 
-[Link]
+[链接]
 ```
 
 **Threads 版本：**
 
 ```
-just shipped something cool — [feature]
+刚发布了一个很酷的东西 —— [feature]
 
-[casual explanation of what it does]
+[对这个功能是什么的随意解释]
 
-link in bio
+链接在简介里
 ```
 
 ### 源内容：技术见解
@@ -140,21 +138,21 @@ link in bio
 **X 版本：**
 
 ```
-TIL: [specific technical insight]
+今天学到：[具体技术见解]
 
-[Why it matters in one sentence]
+[一句话说明其重要性]
 ```
 
 **LinkedIn 版本：**
 
 ```
-A pattern I've been using that's made a real difference:
+我一直在使用的一种模式，它带来了真正的改变：
 
-[Technical insight with professional framing]
+[技术见解与专业框架]
 
-[How it applies to teams/orgs]
+[它如何适用于团队/组织]
 
-#relevantHashtag
+#相关标签
 ```
 
 ## API 集成
@@ -178,7 +176,7 @@ resp = requests.post(
             "threads": {"text": threads_version}
         }
     },
-    timeout=30
+    timeout=30,
 )
 resp.raise_for_status()
 ```

@@ -18,7 +18,7 @@
 如果没有可用工具，使用 Grep 查找零次导入的导出：
 
 ```
-# Find exports, then check if they're imported anywhere
+# 查找导出项，然后检查是否有任何地方导入了它们
 ```
 
 ## 步骤 2：分类发现结果
@@ -64,15 +64,15 @@
 报告结果：
 
 ```
-Dead Code Cleanup
+无用代码清理
 ──────────────────────────────
-Deleted:   12 unused functions
-           3 unused files
-           5 unused dependencies
-Skipped:   2 items (tests failed)
-Saved:     ~450 lines removed
+已删除：   12 个未使用函数
+           3 个未使用文件
+           5 个未使用依赖项
+已跳过：   2 个项目（测试失败）
+已节省：   ~450 行代码被移除
 ──────────────────────────────
-All tests passing ✅
+所有测试通过 PASS:
 ```
 
 ## 规则

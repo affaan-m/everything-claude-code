@@ -47,14 +47,14 @@ dmux
 将研究和实现拆分为并行轨道：
 
 ```
-Pane 1 (Research): "Research best practices for rate limiting in Node.js.
-  Check current libraries, compare approaches, and write findings to
+Pane 1 (Research): "研究 Node.js 中速率限制的最佳实践。
+  检查当前可用的库，比较不同方法，并将研究结果写入
   /tmp/rate-limit-research.md"
 
-Pane 2 (Implement): "Implement rate limiting middleware for our Express API.
-  Start with a basic token bucket, we'll refine after research completes."
+Pane 2 (Implement): "为我们的 Express API 实现速率限制中间件。
+  先从基本的令牌桶算法开始，研究完成后我们将进一步优化。"
 
-# After Pane 1 completes, merge findings into Pane 2's context
+# Pane 1 完成后，将研究结果合并到 Pane 2 的上下文中
 ```
 
 ### 模式 2：多文件功能
@@ -62,11 +62,11 @@ Pane 2 (Implement): "Implement rate limiting middleware for our Express API.
 在独立文件间并行工作：
 
 ```
-Pane 1: "Create the database schema and migrations for the billing feature"
-Pane 2: "Build the billing API endpoints in src/api/billing/"
-Pane 3: "Create the billing dashboard UI components"
+Pane 1: "创建计费功能的数据库模式和迁移"
+Pane 2: "在 src/api/billing/ 中构建计费 API 端点"
+Pane 3: "创建计费仪表板 UI 组件"
 
-# Merge all, then do integration in main pane
+# 合并所有内容，然后在主面板中进行集成
 ```
 
 ### 模式 3：测试 + 修复循环
@@ -74,10 +74,10 @@ Pane 3: "Create the billing dashboard UI components"
 在一个窗格中运行测试，在另一个窗格中修复：
 
 ```
-Pane 1 (Watcher): "Run the test suite in watch mode. When tests fail,
-  summarize the failures."
+窗格 1（观察者）：“在监视模式下运行测试套件。当测试失败时，
+  总结失败原因。”
 
-Pane 2 (Fixer): "Fix failing tests based on the error output from pane 1"
+窗格 2（修复者）：“根据窗格 1 的错误输出修复失败的测试”
 ```
 
 ### 模式 4：跨套件
@@ -95,11 +95,11 @@ Pane 3 (Claude Code): "Write E2E tests for the checkout flow"
 并行审查视角：
 
 ```
-Pane 1: "Review src/api/ for security vulnerabilities"
-Pane 2: "Review src/api/ for performance issues"
-Pane 3: "Review src/api/ for test coverage gaps"
+Pane 1: "审查 src/api/ 中的安全漏洞"
+Pane 2: "审查 src/api/ 中的性能问题"
+Pane 3: "审查 src/api/ 中的测试覆盖缺口"
 
-# Merge all reviews into a single report
+# 将所有审查合并为一份报告
 ```
 
 ## 最佳实践
@@ -151,7 +151,7 @@ node scripts/orchestrate-worktrees.js plan.json --execute
 {
   "sessionName": "skill-audit",
   "baseRef": "HEAD",
-  "launcherCommand": "codex exec --cwd {worktree_path_sh} --task-file {task_file_sh}",
+  "launcherCommand": "codex exec --cwd {worktree_path} --task-file {task_file}",
   "workers": [
     { "name": "docs-a", "task": "Fix skills 1-4 and write handoff notes." },
     { "name": "docs-b", "task": "Fix skills 5-8 and write handoff notes." }
@@ -178,7 +178,7 @@ node scripts/orchestrate-worktrees.js plan.json --execute
     "scripts/lib/tmux-worktree-orchestrator.js",
     ".claude/plan/workflow-e2e-test.json"
   ],
-  "launcherCommand": "bash {repo_root_sh}/scripts/orchestrate-codex-worker.sh {task_file_sh} {handoff_file_sh} {status_file_sh}",
+  "launcherCommand": "bash {repo_root}/scripts/orchestrate-codex-worker.sh {task_file} {handoff_file} {status_file}",
   "workers": [
     { "name": "seed-check", "task": "Verify seeded files are present before starting work." }
   ]

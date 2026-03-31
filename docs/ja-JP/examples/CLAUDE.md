@@ -43,7 +43,7 @@
 
 ```
 src/
-|-- app/              # Next.js app router
+|-- app/              # Next.js App Router
 |-- components/       # 再利用可能なUIコンポーネント
 |-- hooks/            # カスタムReactフック
 |-- lib/              # ユーティリティライブラリ

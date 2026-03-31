@@ -3,18 +3,21 @@ set -euo pipefail
 
 # Sync Everything Claude Code (ECC) assets into a local Codex CLI setup.
 # - Backs up ~/.codex config and AGENTS.md
-# - Replaces AGENTS.md with ECC AGENTS.md
-# - Syncs Codex-ready skills from .agents/skills
+# - Merges ECC AGENTS.md into existing AGENTS.md (marker-based, preserves user content)
 # - Generates prompt files from commands/*.md
 # - Generates Codex QA wrappers and optional language rule-pack prompts
 # - Installs global git safety hooks (pre-commit and pre-push)
 # - Runs a post-sync global regression sanity check
-# - Normalizes MCP server entries to pnpm dlx and removes duplicate Context7 block
+# - Merges ECC MCP servers into config.toml (add-only via Node TOML parser)
 
 MODE="apply"
-if [[ "${1:-}" == "--dry-run" ]]; then
-  MODE="dry-run"
-fi
+UPDATE_MCP=""
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run)    MODE="dry-run" ;;
+    --update-mcp) UPDATE_MCP="--update-mcp" ;;
+  esac
+done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -24,8 +27,6 @@ CONFIG_FILE="$CODEX_HOME/config.toml"
 AGENTS_FILE="$CODEX_HOME/AGENTS.md"
 AGENTS_ROOT_SRC="$REPO_ROOT/AGENTS.md"
 AGENTS_CODEX_SUPP_SRC="$REPO_ROOT/.codex/AGENTS.md"
-SKILLS_SRC="$REPO_ROOT/.agents/skills"
-SKILLS_DEST="$CODEX_HOME/skills"
 PROMPTS_SRC="$REPO_ROOT/commands"
 PROMPTS_DEST="$CODEX_HOME/prompts"
 HOOKS_INSTALLER="$REPO_ROOT/scripts/codex/install-global-git-hooks.sh"
@@ -39,9 +40,11 @@ log() { printf '[ecc-sync] %s\n' "$*"; }
 
 run_or_echo() {
   if [[ "$MODE" == "dry-run" ]]; then
-    printf '[dry-run] %s\n' "$*"
+    printf '[dry-run]'
+    printf ' %q' "$@"
+    printf '\n'
   else
-    eval "$@"
+    "$@"
   fi
 }
 
@@ -123,52 +126,117 @@ generate_prompt_file() {
   } > "$out"
 }
 
+MCP_MERGE_SCRIPT="$REPO_ROOT/scripts/codex/merge-mcp-config.js"
+
 require_path "$REPO_ROOT/AGENTS.md" "ECC AGENTS.md"
 require_path "$AGENTS_CODEX_SUPP_SRC" "ECC Codex AGENTS supplement"
-require_path "$SKILLS_SRC" "ECC skills directory"
 require_path "$PROMPTS_SRC" "ECC commands directory"
 require_path "$HOOKS_INSTALLER" "ECC global git hooks installer"
 require_path "$SANITY_CHECKER" "ECC global sanity checker"
 require_path "$CURSOR_RULES_DIR" "ECC Cursor rules directory"
 require_path "$CONFIG_FILE" "Codex config.toml"
+require_path "$MCP_MERGE_SCRIPT" "ECC MCP merge script"
+
+if ! command -v node >/dev/null 2>&1; then
+  log "ERROR: node is required for MCP config merging but was not found"
+  exit 1
+fi
 
 log "Mode: $MODE"
 log "Repo root: $REPO_ROOT"
 log "Codex home: $CODEX_HOME"
 
 log "Creating backup folder: $BACKUP_DIR"
-run_or_echo "mkdir -p \"$BACKUP_DIR\""
-run_or_echo "cp \"$CONFIG_FILE\" \"$BACKUP_DIR/config.toml\""
+run_or_echo mkdir -p "$BACKUP_DIR"
+run_or_echo cp "$CONFIG_FILE" "$BACKUP_DIR/config.toml"
 if [[ -f "$AGENTS_FILE" ]]; then
-  run_or_echo "cp \"$AGENTS_FILE\" \"$BACKUP_DIR/AGENTS.md\""
+  run_or_echo cp "$AGENTS_FILE" "$BACKUP_DIR/AGENTS.md"
 fi
 
-log "Replacing global AGENTS.md with ECC AGENTS + Codex supplement"
+ECC_BEGIN_MARKER="<!-- BEGIN ECC -->"
+ECC_END_MARKER="<!-- END ECC -->"
+
+compose_ecc_block() {
+  printf '%s\n' "$ECC_BEGIN_MARKER"
+  cat "$AGENTS_ROOT_SRC"
+  printf '\n\n---\n\n'
+  printf '# Codex Supplement (From ECC .codex/AGENTS.md)\n\n'
+  cat "$AGENTS_CODEX_SUPP_SRC"
+  printf '\n%s\n' "$ECC_END_MARKER"
+}
+
+log "Merging ECC AGENTS into $AGENTS_FILE (preserving user content)"
 if [[ "$MODE" == "dry-run" ]]; then
-  printf '[dry-run] compose %s from %s + %s\n' "$AGENTS_FILE" "$AGENTS_ROOT_SRC" "$AGENTS_CODEX_SUPP_SRC"
+  printf '[dry-run] merge ECC block into %s from %s + %s\n' "$AGENTS_FILE" "$AGENTS_ROOT_SRC" "$AGENTS_CODEX_SUPP_SRC"
 else
-  {
-    cat "$AGENTS_ROOT_SRC"
-    printf '\n\n---\n\n'
-    printf '# Codex Supplement (From ECC .codex/AGENTS.md)\n\n'
-    cat "$AGENTS_CODEX_SUPP_SRC"
-  } > "$AGENTS_FILE"
+  replace_ecc_section() {
+    # Replace the ECC block between markers in $AGENTS_FILE with fresh content.
+    # Uses awk to correctly handle all positions including line 1.
+    local tmp
+    tmp="$(mktemp)"
+    local ecc_tmp
+    ecc_tmp="$(mktemp)"
+    compose_ecc_block > "$ecc_tmp"
+    awk -v begin="$ECC_BEGIN_MARKER" -v end="$ECC_END_MARKER" -v ecc="$ecc_tmp" '
+      { gsub(/\r$/, "") }
+      $0 == begin { skip = 1; while ((getline line < ecc) > 0) print line; close(ecc); next }
+      $0 == end   { skip = 0; next }
+      !skip        { print }
+    ' "$AGENTS_FILE" > "$tmp"
+    # Write through the path (preserves symlinks) instead of mv
+    cat "$tmp" > "$AGENTS_FILE"
+    rm -f "$tmp" "$ecc_tmp"
+  }
+
+  if [[ ! -f "$AGENTS_FILE" ]]; then
+    # No existing file — create fresh with markers
+    compose_ecc_block > "$AGENTS_FILE"
+  elif awk -v b="$ECC_BEGIN_MARKER" -v e="$ECC_END_MARKER" '
+        { gsub(/\r$/, "") }
+        $0 == b { bc++; if (!fb) fb = NR }
+        $0 == e { ec++; if (!fe) fe = NR }
+        END { exit !(bc == 1 && ec == 1 && fb < fe) }
+      ' "$AGENTS_FILE"; then
+    # Exactly one BEGIN/END pair in correct order — replace only the ECC section
+    replace_ecc_section
+  elif awk -v b="$ECC_BEGIN_MARKER" -v e="$ECC_END_MARKER" '
+        { gsub(/\r$/, "") }
+        $0 == b { bc++ } $0 == e { ec++ }
+        END { exit !((bc + ec) > 0) }
+      ' "$AGENTS_FILE"; then
+    # Markers present but not exactly one valid BEGIN/END pair (missing END,
+    # duplicates, or out-of-order). Strip all marker lines, then append a
+    # fresh marked block. This preserves user content outside markers.
+    log "WARNING: ECC markers found but not a clean pair — stripping markers and re-appending"
+    _fix_tmp="$(mktemp)"
+    awk -v b="$ECC_BEGIN_MARKER" -v e="$ECC_END_MARKER" '
+      { gsub(/\r$/, "") }
+      $0 == b { skip = 1; next }
+      $0 == e { skip = 0; next }
+      !skip   { print }
+    ' "$AGENTS_FILE" > "$_fix_tmp"
+    cat "$_fix_tmp" > "$AGENTS_FILE"
+    rm -f "$_fix_tmp"
+    { printf '\n\n'; compose_ecc_block; } >> "$AGENTS_FILE"
+  else
+    # Existing file without markers — append ECC block, preserving existing content.
+    # Legacy ECC-only files will have duplicate content after this first run, but
+    # subsequent runs use marker-based replacement so only the marked section updates.
+    # A timestamped backup was already saved above for recovery if needed.
+    log "No ECC markers found — appending managed block (backup saved)"
+    {
+      printf '\n\n'
+      compose_ecc_block
+    } >> "$AGENTS_FILE"
+  fi
 fi
 
-log "Syncing ECC Codex skills"
-run_or_echo "mkdir -p \"$SKILLS_DEST\""
-skills_count=0
-for skill_dir in "$SKILLS_SRC"/*; do
-  [[ -d "$skill_dir" ]] || continue
-  skill_name="$(basename "$skill_dir")"
-  dest="$SKILLS_DEST/$skill_name"
-  run_or_echo "rm -rf \"$dest\""
-  run_or_echo "cp -R \"$skill_dir\" \"$dest\""
-  skills_count=$((skills_count + 1))
-done
+# Skills are NOT synced here — Codex CLI reads directly from
+# ~/.agents/skills/ (installed by ECC installer / npx skills).
+# Copying into ~/.codex/skills/ was unnecessary.
 
 log "Generating prompt files from ECC commands"
-run_or_echo "mkdir -p \"$PROMPTS_DEST\""
+run_or_echo mkdir -p "$PROMPTS_DEST"
 manifest="$PROMPTS_DEST/ecc-prompts-manifest.txt"
 if [[ "$MODE" == "dry-run" ]]; then
   printf '[dry-run] > %s\n' "$manifest"
@@ -383,82 +451,41 @@ if [[ "$MODE" == "apply" ]]; then
   sort -u "$extension_manifest" -o "$extension_manifest"
 fi
 
-if [[ "$MODE" == "apply" ]]; then
-  log "Normalizing MCP server config to pnpm"
-
-  supabase_token="$(extract_toml_value "$CONFIG_FILE" "mcp_servers.supabase.env" "SUPABASE_ACCESS_TOKEN")"
-  context7_key="$(extract_context7_key "$CONFIG_FILE")"
-  github_bootstrap='token=$(gh auth token 2>/dev/null || true); if [ -n "$token" ]; then export GITHUB_PERSONAL_ACCESS_TOKEN="$token"; fi; exec pnpm dlx @modelcontextprotocol/server-github'
-
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.github.env"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.github"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.memory"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.sequential-thinking"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.context7"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.context7-mcp"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.playwright"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.supabase.env"
-  remove_section_inplace "$CONFIG_FILE" "mcp_servers.supabase"
-
-  {
-    printf '\n[mcp_servers.supabase]\n'
-    printf 'command = "pnpm"\n'
-    printf 'args = ["dlx", "@supabase/mcp-server-supabase@latest", "--features=account,docs,database,debugging,development,functions,storage,branching"]\n'
-    printf 'startup_timeout_sec = 20.0\n'
-    printf 'tool_timeout_sec = 120.0\n'
-
-    if [[ -n "$supabase_token" ]]; then
-      printf '\n[mcp_servers.supabase.env]\n'
-      printf 'SUPABASE_ACCESS_TOKEN = "%s"\n' "$(toml_escape "$supabase_token")"
-    fi
-
-    printf '\n[mcp_servers.playwright]\n'
-    printf 'command = "pnpm"\n'
-    printf 'args = ["dlx", "@playwright/mcp@latest"]\n'
-
-    if [[ -n "$context7_key" ]]; then
-      printf '\n[mcp_servers.context7-mcp]\n'
-      printf 'command = "pnpm"\n'
-      printf 'args = ["dlx", "@smithery/cli@latest", "run", "@upstash/context7-mcp", "--key", "%s"]\n' "$(toml_escape "$context7_key")"
-    else
-      printf '\n[mcp_servers.context7-mcp]\n'
-      printf 'command = "pnpm"\n'
-      printf 'args = ["dlx", "@upstash/context7-mcp"]\n'
-    fi
-
-    printf '\n[mcp_servers.github]\n'
-    printf 'command = "bash"\n'
-    printf 'args = ["-lc", "%s"]\n' "$(toml_escape "$github_bootstrap")"
-
-    printf '\n[mcp_servers.memory]\n'
-    printf 'command = "pnpm"\n'
-    printf 'args = ["dlx", "@modelcontextprotocol/server-memory"]\n'
-
-    printf '\n[mcp_servers.sequential-thinking]\n'
-    printf 'command = "pnpm"\n'
-    printf 'args = ["dlx", "@modelcontextprotocol/server-sequential-thinking"]\n'
-  } >> "$CONFIG_FILE"
+log "Merging ECC MCP servers into $CONFIG_FILE (add-only, preserving user config)"
+if [[ "$MODE" == "dry-run" ]]; then
+  node "$MCP_MERGE_SCRIPT" "$CONFIG_FILE" --dry-run $UPDATE_MCP
 else
-  log "Skipping MCP config normalization in dry-run mode"
+  node "$MCP_MERGE_SCRIPT" "$CONFIG_FILE" $UPDATE_MCP
 fi
 
 log "Installing global git safety hooks"
 if [[ "$MODE" == "dry-run" ]]; then
-  "$HOOKS_INSTALLER" --dry-run
+  HOME="$HOME" \
+  CODEX_HOME="$CODEX_HOME" \
+  AGENTS_HOME="${AGENTS_HOME:-$HOME/.agents}" \
+  ECC_GLOBAL_HOOKS_DIR="${ECC_GLOBAL_HOOKS_DIR:-$CODEX_HOME/git-hooks}" \
+    "$HOOKS_INSTALLER" --dry-run
 else
-  "$HOOKS_INSTALLER"
+  HOME="$HOME" \
+  CODEX_HOME="$CODEX_HOME" \
+  AGENTS_HOME="${AGENTS_HOME:-$HOME/.agents}" \
+  ECC_GLOBAL_HOOKS_DIR="${ECC_GLOBAL_HOOKS_DIR:-$CODEX_HOME/git-hooks}" \
+    "$HOOKS_INSTALLER"
 fi
 
 log "Running global regression sanity check"
 if [[ "$MODE" == "dry-run" ]]; then
   printf '[dry-run] %s\n' "$SANITY_CHECKER"
 else
-  "$SANITY_CHECKER"
+  HOME="$HOME" \
+  CODEX_HOME="$CODEX_HOME" \
+  AGENTS_HOME="${AGENTS_HOME:-$HOME/.agents}" \
+  ECC_GLOBAL_HOOKS_DIR="${ECC_GLOBAL_HOOKS_DIR:-$CODEX_HOME/git-hooks}" \
+    "$SANITY_CHECKER"
 fi
 
 log "Sync complete"
 log "Backup saved at: $BACKUP_DIR"
-log "Skills synced: $skills_count"
 log "Prompts generated: $((prompt_count + extension_count)) (commands: $prompt_count, extensions: $extension_count)"
 
 if [[ "$MODE" == "apply" ]]; then

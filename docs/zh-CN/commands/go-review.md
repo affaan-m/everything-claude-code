@@ -73,29 +73,26 @@ govulncheck ./...
 ## 使用示例
 
 ````text
-User: /go-review
+# Go 代码审查报告
 
-Agent:
-# Go Code Review Report
+## 已审查文件
+- internal/handler/user.go（已修改）
+- internal/service/auth.go（已修改）
 
-## Files Reviewed
-- internal/handler/user.go (modified)
-- internal/service/auth.go (modified)
+## 静态分析结果
+✓ go vet: 无问题
+✓ staticcheck: 无问题
 
-## Static Analysis Results
-✓ go vet: No issues
-✓ staticcheck: No issues
+## 发现的问题
 
-## Issues Found
-
-[CRITICAL] Race Condition
-File: internal/service/auth.go:45
-Issue: Shared map accessed without synchronization
+[严重] 竞态条件
+文件: internal/service/auth.go:45
+问题: 共享映射访问未同步
 ```go
-var cache = map[string]*Session{}  // Concurrent access!
+var cache = map[string]*Session{}  // 并发访问！
 
 func GetSession(id string) *Session {
-    return cache[id]  // Race condition
+    return cache[id]  // 竞态条件
 }
 ````
 
@@ -134,28 +131,26 @@ return fmt.Errorf("get user %s: %w", userID, err)
 * 高：1
 * 中：0
 
-建议：❌ 在严重问题修复前阻止合并
+建议：FAIL: 在严重问题修复前阻止合并
 
 ```
+## 批准标准
 
-## Approval Criteria
-
-| Status | Condition |
+| 状态 | 条件 |
 |--------|-----------|
-| ✅ Approve | No CRITICAL or HIGH issues |
-| ⚠️ Warning | Only MEDIUM issues (merge with caution) |
-| ❌ Block | CRITICAL or HIGH issues found |
+| PASS: 批准 | 无 CRITICAL 或 HIGH 级别问题 |
+| WARNING: 警告 | 仅有 MEDIUM 级别问题 (谨慎合并) |
+| FAIL: 阻止 | 发现 CRITICAL 或 HIGH 级别问题 |
 
-## Integration with Other Commands
+## 与其他命令的集成
 
-- Use `/go-test` first to ensure tests pass
-- Use `/go-build` if build errors occur
-- Use `/go-review` before committing
-- Use `/code-review` for non-Go specific concerns
+- 首先使用 `/go-test` 确保测试通过
+- 如果出现构建错误，请使用 `/go-build`
+- 提交前使用 `/go-review`
+- 对于非 Go 语言特定问题，请使用 `/code-review`
 
-## Related
+## 相关
 
 - Agent: `agents/go-reviewer.md`
 - Skills: `skills/golang-patterns/`, `skills/golang-testing/`
-
 ```

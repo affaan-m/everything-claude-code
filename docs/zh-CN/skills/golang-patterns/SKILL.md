@@ -369,17 +369,17 @@ func WriteAndFlush(w io.Writer, data []byte) error {
 myproject/
 ├── cmd/
 │   └── myapp/
-│       └── main.go           # Entry point
+│       └── main.go           # 入口点
 ├── internal/
-│   ├── handler/              # HTTP handlers
-│   ├── service/              # Business logic
-│   ├── repository/           # Data access
-│   └── config/               # Configuration
+│   ├── handler/              # HTTP 处理器
+│   ├── service/              # 业务逻辑
+│   ├── repository/           # 数据访问
+│   └── config/               # 配置
 ├── pkg/
-│   └── client/               # Public API client
+│   └── client/               # 公共 API 客户端
 ├── api/
-│   └── v1/                   # API definitions (proto, OpenAPI)
-├── testdata/                 # Test fixtures
+│   └── v1/                   # API 定义（proto, OpenAPI）
+├── testdata/                 # 测试夹具
 ├── go.mod
 ├── go.sum
 └── Makefile

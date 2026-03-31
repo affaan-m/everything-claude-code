@@ -7,7 +7,7 @@ origin: ECC
 metadata:
   author: evos
   clawdbot:
-    emoji: "📊"
+    emoji: ""
 ---
 
 # 库存需求规划

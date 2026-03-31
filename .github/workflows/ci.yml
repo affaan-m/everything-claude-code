@@ -34,23 +34,30 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: ${{ matrix.node }}
 
       # Package manager setup
       - name: Setup pnpm
         if: matrix.pm == 'pnpm'
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4
         with:
           version: latest
 
+      - name: Setup Yarn (via Corepack)
+        if: matrix.pm == 'yarn'
+        shell: bash
+        run: |
+          corepack enable
+          corepack prepare yarn@stable --activate
+
       - name: Setup Bun
         if: matrix.pm == 'bun'
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
 
       # Cache configuration
       - name: Get npm cache directory
@@ -61,7 +68,7 @@ jobs:
 
       - name: Cache npm
         if: matrix.pm == 'npm'
-        uses: actions/cache@v4
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: ${{ steps.npm-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-node-${{ matrix.node }}-npm-${{ hashFiles('**/package-lock.json') }}
@@ -76,7 +83,7 @@ jobs:
 
       - name: Cache pnpm
         if: matrix.pm == 'pnpm'
-        uses: actions/cache@v4
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: ${{ steps.pnpm-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-node-${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -97,7 +104,7 @@ jobs:
 
       - name: Cache yarn
         if: matrix.pm == 'yarn'
-        uses: actions/cache@v4
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: ${{ steps.yarn-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-node-${{ matrix.node }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -106,7 +113,7 @@ jobs:
 
       - name: Cache bun
         if: matrix.pm == 'bun'
-        uses: actions/cache@v4
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
@@ -114,14 +121,18 @@ jobs:
             ${{ runner.os }}-bun-
 
       # Install dependencies
+      # COREPACK_ENABLE_STRICT=0 allows pnpm to install even though
+      # package.json declares "packageManager": "yarn@..."
       - name: Install dependencies
         shell: bash
+        env:
+          COREPACK_ENABLE_STRICT: '0'
         run: |
           case "${{ matrix.pm }}" in
             npm) npm ci ;;
-            pnpm) pnpm install ;;
-            # --ignore-engines required for Node 18 compat with some devDependencies (e.g., markdownlint-cli)
-            yarn) yarn install --ignore-engines ;;
+            pnpm) pnpm install --no-frozen-lockfile ;;
+            # Yarn Berry (v4+) removed --ignore-engines; engine checking is no longer a core feature
+            yarn) yarn install ;;
             bun) bun install ;;
             *) echo "Unsupported package manager: ${{ matrix.pm }}" && exit 1 ;;
           esac
@@ -135,7 +146,7 @@ jobs:
       # Upload test artifacts on failure
       - name: Upload test artifacts
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: test-results-${{ matrix.os }}-node${{ matrix.node }}-${{ matrix.pm }}
           path: |
@@ -149,10 +160,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: '20.x'
 
@@ -175,12 +186,20 @@ jobs:
         run: node scripts/ci/validate-skills.js
         continue-on-error: false
 
+      - name: Validate install manifests
+        run: node scripts/ci/validate-install-manifests.js
+        continue-on-error: false
+
       - name: Validate rules
         run: node scripts/ci/validate-rules.js
         continue-on-error: false
 
       - name: Validate catalog counts
         run: node scripts/ci/catalog.js --text
+        continue-on-error: false
+
+      - name: Check unicode safety
+        run: node scripts/ci/check-unicode-safety.js
         continue-on-error: false
 
   security:
@@ -190,10 +209,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: '20.x'
 
@@ -208,10 +227,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: '20.x'
 

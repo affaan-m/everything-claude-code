@@ -203,19 +203,19 @@ Synthesize both analyses, generate **Step-by-step Implementation Plan**:
 2. Save plan to `.claude/plan/<feature-name>.md` (extract feature name from requirement, e.g., `user-auth`, `payment-module`)
 3. Output prompt in **bold text** (MUST use actual saved file path):
 
-   ---
-   **Plan generated and saved to `.claude/plan/actual-feature-name.md`**
+---
+**Plan generated and saved to `.claude/plan/actual-feature-name.md`**
 
-   **Please review the plan above. You can:**
-   - **Modify plan**: Tell me what needs adjustment, I'll update the plan
-   - **Execute plan**: Copy the following command to a new session
+**Please review the plan above. You can:**
+- **Modify plan**: Tell me what needs adjustment, I'll update the plan
+- **Execute plan**: Copy the following command to a new session
 
-   ```
-   /ccg:execute .claude/plan/actual-feature-name.md
-   ```
-   ---
+```
+/ccg:execute .claude/plan/actual-feature-name.md
+```
+---
 
-   **NOTE**: The `actual-feature-name.md` above MUST be replaced with the actual saved filename!
+**NOTE**: The `actual-feature-name.md` above MUST be replaced with the actual saved filename!
 
 4. **Immediately terminate current response** (Stop here. No more tool calls.)
 

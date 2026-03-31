@@ -26,10 +26,10 @@ myproject/
 │   ├── __init__.py
 │   ├── settings/
 │   │   ├── __init__.py
-│   │   ├── base.py          # Base settings
-│   │   ├── development.py   # Dev settings
-│   │   ├── production.py    # Production settings
-│   │   └── test.py          # Test settings
+│   │   ├── base.py          # 基础设置
+│   │   ├── development.py   # 开发环境设置
+│   │   ├── production.py    # 生产环境设置
+│   │   └── test.py          # 测试环境设置
 │   ├── urls.py
 │   ├── wsgi.py
 │   └── asgi.py

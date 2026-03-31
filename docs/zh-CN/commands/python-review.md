@@ -93,7 +93,7 @@ Agent:
 ## Static Analysis Results
 ✓ ruff: No issues
 ✓ mypy: No errors
-⚠️ black: 2 files need reformatting
+WARNING: black: 2 files need reformatting
 ✓ bandit: No security issues
 
 ## Issues Found
@@ -171,61 +171,60 @@ with open("config.json") as f:  # Good
 * 高：1
 * 中：2
 
-建议：❌ 在关键问题修复前阻止合并
+建议：FAIL: 在关键问题修复前阻止合并
 
 ## 所需的格式化
 
 运行：`black app/routes/user.py app/services/auth.py`
 
 ````
+## 审批标准
 
-## Approval Criteria
-
-| Status | Condition |
+| 状态 | 条件 |
 |--------|-----------|
-| ✅ Approve | No CRITICAL or HIGH issues |
-| ⚠️ Warning | Only MEDIUM issues (merge with caution) |
-| ❌ Block | CRITICAL or HIGH issues found |
+| PASS: 批准 | 无 CRITICAL 或 HIGH 级别问题 |
+| WARNING: 警告 | 仅存在 MEDIUM 级别问题（谨慎合并） |
+| FAIL: 阻止 | 发现 CRITICAL 或 HIGH 级别问题 |
 
-## Integration with Other Commands
+## 与其他命令的集成
 
-- Use `/tdd` first to ensure tests pass
-- Use `/code-review` for non-Python specific concerns
-- Use `/python-review` before committing
-- Use `/build-fix` if static analysis tools fail
+- 首先使用 `/tdd` 确保测试通过
+- 使用 `/code-review` 处理非 Python 特定问题
+- 在提交前使用 `/python-review`
+- 如果静态分析工具失败，请使用 `/build-fix`
 
-## Framework-Specific Reviews
+## 框架特定审查
 
-### Django Projects
-The reviewer checks for:
-- N+1 query issues (use `select_related` and `prefetch_related`)
-- Missing migrations for model changes
-- Raw SQL usage when ORM could work
-- Missing `transaction.atomic()` for multi-step operations
+### Django 项目
+审查员检查：
+- N+1 查询问题（使用 `select_related` 和 `prefetch_related`）
+- 模型更改缺少迁移
+- 在 ORM 可用时使用原始 SQL
+- 多步骤操作缺少 `transaction.atomic()`
 
-### FastAPI Projects
-The reviewer checks for:
-- CORS misconfiguration
-- Pydantic models for request validation
-- Response models correctness
-- Proper async/await usage
-- Dependency injection patterns
+### FastAPI 项目
+审查员检查：
+- CORS 配置错误
+- 用于请求验证的 Pydantic 模型
+- 响应模型的正确性
+- 正确的 async/await 使用
+- 依赖注入模式
 
-### Flask Projects
-The reviewer checks for:
-- Context management (app context, request context)
-- Proper error handling
-- Blueprint organization
-- Configuration management
+### Flask 项目
+审查员检查：
+- 上下文管理（应用上下文、请求上下文）
+- 正确的错误处理
+- Blueprint 组织
+- 配置管理
 
-## Related
+## 相关
 
 - Agent: `agents/python-reviewer.md`
 - Skills: `skills/python-patterns/`, `skills/python-testing/`
 
-## Common Fixes
+## 常见修复
 
-### Add Type Hints
+### 添加类型提示
 ```python
 # Before
 def calculate(x, y):

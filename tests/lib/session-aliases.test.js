@@ -48,6 +48,7 @@ function resetAliases() {
 }
 
 function runTests() {
+  const rocketEmoji = String.fromCodePoint(0x1F680);
   console.log('\n=== Testing session-aliases.js ===\n');
 
   let passed = 0;
@@ -1441,7 +1442,7 @@ function runTests() {
       'CJK characters should be rejected');
 
     // Emoji
-    const emojiResult = aliases.resolveAlias('rocket-🚀');
+    const emojiResult = aliases.resolveAlias(`rocket-${rocketEmoji}`);
     assert.strictEqual(emojiResult, null,
       'Emoji should be rejected by the ASCII-only regex');
 

@@ -133,7 +133,7 @@ FAIL lib/liquidity.test.ts
 1 test failed, 0 passed
 ```
 
-✅ Tests fail as expected. Ready to implement.
+PASS: Tests fail as expected. Ready to implement.
 
 ## Step 4: Implement Minimal Code (GREEN)
 
@@ -179,7 +179,7 @@ PASS lib/liquidity.test.ts
 3 tests passed
 ```
 
-✅ All tests passing!
+PASS: All tests passing!
 
 ## Step 6: Refactor (IMPROVE)
 
@@ -236,7 +236,7 @@ PASS lib/liquidity.test.ts
 3 tests passed
 ```
 
-✅ Refactoring complete, tests still passing!
+PASS: Refactoring complete, tests still passing!
 
 ## Step 8: Check Coverage
 
@@ -247,29 +247,29 @@ File           | % Stmts | % Branch | % Funcs | % Lines
 ---------------|---------|----------|---------|--------
 liquidity.ts   |   100   |   100    |   100   |   100
 
-Coverage: 100% ✅ (Target: 80%)
+Coverage: 100% PASS: (Target: 80%)
 ```
 
-✅ TDD session complete!
+PASS: TDD session complete!
 ```
 
 ## TDD Best Practices
 
 **DO:**
-- ✅ Write the test FIRST, before any implementation
-- ✅ Run tests and verify they FAIL before implementing
-- ✅ Write minimal code to make tests pass
-- ✅ Refactor only after tests are green
-- ✅ Add edge cases and error scenarios
-- ✅ Aim for 80%+ coverage (100% for critical code)
+- PASS: Write the test FIRST, before any implementation
+- PASS: Run tests and verify they FAIL before implementing
+- PASS: Write minimal code to make tests pass
+- PASS: Refactor only after tests are green
+- PASS: Add edge cases and error scenarios
+- PASS: Aim for 80%+ coverage (100% for critical code)
 
 **DON'T:**
-- ❌ Write implementation before tests
-- ❌ Skip running tests after each change
-- ❌ Write too much code at once
-- ❌ Ignore failing tests
-- ❌ Test implementation details (test behavior)
-- ❌ Mock everything (prefer integration tests)
+- FAIL: Write implementation before tests
+- FAIL: Skip running tests after each change
+- FAIL: Write too much code at once
+- FAIL: Ignore failing tests
+- FAIL: Test implementation details (test behavior)
+- FAIL: Mock everything (prefer integration tests)
 
 ## Test Types to Include
 

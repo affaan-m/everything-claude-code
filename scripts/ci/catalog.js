@@ -76,9 +76,9 @@ function parseReadmeExpectations(readmeContent) {
   );
 
   const tablePatterns = [
-    { category: 'agents', regex: /\|\s*(?:\*\*)?Agents(?:\*\*)?\s*\|\s*✅\s*(\d+)\s+agents\s*\|/i, source: 'README.md comparison table' },
-    { category: 'commands', regex: /\|\s*(?:\*\*)?Commands(?:\*\*)?\s*\|\s*✅\s*(\d+)\s+commands\s*\|/i, source: 'README.md comparison table' },
-    { category: 'skills', regex: /\|\s*(?:\*\*)?Skills(?:\*\*)?\s*\|\s*✅\s*(\d+)\s+skills\s*\|/i, source: 'README.md comparison table' }
+    { category: 'agents', regex: /\|\s*(?:\*\*)?Agents(?:\*\*)?\s*\|\s*(?:(?:PASS:|\u2705)\s*)?(\d+)\s+agents\s*\|/i, source: 'README.md comparison table' },
+    { category: 'commands', regex: /\|\s*(?:\*\*)?Commands(?:\*\*)?\s*\|\s*(?:(?:PASS:|\u2705)\s*)?(\d+)\s+commands\s*\|/i, source: 'README.md comparison table' },
+    { category: 'skills', regex: /\|\s*(?:\*\*)?Skills(?:\*\*)?\s*\|\s*(?:(?:PASS:|\u2705)\s*)?(\d+)\s+skills\s*\|/i, source: 'README.md comparison table' }
   ];
 
   for (const pattern of tablePatterns) {

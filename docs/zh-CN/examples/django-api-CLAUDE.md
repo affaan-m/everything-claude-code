@@ -97,38 +97,38 @@ class InsufficientStockError(APIException):
 ```
 config/
   settings/
-    base.py              # Shared settings
-    local.py             # Dev overrides (DEBUG=True)
-    production.py        # Production settings
-  urls.py                # Root URL config
-  celery.py              # Celery app configuration
+    base.py              # 共享设置
+    local.py             # 开发环境覆盖设置 (DEBUG=True)
+    production.py        # 生产环境设置
+  urls.py                # 根 URL 配置
+  celery.py              # Celery 应用配置
 apps/
-  accounts/              # User auth, registration, profile
+  accounts/              # 用户认证、注册、个人资料
     models.py
     serializers.py
     views.py
-    services.py          # Business logic
+    services.py          # 业务逻辑
     tests/
       test_views.py
       test_services.py
-      factories.py       # Factory Boy factories
-  orders/                # Order management
+      factories.py       # Factory Boy 工厂
+  orders/                # 订单管理
     models.py
     serializers.py
     views.py
     services.py
-    tasks.py             # Celery tasks
+    tasks.py             # Celery 任务
     tests/
-  products/              # Product catalog
+  products/              # 产品目录
     models.py
     serializers.py
     views.py
     tests/
 core/
-  exceptions.py          # Custom API exceptions
-  permissions.py         # Shared permission classes
-  pagination.py          # Custom pagination
-  middleware.py          # Request logging, timing
+  exceptions.py          # 自定义 API 异常
+  permissions.py         # 共享权限类
+  pagination.py          # 自定义分页
+  middleware.py          # 请求日志记录、计时
   tests/
 ```
 

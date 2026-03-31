@@ -211,6 +211,14 @@
       ]
     },
     {
+      "id": "lang:csharp",
+      "family": "language",
+      "description": "C# coding standards and patterns guidance. Currently resolves through the shared framework-language module.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
       "id": "framework:laravel",
       "family": "framework",
       "description": "Laravel patterns, TDD, verification, and security guidance. Resolves through framework-language and security modules.",
@@ -249,6 +257,158 @@
       "description": "Document processing, conversion, and translation skills.",
       "modules": [
         "document-processing"
+      ]
+    },
+    {
+      "id": "agent:architect",
+      "family": "agent",
+      "description": "System design and architecture agent.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
+      "id": "agent:code-reviewer",
+      "family": "agent",
+      "description": "Code review agent for quality and security checks.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
+      "id": "agent:security-reviewer",
+      "family": "agent",
+      "description": "Security vulnerability analysis agent.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
+      "id": "agent:tdd-guide",
+      "family": "agent",
+      "description": "Test-driven development guidance agent.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
+      "id": "agent:planner",
+      "family": "agent",
+      "description": "Feature implementation planning agent.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
+      "id": "agent:build-error-resolver",
+      "family": "agent",
+      "description": "Build error resolution agent.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
+      "id": "agent:e2e-runner",
+      "family": "agent",
+      "description": "Playwright E2E testing agent.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
+      "id": "agent:refactor-cleaner",
+      "family": "agent",
+      "description": "Dead code cleanup and refactoring agent.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
+      "id": "agent:doc-updater",
+      "family": "agent",
+      "description": "Documentation update agent.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
+      "id": "skill:tdd-workflow",
+      "family": "skill",
+      "description": "Test-driven development workflow skill.",
+      "modules": [
+        "workflow-quality"
+      ]
+    },
+    {
+      "id": "skill:continuous-learning",
+      "family": "skill",
+      "description": "Session pattern extraction and continuous learning skill.",
+      "modules": [
+        "workflow-quality"
+      ]
+    },
+    {
+      "id": "skill:eval-harness",
+      "family": "skill",
+      "description": "Evaluation harness for AI regression testing.",
+      "modules": [
+        "workflow-quality"
+      ]
+    },
+    {
+      "id": "skill:verification-loop",
+      "family": "skill",
+      "description": "Verification loop for code quality assurance.",
+      "modules": [
+        "workflow-quality"
+      ]
+    },
+    {
+      "id": "skill:strategic-compact",
+      "family": "skill",
+      "description": "Strategic context compaction for long sessions.",
+      "modules": [
+        "workflow-quality"
+      ]
+    },
+    {
+      "id": "skill:coding-standards",
+      "family": "skill",
+      "description": "Language-agnostic coding standards and best practices.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
+      "id": "skill:frontend-patterns",
+      "family": "skill",
+      "description": "React and frontend engineering patterns.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
+      "id": "skill:backend-patterns",
+      "family": "skill",
+      "description": "API design, database, and backend engineering patterns.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
+      "id": "skill:security-review",
+      "family": "skill",
+      "description": "Security review checklist and vulnerability analysis.",
+      "modules": [
+        "security"
+      ]
+    },
+    {
+      "id": "skill:deep-research",
+      "family": "skill",
+      "description": "Deep research and investigation workflows.",
+      "modules": [
+        "research-apis"
       ]
     }
   ]

@@ -228,9 +228,9 @@ model: opus
 各問題について:
 ```text
 [CRITICAL] SQLインジェクション脆弱性
-File: internal/repository/user.go:42
-Issue: ユーザー入力がSQLクエリに直接連結されている
-Fix: パラメータ化クエリを使用
+ファイル: internal/repository/user.go:42
+問題: ユーザー入力がSQLクエリに直接連結されている
+修正: パラメータ化クエリを使用
 
 query := "SELECT * FROM users WHERE id = " + userID  // Bad
 query := "SELECT * FROM users WHERE id = $1"         // Good

@@ -45,24 +45,24 @@
 ```
 src/
   app/
-    (auth)/          # Auth pages (login, signup, forgot-password)
-    (dashboard)/     # Protected dashboard pages
+    (auth)/          # 认证页面（登录、注册、忘记密码）
+    (dashboard)/     # 受保护的仪表板页面
     api/
-      webhooks/      # Stripe, Supabase webhooks
-    layout.tsx       # Root layout with providers
+      webhooks/      # Stripe、Supabase webhooks
+    layout.tsx       # 根布局（包含 providers）
   components/
-    ui/              # Shadcn/ui components
-    forms/           # Form components with validation
-    dashboard/       # Dashboard-specific components
-  hooks/             # Custom React hooks
+    ui/              # Shadcn/ui 组件
+    forms/           # 带验证的表单组件
+    dashboard/       # 仪表板专用组件
+  hooks/             # 自定义 React hooks
   lib/
-    supabase/        # Supabase client factories
-    stripe/          # Stripe client and helpers
-    utils.ts         # General utilities
-  types/             # Shared TypeScript types
+    supabase/        # Supabase 客户端工厂
+    stripe/          # Stripe 客户端与辅助工具
+    utils.ts         # 通用工具函数
+  types/             # 共享 TypeScript 类型
 supabase/
-  migrations/        # Database migrations
-  seed.sql           # Development seed data
+  migrations/        # 数据库迁移
+  seed.sql           # 开发用种子数据
 ```
 
 ## 关键模式

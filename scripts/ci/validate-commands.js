@@ -99,13 +99,14 @@ function validateCommands() {
     }
 
     // Check skill directory references (e.g., "skills/tdd-workflow/")
+    // learned and imported are reserved roots (~/.claude/skills/); no local dir expected
+    const reservedSkillRoots = new Set(['learned', 'imported']);
     const skillRefs = contentNoCodeBlocks.matchAll(/skills\/([a-z][-a-z0-9]*)\//g);
     for (const match of skillRefs) {
       const refName = match[1];
-      if (!validSkills.has(refName)) {
-        console.warn(`WARN: ${file} - references skill directory skills/${refName}/ (not found locally)`);
-        warnCount++;
-      }
+      if (reservedSkillRoots.has(refName) || validSkills.has(refName)) continue;
+      console.warn(`WARN: ${file} - references skill directory skills/${refName}/ (not found locally)`);
+      warnCount++;
     }
 
     // Check agent name references in workflow diagrams (e.g., "planner -> tdd-guide")

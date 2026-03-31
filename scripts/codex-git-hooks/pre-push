@@ -16,6 +16,20 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   exit 0
 fi
 
+# Skip checks for branch deletion pushes (e.g., git push origin --delete <branch>).
+# The pre-push hook receives lines on stdin: <local ref> <local sha> <remote ref> <remote sha>.
+# For deletions, the local sha is the zero OID.
+is_delete_only=true
+while read -r _local_ref local_sha _remote_ref _remote_sha; do
+  if [[ "$local_sha" != "0000000000000000000000000000000000000000" ]]; then
+    is_delete_only=false
+    break
+  fi
+done
+if [[ "$is_delete_only" == "true" ]]; then
+  exit 0
+fi
+
 ran_any_check=0
 
 log() {

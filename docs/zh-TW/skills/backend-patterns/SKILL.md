@@ -12,7 +12,7 @@ description: Backend architecture patterns, API design, database optimization, a
 ### RESTful API 結構
 
 ```typescript
-// ✅ 基於資源的 URL
+// PASS: 基於資源的 URL
 GET    /api/markets                 # 列出資源
 GET    /api/markets/:id             # 取得單一資源
 POST   /api/markets                 # 建立資源
@@ -20,7 +20,7 @@ PUT    /api/markets/:id             # 替換資源
 PATCH  /api/markets/:id             # 更新資源
 DELETE /api/markets/:id             # 刪除資源
 
-// ✅ 用於過濾、排序、分頁的查詢參數
+// PASS: 用於過濾、排序、分頁的查詢參數
 GET /api/markets?status=active&sort=volume&limit=20&offset=0
 ```
 
@@ -120,7 +120,7 @@ export default withAuth(async (req, res) => {
 ### 查詢優化
 
 ```typescript
-// ✅ 良好：只選擇需要的欄位
+// PASS: 良好：只選擇需要的欄位
 const { data } = await supabase
   .from('markets')
   .select('id, name, status, volume')
@@ -128,7 +128,7 @@ const { data } = await supabase
   .order('volume', { ascending: false })
   .limit(10)
 
-// ❌ 不良：選擇所有欄位
+// FAIL: 不良：選擇所有欄位
 const { data } = await supabase
   .from('markets')
   .select('*')
@@ -137,13 +137,13 @@ const { data } = await supabase
 ### N+1 查詢問題預防
 
 ```typescript
-// ❌ 不良：N+1 查詢問題
+// FAIL: 不良：N+1 查詢問題
 const markets = await getMarkets()
 for (const market of markets) {
   market.creator = await getUser(market.creator_id)  // N 次查詢
 }
 
-// ✅ 良好：批次取得
+// PASS: 良好：批次取得
 const markets = await getMarkets()
 const creatorIds = markets.map(m => m.creator_id)
 const creators = await getUsers(creatorIds)  // 1 次查詢

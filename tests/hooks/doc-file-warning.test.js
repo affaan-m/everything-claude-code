@@ -29,11 +29,11 @@ function runScript(input) {
 }
 
 function runTests() {
-  console.log('\n=== Testing doc-file-warning.js ===\n');
+  console.log('\n=== Testing doc-file-warning.js (denylist policy) ===\n');
   let passed = 0;
   let failed = 0;
 
-  // 1. Allowed standard doc files - no warning in stderr
+  // 1. Standard doc filenames - never on denylist, no warning
   const standardFiles = [
     'README.md',
     'CLAUDE.md',
@@ -53,10 +53,12 @@ function runTests() {
     }) ? passed++ : failed++);
   }
 
-  // 2. Allowed directory paths - no warning
-  const allowedDirPaths = [
+  // 2. Structured directory paths - no warning even for ad-hoc names
+  const structuredDirPaths = [
     'docs/foo.md',
     'docs/guide/setup.md',
+    'docs/TODO.md',
+    'docs/specs/NOTES.md',
     'skills/bar.md',
     'skills/testing/tdd.md',
     '.history/session.md',
@@ -64,9 +66,13 @@ function runTests() {
     '.claude/commands/deploy.md',
     '.claude/plans/roadmap.md',
     '.claude/projects/myproject.md',
+    '.github/ISSUE_TEMPLATE/bug.md',
+    'commands/triage.md',
+    'benchmarks/test.md',
+    'templates/DRAFT.md',
   ];
-  for (const file of allowedDirPaths) {
-    (test(`allows directory path: ${file}`, () => {
+  for (const file of structuredDirPaths) {
+    (test(`allows structured directory path: ${file}`, () => {
       const { code, stderr } = runScript({ tool_input: { file_path: file } });
       assert.strictEqual(code, 0, `expected exit code 0, got ${code}`);
       assert.strictEqual(stderr, '', `expected no warning for ${file}, got: ${stderr}`);
@@ -96,10 +102,42 @@ function runTests() {
     }) ? passed++ : failed++);
   }
 
-  // 5. Non-standard doc files - warning in stderr
-  const nonStandardFiles = ['random-notes.md', 'TODO.md', 'notes.txt', 'scratch.md', 'ideas.txt'];
-  for (const file of nonStandardFiles) {
-    (test(`warns on non-standard doc file: ${file}`, () => {
+  // 5. Lowercase, partial-match, and non-standard extension case - NOT on denylist
+  const allowedNonDenylist = [
+    'random-notes.md',
+    'notes.txt',
+    'scratch.md',
+    'ideas.txt',
+    'todo-list.md',
+    'my-draft.md',
+    'meeting-notes.txt',
+    'TODO.MD',
+    'NOTES.TXT',
+  ];
+  for (const file of allowedNonDenylist) {
+    (test(`allows non-denylist doc file: ${file}`, () => {
+      const { code, stderr } = runScript({ tool_input: { file_path: file } });
+      assert.strictEqual(code, 0);
+      assert.strictEqual(stderr, '', `expected no warning for ${file}, got: ${stderr}`);
+    }) ? passed++ : failed++);
+  }
+
+  // 6. Ad-hoc denylist filenames at root/non-structured paths - SHOULD warn
+  const deniedFiles = [
+    'NOTES.md',
+    'TODO.md',
+    'SCRATCH.md',
+    'TEMP.md',
+    'DRAFT.txt',
+    'BRAINSTORM.md',
+    'SPIKE.md',
+    'DEBUG.md',
+    'WIP.txt',
+    'src/NOTES.md',
+    'lib/TODO.txt',
+  ];
+  for (const file of deniedFiles) {
+    (test(`warns on ad-hoc denylist file: ${file}`, () => {
       const { code, stderr } = runScript({ tool_input: { file_path: file } });
       assert.strictEqual(code, 0, 'should still exit 0 (warn only)');
       assert.ok(stderr.includes('WARNING'), `expected warning in stderr for ${file}, got: ${stderr}`);
@@ -107,7 +145,20 @@ function runTests() {
     }) ? passed++ : failed++);
   }
 
-  // 6. Invalid/empty input - passes through without error
+  // 7. Windows backslash paths - normalized correctly
+  (test('allows ad-hoc name in structured dir with backslash path', () => {
+    const { code, stderr } = runScript({ tool_input: { file_path: 'docs\\specs\\NOTES.md' } });
+    assert.strictEqual(code, 0);
+    assert.strictEqual(stderr, '', 'expected no warning for structured dir with backslash');
+  }) ? passed++ : failed++);
+
+  (test('warns on ad-hoc name with backslash in non-structured dir', () => {
+    const { code, stderr } = runScript({ tool_input: { file_path: 'src\\SCRATCH.md' } });
+    assert.strictEqual(code, 0, 'should still exit 0');
+    assert.ok(stderr.includes('WARNING'), 'expected warning for non-structured backslash path');
+  }) ? passed++ : failed++);
+
+  // 8. Invalid/empty input - passes through without error
   (test('handles empty object input without error', () => {
     const { code, stderr } = runScript({});
     assert.strictEqual(code, 0);
@@ -126,7 +177,19 @@ function runTests() {
     assert.strictEqual(stderr, '', `expected no warning for empty file_path, got: ${stderr}`);
   }) ? passed++ : failed++);
 
-  // 7. Stdout always contains the original input (pass-through)
+  // 9. Malformed input - passes through without error
+  (test('handles non-JSON input without error', () => {
+    const result = spawnSync('node', [script], {
+      encoding: 'utf8',
+      input: 'not-json',
+      timeout: 10000,
+    });
+    assert.strictEqual(result.status || 0, 0);
+    assert.strictEqual(result.stderr || '', '');
+    assert.strictEqual(result.stdout, 'not-json');
+  }) ? passed++ : failed++);
+
+  // 10. Stdout always contains the original input (pass-through)
   (test('passes through input to stdout for allowed file', () => {
     const input = { tool_input: { file_path: 'README.md' } };
     const { stdout } = runScript(input);
@@ -134,7 +197,7 @@ function runTests() {
   }) ? passed++ : failed++);
 
   (test('passes through input to stdout for warned file', () => {
-    const input = { tool_input: { file_path: 'random-notes.md' } };
+    const input = { tool_input: { file_path: 'TODO.md' } };
     const { stdout } = runScript(input);
     assert.strictEqual(stdout, JSON.stringify(input));
   }) ? passed++ : failed++);

@@ -45,40 +45,40 @@ python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py import <
 ## インポートプロセス
 
 ```
-📥 Importing instincts from: team-instincts.yaml
+ instinctsをインポート中: team-instincts.yaml
 ================================================
 
-Found 12 instincts to import.
+12件のinstinctsが見つかりました。
 
-Analyzing conflicts...
+競合を分析中...
 
-## New Instincts (8)
-These will be added:
+## 新規instincts (8)
+以下が追加されます:
   ✓ use-zod-validation (confidence: 0.7)
   ✓ prefer-named-exports (confidence: 0.65)
   ✓ test-async-functions (confidence: 0.8)
   ...
 
-## Duplicate Instincts (3)
-Already have similar instincts:
-  ⚠️ prefer-functional-style
-     Local: 0.8 confidence, 12 observations
-     Import: 0.7 confidence
-     → Keep local (higher confidence)
+## 重複instincts (3)
+類似のinstinctsが既に存在:
+  WARNING: prefer-functional-style
+     ローカル: 信頼度0.8, 12回の観測
+     インポート: 信頼度0.7
+     → ローカルを保持 (信頼度が高い)
 
-  ⚠️ test-first-workflow
-     Local: 0.75 confidence
-     Import: 0.9 confidence
-     → Update to import (higher confidence)
+  WARNING: test-first-workflow
+     ローカル: 信頼度0.75
+     インポート: 信頼度0.9
+     → インポートに更新 (信頼度が高い)
 
-## Conflicting Instincts (1)
-These contradict local instincts:
-  ❌ use-classes-for-services
-     Conflicts with: avoid-classes
-     → Skip (requires manual resolution)
+## 競合instincts (1)
+ローカルのinstinctsと矛盾:
+  FAIL: use-classes-for-services
+     競合: avoid-classes
+     → スキップ (手動解決が必要)
 
 ---
-Import 8 new, update 1, skip 3?
+8件を新規追加、1件を更新、3件をスキップしますか?
 ```
 
 ## マージ戦略
@@ -130,13 +130,13 @@ Skill Creatorからインポートする場合:
 
 インポート後:
 ```
-✅ Import complete!
+PASS: インポート完了!
 
-Added: 8 instincts
-Updated: 1 instinct
-Skipped: 3 instincts (2 duplicates, 1 conflict)
+追加: 8件のinstincts
+更新: 1件のinstinct
+スキップ: 3件のinstincts (2件の重複, 1件の競合)
 
-New instincts saved to: ~/.claude/homunculus/instincts/inherited/
+新規instinctsの保存先: ~/.claude/homunculus/instincts/inherited/
 
-Run /instinct-status to see all instincts.
+/instinct-statusを実行してすべてのinstinctsを確認できます。
 ```

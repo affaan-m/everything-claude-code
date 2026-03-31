@@ -1,6 +1,7 @@
 ---
 name: prompt-optimizer
-description: 分析原始提示，识别意图和差距，匹配ECC组件（技能/命令/代理/钩子），并输出一个可直接粘贴的优化提示。仅提供咨询角色——绝不自行执行任务。触发时机：当用户说“优化提示”、“改进我的提示”、“如何编写提示”、“帮我优化这个指令”或明确要求提高提示质量时。中文等效表达同样触发：“优化prompt”、“改进prompt”、“怎么写prompt”、“帮我优化这个指令”。不触发时机：当用户希望直接执行任务，或说“直接做”时。不触发时机：当用户说“优化代码”、“优化性能”、“optimize performance”、“optimize this code”时——这些是重构/性能优化任务，而非提示优化。origin: community
+description: 分析原始提示，识别意图和差距，匹配ECC组件（技能/命令/代理/钩子），并输出一个可直接粘贴的优化提示。仅提供咨询角色——绝不自行执行任务。触发时机：当用户说“优化提示”、“改进我的提示”、“如何编写提示”、“帮我优化这个指令”或明确要求提高提示质量时。中文等效表达同样触发：“优化prompt”、“改进prompt”、“怎么写prompt”、“帮我优化这个指令”。不触发时机：当用户希望直接执行任务，或说“直接做”时。不触发时机：当用户说“优化代码”、“优化性能”、“optimize performance”、“optimize this code”时——这些是重构/性能优化任务，而非提示优化。
+origin: community
 metadata:
   author: YannJY02
   version: "1.0.0"
@@ -296,7 +297,7 @@ Research → Plan → Implement (TDD) → Review → Verify → Commit
 **用户输入：**
 
 ```
-Add a REST API endpoint for user profile updates with validation
+添加一个用于用户资料更新的REST API端点，并包含验证功能。
 ```
 
 **阶段 0 检测到：** `go.mod`，使用 Go 1.22, Chi router
@@ -304,30 +305,30 @@ Add a REST API endpoint for user profile updates with validation
 **优化提示（完整）：**
 
 ```
-Add a REST API endpoint for user profile updates (PATCH /api/users/:id).
+添加用于用户资料更新的 REST API 端点（PATCH /api/users/:id）。
 
-Tech stack: Go 1.22 + Chi router (detected from project)
+技术栈：Go 1.22 + Chi 路由器（根据项目检测得出）
 
-Requirements:
-- PATCH /api/users/:id — partial update of user profile
-- Input validation for fields: name, email, avatar_url, bio
-- Auth: require valid token, users can only update own profile
-- Return 200 with updated user on success
-- Return 400 with validation errors on invalid input
-- Return 401/403 for auth failures
-- Follow existing API patterns in the codebase
+要求：
+- PATCH /api/users/:id — 部分更新用户资料
+- 对字段进行输入验证：name、email、avatar_url、bio
+- 身份验证：需要有效令牌，用户只能更新自己的资料
+- 成功时返回 200 及更新后的用户信息
+- 输入无效时返回 400 及验证错误信息
+- 身份验证失败时返回 401/403
+- 遵循代码库中现有的 API 模式
 
-Workflow:
-1. /plan the endpoint structure, middleware chain, and validation logic
-2. /tdd — write table-driven tests for success, validation failure, auth failure, not-found
-3. Implement following existing handler patterns
+工作流程：
+1. /plan 端点结构、中间件链和验证逻辑
+2. /tdd — 为成功、验证失败、身份验证失败、未找到等情况编写表格驱动测试
+3. 按照现有处理器模式实现
 4. /go-review
-5. /verify — run full test suite, confirm no regressions
+5. /verify — 运行完整的测试套件，确认没有回归问题
 
-Do not:
-- Modify existing endpoints
-- Change the database schema (use existing user table)
-- Add new dependencies without checking existing ones first (use search-first skill)
+禁止事项：
+- 修改现有端点
+- 更改数据库模式（使用现有的 user 表）
+- 在未先检查现有依赖项的情况下添加新依赖（使用搜索优先技能）
 ```
 
 ### 示例 3：史诗级项目
@@ -335,33 +336,33 @@ Do not:
 **用户输入：**
 
 ```
-Migrate our monolith to microservices
+将我们的单体架构迁移到微服务
 ```
 
 **优化提示（完整）：**
 
 ```
-Use the blueprint skill to plan: "Migrate monolith to microservices architecture"
+使用蓝图技能规划：“将单体架构迁移至微服务架构”
 
-Before executing, answer these questions in the blueprint:
-1. Which domain boundaries exist in the current monolith?
-2. Which service should be extracted first (lowest coupling)?
-3. Communication pattern: REST APIs, gRPC, or event-driven (Kafka/RabbitMQ)?
-4. Database strategy: shared DB initially or database-per-service from start?
-5. Deployment target: Kubernetes, Docker Compose, or serverless?
+在执行前，请在蓝图中回答以下问题：
+1. 当前单体架构中存在哪些领域边界？
+2. 应该首先提取哪个服务（耦合度最低）？
+3. 通信模式：REST API、gRPC 还是事件驱动（Kafka/RabbitMQ）？
+4. 数据库策略：初期使用共享数据库，还是一开始就采用“每个服务一个数据库”？
+5. 部署目标：Kubernetes、Docker Compose 还是无服务器？
 
-The blueprint should produce phases like:
-- Phase 1: Identify service boundaries and create domain map
-- Phase 2: Set up infrastructure (API gateway, service mesh, CI/CD per service)
-- Phase 3: Extract first service (strangler fig pattern)
-- Phase 4: Verify with integration tests, then extract next service
-- Phase N: Decommission monolith
+蓝图应生成如下阶段：
+- 阶段 1：识别服务边界并创建领域映射
+- 阶段 2：搭建基础设施（API 网关、服务网格、每个服务的 CI/CD）
+- 阶段 3：提取第一个服务（采用绞杀者模式）
+- 阶段 4：通过集成测试验证，然后提取下一个服务
+- 阶段 N：停用单体架构
 
-Each phase = 1 PR, with /verify gates between phases.
-Use /save-session between phases. Use /resume-session to continue.
-Use git worktrees for parallel service extraction when dependencies allow.
+每个阶段 = 1 个 PR，阶段之间设置 /verify 检查点。
+阶段之间使用 /save-session。使用 /resume-session 继续。
+在依赖关系允许时，使用 git worktrees 进行并行服务提取。
 
-Recommended: Opus 4.6 for blueprint planning, Sonnet 4.6 for phase execution.
+推荐：使用 Opus 4.6 进行蓝图规划，使用 Sonnet 4.6 执行各阶段。
 ```
 
 ***

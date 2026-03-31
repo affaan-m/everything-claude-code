@@ -28,7 +28,7 @@ Create a snapshot of current progress including:
 - Coverage: XX%
 
 **Build**
-- Status: ✅ Passing / ❌ Failing
+- Status: PASS: Passing / FAIL: Failing
 - Errors: [if any]
 
 **Changes Since Last Checkpoint**

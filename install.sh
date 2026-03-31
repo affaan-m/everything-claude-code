@@ -14,4 +14,19 @@ while [ -L "$SCRIPT_PATH" ]; do
 done
 SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 
-exec node "$SCRIPT_DIR/scripts/install-apply.js" "$@"
+# Auto-install Node dependencies when running from a git clone
+if [ ! -d "$SCRIPT_DIR/node_modules" ]; then
+    echo "[ECC] Installing dependencies..."
+    (cd "$SCRIPT_DIR" && npm install --no-audit --no-fund --loglevel=error)
+fi
+
+# On MSYS2/Git Bash, convert the POSIX path to a Windows path so Node.js
+# (a native Windows binary) receives a valid path instead of a doubled one
+# like G:\g\projects\... that results from Git Bash's auto path conversion.
+if command -v cygpath &>/dev/null; then
+    NODE_SCRIPT="$(cygpath -w "$SCRIPT_DIR/scripts/install-apply.js")"
+else
+    NODE_SCRIPT="$SCRIPT_DIR/scripts/install-apply.js"
+fi
+
+exec node "$NODE_SCRIPT" "$@"

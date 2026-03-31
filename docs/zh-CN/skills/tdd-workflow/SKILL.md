@@ -57,11 +57,11 @@ origin: ECC
 ### 步骤 1: 编写用户旅程
 
 ```
-As a [role], I want to [action], so that [benefit]
+作为一个[角色]，我希望能够[行动]，以便[获得收益]
 
-Example:
-As a user, I want to search for markets semantically,
-so that I can find relevant markets even without exact keywords.
+示例：
+作为一个用户，我希望能够进行语义搜索市场，
+这样即使没有精确的关键词，我也能找到相关的市场。
 ```
 
 ### 步骤 2: 生成测试用例
@@ -252,7 +252,7 @@ src/
 ├── components/
 │   ├── Button/
 │   │   ├── Button.tsx
-│   │   ├── Button.test.tsx          # Unit tests
+│   │   ├── Button.test.tsx          # 单元测试
 │   │   └── Button.stories.tsx       # Storybook
 │   └── MarketCard/
 │       ├── MarketCard.tsx
@@ -261,9 +261,9 @@ src/
 │   └── api/
 │       └── markets/
 │           ├── route.ts
-│           └── route.test.ts         # Integration tests
+│           └── route.test.ts         # 集成测试
 └── e2e/
-    ├── markets.spec.ts               # E2E tests
+    ├── markets.spec.ts               # 端到端测试
     ├── trading.spec.ts
     └── auth.spec.ts
 ```
@@ -335,28 +335,28 @@ npm run test:coverage
 
 ## 应避免的常见测试错误
 
-### ❌ 错误：测试实现细节
+### FAIL: 错误：测试实现细节
 
 ```typescript
 // Don't test internal state
 expect(component.state.count).toBe(5)
 ```
 
-### ✅ 正确：测试用户可见的行为
+### PASS: 正确：测试用户可见的行为
 
 ```typescript
 // Test what users see
 expect(screen.getByText('Count: 5')).toBeInTheDocument()
 ```
 
-### ❌ 错误：脆弱的定位器
+### FAIL: 错误：脆弱的定位器
 
 ```typescript
 // Breaks easily
 await page.click('.css-class-xyz')
 ```
 
-### ✅ 正确：语义化定位器
+### PASS: 正确：语义化定位器
 
 ```typescript
 // Resilient to changes
@@ -364,7 +364,7 @@ await page.click('button:has-text("Submit")')
 await page.click('[data-testid="submit-button"]')
 ```
 
-### ❌ 错误：没有测试隔离
+### FAIL: 错误：没有测试隔离
 
 ```typescript
 // Tests depend on each other
@@ -372,7 +372,7 @@ test('creates user', () => { /* ... */ })
 test('updates same user', () => { /* depends on previous test */ })
 ```
 
-### ✅ 正确：独立的测试
+### PASS: 正确：独立的测试
 
 ```typescript
 // Each test sets up its own data

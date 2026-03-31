@@ -4,12 +4,14 @@ const path = require('path');
 const { planInstallTargetScaffold } = require('./install-targets/registry');
 
 const DEFAULT_REPO_ROOT = path.join(__dirname, '../..');
-const SUPPORTED_INSTALL_TARGETS = ['claude', 'cursor', 'antigravity', 'codex', 'opencode'];
+const SUPPORTED_INSTALL_TARGETS = ['claude', 'cursor', 'antigravity', 'codex', 'opencode', 'codebuddy'];
 const COMPONENT_FAMILY_PREFIXES = {
   baseline: 'baseline:',
   language: 'lang:',
   framework: 'framework:',
   capability: 'capability:',
+  agent: 'agent:',
+  skill: 'skill:',
 };
 const LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET = Object.freeze({
   claude: [
@@ -35,6 +37,8 @@ const LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET = Object.freeze({
   ],
 });
 const LEGACY_LANGUAGE_ALIAS_TO_CANONICAL = Object.freeze({
+  cpp: 'cpp',
+  csharp: 'csharp',
   go: 'go',
   golang: 'go',
   java: 'java',
@@ -43,15 +47,19 @@ const LEGACY_LANGUAGE_ALIAS_TO_CANONICAL = Object.freeze({
   perl: 'perl',
   php: 'php',
   python: 'python',
+  rust: 'rust',
   swift: 'swift',
   typescript: 'typescript',
 });
 const LEGACY_LANGUAGE_EXTRA_MODULE_IDS = Object.freeze({
+  cpp: ['framework-language'],
+  csharp: ['framework-language'],
   go: ['framework-language'],
   java: ['framework-language'],
   perl: [],
   php: [],
   python: ['framework-language'],
+  rust: ['framework-language'],
   swift: [],
   typescript: ['framework-language'],
 });
@@ -206,6 +214,45 @@ function listInstallComponents(options = {}) {
       };
     })
     .filter(component => !target || component.targets.includes(target));
+}
+
+function getInstallComponent(componentId, options = {}) {
+  const manifests = loadInstallManifests(options);
+  const normalizedComponentId = String(componentId || '').trim();
+
+  if (!normalizedComponentId) {
+    throw new Error('An install component ID is required');
+  }
+
+  const component = manifests.componentsById.get(normalizedComponentId);
+  if (!component) {
+    throw new Error(`Unknown install component: ${normalizedComponentId}`);
+  }
+
+  const moduleIds = dedupeStrings(component.modules);
+  const modules = moduleIds
+    .map(moduleId => manifests.modulesById.get(moduleId))
+    .filter(Boolean)
+    .map(module => ({
+      id: module.id,
+      kind: module.kind,
+      description: module.description,
+      targets: module.targets,
+      defaultInstall: module.defaultInstall,
+      cost: module.cost,
+      stability: module.stability,
+      dependencies: dedupeStrings(module.dependencies),
+    }));
+
+  return {
+    id: component.id,
+    family: component.family,
+    description: component.description,
+    moduleIds,
+    moduleCount: moduleIds.length,
+    targets: intersectTargets(modules),
+    modules,
+  };
 }
 
 function expandComponentIdsToModuleIds(componentIds, manifests) {
@@ -430,6 +477,7 @@ module.exports = {
   SUPPORTED_INSTALL_TARGETS,
   getManifestPaths,
   loadInstallManifests,
+  getInstallComponent,
   listInstallComponents,
   listLegacyCompatibilityLanguages,
   listInstallModules,

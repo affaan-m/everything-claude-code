@@ -353,13 +353,13 @@ If you need to switch back:
 
 | Feature | Claude Code | OpenCode | Status |
 |---------|-------------|----------|--------|
-| Agents | ✅ 12 agents | ✅ 12 agents | **Full parity** |
-| Commands | ✅ 23 commands | ✅ 23 commands | **Full parity** |
-| Skills | ✅ 16 skills | ✅ 16 skills | **Full parity** |
-| Hooks | ✅ 3 phases | ✅ 20+ events | **OpenCode has MORE** |
-| Rules | ✅ 8 rules | ✅ 8 rules | **Full parity** |
-| MCP Servers | ✅ Full | ✅ Full | **Full parity** |
-| Custom Tools | ✅ Via hooks | ✅ Native support | **OpenCode is better** |
+| Agents | PASS: 12 agents | PASS: 12 agents | **Full parity** |
+| Commands | PASS: 23 commands | PASS: 23 commands | **Full parity** |
+| Skills | PASS: 16 skills | PASS: 16 skills | **Full parity** |
+| Hooks | PASS: 3 phases | PASS: 20+ events | **OpenCode has MORE** |
+| Rules | PASS: 8 rules | PASS: 8 rules | **Full parity** |
+| MCP Servers | PASS: Full | PASS: Full | **Full parity** |
+| Custom Tools | PASS: Via hooks | PASS: Native support | **OpenCode is better** |
 
 ## Feedback
 

@@ -64,7 +64,7 @@ gog calendar events --today --all --max 30
 ```
 
 ```text
-# Slack (via MCP)
+# Slack（通过 MCP）
 conversations_search_messages(search_query: "YOUR_NAME", filter_date_during: "Today")
 channels_list(channel_types: "im,mpim") → conversations_history(limit: "4h")
 ```
@@ -109,26 +109,26 @@ channels_list(channel_types: "im,mpim") → conversations_history(limit: "4h")
 ## 简报输出格式
 
 ```
-# Today's Briefing — [Date]
+# 今日简报 — [日期]
 
-## Schedule (N)
-| Time | Event | Location | Prep? |
+## 日程安排 (N)
+| 时间 | 事项 | 地点 | 准备? |
 |------|-------|----------|-------|
 
-## Email — Skipped (N) → auto-archived
-## Email — Action Required (N)
-### 1. Sender <email>
-**Subject**: ...
-**Summary**: ...
-**Draft reply**: ...
-→ [Send] [Edit] [Skip]
+## 邮件 — 已跳过 (N) → 自动归档
+## 邮件 — 需处理 (N)
+### 1. 发件人 <邮箱>
+**主题**: ...
+**摘要**: ...
+**回复草稿**: ...
+→ [发送] [编辑] [跳过]
 
-## Slack — Action Required (N)
-## LINE — Action Required (N)
+## Slack — 需处理 (N)
+## LINE — 需处理 (N)
 
-## Triage Queue
-- Stale pending responses: N
-- Overdue tasks: N
+## 待处理队列
+- 待回复超时事项: N
+- 逾期任务: N
 ```
 
 ## 关键设计原则

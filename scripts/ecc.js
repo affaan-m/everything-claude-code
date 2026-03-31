@@ -13,6 +13,10 @@ const COMMANDS = {
     script: 'install-plan.js',
     description: 'Inspect selective-install manifests and resolved plans',
   },
+  catalog: {
+    script: 'catalog.js',
+    description: 'Discover install profiles and component IDs',
+  },
   'install-plan': {
     script: 'install-plan.js',
     description: 'Alias for plan',
@@ -50,6 +54,7 @@ const COMMANDS = {
 const PRIMARY_COMMANDS = [
   'install',
   'plan',
+  'catalog',
   'list-installed',
   'doctor',
   'repair',
@@ -79,6 +84,9 @@ Examples:
   ecc typescript
   ecc install --profile developer --target claude
   ecc plan --profile core --target cursor
+  ecc catalog profiles
+  ecc catalog components --family language
+  ecc catalog show framework:nextjs
   ecc list-installed --json
   ecc doctor --target cursor
   ecc repair --dry-run

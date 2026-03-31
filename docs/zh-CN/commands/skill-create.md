@@ -138,24 +138,23 @@ src/
 └── services/       # API 和外部服务
 
 ```
+## 工作流
 
-## Workflows
+### 添加新组件
+1. 创建 `src/components/ComponentName.tsx`
+2. 在 `src/components/__tests__/ComponentName.test.tsx` 中添加测试
+3. 从 `src/components/index.ts` 导出
 
-### Adding a New Component
-1. Create `src/components/ComponentName.tsx`
-2. Add tests in `src/components/__tests__/ComponentName.test.tsx`
-3. Export from `src/components/index.ts`
+### 数据库迁移
+1. 修改 `src/db/schema.ts`
+2. 运行 `pnpm db:generate`
+3. 运行 `pnpm db:migrate`
 
-### Database Migration
-1. Modify `src/db/schema.ts`
-2. Run `pnpm db:generate`
-3. Run `pnpm db:migrate`
+## 测试模式
 
-## Testing Patterns
-
-- Test files: `__tests__/` directories or `.test.ts` suffix
-- Coverage target: 80%+
-- Framework: Vitest
+- 测试文件：`__tests__/` 目录或 `.test.ts` 后缀
+- 覆盖率目标：80%+
+- 框架：Vitest
 ```
 
 ## GitHub 应用集成
