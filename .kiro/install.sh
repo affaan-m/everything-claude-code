@@ -16,7 +16,7 @@ shopt -s nullglob
 
 # Resolve the directory where this script lives (the repo root)
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-SOURCE_KIRO="$SCRIPT_DIR/.kiro"
+SOURCE_KIRO="$SCRIPT_DIR"
 
 # Target directory: argument or current working directory
 TARGET="${1:-.}"
