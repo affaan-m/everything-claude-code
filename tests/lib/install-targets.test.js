@@ -40,6 +40,7 @@ function runTests() {
     assert.ok(targets.includes('cursor'), 'Should include cursor target');
     assert.ok(targets.includes('antigravity'), 'Should include antigravity target');
     assert.ok(targets.includes('codex'), 'Should include codex target');
+    assert.ok(targets.includes('gemini'), 'Should include gemini target');
     assert.ok(targets.includes('opencode'), 'Should include opencode target');
     assert.ok(targets.includes('codebuddy'), 'Should include codebuddy target');
   })) passed++; else failed++;
@@ -228,6 +229,19 @@ function runTests() {
     assert.strictEqual(adapter.kind, 'project');
     assert.strictEqual(root, path.join(projectRoot, '.codebuddy'));
     assert.strictEqual(statePath, path.join(projectRoot, '.codebuddy', 'ecc-install-state.json'));
+  })) passed++; else failed++;
+
+  if (test('resolves gemini adapter root and install-state path from project root', () => {
+    const adapter = getInstallTargetAdapter('gemini');
+    const projectRoot = '/workspace/app';
+    const root = adapter.resolveRoot({ projectRoot });
+    const statePath = adapter.getInstallStatePath({ projectRoot });
+
+    assert.strictEqual(adapter.id, 'gemini-project');
+    assert.strictEqual(adapter.target, 'gemini');
+    assert.strictEqual(adapter.kind, 'project');
+    assert.strictEqual(root, path.join(projectRoot, '.gemini'));
+    assert.strictEqual(statePath, path.join(projectRoot, '.gemini', 'ecc-install-state.json'));
   })) passed++; else failed++;
 
   if (test('codebuddy adapter supports lookup by target and adapter id', () => {

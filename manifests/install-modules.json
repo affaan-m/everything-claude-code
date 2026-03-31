@@ -88,6 +88,7 @@
         ".claude-plugin",
         ".codex",
         ".cursor",
+        ".gemini",
         ".opencode",
         "mcp-configs",
         "scripts/setup-package-manager.js"
@@ -97,6 +98,7 @@
         "cursor",
         "antigravity",
         "codex",
+        "gemini",
         "opencode",
         "codebuddy"
       ],
@@ -284,8 +286,7 @@
         "skills/investor-materials",
         "skills/investor-outreach",
         "skills/lead-intelligence",
-        "skills/market-research",
-        "skills/social-graph-ranker"
+        "skills/market-research"
       ],
       "targets": [
         "claude",

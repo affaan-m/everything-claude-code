@@ -93,6 +93,52 @@ For each scored target, analyze the user's social graph to find the warmest path
 | Industry alignment | 15% — same vertical = natural intro |
 | Mutual's X handle / LinkedIn | 10% — identifiability for outreach |
 
+### Weighted Bridge Ranking
+
+Treat this as the canonical network-ranking stage for lead intelligence. Do not run a separate graph skill when this stage is enough.
+
+Given:
+- `T` = target leads
+- `M` = your mutuals / existing connections
+- `d(m, t)` = shortest hop distance from mutual `m` to target `t`
+- `w(t)` = target weight from signal scoring
+
+Compute the base bridge score for each mutual:
+
+```text
+B(m) = Σ_{t ∈ T} w(t) · λ^(d(m,t) - 1)
+```
+
+Where:
+- `λ` is the decay factor, usually `0.5`
+- a direct connection contributes full value
+- each extra hop halves the contribution
+
+For second-order reach, expand one level into the mutual's own network:
+
+```text
+B_ext(m) = B(m) + α · Σ_{m' ∈ N(m) \\ M} Σ_{t ∈ T} w(t) · λ^(d(m',t))
+```
+
+Where:
+- `N(m) \\ M` is the set of people the mutual knows that you do not
+- `α` is the second-order discount, usually `0.3`
+
+Then rank by response-adjusted bridge value:
+
+```text
+R(m) = B_ext(m) · (1 + β · engagement(m))
+```
+
+Where:
+- `engagement(m)` is a normalized responsiveness score
+- `β` is the engagement bonus, usually `0.2`
+
+Interpretation:
+- Tier 1: high `R(m)` and direct bridge paths -> warm intro asks
+- Tier 2: medium `R(m)` and one-hop bridge paths -> conditional intro asks
+- Tier 3: no viable bridge -> direct cold outreach using the same lead record
+
 ### Output Format
 
 ```

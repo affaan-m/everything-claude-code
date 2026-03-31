@@ -75,6 +75,9 @@ examples/sessions/*.tmp
 # Local drafts
 marketing/
 .dmux/
+.dmux-hooks/
+.claude/worktrees/
+.claude/scheduled_tasks.lock
 
 # Temporary files
 tmp/
