@@ -72,7 +72,7 @@ cd /path/to/your/project
 ├── ecc-install-state.json  # 安装状态跟踪
 ├── install.sh          # 旧版安装脚本
 ├── uninstall.sh        # 旧版卸载脚本
-└── README.md           # 此文件
+└── README.zh-CN.md     # 此文件
 ```
 
 ## Target Adapter 安装的优势

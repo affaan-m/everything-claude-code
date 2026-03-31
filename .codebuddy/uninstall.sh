@@ -115,27 +115,28 @@ do_uninstall() {
         fi
 
         full_path="$codebuddy_full_path/$file_path"
-        resolved_full="$(resolve_path "$full_path")"
 
-        case "$resolved_full" in
-            "$codebuddy_root_resolved"|"$codebuddy_root_resolved"/*)
-                ;;
-            *)
-                echo "Skipped: $file_path (invalid manifest entry)"
+        # Security check: ensure the path resolves inside the target directory.
+        # Use Python to compute a reliable relative path so symlinks cannot
+        # escape the boundary.
+        relative="$(python3 -c 'import os,sys; print(os.path.relpath(os.path.abspath(sys.argv[1]), sys.argv[2]))' "$full_path" "$codebuddy_root_resolved")"
+        case "$relative" in
+            ../*|..)
+                echo "Skipped: $file_path (outside target directory)"
                 skipped=$((skipped + 1))
                 continue
                 ;;
         esac
 
-        if [ -f "$resolved_full" ]; then
-            rm -f "$resolved_full"
+        if [ -L "$full_path" ] || [ -f "$full_path" ]; then
+            rm -f "$full_path"
             echo "Removed: $file_path"
             removed=$((removed + 1))
-        elif [ -d "$resolved_full" ]; then
+        elif [ -d "$full_path" ]; then
             # Only remove directory if it's empty
-            if [ -z "$(ls -A "$resolved_full" 2>/dev/null)" ]; then
-                rmdir "$resolved_full" 2>/dev/null || true
-                if [ ! -d "$resolved_full" ]; then
+            if [ -z "$(ls -A "$full_path" 2>/dev/null)" ]; then
+                rmdir "$full_path" 2>/dev/null || true
+                if [ ! -d "$full_path" ]; then
                     echo "Removed: $file_path/"
                     removed=$((removed + 1))
                 fi

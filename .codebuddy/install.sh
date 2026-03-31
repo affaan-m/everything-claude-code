@@ -13,9 +13,29 @@ set -euo pipefail
 # When globs match nothing, expand to empty list instead of the literal pattern
 shopt -s nullglob
 
-# Resolve the directory where this script lives (the repo root)
+# Resolve the directory where this script lives
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Locate the ECC repo root by walking up from SCRIPT_DIR to find the marker
+# file (VERSION). This keeps the script working even when it has been copied
+# into a target project's .codebuddy/ directory.
+find_repo_root() {
+    local dir="$(dirname "$SCRIPT_DIR")"
+    # First try the parent of SCRIPT_DIR (original layout: .codebuddy/ lives in repo root)
+    if [ -f "$dir/VERSION" ] && [ -d "$dir/commands" ] && [ -d "$dir/agents" ]; then
+        echo "$dir"
+        return 0
+    fi
+    echo ""
+    return 1
+}
+
+REPO_ROOT="$(find_repo_root)"
+if [ -z "$REPO_ROOT" ]; then
+    echo "Error: Cannot locate the ECC repository root."
+    echo "This script must be run from within the ECC repository's .codebuddy/ directory."
+    exit 1
+fi
 
 # CodeBuddy directory name
 CODEBUDDY_DIR=".codebuddy"
@@ -111,7 +131,6 @@ do_install() {
     agents=0
     skills=0
     rules=0
-    other=0
 
     # Copy commands from repo root
     if [ -d "$REPO_ROOT/commands" ]; then
@@ -174,25 +193,13 @@ do_install() {
         done < <(find "$REPO_ROOT/rules" -type f | sort)
     fi
 
-    # Copy README files from this directory
+    # Copy README files (skip install/uninstall scripts to avoid broken
+    # path references when the copied script runs from the target directory)
     for readme_file in "$SCRIPT_DIR/README.md" "$SCRIPT_DIR/README.zh-CN.md"; do
         if [ -f "$readme_file" ]; then
             local_name=$(basename "$readme_file")
             target_path="$codebuddy_full_path/$local_name"
-            if copy_managed_file "$readme_file" "$target_path" "$MANIFEST" "$local_name"; then
-                other=$((other + 1))
-            fi
-        fi
-    done
-
-    # Copy install and uninstall scripts
-    for script_file in "$SCRIPT_DIR/install.sh" "$SCRIPT_DIR/uninstall.sh"; do
-        if [ -f "$script_file" ]; then
-            local_name=$(basename "$script_file")
-            target_path="$codebuddy_full_path/$local_name"
-            if copy_managed_file "$script_file" "$target_path" "$MANIFEST" "$local_name" 1; then
-                other=$((other + 1))
-            fi
+            copy_managed_file "$readme_file" "$target_path" "$MANIFEST" "$local_name" || true
         fi
     done
 

@@ -192,7 +192,6 @@ function doInstall() {
   let agents = 0;
   let skills = 0;
   let rules = 0;
-  let other = 0;
 
   // Copy commands
   const commandsDir = path.join(repoRoot, 'commands');
@@ -268,27 +267,14 @@ function doInstall() {
     }
   }
 
-  // Copy README files
+  // Copy README files (skip install/uninstall scripts to avoid broken
+  // path references when the copied script runs from the target directory)
   const readmeFiles = ['README.md', 'README.zh-CN.md'];
   for (const readmeFile of readmeFiles) {
     const sourcePath = path.join(scriptDir, readmeFile);
     if (fs.existsSync(sourcePath)) {
       const targetPath = path.join(codebuddyFullPath, readmeFile);
-      if (copyManagedFile(sourcePath, targetPath, manifest, readmeFile)) {
-        other += 1;
-      }
-    }
-  }
-
-  // Copy install and uninstall scripts
-  const scriptFiles = ['install.sh', 'uninstall.sh', 'install.js', 'uninstall.js'];
-  for (const scriptFile of scriptFiles) {
-    const sourcePath = path.join(scriptDir, scriptFile);
-    if (fs.existsSync(sourcePath)) {
-      const targetPath = path.join(codebuddyFullPath, scriptFile);
-      if (copyManagedFile(sourcePath, targetPath, manifest, scriptFile, true)) {
-        other += 1;
-      }
+      copyManagedFile(sourcePath, targetPath, manifest, readmeFile);
     }
   }
 

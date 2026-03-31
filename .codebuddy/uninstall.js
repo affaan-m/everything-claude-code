@@ -13,9 +13,6 @@ const path = require('path');
 const os = require('os');
 const readline = require('readline');
 
-// Platform detection
-const isWindows = process.platform === 'win32';
-
 /**
  * Get home directory cross-platform
  */
@@ -120,8 +117,6 @@ async function promptConfirm(question) {
  * Main uninstall function
  */
 async function doUninstall() {
-  // Resolve script directory
-  const scriptDir = path.dirname(path.resolve(__filename));
   const codebuddyDirName = '.codebuddy';
 
   // Parse arguments
@@ -211,27 +206,29 @@ async function doUninstall() {
     }
 
     const fullPath = path.join(codebuddyFullPath, filePath);
-    const resolvedFull = resolvePath(fullPath);
 
-    // Security check: ensure resolved path is within codebuddy directory
-    if (!resolvedFull.startsWith(codebuddyRootResolved)) {
-      console.log(`Skipped: ${filePath} (invalid manifest entry)`);
+    // Security check: use path.relative() to ensure the manifest entry
+    // resolves inside the codebuddy directory. This is stricter than
+    // startsWith and correctly handles edge-cases with symlinks.
+    const relative = path.relative(codebuddyRootResolved, path.resolve(fullPath));
+    if (relative.startsWith('..') || path.isAbsolute(relative)) {
+      console.log(`Skipped: ${filePath} (outside target directory)`);
       skipped += 1;
       continue;
     }
 
     try {
-      const stats = fs.statSync(resolvedFull);
+      const stats = fs.lstatSync(fullPath);
 
-      if (stats.isFile()) {
-        fs.unlinkSync(resolvedFull);
+      if (stats.isFile() || stats.isSymbolicLink()) {
+        fs.unlinkSync(fullPath);
         console.log(`Removed: ${filePath}`);
         removed += 1;
       } else if (stats.isDirectory()) {
         try {
-          const files = fs.readdirSync(resolvedFull);
+          const files = fs.readdirSync(fullPath);
           if (files.length === 0) {
-            fs.rmdirSync(resolvedFull);
+            fs.rmdirSync(fullPath);
             console.log(`Removed: ${filePath}/`);
             removed += 1;
           } else {

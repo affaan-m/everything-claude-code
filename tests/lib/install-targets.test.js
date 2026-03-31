@@ -286,6 +286,50 @@ function runTests() {
     );
   })) passed++; else failed++;
 
+  if (test('every schema target enum value has a matching adapter (regression guard)', () => {
+    const schemaPath = path.join(__dirname, '..', '..', 'schemas', 'ecc-install-config.schema.json');
+    const schema = JSON.parse(require('fs').readFileSync(schemaPath, 'utf8'));
+    const schemaTargets = schema.properties.target.enum;
+    const adapters = listInstallTargetAdapters();
+    const adapterTargets = adapters.map(a => a.target);
+
+    for (const target of schemaTargets) {
+      assert.ok(
+        adapterTargets.includes(target),
+        `Schema target "${target}" has no matching adapter. ` +
+        `Available adapter targets: ${adapterTargets.join(', ')}`
+      );
+    }
+  })) passed++; else failed++;
+
+  if (test('every adapter target is listed in the schema enum (regression guard)', () => {
+    const schemaPath = path.join(__dirname, '..', '..', 'schemas', 'ecc-install-config.schema.json');
+    const schema = JSON.parse(require('fs').readFileSync(schemaPath, 'utf8'));
+    const schemaTargets = schema.properties.target.enum;
+    const adapters = listInstallTargetAdapters();
+
+    for (const adapter of adapters) {
+      assert.ok(
+        schemaTargets.includes(adapter.target),
+        `Adapter target "${adapter.target}" is not in schema enum. ` +
+        `Schema targets: ${schemaTargets.join(', ')}`
+      );
+    }
+  })) passed++; else failed++;
+
+  if (test('every adapter target is in SUPPORTED_INSTALL_TARGETS (regression guard)', () => {
+    const { SUPPORTED_INSTALL_TARGETS } = require('../../scripts/lib/install-manifests');
+    const adapters = listInstallTargetAdapters();
+
+    for (const adapter of adapters) {
+      assert.ok(
+        SUPPORTED_INSTALL_TARGETS.includes(adapter.target),
+        `Adapter target "${adapter.target}" is not in SUPPORTED_INSTALL_TARGETS. ` +
+        `Supported: ${SUPPORTED_INSTALL_TARGETS.join(', ')}`
+      );
+    }
+  })) passed++; else failed++;
+
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
 }
