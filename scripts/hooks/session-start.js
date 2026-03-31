@@ -13,6 +13,7 @@ const {
   getSessionsDir,
   getSessionSearchDirs,
   getLearnedSkillsDir,
+  getProjectName,
   findFiles,
   ensureDir,
   readFile,
@@ -53,6 +54,56 @@ function dedupeRecentSessions(searchDirs) {
     .sort((left, right) => right.mtime - left.mtime || left.dirIndex - right.dirIndex);
 }
 
+/**
+ * Select the best matching session for the current working directory.
+ *
+ * Session files written by session-end.js contain header fields like:
+ *   **Project:** my-project
+ *   **Worktree:** /path/to/project
+ *
+ * Priority (highest to lowest):
+ *   1. Exact worktree (cwd) match — most recent
+ *   2. Same project name match — most recent
+ *   3. Fallback to overall most recent (original behavior)
+ *
+ * Sessions are already sorted newest-first, so the first match in each
+ * category wins.
+ */
+function selectMatchingSession(sessions, cwd, currentProject) {
+  let projectMatch = null;
+
+  for (const session of sessions) {
+    const content = readFile(session.path);
+    if (!content) continue;
+
+    // Extract **Worktree:** field
+    const worktreeMatch = content.match(/\*\*Worktree:\*\*\s*(.+)$/m);
+    const sessionWorktree = worktreeMatch ? worktreeMatch[1].trim() : '';
+
+    // Exact worktree match — best possible, return immediately
+    if (sessionWorktree && sessionWorktree === cwd) {
+      session._matchReason = 'worktree';
+      return session;
+    }
+
+    // Project name match — keep searching for a worktree match
+    if (!projectMatch && currentProject) {
+      const projectFieldMatch = content.match(/\*\*Project:\*\*\s*(.+)$/m);
+      const sessionProject = projectFieldMatch ? projectFieldMatch[1].trim() : '';
+      if (sessionProject && sessionProject === currentProject) {
+        projectMatch = session;
+        projectMatch._matchReason = 'project';
+      }
+    }
+  }
+
+  if (projectMatch) return projectMatch;
+
+  // Fallback: most recent session (original behavior)
+  sessions[0]._matchReason = 'recency-fallback';
+  return sessions[0];
+}
+
 async function main() {
   const sessionsDir = getSessionsDir();
   const learnedDir = getLearnedSkillsDir();
@@ -66,12 +117,19 @@ async function main() {
   const recentSessions = dedupeRecentSessions(getSessionSearchDirs());
 
   if (recentSessions.length > 0) {
-    const latest = recentSessions[0];
     log(`[SessionStart] Found ${recentSessions.length} recent session(s)`);
-    log(`[SessionStart] Latest: ${latest.path}`);
 
-    // Read and inject the latest session content into Claude's context
-    const content = stripAnsi(readFile(latest.path));
+    // Prefer a session that matches the current working directory or project.
+    // Session files contain **Project:** and **Worktree:** header fields written
+    // by session-end.js, so we can match against them.
+    const cwd = process.cwd();
+    const currentProject = getProjectName() || '';
+
+    const selected = selectMatchingSession(recentSessions, cwd, currentProject);
+    log(`[SessionStart] Selected: ${selected.path} (match: ${selected._matchReason})`);
+
+    // Read and inject the selected session content into Claude's context
+    const content = stripAnsi(readFile(selected.path));
     if (content && !content.includes('[Session context goes here]')) {
       // Only inject if the session has actual content (not the blank template)
       additionalContextParts.push(`Previous session summary:\n${content}`);
