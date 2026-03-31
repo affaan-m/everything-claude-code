@@ -1,8 +1,22 @@
+---
+description: Adversarial dual-review convergence loop — two independent model reviewers must both approve before code ships.
+---
+
 # Santa Loop
 
 Adversarial dual-review convergence loop using the santa-method skill. Two independent reviewers — different models, no shared context — must both return NICE before code ships.
 
-## Instructions
+## Purpose
+
+Run two independent reviewers (Claude Opus + an external model) against the current task output. Both must return NICE before the code is pushed. If either returns NAUGHTY, fix all flagged issues, commit, and re-run fresh reviewers — up to 3 rounds.
+
+## Usage
+
+```
+/santa-loop [file-or-glob | description]
+```
+
+## Workflow
 
 ### Step 1: Identify What to Review
 
@@ -31,7 +45,22 @@ Add domain-specific criteria based on file types (e.g., type safety for TS, memo
 
 ### Step 3: Dual Independent Review
 
-Launch two reviewers **in parallel** with identical rubric but **no shared context**.
+Launch two reviewers **in parallel** using the Agent tool (both in a single message for concurrent execution). Both must complete before proceeding to the verdict gate.
+
+Each reviewer evaluates every rubric criterion as PASS or FAIL, then returns structured JSON:
+
+```json
+{
+  "verdict": "PASS" | "FAIL",
+  "checks": [
+    {"criterion": "...", "result": "PASS|FAIL", "detail": "..."}
+  ],
+  "critical_issues": ["..."],
+  "suggestions": ["..."]
+}
+```
+
+The verdict gate (Step 4) maps these to NICE/NAUGHTY: both PASS → NICE, either FAIL → NAUGHTY.
 
 #### Reviewer A: Claude Agent (always runs)
 
@@ -39,32 +68,47 @@ Launch an Agent (subagent_type: `code-reviewer`, model: `opus`) with the full ru
 - The complete rubric
 - All file contents under review
 - "You are an independent quality reviewer. You have NOT seen any other review. Your job is to find problems, not to approve."
-- Return structured verdict: NICE or NAUGHTY with findings
+- Return the structured JSON verdict above
 
-#### Reviewer B: External Model (preferred, with Claude fallback)
+#### Reviewer B: External Model (Claude fallback only if no external CLI installed)
 
-Try each option in order — use the first one available:
-
-**Option 1: Codex CLI** (if `codex` is on PATH)
-Write the full rubric + file contents to a temp file, then:
+First, detect which CLIs are available:
 ```bash
-codex exec -p "full-auto" --model gpt-5.4 -C "$(pwd)" - < /tmp/santa-reviewer-b-prompt.txt
+command -v codex >/dev/null 2>&1 && echo "codex" || true
+command -v gemini >/dev/null 2>&1 && echo "gemini" || true
 ```
 
-**Option 2: Gemini CLI** (if `gemini` is on PATH)
+Build the reviewer prompt (identical rubric + instructions as Reviewer A) and write it to a unique temp file:
 ```bash
-echo "<prompt>" | gemini -m gemini-3.1-pro-preview
+PROMPT_FILE=$(mktemp /tmp/santa-reviewer-b-XXXXXX.txt)
+cat > "$PROMPT_FILE" << 'EOF'
+... full rubric + file contents + reviewer instructions ...
+EOF
 ```
 
-**Option 3: Claude Agent fallback**
-If neither external CLI is available, launch a second Claude Agent (subagent_type: `code-reviewer`, model: `opus`). Log a note that both reviewers share the same model family — true model diversity was not achieved but context isolation is still enforced.
+Use the first available CLI:
 
-In all cases, the prompt must contain the identical rubric and instructions as Reviewer A. The reviewer must return a structured verdict.
+**Codex CLI** (if installed)
+```bash
+codex exec --sandbox read-only -m gpt-5.4 -C "$(pwd)" - < "$PROMPT_FILE"
+rm -f "$PROMPT_FILE"
+```
+
+**Gemini CLI** (if installed and codex is not)
+```bash
+gemini -p "$(cat "$PROMPT_FILE")" -m gemini-2.5-pro
+rm -f "$PROMPT_FILE"
+```
+
+**Claude Agent fallback** (only if neither `codex` nor `gemini` is installed)
+Launch a second Claude Agent (subagent_type: `code-reviewer`, model: `opus`). Log a warning that both reviewers share the same model family — true model diversity was not achieved but context isolation is still enforced.
+
+In all cases, the reviewer must return the same structured JSON verdict as Reviewer A.
 
 ### Step 4: Verdict Gate
 
-- **Both NICE** → proceed to Step 6 (push)
-- **Either NAUGHTY** → merge all critical issues from both reviewers, deduplicate, proceed to Step 5
+- **Both PASS** → **NICE** — proceed to Step 6 (push)
+- **Either FAIL** → **NAUGHTY** — merge all critical issues from both reviewers, deduplicate, proceed to Step 5
 
 ### Step 5: Fix Cycle (NAUGHTY path)
 
@@ -75,25 +119,40 @@ In all cases, the prompt must contain the identical rubric and instructions as R
    fix: address santa-loop review findings (round N)
    ```
 4. Re-run Step 3 with **fresh reviewers** (no memory of previous rounds)
-5. Repeat until both return NICE
+5. Repeat until both return PASS
 
-**Maximum 3 iterations.** If still NAUGHTY after 3 rounds, stop and present all remaining issues to the user. Do NOT push.
+**Maximum 3 iterations.** If still NAUGHTY after 3 rounds, stop and present remaining issues:
+
+```
+SANTA LOOP ESCALATION (exceeded 3 iterations)
+
+Remaining issues after 3 rounds:
+- [list all unresolved critical issues from both reviewers]
+
+Manual review required before proceeding.
+```
+
+Do NOT push.
 
 ### Step 6: Push (NICE path)
 
-When both reviewers return NICE:
+When both reviewers return PASS:
 
 ```bash
-git push
+git push -u origin HEAD
 ```
 
 ### Step 7: Final Report
 
+Print the output report (see Output section below).
+
+## Output
+
 ```
 SANTA VERDICT: [NICE / NAUGHTY (escalated)]
 
-Reviewer A (Claude Opus):   [NICE/NAUGHTY]
-Reviewer B ([model used]):  [NICE/NAUGHTY]
+Reviewer A (Claude Opus):   [PASS/FAIL]
+Reviewer B ([model used]):  [PASS/FAIL]
 
 Agreement:
   Both flagged:      [issues caught by both]
@@ -104,18 +163,12 @@ Iterations: [N]/3
 Result:     [PUSHED / ESCALATED TO USER]
 ```
 
-## Arguments
-
-`$ARGUMENTS` can be:
-- Empty — reviews uncommitted changes
-- A file path or glob — reviews specific files
-- A description — reviews files relevant to that task
-
 ## Notes
 
 - Reviewer A (Claude Opus) always runs — guarantees at least one strong reviewer regardless of tooling.
-- Model diversity is the goal for Reviewer B. GPT-5.4 or Gemini 3.1 Pro gives true independence — different training data, different biases, different blind spots. The Claude-only fallback still provides value via context isolation but loses model diversity.
-- Strongest available models are used: Opus for Reviewer A, GPT-5.4 or Gemini 3.1 Pro for Reviewer B.
+- Model diversity is the goal for Reviewer B. GPT-5.4 or Gemini 2.5 Pro gives true independence — different training data, different biases, different blind spots. The Claude-only fallback still provides value via context isolation but loses model diversity.
+- Strongest available models are used: Opus for Reviewer A, GPT-5.4 or Gemini 2.5 Pro for Reviewer B.
+- External reviewers run with `--sandbox read-only` (Codex) to prevent repo mutation during review.
 - Fresh reviewers each round prevents anchoring bias from prior findings.
 - The rubric is the most important input. Tighten it if reviewers rubber-stamp or flag subjective style issues.
 - Commits happen on NAUGHTY rounds so fixes are preserved even if the loop is interrupted.
