@@ -32,7 +32,7 @@ Agent-powered lead intelligence pipeline that finds, scores, and reaches high-va
 
 ```
 ┌─────────────┐     ┌──────────────┐     ┌─────────────────┐     ┌──────────────┐     ┌─────────────────┐
-│ 1. Signal   │────▶│ 2. Mutual    │────▶│ 3. Warm Path    │────▶│ 4. Enrich    │────▶│ 5. Outreach     │
+│ 1. Signal   │────>│ 2. Mutual    │────>│ 3. Warm Path    │────>│ 4. Enrich    │────>│ 5. Outreach     │
 │    Scoring  │     │    Ranking   │     │    Discovery    │     │              │     │    Draft        │
 └─────────────┘     └──────────────┘     └─────────────────┘     └──────────────┘     └─────────────────┘
 ```
@@ -116,9 +116,9 @@ MUTUAL RANKING REPORT
 For each target, find the shortest introduction chain:
 
 ```
-You ──[follows]──▶ Mutual A ──[invested in]──▶ Target Company
-You ──[follows]──▶ Mutual B ──[co-founded with]──▶ Target Person
-You ──[met at]──▶ Event ──[also attended]──▶ Target Person
+You ──[follows]──> Mutual A ──[invested in]──> Target Company
+You ──[follows]──> Mutual B ──[co-founded with]──> Target Person
+You ──[met at]──> Event ──[also attended]──> Target Person
 ```
 
 ### Path Types (ordered by warmth)
