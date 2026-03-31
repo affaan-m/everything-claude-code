@@ -22,24 +22,24 @@ Claude Codeセッションの正式な評価フレームワークで、評価駆
 Claudeが以前できなかったことができるようになったかをテスト：
 ```markdown
 [CAPABILITY EVAL: feature-name]
-Task: Claudeが達成すべきことの説明
-Success Criteria:
+タスク: Claudeが達成すべきことの説明
+成功基準:
   - [ ] 基準1
   - [ ] 基準2
   - [ ] 基準3
-Expected Output: 期待される結果の説明
+期待される出力: 期待される結果の説明
 ```
 
 ### リグレッション評価
 変更が既存の機能を破壊しないことを確認：
 ```markdown
 [REGRESSION EVAL: feature-name]
-Baseline: SHAまたはチェックポイント名
-Tests:
+ベースライン: SHAまたはチェックポイント名
+テスト:
   - existing-test-1: PASS/FAIL
   - existing-test-2: PASS/FAIL
   - existing-test-3: PASS/FAIL
-Result: X/Y passed (previously Y/Y)
+結果: X/Y 成功（以前は Y/Y）
 ```
 
 ## 評価者タイプ
@@ -67,17 +67,17 @@ Claudeを使用して自由形式の出力を評価：
 3. エッジケースは処理されていますか？
 4. エラー処理は適切ですか？
 
-Score: 1-5 (1=poor, 5=excellent)
-Reasoning: [説明]
+スコア: 1-5（1=不良、5=優秀）
+理由: [説明]
 ```
 
 ### 3. 人間評価者
 手動レビューのためにフラグを立てる：
 ```markdown
 [HUMAN REVIEW REQUIRED]
-Change: 何が変更されたかの説明
-Reason: 人間のレビューが必要な理由
-Risk Level: LOW/MEDIUM/HIGH
+変更内容: 何が変更されたかの説明
+理由: 人間のレビューが必要な理由
+リスクレベル: LOW/MEDIUM/HIGH
 ```
 
 ## メトリクス
@@ -98,21 +98,21 @@ Risk Level: LOW/MEDIUM/HIGH
 
 ### 1. 定義（コーディング前）
 ```markdown
-## EVAL DEFINITION: feature-xyz
+## 評価定義: feature-xyz
 
-### Capability Evals
+### 能力評価
 1. 新しいユーザーアカウントを作成できる
 2. メール形式を検証できる
 3. パスワードを安全にハッシュ化できる
 
-### Regression Evals
+### リグレッション評価
 1. 既存のログインが引き続き機能する
 2. セッション管理が変更されていない
 3. ログアウトフローが維持されている
 
-### Success Metrics
-- pass@3 > 90% for capability evals
-- pass^3 = 100% for regression evals
+### 成功メトリクス
+- 能力評価で pass@3 > 90%
+- リグレッション評価で pass^3 = 100%
 ```
 
 ### 2. 実装
@@ -131,26 +131,26 @@ npm test -- --testPathPattern="existing"
 
 ### 4. レポート
 ```markdown
-EVAL REPORT: feature-xyz
+評価レポート: feature-xyz
 ========================
 
-Capability Evals:
+能力評価:
   create-user:     PASS (pass@1)
   validate-email:  PASS (pass@2)
   hash-password:   PASS (pass@1)
-  Overall:         3/3 passed
+  全体:            3/3 成功
 
-Regression Evals:
+リグレッション評価:
   login-flow:      PASS
   session-mgmt:    PASS
   logout-flow:     PASS
-  Overall:         3/3 passed
+  全体:            3/3 成功
 
-Metrics:
+メトリクス:
   pass@1: 67% (2/3)
   pass@3: 100% (3/3)
 
-Status: READY FOR REVIEW
+ステータス: レビュー準備完了
 ```
 
 ## 統合パターン
@@ -199,29 +199,29 @@ Status: READY FOR REVIEW
 ```markdown
 ## EVAL: add-authentication
 
-### Phase 1: Define (10 min)
-Capability Evals:
+### フェーズ 1: 定義（10分）
+能力評価:
 - [ ] ユーザーはメール/パスワードで登録できる
 - [ ] ユーザーは有効な資格情報でログインできる
 - [ ] 無効な資格情報は適切なエラーで拒否される
 - [ ] セッションはページリロード後も持続する
 - [ ] ログアウトはセッションをクリアする
 
-Regression Evals:
+リグレッション評価:
 - [ ] 公開ルートは引き続きアクセス可能
 - [ ] APIレスポンスは変更されていない
 - [ ] データベーススキーマは互換性がある
 
-### Phase 2: Implement (varies)
+### フェーズ 2: 実装（可変）
 [コードを書く]
 
-### Phase 3: Evaluate
+### フェーズ 3: 評価
 Run: /eval check add-authentication
 
-### Phase 4: Report
-EVAL REPORT: add-authentication
+### フェーズ 4: レポート
+評価レポート: add-authentication
 ==============================
-Capability: 5/5 passed (pass@3: 100%)
-Regression: 3/3 passed (pass^3: 100%)
-Status: SHIP IT
+能力: 5/5 成功（pass@3: 100%）
+リグレッション: 3/3 成功（pass^3: 100%）
+ステータス: 出荷可能
 ```

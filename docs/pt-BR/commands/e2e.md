@@ -182,7 +182,7 @@ Artifacts generated:
 ╔══════════════════════════════════════════════════════════════╗
 ║                    E2E Test Results                          ║
 ╠══════════════════════════════════════════════════════════════╣
-║ Status:     ✅ ALL TESTS PASSED                              ║
+║ Status:     PASS: ALL TESTS PASSED                              ║
 ║ Total:      3 tests                                          ║
 ║ Passed:     3 (100%)                                         ║
 ║ Failed:     0                                                ║
@@ -191,15 +191,15 @@ Artifacts generated:
 ╚══════════════════════════════════════════════════════════════╝
 
 Artifacts:
-📸 Screenshots: 2 files
-📹 Videos: 0 files (only on failure)
-🔍 Traces: 0 files (only on failure)
-📊 HTML Report: playwright-report/index.html
+ Screenshots: 2 files
+ Videos: 0 files (only on failure)
+ Traces: 0 files (only on failure)
+ HTML Report: playwright-report/index.html
 
 View report: npx playwright show-report
 ```
 
-✅ E2E test suite ready for CI/CD integration!
+PASS: E2E test suite ready for CI/CD integration!
 ```
 
 ## Artefatos de Teste
@@ -235,7 +235,7 @@ open artifacts/search-results.png
 Se um teste falhar de forma intermitente:
 
 ```
-⚠️  FLAKY TEST DETECTED: tests/e2e/markets/trade.spec.ts
+WARNING:  FLAKY TEST DETECTED: tests/e2e/markets/trade.spec.ts
 
 Test passed 7/10 runs (70% pass rate)
 
@@ -254,10 +254,10 @@ Quarantine recommendation: Mark as test.fixme() until fixed
 ## Configuração de Navegador
 
 Os testes rodam em múltiplos navegadores por padrão:
-- ✅ Chromium (Desktop Chrome)
-- ✅ Firefox (Desktop)
-- ✅ WebKit (Desktop Safari)
-- ✅ Mobile Chrome (optional)
+- PASS: Chromium (Desktop Chrome)
+- PASS: Firefox (Desktop)
+- PASS: WebKit (Desktop Safari)
+- PASS: Mobile Chrome (optional)
 
 Configure em `playwright.config.ts` para ajustar navegadores.
 
@@ -285,7 +285,7 @@ Adicione ao seu pipeline de CI:
 
 Para PMX, priorize estes testes E2E:
 
-**🔴 CRITICAL (Must Always Pass):**
+**CRITICAL (Must Always Pass):**
 1. User can connect wallet
 2. User can browse markets
 3. User can search markets (semantic search)
@@ -294,7 +294,7 @@ Para PMX, priorize estes testes E2E:
 6. Market resolves correctly
 7. User can withdraw funds
 
-**🟡 IMPORTANT:**
+**IMPORTANT:**
 1. Market creation flow
 2. User profile updates
 3. Real-time price updates
@@ -305,20 +305,20 @@ Para PMX, priorize estes testes E2E:
 ## Boas Práticas
 
 **DO:**
-- ✅ Use Page Object Model para manutenção
-- ✅ Use atributos data-testid para seletores
-- ✅ Aguarde respostas de API, não timeouts arbitrários
-- ✅ Teste jornadas críticas de usuário end-to-end
-- ✅ Rode testes antes de mergear em main
-- ✅ Revise artefatos quando testes falharem
+- PASS: Use Page Object Model para manutenção
+- PASS: Use atributos data-testid para seletores
+- PASS: Aguarde respostas de API, não timeouts arbitrários
+- PASS: Teste jornadas críticas de usuário end-to-end
+- PASS: Rode testes antes de mergear em main
+- PASS: Revise artefatos quando testes falharem
 
 **DON'T:**
-- ❌ Use seletores frágeis (classes CSS podem mudar)
-- ❌ Teste detalhes de implementação
-- ❌ Rode testes contra produção
-- ❌ Ignore testes flaky
-- ❌ Pule revisão de artefatos em falhas
-- ❌ Teste todo edge case com E2E (use testes unitários)
+- FAIL: Use seletores frágeis (classes CSS podem mudar)
+- FAIL: Teste detalhes de implementação
+- FAIL: Rode testes contra produção
+- FAIL: Ignore testes flaky
+- FAIL: Pule revisão de artefatos em falhas
+- FAIL: Teste todo edge case com E2E (use testes unitários)
 
 ## Notas Importantes
 

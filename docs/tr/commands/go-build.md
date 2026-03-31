@@ -140,7 +140,7 @@ ok      project/internal/handler   0.023s
 | Değiştirilen dosyalar | 2 |
 | Kalan sorunlar | 0 |
 
-Build Durumu: ✅ BAŞARILI
+Build Durumu: PASS: BAŞARILI
 ```
 
 ## Düzeltilen Yaygın Hatalar

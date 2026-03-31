@@ -148,6 +148,24 @@ test('analysis temp file is created and cleaned up', () => {
   assert.ok(content.includes('rm -f "$prompt_file" "$analysis_file"'), 'Should clean up both prompt and analysis temp files');
 });
 
+test('observer-loop uses project-local temp directory for analysis artifacts', () => {
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  assert.ok(content.includes('observer_tmp_dir="${PROJECT_DIR}/.observer-tmp"'), 'Should keep observer temp files inside the project');
+  assert.ok(content.includes('mktemp "${observer_tmp_dir}/ecc-observer-analysis.'), 'Analysis temp file should use the project temp dir');
+  assert.ok(content.includes('mktemp "${observer_tmp_dir}/ecc-observer-prompt.'), 'Prompt temp file should use the project temp dir');
+});
+
+test('observer-loop prompt requires direct instinct writes without asking permission', () => {
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  const heredocStart = content.indexOf('cat > "$prompt_file" <<PROMPT');
+  const heredocEnd = content.indexOf('\nPROMPT', heredocStart + 1);
+  assert.ok(heredocStart > 0, 'Should find prompt heredoc start');
+  assert.ok(heredocEnd > heredocStart, 'Should find prompt heredoc end');
+  const promptSection = content.substring(heredocStart, heredocEnd);
+  assert.ok(promptSection.includes('MUST write an instinct file directly'), 'Prompt should require direct file creation');
+  assert.ok(promptSection.includes('Do NOT ask for permission'), 'Prompt should forbid permission-seeking');
+  assert.ok(promptSection.includes('write or update the instinct file in this run'), 'Prompt should require same-run writes');
+});
 test('prompt references analysis_file not full OBSERVATIONS_FILE', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
   // The prompt heredoc should reference analysis_file for the Read instruction.
@@ -157,7 +175,7 @@ test('prompt references analysis_file not full OBSERVATIONS_FILE', () => {
   assert.ok(heredocStart > 0, 'Should find prompt heredoc start');
   assert.ok(heredocEnd > heredocStart, 'Should find prompt heredoc end');
   const promptSection = content.substring(heredocStart, heredocEnd);
-  assert.ok(promptSection.includes('${analysis_file}'), 'Prompt should point Claude at the sampled analysis file, not the full observations file');
+  assert.ok(promptSection.includes('${analysis_relpath}'), 'Prompt should point Claude at the sampled analysis file (via relative path), not the full observations file');
 });
 
 // ──────────────────────────────────────────────────────

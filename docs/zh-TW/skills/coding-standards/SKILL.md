@@ -38,12 +38,12 @@ description: Universal coding standards, best practices, and patterns for TypeSc
 ### 變數命名
 
 ```typescript
-// ✅ 良好：描述性名稱
+// PASS: 良好：描述性名稱
 const marketSearchQuery = 'election'
 const isUserAuthenticated = true
 const totalRevenue = 1000
 
-// ❌ 不良：不清楚的名稱
+// FAIL: 不良：不清楚的名稱
 const q = 'election'
 const flag = true
 const x = 1000
@@ -52,12 +52,12 @@ const x = 1000
 ### 函式命名
 
 ```typescript
-// ✅ 良好：動詞-名詞模式
+// PASS: 良好：動詞-名詞模式
 async function fetchMarketData(marketId: string) { }
 function calculateSimilarity(a: number[], b: number[]) { }
 function isValidEmail(email: string): boolean { }
 
-// ❌ 不良：不清楚或只有名詞
+// FAIL: 不良：不清楚或只有名詞
 async function market(id: string) { }
 function similarity(a, b) { }
 function email(e) { }
@@ -66,7 +66,7 @@ function email(e) { }
 ### 不可變性模式（關鍵）
 
 ```typescript
-// ✅ 總是使用展開運算符
+// PASS: 總是使用展開運算符
 const updatedUser = {
   ...user,
   name: 'New Name'
@@ -74,7 +74,7 @@ const updatedUser = {
 
 const updatedArray = [...items, newItem]
 
-// ❌ 永遠不要直接修改
+// FAIL: 永遠不要直接修改
 user.name = 'New Name'  // 不良
 items.push(newItem)     // 不良
 ```
@@ -82,7 +82,7 @@ items.push(newItem)     // 不良
 ### 錯誤處理
 
 ```typescript
-// ✅ 良好：完整的錯誤處理
+// PASS: 良好：完整的錯誤處理
 async function fetchData(url: string) {
   try {
     const response = await fetch(url)
@@ -98,7 +98,7 @@ async function fetchData(url: string) {
   }
 }
 
-// ❌ 不良：無錯誤處理
+// FAIL: 不良：無錯誤處理
 async function fetchData(url) {
   const response = await fetch(url)
   return response.json()
@@ -108,14 +108,14 @@ async function fetchData(url) {
 ### Async/Await 最佳實務
 
 ```typescript
-// ✅ 良好：可能時並行執行
+// PASS: 良好：可能時並行執行
 const [users, markets, stats] = await Promise.all([
   fetchUsers(),
   fetchMarkets(),
   fetchStats()
 ])
 
-// ❌ 不良：不必要的順序執行
+// FAIL: 不良：不必要的順序執行
 const users = await fetchUsers()
 const markets = await fetchMarkets()
 const stats = await fetchStats()
@@ -124,7 +124,7 @@ const stats = await fetchStats()
 ### 型別安全
 
 ```typescript
-// ✅ 良好：正確的型別
+// PASS: 良好：正確的型別
 interface Market {
   id: string
   name: string
@@ -136,7 +136,7 @@ function getMarket(id: string): Promise<Market> {
   // 實作
 }
 
-// ❌ 不良：使用 'any'
+// FAIL: 不良：使用 'any'
 function getMarket(id: any): Promise<any> {
   // 實作
 }
@@ -147,7 +147,7 @@ function getMarket(id: any): Promise<any> {
 ### 元件結構
 
 ```typescript
-// ✅ 良好：具有型別的函式元件
+// PASS: 良好：具有型別的函式元件
 interface ButtonProps {
   children: React.ReactNode
   onClick: () => void
@@ -172,7 +172,7 @@ export function Button({
   )
 }
 
-// ❌ 不良：無型別、結構不清楚
+// FAIL: 不良：無型別、結構不清楚
 export function Button(props) {
   return <button onClick={props.onClick}>{props.children}</button>
 }
@@ -181,7 +181,7 @@ export function Button(props) {
 ### 自訂 Hooks
 
 ```typescript
-// ✅ 良好：可重用的自訂 hook
+// PASS: 良好：可重用的自訂 hook
 export function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value)
 
@@ -203,25 +203,25 @@ const debouncedQuery = useDebounce(searchQuery, 500)
 ### 狀態管理
 
 ```typescript
-// ✅ 良好：正確的狀態更新
+// PASS: 良好：正確的狀態更新
 const [count, setCount] = useState(0)
 
 // 基於先前狀態的函式更新
 setCount(prev => prev + 1)
 
-// ❌ 不良：直接引用狀態
+// FAIL: 不良：直接引用狀態
 setCount(count + 1)  // 在非同步情境中可能過時
 ```
 
 ### 條件渲染
 
 ```typescript
-// ✅ 良好：清晰的條件渲染
+// PASS: 良好：清晰的條件渲染
 {isLoading && <Spinner />}
 {error && <ErrorMessage error={error} />}
 {data && <DataDisplay data={data} />}
 
-// ❌ 不良：三元地獄
+// FAIL: 不良：三元地獄
 {isLoading ? <Spinner /> : error ? <ErrorMessage error={error} /> : data ? <DataDisplay data={data} /> : null}
 ```
 
@@ -244,7 +244,7 @@ GET /api/markets?status=active&limit=10&offset=0
 ### 回應格式
 
 ```typescript
-// ✅ 良好：一致的回應結構
+// PASS: 良好：一致的回應結構
 interface ApiResponse<T> {
   success: boolean
   data?: T
@@ -275,7 +275,7 @@ return NextResponse.json({
 ```typescript
 import { z } from 'zod'
 
-// ✅ 良好：Schema 驗證
+// PASS: 良好：Schema 驗證
 const CreateMarketSchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().min(1).max(2000),
@@ -338,14 +338,14 @@ types/market.types.ts         # 型別用 camelCase 加 .types 後綴
 ### 何時註解
 
 ```typescript
-// ✅ 良好：解釋「為什麼」而非「什麼」
+// PASS: 良好：解釋「為什麼」而非「什麼」
 // 使用指數退避以避免在服務中斷時壓垮 API
 const delay = Math.min(1000 * Math.pow(2, retryCount), 30000)
 
 // 為了處理大陣列的效能，此處刻意使用突變
 items.push(newItem)
 
-// ❌ 不良：陳述顯而易見的事實
+// FAIL: 不良：陳述顯而易見的事實
 // 將計數器加 1
 count++
 
@@ -385,12 +385,12 @@ export async function searchMarkets(
 ```typescript
 import { useMemo, useCallback } from 'react'
 
-// ✅ 良好：記憶化昂貴的計算
+// PASS: 良好：記憶化昂貴的計算
 const sortedMarkets = useMemo(() => {
   return markets.sort((a, b) => b.volume - a.volume)
 }, [markets])
 
-// ✅ 良好：記憶化回呼函式
+// PASS: 良好：記憶化回呼函式
 const handleSearch = useCallback((query: string) => {
   setSearchQuery(query)
 }, [])
@@ -401,7 +401,7 @@ const handleSearch = useCallback((query: string) => {
 ```typescript
 import { lazy, Suspense } from 'react'
 
-// ✅ 良好：延遲載入重型元件
+// PASS: 良好：延遲載入重型元件
 const HeavyChart = lazy(() => import('./HeavyChart'))
 
 export function Dashboard() {
@@ -416,13 +416,13 @@ export function Dashboard() {
 ### 資料庫查詢
 
 ```typescript
-// ✅ 良好：只選擇需要的欄位
+// PASS: 良好：只選擇需要的欄位
 const { data } = await supabase
   .from('markets')
   .select('id, name, status')
   .limit(10)
 
-// ❌ 不良：選擇所有欄位
+// FAIL: 不良：選擇所有欄位
 const { data } = await supabase
   .from('markets')
   .select('*')
@@ -449,12 +449,12 @@ test('calculates similarity correctly', () => {
 ### 測試命名
 
 ```typescript
-// ✅ 良好：描述性測試名稱
+// PASS: 良好：描述性測試名稱
 test('returns empty array when no markets match query', () => { })
 test('throws error when OpenAI API key is missing', () => { })
 test('falls back to substring search when Redis unavailable', () => { })
 
-// ❌ 不良：模糊的測試名稱
+// FAIL: 不良：模糊的測試名稱
 test('works', () => { })
 test('test search', () => { })
 ```
@@ -465,12 +465,12 @@ test('test search', () => { })
 
 ### 1. 過長函式
 ```typescript
-// ❌ 不良：函式超過 50 行
+// FAIL: 不良：函式超過 50 行
 function processMarketData() {
   // 100 行程式碼
 }
 
-// ✅ 良好：拆分為較小的函式
+// PASS: 良好：拆分為較小的函式
 function processMarketData() {
   const validated = validateData()
   const transformed = transformData(validated)
@@ -480,7 +480,7 @@ function processMarketData() {
 
 ### 2. 過深巢狀
 ```typescript
-// ❌ 不良：5 層以上巢狀
+// FAIL: 不良：5 層以上巢狀
 if (user) {
   if (user.isAdmin) {
     if (market) {
@@ -493,7 +493,7 @@ if (user) {
   }
 }
 
-// ✅ 良好：提前返回
+// PASS: 良好：提前返回
 if (!user) return
 if (!user.isAdmin) return
 if (!market) return
@@ -505,11 +505,11 @@ if (!hasPermission) return
 
 ### 3. 魔術數字
 ```typescript
-// ❌ 不良：無解釋的數字
+// FAIL: 不良：無解釋的數字
 if (retryCount > 3) { }
 setTimeout(callback, 500)
 
-// ✅ 良好：命名常數
+// PASS: 良好：命名常數
 const MAX_RETRIES = 3
 const DEBOUNCE_DELAY_MS = 500
 

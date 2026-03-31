@@ -18,8 +18,14 @@ export function getHomeDir(): string;
 /** Get the Claude config directory (~/.claude) */
 export function getClaudeDir(): string;
 
-/** Get the sessions directory (~/.claude/sessions) */
+/** Get the canonical ECC sessions directory (~/.claude/session-data) */
 export function getSessionsDir(): string;
+
+/** Get the legacy Claude-managed sessions directory (~/.claude/sessions) */
+export function getLegacySessionsDir(): string;
+
+/** Get session directories to search, with canonical storage first and legacy fallback second */
+export function getSessionSearchDirs(): string[];
 
 /** Get the learned skills directory (~/.claude/skills/learned) */
 export function getLearnedSkillsDir(): string;
@@ -48,8 +54,15 @@ export function getDateTimeString(): string;
 // --- Session/Project ---
 
 /**
+ * Sanitize a string for use as a session filename segment.
+ * Replaces invalid characters, strips leading dots, and returns null when
+ * nothing meaningful remains. Non-ASCII names are hashed for stability.
+ */
+export function sanitizeSessionId(raw: string | null | undefined): string | null;
+
+/**
  * Get short session ID from CLAUDE_SESSION_ID environment variable.
- * Returns last 8 characters, falls back to project name then the provided fallback.
+ * Returns last 8 characters, falls back to a sanitized project name then the provided fallback.
  */
 export function getSessionIdShort(fallback?: string): string;
 

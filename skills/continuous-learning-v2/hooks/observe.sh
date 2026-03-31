@@ -57,7 +57,8 @@ fi
 # ─────────────────────────────────────────────
 
 # Extract cwd from the hook JSON to use for project detection.
-# This avoids spawning a separate git subprocess when cwd is available.
+# If cwd is a subdirectory inside a git repo, resolve it to the repo root so
+# observations attach to the project instead of a nested path.
 STDIN_CWD=$(echo "$INPUT_JSON" | "$PYTHON_CMD" -c '
 import json, sys
 try:
@@ -70,7 +71,8 @@ except(KeyError, TypeError, ValueError):
 
 # If cwd was provided in stdin, use it for project detection
 if [ -n "$STDIN_CWD" ] && [ -d "$STDIN_CWD" ]; then
-  export CLAUDE_PROJECT_DIR="$STDIN_CWD"
+  _GIT_ROOT=$(git -C "$STDIN_CWD" rev-parse --show-toplevel 2>/dev/null || true)
+  export CLAUDE_PROJECT_DIR="${_GIT_ROOT:-$STDIN_CWD}"
 fi
 
 # ─────────────────────────────────────────────

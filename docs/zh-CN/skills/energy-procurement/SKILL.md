@@ -7,7 +7,7 @@ origin: ECC
 metadata:
   author: evos
   clawdbot:
-    emoji: "⚡"
+    emoji: ""
 ---
 
 # 能源采购

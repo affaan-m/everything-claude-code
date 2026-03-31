@@ -21,13 +21,13 @@ description: Use this skill when adding authentication, handling user input, wor
 
 ### 1. 密鑰管理
 
-#### ❌ 絕不這樣做
+#### FAIL: 絕不這樣做
 ```typescript
 const apiKey = "sk-proj-xxxxx"  // 寫死的密鑰
 const dbPassword = "password123" // 在原始碼中
 ```
 
-#### ✅ 總是這樣做
+#### PASS: 總是這樣做
 ```typescript
 const apiKey = process.env.OPENAI_API_KEY
 const dbUrl = process.env.DATABASE_URL
@@ -107,14 +107,14 @@ function validateFileUpload(file: File) {
 
 ### 3. SQL 注入預防
 
-#### ❌ 絕不串接 SQL
+#### FAIL: 絕不串接 SQL
 ```typescript
 // 危險 - SQL 注入漏洞
 const query = `SELECT * FROM users WHERE email = '${userEmail}'`
 await db.query(query)
 ```
 
-#### ✅ 總是使用參數化查詢
+#### PASS: 總是使用參數化查詢
 ```typescript
 // 安全 - 參數化查詢
 const { data } = await supabase
@@ -139,10 +139,10 @@ await db.query(
 
 #### JWT Token 處理
 ```typescript
-// ❌ 錯誤：localStorage（易受 XSS 攻擊）
+// FAIL: 錯誤：localStorage（易受 XSS 攻擊）
 localStorage.setItem('token', token)
 
-// ✅ 正確：httpOnly cookies
+// PASS: 正確：httpOnly cookies
 res.setHeader('Set-Cookie',
   `token=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`)
 ```
@@ -299,18 +299,18 @@ app.use('/api/search', searchLimiter)
 
 #### 日誌記錄
 ```typescript
-// ❌ 錯誤：記錄敏感資料
+// FAIL: 錯誤：記錄敏感資料
 console.log('User login:', { email, password })
 console.log('Payment:', { cardNumber, cvv })
 
-// ✅ 正確：遮蔽敏感資料
+// PASS: 正確：遮蔽敏感資料
 console.log('User login:', { email, userId })
 console.log('Payment:', { last4: card.last4, userId })
 ```
 
 #### 錯誤訊息
 ```typescript
-// ❌ 錯誤：暴露內部細節
+// FAIL: 錯誤：暴露內部細節
 catch (error) {
   return NextResponse.json(
     { error: error.message, stack: error.stack },
@@ -318,7 +318,7 @@ catch (error) {
   )
 }
 
-// ✅ 正確：通用錯誤訊息
+// PASS: 正確：通用錯誤訊息
 catch (error) {
   console.error('Internal error:', error)
   return NextResponse.json(

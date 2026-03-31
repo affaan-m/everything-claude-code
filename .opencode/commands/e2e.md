@@ -90,9 +90,9 @@ test.describe('Feature: [Name]', () => {
 ```
 E2E Test Results
 ================
-✅ Passed: X
-❌ Failed: Y
-⏭️ Skipped: Z
+PASS: Passed: X
+FAIL: Failed: Y
+SKIPPED: Skipped: Z
 
 Failed Tests:
 - test-name: Error message

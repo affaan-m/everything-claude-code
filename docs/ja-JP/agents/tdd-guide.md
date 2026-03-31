@@ -220,26 +220,26 @@ jest.mock('@/lib/openai', () => ({
 
 ## テストの悪臭（アンチパターン）
 
-### ❌ 実装の詳細をテスト
+### FAIL: 実装の詳細をテスト
 ```typescript
 // 内部状態をテストしない
 expect(component.state.count).toBe(5)
 ```
 
-### ✅ ユーザーに見える動作をテスト
+### PASS: ユーザーに見える動作をテスト
 ```typescript
 // ユーザーが見るものをテストする
 expect(screen.getByText('Count: 5')).toBeInTheDocument()
 ```
 
-### ❌ テストが互いに依存
+### FAIL: テストが互いに依存
 ```typescript
 // 前のテストに依存しない
 test('creates user', () => { /* ... */ })
 test('updates same user', () => { /* 前のテストが必要 */ })
 ```
 
-### ✅ 独立したテスト
+### PASS: 独立したテスト
 ```typescript
 // 各テストでデータをセットアップ
 test('updates user', () => {

@@ -273,7 +273,7 @@ Examples:
 # Audio: every 50 words
 {"type": "word", "value": 50}
 
-# Audio: every 30 seconds  
+# Audio: every 30 seconds
 {"type": "time", "value": 30}
 
 # Visual: 5 frames every 2 seconds

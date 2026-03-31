@@ -19,20 +19,20 @@ Fix build and TypeScript errors with minimal changes: $ARGUMENTS
 ## Approach
 
 ### DO:
-- ✅ Fix type errors with correct types
-- ✅ Add missing imports
-- ✅ Fix syntax errors
-- ✅ Make minimal changes
-- ✅ Preserve existing behavior
-- ✅ Run `tsc --noEmit` after each change
+- PASS: Fix type errors with correct types
+- PASS: Add missing imports
+- PASS: Fix syntax errors
+- PASS: Make minimal changes
+- PASS: Preserve existing behavior
+- PASS: Run `tsc --noEmit` after each change
 
 ### DON'T:
-- ❌ Refactor code
-- ❌ Add new features
-- ❌ Change architecture
-- ❌ Use `any` type (unless absolutely necessary)
-- ❌ Add `@ts-ignore` comments
-- ❌ Change business logic
+- FAIL: Refactor code
+- FAIL: Add new features
+- FAIL: Change architecture
+- FAIL: Use `any` type (unless absolutely necessary)
+- FAIL: Add `@ts-ignore` comments
+- FAIL: Change business logic
 
 ## Common Error Fixes
 

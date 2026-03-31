@@ -8,6 +8,7 @@ const os = require('os');
 const path = require('path');
 
 const {
+  findDefaultInstallConfigPath,
   loadInstallConfig,
   resolveInstallConfigPath,
 } = require('../../scripts/lib/install/config');
@@ -47,6 +48,32 @@ function runTests() {
     const cwd = '/workspace/app';
     const resolved = resolveInstallConfigPath('configs/ecc-install.json', { cwd });
     assert.strictEqual(resolved, path.join(cwd, 'configs', 'ecc-install.json'));
+  })) passed++; else failed++;
+
+  if (test('finds the default project install config in the provided cwd', () => {
+    const cwd = createTempDir('install-config-');
+
+    try {
+      const configPath = path.join(cwd, 'ecc-install.json');
+      writeJson(configPath, {
+        version: 1,
+        profile: 'core',
+      });
+
+      assert.strictEqual(findDefaultInstallConfigPath({ cwd }), configPath);
+    } finally {
+      cleanup(cwd);
+    }
+  })) passed++; else failed++;
+
+  if (test('returns null when no default project install config exists', () => {
+    const cwd = createTempDir('install-config-');
+
+    try {
+      assert.strictEqual(findDefaultInstallConfigPath({ cwd }), null);
+    } finally {
+      cleanup(cwd);
+    }
   })) passed++; else failed++;
 
   if (test('loads and normalizes a valid install config', () => {

@@ -1,0 +1,30 @@
+{
+  "name": "everything-claude-code",
+  "version": "1.9.0",
+  "description": "Battle-tested Codex workflows — 125 skills, production-ready MCP configs, and agent definitions for TDD, security scanning, code review, and autonomous development.",
+  "author": {
+    "name": "Affaan Mustafa",
+    "email": "me@affaanmustafa.com",
+    "url": "https://x.com/affaanmustafa"
+  },
+  "homepage": "https://github.com/affaan-m/everything-claude-code",
+  "repository": "https://github.com/affaan-m/everything-claude-code",
+  "license": "MIT",
+  "keywords": ["codex", "agents", "skills", "tdd", "code-review", "security", "workflow", "automation"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Everything Claude Code",
+    "shortDescription": "125 battle-tested skills for TDD, security, code review, and autonomous development.",
+    "longDescription": "Everything Claude Code (ECC) is a community-maintained collection of Codex skills and MCP configs evolved over 10+ months of intensive daily use. It covers TDD workflows, security scanning, code review, architecture decisions, and more — all in one installable plugin.",
+    "developerName": "Affaan Mustafa",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://github.com/affaan-m/everything-claude-code",
+    "defaultPrompt": [
+      "Use the tdd-workflow skill to write tests before implementation.",
+      "Use the security-review skill to scan for OWASP Top 10 vulnerabilities.",
+      "Use the code-review skill to review this PR for correctness and security."
+    ]
+  }
+}

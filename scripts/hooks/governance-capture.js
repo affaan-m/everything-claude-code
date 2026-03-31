@@ -10,6 +10,7 @@
  *   - policy_violation: Actions that violate configured policies
  *   - security_finding: Security-relevant tool invocations
  *   - approval_requested: Operations requiring explicit approval
+ *   - hook_input_truncated: Hook input exceeded the safe inspection limit
  *
  * Enable: Set ECC_GOVERNANCE_CAPTURE=1
  * Configure session: Set ECC_SESSION_ID for session correlation
@@ -101,6 +102,37 @@ function detectSensitivePath(filePath) {
   return SENSITIVE_PATHS.some(pattern => pattern.test(filePath));
 }
 
+function fingerprintCommand(command) {
+  if (!command || typeof command !== 'string') return null;
+  return crypto.createHash('sha256').update(command).digest('hex').slice(0, 12);
+}
+
+function summarizeCommand(command) {
+  if (!command || typeof command !== 'string') {
+    return {
+      commandName: null,
+      commandFingerprint: null,
+    };
+  }
+
+  const trimmed = command.trim();
+  if (!trimmed) {
+    return {
+      commandName: null,
+      commandFingerprint: null,
+    };
+  }
+
+  return {
+    commandName: trimmed.split(/\s+/)[0] || null,
+    commandFingerprint: fingerprintCommand(trimmed),
+  };
+}
+
+function emitGovernanceEvent(event) {
+  process.stderr.write(`[governance] ${JSON.stringify(event)}\n`);
+}
+
 /**
  * Analyze a hook input payload and return governance events to capture.
  *
@@ -146,6 +178,7 @@ function analyzeForGovernanceEvents(input, context = {}) {
   if (toolName === 'Bash') {
     const command = toolInput.command || '';
     const approvalFindings = detectApprovalRequired(command);
+    const commandSummary = summarizeCommand(command);
 
     if (approvalFindings.length > 0) {
       events.push({
@@ -155,7 +188,7 @@ function analyzeForGovernanceEvents(input, context = {}) {
         payload: {
           toolName,
           hookPhase,
-          command: command.slice(0, 200),
+          ...commandSummary,
           matchedPatterns: approvalFindings.map(f => f.pattern),
           severity: 'high',
         },
@@ -188,6 +221,7 @@ function analyzeForGovernanceEvents(input, context = {}) {
   if (SECURITY_RELEVANT_TOOLS.has(toolName) && hookPhase === 'post') {
     const command = toolInput.command || '';
     const hasElevated = /sudo\s/.test(command) || /chmod\s/.test(command) || /chown\s/.test(command);
+    const commandSummary = summarizeCommand(command);
 
     if (hasElevated) {
       events.push({
@@ -197,7 +231,7 @@ function analyzeForGovernanceEvents(input, context = {}) {
         payload: {
           toolName,
           hookPhase,
-          command: command.slice(0, 200),
+          ...commandSummary,
           reason: 'elevated_privilege_command',
           severity: 'medium',
         },
@@ -216,16 +250,32 @@ function analyzeForGovernanceEvents(input, context = {}) {
  * @param {string} rawInput - Raw JSON string from stdin
  * @returns {string} The original input (pass-through)
  */
-function run(rawInput) {
+function run(rawInput, options = {}) {
   // Gate on feature flag
   if (String(process.env.ECC_GOVERNANCE_CAPTURE || '').toLowerCase() !== '1') {
     return rawInput;
   }
 
+  const sessionId = process.env.ECC_SESSION_ID || null;
+  const hookPhase = process.env.CLAUDE_HOOK_EVENT_NAME || 'unknown';
+
+  if (options.truncated) {
+    emitGovernanceEvent({
+      id: generateEventId(),
+      sessionId,
+      eventType: 'hook_input_truncated',
+      payload: {
+        hookPhase: hookPhase.startsWith('Pre') ? 'pre' : 'post',
+        sizeLimitBytes: options.maxStdin || MAX_STDIN,
+        severity: 'warning',
+      },
+      resolvedAt: null,
+      resolution: null,
+    });
+  }
+
   try {
     const input = JSON.parse(rawInput);
-    const sessionId = process.env.ECC_SESSION_ID || null;
-    const hookPhase = process.env.CLAUDE_HOOK_EVENT_NAME || 'unknown';
 
     const events = analyzeForGovernanceEvents(input, {
       sessionId,
@@ -233,13 +283,8 @@ function run(rawInput) {
     });
 
     if (events.length > 0) {
-      // Write events to stderr as JSON-lines for the caller to capture.
-      // The state store write is async and handled by a separate process
-      // to avoid blocking the hook pipeline.
       for (const event of events) {
-        process.stderr.write(
-          `[governance] ${JSON.stringify(event)}\n`
-        );
+        emitGovernanceEvent(event);
       }
     }
   } catch {
@@ -252,16 +297,25 @@ function run(rawInput) {
 // ── stdin entry point ────────────────────────────────
 if (require.main === module) {
   let raw = '';
+  let truncated = /^(1|true|yes)$/i.test(String(process.env.ECC_HOOK_INPUT_TRUNCATED || ''));
   process.stdin.setEncoding('utf8');
   process.stdin.on('data', chunk => {
     if (raw.length < MAX_STDIN) {
       const remaining = MAX_STDIN - raw.length;
       raw += chunk.substring(0, remaining);
+      if (chunk.length > remaining) {
+        truncated = true;
+      }
+    } else {
+      truncated = true;
     }
   });
 
   process.stdin.on('end', () => {
-    const result = run(raw);
+    const result = run(raw, {
+      truncated,
+      maxStdin: Number(process.env.ECC_HOOK_INPUT_MAX_BYTES) || MAX_STDIN,
+    });
     process.stdout.write(result);
   });
 }

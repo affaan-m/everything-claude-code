@@ -65,6 +65,7 @@ function main() {
       const result = runCli(['--help']);
       assert.strictEqual(result.status, 0);
       assert.match(result.stdout, /ECC selective-install CLI/);
+      assert.match(result.stdout, /catalog/);
       assert.match(result.stdout, /list-installed/);
       assert.match(result.stdout, /doctor/);
     }],
@@ -92,6 +93,13 @@ function main() {
       const payload = parseJson(result.stdout);
       assert.ok(Array.isArray(payload.profiles));
       assert.ok(payload.profiles.length > 0);
+    }],
+    ['delegates catalog command', () => {
+      const result = runCli(['catalog', 'show', 'framework:nextjs', '--json']);
+      assert.strictEqual(result.status, 0, result.stderr);
+      const payload = parseJson(result.stdout);
+      assert.strictEqual(payload.id, 'framework:nextjs');
+      assert.deepStrictEqual(payload.moduleIds, ['framework-language']);
     }],
     ['delegates lifecycle commands', () => {
       const homeDir = createTempDir('ecc-cli-home-');
@@ -126,6 +134,11 @@ function main() {
       const result = runCli(['help', 'repair']);
       assert.strictEqual(result.status, 0, result.stderr);
       assert.match(result.stdout, /Usage: node scripts\/repair\.js/);
+    }],
+    ['supports help for the catalog subcommand', () => {
+      const result = runCli(['help', 'catalog']);
+      assert.strictEqual(result.status, 0, result.stderr);
+      assert.match(result.stdout, /node scripts\/catalog\.js show <component-id>/);
     }],
     ['fails on unknown commands instead of treating them as installs', () => {
       const result = runCli(['bogus']);

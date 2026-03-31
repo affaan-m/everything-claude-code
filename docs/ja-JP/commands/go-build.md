@@ -62,9 +62,9 @@ internal/handler/api.go:58:2: missing return at end of function
 
 ## 修正1: 未定義の識別子
 
-File: internal/service/user.go:25
-Error: undefined: UserRepository
-Cause: インポート欠落
+ファイル: internal/service/user.go:25
+エラー: undefined: UserRepository
+原因: インポート欠落
 
 ```go
 // インポートを追加
@@ -83,8 +83,8 @@ $ go build ./...
 
 ## 修正2: 型の不一致
 
-File: internal/handler/api.go:42
-Error: cannot use x (type string) as type int
+ファイル: internal/handler/api.go:42
+エラー: cannot use x (type string) as type int
 
 ```go
 // 変更前
@@ -101,8 +101,8 @@ $ go build ./...
 
 ## 修正3: 戻り値の欠落
 
-File: internal/handler/api.go:58
-Error: missing return at end of function
+ファイル: internal/handler/api.go:58
+エラー: missing return at end of function
 
 ```go
 func GetUser(id string) (*User, error) {
@@ -140,7 +140,7 @@ ok      project/internal/handler   0.023s
 | 変更されたファイル | 2 |
 | 残存問題 | 0 |
 
-ビルドステータス: ✅ 成功
+ビルドステータス: PASS: 成功
 ```
 
 ## 修正される一般的なエラー

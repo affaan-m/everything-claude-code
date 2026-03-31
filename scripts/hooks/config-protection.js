@@ -61,11 +61,34 @@ const PROTECTED_FILES = new Set([
   '.markdownlintrc',
 ]);
 
+function parseInput(inputOrRaw) {
+  if (typeof inputOrRaw === 'string') {
+    try {
+      return inputOrRaw.trim() ? JSON.parse(inputOrRaw) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  return inputOrRaw && typeof inputOrRaw === 'object' ? inputOrRaw : {};
+}
+
 /**
  * Exportable run() for in-process execution via run-with-flags.js.
  * Avoids the ~50-100ms spawnSync overhead when available.
  */
-function run(input) {
+function run(inputOrRaw, options = {}) {
+  if (options.truncated) {
+    return {
+      exitCode: 2,
+      stderr:
+        `BLOCKED: Hook input exceeded ${options.maxStdin || MAX_STDIN} bytes. ` +
+        'Refusing to bypass config-protection on a truncated payload. ' +
+        'Retry with a smaller edit or disable the config-protection hook temporarily.'
+    };
+  }
+
+  const input = parseInput(inputOrRaw);
   const filePath = input?.tool_input?.file_path || input?.tool_input?.file || '';
   if (!filePath) return { exitCode: 0 };
 
@@ -75,9 +98,9 @@ function run(input) {
       exitCode: 2,
       stderr:
         `BLOCKED: Modifying ${basename} is not allowed. ` +
-        `Fix the source code to satisfy linter/formatter rules instead of ` +
-        `weakening the config. If this is a legitimate config change, ` +
-        `disable the config-protection hook temporarily.`,
+        'Fix the source code to satisfy linter/formatter rules instead of ' +
+        'weakening the config. If this is a legitimate config change, ' +
+        'disable the config-protection hook temporarily.',
     };
   }
 
@@ -87,7 +110,7 @@ function run(input) {
 module.exports = { run };
 
 // Stdin fallback for spawnSync execution
-let truncated = false;
+let truncated = /^(1|true|yes)$/i.test(String(process.env.ECC_HOOK_INPUT_TRUNCATED || ''));
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', chunk => {
   if (raw.length < MAX_STDIN) {
@@ -100,25 +123,17 @@ process.stdin.on('data', chunk => {
 });
 
 process.stdin.on('end', () => {
-  // If stdin was truncated, the JSON is likely malformed. Fail open but
-  // log a warning so the issue is visible. The run() path (used by
-  // run-with-flags.js in-process) is not affected by this.
-  if (truncated) {
-    process.stderr.write('[config-protection] Warning: stdin exceeded 1MB, skipping check\n');
-    process.stdout.write(raw);
-    return;
+  const result = run(raw, {
+    truncated,
+    maxStdin: Number(process.env.ECC_HOOK_INPUT_MAX_BYTES) || MAX_STDIN,
+  });
+
+  if (result.stderr) {
+    process.stderr.write(result.stderr + '\n');
   }
 
-  try {
-    const input = raw.trim() ? JSON.parse(raw) : {};
-    const result = run(input);
-
-    if (result.exitCode === 2) {
-      process.stderr.write(result.stderr + '\n');
-      process.exit(2);
-    }
-  } catch {
-    // Keep hook non-blocking on parse errors.
+  if (result.exitCode === 2) {
+    process.exit(2);
   }
 
   process.stdout.write(raw);

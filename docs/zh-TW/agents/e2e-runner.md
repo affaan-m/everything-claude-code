@@ -220,28 +220,28 @@ test('market search with complex query', async ({ page }) => {
 
 **1. 競態條件**
 ```typescript
-// ❌ 不穩定：不要假設元素已準備好
+// FAIL: 不穩定：不要假設元素已準備好
 await page.click('[data-testid="button"]')
 
-// ✅ 穩定：等待元素準備好
+// PASS: 穩定：等待元素準備好
 await page.locator('[data-testid="button"]').click() // 內建自動等待
 ```
 
 **2. 網路時序**
 ```typescript
-// ❌ 不穩定：任意逾時
+// FAIL: 不穩定：任意逾時
 await page.waitForTimeout(5000)
 
-// ✅ 穩定：等待特定條件
+// PASS: 穩定：等待特定條件
 await page.waitForResponse(resp => resp.url().includes('/api/markets'))
 ```
 
 **3. 動畫時序**
 ```typescript
-// ❌ 不穩定：在動畫期間點擊
+// FAIL: 不穩定：在動畫期間點擊
 await page.click('[data-testid="menu-item"]')
 
-// ✅ 穩定：等待動畫完成
+// PASS: 穩定：等待動畫完成
 await page.locator('[data-testid="menu-item"]').waitFor({ state: 'visible' })
 await page.waitForLoadState('networkidle')
 await page.click('[data-testid="menu-item"]')
@@ -290,13 +290,13 @@ use: {
 ## 成功指標
 
 E2E 測試執行後：
-- ✅ 所有關鍵旅程通過（100%）
-- ✅ 總體通過率 > 95%
-- ✅ 不穩定率 < 5%
-- ✅ 沒有失敗測試阻擋部署
-- ✅ 產出物已上傳且可存取
-- ✅ 測試時間 < 10 分鐘
-- ✅ HTML 報告已產生
+- PASS: 所有關鍵旅程通過（100%）
+- PASS: 總體通過率 > 95%
+- PASS: 不穩定率 < 5%
+- PASS: 沒有失敗測試阻擋部署
+- PASS: 產出物已上傳且可存取
+- PASS: 測試時間 < 10 分鐘
+- PASS: HTML 報告已產生
 
 ---
 

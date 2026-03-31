@@ -47,6 +47,12 @@ function resolveInstallConfigPath(configPath, options = {}) {
     : path.normalize(path.join(cwd, configPath));
 }
 
+function findDefaultInstallConfigPath(options = {}) {
+  const cwd = options.cwd || process.cwd();
+  const candidatePath = path.join(cwd, DEFAULT_INSTALL_CONFIG);
+  return fs.existsSync(candidatePath) ? candidatePath : null;
+}
+
 function loadInstallConfig(configPath, options = {}) {
   const resolvedPath = resolveInstallConfigPath(configPath, options);
 
@@ -77,6 +83,7 @@ function loadInstallConfig(configPath, options = {}) {
 
 module.exports = {
   DEFAULT_INSTALL_CONFIG,
+  findDefaultInstallConfigPath,
   loadInstallConfig,
   resolveInstallConfigPath,
 };

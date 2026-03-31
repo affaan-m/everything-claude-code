@@ -184,7 +184,7 @@ Artifacts generated:
 ╔══════════════════════════════════════════════════════════════╗
 ║                    E2E 测试结果                          ║
 ╠══════════════════════════════════════════════════════════════╣
-║ 状态：     ✅ 所有测试通过                              ║
+║ 状态：     PASS: 所有测试通过                              ║
 ║ 总计：      3 项测试                                          ║
 ║ 通过：     3 (100%)                                         ║
 ║ 失败：     0                                                ║
@@ -193,15 +193,15 @@ Artifacts generated:
 ╚══════════════════════════════════════════════════════════════╝
 
 产物：
-📸 截图： 2 个文件
-📹 视频： 0 个文件（仅在失败时生成）
-🔍 追踪文件： 0 个文件（仅在失败时生成）
-📊 HTML 报告： playwright-report/index.html
+ 截图： 2 个文件
+ 视频： 0 个文件（仅在失败时生成）
+ 追踪文件： 0 个文件（仅在失败时生成）
+ HTML 报告： playwright-report/index.html
 
 查看报告： npx playwright show-report
 ```
 
-✅ E2E 测试套件已准备好进行 CI/CD 集成！
+PASS: E2E 测试套件已准备好进行 CI/CD 集成！
 
 ````
 ## 测试产物
@@ -238,7 +238,7 @@ open artifacts/search-results.png
 如果测试间歇性失败：
 
 ```
-⚠️  FLAKY TEST DETECTED: tests/e2e/markets/trade.spec.ts
+WARNING:  FLAKY TEST DETECTED: tests/e2e/markets/trade.spec.ts
 
 测试通过了 7/10 次运行 (70% 通过率)
 
@@ -258,10 +258,10 @@ open artifacts/search-results.png
 
 默认情况下，测试在多个浏览器上运行：
 
-* ✅ Chromium（桌面版 Chrome）
-* ✅ Firefox（桌面版）
-* ✅ WebKit（桌面版 Safari）
-* ✅ 移动版 Chrome（可选）
+* PASS: Chromium（桌面版 Chrome）
+* PASS: Firefox（桌面版）
+* PASS: WebKit（桌面版 Safari）
+* PASS: 移动版 Chrome（可选）
 
 在 `playwright.config.ts` 中配置以调整浏览器。
 
@@ -289,7 +289,7 @@ open artifacts/search-results.png
 
 对于 PMX，请优先考虑以下 E2E 测试：
 
-**🔴 关键（必须始终通过）：**
+**关键（必须始终通过）：**
 
 1. 用户可以连接钱包
 2. 用户可以浏览市场
@@ -299,7 +299,7 @@ open artifacts/search-results.png
 6. 市场正确结算
 7. 用户可以提取资金
 
-**🟡 重要：**
+**重要：**
 
 1. 市场创建流程
 2. 用户资料更新
@@ -312,21 +312,21 @@ open artifacts/search-results.png
 
 **应该：**
 
-* ✅ 使用页面对象模型以提高可维护性
-* ✅ 使用 data-testid 属性作为选择器
-* ✅ 等待 API 响应，而不是使用任意超时
-* ✅ 测试关键用户旅程的端到端
-* ✅ 在合并到主分支前运行测试
-* ✅ 在测试失败时审查工件
+* PASS: 使用页面对象模型以提高可维护性
+* PASS: 使用 data-testid 属性作为选择器
+* PASS: 等待 API 响应，而不是使用任意超时
+* PASS: 测试关键用户旅程的端到端
+* PASS: 在合并到主分支前运行测试
+* PASS: 在测试失败时审查工件
 
 **不应该：**
 
-* ❌ 使用不稳定的选择器（CSS 类可能会改变）
-* ❌ 测试实现细节
-* ❌ 针对生产环境运行测试
-* ❌ 忽略不稳定测试
-* ❌ 在失败时跳过工件审查
-* ❌ 使用 E2E 测试每个边缘情况（使用单元测试）
+* FAIL: 使用不稳定的选择器（CSS 类可能会改变）
+* FAIL: 测试实现细节
+* FAIL: 针对生产环境运行测试
+* FAIL: 忽略不稳定测试
+* FAIL: 在失败时跳过工件审查
+* FAIL: 使用 E2E 测试每个边缘情况（使用单元测试）
 
 ## 重要注意事项
 

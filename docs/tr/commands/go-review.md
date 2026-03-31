@@ -124,16 +124,16 @@ return fmt.Errorf("get user %s: %w", userID, err)
 - YÜKSEK: 1
 - ORTA: 0
 
-Öneri: ❌ KRİTİK sorun düzeltilene kadar merge'i engelle
+Öneri: FAIL: KRİTİK sorun düzeltilene kadar merge'i engelle
 ```
 
 ## Onay Kriterleri
 
 | Durum | Koşul |
 |--------|-----------|
-| ✅ Onayla | KRİTİK veya YÜKSEK sorun yok |
-| ⚠️ Uyarı | Sadece ORTA sorunlar (dikkatle merge et) |
-| ❌ Engelle | KRİTİK veya YÜKSEK sorun bulundu |
+| PASS: Onayla | KRİTİK veya YÜKSEK sorun yok |
+| WARNING: Uyarı | Sadece ORTA sorunlar (dikkatle merge et) |
+| FAIL: Engelle | KRİTİK veya YÜKSEK sorun bulundu |
 
 ## Diğer Komutlarla Entegrasyon
 

@@ -368,17 +368,17 @@ func WriteAndFlush(w io.Writer, data []byte) error {
 myproject/
 ├── cmd/
 │   └── myapp/
-│       └── main.go           # Entry point
+│       └── main.go           # エントリポイント
 ├── internal/
-│   ├── handler/              # HTTP handlers
-│   ├── service/              # Business logic
-│   ├── repository/           # Data access
-│   └── config/               # Configuration
+│   ├── handler/              # HTTP ハンドラー
+│   ├── service/              # ビジネスロジック
+│   ├── repository/           # データアクセス
+│   └── config/               # 設定
 ├── pkg/
-│   └── client/               # Public API client
+│   └── client/               # 公開 API クライアント
 ├── api/
-│   └── v1/                   # API definitions (proto, OpenAPI)
-├── testdata/                 # Test fixtures
+│   └── v1/                   # API 定義（proto、OpenAPI）
+├── testdata/                 # テストフィクスチャ
 ├── go.mod
 ├── go.sum
 └── Makefile

@@ -24,7 +24,7 @@
 #### 最小權限原則
 
 ```yaml
-# ✅ 正確：最小權限
+# PASS: 正確：最小權限
 iam_role:
   permissions:
     - s3:GetObject  # 只有讀取存取
@@ -32,7 +32,7 @@ iam_role:
   resources:
     - arn:aws:s3:::my-bucket/*  # 只有特定 bucket
 
-# ❌ 錯誤：過於廣泛的權限
+# FAIL: 錯誤：過於廣泛的權限
 iam_role:
   permissions:
     - s3:*  # 所有 S3 動作
@@ -65,14 +65,14 @@ aws iam enable-mfa-device \
 #### 雲端密鑰管理器
 
 ```typescript
-// ✅ 正確：使用雲端密鑰管理器
+// PASS: 正確：使用雲端密鑰管理器
 import { SecretsManager } from '@aws-sdk/client-secrets-manager';
 
 const client = new SecretsManager({ region: 'us-east-1' });
 const secret = await client.getSecretValue({ SecretId: 'prod/api-key' });
 const apiKey = JSON.parse(secret.SecretString).key;
 
-// ❌ 錯誤：寫死或只在環境變數
+// FAIL: 錯誤：寫死或只在環境變數
 const apiKey = process.env.API_KEY; // 未輪換、未稽核
 ```
 
@@ -99,7 +99,7 @@ aws secretsmanager rotate-secret \
 #### VPC 和防火牆設定
 
 ```terraform
-# ✅ 正確：限制的安全群組
+# PASS: 正確：限制的安全群組
 resource "aws_security_group" "app" {
   name = "app-sg"
 
@@ -118,7 +118,7 @@ resource "aws_security_group" "app" {
   }
 }
 
-# ❌ 錯誤：對網際網路開放
+# FAIL: 錯誤：對網際網路開放
 resource "aws_security_group" "bad" {
   ingress {
     from_port   = 0
@@ -142,7 +142,7 @@ resource "aws_security_group" "bad" {
 #### CloudWatch/日誌設定
 
 ```typescript
-// ✅ 正確：全面日誌記錄
+// PASS: 正確：全面日誌記錄
 import { CloudWatchLogsClient, CreateLogStreamCommand } from '@aws-sdk/client-cloudwatch-logs';
 
 const logSecurityEvent = async (event: SecurityEvent) => {
@@ -177,7 +177,7 @@ const logSecurityEvent = async (event: SecurityEvent) => {
 #### 安全管線設定
 
 ```yaml
-# ✅ 正確：安全的 GitHub Actions 工作流程
+# PASS: 正確：安全的 GitHub Actions 工作流程
 name: Deploy
 
 on:
@@ -237,7 +237,7 @@ jobs:
 #### Cloudflare 安全設定
 
 ```typescript
-// ✅ 正確：帶安全標頭的 Cloudflare Workers
+// PASS: 正確：帶安全標頭的 Cloudflare Workers
 export default {
   async fetch(request: Request): Promise<Response> {
     const response = await fetch(request);
@@ -281,7 +281,7 @@ export default {
 #### 自動備份
 
 ```terraform
-# ✅ 正確：自動 RDS 備份
+# PASS: 正確：自動 RDS 備份
 resource "aws_db_instance" "main" {
   allocated_storage     = 20
   engine               = "postgres"
@@ -327,10 +327,10 @@ resource "aws_db_instance" "main" {
 ### S3 Bucket 暴露
 
 ```bash
-# ❌ 錯誤：公開 bucket
+# FAIL: 錯誤：公開 bucket
 aws s3api put-bucket-acl --bucket my-bucket --acl public-read
 
-# ✅ 正確：私有 bucket 並有特定存取
+# PASS: 正確：私有 bucket 並有特定存取
 aws s3api put-bucket-acl --bucket my-bucket --acl private
 aws s3api put-bucket-policy --bucket my-bucket --policy file://policy.json
 ```
@@ -338,12 +338,12 @@ aws s3api put-bucket-policy --bucket my-bucket --policy file://policy.json
 ### RDS 公開存取
 
 ```terraform
-# ❌ 錯誤
+# FAIL: 錯誤
 resource "aws_db_instance" "bad" {
   publicly_accessible = true  # 絕不這樣做！
 }
 
-# ✅ 正確
+# PASS: 正確
 resource "aws_db_instance" "good" {
   publicly_accessible = false
   vpc_security_group_ids = [aws_security_group.db.id]

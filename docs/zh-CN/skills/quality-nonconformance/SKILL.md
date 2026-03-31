@@ -7,7 +7,7 @@ origin: ECC
 metadata:
   author: evos
   clawdbot:
-    emoji: "🔍"
+    emoji: ""
 ---
 
 # 质量与不合格品管理

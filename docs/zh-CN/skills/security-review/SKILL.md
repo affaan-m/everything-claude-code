@@ -22,14 +22,14 @@ origin: ECC
 
 ### 1. 密钥管理
 
-#### ❌ 绝对不要这样做
+#### FAIL: 绝对不要这样做
 
 ```typescript
 const apiKey = "sk-proj-xxxxx"  // Hardcoded secret
 const dbPassword = "password123" // In source code
 ```
 
-#### ✅ 始终这样做
+#### PASS: 始终这样做
 
 ```typescript
 const apiKey = process.env.OPENAI_API_KEY
@@ -114,7 +114,7 @@ function validateFileUpload(file: File) {
 
 ### 3. SQL 注入防护
 
-#### ❌ 绝对不要拼接 SQL
+#### FAIL: 绝对不要拼接 SQL
 
 ```typescript
 // DANGEROUS - SQL Injection vulnerability
@@ -122,7 +122,7 @@ const query = `SELECT * FROM users WHERE email = '${userEmail}'`
 await db.query(query)
 ```
 
-#### ✅ 始终使用参数化查询
+#### PASS: 始终使用参数化查询
 
 ```typescript
 // Safe - parameterized query
@@ -150,10 +150,10 @@ await db.query(
 #### JWT 令牌处理
 
 ```typescript
-// ❌ WRONG: localStorage (vulnerable to XSS)
+// FAIL: WRONG: localStorage (vulnerable to XSS)
 localStorage.setItem('token', token)
 
-// ✅ CORRECT: httpOnly cookies
+// PASS: CORRECT: httpOnly cookies
 res.setHeader('Set-Cookie',
   `token=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`)
 ```
@@ -323,11 +323,11 @@ app.use('/api/search', searchLimiter)
 #### 日志记录
 
 ```typescript
-// ❌ WRONG: Logging sensitive data
+// FAIL: WRONG: Logging sensitive data
 console.log('User login:', { email, password })
 console.log('Payment:', { cardNumber, cvv })
 
-// ✅ CORRECT: Redact sensitive data
+// PASS: CORRECT: Redact sensitive data
 console.log('User login:', { email, userId })
 console.log('Payment:', { last4: card.last4, userId })
 ```
@@ -335,7 +335,7 @@ console.log('Payment:', { last4: card.last4, userId })
 #### 错误消息
 
 ```typescript
-// ❌ WRONG: Exposing internal details
+// FAIL: WRONG: Exposing internal details
 catch (error) {
   return NextResponse.json(
     { error: error.message, stack: error.stack },
@@ -343,7 +343,7 @@ catch (error) {
   )
 }
 
-// ✅ CORRECT: Generic error messages
+// PASS: CORRECT: Generic error messages
 catch (error) {
   console.error('Internal error:', error)
   return NextResponse.json(

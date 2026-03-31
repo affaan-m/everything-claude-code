@@ -37,10 +37,10 @@ project/
 ### 依赖规则
 
 ```
-app → presentation, domain, data, core  
-presentation → domain, design-system, core  
-data → domain, core  
-domain → core (或无依赖)  
+app → presentation, domain, data, core
+presentation → domain, design-system, core
+data → domain, core
+domain → core (或无依赖)
 core → (无依赖)
 ```
 

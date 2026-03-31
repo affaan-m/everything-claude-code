@@ -91,7 +91,7 @@ Se você encontrar uma vulnerabilidade CRÍTICA:
 
 **IMEDIATAMENTE:** Incidentes de produção, CVEs de dependências, relatórios de segurança do usuário, antes de grandes lançamentos.
 
-## Métricas de sucesso 
+## Métricas de sucesso
 
 - Nenhum problema CRÍTICO encontrado
 - Todos os problemas de ALTA prioridade foram resolvidos

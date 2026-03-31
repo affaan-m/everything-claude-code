@@ -77,19 +77,19 @@ model: opus
 各問題について:
 ```
 [CRITICAL] ハードコードされたAPIキー
-File: src/api/client.ts:42
-Issue: APIキーがソースコードに公開されている
-Fix: 環境変数に移動
+ファイル: src/api/client.ts:42
+問題: APIキーがソースコードに公開されている
+修正: 環境変数に移動
 
-const apiKey = "sk-abc123";  // ❌ Bad
+const apiKey = "sk-abc123";  // FAIL: Bad
 const apiKey = process.env.API_KEY;  // ✓ Good
 ```
 
 ## 承認基準
 
-- ✅ 承認: CRITICALまたはHIGH問題なし
-- ⚠️ 警告: MEDIUM問題のみ（注意してマージ可能）
-- ❌ ブロック: CRITICALまたはHIGH問題が見つかった
+- PASS: 承認: CRITICALまたはHIGH問題なし
+- WARNING: 警告: MEDIUM問題のみ（注意してマージ可能）
+- FAIL: ブロック: CRITICALまたはHIGH問題が見つかった
 
 ## プロジェクト固有のガイドライン（例）
 

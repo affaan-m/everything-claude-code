@@ -109,14 +109,14 @@ c) 資料保護
 **影響：** 大表上查詢快 100-1000 倍
 
 ```sql
--- ❌ 錯誤：外鍵沒有索引
+-- FAIL: 錯誤：外鍵沒有索引
 CREATE TABLE orders (
   id bigint PRIMARY KEY,
   customer_id bigint REFERENCES customers(id)
   -- 缺少索引！
 );
 
--- ✅ 正確：外鍵有索引
+-- PASS: 正確：外鍵有索引
 CREATE TABLE orders (
   id bigint PRIMARY KEY,
   customer_id bigint REFERENCES customers(id)
@@ -134,11 +134,11 @@ CREATE INDEX orders_customer_id_idx ON orders (customer_id);
 | **Hash** | 僅等於 | `=`（比 B-tree 略快）|
 
 ```sql
--- ❌ 錯誤：JSONB 包含用 B-tree
+-- FAIL: 錯誤：JSONB 包含用 B-tree
 CREATE INDEX products_attrs_idx ON products (attributes);
 SELECT * FROM products WHERE attributes @> '{"color": "red"}';
 
--- ✅ 正確：JSONB 用 GIN
+-- PASS: 正確：JSONB 用 GIN
 CREATE INDEX products_attrs_idx ON products USING gin (attributes);
 ```
 
@@ -147,11 +147,11 @@ CREATE INDEX products_attrs_idx ON products USING gin (attributes);
 **影響：** 多欄位查詢快 5-10 倍
 
 ```sql
--- ❌ 錯誤：分開的索引
+-- FAIL: 錯誤：分開的索引
 CREATE INDEX orders_status_idx ON orders (status);
 CREATE INDEX orders_created_idx ON orders (created_at);
 
--- ✅ 正確：複合索引（等於欄位在前，然後範圍）
+-- PASS: 正確：複合索引（等於欄位在前，然後範圍）
 CREATE INDEX orders_status_created_idx ON orders (status, created_at);
 ```
 
@@ -167,11 +167,11 @@ CREATE INDEX orders_status_created_idx ON orders (status, created_at);
 **影響：** 透過避免表查找，查詢快 2-5 倍
 
 ```sql
--- ❌ 錯誤：必須從表獲取 name
+-- FAIL: 錯誤：必須從表獲取 name
 CREATE INDEX users_email_idx ON users (email);
 SELECT email, name FROM users WHERE email = 'user@example.com';
 
--- ✅ 正確：所有欄位在索引中
+-- PASS: 正確：所有欄位在索引中
 CREATE INDEX users_email_idx ON users (email) INCLUDE (name, created_at);
 ```
 
@@ -180,10 +180,10 @@ CREATE INDEX users_email_idx ON users (email) INCLUDE (name, created_at);
 **影響：** 索引小 5-20 倍，寫入和查詢更快
 
 ```sql
--- ❌ 錯誤：完整索引包含已刪除的列
+-- FAIL: 錯誤：完整索引包含已刪除的列
 CREATE INDEX users_email_idx ON users (email);
 
--- ✅ 正確：部分索引排除已刪除的列
+-- PASS: 正確：部分索引排除已刪除的列
 CREATE INDEX users_active_email_idx ON users (email) WHERE deleted_at IS NULL;
 ```
 
@@ -196,11 +196,11 @@ CREATE INDEX users_active_email_idx ON users (email) WHERE deleted_at IS NULL;
 **影響：** 關鍵 - 資料庫強制的租戶隔離
 
 ```sql
--- ❌ 錯誤：僅應用程式篩選
+-- FAIL: 錯誤：僅應用程式篩選
 SELECT * FROM orders WHERE user_id = $current_user_id;
 -- Bug 意味著所有訂單暴露！
 
--- ✅ 正確：資料庫強制的 RLS
+-- PASS: 正確：資料庫強制的 RLS
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders FORCE ROW LEVEL SECURITY;
 
@@ -220,11 +220,11 @@ CREATE POLICY orders_user_policy ON orders
 **影響：** RLS 查詢快 5-10 倍
 
 ```sql
--- ❌ 錯誤：每列呼叫一次函式
+-- FAIL: 錯誤：每列呼叫一次函式
 CREATE POLICY orders_policy ON orders
   USING (auth.uid() = user_id);  -- 1M 列呼叫 1M 次！
 
--- ✅ 正確：包在 SELECT 中（快取，只呼叫一次）
+-- PASS: 正確：包在 SELECT 中（快取，只呼叫一次）
 CREATE POLICY orders_policy ON orders
   USING ((SELECT auth.uid()) = user_id);  -- 快 100 倍
 
@@ -235,10 +235,10 @@ CREATE INDEX orders_user_id_idx ON orders (user_id);
 ### 3. 最小權限存取
 
 ```sql
--- ❌ 錯誤：過度寬鬆
+-- FAIL: 錯誤：過度寬鬆
 GRANT ALL PRIVILEGES ON ALL TABLES TO app_user;
 
--- ✅ 正確：最小權限
+-- PASS: 正確：最小權限
 CREATE ROLE app_readonly NOLOGIN;
 GRANT USAGE ON SCHEMA public TO app_readonly;
 GRANT SELECT ON public.products, public.categories TO app_readonly;
@@ -260,36 +260,36 @@ REVOKE ALL ON SCHEMA public FROM public;
 **影響：** 批量插入快 10-50 倍
 
 ```sql
--- ❌ 錯誤：個別插入
+-- FAIL: 錯誤：個別插入
 INSERT INTO events (user_id, action) VALUES (1, 'click');
 INSERT INTO events (user_id, action) VALUES (2, 'view');
 -- 1000 次往返
 
--- ✅ 正確：批次插入
+-- PASS: 正確：批次插入
 INSERT INTO events (user_id, action) VALUES
   (1, 'click'),
   (2, 'view'),
   (3, 'click');
 -- 1 次往返
 
--- ✅ 最佳：大資料集用 COPY
+-- PASS: 最佳：大資料集用 COPY
 COPY events (user_id, action) FROM '/path/to/data.csv' WITH (FORMAT csv);
 ```
 
 ### 2. 消除 N+1 查詢
 
 ```sql
--- ❌ 錯誤：N+1 模式
+-- FAIL: 錯誤：N+1 模式
 SELECT id FROM users WHERE active = true;  -- 回傳 100 個 IDs
 -- 然後 100 個查詢：
 SELECT * FROM orders WHERE user_id = 1;
 SELECT * FROM orders WHERE user_id = 2;
 -- ... 還有 98 個
 
--- ✅ 正確：用 ANY 的單一查詢
+-- PASS: 正確：用 ANY 的單一查詢
 SELECT * FROM orders WHERE user_id = ANY(ARRAY[1, 2, 3, ...]);
 
--- ✅ 正確：JOIN
+-- PASS: 正確：JOIN
 SELECT u.id, u.name, o.*
 FROM users u
 LEFT JOIN orders o ON o.user_id = u.id
@@ -301,11 +301,11 @@ WHERE u.active = true;
 **影響：** 無論頁面深度，一致的 O(1) 效能
 
 ```sql
--- ❌ 錯誤：OFFSET 隨深度變慢
+-- FAIL: 錯誤：OFFSET 隨深度變慢
 SELECT * FROM products ORDER BY id LIMIT 20 OFFSET 199980;
 -- 掃描 200,000 列！
 
--- ✅ 正確：游標式（總是快）
+-- PASS: 正確：游標式（總是快）
 SELECT * FROM products WHERE id > 199980 ORDER BY id LIMIT 20;
 -- 使用索引，O(1)
 ```
@@ -313,11 +313,11 @@ SELECT * FROM products WHERE id > 199980 ORDER BY id LIMIT 20;
 ### 4. UPSERT 用於插入或更新
 
 ```sql
--- ❌ 錯誤：競態條件
+-- FAIL: 錯誤：競態條件
 SELECT * FROM settings WHERE user_id = 123 AND key = 'theme';
 -- 兩個執行緒都找不到，都插入，一個失敗
 
--- ✅ 正確：原子 UPSERT
+-- PASS: 正確：原子 UPSERT
 INSERT INTO settings (user_id, key, value)
 VALUES (123, 'theme', 'dark')
 ON CONFLICT (user_id, key)
@@ -329,27 +329,27 @@ RETURNING *;
 
 ## 要標記的反模式
 
-### ❌ 查詢反模式
+### FAIL: 查詢反模式
 - 生產程式碼中用 `SELECT *`
 - WHERE/JOIN 欄位缺少索引
 - 大表上用 OFFSET 分頁
 - N+1 查詢模式
 - 非參數化查詢（SQL 注入風險）
 
-### ❌ 結構描述反模式
+### FAIL: 結構描述反模式
 - IDs 用 `int`（應用 `bigint`）
 - 無理由用 `varchar(255)`（應用 `text`）
 - `timestamp` 沒有時區（應用 `timestamptz`）
 - 隨機 UUIDs 作為主鍵（應用 UUIDv7 或 IDENTITY）
 - 需要引號的混合大小寫識別符
 
-### ❌ 安全性反模式
+### FAIL: 安全性反模式
 - `GRANT ALL` 給應用程式使用者
 - 多租戶表缺少 RLS
 - RLS 政策每列呼叫函式（沒有包在 SELECT 中）
 - RLS 政策欄位沒有索引
 
-### ❌ 連線反模式
+### FAIL: 連線反模式
 - 沒有連線池
 - 沒有閒置逾時
 - Transaction 模式連線池使用 Prepared statements

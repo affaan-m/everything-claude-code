@@ -131,16 +131,16 @@ return fmt.Errorf("get user %s: %w", userID, err)
 * 高：1
 * 中：0
 
-建议：❌ 在严重问题修复前阻止合并
+建议：FAIL: 在严重问题修复前阻止合并
 
 ```
 ## 批准标准
 
 | 状态 | 条件 |
 |--------|-----------|
-| ✅ 批准 | 无 CRITICAL 或 HIGH 级别问题 |
-| ⚠️ 警告 | 仅有 MEDIUM 级别问题 (谨慎合并) |
-| ❌ 阻止 | 发现 CRITICAL 或 HIGH 级别问题 |
+| PASS: 批准 | 无 CRITICAL 或 HIGH 级别问题 |
+| WARNING: 警告 | 仅有 MEDIUM 级别问题 (谨慎合并) |
+| FAIL: 阻止 | 发现 CRITICAL 或 HIGH 级别问题 |
 
 ## 与其他命令的集成
 

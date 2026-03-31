@@ -27,12 +27,12 @@ description: Pattern for progressively refining context retrieval to solve the s
 ┌─────────────────────────────────────────────┐
 │                                             │
 │   ┌──────────┐      ┌──────────┐            │
-│   │ DISPATCH │─────▶│ EVALUATE │            │
+│   │ DISPATCH │─────│ EVALUATE │            │
 │   └──────────┘      └──────────┘            │
 │        ▲                  │                 │
 │        │                  ▼                 │
 │   ┌──────────┐      ┌──────────┐            │
-│   │   LOOP   │◀─────│  REFINE  │            │
+│   │   LOOP   │─────│  REFINE  │            │
 │   └──────────┘      └──────────┘            │
 │                                             │
 │        最多 3 個循環，然後繼續               │

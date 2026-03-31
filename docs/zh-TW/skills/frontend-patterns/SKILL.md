@@ -12,7 +12,7 @@ description: Frontend development patterns for React, Next.js, state management,
 ### 組合優於繼承
 
 ```typescript
-// ✅ 良好：元件組合
+// PASS: 良好：元件組合
 interface CardProps {
   children: React.ReactNode
   variant?: 'default' | 'outlined'
@@ -283,17 +283,17 @@ export function useMarkets() {
 ### 記憶化
 
 ```typescript
-// ✅ useMemo 用於昂貴計算
+// PASS: useMemo 用於昂貴計算
 const sortedMarkets = useMemo(() => {
   return markets.sort((a, b) => b.volume - a.volume)
 }, [markets])
 
-// ✅ useCallback 用於傳遞給子元件的函式
+// PASS: useCallback 用於傳遞給子元件的函式
 const handleSearch = useCallback((query: string) => {
   setSearchQuery(query)
 }, [])
 
-// ✅ React.memo 用於純元件
+// PASS: React.memo 用於純元件
 export const MarketCard = React.memo<MarketCardProps>(({ market }) => {
   return (
     <div className="market-card">
@@ -309,7 +309,7 @@ export const MarketCard = React.memo<MarketCardProps>(({ market }) => {
 ```typescript
 import { lazy, Suspense } from 'react'
 
-// ✅ 延遲載入重型元件
+// PASS: 延遲載入重型元件
 const HeavyChart = lazy(() => import('./HeavyChart'))
 const ThreeJsBackground = lazy(() => import('./ThreeJsBackground'))
 
@@ -504,7 +504,7 @@ export class ErrorBoundary extends React.Component<
 ```typescript
 import { motion, AnimatePresence } from 'framer-motion'
 
-// ✅ 列表動畫
+// PASS: 列表動畫
 export function AnimatedMarketList({ markets }: { markets: Market[] }) {
   return (
     <AnimatePresence>
@@ -523,7 +523,7 @@ export function AnimatedMarketList({ markets }: { markets: Market[] }) {
   )
 }
 
-// ✅ Modal 動畫
+// PASS: Modal 動畫
 export function Modal({ isOpen, onClose, children }: ModalProps) {
   return (
     <AnimatePresence>

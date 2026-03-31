@@ -594,18 +594,18 @@ def test_with_tmpdir(tmpdir):
 
 ```
 tests/
-├── conftest.py                 # Shared fixtures
+├── conftest.py                 # 共有フィクスチャ
 ├── __init__.py
-├── unit/                       # Unit tests
+├── unit/                       # ユニットテスト
 │   ├── __init__.py
 │   ├── test_models.py
 │   ├── test_utils.py
 │   └── test_services.py
-├── integration/                # Integration tests
+├── integration/                # 統合テスト
 │   ├── __init__.py
 │   ├── test_api.py
 │   └── test_database.py
-└── e2e/                        # End-to-end tests
+└── e2e/                        # エンドツーエンドテスト
     ├── __init__.py
     └── test_user_flow.py
 ```

@@ -129,33 +129,33 @@ model: opus
 ## 实施步骤
 
 ### 阶段 1：数据库与后端 (2 个文件)
-1.  **创建订阅数据迁移** (文件：supabase/migrations/004_subscriptions.sql)
+1. **创建订阅数据迁移** (文件：supabase/migrations/004_subscriptions.sql)
     - 操作：使用 RLS 策略 CREATE TABLE subscriptions
     - 原因：在服务器端存储计费状态，绝不信任客户端
     - 依赖：无
     - 风险：低
 
-2.  **创建 Stripe webhook 处理器** (文件：src/app/api/webhooks/stripe/route.ts)
+2. **创建 Stripe webhook 处理器** (文件：src/app/api/webhooks/stripe/route.ts)
     - 操作：处理 checkout.session.completed、customer.subscription.updated、customer.subscription.deleted 事件
     - 原因：保持订阅状态与 Stripe 同步
     - 依赖：步骤 1（需要 subscriptions 表）
     - 风险：高 — webhook 签名验证至关重要
 
 ### 阶段 2：Checkout 流程 (2 个文件)
-3.  **创建 checkout API 路由** (文件：src/app/api/checkout/route.ts)
+3. **创建 checkout API 路由** (文件：src/app/api/checkout/route.ts)
     - 操作：使用 price_id 和 success/cancel URL 创建 Stripe Checkout 会话
     - 原因：服务器端会话创建可防止价格篡改
     - 依赖：步骤 1
     - 风险：中 — 必须验证用户已认证
 
-4.  **构建定价页面** (文件：src/components/PricingTable.tsx)
+4. **构建定价页面** (文件：src/components/PricingTable.tsx)
     - 操作：显示三个等级，包含功能对比和升级按钮
     - 原因：面向用户的升级流程
     - 依赖：步骤 3
     - 风险：低
 
 ### 阶段 3：功能权限控制 (1 个文件)
-5.  **添加基于等级的中间件** (文件：src/middleware.ts)
+5. **添加基于等级的中间件** (文件：src/middleware.ts)
     - 操作：在受保护的路由上检查订阅等级，重定向免费用户
     - 原因：在服务器端强制执行等级限制
     - 依赖：步骤 1-2（需要订阅数据）

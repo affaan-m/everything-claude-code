@@ -64,7 +64,7 @@ function sleep(ms) {
 }
 
 async function animateProgress(label, steps, callback) {
-  process.stdout.write(`\n${chalk.cyan('⏳')} ${label}...\n`);
+  process.stdout.write(`\n${chalk.cyan('[RUN]')} ${label}...\n`);
 
   for (let i = 0; i < steps.length; i++) {
     const step = steps[i];
@@ -72,7 +72,7 @@ async function animateProgress(label, steps, callback) {
     await sleep(step.duration || 500);
     process.stdout.clearLine?.(0) || process.stdout.write('\r');
     process.stdout.cursorTo?.(0) || process.stdout.write('\r');
-    process.stdout.write(`   ${chalk.green('✓')} ${step.name}\n`);
+    process.stdout.write(`   ${chalk.green('[DONE]')} ${step.name}\n`);
     if (callback) callback(step, i);
   }
 }
@@ -90,7 +90,7 @@ class SkillCreateOutput {
 
     console.log('\n');
     console.log(chalk.bold(chalk.magenta('╔════════════════════════════════════════════════════════════════╗')));
-    console.log(chalk.bold(chalk.magenta('║')) + chalk.bold('  🔮 ECC Skill Creator                                          ') + chalk.bold(chalk.magenta('║')));
+    console.log(chalk.bold(chalk.magenta('║')) + chalk.bold('  ECC Skill Creator                                             ') + chalk.bold(chalk.magenta('║')));
     console.log(chalk.bold(chalk.magenta('║')) + `     ${subtitle}${' '.repeat(Math.max(0, 59 - stripAnsi(subtitle).length))}` + chalk.bold(chalk.magenta('║')));
     console.log(chalk.bold(chalk.magenta('╚════════════════════════════════════════════════════════════════╝')));
     console.log('');
@@ -111,7 +111,7 @@ class SkillCreateOutput {
 
   analysisResults(data) {
     console.log('\n');
-    console.log(box('📊 Analysis Results', `
+    console.log(box('Analysis Results', `
 ${chalk.bold('Commits Analyzed:')} ${chalk.yellow(data.commits)}
 ${chalk.bold('Time Range:')}       ${chalk.gray(data.timeRange)}
 ${chalk.bold('Contributors:')}     ${chalk.cyan(data.contributors)}
@@ -121,7 +121,7 @@ ${chalk.bold('Files Tracked:')}    ${chalk.green(data.files)}
 
   patterns(patterns) {
     console.log('\n');
-    console.log(chalk.bold(chalk.cyan('🔍 Key Patterns Discovered:')));
+    console.log(chalk.bold(chalk.cyan('Key Patterns Discovered:')));
     console.log(chalk.gray('─'.repeat(50)));
 
     patterns.forEach((pattern, i) => {
@@ -137,26 +137,26 @@ ${chalk.bold('Files Tracked:')}    ${chalk.green(data.files)}
 
   instincts(instincts) {
     console.log('\n');
-    console.log(box('🧠 Instincts Generated', instincts.map((inst, i) =>
+    console.log(box('Instincts Generated', instincts.map((inst, i) =>
       `${chalk.yellow(`${i + 1}.`)} ${chalk.bold(inst.name)} ${chalk.gray(`(${Math.round(inst.confidence * 100)}%)`)}`
     ).join('\n')));
   }
 
   output(skillPath, instinctsPath) {
     console.log('\n');
-    console.log(chalk.bold(chalk.green('✨ Generation Complete!')));
+    console.log(chalk.bold(chalk.green('Generation Complete!')));
     console.log(chalk.gray('─'.repeat(50)));
     console.log(`
-  ${chalk.green('📄')} ${chalk.bold('Skill File:')}
+  ${chalk.green('-')} ${chalk.bold('Skill File:')}
      ${chalk.cyan(skillPath)}
 
-  ${chalk.green('🧠')} ${chalk.bold('Instincts File:')}
+  ${chalk.green('-')} ${chalk.bold('Instincts File:')}
      ${chalk.cyan(instinctsPath)}
 `);
   }
 
   nextSteps() {
-    console.log(box('📋 Next Steps', `
+    console.log(box('Next Steps', `
 ${chalk.yellow('1.')} Review the generated SKILL.md
 ${chalk.yellow('2.')} Import instincts: ${chalk.cyan('/instinct-import <path>')}
 ${chalk.yellow('3.')} View learned patterns: ${chalk.cyan('/instinct-status')}

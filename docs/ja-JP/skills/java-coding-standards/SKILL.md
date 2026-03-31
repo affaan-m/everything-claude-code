@@ -17,22 +17,22 @@ Spring Bootサービスにおける読みやすく保守可能なJava(17+)コー
 ## 命名
 
 ```java
-// ✅ クラス/レコード: PascalCase
+// PASS: クラス/レコード: PascalCase
 public class MarketService {}
 public record Money(BigDecimal amount, Currency currency) {}
 
-// ✅ メソッド/フィールド: camelCase
+// PASS: メソッド/フィールド: camelCase
 private final MarketRepository marketRepository;
 public Market findBySlug(String slug) {}
 
-// ✅ 定数: UPPER_SNAKE_CASE
+// PASS: 定数: UPPER_SNAKE_CASE
 private static final int MAX_PAGE_SIZE = 100;
 ```
 
 ## 不変性
 
 ```java
-// ✅ recordとfinalフィールドを優先
+// PASS: recordとfinalフィールドを優先
 public record MarketDto(Long id, String name, MarketStatus status) {}
 
 public class Market {
@@ -45,10 +45,10 @@ public class Market {
 ## Optionalの使用
 
 ```java
-// ✅ find*メソッドからOptionalを返す
+// PASS: find*メソッドからOptionalを返す
 Optional<Market> market = marketRepository.findBySlug(slug);
 
-// ✅ get()の代わりにmap/flatMapを使用
+// PASS: get()の代わりにmap/flatMapを使用
 return market
     .map(MarketResponse::from)
     .orElseThrow(() -> new EntityNotFoundException("Market not found"));
@@ -57,13 +57,13 @@ return market
 ## ストリームのベストプラクティス
 
 ```java
-// ✅ 変換にストリームを使用し、パイプラインを短く保つ
+// PASS: 変換にストリームを使用し、パイプラインを短く保つ
 List<String> names = markets.stream()
     .map(Market::name)
     .filter(Objects::nonNull)
     .toList();
 
-// ❌ 複雑なネストされたストリームを避ける; 明確性のためにループを優先
+// FAIL: 複雑なネストされたストリームを避ける; 明確性のためにループを優先
 ```
 
 ## 例外

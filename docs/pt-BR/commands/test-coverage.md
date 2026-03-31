@@ -57,7 +57,7 @@ File                   Before  After
 src/services/auth.ts   45%     88%
 src/utils/validation.ts 32%    82%
 ──────────────────────────────
-Overall:               67%     84%  ✅
+Overall:               67%     84%  PASS:
 ```
 
 ## Áreas de Foco

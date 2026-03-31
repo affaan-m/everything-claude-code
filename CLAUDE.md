@@ -59,3 +59,14 @@ Follow the formats in CONTRIBUTING.md:
 - Hooks: JSON with matcher and hooks array
 
 File naming: lowercase with hyphens (e.g., `python-reviewer.md`, `tdd-workflow.md`)
+
+## Skills
+
+Use the following skills when working on related files:
+
+| File(s) | Skill |
+|---------|-------|
+| `README.md` | `/readme` |
+| `.github/workflows/*.yml` | `/ci-workflow` |
+
+When spawning subagents, always pass conventions from the respective skill into the agent's prompt.

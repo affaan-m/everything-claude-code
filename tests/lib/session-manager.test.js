@@ -341,8 +341,10 @@ src/main.ts
   // Override HOME to a temp dir for isolated getAllSessions/getSessionById tests
   // On Windows, os.homedir() uses USERPROFILE, not HOME — set both for cross-platform
   const tmpHome = path.join(os.tmpdir(), `ecc-session-mgr-test-${Date.now()}`);
-  const tmpSessionsDir = path.join(tmpHome, '.claude', 'sessions');
-  fs.mkdirSync(tmpSessionsDir, { recursive: true });
+  const tmpCanonicalSessionsDir = path.join(tmpHome, '.claude', 'session-data');
+  const tmpLegacySessionsDir = path.join(tmpHome, '.claude', 'sessions');
+  fs.mkdirSync(tmpCanonicalSessionsDir, { recursive: true });
+  fs.mkdirSync(tmpLegacySessionsDir, { recursive: true });
   const origHome = process.env.HOME;
   const origUserProfile = process.env.USERPROFILE;
 
@@ -355,7 +357,10 @@ src/main.ts
     { name: '2026-02-10-session.tmp', content: '# Old format session' },
   ];
   for (let i = 0; i < testSessions.length; i++) {
-    const filePath = path.join(tmpSessionsDir, testSessions[i].name);
+    const targetDir = testSessions[i].name === '2026-02-10-session.tmp'
+      ? tmpLegacySessionsDir
+      : tmpCanonicalSessionsDir;
+    const filePath = path.join(targetDir, testSessions[i].name);
     fs.writeFileSync(filePath, testSessions[i].content);
     // Stagger modification times so sort order is deterministic
     const mtime = new Date(Date.now() - (testSessions.length - i) * 60000);
@@ -399,6 +404,23 @@ src/main.ts
     assert.strictEqual(result.sessions[0].shortId, 'abcd1234');
   })) passed++; else failed++;
 
+  if (test('getAllSessions prefers canonical session-data duplicates over newer legacy copies', () => {
+    const duplicateName = '2026-01-15-abcd1234-session.tmp';
+    const legacyDuplicatePath = path.join(tmpLegacySessionsDir, duplicateName);
+    const legacyMtime = new Date(Date.now() + 60000);
+
+    try {
+      fs.writeFileSync(legacyDuplicatePath, '# Legacy duplicate');
+      fs.utimesSync(legacyDuplicatePath, legacyMtime, legacyMtime);
+
+      const result = sessionManager.getAllSessions({ search: 'abcd', limit: 100 });
+      assert.strictEqual(result.total, 1, 'Duplicate filenames should be deduped');
+      assert.ok(result.sessions[0].sessionPath.includes('session-data'), 'Canonical session-data copy should win');
+    } finally {
+      fs.rmSync(legacyDuplicatePath, { force: true });
+    }
+  })) passed++; else failed++;
+
   if (test('getAllSessions returns sorted by newest first', () => {
     const result = sessionManager.getAllSessions({ limit: 100 });
     for (let i = 1; i < result.sessions.length; i++) {
@@ -423,8 +445,8 @@ src/main.ts
   })) passed++; else failed++;
 
   if (test('getAllSessions ignores non-.tmp files', () => {
-    fs.writeFileSync(path.join(tmpSessionsDir, 'notes.txt'), 'not a session');
-    fs.writeFileSync(path.join(tmpSessionsDir, 'compaction-log.txt'), 'log');
+    fs.writeFileSync(path.join(tmpCanonicalSessionsDir, 'notes.txt'), 'not a session');
+    fs.writeFileSync(path.join(tmpCanonicalSessionsDir, 'compaction-log.txt'), 'log');
     const result = sessionManager.getAllSessions({ limit: 100 });
     assert.strictEqual(result.total, 5, 'Should only count .tmp session files');
   })) passed++; else failed++;
@@ -442,6 +464,23 @@ src/main.ts
     const result = sessionManager.getSessionById('abcd');
     assert.ok(result, 'Should find session by short ID prefix');
     assert.strictEqual(result.shortId, 'abcd1234');
+  })) passed++; else failed++;
+
+  if (test('getSessionById prefers canonical session-data duplicates over newer legacy copies', () => {
+    const duplicateName = '2026-01-15-abcd1234-session.tmp';
+    const legacyDuplicatePath = path.join(tmpLegacySessionsDir, duplicateName);
+    const legacyMtime = new Date(Date.now() + 120000);
+
+    try {
+      fs.writeFileSync(legacyDuplicatePath, '# Legacy duplicate');
+      fs.utimesSync(legacyDuplicatePath, legacyMtime, legacyMtime);
+
+      const result = sessionManager.getSessionById('abcd1234');
+      assert.ok(result, 'Should still resolve the duplicate session');
+      assert.ok(result.sessionPath.includes('session-data'), 'Canonical session-data copy should win');
+    } finally {
+      fs.rmSync(legacyDuplicatePath, { force: true });
+    }
   })) passed++; else failed++;
 
   if (test('getSessionById finds by full filename', () => {
@@ -475,6 +514,12 @@ src/main.ts
   if (test('getSessionById returns null for empty string', () => {
     const result = sessionManager.getSessionById('');
     assert.strictEqual(result, null, 'Empty string should not match any session');
+  })) passed++; else failed++;
+
+  if (test('getSessionById returns null for non-string IDs', () => {
+    assert.strictEqual(sessionManager.getSessionById(null), null);
+    assert.strictEqual(sessionManager.getSessionById(undefined), null);
+    assert.strictEqual(sessionManager.getSessionById(42), null);
   })) passed++; else failed++;
 
   if (test('getSessionById metadata and stats populated when includeContent=true', () => {
@@ -990,7 +1035,7 @@ src/main.ts
     assert.ok(result.endsWith(filename), `Path should end with filename, got: ${result}`);
     // Since HOME is overridden, sessions dir should be under tmpHome
     assert.ok(result.includes('.claude'), 'Path should include .claude directory');
-    assert.ok(result.includes('sessions'), 'Path should include sessions directory');
+    assert.ok(result.includes('session-data'), 'Path should use canonical session-data directory');
   })) passed++; else failed++;
 
   // ── Round 66: getSessionById noIdMatch path (date-only string for old format) ──
@@ -1601,18 +1646,13 @@ src/main.ts
       'Null search should return sessions (confirming they exist but space filtered them)');
   })) passed++; else failed++;
 
-  // ── Round 98: getSessionById with null sessionId throws TypeError ──
-  console.log('\nRound 98: getSessionById (null sessionId — crashes at line 297):');
+  // ── Round 98: getSessionById with null sessionId returns null ──
+  console.log('\nRound 98: getSessionById (null sessionId — guarded null return):');
 
-  if (test('getSessionById(null) throws TypeError when session files exist', () => {
-    // session-manager.js line 297: `sessionId.length > 0` — calling .length on null
-    // throws TypeError because there's no early guard for null/undefined input.
-    // This only surfaces when valid .tmp files exist in the sessions directory.
-    assert.throws(
-      () => sessionManager.getSessionById(null),
-      { name: 'TypeError' },
-      'null.length should throw TypeError (no input guard at function entry)'
-    );
+  if (test('getSessionById(null) returns null when session files exist', () => {
+    // Keep a populated sessions directory so the early input guard is exercised even when
+    // candidate files are present.
+    assert.strictEqual(sessionManager.getSessionById(null), null);
   })) passed++; else failed++;
 
   // Cleanup test environment for Rounds 95-98 that needed sessions
@@ -1629,18 +1669,13 @@ src/main.ts
     // best-effort
   }
 
-  // ── Round 98: parseSessionFilename with null input throws TypeError ──
-  console.log('\nRound 98: parseSessionFilename (null input — crashes at line 30):');
+  // ── Round 98: parseSessionFilename with null input returns null ──
+  console.log('\nRound 98: parseSessionFilename (null input is safely rejected):');
 
-  if (test('parseSessionFilename(null) throws TypeError because null has no .match()', () => {
-    // session-manager.js line 30: `filename.match(SESSION_FILENAME_REGEX)`
-    // When filename is null, null.match() throws TypeError.
-    // Function lacks a type guard like `if (!filename || typeof filename !== 'string')`.
-    assert.throws(
-      () => sessionManager.parseSessionFilename(null),
-      { name: 'TypeError' },
-      'null.match() should throw TypeError (no type guard on filename parameter)'
-    );
+  if (test('parseSessionFilename(null) returns null instead of throwing', () => {
+    assert.strictEqual(sessionManager.parseSessionFilename(null), null);
+    assert.strictEqual(sessionManager.parseSessionFilename(undefined), null);
+    assert.strictEqual(sessionManager.parseSessionFilename(123), null);
   })) passed++; else failed++;
 
   // ── Round 99: writeSessionContent with null path returns false (error caught) ──

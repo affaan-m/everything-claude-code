@@ -195,7 +195,7 @@ function writeCatalogFixture(testDir, options = {}) {
   fs.writeFileSync(path.join(testDir, 'commands', 'plan.md'), '---\ndescription: Plan\n---\n# Plan');
   fs.writeFileSync(path.join(testDir, 'skills', 'demo-skill', 'SKILL.md'), '---\nname: demo-skill\ndescription: Demo skill\norigin: ECC\n---\n# Demo Skill');
 
-  fs.writeFileSync(readmePath, `Access to ${readmeCounts.agents} agents, ${readmeCounts.skills} skills, and ${readmeCounts.commands} commands.\n| Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |\n|---------|------------|------------|-----------|----------|\n| Agents | ✅ ${readmeCounts.agents} agents | Shared | Shared | 1 |\n| Commands | ✅ ${readmeCounts.commands} commands | Shared | Shared | 1 |\n| Skills | ✅ ${readmeCounts.skills} skills | Shared | Shared | 1 |\n`);
+  fs.writeFileSync(readmePath, `Access to ${readmeCounts.agents} agents, ${readmeCounts.skills} skills, and ${readmeCounts.commands} commands.\n| Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |\n|---------|------------|------------|-----------|----------|\n| Agents | PASS: ${readmeCounts.agents} agents | Shared | Shared | 1 |\n| Commands | PASS: ${readmeCounts.commands} commands | Shared | Shared | 1 |\n| Skills | PASS: ${readmeCounts.skills} skills | Shared | Shared | 1 |\n`);
   fs.writeFileSync(agentsPath, `This is a **production-ready AI coding plugin** providing ${summaryCounts.agents} specialized agents, ${summaryCounts.skills} skills, ${summaryCounts.commands} commands, and automated hook workflows for software development.\n\n\`\`\`\n${structureLines.join('\n')}\n\`\`\`\n`);
 
   return { readmePath, agentsPath };

@@ -86,7 +86,7 @@ ORDER BY hour DESC;
 ### 高效過濾
 
 ```sql
--- ✅ 良好：先使用索引欄位
+-- PASS: 良好：先使用索引欄位
 SELECT *
 FROM markets_analytics
 WHERE date >= '2025-01-01'
@@ -95,7 +95,7 @@ WHERE date >= '2025-01-01'
 ORDER BY date DESC
 LIMIT 100;
 
--- ❌ 不良：先過濾非索引欄位
+-- FAIL: 不良：先過濾非索引欄位
 SELECT *
 FROM markets_analytics
 WHERE volume > 1000
@@ -106,7 +106,7 @@ WHERE volume > 1000
 ### 聚合
 
 ```sql
--- ✅ 良好：使用 ClickHouse 特定聚合函式
+-- PASS: 良好：使用 ClickHouse 特定聚合函式
 SELECT
     toStartOfDay(created_at) AS day,
     market_id,
@@ -119,7 +119,7 @@ WHERE created_at >= today() - INTERVAL 7 DAY
 GROUP BY day, market_id
 ORDER BY day DESC, total_volume DESC;
 
--- ✅ 使用 quantile 計算百分位數（比 percentile 更高效）
+-- PASS: 使用 quantile 計算百分位數（比 percentile 更高效）
 SELECT
     quantile(0.50)(trade_size) AS median,
     quantile(0.95)(trade_size) AS p95,
@@ -162,7 +162,7 @@ const clickhouse = new ClickHouse({
   }
 })
 
-// ✅ 批量插入（高效）
+// PASS: 批量插入（高效）
 async function bulkInsertTrades(trades: Trade[]) {
   const values = trades.map(trade => `(
     '${trade.id}',
@@ -178,7 +178,7 @@ async function bulkInsertTrades(trades: Trade[]) {
   `).toPromise()
 }
 
-// ❌ 個別插入（慢）
+// FAIL: 個別插入（慢）
 async function insertTrade(trade: Trade) {
   // 不要在迴圈中這樣做！
   await clickhouse.query(`

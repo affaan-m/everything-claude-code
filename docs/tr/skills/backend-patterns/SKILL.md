@@ -23,7 +23,7 @@ origin: ECC
 ### RESTful API Yapısı
 
 ```typescript
-// ✅ Kaynak tabanlı URL'ler
+// PASS: Kaynak tabanlı URL'ler
 GET    /api/markets                 # Kaynakları listele
 GET    /api/markets/:id             # Tek kaynak getir
 POST   /api/markets                 # Kaynak oluştur
@@ -31,7 +31,7 @@ PUT    /api/markets/:id             # Kaynağı değiştir (tam)
 PATCH  /api/markets/:id             # Kaynağı güncelle (kısmi)
 DELETE /api/markets/:id             # Kaynağı sil
 
-// ✅ Filtreleme, sıralama, sayfalama için query parametreleri
+// PASS: Filtreleme, sıralama, sayfalama için query parametreleri
 GET /api/markets?status=active&sort=volume&limit=20&offset=0
 ```
 
@@ -131,7 +131,7 @@ export default withAuth(async (req, res) => {
 ### Sorgu Optimizasyonu
 
 ```typescript
-// ✅ İYİ: Sadece gerekli sütunları seç
+// PASS: İYİ: Sadece gerekli sütunları seç
 const { data } = await supabase
   .from('markets')
   .select('id, name, status, volume')
@@ -139,7 +139,7 @@ const { data } = await supabase
   .order('volume', { ascending: false })
   .limit(10)
 
-// ❌ KÖTÜ: Her şeyi seç
+// FAIL: KÖTÜ: Her şeyi seç
 const { data } = await supabase
   .from('markets')
   .select('*')
@@ -148,13 +148,13 @@ const { data } = await supabase
 ### N+1 Sorgu Önleme
 
 ```typescript
-// ❌ KÖTÜ: N+1 sorgu problemi
+// FAIL: KÖTÜ: N+1 sorgu problemi
 const markets = await getMarkets()
 for (const market of markets) {
   market.creator = await getUser(market.creator_id)  // N sorgu
 }
 
-// ✅ İYİ: Toplu getirme
+// PASS: İYİ: Toplu getirme
 const markets = await getMarkets()
 const creatorIds = markets.map(m => m.creator_id)
 const creators = await getUsers(creatorIds)  // 1 sorgu

@@ -386,7 +386,7 @@ function extractJSDoc(pattern: string) {
 - [x] 古い参照なし
 
 ### 影響
-🟢 低 - ドキュメントのみ、コード変更なし
+ 低 - ドキュメントのみ、コード変更なし
 
 完全なアーキテクチャ概要についてはdocs/CODEMAPS/INDEX.mdを参照してください。
 ```

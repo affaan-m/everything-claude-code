@@ -73,6 +73,13 @@ git add . && git commit -m "feat: add my-skill" && git push -u origin feat/my-co
 
 Skills are knowledge modules that Claude Code loads based on context.
 
+> ** Comprehensive Guide:** For detailed guidance on creating effective skills, see [Skill Development Guide](docs/SKILL-DEVELOPMENT-GUIDE.md). It covers:
+> - Skill architecture and categories
+> - Writing effective content with examples
+> - Best practices and common patterns
+> - Testing and validation
+> - Complete examples gallery
+
 ### Directory Structure
 
 ```
@@ -86,13 +93,17 @@ skills/
 ```markdown
 ---
 name: your-skill-name
-description: Brief description shown in skill list
+description: Brief description shown in skill list and used for auto-activation
 origin: ECC
 ---
 
 # Your Skill Title
 
 Brief overview of what this skill covers.
+
+## When to Activate
+
+Describe scenarios where Claude should use this skill. This is critical for auto-activation.
 
 ## Core Concepts
 
@@ -107,33 +118,54 @@ function example() {
 }
 \`\`\`
 
+## Anti-Patterns
+
+Show what NOT to do with examples.
+
 ## Best Practices
 
 - Actionable guidelines
 - Do's and don'ts
 - Common pitfalls to avoid
 
-## When to Use
+## Related Skills
 
-Describe scenarios where this skill applies.
+Link to complementary skills (e.g., `related-skill-1`, `related-skill-2`).
 ```
+
+### Skill Categories
+
+| Category | Purpose | Examples |
+|----------|---------|----------|
+| **Language Standards** | Idioms, conventions, best practices | `python-patterns`, `golang-patterns` |
+| **Framework Patterns** | Framework-specific guidance | `django-patterns`, `nextjs-patterns` |
+| **Workflow** | Step-by-step processes | `tdd-workflow`, `refactoring-workflow` |
+| **Domain Knowledge** | Specialized domains | `security-review`, `api-design` |
+| **Tool Integration** | Tool/library usage | `docker-patterns`, `supabase-patterns` |
+| **Template** | Project-specific skill templates | `project-guidelines-example` |
 
 ### Skill Checklist
 
-- [ ] Focused on one domain/technology
-- [ ] Includes practical code examples
-- [ ] Under 500 lines
+- [ ] Focused on one domain/technology (not too broad)
+- [ ] Includes "When to Activate" section for auto-activation
+- [ ] Includes practical, copy-pasteable code examples
+- [ ] Shows anti-patterns (what NOT to do)
+- [ ] Under 500 lines (800 max)
 - [ ] Uses clear section headers
 - [ ] Tested with Claude Code
+- [ ] Links to related skills
+- [ ] No sensitive data (API keys, tokens, paths)
 
 ### Example Skills
 
-| Skill | Purpose |
-|-------|---------|
-| `coding-standards/` | TypeScript/JavaScript patterns |
-| `frontend-patterns/` | React and Next.js best practices |
-| `backend-patterns/` | API and database patterns |
-| `security-review/` | Security checklist |
+| Skill | Category | Purpose |
+|-------|----------|---------|
+| `coding-standards/` | Language Standards | TypeScript/JavaScript patterns |
+| `frontend-patterns/` | Framework Patterns | React and Next.js best practices |
+| `backend-patterns/` | Framework Patterns | API and database patterns |
+| `security-review/` | Domain Knowledge | Security checklist |
+| `tdd-workflow/` | Workflow | Test-driven development process |
+| `project-guidelines-example/` | Template | Project-specific skill template |
 
 ---
 

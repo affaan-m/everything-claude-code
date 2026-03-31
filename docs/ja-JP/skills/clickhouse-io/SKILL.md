@@ -86,7 +86,7 @@ ORDER BY hour DESC;
 ### 効率的なフィルタリング
 
 ```sql
--- ✅ 良い: インデックス列を最初に使用
+-- PASS: 良い: インデックス列を最初に使用
 SELECT *
 FROM markets_analytics
 WHERE date >= '2025-01-01'
@@ -95,7 +95,7 @@ WHERE date >= '2025-01-01'
 ORDER BY date DESC
 LIMIT 100;
 
--- ❌ 悪い: インデックスのない列を最初にフィルタリング
+-- FAIL: 悪い: インデックスのない列を最初にフィルタリング
 SELECT *
 FROM markets_analytics
 WHERE volume > 1000
@@ -106,7 +106,7 @@ WHERE volume > 1000
 ### 集計
 
 ```sql
--- ✅ 良い: ClickHouse固有の集計関数を使用
+-- PASS: 良い: ClickHouse固有の集計関数を使用
 SELECT
     toStartOfDay(created_at) AS day,
     market_id,
@@ -119,7 +119,7 @@ WHERE created_at >= today() - INTERVAL 7 DAY
 GROUP BY day, market_id
 ORDER BY day DESC, total_volume DESC;
 
--- ✅ パーセンタイルにはquantileを使用（percentileより効率的）
+-- PASS: パーセンタイルにはquantileを使用（percentileより効率的）
 SELECT
     quantile(0.50)(trade_size) AS median,
     quantile(0.95)(trade_size) AS p95,
@@ -162,7 +162,7 @@ const clickhouse = new ClickHouse({
   }
 })
 
-// ✅ バッチ挿入（効率的）
+// PASS: バッチ挿入（効率的）
 async function bulkInsertTrades(trades: Trade[]) {
   const values = trades.map(trade => `(
     '${trade.id}',
@@ -178,7 +178,7 @@ async function bulkInsertTrades(trades: Trade[]) {
   `).toPromise()
 }
 
-// ❌ 個別挿入（低速）
+// FAIL: 個別挿入（低速）
 async function insertTrade(trade: Trade) {
   // ループ内でこれをしないでください！
   await clickhouse.query(`

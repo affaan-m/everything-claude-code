@@ -89,6 +89,9 @@
     "AGENTS.md",
     ".claude-plugin/plugin.json",
     ".claude-plugin/README.md",
+    ".codex-plugin/plugin.json",
+    ".codex-plugin/README.md",
+    ".mcp.json",
     "install.sh",
     "install.ps1",
     "llms.txt"
@@ -105,22 +108,23 @@
     "orchestrate:status": "node scripts/orchestration-status.js",
     "orchestrate:worker": "bash scripts/orchestrate-codex-worker.sh",
     "orchestrate:tmux": "node scripts/orchestrate-worktrees.js",
-    "test": "node scripts/ci/validate-agents.js && node scripts/ci/validate-commands.js && node scripts/ci/validate-rules.js && node scripts/ci/validate-skills.js && node scripts/ci/validate-hooks.js && node scripts/ci/validate-install-manifests.js && node scripts/ci/validate-no-personal-paths.js && node scripts/ci/catalog.js --text && node tests/run-all.js",
+    "test": "node scripts/ci/check-unicode-safety.js && node scripts/ci/validate-agents.js && node scripts/ci/validate-commands.js && node scripts/ci/validate-rules.js && node scripts/ci/validate-skills.js && node scripts/ci/validate-hooks.js && node scripts/ci/validate-install-manifests.js && node scripts/ci/validate-no-personal-paths.js && node scripts/ci/catalog.js --text && node tests/run-all.js",
     "coverage": "c8 --all --include=\"scripts/**/*.js\" --check-coverage --lines 80 --functions 80 --branches 80 --statements 80 --reporter=text --reporter=lcov node tests/run-all.js"
   },
   "dependencies": {
     "@iarna/toml": "^2.2.5",
+    "ajv": "^8.18.0",
     "sql.js": "^1.14.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "ajv": "^8.18.0",
-    "c8": "^10.1.2",
+    "c8": "^11.0.0",
     "eslint": "^9.39.2",
     "globals": "^17.1.0",
-    "markdownlint-cli": "^0.47.0"
+    "markdownlint-cli": "^0.48.0"
   },
   "engines": {
     "node": ">=18"
-  }
+  },
+  "packageManager": "yarn@4.9.2+sha512.1fc009bc09d13cfd0e19efa44cbfc2b9cf6ca61482725eb35bbc5e257e093ebf4130db6dfe15d604ff4b79efd8e1e8e99b25fa7d0a6197c9f9826358d4d65c3c"
 }

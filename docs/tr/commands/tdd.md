@@ -133,7 +133,7 @@ FAIL lib/liquidity.test.ts
 1 test failed, 0 passed
 ```
 
-✅ Testler beklendiği gibi başarısız. Uygulamaya hazır.
+PASS: Testler beklendiği gibi başarısız. Uygulamaya hazır.
 
 ## Adım 4: Minimal Kod Uygula (GREEN)
 
@@ -179,7 +179,7 @@ PASS lib/liquidity.test.ts
 3 tests passed
 ```
 
-✅ Tüm testler geçiyor!
+PASS: Tüm testler geçiyor!
 
 ## Adım 6: Refactor Et (IYILEŞTIR)
 
@@ -236,7 +236,7 @@ PASS lib/liquidity.test.ts
 3 tests passed
 ```
 
-✅ Refactoring tamamlandı, testler hala geçiyor!
+PASS: Refactoring tamamlandı, testler hala geçiyor!
 
 ## Adım 8: Kapsama Oranını Kontrol Et
 
@@ -247,29 +247,29 @@ File           | % Stmts | % Branch | % Funcs | % Lines
 ---------------|---------|----------|---------|--------
 liquidity.ts   |   100   |   100    |   100   |   100
 
-Coverage: 100% ✅ (Hedef: 80%)
+Coverage: 100% PASS: (Hedef: 80%)
 ```
 
-✅ TDD oturumu tamamlandı!
+PASS: TDD oturumu tamamlandı!
 ```
 
 ## TDD En İyi Uygulamaları
 
 **YAPIN:**
-- ✅ Herhangi bir uygulamadan ÖNCE testi yazın
-- ✅ Testleri çalıştırın ve uygulamadan önce başarısız olduklarını doğrulayın
-- ✅ Testleri geçirmek için minimal kod yazın
-- ✅ Testler yeşil olduktan sonra refactor edin
-- ✅ Edge case'leri ve hata senaryolarını ekleyin
-- ✅ %80+ kapsama hedefleyin (kritik kod için %100)
+- PASS: Herhangi bir uygulamadan ÖNCE testi yazın
+- PASS: Testleri çalıştırın ve uygulamadan önce başarısız olduklarını doğrulayın
+- PASS: Testleri geçirmek için minimal kod yazın
+- PASS: Testler yeşil olduktan sonra refactor edin
+- PASS: Edge case'leri ve hata senaryolarını ekleyin
+- PASS: %80+ kapsama hedefleyin (kritik kod için %100)
 
 **YAPMAYIN:**
-- ❌ Testlerden önce uygulama yazmayın
-- ❌ Her değişiklikten sonra testleri çalıştırmayı atlamayın
-- ❌ Aynı anda çok fazla kod yazmayın
-- ❌ Başarısız testleri görmezden gelmeyin
-- ❌ Uygulama detaylarını test etmeyin (davranışı test edin)
-- ❌ Her şeyi mock'lamayın (integration testleri tercih edin)
+- FAIL: Testlerden önce uygulama yazmayın
+- FAIL: Her değişiklikten sonra testleri çalıştırmayı atlamayın
+- FAIL: Aynı anda çok fazla kod yazmayın
+- FAIL: Başarısız testleri görmezden gelmeyin
+- FAIL: Uygulama detaylarını test etmeyin (davranışı test edin)
+- FAIL: Her şeyi mock'lamayın (integration testleri tercih edin)
 
 ## Dahil Edilecek Test Türleri
 

@@ -85,8 +85,8 @@ Agent:
 ## 発見された問題
 
 [CRITICAL] 競合状態
-File: internal/service/auth.go:45
-Issue: 同期化なしで共有マップにアクセス
+ファイル: internal/service/auth.go:45
+問題: 同期化なしで共有マップにアクセス
 ```go
 var cache = map[string]*Session{}  // 並行アクセス!
 
@@ -94,7 +94,7 @@ func GetSession(id string) *Session {
     return cache[id]  // 競合状態
 }
 ```
-Fix: sync.RWMutexまたはsync.Mapを使用
+修正: sync.RWMutexまたはsync.Mapを使用
 ```go
 var (
     cache   = map[string]*Session{}
@@ -109,12 +109,12 @@ func GetSession(id string) *Session {
 ```
 
 [HIGH] エラーコンテキストの欠落
-File: internal/handler/user.go:28
-Issue: コンテキストなしでエラーを返す
+ファイル: internal/handler/user.go:28
+問題: コンテキストなしでエラーを返す
 ```go
 return err  // コンテキストなし
 ```
-Fix: コンテキストでラップ
+修正: コンテキストでラップ
 ```go
 return fmt.Errorf("get user %s: %w", userID, err)
 ```
@@ -124,16 +124,16 @@ return fmt.Errorf("get user %s: %w", userID, err)
 - HIGH: 1
 - MEDIUM: 0
 
-推奨: ❌ CRITICAL問題が修正されるまでマージをブロック
+推奨: FAIL: CRITICAL問題が修正されるまでマージをブロック
 ```
 
 ## 承認基準
 
 | ステータス | 条件 |
 |--------|-----------|
-| ✅ 承認 | CRITICALまたはHIGH問題なし |
-| ⚠️ 警告 | MEDIUM問題のみ(注意してマージ) |
-| ❌ ブロック | CRITICALまたはHIGH問題が発見された |
+| PASS: 承認 | CRITICALまたはHIGH問題なし |
+| WARNING: 警告 | MEDIUM問題のみ(注意してマージ) |
+| FAIL: ブロック | CRITICALまたはHIGH問題が発見された |
 
 ## 他のコマンドとの統合
 

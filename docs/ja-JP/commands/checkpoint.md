@@ -35,12 +35,12 @@ echo "$(date +%Y-%m-%d-%H:%M) | $CHECKPOINT_NAME | $(git rev-parse --short HEAD)
 3. レポート：
 
 ```
-CHECKPOINT COMPARISON: $NAME
+チェックポイント比較: $NAME
 ============================
-Files changed: X
-Tests: +Y passed / -Z failed
-Coverage: +X% / -Y%
-Build: [PASS/FAIL]
+変更されたファイル: X
+テスト: +Y 合格 / -Z 失敗
+カバレッジ: +X% / -Y%
+ビルド: [PASS/FAIL]
 ```
 
 ## チェックポイント一覧表示
@@ -57,13 +57,13 @@ Build: [PASS/FAIL]
 一般的なチェックポイント流：
 
 ```
-[Start] --> /checkpoint create "feature-start"
+[開始] --> /checkpoint create "feature-start"
    |
-[Implement] --> /checkpoint create "core-done"
+[実装] --> /checkpoint create "core-done"
    |
-[Test] --> /checkpoint verify "core-done"
+[テスト] --> /checkpoint verify "core-done"
    |
-[Refactor] --> /checkpoint create "refactor-done"
+[リファクタリング] --> /checkpoint create "refactor-done"
    |
 [PR] --> /checkpoint verify "feature-start"
 ```

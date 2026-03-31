@@ -6,12 +6,20 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const crypto = require('crypto');
 const { execSync, spawnSync } = require('child_process');
 
 // Platform detection
 const isWindows = process.platform === 'win32';
 const isMacOS = process.platform === 'darwin';
 const isLinux = process.platform === 'linux';
+const SESSION_DATA_DIR_NAME = 'session-data';
+const LEGACY_SESSIONS_DIR_NAME = 'sessions';
+const WINDOWS_RESERVED_SESSION_IDS = new Set([
+  'CON', 'PRN', 'AUX', 'NUL',
+  'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9',
+  'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'
+]);
 
 /**
  * Get the user's home directory (cross-platform)
@@ -31,7 +39,21 @@ function getClaudeDir() {
  * Get the sessions directory
  */
 function getSessionsDir() {
-  return path.join(getClaudeDir(), 'sessions');
+  return path.join(getClaudeDir(), SESSION_DATA_DIR_NAME);
+}
+
+/**
+ * Get the legacy sessions directory used by older ECC installs
+ */
+function getLegacySessionsDir() {
+  return path.join(getClaudeDir(), LEGACY_SESSIONS_DIR_NAME);
+}
+
+/**
+ * Get all session directories to search, in canonical-first order
+ */
+function getSessionSearchDirs() {
+  return Array.from(new Set([getSessionsDir(), getLegacySessionsDir()]));
 }
 
 /**
@@ -108,15 +130,51 @@ function getProjectName() {
 }
 
 /**
+ * Sanitize a string for use as a session filename segment.
+ * Replaces invalid characters with hyphens, collapses runs, strips
+ * leading/trailing hyphens, and removes leading dots so hidden-dir names
+ * like ".claude" map cleanly to "claude".
+ *
+ * Pure non-ASCII inputs get a stable 8-char hash so distinct names do not
+ * collapse to the same fallback session id. Mixed-script inputs retain their
+ * ASCII part and gain a short hash suffix for disambiguation.
+ */
+function sanitizeSessionId(raw) {
+  if (!raw || typeof raw !== 'string') return null;
+
+  const hasNonAscii = Array.from(raw).some(char => char.codePointAt(0) > 0x7f);
+  const normalized = raw.replace(/^\.+/, '');
+  const sanitized = normalized
+    .replace(/[^a-zA-Z0-9_-]/g, '-')
+    .replace(/-{2,}/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  if (sanitized.length > 0) {
+    const suffix = crypto.createHash('sha256').update(normalized).digest('hex').slice(0, 6);
+    if (WINDOWS_RESERVED_SESSION_IDS.has(sanitized.toUpperCase())) {
+      return `${sanitized}-${suffix}`;
+    }
+    if (!hasNonAscii) return sanitized;
+    return `${sanitized}-${suffix}`;
+  }
+
+  const meaningful = normalized.replace(/[\s\p{P}]/gu, '');
+  if (meaningful.length === 0) return null;
+
+  return crypto.createHash('sha256').update(normalized).digest('hex').slice(0, 8);
+}
+
+/**
  * Get short session ID from CLAUDE_SESSION_ID environment variable
- * Returns last 8 characters, falls back to project name then 'default'
+ * Returns last 8 characters, falls back to a sanitized project name then 'default'.
  */
 function getSessionIdShort(fallback = 'default') {
   const sessionId = process.env.CLAUDE_SESSION_ID;
   if (sessionId && sessionId.length > 0) {
-    return sessionId.slice(-8);
+    const sanitized = sanitizeSessionId(sessionId.slice(-8));
+    if (sanitized) return sanitized;
   }
-  return getProjectName() || fallback;
+  return sanitizeSessionId(getProjectName()) || sanitizeSessionId(fallback) || 'default';
 }
 
 /**
@@ -525,6 +583,8 @@ module.exports = {
   getHomeDir,
   getClaudeDir,
   getSessionsDir,
+  getLegacySessionsDir,
+  getSessionSearchDirs,
   getLearnedSkillsDir,
   getTempDir,
   ensureDir,
@@ -535,6 +595,7 @@ module.exports = {
   getDateTimeString,
 
   // Session/Project
+  sanitizeSessionId,
   getSessionIdShort,
   getGitRepoName,
   getProjectName,

@@ -36,7 +36,11 @@ PYTHON_CMD="${CLV2_PYTHON_CMD:-}"
 # ─────────────────────────────────────────────
 
 CONFIG_DIR="${HOME}/.claude/homunculus"
-CONFIG_FILE="${SKILL_ROOT}/config.json"
+if [ -n "${CLV2_CONFIG:-}" ]; then
+  CONFIG_FILE="$CLV2_CONFIG"
+else
+  CONFIG_FILE="${SKILL_ROOT}/config.json"
+fi
 # PID file is project-scoped so each project can have its own observer
 PID_FILE="${PROJECT_DIR}/.observer.pid"
 LOG_FILE="${PROJECT_DIR}/observer.log"

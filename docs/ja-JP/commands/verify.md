@@ -36,16 +36,16 @@
 簡潔な検証レポートを生成します:
 
 ```
-VERIFICATION: [PASS/FAIL]
+検証結果: [PASS/FAIL]
 
-Build:    [OK/FAIL]
-Types:    [OK/X errors]
-Lint:     [OK/X issues]
-Tests:    [X/Y passed, Z% coverage]
-Secrets:  [OK/X found]
-Logs:     [OK/X console.logs]
+ビルド:       [OK/FAIL]
+型:           [OK/Xエラー]
+Lint:         [OK/X件の問題]
+テスト:       [X/Y合格, Z%カバレッジ]
+シークレット: [OK/X件発見]
+ログ:         [OK/X件のconsole.log]
 
-Ready for PR: [YES/NO]
+PR準備完了: [YES/NO]
 ```
 
 重大な問題がある場合は、修正案とともにリストアップします。
