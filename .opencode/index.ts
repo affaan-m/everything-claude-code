@@ -74,6 +74,7 @@ export const metadata = {
       "format-code",
       "lint-check",
       "git-summary",
+      "changed-files",
     ],
   },
 }

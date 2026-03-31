@@ -11,7 +11,8 @@
       "targets": [
         "claude",
         "cursor",
-        "antigravity"
+        "antigravity",
+        "codebuddy"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -32,7 +33,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -50,7 +52,8 @@
         "claude",
         "cursor",
         "antigravity",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -69,7 +72,8 @@
       "targets": [
         "claude",
         "cursor",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -93,7 +97,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -145,7 +150,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "rules-core",
@@ -172,7 +178,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -205,7 +212,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -232,7 +240,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "workflow-quality"
@@ -255,7 +264,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -273,14 +283,17 @@
         "skills/content-engine",
         "skills/investor-materials",
         "skills/investor-outreach",
-        "skills/market-research"
+        "skills/lead-intelligence",
+        "skills/market-research",
+        "skills/social-graph-ranker"
       ],
       "targets": [
         "claude",
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -302,7 +315,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "business-content"
@@ -317,6 +331,7 @@
       "description": "Media generation and AI-assisted editing skills.",
       "paths": [
         "skills/fal-ai-media",
+        "skills/remotion-video-creation",
         "skills/video-editing",
         "skills/videodb"
       ],
@@ -324,7 +339,8 @@
         "claude",
         "cursor",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -378,7 +394,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -416,7 +433,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -438,7 +456,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -466,7 +485,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -488,7 +508,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"

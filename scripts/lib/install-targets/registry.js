@@ -1,5 +1,6 @@
 const antigravityProject = require('./antigravity-project');
 const claudeHome = require('./claude-home');
+const codebuddyProject = require('./codebuddy-project');
 const codexHome = require('./codex-home');
 const cursorProject = require('./cursor-project');
 const opencodeHome = require('./opencode-home');
@@ -10,6 +11,7 @@ const ADAPTERS = Object.freeze([
   antigravityProject,
   codexHome,
   opencodeHome,
+  codebuddyProject,
 ]);
 
 function listInstallTargetAdapters() {

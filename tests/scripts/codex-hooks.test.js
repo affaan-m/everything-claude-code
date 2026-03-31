@@ -66,7 +66,11 @@ function makeHermeticCodexEnv(homeDir, codexDir, extraEnv = {}) {
 let passed = 0;
 let failed = 0;
 
-if (
+// Windows NTFS does not allow double-quote characters in file paths,
+// so the quoted-path shell-injection test is only meaningful on Unix.
+if (os.platform() === 'win32') {
+  console.log('  - install-global-git-hooks.sh quoted paths (skipped on Windows)');
+} else if (
   test('install-global-git-hooks.sh handles quoted hook paths without shell injection', () => {
     const homeDir = createTempDir('codex-hooks-home-');
     const weirdHooksDir = path.join(homeDir, 'git-hooks "quoted"');

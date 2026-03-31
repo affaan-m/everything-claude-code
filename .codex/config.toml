@@ -102,7 +102,6 @@ sandbox_mode = "workspace-write"
 web_search = "live"
 
 [agents]
-[agents]
 # Multi-agent role limits and local role definitions.
 # These map to `.codex/agents/*.toml` and mirror the repo's explorer/reviewer/docs workflow.
 max_threads = 6

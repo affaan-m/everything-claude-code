@@ -89,7 +89,7 @@ if (
 
     const result = runCheck(root, ['--write']);
     assert.notStrictEqual(result.status, 0, result.stdout + result.stderr);
-    assert.match(result.stderr, /scripts\/sample\.js:1:23 emoji U\+1F680/);
+    assert.match(result.stderr, /scripts[/\\]sample\.js:1:23 emoji U\+1F680/);
     assert.strictEqual(fs.readFileSync(scriptFile, 'utf8'), original);
   })
 )

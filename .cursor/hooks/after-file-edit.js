@@ -8,9 +8,8 @@ readStdin().then(raw => {
     });
     const claudeStr = JSON.stringify(claudeInput);
 
-    // Run format, typecheck, and console.log warning sequentially
-    runExistingHook('post-edit-format.js', claudeStr);
-    runExistingHook('post-edit-typecheck.js', claudeStr);
+    // Accumulate edited paths for batch format+typecheck at stop time
+    runExistingHook('post-edit-accumulator.js', claudeStr);
     runExistingHook('post-edit-console-warn.js', claudeStr);
   } catch {}
   process.stdout.write(raw);

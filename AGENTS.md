@@ -1,6 +1,6 @@
 # Everything Claude Code (ECC) — Agent Instructions
 
-This is a **production-ready AI coding plugin** providing 28 specialized agents, 126 skills, 61 commands, and automated hook workflows for software development.
+This is a **production-ready AI coding plugin** providing 30 specialized agents, 140 skills, 60 commands, and automated hook workflows for software development.
 
 **Version:** 1.9.0
 
@@ -25,9 +25,9 @@ This is a **production-ready AI coding plugin** providing 28 specialized agents,
 | e2e-runner | End-to-end Playwright testing | Critical user flows |
 | refactor-cleaner | Dead code cleanup | Code maintenance |
 | doc-updater | Documentation and codemaps | Updating docs |
-| docs-lookup | Documentation and API reference research | Library/API documentation questions |
 | cpp-reviewer | C++ code review | C++ projects |
 | cpp-build-resolver | C++ build errors | C++ build failures |
+| docs-lookup | Documentation lookup via Context7 | API/docs questions |
 | go-reviewer | Go code review | Go projects |
 | go-build-resolver | Go build errors | Go build failures |
 | kotlin-reviewer | Kotlin code review | Kotlin/Android/KMP projects |
@@ -36,7 +36,6 @@ This is a **production-ready AI coding plugin** providing 28 specialized agents,
 | python-reviewer | Python code review | Python projects |
 | java-reviewer | Java and Spring Boot code review | Java/Spring Boot projects |
 | java-build-resolver | Java/Maven/Gradle build errors | Java build failures |
-| chief-of-staff | Communication triage and drafts | Multi-channel email, Slack, LINE, Messenger |
 | loop-operator | Autonomous loop execution | Run loops safely, monitor stalls, intervene |
 | harness-optimizer | Harness config tuning | Reliability, cost, throughput |
 | rust-reviewer | Rust code review | Rust projects |
@@ -52,7 +51,6 @@ Use agents proactively without user prompt:
 - Bug fix or new feature → **tdd-guide**
 - Architectural decision → **architect**
 - Security-sensitive code → **security-reviewer**
-- Multi-channel communication triage → **chief-of-staff**
 - Autonomous loops / loop monitoring → **loop-operator**
 - Harness config reliability and cost → **harness-optimizer**
 
@@ -141,9 +139,9 @@ Troubleshoot failures: check test isolation → verify mocks → fix implementat
 ## Project Structure
 
 ```
-agents/          — 28 specialized subagents
-skills/          — 126 workflow skills and domain knowledge
-commands/        — 61 slash commands
+agents/          — 30 specialized subagents
+skills/          — 140 workflow skills and domain knowledge
+commands/        — 60 slash commands
 hooks/           — Trigger-based automations
 rules/           — Always-follow guidelines (common + per-language)
 scripts/         — Cross-platform Node.js utilities

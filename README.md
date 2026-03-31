@@ -220,7 +220,7 @@ For manual install instructions see the README in the `rules/` folder. When copy
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-✨ **That's it!** You now have access to 28 agents, 126 skills, and 61 commands.
+**That's it!** You now have access to 30 agents, 140 skills, and 60 commands.
 
 ### Multi-model commands require additional setup
 
@@ -1111,13 +1111,13 @@ The configuration is automatically detected from `.opencode/opencode.json`.
 
 | Feature | Claude Code | OpenCode | Status |
 |---------|-------------|----------|--------|
-| Agents | ✅ 28 agents | ✅ 12 agents | **Claude Code leads** |
-| Commands | ✅ 61 commands | ✅ 31 commands | **Claude Code leads** |
-| Skills | ✅ 126 skills | ✅ 37 skills | **Claude Code leads** |
-| Hooks | ✅ 8 event types | ✅ 11 events | **OpenCode has more!** |
-| Rules | ✅ 29 rules | ✅ 13 instructions | **Claude Code leads** |
-| MCP Servers | ✅ 14 servers | ✅ Full | **Full parity** |
-| Custom Tools | ✅ Via hooks | ✅ 6 native tools | **OpenCode is better** |
+| Agents | PASS: 30 agents | PASS: 12 agents | **Claude Code leads** |
+| Commands | PASS: 60 commands | PASS: 31 commands | **Claude Code leads** |
+| Skills | PASS: 140 skills | PASS: 37 skills | **Claude Code leads** |
+| Hooks | PASS: 8 event types | PASS: 11 events | **OpenCode has more!** |
+| Rules | PASS: 29 rules | PASS: 13 instructions | **Claude Code leads** |
+| MCP Servers | PASS: 14 servers | PASS: Full | **Full parity** |
+| Custom Tools | PASS: Via hooks | PASS: 6 native tools | **OpenCode is better** |
 
 ### Hook Support via Plugins
 

@@ -1958,13 +1958,25 @@ async function runTests() {
       const sessionStartHook = hooks.hooks.SessionStart?.[0]?.hooks?.[0];
 
       assert.ok(sessionStartHook, 'Should define a SessionStart hook');
-      assert.ok(sessionStartHook.command.startsWith('node -e "'), 'SessionStart should use inline node resolver');
-      assert.ok(sessionStartHook.command.includes('session:start'), 'SessionStart should invoke the session:start profile');
-      assert.ok(sessionStartHook.command.includes('run-with-flags.js'), 'SessionStart should resolve the runner script');
-      assert.ok(sessionStartHook.command.includes('CLAUDE_PLUGIN_ROOT'), 'SessionStart should consult CLAUDE_PLUGIN_ROOT');
-      assert.ok(sessionStartHook.command.includes('plugins'), 'SessionStart should probe known plugin roots');
+      // The bootstrap was extracted to a standalone file to avoid shell history
+      // expansion of `!` characters that caused startup hook errors when the
+      // logic was embedded as an inline `node -e "..."` string.
+      assert.ok(
+        sessionStartHook.command.includes('session-start-bootstrap.js'),
+        'SessionStart should delegate to the extracted bootstrap script'
+      );
+      assert.ok(sessionStartHook.command.includes('CLAUDE_PLUGIN_ROOT'), 'SessionStart should use CLAUDE_PLUGIN_ROOT');
       assert.ok(!sessionStartHook.command.includes('find '), 'Should not scan arbitrary plugin paths with find');
       assert.ok(!sessionStartHook.command.includes('head -n 1'), 'Should not pick the first matching plugin path');
+
+      // Verify the bootstrap script itself contains the expected logic
+      const bootstrapPath = path.join(__dirname, '..', '..', 'scripts', 'hooks', 'session-start-bootstrap.js');
+      assert.ok(fs.existsSync(bootstrapPath), 'Bootstrap script should exist at scripts/hooks/session-start-bootstrap.js');
+      const bootstrapSrc = fs.readFileSync(bootstrapPath, 'utf8');
+      assert.ok(bootstrapSrc.includes('session:start'), 'Bootstrap should invoke the session:start profile');
+      assert.ok(bootstrapSrc.includes('run-with-flags.js'), 'Bootstrap should resolve the runner script');
+      assert.ok(bootstrapSrc.includes('CLAUDE_PLUGIN_ROOT'), 'Bootstrap should consult CLAUDE_PLUGIN_ROOT');
+      assert.ok(bootstrapSrc.includes('plugins'), 'Bootstrap should probe known plugin roots');
     })
   )
     passed++;

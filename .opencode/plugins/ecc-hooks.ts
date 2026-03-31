@@ -14,6 +14,14 @@
  */
 
 import type { PluginInput } from "@opencode-ai/plugin"
+import * as fs from "fs"
+import * as path from "path"
+import {
+  initStore,
+  recordChange,
+  clearChanges,
+} from "./lib/changed-files-store.js"
+import changedFilesTool from "../tools/changed-files.js"
 
 export const ECCHooksPlugin = async ({
   client,
@@ -23,8 +31,24 @@ export const ECCHooksPlugin = async ({
 }: PluginInput) => {
   type HookProfile = "minimal" | "standard" | "strict"
 
-  // Track files edited in current session for console.log audit
+  const worktreePath = worktree || directory
+  initStore(worktreePath)
+
   const editedFiles = new Set<string>()
+
+  function resolvePath(p: string): string {
+    if (path.isAbsolute(p)) return p
+    return path.join(worktreePath, p)
+  }
+
+  const pendingToolChanges = new Map<string, { path: string; type: "added" | "modified" }>()
+  let writeCounter = 0
+
+  function getFilePath(args: Record<string, unknown> | undefined): string | null {
+    if (!args) return null
+    const p = (args.filePath ?? args.file_path ?? args.path) as string | undefined
+    return typeof p === "string" && p.trim() ? p : null
+  }
 
   // Helper to call the SDK's log API with correct signature
   const log = (level: "debug" | "info" | "warn" | "error", message: string) =>
@@ -73,8 +97,8 @@ export const ECCHooksPlugin = async ({
      * Action: Runs prettier --write on the file
      */
     "file.edited": async (event: { path: string }) => {
-      // Track edited files for console.log audit
       editedFiles.add(event.path)
+      recordChange(event.path, "modified")
 
       // Auto-format JS/TS files
       if (hookEnabled("post:edit:format", ["strict"]) && event.path.match(/\.(ts|tsx|js|jsx)$/)) {
@@ -111,9 +135,24 @@ export const ECCHooksPlugin = async ({
      * Action: Runs tsc --noEmit to check for type errors
      */
     "tool.execute.after": async (
-      input: { tool: string; args?: { filePath?: string } },
+      input: { tool: string; callID?: string; args?: { filePath?: string; file_path?: string; path?: string } },
       output: unknown
     ) => {
+      const filePath = getFilePath(input.args as Record<string, unknown>)
+      if (input.tool === "edit" && filePath) {
+        recordChange(filePath, "modified")
+      }
+      if (input.tool === "write" && filePath) {
+        const key = input.callID ?? `write-${++writeCounter}-${filePath}`
+        const pending = pendingToolChanges.get(key)
+        if (pending) {
+          recordChange(pending.path, pending.type)
+          pendingToolChanges.delete(key)
+        } else {
+          recordChange(filePath, "modified")
+        }
+      }
+
       // Check if a TypeScript file was edited
       if (
         hookEnabled("post:edit:typecheck", ["strict"]) &&
@@ -152,8 +191,25 @@ export const ECCHooksPlugin = async ({
      * Action: Warns about potential security issues
      */
     "tool.execute.before": async (
-      input: { tool: string; args?: Record<string, unknown> }
+      input: { tool: string; callID?: string; args?: Record<string, unknown> }
     ) => {
+      if (input.tool === "write") {
+        const filePath = getFilePath(input.args)
+        if (filePath) {
+          const absPath = resolvePath(filePath)
+          let type: "added" | "modified" = "modified"
+          try {
+            if (typeof fs.existsSync === "function") {
+              type = fs.existsSync(absPath) ? "modified" : "added"
+            }
+          } catch {
+            type = "modified"
+          }
+          const key = input.callID ?? `write-${++writeCounter}-${filePath}`
+          pendingToolChanges.set(key, { path: filePath, type })
+        }
+      }
+
       // Git push review reminder
       if (
         hookEnabled("pre:bash:git-push-reminder", "strict") &&
@@ -293,6 +349,8 @@ export const ECCHooksPlugin = async ({
       if (!hookEnabled("session:end-marker", ["minimal", "standard", "strict"])) return
       log("info", "[ECC] Session ended - cleaning up")
       editedFiles.clear()
+      clearChanges()
+      pendingToolChanges.clear()
     },
 
     /**
@@ -303,6 +361,10 @@ export const ECCHooksPlugin = async ({
      * Action: Updates tracking
      */
     "file.watcher.updated": async (event: { path: string; type: string }) => {
+      let changeType: "added" | "modified" | "deleted" = "modified"
+      if (event.type === "create" || event.type === "add") changeType = "added"
+      else if (event.type === "delete" || event.type === "remove") changeType = "deleted"
+      recordChange(event.path, changeType)
       if (event.type === "change" && event.path.match(/\.(ts|tsx|js|jsx)$/)) {
         editedFiles.add(event.path)
       }
@@ -394,7 +456,7 @@ export const ECCHooksPlugin = async ({
         "",
         "## Active Plugin: Everything Claude Code v1.8.0",
         "- Hooks: file.edited, tool.execute.before/after, session.created/idle/deleted, shell.env, compacting, permission.ask",
-        "- Tools: run-tests, check-coverage, security-audit, format-code, lint-check, git-summary",
+        "- Tools: run-tests, check-coverage, security-audit, format-code, lint-check, git-summary, changed-files",
         "- Agents: 13 specialized (planner, architect, tdd-guide, code-reviewer, security-reviewer, build-error-resolver, e2e-runner, refactor-cleaner, doc-updater, go-reviewer, go-build-resolver, database-reviewer, python-reviewer)",
         "",
         "## Key Principles",
@@ -448,6 +510,10 @@ export const ECCHooksPlugin = async ({
 
       // Everything else: let user decide
       return { approved: undefined }
+    },
+
+    tool: {
+      "changed-files": changedFilesTool,
     },
   }
 }

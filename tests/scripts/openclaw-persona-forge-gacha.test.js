@@ -30,6 +30,7 @@ function runGacha(pythonBin, arg) {
   return spawnSync(pythonBin, [SCRIPT, arg], {
     encoding: 'utf8',
     maxBuffer: 10 * 1024 * 1024,
+    env: { ...process.env, PYTHONUTF8: '1' },
   });
 }
 
