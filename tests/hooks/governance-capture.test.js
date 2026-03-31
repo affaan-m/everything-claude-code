@@ -156,6 +156,35 @@ async function runTests() {
     assert.strictEqual(approvalEvent.payload.severity, 'high');
   })) passed += 1; else failed += 1;
 
+  if (await test('approval events fingerprint commands instead of storing raw command text', async () => {
+    const command = 'git push origin main --force';
+    const events = analyzeForGovernanceEvents({
+      tool_name: 'Bash',
+      tool_input: { command },
+    });
+
+    const approvalEvent = events.find(e => e.eventType === 'approval_requested');
+    assert.ok(approvalEvent);
+    assert.strictEqual(approvalEvent.payload.commandName, 'git');
+    assert.ok(/^[a-f0-9]{12}$/.test(approvalEvent.payload.commandFingerprint), 'Expected short command fingerprint');
+    assert.ok(!Object.prototype.hasOwnProperty.call(approvalEvent.payload, 'command'), 'Should not store raw command text');
+  })) passed += 1; else failed += 1;
+
+  if (await test('security findings fingerprint elevated commands instead of storing raw command text', async () => {
+    const command = 'sudo chmod 600 ~/.ssh/id_rsa';
+    const events = analyzeForGovernanceEvents({
+      tool_name: 'Bash',
+      tool_input: { command },
+    }, {
+      hookPhase: 'post',
+    });
+
+    const securityEvent = events.find(e => e.eventType === 'security_finding');
+    assert.ok(securityEvent);
+    assert.strictEqual(securityEvent.payload.commandName, 'sudo');
+    assert.ok(/^[a-f0-9]{12}$/.test(securityEvent.payload.commandFingerprint), 'Expected short command fingerprint');
+    assert.ok(!Object.prototype.hasOwnProperty.call(securityEvent.payload, 'command'), 'Should not store raw command text');
+  })) passed += 1; else failed += 1;
   if (await test('analyzeForGovernanceEvents detects sensitive file access', async () => {
     const events = analyzeForGovernanceEvents({
       tool_name: 'Edit',
@@ -273,6 +302,43 @@ async function runTests() {
     }
   })) passed += 1; else failed += 1;
 
+  if (await test('run() emits hook_input_truncated event without logging raw command text', async () => {
+    const original = process.env.ECC_GOVERNANCE_CAPTURE;
+    const originalHookEvent = process.env.CLAUDE_HOOK_EVENT_NAME;
+    const originalWrite = process.stderr.write;
+    const stderr = [];
+    process.env.ECC_GOVERNANCE_CAPTURE = '1';
+    process.env.CLAUDE_HOOK_EVENT_NAME = 'PreToolUse';
+    process.stderr.write = (chunk, encoding, callback) => {
+      stderr.push(String(chunk));
+      if (typeof encoding === 'function') encoding();
+      if (typeof callback === 'function') callback();
+      return true;
+    };
+
+    try {
+      const input = JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'rm -rf /tmp/important' } });
+      const result = run(input, { truncated: true, maxStdin: 1024 });
+      assert.strictEqual(result, input);
+    } finally {
+      process.stderr.write = originalWrite;
+      if (original !== undefined) {
+        process.env.ECC_GOVERNANCE_CAPTURE = original;
+      } else {
+        delete process.env.ECC_GOVERNANCE_CAPTURE;
+      }
+      if (originalHookEvent !== undefined) {
+        process.env.CLAUDE_HOOK_EVENT_NAME = originalHookEvent;
+      } else {
+        delete process.env.CLAUDE_HOOK_EVENT_NAME;
+      }
+    }
+
+    const combined = stderr.join('');
+    assert.ok(combined.includes('"eventType":"hook_input_truncated"'), 'Should emit truncation event');
+    assert.ok(combined.includes('"sizeLimitBytes":1024'), 'Should record the truncation limit');
+    assert.ok(!combined.includes('rm -rf /tmp/important'), 'Should not leak raw command text to governance logs');
+  })) passed += 1; else failed += 1;
   if (await test('run() can detect multiple event types in one input', async () => {
     // Bash command with force push AND secret in command
     const events = analyzeForGovernanceEvents({

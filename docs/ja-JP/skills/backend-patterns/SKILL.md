@@ -12,7 +12,7 @@ description: Backend architecture patterns, API design, database optimization, a
 ### RESTful API構造
 
 ```typescript
-// ✅ リソースベースのURL
+// PASS: リソースベースのURL
 GET    /api/markets                 # リソースのリスト
 GET    /api/markets/:id             # 単一リソースの取得
 POST   /api/markets                 # リソースの作成
@@ -20,7 +20,7 @@ PUT    /api/markets/:id             # リソースの置換
 PATCH  /api/markets/:id             # リソースの更新
 DELETE /api/markets/:id             # リソースの削除
 
-// ✅ フィルタリング、ソート、ページネーション用のクエリパラメータ
+// PASS: フィルタリング、ソート、ページネーション用のクエリパラメータ
 GET /api/markets?status=active&sort=volume&limit=20&offset=0
 ```
 
@@ -120,7 +120,7 @@ export default withAuth(async (req, res) => {
 ### クエリ最適化
 
 ```typescript
-// ✅ 良い: 必要な列のみを選択
+// PASS: 良い: 必要な列のみを選択
 const { data } = await supabase
   .from('markets')
   .select('id, name, status, volume')
@@ -128,7 +128,7 @@ const { data } = await supabase
   .order('volume', { ascending: false })
   .limit(10)
 
-// ❌ 悪い: すべてを選択
+// FAIL: 悪い: すべてを選択
 const { data } = await supabase
   .from('markets')
   .select('*')
@@ -137,13 +137,13 @@ const { data } = await supabase
 ### N+1クエリ防止
 
 ```typescript
-// ❌ 悪い: N+1クエリ問題
+// FAIL: 悪い: N+1クエリ問題
 const markets = await getMarkets()
 for (const market of markets) {
   market.creator = await getUser(market.creator_id)  // Nクエリ
 }
 
-// ✅ 良い: バッチフェッチ
+// PASS: 良い: バッチフェッチ
 const markets = await getMarkets()
 const creatorIds = markets.map(m => m.creator_id)
 const creators = await getUsers(creatorIds)  // 1クエリ

@@ -112,14 +112,17 @@ function runTests() {
     );
   })) passed++; else failed++;
 
-  if (test('resolves antigravity profiles by skipping incompatible dependency trees', () => {
+  if (test('resolves antigravity profiles while skipping only unsupported modules', () => {
     const projectRoot = '/workspace/app';
     const plan = resolveInstallPlan({ profileId: 'core', target: 'antigravity', projectRoot });
 
-    assert.deepStrictEqual(plan.selectedModuleIds, ['rules-core', 'agents-core', 'commands-core']);
+    assert.deepStrictEqual(
+      plan.selectedModuleIds,
+      ['rules-core', 'agents-core', 'commands-core', 'platform-configs', 'workflow-quality']
+    );
     assert.ok(plan.skippedModuleIds.includes('hooks-runtime'));
-    assert.ok(plan.skippedModuleIds.includes('platform-configs'));
-    assert.ok(plan.skippedModuleIds.includes('workflow-quality'));
+    assert.ok(!plan.skippedModuleIds.includes('platform-configs'));
+    assert.ok(!plan.skippedModuleIds.includes('workflow-quality'));
     assert.strictEqual(plan.targetAdapterId, 'antigravity-project');
     assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.agent'));
   })) passed++; else failed++;

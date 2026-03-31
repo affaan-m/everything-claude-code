@@ -7,7 +7,7 @@ origin: ECC
 metadata:
   author: evos
   clawdbot:
-    emoji: "📦"
+    emoji: ""
 ---
 
 # 物流异常管理

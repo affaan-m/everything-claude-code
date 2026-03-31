@@ -182,7 +182,7 @@ Oluşturulan artifact'lar:
 ╔══════════════════════════════════════════════════════════════╗
 ║                    E2E Test Sonuçları                        ║
 ╠══════════════════════════════════════════════════════════════╣
-║ Durum:      ✅ TÜM TESTLER GEÇTİ                             ║
+║ Durum:      PASS: TÜM TESTLER GEÇTİ                             ║
 ║ Toplam:     3 test                                           ║
 ║ Geçti:      3 (%100)                                         ║
 ║ Başarısız:  0                                                ║
@@ -191,15 +191,15 @@ Oluşturulan artifact'lar:
 ╚══════════════════════════════════════════════════════════════╝
 
 Artifact'lar:
-📸 Ekran Görüntüleri: 2 dosya
-📹 Videolar: 0 dosya (sadece hatada)
-🔍 İzlemeler: 0 dosya (sadece hatada)
-📊 HTML Rapor: playwright-report/index.html
+ Ekran Görüntüleri: 2 dosya
+ Videolar: 0 dosya (sadece hatada)
+ İzlemeler: 0 dosya (sadece hatada)
+ HTML Rapor: playwright-report/index.html
 
 Raporu görüntüle: npx playwright show-report
 ```
 
-✅ E2E test paketi CI/CD entegrasyonuna hazır!
+PASS: E2E test paketi CI/CD entegrasyonuna hazır!
 ```
 
 ## Test Artifact'ları
@@ -235,7 +235,7 @@ open artifacts/search-results.png
 Bir test aralıklı olarak başarısız olursa:
 
 ```
-⚠️  DENGESİZ TEST TESPİT EDİLDİ: tests/e2e/markets/trade.spec.ts
+WARNING:  DENGESİZ TEST TESPİT EDİLDİ: tests/e2e/markets/trade.spec.ts
 
 Test 10 çalıştırmadan 7'sinde geçti (%70 geçme oranı)
 
@@ -254,10 +254,10 @@ Karantina önerisi: Düzeltilene kadar test.fixme() olarak işaretle
 ## Tarayıcı Yapılandırması
 
 Testler varsayılan olarak birden fazla tarayıcıda çalışır:
-- ✅ Chromium (Desktop Chrome)
-- ✅ Firefox (Desktop)
-- ✅ WebKit (Desktop Safari)
-- ✅ Mobile Chrome (opsiyonel)
+- PASS: Chromium (Desktop Chrome)
+- PASS: Firefox (Desktop)
+- PASS: WebKit (Desktop Safari)
+- PASS: Mobile Chrome (opsiyonel)
 
 Tarayıcıları ayarlamak için `playwright.config.ts`'yi yapılandırın.
 
@@ -285,7 +285,7 @@ CI pipeline'ınıza ekleyin:
 
 PMX için bu E2E testlerine öncelik verin:
 
-**🔴 KRİTİK (Her Zaman Geçmeli):**
+**KRİTİK (Her Zaman Geçmeli):**
 1. Kullanıcı cüzdan bağlayabilir
 2. Kullanıcı piyasalara göz atabilir
 3. Kullanıcı piyasa arayabilir (semantik arama)
@@ -294,7 +294,7 @@ PMX için bu E2E testlerine öncelik verin:
 6. Piyasa doğru çözülür
 7. Kullanıcı fon çekebilir
 
-**🟡 ÖNEMLİ:**
+**ÖNEMLİ:**
 1. Piyasa oluşturma akışı
 2. Kullanıcı profil güncellemeleri
 3. Gerçek zamanlı fiyat güncellemeleri
@@ -305,20 +305,20 @@ PMX için bu E2E testlerine öncelik verin:
 ## En İyi Uygulamalar
 
 **YAPIN:**
-- ✅ Sürdürülebilirlik için Page Object Model kullanın
-- ✅ Selector'lar için data-testid nitelikleri kullanın
-- ✅ Rastgele timeout'lar değil, API yanıtlarını bekleyin
-- ✅ Kritik kullanıcı yolculuklarını uçtan uca test edin
-- ✅ Main'e merge etmeden önce testleri çalıştırın
-- ✅ Testler başarısız olduğunda artifact'ları inceleyin
+- PASS: Sürdürülebilirlik için Page Object Model kullanın
+- PASS: Selector'lar için data-testid nitelikleri kullanın
+- PASS: Rastgele timeout'lar değil, API yanıtlarını bekleyin
+- PASS: Kritik kullanıcı yolculuklarını uçtan uca test edin
+- PASS: Main'e merge etmeden önce testleri çalıştırın
+- PASS: Testler başarısız olduğunda artifact'ları inceleyin
 
 **YAPMAYIN:**
-- ❌ Kırılgan selector'lar kullanmayın (CSS sınıfları değişebilir)
-- ❌ Uygulama detaylarını test etmeyin
-- ❌ Production'a karşı testler çalıştırmayın
-- ❌ Dengesiz testleri görmezden gelmeyin
-- ❌ Başarısızlıklarda artifact incelemesini atlamayın
-- ❌ Her edge case'i E2E ile test etmeyin (unit testler kullanın)
+- FAIL: Kırılgan selector'lar kullanmayın (CSS sınıfları değişebilir)
+- FAIL: Uygulama detaylarını test etmeyin
+- FAIL: Production'a karşı testler çalıştırmayın
+- FAIL: Dengesiz testleri görmezden gelmeyin
+- FAIL: Başarısızlıklarda artifact incelemesini atlamayın
+- FAIL: Her edge case'i E2E ile test etmeyin (unit testler kullanın)
 
 ## Önemli Notlar
 

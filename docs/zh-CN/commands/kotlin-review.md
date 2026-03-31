@@ -84,7 +84,7 @@ Agent:
 ## Static Analysis Results
 ✓ Build: Successful
 ✓ detekt: No issues
-⚠ ktlint: 2 formatting warnings
+WARNING: ktlint: 2 formatting warnings
 
 ## Issues Found
 
@@ -120,16 +120,16 @@ launch {
 - HIGH: 1
 - MEDIUM: 0
 
-Recommendation: ❌ Block merge until CRITICAL issue is fixed
+Recommendation: FAIL: Block merge until CRITICAL issue is fixed
 ````
 
 ## 批准标准
 
 | 状态 | 条件 |
 |--------|-----------|
-| ✅ 批准 | 无严重或高优先级问题 |
-| ⚠️ 警告 | 仅存在中优先级问题（谨慎合并） |
-| ❌ 阻止 | 发现严重或高优先级问题 |
+| PASS: 批准 | 无严重或高优先级问题 |
+| WARNING: 警告 | 仅存在中优先级问题（谨慎合并） |
+| FAIL: 阻止 | 发现严重或高优先级问题 |
 
 ## 与其他命令的集成
 

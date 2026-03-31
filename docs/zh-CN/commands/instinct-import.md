@@ -44,7 +44,7 @@ python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py import <
 ## 导入过程
 
 ```
-📥 从 team-instincts.yaml 导入本能
+ 从 team-instincts.yaml 导入本能
 ================================================
 
 发现 12 个待导入的本能。
@@ -60,12 +60,12 @@ python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py import <
 
 ## 重复本能 (3)
 已存在类似本能：
-  ⚠️ prefer-functional-style
+  WARNING: prefer-functional-style
      本地: 0.8 置信度, 12 次观察
      导入: 0.7 置信度
      → 保留本地 (置信度更高)
 
-  ⚠️ test-first-workflow
+  WARNING: test-first-workflow
      本地: 0.75 置信度
      导入: 0.9 置信度
      → 更新为导入 (置信度更高)
@@ -105,10 +105,10 @@ project_name: "my-project"
 导入后：
 
 ```
-✅ 导入完成！
+PASS: 导入完成！
 
-新增：8 项本能  
-更新：1 项本能  
+新增：8 项本能
+更新：1 项本能
 跳过：3 项本能（已存在同等或更高置信度的版本）
 
 新本能已保存至：~/.claude/homunculus/instincts/inherited/

@@ -140,10 +140,10 @@ await db.query(
 
 #### JWT 토큰 처리
 ```typescript
-// ❌ WRONG: localStorage (vulnerable to XSS)
+// FAIL: WRONG: localStorage (vulnerable to XSS)
 localStorage.setItem('token', token)
 
-// ✅ CORRECT: httpOnly cookies
+// PASS: CORRECT: httpOnly cookies
 res.setHeader('Set-Cookie',
   `token=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`)
 ```
@@ -302,18 +302,18 @@ app.use('/api/search', searchLimiter)
 
 #### 로깅
 ```typescript
-// ❌ WRONG: Logging sensitive data
+// FAIL: WRONG: Logging sensitive data
 console.log('User login:', { email, password })
 console.log('Payment:', { cardNumber, cvv })
 
-// ✅ CORRECT: Redact sensitive data
+// PASS: CORRECT: Redact sensitive data
 console.log('User login:', { email, userId })
 console.log('Payment:', { last4: card.last4, userId })
 ```
 
 #### 에러 메시지
 ```typescript
-// ❌ WRONG: Exposing internal details
+// FAIL: WRONG: Exposing internal details
 catch (error) {
   return NextResponse.json(
     { error: error.message, stack: error.stack },
@@ -321,7 +321,7 @@ catch (error) {
   )
 }
 
-// ✅ CORRECT: Generic error messages
+// PASS: CORRECT: Generic error messages
 catch (error) {
   console.error('Internal error:', error)
   return NextResponse.json(

@@ -99,36 +99,36 @@ security-reviewer -> code-reviewer -> architect
 ## 最終レポート形式
 
 ```
-ORCHESTRATION REPORT
+オーケストレーションレポート
 ====================
-Workflow: feature
-Task: Add user authentication
-Agents: planner -> tdd-guide -> code-reviewer -> security-reviewer
+ワークフロー: feature
+タスク: ユーザー認証の追加
+エージェント: planner -> tdd-guide -> code-reviewer -> security-reviewer
 
-SUMMARY
+サマリー
 -------
 [1段落の要約]
 
-AGENT OUTPUTS
+エージェント出力
 -------------
 Planner: [要約]
 TDD Guide: [要約]
 Code Reviewer: [要約]
 Security Reviewer: [要約]
 
-FILES CHANGED
+変更ファイル
 -------------
 [変更されたすべてのファイルをリスト]
 
-TEST RESULTS
+テスト結果
 ------------
 [テスト合格/不合格の要約]
 
-SECURITY STATUS
+セキュリティステータス
 ---------------
 [セキュリティの発見事項]
 
-RECOMMENDATION
+推奨事項
 --------------
 [リリース可 / 要修正 / ブロック中]
 ```

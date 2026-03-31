@@ -90,6 +90,14 @@ function runHookWithInput(scriptPath, input = {}, env = {}, timeoutMs = 10000) {
   });
 }
 
+function getSessionStartPayload(stdout) {
+  assert.ok(stdout.trim(), 'Expected SessionStart hook to emit stdout payload');
+  const payload = JSON.parse(stdout);
+  assert.strictEqual(payload.hookSpecificOutput?.hookEventName, 'SessionStart');
+  assert.strictEqual(typeof payload.hookSpecificOutput?.additionalContext, 'string');
+  return payload;
+}
+
 /**
  * Run a hook command string exactly as declared in hooks.json.
  * Supports wrapped node script commands and shell wrappers.
@@ -249,11 +257,14 @@ async function runTests() {
   // ==========================================
   console.log('\nHook Output Format:');
 
-  if (await asyncTest('hooks output messages to stderr (not stdout)', async () => {
+  if (await asyncTest('session-start logs diagnostics to stderr and emits structured stdout when context exists', async () => {
     const result = await runHookWithInput(path.join(scriptsDir, 'session-start.js'), {});
     // Session-start should write info to stderr
     assert.ok(result.stderr.length > 0, 'Should have stderr output');
     assert.ok(result.stderr.includes('[SessionStart]'), 'Should have [SessionStart] prefix');
+    const payload = getSessionStartPayload(result.stdout);
+    assert.ok(payload.hookSpecificOutput, 'Should include hookSpecificOutput');
+    assert.strictEqual(payload.hookSpecificOutput.hookEventName, 'SessionStart');
   })) passed++; else failed++;
 
   if (await asyncTest('PreCompact hook logs to stderr', async () => {

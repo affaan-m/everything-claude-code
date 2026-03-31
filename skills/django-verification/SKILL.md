@@ -357,7 +357,7 @@ Phase 12: Diff Review
   ✓ No hardcoded secrets
   ✓ Migrations included
 
-RECOMMENDATION: ⚠️ Fix pip-audit vulnerabilities before deploying
+RECOMMENDATION: WARNING: Fix pip-audit vulnerabilities before deploying
 
 NEXT STEPS:
 1. Update vulnerable dependencies

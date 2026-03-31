@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
+const os = require('os');
 const { createStateStore } = require('./lib/state-store');
 
 function showHelp(exitCode = 0) {
@@ -139,7 +140,7 @@ async function main() {
 
     store = await createStateStore({
       dbPath: options.dbPath,
-      homeDir: process.env.HOME,
+      homeDir: process.env.HOME || os.homedir(),
     });
 
     const payload = {

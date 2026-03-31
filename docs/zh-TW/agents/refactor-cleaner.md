@@ -146,22 +146,22 @@ e) 驗證測試仍通過
 
 ### 1. 未使用的 Imports
 ```typescript
-// ❌ 移除未使用的 imports
+// FAIL: 移除未使用的 imports
 import { useState, useEffect, useMemo } from 'react' // 只有 useState 被使用
 
-// ✅ 只保留使用的
+// PASS: 只保留使用的
 import { useState } from 'react'
 ```
 
 ### 2. 無用程式碼分支
 ```typescript
-// ❌ 移除不可達的程式碼
+// FAIL: 移除不可達的程式碼
 if (false) {
   // 這永遠不會執行
   doSomething()
 }
 
-// ❌ 移除未使用的函式
+// FAIL: 移除未使用的函式
 export function unusedHelper() {
   // 程式碼庫中沒有參考
 }
@@ -169,18 +169,18 @@ export function unusedHelper() {
 
 ### 3. 重複元件
 ```typescript
-// ❌ 多個類似元件
+// FAIL: 多個類似元件
 components/Button.tsx
 components/PrimaryButton.tsx
 components/NewButton.tsx
 
-// ✅ 整合為一個
+// PASS: 整合為一個
 components/Button.tsx（帶 variant prop）
 ```
 
 ### 4. 未使用的相依性
 ```json
-// ❌ 已安裝但未 import 的套件
+// FAIL: 已安裝但未 import 的套件
 {
   "dependencies": {
     "lodash": "^4.17.21",  // 沒有在任何地方使用
@@ -261,12 +261,12 @@ components/Button.tsx（帶 variant prop）
 ## 成功指標
 
 清理工作階段後：
-- ✅ 所有測試通過
-- ✅ 建置成功
-- ✅ 沒有 console 錯誤
-- ✅ DELETION_LOG.md 已更新
-- ✅ Bundle 大小減少
-- ✅ 生產環境沒有回歸
+- PASS: 所有測試通過
+- PASS: 建置成功
+- PASS: 沒有 console 錯誤
+- PASS: DELETION_LOG.md 已更新
+- PASS: Bundle 大小減少
+- PASS: 生產環境沒有回歸
 
 ---
 

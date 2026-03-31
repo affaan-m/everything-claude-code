@@ -73,7 +73,7 @@ origin: auto-extracted
    | **[X]'e Ekle** | Mevcut bir skill'e eklenmelidir | Hedef skill'i ve eklemeleri göster → Adım 6 |
    | **Düşür** | Önemsiz, gereksiz veya çok soyut | Gerekçeyi açıkla ve dur |
 
-   **Yönlendirici boyutlar** (karar verirken, puanlanmaz):
+**Yönlendirici boyutlar** (karar verirken, puanlanmaz):
 
    - **Spesifiklik ve Uygulanabilirlik**: Hemen kullanılabilir kod örnekleri veya komutlar içerir
    - **Kapsam Uyumu**: Ad, tetikleyici koşullar ve içerik hizalanmış ve tek bir desene odaklanmış

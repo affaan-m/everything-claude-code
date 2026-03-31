@@ -9,7 +9,10 @@ const {
   listInstallProfiles,
   resolveInstallPlan,
 } = require('./lib/install-manifests');
-const { loadInstallConfig } = require('./lib/install/config');
+const {
+  findDefaultInstallConfigPath,
+  loadInstallConfig,
+} = require('./lib/install/config');
 const { normalizeInstallRequest } = require('./lib/install/request');
 
 function showHelp() {
@@ -186,7 +189,7 @@ function main() {
   try {
     const options = parseArgs(process.argv);
 
-    if (options.help || process.argv.length <= 2) {
+    if (options.help) {
       showHelp();
       process.exit(0);
     }
@@ -224,9 +227,18 @@ function main() {
       return;
     }
 
+    const defaultConfigPath = options.configPath
+      ? null
+      : findDefaultInstallConfigPath({ cwd: process.cwd() });
     const config = options.configPath
       ? loadInstallConfig(options.configPath, { cwd: process.cwd() })
-      : null;
+      : (defaultConfigPath ? loadInstallConfig(defaultConfigPath, { cwd: process.cwd() }) : null);
+
+    if (process.argv.length <= 2 && !config) {
+      showHelp();
+      process.exit(0);
+    }
+
     const request = normalizeInstallRequest({
       ...options,
       languages: [],

@@ -48,12 +48,12 @@ Tüm projelerde uygulanabilir evrensel kodlama standartları.
 ### Değişken İsimlendirme
 
 ```typescript
-// ✅ İYİ: Açıklayıcı isimler
+// PASS: İYİ: Açıklayıcı isimler
 const marketSearchQuery = 'election'
 const isUserAuthenticated = true
 const totalRevenue = 1000
 
-// ❌ KÖTÜ: Belirsiz isimler
+// FAIL: KÖTÜ: Belirsiz isimler
 const q = 'election'
 const flag = true
 const x = 1000
@@ -62,12 +62,12 @@ const x = 1000
 ### Fonksiyon İsimlendirme
 
 ```typescript
-// ✅ İYİ: Fiil-isim kalıbı
+// PASS: İYİ: Fiil-isim kalıbı
 async function fetchMarketData(marketId: string) { }
 function calculateSimilarity(a: number[], b: number[]) { }
 function isValidEmail(email: string): boolean { }
 
-// ❌ KÖTÜ: Belirsiz veya sadece isim
+// FAIL: KÖTÜ: Belirsiz veya sadece isim
 async function market(id: string) { }
 function similarity(a, b) { }
 function email(e) { }
@@ -76,7 +76,7 @@ function email(e) { }
 ### Değişmezlik Kalıbı (KRİTİK)
 
 ```typescript
-// ✅ HER ZAMAN spread operatörü kullanın
+// PASS: HER ZAMAN spread operatörü kullanın
 const updatedUser = {
   ...user,
   name: 'New Name'
@@ -84,7 +84,7 @@ const updatedUser = {
 
 const updatedArray = [...items, newItem]
 
-// ❌ ASLA doğrudan mutasyon yapmayın
+// FAIL: ASLA doğrudan mutasyon yapmayın
 user.name = 'New Name'  // KÖTÜ
 items.push(newItem)     // KÖTÜ
 ```
@@ -92,7 +92,7 @@ items.push(newItem)     // KÖTÜ
 ### Hata Yönetimi
 
 ```typescript
-// ✅ İYİ: Kapsamlı hata yönetimi
+// PASS: İYİ: Kapsamlı hata yönetimi
 async function fetchData(url: string) {
   try {
     const response = await fetch(url)
@@ -108,7 +108,7 @@ async function fetchData(url: string) {
   }
 }
 
-// ❌ KÖTÜ: Hata yönetimi yok
+// FAIL: KÖTÜ: Hata yönetimi yok
 async function fetchData(url) {
   const response = await fetch(url)
   return response.json()
@@ -118,14 +118,14 @@ async function fetchData(url) {
 ### Async/Await En İyi Uygulamaları
 
 ```typescript
-// ✅ İYİ: Mümkün olduğunda paralel yürütme
+// PASS: İYİ: Mümkün olduğunda paralel yürütme
 const [users, markets, stats] = await Promise.all([
   fetchUsers(),
   fetchMarkets(),
   fetchStats()
 ])
 
-// ❌ KÖTÜ: Gereksiz yere sıralı
+// FAIL: KÖTÜ: Gereksiz yere sıralı
 const users = await fetchUsers()
 const markets = await fetchMarkets()
 const stats = await fetchStats()
@@ -134,7 +134,7 @@ const stats = await fetchStats()
 ### Tür Güvenliği
 
 ```typescript
-// ✅ İYİ: Doğru tipler
+// PASS: İYİ: Doğru tipler
 interface Market {
   id: string
   name: string
@@ -146,7 +146,7 @@ function getMarket(id: string): Promise<Market> {
   // Implementation
 }
 
-// ❌ KÖTÜ: 'any' kullanımı
+// FAIL: KÖTÜ: 'any' kullanımı
 function getMarket(id: any): Promise<any> {
   // Implementation
 }
@@ -157,7 +157,7 @@ function getMarket(id: any): Promise<any> {
 ### Bileşen Yapısı
 
 ```typescript
-// ✅ İYİ: Tiplerle fonksiyonel bileşen
+// PASS: İYİ: Tiplerle fonksiyonel bileşen
 interface ButtonProps {
   children: React.ReactNode
   onClick: () => void
@@ -182,7 +182,7 @@ export function Button({
   )
 }
 
-// ❌ KÖTÜ: Tip yok, belirsiz yapı
+// FAIL: KÖTÜ: Tip yok, belirsiz yapı
 export function Button(props) {
   return <button onClick={props.onClick}>{props.children}</button>
 }
@@ -191,7 +191,7 @@ export function Button(props) {
 ### Özel Hook'lar
 
 ```typescript
-// ✅ İYİ: Yeniden kullanılabilir özel hook
+// PASS: İYİ: Yeniden kullanılabilir özel hook
 export function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value)
 
@@ -213,25 +213,25 @@ const debouncedQuery = useDebounce(searchQuery, 500)
 ### State Yönetimi
 
 ```typescript
-// ✅ İYİ: Doğru state güncellemeleri
+// PASS: İYİ: Doğru state güncellemeleri
 const [count, setCount] = useState(0)
 
 // Önceki state'e dayalı fonksiyonel güncelleme
 setCount(prev => prev + 1)
 
-// ❌ KÖTÜ: Doğrudan state referansı
+// FAIL: KÖTÜ: Doğrudan state referansı
 setCount(count + 1)  // Async senaryolarda eski olabilir
 ```
 
 ### Koşullu Render
 
 ```typescript
-// ✅ İYİ: Açık koşullu render
+// PASS: İYİ: Açık koşullu render
 {isLoading && <Spinner />}
 {error && <ErrorMessage error={error} />}
 {data && <DataDisplay data={data} />}
 
-// ❌ KÖTÜ: Ternary cehennemi
+// FAIL: KÖTÜ: Ternary cehennemi
 {isLoading ? <Spinner /> : error ? <ErrorMessage error={error} /> : data ? <DataDisplay data={data} /> : null}
 ```
 
@@ -254,7 +254,7 @@ GET /api/markets?status=active&limit=10&offset=0
 ### Response Formatı
 
 ```typescript
-// ✅ İYİ: Tutarlı response yapısı
+// PASS: İYİ: Tutarlı response yapısı
 interface ApiResponse<T> {
   success: boolean
   data?: T
@@ -285,7 +285,7 @@ return NextResponse.json({
 ```typescript
 import { z } from 'zod'
 
-// ✅ İYİ: Schema doğrulama
+// PASS: İYİ: Schema doğrulama
 const CreateMarketSchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().min(1).max(2000),
@@ -348,14 +348,14 @@ types/market.types.ts         # .types soneki ile camelCase
 ### Ne Zaman Yorum Yapmalı
 
 ```typescript
-// ✅ İYİ: NİÇİN'i açıklayın, NE'yi değil
+// PASS: İYİ: NİÇİN'i açıklayın, NE'yi değil
 // Kesintiler sırasında API'yi aşırı yüklemekten kaçınmak için exponential backoff kullan
 const delay = Math.min(1000 * Math.pow(2, retryCount), 30000)
 
 // Büyük dizilerle performans için burada kasıtlı olarak mutasyon kullanılıyor
 items.push(newItem)
 
-// ❌ KÖTÜ: Açık olanı belirtmek
+// FAIL: KÖTÜ: Açık olanı belirtmek
 // Sayacı 1 artır
 count++
 
@@ -395,12 +395,12 @@ export async function searchMarkets(
 ```typescript
 import { useMemo, useCallback } from 'react'
 
-// ✅ İYİ: Pahalı hesaplamaları memoize et
+// PASS: İYİ: Pahalı hesaplamaları memoize et
 const sortedMarkets = useMemo(() => {
   return markets.sort((a, b) => b.volume - a.volume)
 }, [markets])
 
-// ✅ İYİ: Callback'leri memoize et
+// PASS: İYİ: Callback'leri memoize et
 const handleSearch = useCallback((query: string) => {
   setSearchQuery(query)
 }, [])
@@ -411,7 +411,7 @@ const handleSearch = useCallback((query: string) => {
 ```typescript
 import { lazy, Suspense } from 'react'
 
-// ✅ İYİ: Ağır bileşenleri lazy yükle
+// PASS: İYİ: Ağır bileşenleri lazy yükle
 const HeavyChart = lazy(() => import('./HeavyChart'))
 
 export function Dashboard() {
@@ -426,13 +426,13 @@ export function Dashboard() {
 ### Veritabanı Sorguları
 
 ```typescript
-// ✅ İYİ: Sadece gerekli sütunları seç
+// PASS: İYİ: Sadece gerekli sütunları seç
 const { data } = await supabase
   .from('markets')
   .select('id, name, status')
   .limit(10)
 
-// ❌ KÖTÜ: Her şeyi seç
+// FAIL: KÖTÜ: Her şeyi seç
 const { data } = await supabase
   .from('markets')
   .select('*')
@@ -459,12 +459,12 @@ test('benzerliği doğru hesaplar', () => {
 ### Test İsimlendirme
 
 ```typescript
-// ✅ İYİ: Açıklayıcı test isimleri
+// PASS: İYİ: Açıklayıcı test isimleri
 test('sorguya uygun market bulunamadığında boş dizi döndürür', () => { })
 test('OpenAI API anahtarı eksikse hata fırlatır', () => { })
 test('Redis kullanılamazsa substring aramaya geri döner', () => { })
 
-// ❌ KÖTÜ: Belirsiz test isimleri
+// FAIL: KÖTÜ: Belirsiz test isimleri
 test('çalışır', () => { })
 test('arama testi', () => { })
 ```
@@ -475,12 +475,12 @@ Bu anti-kalıplara dikkat edin:
 
 ### 1. Uzun Fonksiyonlar
 ```typescript
-// ❌ KÖTÜ: 50 satırdan uzun fonksiyon
+// FAIL: KÖTÜ: 50 satırdan uzun fonksiyon
 function processMarketData() {
   // 100 satır kod
 }
 
-// ✅ İYİ: Küçük fonksiyonlara böl
+// PASS: İYİ: Küçük fonksiyonlara böl
 function processMarketData() {
   const validated = validateData()
   const transformed = transformData(validated)
@@ -490,7 +490,7 @@ function processMarketData() {
 
 ### 2. Derin İç İçe Geçme
 ```typescript
-// ❌ KÖTÜ: 5+ seviye iç içe geçme
+// FAIL: KÖTÜ: 5+ seviye iç içe geçme
 if (user) {
   if (user.isAdmin) {
     if (market) {
@@ -503,7 +503,7 @@ if (user) {
   }
 }
 
-// ✅ İYİ: Erken dönüşler
+// PASS: İYİ: Erken dönüşler
 if (!user) return
 if (!user.isAdmin) return
 if (!market) return
@@ -515,11 +515,11 @@ if (!hasPermission) return
 
 ### 3. Sihirli Sayılar
 ```typescript
-// ❌ KÖTÜ: Açıklanmamış sayılar
+// FAIL: KÖTÜ: Açıklanmamış sayılar
 if (retryCount > 3) { }
 setTimeout(callback, 500)
 
-// ✅ İYİ: İsimlendirilmiş sabitler
+// PASS: İYİ: İsimlendirilmiş sabitler
 const MAX_RETRIES = 3
 const DEBOUNCE_DELAY_MS = 500
 

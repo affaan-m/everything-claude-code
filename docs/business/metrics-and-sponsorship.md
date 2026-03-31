@@ -66,9 +66,9 @@ Use these as starting points in negotiation:
 
 Use this on calls:
 
-> ECC is now positioned as an agent harness performance system, not a config repo.  
-> We track adoption through npm distribution, GitHub App installs, and repository growth.  
-> Claude plugin installs are structurally undercounted publicly, so we use a blended metrics model.  
+> ECC is now positioned as an agent harness performance system, not a config repo.
+> We track adoption through npm distribution, GitHub App installs, and repository growth.
+> Claude plugin installs are structurally undercounted publicly, so we use a blended metrics model.
 > The project supports Claude Code, Cursor, OpenCode, and Codex app/CLI with production-grade hook reliability and a large passing test suite.
 
 For launch-ready social copy snippets, see [`social-launch-copy.md`](./social-launch-copy.md).

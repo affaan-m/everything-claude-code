@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const os = require('os');
 const { discoverInstalledStates } = require('./lib/install-lifecycle');
 const { SUPPORTED_INSTALL_TARGETS } = require('./lib/install-manifests');
 
@@ -70,7 +71,7 @@ function main() {
     }
 
     const records = discoverInstalledStates({
-      homeDir: process.env.HOME,
+      homeDir: process.env.HOME || os.homedir(),
       projectRoot: process.cwd(),
       targets: options.targets,
     }).filter(record => record.exists);

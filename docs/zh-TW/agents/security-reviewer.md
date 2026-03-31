@@ -128,12 +128,12 @@ b) 審查高風險區域
 ### 1. 寫死密鑰（關鍵）
 
 ```javascript
-// ❌ 關鍵：寫死的密鑰
+// FAIL: 關鍵：寫死的密鑰
 const apiKey = "sk-proj-xxxxx"
 const password = "admin123"
 const token = "ghp_xxxxxxxxxxxx"
 
-// ✅ 正確：環境變數
+// PASS: 正確：環境變數
 const apiKey = process.env.OPENAI_API_KEY
 if (!apiKey) {
   throw new Error('OPENAI_API_KEY not configured')
@@ -143,11 +143,11 @@ if (!apiKey) {
 ### 2. SQL 注入（關鍵）
 
 ```javascript
-// ❌ 關鍵：SQL 注入弱點
+// FAIL: 關鍵：SQL 注入弱點
 const query = `SELECT * FROM users WHERE id = ${userId}`
 await db.query(query)
 
-// ✅ 正確：參數化查詢
+// PASS: 正確：參數化查詢
 const { data } = await supabase
   .from('users')
   .select('*')
@@ -157,11 +157,11 @@ const { data } = await supabase
 ### 3. 命令注入（關鍵）
 
 ```javascript
-// ❌ 關鍵：命令注入
+// FAIL: 關鍵：命令注入
 const { exec } = require('child_process')
 exec(`ping ${userInput}`, callback)
 
-// ✅ 正確：使用函式庫，而非 shell 命令
+// PASS: 正確：使用函式庫，而非 shell 命令
 const dns = require('dns')
 dns.lookup(userInput, callback)
 ```
@@ -169,10 +169,10 @@ dns.lookup(userInput, callback)
 ### 4. 跨站腳本 XSS（高）
 
 ```javascript
-// ❌ 高：XSS 弱點
+// FAIL: 高：XSS 弱點
 element.innerHTML = userInput
 
-// ✅ 正確：使用 textContent 或清理
+// PASS: 正確：使用 textContent 或清理
 element.textContent = userInput
 // 或
 import DOMPurify from 'dompurify'
@@ -182,10 +182,10 @@ element.innerHTML = DOMPurify.sanitize(userInput)
 ### 5. 伺服器端請求偽造 SSRF（高）
 
 ```javascript
-// ❌ 高：SSRF 弱點
+// FAIL: 高：SSRF 弱點
 const response = await fetch(userProvidedUrl)
 
-// ✅ 正確：驗證和白名單 URL
+// PASS: 正確：驗證和白名單 URL
 const allowedDomains = ['api.example.com', 'cdn.example.com']
 const url = new URL(userProvidedUrl)
 if (!allowedDomains.includes(url.hostname)) {
@@ -197,10 +197,10 @@ const response = await fetch(url.toString())
 ### 6. 不安全的驗證（關鍵）
 
 ```javascript
-// ❌ 關鍵：明文密碼比對
+// FAIL: 關鍵：明文密碼比對
 if (password === storedPassword) { /* login */ }
 
-// ✅ 正確：雜湊密碼比對
+// PASS: 正確：雜湊密碼比對
 import bcrypt from 'bcrypt'
 const isValid = await bcrypt.compare(password, hashedPassword)
 ```
@@ -208,13 +208,13 @@ const isValid = await bcrypt.compare(password, hashedPassword)
 ### 7. 授權不足（關鍵）
 
 ```javascript
-// ❌ 關鍵：沒有授權檢查
+// FAIL: 關鍵：沒有授權檢查
 app.get('/api/user/:id', async (req, res) => {
   const user = await getUser(req.params.id)
   res.json(user)
 })
 
-// ✅ 正確：驗證使用者可以存取資源
+// PASS: 正確：驗證使用者可以存取資源
 app.get('/api/user/:id', authenticateUser, async (req, res) => {
   if (req.user.id !== req.params.id && !req.user.isAdmin) {
     return res.status(403).json({ error: 'Forbidden' })
@@ -227,13 +227,13 @@ app.get('/api/user/:id', authenticateUser, async (req, res) => {
 ### 8. 財務操作中的競態條件（關鍵）
 
 ```javascript
-// ❌ 關鍵：餘額檢查中的競態條件
+// FAIL: 關鍵：餘額檢查中的競態條件
 const balance = await getBalance(userId)
 if (balance >= amount) {
   await withdraw(userId, amount) // 另一個請求可能同時提款！
 }
 
-// ✅ 正確：帶鎖定的原子交易
+// PASS: 正確：帶鎖定的原子交易
 await db.transaction(async (trx) => {
   const balance = await trx('balances')
     .where({ user_id: userId })
@@ -253,13 +253,13 @@ await db.transaction(async (trx) => {
 ### 9. 速率限制不足（高）
 
 ```javascript
-// ❌ 高：沒有速率限制
+// FAIL: 高：沒有速率限制
 app.post('/api/trade', async (req, res) => {
   await executeTrade(req.body)
   res.json({ success: true })
 })
 
-// ✅ 正確：速率限制
+// PASS: 正確：速率限制
 import rateLimit from 'express-rate-limit'
 
 const tradeLimiter = rateLimit({
@@ -277,10 +277,10 @@ app.post('/api/trade', tradeLimiter, async (req, res) => {
 ### 10. 記錄敏感資料（中）
 
 ```javascript
-// ❌ 中：記錄敏感資料
+// FAIL: 中：記錄敏感資料
 console.log('User login:', { email, password, apiKey })
 
-// ✅ 正確：清理日誌
+// PASS: 正確：清理日誌
 console.log('User login:', {
   email: email.replace(/(?<=.).(?=.*@)/g, '*'),
   passwordProvided: !!password
@@ -302,7 +302,7 @@ console.log('User login:', {
 - **高優先問題：** Y
 - **中優先問題：** Z
 - **低優先問題：** W
-- **風險等級：** 🔴 高 / 🟡 中 / 🟢 低
+- **風險等級：**  高 /  中 /  低
 
 ## 關鍵問題（立即修復）
 
@@ -324,7 +324,7 @@ console.log('User login:', {
 
 **修復：**
 ```javascript
-// ✅ 安全的實作
+// PASS: 安全的實作
 ```
 
 **參考：**
@@ -365,13 +365,13 @@ console.log('User login:', {
 ## 成功指標
 
 安全性審查後：
-- ✅ 未發現關鍵問題
-- ✅ 所有高優先問題已處理
-- ✅ 安全性檢查清單完成
-- ✅ 程式碼中無密鑰
-- ✅ 相依性已更新
-- ✅ 測試包含安全性情境
-- ✅ 文件已更新
+- PASS: 未發現關鍵問題
+- PASS: 所有高優先問題已處理
+- PASS: 安全性檢查清單完成
+- PASS: 程式碼中無密鑰
+- PASS: 相依性已更新
+- PASS: 測試包含安全性情境
+- PASS: 文件已更新
 
 ---
 

@@ -69,7 +69,7 @@ Deleted:   12 unused functions
 Skipped:   2 items (tests failed)
 Saved:     ~450 lines removed
 ──────────────────────────────
-All tests passing ✅
+All tests passing PASS:
 ```
 
 ## Regras

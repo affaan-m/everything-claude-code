@@ -7,7 +7,7 @@ origin: ECC
 metadata:
   author: evos
   clawdbot:
-    emoji: "🤝"
+    emoji: ""
 ---
 
 # 承运商关系管理

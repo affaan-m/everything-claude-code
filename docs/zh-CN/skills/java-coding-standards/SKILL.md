@@ -26,22 +26,22 @@ origin: ECC
 ## 命名
 
 ```java
-// ✅ Classes/Records: PascalCase
+// PASS: Classes/Records: PascalCase
 public class MarketService {}
 public record Money(BigDecimal amount, Currency currency) {}
 
-// ✅ Methods/fields: camelCase
+// PASS: Methods/fields: camelCase
 private final MarketRepository marketRepository;
 public Market findBySlug(String slug) {}
 
-// ✅ Constants: UPPER_SNAKE_CASE
+// PASS: Constants: UPPER_SNAKE_CASE
 private static final int MAX_PAGE_SIZE = 100;
 ```
 
 ## 不可变性
 
 ```java
-// ✅ Favor records and final fields
+// PASS: Favor records and final fields
 public record MarketDto(Long id, String name, MarketStatus status) {}
 
 public class Market {
@@ -54,10 +54,10 @@ public class Market {
 ## Optional 使用
 
 ```java
-// ✅ Return Optional from find* methods
+// PASS: Return Optional from find* methods
 Optional<Market> market = marketRepository.findBySlug(slug);
 
-// ✅ Map/flatMap instead of get()
+// PASS: Map/flatMap instead of get()
 return market
     .map(MarketResponse::from)
     .orElseThrow(() -> new EntityNotFoundException("Market not found"));
@@ -66,13 +66,13 @@ return market
 ## Streams 最佳实践
 
 ```java
-// ✅ Use streams for transformations, keep pipelines short
+// PASS: Use streams for transformations, keep pipelines short
 List<String> names = markets.stream()
     .map(Market::name)
     .filter(Objects::nonNull)
     .toList();
 
-// ❌ Avoid complex nested streams; prefer loops for clarity
+// FAIL: Avoid complex nested streams; prefer loops for clarity
 ```
 
 ## 异常

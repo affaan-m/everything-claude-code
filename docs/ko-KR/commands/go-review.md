@@ -124,16 +124,16 @@ return fmt.Errorf("get user %s: %w", userID, err)
 - HIGH: 1
 - MEDIUM: 0
 
-권장: ❌ CRITICAL 이슈가 수정될 때까지 merge 차단
+권장: FAIL: CRITICAL 이슈가 수정될 때까지 merge 차단
 ````
 
 ## 승인 기준
 
 | 상태 | 조건 |
 |------|------|
-| ✅ 승인 | CRITICAL 또는 HIGH 이슈 없음 |
-| ⚠️ 경고 | MEDIUM 이슈만 있음 (주의하여 merge) |
-| ❌ 차단 | CRITICAL 또는 HIGH 이슈 발견 |
+| PASS: 승인 | CRITICAL 또는 HIGH 이슈 없음 |
+| WARNING: 경고 | MEDIUM 이슈만 있음 (주의하여 merge) |
+| FAIL: 차단 | CRITICAL 또는 HIGH 이슈 발견 |
 
 ## 다른 커맨드와의 연동
 

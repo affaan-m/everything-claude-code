@@ -19,7 +19,7 @@
 
 <div align="center">
 
-**🌐 言語 / Language / 語言**
+**言語 / Language / 語言**
 
 [**English**](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](docs/zh-TW/README.md) | [日本語](docs/ja-JP/README.md)
 
@@ -99,7 +99,7 @@
 
 ---
 
-## 🚀 クイックスタート
+## クイックスタート
 
 2分以内に起動できます：
 
@@ -115,7 +115,7 @@
 
 ### ステップ2：ルールをインストール（必須）
 
-> ⚠️ **重要:** Claude Codeプラグインは`rules`を自動配布できません。手動でインストールしてください：
+> WARNING: **重要:** Claude Codeプラグインは`rules`を自動配布できません。手動でインストールしてください：
 
 ```bash
 # まずリポジトリをクローン
@@ -143,11 +143,11 @@ cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-✨ **完了です！** これで13のエージェント、43のスキル、31のコマンドにアクセスできます。
+**完了です！** これで13のエージェント、43のスキル、31のコマンドにアクセスできます。
 
 ---
 
-## 🌐 クロスプラットフォーム対応
+## クロスプラットフォーム対応
 
 このプラグインは **Windows、macOS、Linux** を完全にサポートしています。すべてのフックとスクリプトが Node.js で書き直され、最大の互換性を実現しています。
 
@@ -182,7 +182,7 @@ node scripts/setup-package-manager.js --detect
 
 ---
 
-## 📦 含まれるもの
+## 含まれるもの
 
 このリポジトリは**Claude Codeプラグイン**です - 直接インストールするか、コンポーネントを手動でコピーできます。
 
@@ -315,7 +315,7 @@ everything-claude-code/
 
 ---
 
-## 🛠️ エコシステムツール
+## エコシステムツール
 
 ### スキル作成ツール
 
@@ -374,7 +374,7 @@ Claude Codeで`/security-scan`を実行、または[GitHub Action](https://githu
 
 [GitHub](https://github.com/affaan-m/agentshield) | [npm](https://www.npmjs.com/package/ecc-agentshield)
 
-### 🧠 継続的学習 v2
+### 継続的学習 v2
 
 instinctベースの学習システムがパターンを自動学習：
 
@@ -389,7 +389,7 @@ instinctベースの学習システムがパターンを自動学習：
 
 ---
 
-## 📋 要件
+## 要件
 
 ### Claude Code CLI バージョン
 
@@ -404,19 +404,19 @@ claude --version
 
 ### 重要: フック自動読み込み動作
 
-> ⚠️ **貢献者向け:** `.claude-plugin/plugin.json`に`"hooks"`フィールドを追加しないでください。これは回帰テストで強制されます。
+> WARNING: **貢献者向け:** `.claude-plugin/plugin.json`に`"hooks"`フィールドを追加しないでください。これは回帰テストで強制されます。
 
 Claude Code v2.1+は、インストール済みプラグインの`hooks/hooks.json`（規約）を自動読み込みします。`plugin.json`で明示的に宣言するとエラーが発生します：
 
 ```
-Duplicate hooks file detected: ./hooks/hooks.json resolves to already-loaded file
+Duplicate hook file detected: ./hooks/hooks.json is already resolved to a loaded file
 ```
 
 **背景:** これは本リポジトリで複数の修正/リバート循環を引き起こしました（[#29](https://github.com/affaan-m/everything-claude-code/issues/29), [#52](https://github.com/affaan-m/everything-claude-code/issues/52), [#103](https://github.com/affaan-m/everything-claude-code/issues/103)）。Claude Codeバージョン間で動作が変わったため混乱がありました。今後を防ぐため回帰テストがあります。
 
 ---
 
-## 📥 インストール
+## インストール
 
 ### オプション1：プラグインとしてインストール（推奨）
 
@@ -471,7 +471,7 @@ Duplicate hooks file detected: ./hooks/hooks.json resolves to already-loaded fil
 
 ---
 
-### 🔧 オプション2：手動インストール
+### オプション2：手動インストール
 
 インストール内容を手動で制御したい場合：
 
@@ -507,7 +507,7 @@ cp -r everything-claude-code/skills/* ~/.claude/skills/
 
 ---
 
-## 🎯 主要概念
+## 主要概念
 
 ### エージェント
 
@@ -569,7 +569,7 @@ rules/
 
 ---
 
-## 🧪 テストを実行
+## テストを実行
 
 プラグインには包括的なテストスイートが含まれています：
 
@@ -585,7 +585,7 @@ node tests/hooks/hooks.test.js
 
 ---
 
-## 🤝 貢献
+## 貢献
 
 **貢献は大歓迎で、奨励されています。**
 
@@ -637,7 +637,7 @@ npm install ecc-universal
 
 ---
 
-## 🔌 OpenCodeサポート
+## OpenCodeサポート
 
 ECCは**フルOpenCodeサポート**をプラグインとフック含めて提供。
 
@@ -657,13 +657,13 @@ opencode
 
 | 機能 | Claude Code | OpenCode | ステータス |
 |---------|-------------|----------|--------|
-| Agents | ✅ 14 エージェント | ✅ 12 エージェント | **Claude Code がリード** |
-| Commands | ✅ 30 コマンド | ✅ 24 コマンド | **Claude Code がリード** |
-| Skills | ✅ 28 スキル | ✅ 16 スキル | **Claude Code がリード** |
-| Hooks | ✅ 3 フェーズ | ✅ 20+ イベント | **OpenCode が多い！** |
-| Rules | ✅ 8 ルール | ✅ 8 ルール | **完全パリティ** |
-| MCP Servers | ✅ 完全 | ✅ 完全 | **完全パリティ** |
-| Custom Tools | ✅ フック経由 | ✅ ネイティブサポート | **OpenCode がより良い** |
+| Agents | PASS: 14 エージェント | PASS: 12 エージェント | **Claude Code がリード** |
+| Commands | PASS: 30 コマンド | PASS: 24 コマンド | **Claude Code がリード** |
+| Skills | PASS: 28 スキル | PASS: 16 スキル | **Claude Code がリード** |
+| Hooks | PASS: 3 フェーズ | PASS: 20+ イベント | **OpenCode が多い！** |
+| Rules | PASS: 8 ルール | PASS: 8 ルール | **完全パリティ** |
+| MCP Servers | PASS: 完全 | PASS: 完全 | **完全パリティ** |
+| Custom Tools | PASS: フック経由 | PASS: ネイティブサポート | **OpenCode がより良い** |
 
 ### プラグイン経由のフックサポート
 
@@ -737,7 +737,7 @@ npm install ecc-universal
 
 ---
 
-## 📖 背景
+## 背景
 
 実験的なリリース以来、Claude Codeを使用してきました。2025年9月、[@DRodriguezFX](https://x.com/DRodriguezFX)と一緒にClaude Codeで[zenith.chat](https://zenith.chat)を構築し、Anthropic x Forum Venturesハッカソンで優勝しました。
 
@@ -745,7 +745,7 @@ npm install ecc-universal
 
 ---
 
-## ⚠️ 重要な注記
+## WARNING: 重要な注記
 
 ### コンテキストウィンドウ管理
 
@@ -768,13 +768,13 @@ npm install ecc-universal
 
 ---
 
-## 🌟 Star 履歴
+## Star 履歴
 
 [![Star History Chart](https://api.star-history.com/svg?repos=affaan-m/everything-claude-code&type=Date)](https://star-history.com/#affaan-m/everything-claude-code&Date)
 
 ---
 
-## 🔗 リンク
+## リンク
 
 - **簡潔ガイド（まずはこれ）:** [Everything Claude Code 簡潔ガイド](https://x.com/affaanmustafa/status/2012378465664745795)
 - **詳細ガイド（高度）:** [Everything Claude Code 詳細ガイド](https://x.com/affaanmustafa/status/2014040193557471352)
@@ -784,7 +784,7 @@ npm install ecc-universal
 
 ---
 
-## 📄 ライセンス
+## ライセンス
 
 MIT - 自由に使用、必要に応じて修正、可能であれば貢献してください。
 

@@ -133,7 +133,7 @@ FAIL lib/liquidity.test.ts
 1 test failed, 0 passed
 ```
 
-✅ 예상대로 테스트 실패. 구현 준비 완료.
+PASS: 예상대로 테스트 실패. 구현 준비 완료.
 
 ## 4단계: 최소한의 코드 구현 (GREEN)
 
@@ -179,7 +179,7 @@ PASS lib/liquidity.test.ts
 3 tests passed
 ```
 
-✅ 모든 테스트 통과!
+PASS: 모든 테스트 통과!
 
 ## 6단계: 리팩토링 (IMPROVE)
 
@@ -236,7 +236,7 @@ PASS lib/liquidity.test.ts
 3 tests passed
 ```
 
-✅ 리팩토링 완료, 테스트 여전히 통과!
+PASS: 리팩토링 완료, 테스트 여전히 통과!
 
 ## 8단계: 커버리지 확인
 
@@ -247,10 +247,10 @@ File           | % Stmts | % Branch | % Funcs | % Lines
 ---------------|---------|----------|---------|--------
 liquidity.ts   |   100   |   100    |   100   |   100
 
-Coverage: 100% ✅ (목표: 80%)
+Coverage: 100% PASS: (목표: 80%)
 ```
 
-✅ TDD 세션 완료!
+PASS: TDD 세션 완료!
 ````
 
 ## TDD 모범 사례

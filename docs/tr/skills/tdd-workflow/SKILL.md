@@ -314,39 +314,39 @@ npm run test:coverage
 
 ## Kaçınılması Gereken Yaygın Test Hataları
 
-### ❌ YANLIŞ: Implementasyon Detaylarını Test Etme
+### FAIL: YANLIŞ: Implementasyon Detaylarını Test Etme
 ```typescript
 // İç state'i test etme
 expect(component.state.count).toBe(5)
 ```
 
-### ✅ DOĞRU: Kullanıcı Tarafından Görünen Davranışı Test Et
+### PASS: DOĞRU: Kullanıcı Tarafından Görünen Davranışı Test Et
 ```typescript
 // Kullanıcıların gördüğünü test et
 expect(screen.getByText('Sayı: 5')).toBeInTheDocument()
 ```
 
-### ❌ YANLIŞ: Kırılgan Selector'lar
+### FAIL: YANLIŞ: Kırılgan Selector'lar
 ```typescript
 // Kolayca bozulur
 await page.click('.css-class-xyz')
 ```
 
-### ✅ DOĞRU: Semantik Selector'lar
+### PASS: DOĞRU: Semantik Selector'lar
 ```typescript
 // Değişikliklere karşı dayanıklı
 await page.click('button:has-text("Gönder")')
 await page.click('[data-testid="submit-button"]')
 ```
 
-### ❌ YANLIŞ: Test İzolasyonu Yok
+### FAIL: YANLIŞ: Test İzolasyonu Yok
 ```typescript
 // Testler birbirine bağımlı
 test('kullanıcı oluşturur', () => { /* ... */ })
 test('aynı kullanıcıyı günceller', () => { /* önceki teste bağımlı */ })
 ```
 
-### ✅ DOĞRU: Bağımsız Testler
+### PASS: DOĞRU: Bağımsız Testler
 ```typescript
 // Her test kendi verisini hazırlar
 test('kullanıcı oluşturur', () => {

@@ -69,7 +69,7 @@ Silindi:   12 kullanılmayan fonksiyon
 Atlandı:   2 öğe (testler başarısız)
 Kazanç:    ~450 satır kaldırıldı
 ──────────────────────────────
-Tüm testler geçiyor ✅
+Tüm testler geçiyor PASS:
 ```
 
 ## Kurallar

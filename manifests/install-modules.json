@@ -11,7 +11,8 @@
       "targets": [
         "claude",
         "cursor",
-        "antigravity"
+        "antigravity",
+        "codebuddy"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -32,7 +33,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -50,7 +52,8 @@
         "claude",
         "cursor",
         "antigravity",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -63,12 +66,14 @@
       "description": "Runtime hook configs and hook script helpers.",
       "paths": [
         "hooks",
-        "scripts/hooks"
+        "scripts/hooks",
+        "scripts/lib"
       ],
       "targets": [
         "claude",
         "cursor",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -90,8 +95,10 @@
       "targets": [
         "claude",
         "cursor",
+        "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -123,6 +130,7 @@
         "skills/kotlin-ktor-patterns",
         "skills/kotlin-patterns",
         "skills/kotlin-testing",
+        "skills/laravel-plugin-discovery",
         "skills/laravel-patterns",
         "skills/laravel-tdd",
         "skills/laravel-verification",
@@ -142,7 +150,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "rules-core",
@@ -169,7 +178,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -202,7 +212,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -229,7 +240,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "workflow-quality"
@@ -252,7 +264,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -270,14 +283,17 @@
         "skills/content-engine",
         "skills/investor-materials",
         "skills/investor-outreach",
-        "skills/market-research"
+        "skills/lead-intelligence",
+        "skills/market-research",
+        "skills/social-graph-ranker"
       ],
       "targets": [
         "claude",
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -299,7 +315,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "business-content"
@@ -314,6 +331,7 @@
       "description": "Media generation and AI-assisted editing skills.",
       "paths": [
         "skills/fal-ai-media",
+        "skills/remotion-video-creation",
         "skills/video-editing",
         "skills/videodb"
       ],
@@ -321,7 +339,8 @@
         "claude",
         "cursor",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -375,7 +394,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -405,6 +425,7 @@
         "skills/ralphinho-rfc-pipeline",
         "skills/regex-vs-llm-structured-text",
         "skills/search-first",
+        "skills/token-budget-advisor",
         "skills/team-builder"
       ],
       "targets": [
@@ -412,7 +433,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -434,7 +456,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -462,7 +485,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"
@@ -484,7 +508,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode"
+        "opencode",
+        "codebuddy"
       ],
       "dependencies": [
         "platform-configs"

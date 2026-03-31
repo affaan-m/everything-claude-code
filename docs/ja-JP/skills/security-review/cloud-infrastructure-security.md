@@ -24,7 +24,7 @@
 #### 最小権限の原則
 
 ```yaml
-# ✅ 正解：最小限の権限
+# PASS: 正解：最小限の権限
 iam_role:
   permissions:
     - s3:GetObject  # 読み取りアクセスのみ
@@ -32,7 +32,7 @@ iam_role:
   resources:
     - arn:aws:s3:::my-bucket/*  # 特定のバケットのみ
 
-# ❌ 誤り：過度に広範な権限
+# FAIL: 誤り：過度に広範な権限
 iam_role:
   permissions:
     - s3:*  # すべてのS3アクション
@@ -65,14 +65,14 @@ aws iam enable-mfa-device \
 #### クラウドシークレットマネージャー
 
 ```typescript
-// ✅ 正解：クラウドシークレットマネージャーを使用
+// PASS: 正解：クラウドシークレットマネージャーを使用
 import { SecretsManager } from '@aws-sdk/client-secrets-manager';
 
 const client = new SecretsManager({ region: 'us-east-1' });
 const secret = await client.getSecretValue({ SecretId: 'prod/api-key' });
 const apiKey = JSON.parse(secret.SecretString).key;
 
-// ❌ 誤り：ハードコードまたは環境変数のみ
+// FAIL: 誤り：ハードコードまたは環境変数のみ
 const apiKey = process.env.API_KEY; // ローテーションされず、監査されない
 ```
 
@@ -99,7 +99,7 @@ aws secretsmanager rotate-secret \
 #### VPCとファイアウォール設定
 
 ```terraform
-# ✅ 正解：制限されたセキュリティグループ
+# PASS: 正解：制限されたセキュリティグループ
 resource "aws_security_group" "app" {
   name = "app-sg"
 
@@ -118,7 +118,7 @@ resource "aws_security_group" "app" {
   }
 }
 
-# ❌ 誤り：インターネットに公開
+# FAIL: 誤り：インターネットに公開
 resource "aws_security_group" "bad" {
   ingress {
     from_port   = 0
@@ -142,7 +142,7 @@ resource "aws_security_group" "bad" {
 #### CloudWatch/ロギング設定
 
 ```typescript
-// ✅ 正解：包括的なロギング
+// PASS: 正解：包括的なロギング
 import { CloudWatchLogsClient, CreateLogStreamCommand } from '@aws-sdk/client-cloudwatch-logs';
 
 const logSecurityEvent = async (event: SecurityEvent) => {
@@ -177,7 +177,7 @@ const logSecurityEvent = async (event: SecurityEvent) => {
 #### 安全なパイプライン設定
 
 ```yaml
-# ✅ 正解：安全なGitHub Actionsワークフロー
+# PASS: 正解：安全なGitHub Actionsワークフロー
 name: Deploy
 
 on:
@@ -237,7 +237,7 @@ jobs:
 #### Cloudflareセキュリティ設定
 
 ```typescript
-// ✅ 正解：セキュリティヘッダー付きCloudflare Workers
+// PASS: 正解：セキュリティヘッダー付きCloudflare Workers
 export default {
   async fetch(request: Request): Promise<Response> {
     const response = await fetch(request);
@@ -281,7 +281,7 @@ export default {
 #### 自動バックアップ
 
 ```terraform
-# ✅ 正解：自動RDSバックアップ
+# PASS: 正解：自動RDSバックアップ
 resource "aws_db_instance" "main" {
   allocated_storage     = 20
   engine               = "postgres"
@@ -327,10 +327,10 @@ resource "aws_db_instance" "main" {
 ### S3バケットの露出
 
 ```bash
-# ❌ 誤り：公開バケット
+# FAIL: 誤り：公開バケット
 aws s3api put-bucket-acl --bucket my-bucket --acl public-read
 
-# ✅ 正解：特定のアクセス付きプライベートバケット
+# PASS: 正解：特定のアクセス付きプライベートバケット
 aws s3api put-bucket-acl --bucket my-bucket --acl private
 aws s3api put-bucket-policy --bucket my-bucket --policy file://policy.json
 ```
@@ -338,12 +338,12 @@ aws s3api put-bucket-policy --bucket my-bucket --policy file://policy.json
 ### RDS公開アクセス
 
 ```terraform
-# ❌ 誤り
+# FAIL: 誤り
 resource "aws_db_instance" "bad" {
   publicly_accessible = true  # 絶対にこれをしない！
 }
 
-# ✅ 正解
+# PASS: 正解
 resource "aws_db_instance" "good" {
   publicly_accessible = false
   vpc_security_group_ids = [aws_security_group.db.id]

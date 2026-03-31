@@ -37,6 +37,33 @@ function cleanupTestDir(testDir) {
   fs.rmSync(testDir, { recursive: true, force: true });
 }
 
+function withIsolatedHome(fn) {
+  const isolatedHome = fs.mkdtempSync(path.join(os.tmpdir(), 'pm-home-'));
+  const originalHome = process.env.HOME;
+  const originalUserProfile = process.env.USERPROFILE;
+
+  process.env.HOME = isolatedHome;
+  process.env.USERPROFILE = isolatedHome;
+
+  try {
+    return fn(isolatedHome);
+  } finally {
+    if (originalHome !== undefined) {
+      process.env.HOME = originalHome;
+    } else {
+      delete process.env.HOME;
+    }
+
+    if (originalUserProfile !== undefined) {
+      process.env.USERPROFILE = originalUserProfile;
+    } else {
+      delete process.env.USERPROFILE;
+    }
+
+    fs.rmSync(isolatedHome, { recursive: true, force: true });
+  }
+}
+
 // Test suite
 function runTests() {
   console.log('\n=== Testing package-manager.js ===\n');
@@ -711,9 +738,11 @@ function runTests() {
     const originalEnv = process.env.CLAUDE_PACKAGE_MANAGER;
     try {
       delete process.env.CLAUDE_PACKAGE_MANAGER;
-      const result = pm.getPackageManager({ projectDir: testDir });
-      assert.strictEqual(result.name, 'npm', 'Should default to npm');
-      assert.strictEqual(result.source, 'default');
+      withIsolatedHome(() => {
+        const result = pm.getPackageManager({ projectDir: testDir });
+        assert.strictEqual(result.name, 'npm', 'Should default to npm');
+        assert.strictEqual(result.source, 'default');
+      });
     } finally {
       if (originalEnv !== undefined) {
         process.env.CLAUDE_PACKAGE_MANAGER = originalEnv;

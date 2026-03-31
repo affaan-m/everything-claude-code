@@ -27,7 +27,10 @@ notify = [
   "-sound", "default",
 ]
 
-# Prefer AGENTS.md and project-local .codex/AGENTS.md for instructions.
+# Persistent instructions are appended to every prompt (additive, unlike
+# model_instructions_file which replaces AGENTS.md).
+persistent_instructions = "Follow project AGENTS.md guidelines. Use available MCP servers when they can help."
+
 # model_instructions_file replaces built-in instructions instead of AGENTS.md,
 # so leave it unset unless you intentionally want a single override file.
 # model_instructions_file = "/absolute/path/to/instructions.md"
@@ -38,10 +41,14 @@ notify = [
 [mcp_servers.github]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-github"]
+startup_timeout_sec = 30
 
 [mcp_servers.context7]
 command = "npx"
+# Canonical Codex section name is `context7`; the package itself remains
+# `@upstash/context7-mcp`.
 args = ["-y", "@upstash/context7-mcp@latest"]
+startup_timeout_sec = 30
 
 [mcp_servers.exa]
 url = "https://mcp.exa.ai/mcp"
@@ -49,14 +56,17 @@ url = "https://mcp.exa.ai/mcp"
 [mcp_servers.memory]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-memory"]
+startup_timeout_sec = 30
 
 [mcp_servers.playwright]
 command = "npx"
 args = ["-y", "@playwright/mcp@latest", "--extension"]
+startup_timeout_sec = 30
 
 [mcp_servers.sequential-thinking]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+startup_timeout_sec = 30
 
 # Additional MCP servers (uncomment as needed):
 # [mcp_servers.supabase]
@@ -76,7 +86,8 @@ args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
 # args = ["-y", "@cloudflare/mcp-server-cloudflare"]
 
 [features]
-# Codex multi-agent support is experimental as of March 2026.
+# Codex multi-agent collaboration is stable and on by default in current builds.
+# Keep the explicit toggle here so the repo documents its expectation clearly.
 multi_agent = true
 
 # Profiles — switch with `codex -p <name>`
@@ -91,6 +102,8 @@ sandbox_mode = "workspace-write"
 web_search = "live"
 
 [agents]
+# Multi-agent role limits and local role definitions.
+# These map to `.codex/agents/*.toml` and mirror the repo's explorer/reviewer/docs workflow.
 max_threads = 6
 max_depth = 1
 

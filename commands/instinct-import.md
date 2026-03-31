@@ -44,7 +44,7 @@ Import instincts from local file paths or HTTP(S) URLs.
 ## Import Process
 
 ```
-📥 Importing instincts from: team-instincts.yaml
+ Importing instincts from: team-instincts.yaml
 ================================================
 
 Found 12 instincts to import.
@@ -60,12 +60,12 @@ These will be added:
 
 ## Duplicate Instincts (3)
 Already have similar instincts:
-  ⚠️ prefer-functional-style
+  WARNING: prefer-functional-style
      Local: 0.8 confidence, 12 observations
      Import: 0.7 confidence
      → Keep local (higher confidence)
 
-  ⚠️ test-first-workflow
+  WARNING: test-first-workflow
      Local: 0.75 confidence
      Import: 0.9 confidence
      → Update to import (higher confidence)
@@ -102,7 +102,7 @@ project_name: "my-project"
 
 After import:
 ```
-✅ Import complete!
+PASS: Import complete!
 
 Added: 8 instincts
 Updated: 1 instinct

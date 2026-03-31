@@ -4,22 +4,23 @@ Run a deterministic repository harness audit and return a prioritized scorecard.
 
 ## Usage
 
-`/harness-audit [scope] [--format text|json]`
+`/harness-audit [scope] [--format text|json] [--root path]`
 
 - `scope` (optional): `repo` (default), `hooks`, `skills`, `commands`, `agents`
 - `--format`: output style (`text` default, `json` for automation)
+- `--root`: audit a specific path instead of the current working directory
 
 ## Deterministic Engine
 
 Always run:
 
 ```bash
-node scripts/harness-audit.js <scope> --format <text|json>
+node scripts/harness-audit.js <scope> --format <text|json> [--root <path>]
 ```
 
 This script is the source of truth for scoring and checks. Do not invent additional dimensions or ad-hoc points.
 
-Rubric version: `2026-03-16`.
+Rubric version: `2026-03-30`.
 
 The script computes 7 fixed categories (`0-10` normalized each):
 
@@ -32,6 +33,7 @@ The script computes 7 fixed categories (`0-10` normalized each):
 7. Cost Efficiency
 
 Scores are derived from explicit file/rule checks and are reproducible for the same commit.
+The script audits the current working directory by default and auto-detects whether the target is the ECC repo itself or a consumer project using ECC.
 
 ## Output Contract
 

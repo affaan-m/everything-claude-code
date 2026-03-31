@@ -140,7 +140,7 @@ ok      project/internal/handler   0.023s
 | 수정된 파일 | 2 |
 | 남은 이슈 | 0 |
 
-Build 상태: ✅ 성공
+Build 상태: PASS: 성공
 ````
 
 ## 자주 발생하는 에러

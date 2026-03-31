@@ -313,39 +313,39 @@ npm run test:coverage
 
 ## 常見測試錯誤避免
 
-### ❌ 錯誤：測試實作細節
+### FAIL: 錯誤：測試實作細節
 ```typescript
 // 不要測試內部狀態
 expect(component.state.count).toBe(5)
 ```
 
-### ✅ 正確：測試使用者可見行為
+### PASS: 正確：測試使用者可見行為
 ```typescript
 // 測試使用者看到的內容
 expect(screen.getByText('Count: 5')).toBeInTheDocument()
 ```
 
-### ❌ 錯誤：脆弱的選擇器
+### FAIL: 錯誤：脆弱的選擇器
 ```typescript
 // 容易壞掉
 await page.click('.css-class-xyz')
 ```
 
-### ✅ 正確：語意選擇器
+### PASS: 正確：語意選擇器
 ```typescript
 // 對變更有彈性
 await page.click('button:has-text("Submit")')
 await page.click('[data-testid="submit-button"]')
 ```
 
-### ❌ 錯誤：無測試隔離
+### FAIL: 錯誤：無測試隔離
 ```typescript
 // 測試互相依賴
 test('creates user', () => { /* ... */ })
 test('updates same user', () => { /* 依賴前一個測試 */ })
 ```
 
-### ✅ 正確：獨立測試
+### PASS: 正確：獨立測試
 ```typescript
 // 每個測試設置自己的資料
 test('creates user', () => {

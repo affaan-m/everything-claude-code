@@ -15,7 +15,7 @@ origin: ECC
 metadata:
   author: evos
   clawdbot:
-    emoji: "🔍"
+    emoji: ""
 ---
 
 # Quality & Non-Conformance Management

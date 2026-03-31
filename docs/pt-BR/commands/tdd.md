@@ -133,7 +133,7 @@ FAIL lib/liquidity.test.ts
 1 test failed, 0 passed
 ```
 
-✅ Os testes falharam conforme o esperado. Pronto para implementação.
+PASS: Os testes falharam conforme o esperado. Pronto para implementação.
 
 ## Etapa 4: Implementar o código mínimo (VERDE)
 
@@ -179,7 +179,7 @@ PASS lib/liquidity.test.ts
 3 tests passed
 ```
 
-✅ Todos os testes passando
+PASS: Todos os testes passando
 
 ## Etapa 6: Refatorar (MELHORAR)
 
@@ -236,7 +236,7 @@ PASS lib/liquidity.test.ts
 3 tests passed
 ```
 
-✅ Refatoração concluída, testes ainda passando!
+PASS: Refatoração concluída, testes ainda passando!
 
 ## Etapa 8: Verificar a cobertura
 
@@ -247,29 +247,29 @@ File           | % Stmts | % Branch | % Funcs | % Lines
 ---------------|---------|----------|---------|--------
 liquidity.ts   |   100   |   100    |   100   |   100
 
-Coverage: 100% ✅ (Target: 80%)
+Coverage: 100% PASS: (Target: 80%)
 ```
 
-✅ TDD sessão completa!
+PASS: TDD sessão completa!
 ```
 
 ## Boas Práticas de TDD
 
 **Fazer:**
-- ✅ Escreva o teste PRIMEIRO, antes da implementação
-- ✅ Rode testes e confirme que FALHAM antes de implementar
-- ✅ Escreva código mínimo para fazer passar
-- ✅ Refatore só depois que os testes estiverem verdes
-- ✅ Adicione casos de borda e cenários de erro
-- ✅ Mire 80%+ de cobertura (100% para código crítico)
+- PASS: Escreva o teste PRIMEIRO, antes da implementação
+- PASS: Rode testes e confirme que FALHAM antes de implementar
+- PASS: Escreva código mínimo para fazer passar
+- PASS: Refatore só depois que os testes estiverem verdes
+- PASS: Adicione casos de borda e cenários de erro
+- PASS: Mire 80%+ de cobertura (100% para código crítico)
 
 **Não fazer:**
-- ❌ Escrever implementação antes de testes
-- ❌ Pular execução de testes após cada mudança
-- ❌ Escrever código demais de uma vez
-- ❌ Ignorar testes falhando
-- ❌ Testar detalhes de implementação (teste comportamento)
-- ❌ Fazer mock de tudo (prefira testes de integração)
+- FAIL: Escrever implementação antes de testes
+- FAIL: Pular execução de testes após cada mudança
+- FAIL: Escrever código demais de uma vez
+- FAIL: Ignorar testes falhando
+- FAIL: Testar detalhes de implementação (teste comportamento)
+- FAIL: Fazer mock de tudo (prefira testes de integração)
 
 ## Tipos de Teste a Incluir
 

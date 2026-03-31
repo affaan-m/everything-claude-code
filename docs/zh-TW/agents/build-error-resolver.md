@@ -101,12 +101,12 @@ c) 依影響排序優先順序
 
 **模式 1：型別推論失敗**
 ```typescript
-// ❌ 錯誤：Parameter 'x' implicitly has an 'any' type
+// FAIL: 錯誤：Parameter 'x' implicitly has an 'any' type
 function add(x, y) {
   return x + y
 }
 
-// ✅ 修復：新增型別註解
+// PASS: 修復：新增型別註解
 function add(x: number, y: number): number {
   return x + y
 }
@@ -114,25 +114,25 @@ function add(x: number, y: number): number {
 
 **模式 2：Null/Undefined 錯誤**
 ```typescript
-// ❌ 錯誤：Object is possibly 'undefined'
+// FAIL: 錯誤：Object is possibly 'undefined'
 const name = user.name.toUpperCase()
 
-// ✅ 修復：可選串聯
+// PASS: 修復：可選串聯
 const name = user?.name?.toUpperCase()
 
-// ✅ 或：Null 檢查
+// PASS: 或：Null 檢查
 const name = user && user.name ? user.name.toUpperCase() : ''
 ```
 
 **模式 3：缺少屬性**
 ```typescript
-// ❌ 錯誤：Property 'age' does not exist on type 'User'
+// FAIL: 錯誤：Property 'age' does not exist on type 'User'
 interface User {
   name: string
 }
 const user: User = { name: 'John', age: 30 }
 
-// ✅ 修復：新增屬性到介面
+// PASS: 修復：新增屬性到介面
 interface User {
   name: string
   age?: number // 如果不是總是存在則為可選
@@ -141,10 +141,10 @@ interface User {
 
 **模式 4：Import 錯誤**
 ```typescript
-// ❌ 錯誤：Cannot find module '@/lib/utils'
+// FAIL: 錯誤：Cannot find module '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 
-// ✅ 修復 1：檢查 tsconfig paths 是否正確
+// PASS: 修復 1：檢查 tsconfig paths 是否正確
 {
   "compilerOptions": {
     "paths": {
@@ -153,22 +153,22 @@ import { formatDate } from '@/lib/utils'
   }
 }
 
-// ✅ 修復 2：使用相對 import
+// PASS: 修復 2：使用相對 import
 import { formatDate } from '../lib/utils'
 
-// ✅ 修復 3：安裝缺少的套件
+// PASS: 修復 3：安裝缺少的套件
 npm install @/lib/utils
 ```
 
 **模式 5：型別不符**
 ```typescript
-// ❌ 錯誤：Type 'string' is not assignable to type 'number'
+// FAIL: 錯誤：Type 'string' is not assignable to type 'number'
 const age: number = "30"
 
-// ✅ 修復：解析字串為數字
+// PASS: 修復：解析字串為數字
 const age: number = parseInt("30", 10)
 
-// ✅ 或：變更型別
+// PASS: 或：變更型別
 const age: string = "30"
 ```
 
@@ -177,34 +177,34 @@ const age: string = "30"
 **關鍵：做最小可能的變更**
 
 ### 應該做：
-✅ 在缺少處新增型別註解
-✅ 在需要處新增 null 檢查
-✅ 修復 imports/exports
-✅ 新增缺少的相依性
-✅ 更新型別定義
-✅ 修復設定檔
+PASS: 在缺少處新增型別註解
+PASS: 在需要處新增 null 檢查
+PASS: 修復 imports/exports
+PASS: 新增缺少的相依性
+PASS: 更新型別定義
+PASS: 修復設定檔
 
 ### 不應該做：
-❌ 重構不相關的程式碼
-❌ 變更架構
-❌ 重新命名變數/函式（除非是錯誤原因）
-❌ 新增功能
-❌ 變更邏輯流程（除非是修復錯誤）
-❌ 優化效能
-❌ 改善程式碼風格
+FAIL: 重構不相關的程式碼
+FAIL: 變更架構
+FAIL: 重新命名變數/函式（除非是錯誤原因）
+FAIL: 新增功能
+FAIL: 變更邏輯流程（除非是修復錯誤）
+FAIL: 優化效能
+FAIL: 改善程式碼風格
 
 **最小差異範例：**
 
 ```typescript
 // 檔案有 200 行，第 45 行有錯誤
 
-// ❌ 錯誤：重構整個檔案
+// FAIL: 錯誤：重構整個檔案
 // - 重新命名變數
 // - 抽取函式
 // - 變更模式
 // 結果：50 行變更
 
-// ✅ 正確：只修復錯誤
+// PASS: 正確：只修復錯誤
 // - 在第 45 行新增型別註解
 // 結果：1 行變更
 
@@ -212,12 +212,12 @@ function processData(data) { // 第 45 行 - 錯誤：'data' implicitly has 'any
   return data.map(item => item.value)
 }
 
-// ✅ 最小修復：
+// PASS: 最小修復：
 function processData(data: any[]) { // 只變更這行
   return data.map(item => item.value)
 }
 
-// ✅ 更好的最小修復（如果知道型別）：
+// PASS: 更好的最小修復（如果知道型別）：
 function processData(data: Array<{ value: number }>) {
   return data.map(item => item.value)
 }
@@ -232,7 +232,7 @@ function processData(data: Array<{ value: number }>) {
 **建置目標：** Next.js 生產 / TypeScript 檢查 / ESLint
 **初始錯誤：** X
 **已修復錯誤：** Y
-**建置狀態：** ✅ 通過 / ❌ 失敗
+**建置狀態：** PASS: 通過 / FAIL: 失敗
 
 ## 已修復的錯誤
 
@@ -260,11 +260,11 @@ Parameter 'market' implicitly has an 'any' type.
 
 ## 驗證步驟
 
-1. ✅ TypeScript 檢查通過：`npx tsc --noEmit`
-2. ✅ Next.js 建置成功：`npm run build`
-3. ✅ ESLint 檢查通過：`npx eslint .`
-4. ✅ 沒有引入新錯誤
-5. ✅ 開發伺服器執行：`npm run dev`
+1. PASS: TypeScript 檢查通過：`npx tsc --noEmit`
+2. PASS: Next.js 建置成功：`npm run build`
+3. PASS: ESLint 檢查通過：`npx eslint .`
+4. PASS: 沒有引入新錯誤
+5. PASS: 開發伺服器執行：`npm run dev`
 ```
 
 ## 何時使用此 Agent
@@ -287,13 +287,13 @@ Parameter 'market' implicitly has an 'any' type.
 ## 成功指標
 
 建置錯誤解決後：
-- ✅ `npx tsc --noEmit` 以代碼 0 結束
-- ✅ `npm run build` 成功完成
-- ✅ 沒有引入新錯誤
-- ✅ 變更行數最小（< 受影響檔案的 5%）
-- ✅ 建置時間沒有顯著增加
-- ✅ 開發伺服器無錯誤執行
-- ✅ 測試仍然通過
+- PASS: `npx tsc --noEmit` 以代碼 0 結束
+- PASS: `npm run build` 成功完成
+- PASS: 沒有引入新錯誤
+- PASS: 變更行數最小（< 受影響檔案的 5%）
+- PASS: 建置時間沒有顯著增加
+- PASS: 開發伺服器無錯誤執行
+- PASS: 測試仍然通過
 
 ---
 

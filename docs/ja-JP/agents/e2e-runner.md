@@ -428,28 +428,28 @@ test('market search with complex query', async ({ page }) => {
 
 **1. 競合状態**
 ```typescript
-// ❌ 不安定: 要素が準備完了であると仮定しない
+// FAIL: 不安定: 要素が準備完了であると仮定しない
 await page.click('[data-testid="button"]')
 
-// ✅ 安定: 要素が準備完了になるのを待つ
+// PASS: 安定: 要素が準備完了になるのを待つ
 await page.locator('[data-testid="button"]').click() // 組み込みの自動待機
 ```
 
 **2. ネットワークタイミング**
 ```typescript
-// ❌ 不安定: 任意のタイムアウト
+// FAIL: 不安定: 任意のタイムアウト
 await page.waitForTimeout(5000)
 
-// ✅ 安定: 特定の条件を待つ
+// PASS: 安定: 特定の条件を待つ
 await page.waitForResponse(resp => resp.url().includes('/api/markets'))
 ```
 
 **3. アニメーションタイミング**
 ```typescript
-// ❌ 不安定: アニメーション中にクリック
+// FAIL: 不安定: アニメーション中にクリック
 await page.click('[data-testid="menu-item"]')
 
-// ✅ 安定: アニメーションが完了するのを待つ
+// PASS: 安定: アニメーションが完了するのを待つ
 await page.locator('[data-testid="menu-item"]').waitFor({ state: 'visible' })
 await page.waitForLoadState('networkidle')
 await page.click('[data-testid="menu-item"]')
@@ -548,7 +548,7 @@ jobs:
 
 **日付:** YYYY-MM-DD HH:MM
 **期間:** Xm Ys
-**ステータス:** ✅ 成功 / ❌ 失敗
+**ステータス:** PASS: 成功 / FAIL: 失敗
 
 ## まとめ
 
@@ -561,20 +561,20 @@ jobs:
 ## スイート別テスト結果
 
 ### Markets - ブラウズと検索
-- ✅ user can browse markets (2.3s)
-- ✅ semantic search returns relevant results (1.8s)
-- ✅ search handles no results (1.2s)
-- ❌ search with special characters (0.9s)
+- PASS: user can browse markets (2.3s)
+- PASS: semantic search returns relevant results (1.8s)
+- PASS: search handles no results (1.2s)
+- FAIL: search with special characters (0.9s)
 
 ### Wallet - 接続
-- ✅ user can connect MetaMask (3.1s)
-- ⚠️  user can connect Phantom (2.8s) - 不安定
-- ✅ user can disconnect wallet (1.5s)
+- PASS: user can connect MetaMask (3.1s)
+- WARNING:  user can connect Phantom (2.8s) - 不安定
+- PASS: user can disconnect wallet (1.5s)
 
 ### Trading - コアフロー
-- ✅ user can place buy order (5.2s)
-- ❌ user can place sell order (4.8s)
-- ✅ insufficient balance shows error (1.9s)
+- PASS: user can place buy order (5.2s)
+- FAIL: user can place sell order (4.8s)
+- PASS: insufficient balance shows error (1.9s)
 
 ## 失敗したテスト
 
@@ -623,13 +623,13 @@ jobs:
 ## 成功指標
 
 E2Eテスト実行後:
-- ✅ すべての重要なジャーニーが成功（100%）
-- ✅ 全体の成功率 > 95%
-- ✅ 不安定率 < 5%
-- ✅ デプロイをブロックする失敗したテストなし
-- ✅ アーティファクトがアップロードされアクセス可能
-- ✅ テスト時間 < 10分
-- ✅ HTMLレポートが生成された
+- PASS: すべての重要なジャーニーが成功（100%）
+- PASS: 全体の成功率 > 95%
+- PASS: 不安定率 < 5%
+- PASS: デプロイをブロックする失敗したテストなし
+- PASS: アーティファクトがアップロードされアクセス可能
+- PASS: テスト時間 < 10分
+- PASS: HTMLレポートが生成された
 
 ---
 

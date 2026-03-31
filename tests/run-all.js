@@ -67,7 +67,7 @@ for (const testFile of testFiles) {
   const displayPath = testFile.split(path.sep).join('/');
 
   if (!fs.existsSync(testPath)) {
-    console.log(`⚠ Skipping ${displayPath} (file not found)`);
+    console.log(`WARNING Skipping ${displayPath} (file not found)`);
     continue;
   }
 

@@ -89,32 +89,32 @@ Agent:
 ## 静的解析結果
 ✓ ruff: 問題なし
 ✓ mypy: エラーなし
-⚠️ black: 2ファイルが再フォーマット必要
+WARNING: black: 2ファイルが再フォーマット必要
 ✓ bandit: セキュリティ問題なし
 
 ## 発見された問題
 
 [CRITICAL] SQLインジェクション脆弱性
-File: app/routes/user.py:42
-Issue: ユーザー入力が直接SQLクエリに挿入されている
+ファイル: app/routes/user.py:42
+問題: ユーザー入力が直接SQLクエリに挿入されている
 ```python
 query = f"SELECT * FROM users WHERE id = {user_id}"  # 悪い
 ```
-Fix: パラメータ化クエリを使用
+修正: パラメータ化クエリを使用
 ```python
 query = "SELECT * FROM users WHERE id = %s"  # 良い
 cursor.execute(query, (user_id,))
 ```
 
 [HIGH] 可変デフォルト引数
-File: app/services/auth.py:18
-Issue: 可変デフォルト引数が共有状態を引き起こす
+ファイル: app/services/auth.py:18
+問題: 可変デフォルト引数が共有状態を引き起こす
 ```python
 def process_items(items=[]):  # 悪い
     items.append("new")
     return items
 ```
-Fix: デフォルトにNoneを使用
+修正: デフォルトにNoneを使用
 ```python
 def process_items(items=None):  # 良い
     if items is None:
@@ -124,27 +124,27 @@ def process_items(items=None):  # 良い
 ```
 
 [MEDIUM] 型ヒントの欠落
-File: app/services/auth.py:25
-Issue: 型アノテーションのない公開関数
+ファイル: app/services/auth.py:25
+問題: 型アノテーションのない公開関数
 ```python
 def get_user(user_id):  # 悪い
     return db.find(user_id)
 ```
-Fix: 型ヒントを追加
+修正: 型ヒントを追加
 ```python
 def get_user(user_id: str) -> Optional[User]:  # 良い
     return db.find(user_id)
 ```
 
 [MEDIUM] コンテキストマネージャーを使用していない
-File: app/routes/user.py:55
-Issue: 例外時にファイルがクローズされない
+ファイル: app/routes/user.py:55
+問題: 例外時にファイルがクローズされない
 ```python
 f = open("config.json")  # 悪い
 data = f.read()
 f.close()
 ```
-Fix: コンテキストマネージャーを使用
+修正: コンテキストマネージャーを使用
 ```python
 with open("config.json") as f:  # 良い
     data = f.read()
@@ -155,7 +155,7 @@ with open("config.json") as f:  # 良い
 - HIGH: 1
 - MEDIUM: 2
 
-推奨: ❌ CRITICAL問題が修正されるまでマージをブロック
+推奨: FAIL: CRITICAL問題が修正されるまでマージをブロック
 
 ## フォーマット必要
 実行: `black app/routes/user.py app/services/auth.py`
@@ -165,9 +165,9 @@ with open("config.json") as f:  # 良い
 
 | ステータス | 条件 |
 |--------|-----------|
-| ✅ 承認 | CRITICALまたはHIGH問題なし |
-| ⚠️ 警告 | MEDIUM問題のみ(注意してマージ) |
-| ❌ ブロック | CRITICALまたはHIGH問題が発見された |
+| PASS: 承認 | CRITICALまたはHIGH問題なし |
+| WARNING: 警告 | MEDIUM問題のみ(注意してマージ) |
+| FAIL: ブロック | CRITICALまたはHIGH問題が発見された |
 
 ## 他のコマンドとの統合
 

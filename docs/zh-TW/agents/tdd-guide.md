@@ -220,26 +220,26 @@ jest.mock('@/lib/openai', () => ({
 
 ## 測試異味（反模式）
 
-### ❌ 測試實作細節
+### FAIL: 測試實作細節
 ```typescript
 // 不要測試內部狀態
 expect(component.state.count).toBe(5)
 ```
 
-### ✅ 測試使用者可見的行為
+### PASS: 測試使用者可見的行為
 ```typescript
 // 測試使用者看到的
 expect(screen.getByText('Count: 5')).toBeInTheDocument()
 ```
 
-### ❌ 測試相互依賴
+### FAIL: 測試相互依賴
 ```typescript
 // 不要依賴前一個測試
 test('creates user', () => { /* ... */ })
 test('updates same user', () => { /* 需要前一個測試 */ })
 ```
 
-### ✅ 獨立測試
+### PASS: 獨立測試
 ```typescript
 // 在每個測試中設定資料
 test('updates user', () => {

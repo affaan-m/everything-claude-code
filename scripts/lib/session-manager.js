@@ -2,7 +2,8 @@
  * Session Manager Library for Claude Code
  * Provides core session CRUD operations for listing, loading, and managing sessions
  *
- * Sessions are stored as markdown files in ~/.claude/sessions/ with format:
+ * Sessions are stored as markdown files in ~/.claude/session-data/ with
+ * legacy read compatibility for ~/.claude/sessions/:
  * - YYYY-MM-DD-session.tmp (old format)
  * - YYYY-MM-DD-<short-id>-session.tmp (new format)
  */
@@ -12,6 +13,7 @@ const path = require('path');
 
 const {
   getSessionsDir,
+  getSessionSearchDirs,
   readFile,
   log
 } = require('./utils');
@@ -30,6 +32,7 @@ const SESSION_FILENAME_REGEX = /^(\d{4}-\d{2}-\d{2})(?:-([a-zA-Z0-9_][a-zA-Z0-9_
  * @returns {object|null} Parsed metadata or null if invalid
  */
 function parseSessionFilename(filename) {
+  if (!filename || typeof filename !== 'string') return null;
   const match = filename.match(SESSION_FILENAME_REGEX);
   if (!match) return null;
 
@@ -64,6 +67,145 @@ function parseSessionFilename(filename) {
  */
 function getSessionPath(filename) {
   return path.join(getSessionsDir(), filename);
+}
+
+function getSessionCandidates(options = {}) {
+  const {
+    date = null,
+    search = null
+  } = options;
+
+  const candidates = [];
+
+  for (const sessionsDir of getSessionSearchDirs()) {
+    if (!fs.existsSync(sessionsDir)) {
+      continue;
+    }
+
+    let entries;
+    try {
+      entries = fs.readdirSync(sessionsDir, { withFileTypes: true });
+    } catch (error) {
+      log(`[SessionManager] Error reading sessions directory ${sessionsDir}: ${error.message}`);
+      continue;
+    }
+
+    for (const entry of entries) {
+      if (!entry.isFile() || !entry.name.endsWith('.tmp')) continue;
+
+      const filename = entry.name;
+      const metadata = parseSessionFilename(filename);
+
+      if (!metadata) continue;
+      if (date && metadata.date !== date) continue;
+      if (search && !metadata.shortId.includes(search)) continue;
+
+      const sessionPath = path.join(sessionsDir, filename);
+
+      let stats;
+      try {
+        stats = fs.statSync(sessionPath);
+      } catch (error) {
+        log(`[SessionManager] Error stating session ${sessionPath}: ${error.message}`);
+        continue;
+      }
+
+      candidates.push({
+        ...metadata,
+        sessionPath,
+        hasContent: stats.size > 0,
+        size: stats.size,
+        modifiedTime: stats.mtime,
+        createdTime: stats.birthtime || stats.ctime
+      });
+    }
+  }
+
+  const deduped = [];
+  const seenFilenames = new Set();
+
+  for (const session of candidates) {
+    if (seenFilenames.has(session.filename)) {
+      continue;
+    }
+    seenFilenames.add(session.filename);
+    deduped.push(session);
+  }
+
+  deduped.sort((a, b) => b.modifiedTime - a.modifiedTime);
+  return deduped;
+}
+
+function buildSessionRecord(sessionPath, metadata) {
+  let stats;
+  try {
+    stats = fs.statSync(sessionPath);
+  } catch (error) {
+    log(`[SessionManager] Error stating session ${sessionPath}: ${error.message}`);
+    return null;
+  }
+
+  return {
+    ...metadata,
+    sessionPath,
+    hasContent: stats.size > 0,
+    size: stats.size,
+    modifiedTime: stats.mtime,
+    createdTime: stats.birthtime || stats.ctime
+  };
+}
+
+function sessionMatchesId(metadata, normalizedSessionId) {
+  const filename = metadata.filename;
+  const shortIdMatch = metadata.shortId !== 'no-id' && metadata.shortId.startsWith(normalizedSessionId);
+  const filenameMatch = filename === normalizedSessionId || filename === `${normalizedSessionId}.tmp`;
+  const noIdMatch = metadata.shortId === 'no-id' && filename === `${normalizedSessionId}-session.tmp`;
+
+  return shortIdMatch || filenameMatch || noIdMatch;
+}
+
+function getMatchingSessionCandidates(normalizedSessionId) {
+  const matches = [];
+  const seenFilenames = new Set();
+
+  for (const sessionsDir of getSessionSearchDirs()) {
+    if (!fs.existsSync(sessionsDir)) {
+      continue;
+    }
+
+    let entries;
+    try {
+      entries = fs.readdirSync(sessionsDir, { withFileTypes: true });
+    } catch (error) {
+      log(`[SessionManager] Error reading sessions directory ${sessionsDir}: ${error.message}`);
+      continue;
+    }
+
+    for (const entry of entries) {
+      if (!entry.isFile() || !entry.name.endsWith('.tmp')) continue;
+
+      const metadata = parseSessionFilename(entry.name);
+      if (!metadata || !sessionMatchesId(metadata, normalizedSessionId)) {
+        continue;
+      }
+
+      if (seenFilenames.has(metadata.filename)) {
+        continue;
+      }
+
+      const sessionPath = path.join(sessionsDir, metadata.filename);
+      const sessionRecord = buildSessionRecord(sessionPath, metadata);
+      if (!sessionRecord) {
+        continue;
+      }
+
+      seenFilenames.add(metadata.filename);
+      matches.push(sessionRecord);
+    }
+  }
+
+  matches.sort((a, b) => b.modifiedTime - a.modifiedTime);
+  return matches;
 }
 
 /**
@@ -228,57 +370,11 @@ function getAllSessions(options = {}) {
   const limitNum = Number(rawLimit);
   const limit = Number.isNaN(limitNum) ? 50 : Math.max(1, Math.floor(limitNum));
 
-  const sessionsDir = getSessionsDir();
+  const sessions = getSessionCandidates({ date, search });
 
-  if (!fs.existsSync(sessionsDir)) {
+  if (sessions.length === 0) {
     return { sessions: [], total: 0, offset, limit, hasMore: false };
   }
-
-  const entries = fs.readdirSync(sessionsDir, { withFileTypes: true });
-  const sessions = [];
-
-  for (const entry of entries) {
-    // Skip non-files (only process .tmp files)
-    if (!entry.isFile() || !entry.name.endsWith('.tmp')) continue;
-
-    const filename = entry.name;
-    const metadata = parseSessionFilename(filename);
-
-    if (!metadata) continue;
-
-    // Apply date filter
-    if (date && metadata.date !== date) {
-      continue;
-    }
-
-    // Apply search filter (search in short ID)
-    if (search && !metadata.shortId.includes(search)) {
-      continue;
-    }
-
-    const sessionPath = path.join(sessionsDir, filename);
-
-    // Get file stats (wrapped in try-catch to handle TOCTOU race where
-    // file is deleted between readdirSync and statSync)
-    let stats;
-    try {
-      stats = fs.statSync(sessionPath);
-    } catch {
-      continue; // File was deleted between readdir and stat
-    }
-
-    sessions.push({
-      ...metadata,
-      sessionPath,
-      hasContent: stats.size > 0,
-      size: stats.size,
-      modifiedTime: stats.mtime,
-      createdTime: stats.birthtime || stats.ctime
-    });
-  }
-
-  // Sort by modified time (newest first)
-  sessions.sort((a, b) => b.modifiedTime - a.modifiedTime);
 
   // Apply pagination
   const paginatedSessions = sessions.slice(offset, offset + limit);
@@ -299,55 +395,28 @@ function getAllSessions(options = {}) {
  * @returns {object|null} Session object or null if not found
  */
 function getSessionById(sessionId, includeContent = false) {
-  const sessionsDir = getSessionsDir();
-
-  if (!fs.existsSync(sessionsDir)) {
+  if (typeof sessionId !== 'string') {
     return null;
   }
 
-  const entries = fs.readdirSync(sessionsDir, { withFileTypes: true });
+  const normalizedSessionId = sessionId.trim();
+  if (!normalizedSessionId) {
+    return null;
+  }
 
-  for (const entry of entries) {
-    if (!entry.isFile() || !entry.name.endsWith('.tmp')) continue;
+  const sessions = getMatchingSessionCandidates(normalizedSessionId);
 
-    const filename = entry.name;
-    const metadata = parseSessionFilename(filename);
-
-    if (!metadata) continue;
-
-    // Check if session ID matches (short ID or full filename without .tmp)
-    const shortIdMatch = sessionId.length > 0 && metadata.shortId !== 'no-id' && metadata.shortId.startsWith(sessionId);
-    const filenameMatch = filename === sessionId || filename === `${sessionId}.tmp`;
-    const noIdMatch = metadata.shortId === 'no-id' && filename === `${sessionId}-session.tmp`;
-
-    if (!shortIdMatch && !filenameMatch && !noIdMatch) {
-      continue;
-    }
-
-    const sessionPath = path.join(sessionsDir, filename);
-    let stats;
-    try {
-      stats = fs.statSync(sessionPath);
-    } catch {
-      return null; // File was deleted between readdir and stat
-    }
-
-    const session = {
-      ...metadata,
-      sessionPath,
-      size: stats.size,
-      modifiedTime: stats.mtime,
-      createdTime: stats.birthtime || stats.ctime
-    };
+  for (const session of sessions) {
+    const sessionRecord = { ...session };
 
     if (includeContent) {
-      session.content = getSessionContent(sessionPath);
-      session.metadata = parseSessionMetadata(session.content);
+      sessionRecord.content = getSessionContent(sessionRecord.sessionPath);
+      sessionRecord.metadata = parseSessionMetadata(sessionRecord.content);
       // Pass pre-read content to avoid a redundant disk read
-      session.stats = getSessionStats(session.content || '');
+      sessionRecord.stats = getSessionStats(sessionRecord.content || '');
     }
 
-    return session;
+    return sessionRecord;
   }
 
   return null;

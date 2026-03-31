@@ -24,7 +24,7 @@ This skill ensures cloud infrastructure, CI/CD pipelines, and deployment configu
 #### Principle of Least Privilege
 
 ```yaml
-# ✅ CORRECT: Minimal permissions
+# PASS: CORRECT: Minimal permissions
 iam_role:
   permissions:
     - s3:GetObject  # Only read access
@@ -32,7 +32,7 @@ iam_role:
   resources:
     - arn:aws:s3:::my-bucket/*  # Specific bucket only
 
-# ❌ WRONG: Overly broad permissions
+# FAIL: WRONG: Overly broad permissions
 iam_role:
   permissions:
     - s3:*  # All S3 actions
@@ -65,14 +65,14 @@ aws iam enable-mfa-device \
 #### Cloud Secrets Managers
 
 ```typescript
-// ✅ CORRECT: Use cloud secrets manager
+// PASS: CORRECT: Use cloud secrets manager
 import { SecretsManager } from '@aws-sdk/client-secrets-manager';
 
 const client = new SecretsManager({ region: 'us-east-1' });
 const secret = await client.getSecretValue({ SecretId: 'prod/api-key' });
 const apiKey = JSON.parse(secret.SecretString).key;
 
-// ❌ WRONG: Hardcoded or in environment variables only
+// FAIL: WRONG: Hardcoded or in environment variables only
 const apiKey = process.env.API_KEY; // Not rotated, not audited
 ```
 
@@ -99,17 +99,17 @@ aws secretsmanager rotate-secret \
 #### VPC and Firewall Configuration
 
 ```terraform
-# ✅ CORRECT: Restricted security group
+# PASS: CORRECT: Restricted security group
 resource "aws_security_group" "app" {
   name = "app-sg"
-  
+
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["10.0.0.0/16"]  # Internal VPC only
   }
-  
+
   egress {
     from_port   = 443
     to_port     = 443
@@ -118,7 +118,7 @@ resource "aws_security_group" "app" {
   }
 }
 
-# ❌ WRONG: Open to the internet
+# FAIL: WRONG: Open to the internet
 resource "aws_security_group" "bad" {
   ingress {
     from_port   = 0
@@ -142,7 +142,7 @@ resource "aws_security_group" "bad" {
 #### CloudWatch/Logging Configuration
 
 ```typescript
-// ✅ CORRECT: Comprehensive logging
+// PASS: CORRECT: Comprehensive logging
 import { CloudWatchLogsClient, CreateLogStreamCommand } from '@aws-sdk/client-cloudwatch-logs';
 
 const logSecurityEvent = async (event: SecurityEvent) => {
@@ -177,7 +177,7 @@ const logSecurityEvent = async (event: SecurityEvent) => {
 #### Secure Pipeline Configuration
 
 ```yaml
-# ✅ CORRECT: Secure GitHub Actions workflow
+# PASS: CORRECT: Secure GitHub Actions workflow
 name: Deploy
 
 on:
@@ -189,18 +189,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read  # Minimal permissions
-      
+
     steps:
       - uses: actions/checkout@v4
-      
+
       # Scan for secrets
       - name: Secret scanning
         uses: trufflesecurity/trufflehog@main
-        
+
       # Dependency audit
       - name: Audit dependencies
         run: npm audit --audit-level=high
-        
+
       # Use OIDC, not long-lived tokens
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -237,18 +237,18 @@ jobs:
 #### Cloudflare Security Configuration
 
 ```typescript
-// ✅ CORRECT: Cloudflare Workers with security headers
+// PASS: CORRECT: Cloudflare Workers with security headers
 export default {
   async fetch(request: Request): Promise<Response> {
     const response = await fetch(request);
-    
+
     // Add security headers
     const headers = new Headers(response.headers);
     headers.set('X-Frame-Options', 'DENY');
     headers.set('X-Content-Type-Options', 'nosniff');
     headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
     headers.set('Permissions-Policy', 'geolocation=(), microphone=()');
-    
+
     return new Response(response.body, {
       status: response.status,
       headers
@@ -281,17 +281,17 @@ export default {
 #### Automated Backups
 
 ```terraform
-# ✅ CORRECT: Automated RDS backups
+# PASS: CORRECT: Automated RDS backups
 resource "aws_db_instance" "main" {
   allocated_storage     = 20
   engine               = "postgres"
-  
+
   backup_retention_period = 30  # 30 days retention
   backup_window          = "03:00-04:00"
   maintenance_window     = "mon:04:00-mon:05:00"
-  
+
   enabled_cloudwatch_logs_exports = ["postgresql"]
-  
+
   deletion_protection = true  # Prevent accidental deletion
 }
 ```
@@ -327,10 +327,10 @@ Before ANY production cloud deployment:
 ### S3 Bucket Exposure
 
 ```bash
-# ❌ WRONG: Public bucket
+# FAIL: WRONG: Public bucket
 aws s3api put-bucket-acl --bucket my-bucket --acl public-read
 
-# ✅ CORRECT: Private bucket with specific access
+# PASS: CORRECT: Private bucket with specific access
 aws s3api put-bucket-acl --bucket my-bucket --acl private
 aws s3api put-bucket-policy --bucket my-bucket --policy file://policy.json
 ```
@@ -338,12 +338,12 @@ aws s3api put-bucket-policy --bucket my-bucket --policy file://policy.json
 ### RDS Public Access
 
 ```terraform
-# ❌ WRONG
+# FAIL: WRONG
 resource "aws_db_instance" "bad" {
   publicly_accessible = true  # NEVER do this!
 }
 
-# ✅ CORRECT
+# PASS: CORRECT
 resource "aws_db_instance" "good" {
   publicly_accessible = false
   vpc_security_group_ids = [aws_security_group.db.id]

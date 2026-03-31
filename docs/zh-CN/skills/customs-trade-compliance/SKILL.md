@@ -7,7 +7,7 @@ origin: ECC
 metadata:
   author: evos
   clawdbot:
-    emoji: "🌐"
+    emoji: ""
 ---
 
 # 海关与贸易合规

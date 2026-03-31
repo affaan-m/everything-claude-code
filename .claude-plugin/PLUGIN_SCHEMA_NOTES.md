@@ -120,7 +120,7 @@ Assume the validator is hostile and literal.
 
 ## The `hooks` Field: DO NOT ADD
 
-> ⚠️ **CRITICAL:** Do NOT add a `"hooks"` field to `plugin.json`. This is enforced by a regression test.
+> WARNING: **CRITICAL:** Do NOT add a `"hooks"` field to `plugin.json`. This is enforced by a regression test.
 
 ### Why This Matters
 

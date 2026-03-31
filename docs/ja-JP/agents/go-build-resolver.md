@@ -341,20 +341,20 @@ x = x  // 無意味な代入を削除
 各修正試行後:
 
 ```text
-[FIXED] internal/handler/user.go:42
-Error: undefined: UserService
-Fix: Added import "project/internal/service"
+[修正済] internal/handler/user.go:42
+エラー: undefined: UserService
+修正: import を追加 "project/internal/service"
 
-Remaining errors: 3
+残りのエラー: 3
 ```
 
 最終サマリー:
 ```text
-Build Status: SUCCESS/FAILED
-Errors Fixed: N
-Vet Warnings Fixed: N
-Files Modified: list
-Remaining Issues: list (if any)
+ビルドステータス: SUCCESS/FAILED
+修正済みエラー: N
+Vet 警告修正済み: N
+変更ファイル: list
+残りの問題: list (ある場合)
 ```
 
 ## 重要な注意事項

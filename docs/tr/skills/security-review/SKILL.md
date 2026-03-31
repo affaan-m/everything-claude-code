@@ -22,13 +22,13 @@ Bu skill tüm kodun güvenlik en iyi uygulamalarını takip etmesini sağlar ve 
 
 ### 1. Secret Yönetimi
 
-#### ❌ ASLA Bunu Yapmayın
+#### FAIL: ASLA Bunu Yapmayın
 ```typescript
 const apiKey = "sk-proj-xxxxx"  // Hardcoded secret
 const dbPassword = "password123" // Kaynak kodda
 ```
 
-#### ✅ HER ZAMAN Bunu Yapın
+#### PASS: HER ZAMAN Bunu Yapın
 ```typescript
 const apiKey = process.env.OPENAI_API_KEY
 const dbUrl = process.env.DATABASE_URL
@@ -108,14 +108,14 @@ function validateFileUpload(file: File) {
 
 ### 3. SQL Injection Önleme
 
-#### ❌ ASLA SQL Concatenation Yapmayın
+#### FAIL: ASLA SQL Concatenation Yapmayın
 ```typescript
 // TEHLİKELİ - SQL Injection açığı
 const query = `SELECT * FROM users WHERE email = '${userEmail}'`
 await db.query(query)
 ```
 
-#### ✅ HER ZAMAN Parametreli Sorgular Kullanın
+#### PASS: HER ZAMAN Parametreli Sorgular Kullanın
 ```typescript
 // Güvenli - parametreli sorgu
 const { data } = await supabase
@@ -140,10 +140,10 @@ await db.query(
 
 #### JWT Token İşleme
 ```typescript
-// ❌ YANLIŞ: localStorage (XSS'e karşı savunmasız)
+// FAIL: YANLIŞ: localStorage (XSS'e karşı savunmasız)
 localStorage.setItem('token', token)
 
-// ✅ DOĞRU: httpOnly cookies
+// PASS: DOĞRU: httpOnly cookies
 res.setHeader('Set-Cookie',
   `token=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`)
 ```
@@ -300,18 +300,18 @@ app.use('/api/search', searchLimiter)
 
 #### Loglama
 ```typescript
-// ❌ YANLIŞ: Hassas veri loglama
+// FAIL: YANLIŞ: Hassas veri loglama
 console.log('User login:', { email, password })
 console.log('Payment:', { cardNumber, cvv })
 
-// ✅ DOĞRU: Hassas veriyi gizle
+// PASS: DOĞRU: Hassas veriyi gizle
 console.log('User login:', { email, userId })
 console.log('Payment:', { last4: card.last4, userId })
 ```
 
 #### Hata Mesajları
 ```typescript
-// ❌ YANLIŞ: İç detayları açığa çıkarma
+// FAIL: YANLIŞ: İç detayları açığa çıkarma
 catch (error) {
   return NextResponse.json(
     { error: error.message, stack: error.stack },
@@ -319,7 +319,7 @@ catch (error) {
   )
 }
 
-// ✅ DOĞRU: Genel hata mesajları
+// PASS: DOĞRU: Genel hata mesajları
 catch (error) {
   console.error('Internal error:', error)
   return NextResponse.json(

@@ -80,7 +80,7 @@ Agent:
 ## Static Analysis Results
 ✓ Build: Successful
 ✓ detekt: No issues
-⚠ ktlint: 2 formatting warnings
+WARNING: ktlint: 2 formatting warnings
 
 ## Issues Found
 
@@ -116,16 +116,16 @@ launch {
 - HIGH: 1
 - MEDIUM: 0
 
-Recommendation: ❌ Block merge until CRITICAL issue is fixed
+Recommendation: FAIL: Block merge until CRITICAL issue is fixed
 ````
 
 ## Approval Criteria
 
 | Status | Condition |
 |--------|-----------|
-| ✅ Approve | No CRITICAL or HIGH issues |
-| ⚠️ Warning | Only MEDIUM issues (merge with caution) |
-| ❌ Block | CRITICAL or HIGH issues found |
+| PASS: Approve | No CRITICAL or HIGH issues |
+| WARNING: Warning | Only MEDIUM issues (merge with caution) |
+| FAIL: Block | CRITICAL or HIGH issues found |
 
 ## Integration with Other Commands
 

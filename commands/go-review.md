@@ -124,16 +124,16 @@ return fmt.Errorf("get user %s: %w", userID, err)
 - HIGH: 1
 - MEDIUM: 0
 
-Recommendation: ❌ Block merge until CRITICAL issue is fixed
+Recommendation: FAIL: Block merge until CRITICAL issue is fixed
 ```
 
 ## Approval Criteria
 
 | Status | Condition |
 |--------|-----------|
-| ✅ Approve | No CRITICAL or HIGH issues |
-| ⚠️ Warning | Only MEDIUM issues (merge with caution) |
-| ❌ Block | CRITICAL or HIGH issues found |
+| PASS: Approve | No CRITICAL or HIGH issues |
+| WARNING: Warning | Only MEDIUM issues (merge with caution) |
+| FAIL: Block | CRITICAL or HIGH issues found |
 
 ## Integration with Other Commands
 

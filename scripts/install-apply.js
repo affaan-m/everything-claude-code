@@ -6,6 +6,7 @@
  * target-specific mutation logic into testable Node code.
  */
 
+const os = require('os');
 const {
   SUPPORTED_INSTALL_TARGETS,
   listLegacyCompatibilityLanguages,
@@ -16,10 +17,10 @@ const {
   parseInstallArgs,
 } = require('./lib/install/request');
 
-function showHelp(exitCode = 0) {
+function getHelpText() {
   const languages = listLegacyCompatibilityLanguages();
 
-  console.log(`
+  return `
 Usage: install.sh [--target <${LEGACY_INSTALL_TARGETS.join('|')}>] [--dry-run] [--json] <language> [<language> ...]
        install.sh [--target <${SUPPORTED_INSTALL_TARGETS.join('|')}>] [--dry-run] [--json] --profile <name> [--with <component>]... [--without <component>]...
        install.sh [--target <${SUPPORTED_INSTALL_TARGETS.join('|')}>] [--dry-run] [--json] --modules <id,id,...> [--with <component>]... [--without <component>]...
@@ -43,8 +44,11 @@ Options:
 
 Available languages:
 ${languages.map(language => `  - ${language}`).join('\n')}
-`);
+`;
+}
 
+function showHelp(exitCode = 0) {
+  console.log(getHelpText());
   process.exit(exitCode);
 }
 
@@ -100,19 +104,25 @@ function main() {
       showHelp(0);
     }
 
-    const { loadInstallConfig } = require('./lib/install/config');
+    const {
+      findDefaultInstallConfigPath,
+      loadInstallConfig,
+    } = require('./lib/install/config');
     const { applyInstallPlan } = require('./lib/install-executor');
     const { createInstallPlanFromRequest } = require('./lib/install/runtime');
+    const defaultConfigPath = options.configPath || options.languages.length > 0
+      ? null
+      : findDefaultInstallConfigPath({ cwd: process.cwd() });
     const config = options.configPath
       ? loadInstallConfig(options.configPath, { cwd: process.cwd() })
-      : null;
+      : (defaultConfigPath ? loadInstallConfig(defaultConfigPath, { cwd: process.cwd() }) : null);
     const request = normalizeInstallRequest({
       ...options,
       config,
     });
     const plan = createInstallPlanFromRequest(request, {
       projectRoot: process.cwd(),
-      homeDir: process.env.HOME,
+      homeDir: process.env.HOME || os.homedir(),
       claudeRulesDir: process.env.CLAUDE_RULES_DIR || null,
     });
 
@@ -132,7 +142,7 @@ function main() {
       printHumanPlan(result, false);
     }
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    process.stderr.write(`Error: ${error.message}${getHelpText()}`);
     process.exit(1);
   }
 }

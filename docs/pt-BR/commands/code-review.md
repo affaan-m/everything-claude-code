@@ -9,7 +9,7 @@ Revisão completa de segurança e qualidade das mudanças não commitadas:
 **Problemas de Segurança (CRITICAL):**
 - Credenciais, chaves de API ou tokens hardcoded
 - Vulnerabilidades de SQL injection
-- Vulnerabilidades de XSS  
+- Vulnerabilidades de XSS
 - Falta de validação de entrada
 - Dependências inseguras
 - Riscos de path traversal
