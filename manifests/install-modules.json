@@ -317,6 +317,7 @@
       "description": "Media generation and AI-assisted editing skills.",
       "paths": [
         "skills/fal-ai-media",
+        "skills/remotion-video-creation",
         "skills/video-editing",
         "skills/videodb"
       ],
