@@ -220,7 +220,7 @@ For manual install instructions see the README in the `rules/` folder. When copy
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**That's it!** You now have access to 30 agents, 136 skills, and 60 commands.
+**That's it!** You now have access to 31 agents, 138 skills, and 60 commands.
 
 ### Multi-model commands require additional setup
 
@@ -295,7 +295,7 @@ everything-claude-code/
 |   |-- plugin.json         # Plugin metadata and component paths
 |   |-- marketplace.json    # Marketplace catalog for /plugin marketplace add
 |
-|-- agents/           # 30 specialized subagents for delegation
+|-- agents/           # 31 specialized subagents for delegation
 |   |-- planner.md           # Feature implementation planning
 |   |-- architect.md         # System design decisions
 |   |-- tdd-guide.md         # Test-driven development
@@ -1109,9 +1109,9 @@ The configuration is automatically detected from `.opencode/opencode.json`.
 
 | Feature | Claude Code | OpenCode | Status |
 |---------|-------------|----------|--------|
-| Agents | PASS: 30 agents | PASS: 12 agents | **Claude Code leads** |
+| Agents | PASS: 31 agents | PASS: 12 agents | **Claude Code leads** |
 | Commands | PASS: 60 commands | PASS: 31 commands | **Claude Code leads** |
-| Skills | PASS: 136 skills | PASS: 37 skills | **Claude Code leads** |
+| Skills | PASS: 138 skills | PASS: 37 skills | **Claude Code leads** |
 | Hooks | PASS: 8 event types | PASS: 11 events | **OpenCode has more!** |
 | Rules | PASS: 29 rules | PASS: 13 instructions | **Claude Code leads** |
 | MCP Servers | PASS: 14 servers | PASS: Full | **Full parity** |
