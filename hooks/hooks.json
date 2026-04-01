@@ -227,6 +227,20 @@
         "id": "post:quality-gate"
       },
       {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Check if the file written in $ARGUMENTS is a frontend file (.vue, .tsx, .jsx, .html, .css, .svelte). If NOT a frontend file, respond with just 'pass'. If it IS a frontend file, do a quick design quality check: Does the code avoid generic/template patterns? Does it have visual hierarchy, intentional spacing, hover states, and personality? If it looks like default AI-generated UI (uniform cards, basic gradients, no depth), respond with a brief warning like 'DESIGN WARNING: This looks generic — consider adding [specific suggestions]'. Keep response under 50 words.",
+            "model": "claude-haiku-4-5-20251001",
+            "timeout": 10,
+            "statusMessage": "Checking design quality..."
+          }
+        ],
+        "description": "Uses Haiku to detect generic/template-looking frontend UI on Write. Fires a warning if the code looks like default AI-generated output. Only checks frontend files (.vue, .tsx, .jsx, .html, .css, .svelte).",
+        "id": "post:write:design-quality-check"
+      },
+      {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
           {

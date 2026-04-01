@@ -38,6 +38,7 @@ User request → Claude picks a tool → PreToolUse hook runs → Tool executes 
 | **Prettier format** | `Edit` | Auto-formats JS/TS files with Prettier after edits |
 | **TypeScript check** | `Edit` | Runs `tsc --noEmit` after editing `.ts`/`.tsx` files |
 | **console.log warning** | `Edit` | Warns about `console.log` statements in edited files |
+| **Design quality check** | `Write` | Uses Haiku to detect generic/template-looking frontend UI (.vue, .tsx, .jsx, .html, .css, .svelte). Warns with specific suggestions when code looks like default AI-generated output. |
 
 ### Lifecycle Hooks
 
