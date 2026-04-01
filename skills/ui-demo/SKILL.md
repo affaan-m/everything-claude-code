@@ -198,6 +198,7 @@ async function injectCursor(page) {
 Never teleport the cursor. Always move to the target before clicking:
 ```javascript
 async function moveAndClick(page, locator, label, opts = {}) {
+  const { postClickDelay = 800, ...clickOpts } = opts;
   const el = typeof locator === 'string' ? page.locator(locator).first() : locator;
   const visible = await el.isVisible().catch(() => false);
   if (!visible) {
@@ -212,12 +213,12 @@ async function moveAndClick(page, locator, label, opts = {}) {
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 10 });
       await page.waitForTimeout(400);
     }
-    await el.click(opts);
+    await el.click(clickOpts);
   } catch (e) {
     console.error(`WARNING: moveAndClick failed on "${label}": ${e.message}`);
     return false;
   }
-  await page.waitForTimeout(opts.postClickDelay ?? 800);
+  await page.waitForTimeout(postClickDelay);
   return true;
 }
 ```
