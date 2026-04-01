@@ -27,8 +27,11 @@ CONFIG_FILE="$CODEX_HOME/config.toml"
 AGENTS_FILE="$CODEX_HOME/AGENTS.md"
 AGENTS_ROOT_SRC="$REPO_ROOT/AGENTS.md"
 AGENTS_CODEX_SUPP_SRC="$REPO_ROOT/.codex/AGENTS.md"
+CODEX_AGENTS_SRC="$REPO_ROOT/.codex/agents"
+CODEX_AGENTS_DEST="$CODEX_HOME/agents"
 PROMPTS_SRC="$REPO_ROOT/commands"
 PROMPTS_DEST="$CODEX_HOME/prompts"
+BASELINE_MERGE_SCRIPT="$REPO_ROOT/scripts/codex/merge-codex-config.js"
 HOOKS_INSTALLER="$REPO_ROOT/scripts/codex/install-global-git-hooks.sh"
 SANITY_CHECKER="$REPO_ROOT/scripts/codex/check-codex-global-state.sh"
 CURSOR_RULES_DIR="$REPO_ROOT/.cursor/rules"
@@ -130,7 +133,9 @@ MCP_MERGE_SCRIPT="$REPO_ROOT/scripts/codex/merge-mcp-config.js"
 
 require_path "$REPO_ROOT/AGENTS.md" "ECC AGENTS.md"
 require_path "$AGENTS_CODEX_SUPP_SRC" "ECC Codex AGENTS supplement"
+require_path "$CODEX_AGENTS_SRC" "ECC Codex agent roles"
 require_path "$PROMPTS_SRC" "ECC commands directory"
+require_path "$BASELINE_MERGE_SCRIPT" "ECC Codex baseline merge script"
 require_path "$HOOKS_INSTALLER" "ECC global git hooks installer"
 require_path "$SANITY_CHECKER" "ECC global sanity checker"
 require_path "$CURSOR_RULES_DIR" "ECC Cursor rules directory"
@@ -231,9 +236,25 @@ else
   fi
 fi
 
-# Skills are NOT synced here — Codex CLI reads directly from
-# ~/.agents/skills/ (installed by ECC installer / npx skills).
-# Copying into ~/.codex/skills/ was unnecessary.
+log "Merging ECC Codex baseline into $CONFIG_FILE (add-only, preserving user config)"
+if [[ "$MODE" == "dry-run" ]]; then
+  node "$BASELINE_MERGE_SCRIPT" "$CONFIG_FILE" --dry-run
+else
+  node "$BASELINE_MERGE_SCRIPT" "$CONFIG_FILE"
+fi
+
+log "Syncing sample Codex agent role files"
+run_or_echo mkdir -p "$CODEX_AGENTS_DEST"
+for agent_file in "$CODEX_AGENTS_SRC"/*.toml; do
+  [[ -f "$agent_file" ]] || continue
+  agent_name="$(basename "$agent_file")"
+  dest="$CODEX_AGENTS_DEST/$agent_name"
+  if [[ -e "$dest" ]]; then
+    log "Keeping existing Codex agent role file: $dest"
+  else
+    run_or_echo cp "$agent_file" "$dest"
+  fi
+done
 
 log "Generating prompt files from ECC commands"
 run_or_echo mkdir -p "$PROMPTS_DEST"

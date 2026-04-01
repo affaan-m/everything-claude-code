@@ -80,6 +80,7 @@
     "scripts/orchestrate-worktrees.js",
     "scripts/setup-package-manager.js",
     "scripts/skill-create-output.js",
+    "scripts/codex/merge-codex-config.js",
     "scripts/codex/merge-mcp-config.js",
     "scripts/repair.js",
     "scripts/harness-audit.js",

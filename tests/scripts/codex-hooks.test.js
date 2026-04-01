@@ -93,29 +93,14 @@ if (os.platform() === 'win32') {
 else failed++;
 
 if (
-  test('sync preserves baseline config and accepts the legacy context7 MCP section', () => {
+  test('sync installs the missing Codex baseline and accepts the legacy context7 MCP section', () => {
     const homeDir = createTempDir('codex-sync-home-');
     const codexDir = path.join(homeDir, '.codex');
     const configPath = path.join(codexDir, 'config.toml');
     const agentsPath = path.join(codexDir, 'AGENTS.md');
     const config = [
-      'approval_policy = "on-request"',
-      'sandbox_mode = "workspace-write"',
-      'web_search = "live"',
-      'persistent_instructions = ""',
-      '',
-      '[features]',
       'multi_agent = true',
-      '',
-      '[profiles.strict]',
-      'approval_policy = "on-request"',
-      'sandbox_mode = "read-only"',
-      'web_search = "cached"',
-      '',
-      '[profiles.yolo]',
-      'approval_policy = "never"',
-      'sandbox_mode = "workspace-write"',
-      'web_search = "live"',
+      'persistent_instructions = ""',
       '',
       '[mcp_servers.context7]',
       'command = "npx"',
@@ -147,13 +132,26 @@ if (
       assert.match(syncedAgents, /^# Codex Supplement \(From ECC \.codex\/AGENTS\.md\)/m);
 
       const syncedConfig = fs.readFileSync(configPath, 'utf8');
-      assert.match(syncedConfig, /^multi_agent\s*=\s*true$/m);
+      assert.match(syncedConfig, /^approval_policy\s*=\s*"on-request"$/m);
+      assert.match(syncedConfig, /^sandbox_mode\s*=\s*"workspace-write"$/m);
+      assert.match(syncedConfig, /^web_search\s*=\s*"live"$/m);
+      assert.match(syncedConfig, /^\[features\]$/m);
+      assert.match(syncedConfig, /^\s*multi_agent\s*=\s*true$/m);
       assert.match(syncedConfig, /^\[profiles\.strict\]$/m);
       assert.match(syncedConfig, /^\[profiles\.yolo\]$/m);
+      assert.match(syncedConfig, /^\[agents\]$/m);
+      assert.match(syncedConfig, /^\[agents\.explorer\]$/m);
+      assert.match(syncedConfig, /^\[agents\.reviewer\]$/m);
+      assert.match(syncedConfig, /^\[agents\.docs_researcher\]$/m);
+      assert.match(syncedConfig, /^\[mcp_servers\.exa\]$/m);
       assert.match(syncedConfig, /^\[mcp_servers\.github\]$/m);
       assert.match(syncedConfig, /^\[mcp_servers\.memory\]$/m);
       assert.match(syncedConfig, /^\[mcp_servers\.sequential-thinking\]$/m);
       assert.match(syncedConfig, /^\[mcp_servers\.context7\]$/m);
+
+      for (const roleFile of ['explorer.toml', 'reviewer.toml', 'docs-researcher.toml']) {
+        assert.ok(fs.existsSync(path.join(codexDir, 'agents', roleFile)));
+      }
     } finally {
       cleanup(homeDir);
     }
