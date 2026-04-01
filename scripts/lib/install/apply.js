@@ -33,6 +33,10 @@ function mergeHookEntries(existingEntries, incomingEntries) {
       console.error(`[mergeHookEntries] Invalid hook entry: expected object, got ${JSON.stringify(entry)} — skipping`);
       continue;
     }
+    if ('id' in entry && typeof entry.id !== 'string') {
+      console.error(`[mergeHookEntries] Invalid hook entry: id must be string, got ${typeof entry.id} — skipping`);
+      continue;
+    }
     const id = entry.id;
     if (id !== undefined) {
       if (!byId.has(id)) {
