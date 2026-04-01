@@ -30,7 +30,8 @@ function mergeHookEntries(existingEntries, incomingEntries) {
 
   for (const entry of [...existingEntries, ...incomingEntries]) {
     if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
-      throw new Error(`Invalid hook entry: expected object, got ${JSON.stringify(entry)}`);
+      console.error(`[mergeHookEntries] Invalid hook entry: expected object, got ${JSON.stringify(entry)} — skipping`);
+      continue;
     }
     const id = entry.id;
     if (id !== undefined) {
