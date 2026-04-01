@@ -5,6 +5,63 @@ const path = require('path');
 
 const { writeInstallState } = require('../install-state');
 
+/**
+ * Replace all occurrences of `${CLAUDE_PLUGIN_ROOT}` in hook command strings
+ * with the actual resolved install root path.
+ *
+ * This prevents hook failures when CLAUDE_PLUGIN_ROOT is unset at runtime —
+ * the absolute path is baked in at install time instead.
+ *
+ * @param {object} hooks  The merged hooks object (mutated in-place on entries)
+ * @param {string} root   The resolved ECC install root (absolute path)
+ * @returns {object} New hooks object with paths resolved
+ */
+function resolvePluginRootInHooks(hooks, root) {
+  if (!hooks || typeof hooks !== 'object' || Array.isArray(hooks)) {
+    return hooks;
+  }
+
+  const placeholder = '${CLAUDE_PLUGIN_ROOT}';
+  const escapedRoot = root.replace(/\\/g, '\\\\');
+
+  function resolveValue(value) {
+    if (typeof value === 'string' && value.includes(placeholder)) {
+      // On Windows, backslashes in paths must be escaped inside double-quoted
+      // shell strings. Replace each backslash with two backslashes.
+      return value.split(placeholder).join(
+        process.platform === 'win32' ? escapedRoot : root
+      );
+    }
+    return value;
+  }
+
+  const resolved = {};
+  for (const [eventName, entries] of Object.entries(hooks)) {
+    if (!Array.isArray(entries)) {
+      resolved[eventName] = entries;
+      continue;
+    }
+    resolved[eventName] = entries.map(entry => {
+      if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+        return entry;
+      }
+      if (!Array.isArray(entry.hooks)) {
+        return entry;
+      }
+      return {
+        ...entry,
+        hooks: entry.hooks.map(hook => {
+          if (!hook || typeof hook !== 'object' || typeof hook.command !== 'string') {
+            return hook;
+          }
+          return { ...hook, command: resolveValue(hook.command) };
+        }),
+      };
+    });
+  }
+  return resolved;
+}
+
 function readJsonObject(filePath, label) {
   let parsed;
   try {
@@ -129,9 +186,13 @@ function buildMergedSettings(plan) {
     mergedHooks[eventName] = mergeHookEntries(currentEntries, nextEntries);
   }
 
+  // Resolve ${CLAUDE_PLUGIN_ROOT} to the actual install path so hooks work
+  // even when the env var is unset at runtime. See: issue #547, #691.
+  const resolvedHooks = resolvePluginRootInHooks(mergedHooks, plan.targetRoot);
+
   const mergedSettings = {
     ...settings,
-    hooks: mergedHooks,
+    hooks: resolvedHooks,
   };
 
   return {
@@ -167,4 +228,5 @@ function applyInstallPlan(plan) {
 
 module.exports = {
   applyInstallPlan,
+  resolvePluginRootInHooks,
 };
