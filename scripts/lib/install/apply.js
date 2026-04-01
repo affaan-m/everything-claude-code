@@ -29,6 +29,9 @@ function mergeHookEntries(existingEntries, incomingEntries) {
   const byId = new Map();
 
   for (const entry of [...existingEntries, ...incomingEntries]) {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+      throw new Error(`Invalid hook entry: expected object, got ${JSON.stringify(entry)}`);
+    }
     const id = entry.id;
     if (id !== undefined) {
       if (!byId.has(id)) {
