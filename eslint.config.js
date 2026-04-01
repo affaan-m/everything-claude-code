@@ -24,5 +24,11 @@ module.exports = [
             'no-undef': 'error',
             'eqeqeq': 'warn'
         }
+    },
+    {
+        files: ['**/*.mjs'],
+        languageOptions: {
+            sourceType: 'module'
+        }
     }
 ];

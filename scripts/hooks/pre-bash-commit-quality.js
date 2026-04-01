@@ -67,7 +67,7 @@ function findFileIssues(filePath) {
   
   try {
     const content = getStagedFileContent(filePath);
-    if (content == null) {
+    if (content === null || content === undefined) {
       return issues;
     }
     const lines = content.split('\n');

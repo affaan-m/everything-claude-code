@@ -37,8 +37,8 @@ function createSkillObservation(input) {
     ? input.skill.path.trim()
     : null;
   const success = Boolean(input.success);
-  const error = input.error == null ? null : String(input.error);
-  const feedback = input.feedback == null ? null : String(input.feedback);
+  const error = input.error === null || input.error === undefined ? null : String(input.error);
+  const feedback = input.feedback === null || input.feedback === undefined ? null : String(input.feedback);
   const variant = typeof input.variant === 'string' && input.variant.trim().length > 0
     ? input.variant.trim()
     : 'baseline';

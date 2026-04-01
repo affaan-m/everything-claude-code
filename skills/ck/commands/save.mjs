@@ -20,8 +20,8 @@ import { readFileSync, mkdirSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import {
   readProjects, writeProjects, loadContext, saveContext,
-  today, shortId, gitSummary, nativeMemoryDir, encodeProjectPath,
-  CONTEXTS_DIR, CURRENT_SESSION,
+  today, shortId, gitSummary, nativeMemoryDir,
+  CURRENT_SESSION,
 } from './shared.mjs';
 
 const isInit = process.argv.includes('--init');
