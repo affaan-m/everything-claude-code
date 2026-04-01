@@ -1,6 +1,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { readJson } = require('./json-utils');
 const { planInstallTargetScaffold } = require('./install-targets/registry');
 
 const DEFAULT_REPO_ROOT = path.join(__dirname, '../..');
@@ -63,14 +64,6 @@ const LEGACY_LANGUAGE_EXTRA_MODULE_IDS = Object.freeze({
   swift: [],
   typescript: ['framework-language'],
 });
-
-function readJson(filePath, label) {
-  try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  } catch (error) {
-    throw new Error(`Failed to read ${label}: ${error.message}`);
-  }
-}
 
 function dedupeStrings(values) {
   return [...new Set((Array.isArray(values) ? values : []).map(value => String(value).trim()).filter(Boolean))];

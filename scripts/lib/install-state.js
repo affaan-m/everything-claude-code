@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { readJson } = require('./json-utils');
 
 let Ajv = null;
 try {
@@ -21,14 +22,6 @@ function cloneJsonValue(value) {
   }
 
   return JSON.parse(JSON.stringify(value));
-}
-
-function readJson(filePath, label) {
-  try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  } catch (error) {
-    throw new Error(`Failed to read ${label}: ${error.message}`);
-  }
 }
 
 function getValidator() {

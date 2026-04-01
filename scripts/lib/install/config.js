@@ -3,19 +3,12 @@
 const fs = require('fs');
 const path = require('path');
 const Ajv = require('ajv');
+const { readJson } = require('../json-utils');
 
 const DEFAULT_INSTALL_CONFIG = 'ecc-install.json';
 const CONFIG_SCHEMA_PATH = path.join(__dirname, '..', '..', '..', 'schemas', 'ecc-install-config.schema.json');
 
 let cachedValidator = null;
-
-function readJson(filePath, label) {
-  try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  } catch (error) {
-    throw new Error(`Invalid JSON in ${label}: ${error.message}`);
-  }
-}
 
 function getValidator() {
   if (cachedValidator) {

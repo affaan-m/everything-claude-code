@@ -3,22 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const { readJsonObject } = require('../json-utils');
 const { writeInstallState } = require('../install-state');
-
-function readJsonObject(filePath, label) {
-  let parsed;
-  try {
-    parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  } catch (error) {
-    throw new Error(`Failed to parse ${label} at ${filePath}: ${error.message}`);
-  }
-
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    throw new Error(`Invalid ${label} at ${filePath}: expected a JSON object`);
-  }
-
-  return parsed;
-}
 
 function mergeHookEntries(existingEntries, incomingEntries) {
   const mergedEntries = [];
