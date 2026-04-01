@@ -26,6 +26,7 @@ function runHook(mode, payload, homeDir) {
     env: {
       ...process.env,
       HOME: homeDir,
+      USERPROFILE: homeDir, // Windows: os.homedir() reads USERPROFILE, not HOME
     },
   });
 }
