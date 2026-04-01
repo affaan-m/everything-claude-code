@@ -112,7 +112,11 @@ for (const [projectPath, info] of Object.entries(projects)) {
     const contextMd = existsSync(contextMdPath) ? readFileSync(contextMdPath, 'utf8') : '';
     let meta = {};
     if (existsSync(metaPath)) {
-      try { meta = JSON.parse(readFileSync(metaPath, 'utf8')); } catch { /* ignore malformed JSON */ }
+      try {
+        meta = JSON.parse(readFileSync(metaPath, 'utf8'));
+      } catch (e) {
+        console.warn(`  ! ${contextDir}: invalid meta.json, continuing with defaults (${e.message})`);
+      }
     }
 
     // Extract fields from CONTEXT.md
