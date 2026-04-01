@@ -70,8 +70,9 @@ process.stdin.on('end', () => {
     };
 
     appendFile(path.join(metricsDir, 'costs.jsonl'), `${JSON.stringify(row)}\n`);
-  } catch {
+  } catch (err) {
     // Keep hook non-blocking.
+    console.error('[CostTracker]', err.message || err);
   }
 
   process.stdout.write(raw);

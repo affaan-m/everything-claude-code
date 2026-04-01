@@ -25,8 +25,9 @@ function parseFrontmatter(content) {
     if (value.startsWith('[') && value.endsWith(']')) {
       try {
         value = JSON.parse(value);
-      } catch {
+      } catch (err) {
         // keep as string
+        console.error('[AgentCompress]', err.message || err);
       }
     }
 

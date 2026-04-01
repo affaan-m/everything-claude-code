@@ -20,8 +20,8 @@ process.stdin.on('end', () => {
       console.error('[Hook] Review changes before push...');
       console.error('[Hook] Continuing with push (remove this hook to add interactive review)');
     }
-  } catch {
-    // ignore parse errors and pass through
+  } catch (err) {
+    console.error('[PreBashGitPushReminder]', err.message || err);
   }
 
   process.stdout.write(raw);

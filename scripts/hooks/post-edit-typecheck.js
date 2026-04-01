@@ -87,8 +87,9 @@ process.stdin.on("end", () => {
         }
       }
     }
-  } catch {
+  } catch (err) {
     // Invalid input — pass through
+    console.error('[PostEditTypecheck]', err.message || err);
   }
 
   process.stdout.write(data);

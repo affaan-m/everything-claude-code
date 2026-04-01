@@ -227,7 +227,8 @@ function findFiles(dir, pattern, options = {}) {
           let stats;
           try {
             stats = fs.statSync(fullPath);
-          } catch {
+          } catch (err) {
+            console.error('[Utils]', err.message || err);
             continue; // File deleted between readdir and stat
           }
 
@@ -281,7 +282,8 @@ async function readStdinJson(options = {}) {
         // Resolve with whatever we have so far rather than hanging
         try {
           resolve(data.trim() ? JSON.parse(data) : {});
-        } catch {
+        } catch (err) {
+          console.error('[Utils]', err.message || err);
           resolve({});
         }
       }
@@ -300,9 +302,10 @@ async function readStdinJson(options = {}) {
       clearTimeout(timer);
       try {
         resolve(data.trim() ? JSON.parse(data) : {});
-      } catch {
+      } catch (err) {
         // Consistent with timeout path: resolve with empty object
         // so hooks don't crash on malformed input
+        console.error('[Utils]', err.message || err);
         resolve({});
       }
     });
@@ -341,7 +344,8 @@ function output(data) {
 function readFile(filePath) {
   try {
     return fs.readFileSync(filePath, 'utf8');
-  } catch {
+  } catch (err) {
+    console.error('[Utils]', err.message || err);
     return null;
   }
 }
@@ -381,7 +385,8 @@ function commandExists(cmd) {
       const result = spawnSync('which', [cmd], { stdio: 'pipe' });
       return result.status === 0;
     }
-  } catch {
+  } catch (err) {
+    console.error('[Utils]', err.message || err);
     return false;
   }
 }
@@ -451,8 +456,9 @@ function getGitModifiedFiles(patterns = []) {
       if (typeof pattern !== 'string' || pattern.length === 0) continue;
       try {
         compiled.push(new RegExp(pattern));
-      } catch {
+      } catch (err) {
         // Skip invalid regex patterns
+        console.error('[Utils]', err.message || err);
       }
     }
     if (compiled.length > 0) {
@@ -515,7 +521,8 @@ function countInFile(filePath, pattern) {
     } else {
       return 0;
     }
-  } catch {
+  } catch (err) {
+    console.error('[Utils]', err.message || err);
     return 0; // Invalid regex pattern
   }
   const matches = content.match(regex);
@@ -558,7 +565,8 @@ function grepFile(filePath, pattern) {
     } else {
       regex = new RegExp(pattern);
     }
-  } catch {
+  } catch (err) {
+    console.error('[Utils]', err.message || err);
     return []; // Invalid regex pattern
   }
   const lines = content.split('\n');

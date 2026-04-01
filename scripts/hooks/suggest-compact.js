@@ -56,8 +56,9 @@ async function main() {
     } finally {
       fs.closeSync(fd);
     }
-  } catch {
+  } catch (err) {
     // Fallback: just use writeFile if fd operations fail
+    console.error('[SuggestCompact]', err.message || err);
     writeFile(counterFile, String(count));
   }
 

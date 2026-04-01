@@ -25,8 +25,8 @@ process.stdin.on('end', () => {
       console.error('[Hook] Consider running in tmux for session persistence');
       console.error('[Hook] tmux new -s dev  |  tmux attach -t dev');
     }
-  } catch {
-    // ignore parse errors and pass through
+  } catch (err) {
+    console.error('[PreBashTmuxReminder]', err.message || err);
   }
 
   process.stdout.write(raw);

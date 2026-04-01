@@ -144,8 +144,9 @@ function readJsonl(filePath) {
     .reduce((rows, line) => {
       try {
         rows.push(JSON.parse(line));
-      } catch {
+      } catch (err) {
         // Ignore malformed rows so the log remains append-only and resilient.
+        console.error('[SkillVersioning]', err.message || err);
       }
       return rows;
     }, []);

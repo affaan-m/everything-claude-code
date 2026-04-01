@@ -125,8 +125,9 @@ function findFileIssues(filePath) {
         }
       }
     });
-  } catch {
+  } catch (err) {
     // File not readable, skip
+    console.error('[PreBashCommitQuality]', err.message || err);
   }
   
   return issues;
@@ -237,8 +238,9 @@ function runLinter(files) {
           output: result.stdout || result.stderr
         };
       }
-    } catch {
+    } catch (err) {
       // Pylint not available
+      console.error('[PreBashCommitQuality]', err.message || err);
     }
   }
   
@@ -258,8 +260,9 @@ function runLinter(files) {
           output: result.stdout
         };
       }
-    } catch {
+    } catch (err) {
       // golint not available
+      console.error('[PreBashCommitQuality]', err.message || err);
     }
   }
   

@@ -287,8 +287,9 @@ function run(rawInput, options = {}) {
         emitGovernanceEvent(event);
       }
     }
-  } catch {
-    // Silently ignore parse errors — never block the tool pipeline.
+  } catch (err) {
+    // Never block the tool pipeline.
+    console.error('[GovernanceCapture]', err.message || err);
   }
 
   return rawInput;

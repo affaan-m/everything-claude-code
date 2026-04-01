@@ -69,7 +69,8 @@ function configPaths() {
 function readJsonFile(filePath) {
   try {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  } catch {
+  } catch (err) {
+    console.error('[MCPHealthCheck]', err.message || err);
     return null;
   }
 }
@@ -91,8 +92,9 @@ function saveState(filePath, state) {
   try {
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
     fs.writeFileSync(filePath, JSON.stringify(state, null, 2));
-  } catch {
+  } catch (err) {
     // Never block the hook on state persistence errors.
+    console.error('[MCPHealthCheck]', err.message || err);
   }
 }
 
@@ -120,7 +122,8 @@ function readRawStdin() {
 function safeParse(raw) {
   try {
     return raw.trim() ? JSON.parse(raw) : {};
-  } catch {
+  } catch (err) {
+    console.error('[MCPHealthCheck]', err.message || err);
     return {};
   }
 }
@@ -354,15 +357,15 @@ function probeCommandServer(serverName, config) {
     const timer = setTimeout(() => {
       try {
         child.kill('SIGTERM');
-      } catch {
-        // ignore
+      } catch (err) {
+        console.error('[MCPHealthCheck]', err.message || err);
       }
 
       setTimeout(() => {
         try {
           child.kill('SIGKILL');
-        } catch {
-          // ignore
+        } catch (err) {
+          console.error('[MCPHealthCheck]', err.message || err);
         }
       }, 200).unref?.();
 

@@ -179,8 +179,8 @@ process.stdin.on('end', () => {
         process.exit(2);
       }
     }
-  } catch {
-    // ignore parse errors and pass through
+  } catch (err) {
+    console.error('[PreBashDevServerBlock]', err.message || err);
   }
 
   process.stdout.write(raw);

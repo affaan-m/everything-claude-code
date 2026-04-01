@@ -443,7 +443,8 @@ function getSessionSize(sessionPath) {
   let stats;
   try {
     stats = fs.statSync(sessionPath);
-  } catch {
+  } catch (err) {
+    console.error('[SessionManager]', err.message || err);
     return '0 B';
   }
   const size = stats.size;
@@ -511,7 +512,8 @@ function deleteSession(sessionPath) {
 function sessionExists(sessionPath) {
   try {
     return fs.statSync(sessionPath).isFile();
-  } catch {
+  } catch (err) {
+    console.error('[SessionManager]', err.message || err);
     return false;
   }
 }

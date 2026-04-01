@@ -66,7 +66,8 @@ function resolveEccRoot(options = {}) {
       let versionDirs;
       try {
         versionDirs = fs.readdirSync(orgPath, { withFileTypes: true });
-      } catch {
+      } catch (err) {
+        console.error('[ResolveEccRoot]', err.message || err);
         continue;
       }
 
@@ -78,8 +79,9 @@ function resolveEccRoot(options = {}) {
         }
       }
     }
-  } catch {
+  } catch (err) {
     // Plugin cache doesn't exist or isn't readable — continue to fallback
+    console.error('[ResolveEccRoot]', err.message || err);
   }
 
   return claudeDir;

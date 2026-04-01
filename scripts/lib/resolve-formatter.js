@@ -100,8 +100,9 @@ function detectFormatter(projectRoot) {
         return 'prettier';
       }
     }
-  } catch {
+  } catch (err) {
     // Malformed package.json — continue to file-based detection
+    console.error('[ResolveFormatter]', err.message || err);
   }
 
   for (const cfg of PRETTIER_CONFIGS) {

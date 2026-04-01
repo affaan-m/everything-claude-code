@@ -90,7 +90,8 @@ function readSkillObservations(options = {}) {
     .map(line => {
       try {
         return JSON.parse(line);
-      } catch {
+      } catch (err) {
+        console.error('[SkillObservations]', err.message || err);
         return null;
       }
     })

@@ -47,7 +47,8 @@ async function main() {
   try {
     const input = JSON.parse(stdinData);
     transcriptPath = input.transcript_path;
-  } catch {
+  } catch (err) {
+    console.error('[ContinuousLearning]', err.message || err);
     // Fallback: try env var for backwards compatibility
     transcriptPath = process.env.CLAUDE_TRANSCRIPT_PATH;
   }

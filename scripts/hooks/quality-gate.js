@@ -142,8 +142,8 @@ function run(rawInput) {
     const input = JSON.parse(rawInput);
     const filePath = String(input.tool_input?.file_path || '');
     maybeRunQualityGate(filePath);
-  } catch {
-    // Ignore parse errors.
+  } catch (err) {
+    console.error('[QualityGate]', err.message || err);
   }
   return rawInput;
 }

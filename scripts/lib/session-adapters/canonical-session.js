@@ -285,7 +285,8 @@ function readExistingRecording(filePath) {
 
   try {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  } catch {
+  } catch (err) {
+    console.error('[CanonicalSession]', err.message || err);
     return null;
   }
 }

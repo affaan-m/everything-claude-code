@@ -90,7 +90,8 @@ function extractSessionSummary(transcriptPath) {
           }
         }
       }
-    } catch {
+    } catch (err) {
+      console.error('[SessionEnd]', err.message || err);
       parseErrors++;
     }
   }
@@ -183,7 +184,8 @@ async function main() {
   try {
     const input = JSON.parse(stdinData);
     transcriptPath = input.transcript_path;
-  } catch {
+  } catch (err) {
+    console.error('[SessionEnd]', err.message || err);
     // Fallback: try env var for backwards compatibility
     transcriptPath = process.env.CLAUDE_TRANSCRIPT_PATH;
   }

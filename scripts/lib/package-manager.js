@@ -71,7 +71,8 @@ function loadConfig() {
   if (content) {
     try {
       return JSON.parse(content);
-    } catch {
+    } catch (err) {
+      console.error('[PackageManager]', err.message || err);
       return null;
     }
   }
@@ -118,8 +119,9 @@ function detectFromPackageJson(projectDir = process.cwd()) {
           return pmName;
         }
       }
-    } catch {
+    } catch (err) {
       // Invalid package.json
+      console.error('[PackageManager]', err.message || err);
     }
   }
   return null;
@@ -186,8 +188,9 @@ function getPackageManager(options = {}) {
           source: 'project-config'
         };
       }
-    } catch {
+    } catch (err) {
       // Invalid config
+      console.error('[PackageManager]', err.message || err);
     }
   }
 

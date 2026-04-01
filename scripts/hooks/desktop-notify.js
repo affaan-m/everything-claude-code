@@ -28,7 +28,8 @@ let isWSL = false;
 if (process.platform === 'linux') {
   try {
     isWSL = require('fs').readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
-  } catch {
+  } catch (err) {
+    console.error('[DesktopNotify]', err.message || err);
     isWSL = false;
   }
 }
@@ -54,7 +55,8 @@ function findPowerShell() {
       if (result.status === 0) {
         return path;
       }
-    } catch {
+    } catch (err) {
+      console.error('[DesktopNotify]', err.message || err);
       // continue
     }
   }

@@ -65,7 +65,8 @@ function parseInput(inputOrRaw) {
   if (typeof inputOrRaw === 'string') {
     try {
       return inputOrRaw.trim() ? JSON.parse(inputOrRaw) : {};
-    } catch {
+    } catch (err) {
+      console.error('[ConfigProtection]', err.message || err);
       return {};
     }
   }

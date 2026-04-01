@@ -28,8 +28,8 @@ process.stdin.on('end', () => {
         console.error(`[Hook] To review: gh pr review ${prNum} --repo ${repo}`);
       }
     }
-  } catch {
-    // ignore parse errors and pass through
+  } catch (err) {
+    console.error('[PostBashPrCreated]', err.message || err);
   }
 
   process.stdout.write(raw);

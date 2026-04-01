@@ -19,8 +19,8 @@ process.stdin.on('end', () => {
     if (/(npm run build|pnpm build|yarn build)/.test(cmd)) {
       console.error('[Hook] Build completed - async analysis running in background');
     }
-  } catch {
-    // ignore parse errors and pass through
+  } catch (err) {
+    console.error('[PostBashBuildComplete]', err.message || err);
   }
 
   process.stdout.write(raw);

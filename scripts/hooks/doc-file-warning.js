@@ -51,6 +51,7 @@ function run(inputOrRaw, _options = {}) {
       ? (inputOrRaw.trim() ? JSON.parse(inputOrRaw) : {})
       : (inputOrRaw || {});
   } catch {
+    // Non-JSON input is expected (hooks receive varied payloads) — silent no-op.
     return { exitCode: 0 };
   }
   const filePath = String(input?.tool_input?.file_path || '');

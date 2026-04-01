@@ -76,12 +76,14 @@ function run(rawInput) {
             timeout: 15000
           });
         }
-      } catch {
+      } catch (err) {
         // Formatter not installed, file missing, or failed — non-blocking
+        console.error('[PostEditFormat]', err.message || err);
       }
     }
-  } catch {
+  } catch (err) {
     // Invalid input — pass through
+    console.error('[PostEditFormat]', err.message || err);
   }
 
   return rawInput;

@@ -142,8 +142,9 @@ function saveAliases(aliases) {
       if (fs.existsSync(tempPath)) {
         fs.unlinkSync(tempPath);
       }
-    } catch {
+    } catch (err) {
       // Non-critical: temp file will be overwritten on next save
+      console.error('[SessionAliases]', err.message || err);
     }
 
     return false;

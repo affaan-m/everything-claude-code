@@ -95,8 +95,9 @@ function readJsonl(filePath) {
     .reduce((rows, line) => {
       try {
         rows.push(JSON.parse(line));
-      } catch {
+      } catch (err) {
         // Ignore malformed rows so analytics remain best-effort.
+        console.error('[SkillTracker]', err.message || err);
       }
       return rows;
     }, []);
@@ -113,8 +114,9 @@ function recordSkillExecution(input, options = {}) {
         record,
         result,
       };
-    } catch {
+    } catch (err) {
       // Fall back to JSONL until the formal state-store exists on this branch.
+      console.error('[SkillTracker]', err.message || err);
     }
   }
 

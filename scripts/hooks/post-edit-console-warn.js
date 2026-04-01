@@ -45,8 +45,9 @@ process.stdin.on('end', () => {
         console.error('[Hook] Remove console.log before committing');
       }
     }
-  } catch {
+  } catch (err) {
     // Invalid input — pass through
+    console.error('[PostEditConsoleWarn]', err.message || err);
   }
 
   process.stdout.write(data);

@@ -80,8 +80,9 @@ process.stdin.on('end', () => {
       }
     }
     process.stdout.write(JSON.stringify(input));
-  } catch {
+  } catch (err) {
     // Invalid input — pass through original data unchanged
+    console.error('[AutoTmuxDev]', err.message || err);
     process.stdout.write(data);
   }
   process.exit(0);

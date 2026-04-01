@@ -131,7 +131,8 @@ const FRAMEWORK_RULES = [
 function fileExists(projectDir, filePath) {
   try {
     return fs.existsSync(path.join(projectDir, filePath));
-  } catch {
+  } catch (err) {
+    console.error('[ProjectDetect]', err.message || err);
     return false;
   }
 }
@@ -150,7 +151,8 @@ function hasFileWithExtension(projectDir, extensions) {
       const ext = path.extname(entry.name);
       return extensions.includes(ext);
     });
-  } catch {
+  } catch (err) {
+    console.error('[ProjectDetect]', err.message || err);
     return false;
   }
 }
@@ -166,7 +168,8 @@ function getPackageJsonDeps(projectDir) {
     if (!fs.existsSync(pkgPath)) return [];
     const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
     return [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.devDependencies || {})];
-  } catch {
+  } catch (err) {
+    console.error('[ProjectDetect]', err.message || err);
     return [];
   }
 }
@@ -195,8 +198,8 @@ function getPythonDeps(projectDir) {
         }
       });
     }
-  } catch {
-    /* ignore */
+  } catch (err) {
+    console.error('[ProjectDetect]', err.message || err);
   }
 
   // pyproject.toml — simple extraction of dependency names
@@ -217,8 +220,8 @@ function getPythonDeps(projectDir) {
         });
       }
     }
-  } catch {
-    /* ignore */
+  } catch (err) {
+    console.error('[ProjectDetect]', err.message || err);
   }
 
   return deps;
@@ -246,7 +249,8 @@ function getGoDeps(projectDir) {
       });
     }
     return deps;
-  } catch {
+  } catch (err) {
+    console.error('[ProjectDetect]', err.message || err);
     return [];
   }
 }
@@ -275,7 +279,8 @@ function getRustDeps(projectDir) {
       });
     }
     return deps;
-  } catch {
+  } catch (err) {
+    console.error('[ProjectDetect]', err.message || err);
     return [];
   }
 }
@@ -291,7 +296,8 @@ function getComposerDeps(projectDir) {
     if (!fs.existsSync(composerPath)) return [];
     const composer = JSON.parse(fs.readFileSync(composerPath, 'utf8'));
     return [...Object.keys(composer.require || {}), ...Object.keys(composer['require-dev'] || {})];
-  } catch {
+  } catch (err) {
+    console.error('[ProjectDetect]', err.message || err);
     return [];
   }
 }
@@ -312,7 +318,8 @@ function getElixirDeps(projectDir) {
       matches.forEach(m => deps.push(m.replace('{:', '')));
     }
     return deps;
-  } catch {
+  } catch (err) {
+    console.error('[ProjectDetect]', err.message || err);
     return [];
   }
 }
