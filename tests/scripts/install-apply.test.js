@@ -353,6 +353,35 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (test('resolves ${CLAUDE_PLUGIN_ROOT} to the actual install root in settings.json', () => {
+    const homeDir = createTempDir('install-apply-home-');
+    const projectDir = createTempDir('install-apply-project-');
+
+    try {
+      const result = run(['--profile', 'core'], { cwd: projectDir, homeDir });
+      assert.strictEqual(result.code, 0, result.stderr);
+
+      const claudeRoot = path.join(homeDir, '.claude');
+      const settingsPath = path.join(claudeRoot, 'settings.json');
+      const settingsRaw = fs.readFileSync(settingsPath, 'utf8');
+
+      assert.ok(
+        !settingsRaw.includes('${CLAUDE_PLUGIN_ROOT}'),
+        'settings.json should not contain unresolved ${CLAUDE_PLUGIN_ROOT} after install'
+      );
+
+      const settings = JSON.parse(settingsRaw);
+      const allCommands = JSON.stringify(settings.hooks || {});
+      assert.ok(
+        allCommands.includes(claudeRoot.replace(/\\/g, '\\\\')),
+        'hook commands should reference the actual claude root path'
+      );
+    } finally {
+      cleanup(homeDir);
+      cleanup(projectDir);
+    }
+  })) passed++; else failed++;
+
   if (test('preserves existing settings fields and hook entries when merging hooks', () => {
     const homeDir = createTempDir('install-apply-home-');
     const projectDir = createTempDir('install-apply-project-');

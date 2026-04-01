@@ -90,6 +90,25 @@ function mergeHookEntries(existingEntries, incomingEntries) {
   return mergedEntries;
 }
 
+const PLUGIN_ROOT_PLACEHOLDER = '${CLAUDE_PLUGIN_ROOT}';
+
+function resolvePluginRoot(value, pluginRoot) {
+  if (typeof value === 'string') {
+    return value.split(PLUGIN_ROOT_PLACEHOLDER).join(pluginRoot);
+  }
+  if (Array.isArray(value)) {
+    return value.map(item => resolvePluginRoot(item, pluginRoot));
+  }
+  if (value !== null && typeof value === 'object') {
+    const result = {};
+    for (const [k, v] of Object.entries(value)) {
+      result[k] = resolvePluginRoot(v, pluginRoot);
+    }
+    return result;
+  }
+  return value;
+}
+
 function findHooksSourcePath(plan, hooksDestinationPath) {
   const operation = plan.operations.find(item => item.destinationPath === hooksDestinationPath);
   return operation ? operation.sourcePath : null;
@@ -121,9 +140,10 @@ function buildMergedSettings(plan) {
   const existingHooks = settings.hooks && typeof settings.hooks === 'object' && !Array.isArray(settings.hooks)
     ? settings.hooks
     : {};
+  const resolvedIncomingHooks = resolvePluginRoot(incomingHooks, plan.targetRoot);
   const mergedHooks = { ...existingHooks };
 
-  for (const [eventName, incomingEntries] of Object.entries(incomingHooks)) {
+  for (const [eventName, incomingEntries] of Object.entries(resolvedIncomingHooks)) {
     const currentEntries = Array.isArray(existingHooks[eventName]) ? existingHooks[eventName] : [];
     const nextEntries = Array.isArray(incomingEntries) ? incomingEntries : [];
     mergedHooks[eventName] = mergeHookEntries(currentEntries, nextEntries);
