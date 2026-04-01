@@ -36,7 +36,7 @@ function createSkillObservation(input) {
   const skillPath = typeof input.skill.path === 'string' && input.skill.path.trim().length > 0
     ? input.skill.path.trim()
     : null;
-  const success = Boolean(input.success);
+  const success = !!input.success;
   const error = input.error == null ? null : String(input.error);
   const feedback = input.feedback == null ? null : String(input.feedback);
   const variant = typeof input.variant === 'string' && input.variant.trim().length > 0

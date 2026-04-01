@@ -622,7 +622,7 @@ function createManifestInstallPlan(options = {}) {
       includeComponents: requestIncludeComponentIds,
       excludeComponents: requestExcludeComponentIds,
       legacyLanguages,
-      legacyMode: Boolean(options.legacyMode),
+      legacyMode: !!options.legacyMode,
     },
     resolution: {
       selectedModules: plan.selectedModuleIds,

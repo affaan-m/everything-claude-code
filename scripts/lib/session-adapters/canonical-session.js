@@ -9,7 +9,7 @@ const SESSION_RECORDING_SCHEMA_VERSION = 'ecc.session.recording.v1';
 const DEFAULT_RECORDING_DIR = path.join(os.tmpdir(), 'ecc-session-recordings');
 
 function isObject(value) {
-  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+  return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
 function sanitizePathSegment(value) {
@@ -429,8 +429,8 @@ function normalizeDmuxSnapshot(snapshot, sourceTarget) {
       kind: 'tmux-pane',
       command: worker.pane ? worker.pane.currentCommand || null : null,
       pid: worker.pane ? worker.pane.pid || null : null,
-      active: worker.pane ? Boolean(worker.pane.active) : false,
-      dead: worker.pane ? Boolean(worker.pane.dead) : false,
+      active: worker.pane ? !!worker.pane.active : false,
+      dead: worker.pane ? !!worker.pane.dead : false,
     },
     intent: {
       objective: worker.task.objective || '',

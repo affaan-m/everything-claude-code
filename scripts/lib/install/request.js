@@ -88,7 +88,7 @@ function normalizeInstallRequest(options = {}) {
     ...(Array.isArray(options.languages) ? options.languages : []),
   ]).map(language => language.toLowerCase()));
   const target = options.target || config?.target || 'claude';
-  const hasManifestBaseSelection = Boolean(profileId) || moduleIds.length > 0 || includeComponentIds.length > 0;
+  const hasManifestBaseSelection = !!profileId || moduleIds.length > 0 || includeComponentIds.length > 0;
   const usingManifestMode = hasManifestBaseSelection || excludeComponentIds.length > 0;
 
   if (usingManifestMode && legacyLanguages.length > 0) {

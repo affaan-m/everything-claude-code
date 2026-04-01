@@ -17,7 +17,7 @@ let cachedValidator = null;
 
 function cloneJsonValue(value) {
   if (value === undefined) {
-    return undefined;
+    return;
   }
 
   return JSON.parse(JSON.stringify(value));
@@ -264,7 +264,7 @@ function createInstallState(options) {
       legacyLanguages: Array.isArray(options.request.legacyLanguages)
         ? [...options.request.legacyLanguages]
         : [],
-      legacyMode: Boolean(options.request.legacyMode),
+      legacyMode: !!options.request.legacyMode,
     },
     resolution: {
       selectedModules: Array.isArray(options.resolution.selectedModules)

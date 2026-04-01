@@ -303,7 +303,7 @@ function buildOrchestrationPlan(config = {}) {
   return {
     baseRef,
     coordinationDir,
-    replaceExisting: Boolean(config.replaceExisting),
+    replaceExisting: !!config.replaceExisting,
     repoRoot,
     sessionName,
     tmuxCommands,

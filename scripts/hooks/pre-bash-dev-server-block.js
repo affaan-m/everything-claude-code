@@ -87,7 +87,7 @@ function readToken(input, startIndex) {
 function shouldSkipOptionValue(wrapper, optionToken) {
   if (!wrapper || !optionToken || optionToken.includes('=')) return false;
   const optionSet = PREFIX_OPTION_VALUE_WORDS[wrapper];
-  return Boolean(optionSet && optionSet.has(optionToken));
+  return !!(optionSet && optionSet.has(optionToken));
 }
 
 function isOptionToken(token) {

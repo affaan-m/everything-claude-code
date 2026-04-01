@@ -83,12 +83,12 @@ function readFileUtf8(filePath) {
 }
 
 function isPlainObject(value) {
-  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+  return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
 function cloneJsonValue(value) {
   if (value === undefined) {
-    return undefined;
+    return;
   }
 
   return JSON.parse(JSON.stringify(value));
@@ -96,7 +96,7 @@ function cloneJsonValue(value) {
 
 function parseJsonLikeValue(value, label) {
   if (value === undefined) {
-    return undefined;
+    return;
   }
 
   if (typeof value === 'string') {
@@ -147,7 +147,7 @@ function getOperationJsonPayload(operation) {
     }
   }
 
-  return undefined;
+  return;
 }
 
 function getOperationPreviousContent(operation) {
@@ -179,7 +179,7 @@ function getOperationPreviousJson(operation) {
     }
   }
 
-  return undefined;
+  return;
 }
 
 function formatJson(value) {
@@ -1088,7 +1088,7 @@ function repairInstalledStates(options = {}) {
   });
 
   return {
-    dryRun: Boolean(options.dryRun),
+    dryRun: !!options.dryRun,
     generatedAt: new Date().toISOString(),
     results,
     summary,
@@ -1209,7 +1209,7 @@ function uninstallInstalledStates(options = {}) {
   });
 
   return {
-    dryRun: Boolean(options.dryRun),
+    dryRun: !!options.dryRun,
     generatedAt: new Date().toISOString(),
     results,
     summary,

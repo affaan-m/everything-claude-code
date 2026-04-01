@@ -124,29 +124,15 @@ async function main() {
 }
 
 function writeSessionStartPayload(additionalContext) {
+  const payload = JSON.stringify({
+    hookSpecificOutput: {
+      hookEventName: 'SessionStart',
+      additionalContext
+    }
+  });
+
   return new Promise((resolve, reject) => {
-    let settled = false;
-    const payload = JSON.stringify({
-      hookSpecificOutput: {
-        hookEventName: 'SessionStart',
-        additionalContext
-      }
-    });
-
-    const handleError = (err) => {
-      if (settled) return;
-      settled = true;
-      if (err) {
-        log(`[SessionStart] stdout write error: ${err.message}`);
-      }
-      reject(err || new Error('stdout stream error'));
-    };
-
-    process.stdout.once('error', handleError);
     process.stdout.write(payload, (err) => {
-      process.stdout.removeListener('error', handleError);
-      if (settled) return;
-      settled = true;
       if (err) {
         log(`[SessionStart] stdout write error: ${err.message}`);
         reject(err);
