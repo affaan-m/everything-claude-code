@@ -33,16 +33,10 @@ const VALID_EVENTS = [
 const VALID_HOOK_TYPES = ['command', 'http', 'prompt', 'agent'];
 const EVENTS_WITHOUT_MATCHER = new Set(['UserPromptSubmit', 'Notification', 'Stop', 'SubagentStop']);
 
-function isNonEmptyString(value) {
-  return typeof value === 'string' && value.trim().length > 0;
-}
-
-function isNonEmptyStringArray(value) {
-  return Array.isArray(value) && value.length > 0 && value.every(item => isNonEmptyString(item));
-}
-
 /**
- * Validate a single hook entry has required fields and valid inline JS
+ * Validate a single hook entry for checks the JSON schema cannot perform:
+ * 1. Inline JS syntax checking for `node -e "..."` commands
+ * 2. Ensuring `async` is only used on command hooks
  * @param {object} hook - Hook object with type and command fields
  * @param {string} label - Label for error messages (e.g., "PreToolUse[0].hooks[1]")
  * @returns {boolean} true if errors were found
@@ -50,74 +44,20 @@ function isNonEmptyStringArray(value) {
 function validateHookEntry(hook, label) {
   let hasErrors = false;
 
-  if (!hook.type || typeof hook.type !== 'string') {
-    console.error(`ERROR: ${label} missing or invalid 'type' field`);
-    hasErrors = true;
-  } else if (!VALID_HOOK_TYPES.includes(hook.type)) {
-    console.error(`ERROR: ${label} has unsupported hook type '${hook.type}'`);
-    hasErrors = true;
-  }
-
-  if ('timeout' in hook && (typeof hook.timeout !== 'number' || hook.timeout < 0)) {
-    console.error(`ERROR: ${label} 'timeout' must be a non-negative number`);
-    hasErrors = true;
-  }
-
-  if (hook.type === 'command') {
-    if ('async' in hook && typeof hook.async !== 'boolean') {
-      console.error(`ERROR: ${label} 'async' must be a boolean`);
-      hasErrors = true;
-    }
-
-    if (!isNonEmptyString(hook.command) && !isNonEmptyStringArray(hook.command)) {
-      console.error(`ERROR: ${label} missing or invalid 'command' field`);
-      hasErrors = true;
-    } else if (typeof hook.command === 'string') {
-      const nodeEMatch = hook.command.match(/^node -e "(.*)"$/s);
-      if (nodeEMatch) {
-        try {
-          new vm.Script(nodeEMatch[1].replace(/\\\\/g, '\\').replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\t/g, '\t'));
-        } catch (syntaxErr) {
-          console.error(`ERROR: ${label} has invalid inline JS: ${syntaxErr.message}`);
-          hasErrors = true;
-        }
+  if (hook.type === 'command' && typeof hook.command === 'string') {
+    const nodeEMatch = hook.command.match(/^node -e "(.*)"$/s);
+    if (nodeEMatch) {
+      try {
+        new vm.Script(nodeEMatch[1].replace(/\\\\/g, '\\').replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\t/g, '\t'));
+      } catch (syntaxErr) {
+        console.error(`ERROR: ${label} has invalid inline JS: ${syntaxErr.message}`);
+        hasErrors = true;
       }
     }
-
-    return hasErrors;
   }
 
-  if ('async' in hook) {
+  if (hook.type !== 'command' && 'async' in hook) {
     console.error(`ERROR: ${label} 'async' is only supported for command hooks`);
-    hasErrors = true;
-  }
-
-  if (hook.type === 'http') {
-    if (!isNonEmptyString(hook.url)) {
-      console.error(`ERROR: ${label} missing or invalid 'url' field`);
-      hasErrors = true;
-    }
-
-    if ('headers' in hook && (typeof hook.headers !== 'object' || hook.headers === null || Array.isArray(hook.headers) || !Object.values(hook.headers).every(value => typeof value === 'string'))) {
-      console.error(`ERROR: ${label} 'headers' must be an object with string values`);
-      hasErrors = true;
-    }
-
-    if ('allowedEnvVars' in hook && (!Array.isArray(hook.allowedEnvVars) || !hook.allowedEnvVars.every(value => isNonEmptyString(value)))) {
-      console.error(`ERROR: ${label} 'allowedEnvVars' must be an array of strings`);
-      hasErrors = true;
-    }
-
-    return hasErrors;
-  }
-
-  if (!isNonEmptyString(hook.prompt)) {
-    console.error(`ERROR: ${label} missing or invalid 'prompt' field`);
-    hasErrors = true;
-  }
-
-  if ('model' in hook && !isNonEmptyString(hook.model)) {
-    console.error(`ERROR: ${label} 'model' must be a non-empty string`);
     hasErrors = true;
   }
 

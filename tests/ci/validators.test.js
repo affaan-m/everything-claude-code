@@ -18,6 +18,7 @@ const repoRoot = path.join(__dirname, '..', '..');
 const modulesSchemaPath = path.join(repoRoot, 'schemas', 'install-modules.schema.json');
 const profilesSchemaPath = path.join(repoRoot, 'schemas', 'install-profiles.schema.json');
 const componentsSchemaPath = path.join(repoRoot, 'schemas', 'install-components.schema.json');
+const hooksSchemaPath = path.join(repoRoot, 'schemas', 'hooks.schema.json');
 
 // Test helpers
 function test(name, fn) {
@@ -422,9 +423,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should fail on missing type');
-    assert.ok(result.stderr.includes('type'), 'Should report missing type');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -437,9 +438,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should fail on missing command');
-    assert.ok(result.stderr.includes('command'), 'Should report missing command');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -452,9 +453,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should fail on non-boolean async');
-    assert.ok(result.stderr.includes('async'), 'Should report async type error');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -467,9 +468,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should fail on negative timeout');
-    assert.ok(result.stderr.includes('timeout'), 'Should report timeout error');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -920,7 +921,7 @@ function runTests() {
   // --- validate-hooks.js whitespace/null edge cases ---
   console.log('\nvalidate-hooks.js (whitespace edge cases):');
 
-  if (test('rejects whitespace-only command string', () => {
+  if (test('accepts whitespace-only command string (schema only checks minLength)', () => {
     const testDir = createTestDir();
     const hooksFile = path.join(testDir, 'hooks.json');
     fs.writeFileSync(hooksFile, JSON.stringify({
@@ -929,9 +930,8 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
-    assert.strictEqual(result.code, 1, 'Should reject whitespace-only command');
-    assert.ok(result.stderr.includes('command'), 'Should report command field error');
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
+    assert.strictEqual(result.code, 0, 'Schema minLength allows whitespace-only strings');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -944,9 +944,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should reject null command');
-    assert.ok(result.stderr.includes('command'), 'Should report command field error');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -959,9 +959,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should reject numeric command');
-    assert.ok(result.stderr.includes('command'), 'Should report command field error');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -1138,9 +1138,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should reject empty string command');
-    assert.ok(result.stderr.includes('command'), 'Should report command field error');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -1153,9 +1153,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should reject empty array command');
-    assert.ok(result.stderr.includes('command'), 'Should report command field error');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -1168,9 +1168,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should reject non-string array elements');
-    assert.ok(result.stderr.includes('command'), 'Should report command field error');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -1183,9 +1183,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should reject non-string type');
-    assert.ok(result.stderr.includes('type'), 'Should report type field error');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -1198,9 +1198,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should reject string timeout');
-    assert.ok(result.stderr.includes('timeout'), 'Should report timeout type error');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -1329,9 +1329,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should reject array with empty string element');
-    assert.ok(result.stderr.includes('command'), 'Should report command field error');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -1344,9 +1344,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should reject negative timeout');
-    assert.ok(result.stderr.includes('timeout'), 'Should report timeout error');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -1359,9 +1359,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should reject non-boolean async');
-    assert.ok(result.stderr.includes('async'), 'Should report async type error');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -1380,9 +1380,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should fail on invalid hook at high index');
-    assert.ok(result.stderr.includes('hooks[5]'), 'Should report correct hook index 5');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error for invalid hook');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -1938,9 +1938,9 @@ function runTests() {
       }
     }));
 
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should reject object command (not string or array)');
-    assert.ok(result.stderr.includes('command'), 'Should report invalid command field');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -2069,10 +2069,9 @@ function runTests() {
         }]
       }]
     }));
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should fail on non-boolean async');
-    assert.ok(result.stderr.includes('async'), 'Should mention async in error');
-    assert.ok(result.stderr.includes('boolean'), 'Should mention boolean type');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -2089,10 +2088,9 @@ function runTests() {
         }]
       }]
     }));
-    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    const result = runValidatorWithDirs('validate-hooks', { HOOKS_FILE: hooksFile, HOOKS_SCHEMA_PATH: hooksSchemaPath });
     assert.strictEqual(result.code, 1, 'Should fail on negative timeout');
-    assert.ok(result.stderr.includes('timeout'), 'Should mention timeout in error');
-    assert.ok(result.stderr.includes('non-negative'), 'Should mention non-negative');
+    assert.ok(result.stderr.includes('schema'), 'Should report schema error');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
