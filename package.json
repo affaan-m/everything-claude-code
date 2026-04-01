@@ -119,7 +119,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "c8": "^11.0.0",
-    "eslint": "^9.39.2",
+    "eslint": "^10.1.0",
     "globals": "^17.1.0",
     "markdownlint-cli": "^0.48.0"
   },
