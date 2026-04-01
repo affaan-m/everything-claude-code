@@ -5,7 +5,7 @@ description: Development conventions and patterns for everything-claude-code. Ja
 
 # Everything Claude Code Conventions
 
-> Generated from [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code) on 2026-03-20
+> Generated from [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code) on 2026-04-01
 
 ## Overview
 
@@ -34,13 +34,13 @@ Follow these commit message conventions based on 500 analyzed commits.
 ### Prefixes Used
 
 - `fix`
-- `test`
 - `feat`
 - `docs`
+- `chore`
 
 ### Message Guidelines
 
-- Average message length: ~65 characters
+- Average message length: ~57 characters
 - Keep first line concise and descriptive
 - Use imperative mood ("Add feature" not "Added feature")
 
@@ -48,49 +48,49 @@ Follow these commit message conventions based on 500 analyzed commits.
 *Commit message example*
 
 ```text
-feat(rules): add C# language support
+feat: add everything-claude-code ECC bundle (.claude/commands/add-or-update-cli-command.md)
 ```
 
 *Commit message example*
 
 ```text
-chore(deps-dev): bump flatted (#675)
+refactor: collapse legacy command bodies into skills
 ```
 
 *Commit message example*
 
 ```text
-fix: auto-detect ECC root from plugin cache when CLAUDE_PLUGIN_ROOT is unset (#547) (#691)
+fix: dedupe managed hooks by semantic identity
 ```
 
 *Commit message example*
 
 ```text
-docs: add Antigravity setup and usage guide (#552)
+docs: close bundle drift and sync plugin guidance
 ```
 
 *Commit message example*
 
 ```text
-merge: PR #529 — feat(skills): add documentation-lookup, bun-runtime, nextjs-turbopack; feat(agents): add rust-reviewer
+chore: ignore local orchestration artifacts
 ```
 
 *Commit message example*
 
 ```text
-Revert "Add Kiro IDE support (.kiro/) (#548)"
+feat: add everything-claude-code ECC bundle (.claude/commands/add-new-skill-or-agent.md)
 ```
 
 *Commit message example*
 
 ```text
-Add Kiro IDE support (.kiro/) (#548)
+feat: add everything-claude-code ECC bundle (.claude/commands/feature-development.md)
 ```
 
 *Commit message example*
 
 ```text
-feat: add block-no-verify hook for Claude Code and Cursor (#649)
+feat: add everything-claude-code ECC bundle (.claude/enterprise/controls.md)
 ```
 
 ## Architecture
@@ -184,33 +184,11 @@ try {
 
 These workflows were detected from analyzing commit patterns.
 
-### Database Migration
-
-Database schema changes with migration files
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create migration file
-2. Update schema definitions
-3. Generate/update types
-
-**Files typically involved**:
-- `**/schema.*`
-- `migrations/*`
-
-**Example commit sequence**:
-```
-feat: implement --with/--without selective install flags (#679)
-fix: sync catalog counts with filesystem (27 agents, 113 skills, 58 commands) (#693)
-feat(rules): add Rust language rules (rebased #660) (#686)
-```
-
 ### Feature Development
 
 Standard feature implementation workflow
 
-**Frequency**: ~22 times per month
+**Frequency**: ~19 times per month
 
 **Steps**:
 1. Add feature implementation
@@ -218,205 +196,205 @@ Standard feature implementation workflow
 3. Update documentation
 
 **Files typically involved**:
-- `manifests/*`
-- `schemas/*`
+- `.opencode/*`
+- `.opencode/plugins/*`
+- `.opencode/plugins/lib/*`
 - `**/*.test.*`
-- `**/api/**`
 
 **Example commit sequence**:
 ```
-feat(skills): add documentation-lookup, bun-runtime, nextjs-turbopack; feat(agents): add rust-reviewer
-docs(skills): align documentation-lookup with CONTRIBUTING template; add cross-harness (Codex/Cursor) skill copies
-fix: address PR review — skill template (When to use, How it works, Examples), bun.lock, next build note, rust-reviewer CI note, doc-lookup privacy/uncertainty
+feat: install claude-hud plugin (jarrodwatts/claude-hud) (#1041)
+feat: add GAN-style generator-evaluator harness (#1029)
+feat(agents,skills): add opensource-pipeline — 3-agent workflow for safe public releases (#1036)
 ```
 
-### Add Language Rules
+### Refactoring
 
-Adds a new programming language to the rules system, including coding style, hooks, patterns, security, and testing guidelines.
+Code refactoring and cleanup workflow
 
 **Frequency**: ~2 times per month
 
 **Steps**:
-1. Create a new directory under rules/{language}/
-2. Add coding-style.md, hooks.md, patterns.md, security.md, and testing.md files with language-specific content
-3. Optionally reference or link to related skills
+1. Ensure tests pass before refactor
+2. Refactor code structure
+3. Verify tests still pass
 
 **Files typically involved**:
-- `rules/*/coding-style.md`
-- `rules/*/hooks.md`
-- `rules/*/patterns.md`
-- `rules/*/security.md`
-- `rules/*/testing.md`
+- `src/**/*`
 
 **Example commit sequence**:
 ```
-Create a new directory under rules/{language}/
-Add coding-style.md, hooks.md, patterns.md, security.md, and testing.md files with language-specific content
-Optionally reference or link to related skills
+refactor: collapse legacy command bodies into skills
+feat: add connected operator workflow skills
+feat: expand lead intelligence outreach channels
 ```
 
-### Add New Skill
+### Add New Skill Or Agent
 
-Adds a new skill to the system, documenting its workflow, triggers, and usage, often with supporting scripts.
-
-**Frequency**: ~4 times per month
-
-**Steps**:
-1. Create a new directory under skills/{skill-name}/
-2. Add SKILL.md with documentation (When to Use, How It Works, Examples, etc.)
-3. Optionally add scripts or supporting files under skills/{skill-name}/scripts/
-4. Address review feedback and iterate on documentation
-
-**Files typically involved**:
-- `skills/*/SKILL.md`
-- `skills/*/scripts/*.sh`
-- `skills/*/scripts/*.js`
-
-**Example commit sequence**:
-```
-Create a new directory under skills/{skill-name}/
-Add SKILL.md with documentation (When to Use, How It Works, Examples, etc.)
-Optionally add scripts or supporting files under skills/{skill-name}/scripts/
-Address review feedback and iterate on documentation
-```
-
-### Add New Agent
-
-Adds a new agent to the system for code review, build resolution, or other automated tasks.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create a new agent markdown file under agents/{agent-name}.md
-2. Register the agent in AGENTS.md
-3. Optionally update README.md and docs/COMMAND-AGENT-MAP.md
-
-**Files typically involved**:
-- `agents/*.md`
-- `AGENTS.md`
-- `README.md`
-- `docs/COMMAND-AGENT-MAP.md`
-
-**Example commit sequence**:
-```
-Create a new agent markdown file under agents/{agent-name}.md
-Register the agent in AGENTS.md
-Optionally update README.md and docs/COMMAND-AGENT-MAP.md
-```
-
-### Add New Workflow Surface
-
-Adds or updates a workflow entrypoint. Default to skills-first; only add a command shim when legacy slash compatibility is still required.
-
-**Frequency**: ~1 times per month
-
-**Steps**:
-1. Create or update the canonical workflow under skills/{skill-name}/SKILL.md
-2. Only if needed, add or update commands/{command-name}.md as a compatibility shim
-
-**Files typically involved**:
-- `skills/*/SKILL.md`
-- `commands/*.md` (only when a legacy shim is intentionally retained)
-
-**Example commit sequence**:
-```
-Create or update the canonical skill under skills/{skill-name}/SKILL.md
-Only if needed, add or update commands/{command-name}.md as a compatibility shim
-```
-
-### Sync Catalog Counts
-
-Synchronizes the documented counts of agents, skills, and commands in AGENTS.md and README.md with the actual repository state.
+Adds a new skill or agent to the codebase, including documentation and configuration.
 
 **Frequency**: ~3 times per month
 
 **Steps**:
-1. Update agent, skill, and command counts in AGENTS.md
-2. Update the same counts in README.md (quick-start, comparison table, etc.)
-3. Optionally update other documentation files
+1. Create or update SKILL.md in skills/ or .agents/skills/ or .claude/skills/
+2. Optionally add or update agent definition in agents/ or .agents/skills/
+3. Update manifests/install-modules.json if skill/agent is installable
+4. Update AGENTS.md and/or README.md to document the new skill/agent
 
 **Files typically involved**:
+- `skills/*/SKILL.md`
+- `.agents/skills/*/SKILL.md`
+- `.claude/skills/*/SKILL.md`
+- `agents/*.md`
+- `manifests/install-modules.json`
 - `AGENTS.md`
 - `README.md`
 
 **Example commit sequence**:
 ```
-Update agent, skill, and command counts in AGENTS.md
-Update the same counts in README.md (quick-start, comparison table, etc.)
-Optionally update other documentation files
+Create or update SKILL.md in skills/ or .agents/skills/ or .claude/skills/
+Optionally add or update agent definition in agents/ or .agents/skills/
+Update manifests/install-modules.json if skill/agent is installable
+Update AGENTS.md and/or README.md to document the new skill/agent
 ```
 
-### Add Cross Harness Skill Copies
+### Add Or Update Command
 
-Adds skill copies for different agent harnesses (e.g., Codex, Cursor, Antigravity) to ensure compatibility across platforms.
+Adds or updates a CLI or workflow command, often with supporting documentation and implementation.
 
 **Frequency**: ~2 times per month
 
 **Steps**:
-1. Copy or adapt SKILL.md to .agents/skills/{skill}/SKILL.md and/or .cursor/skills/{skill}/SKILL.md
-2. Optionally add harness-specific openai.yaml or config files
-3. Address review feedback to align with CONTRIBUTING template
+1. Create or update a command file in commands/
+2. Update related documentation (README.md, AGENTS.md, etc.) if needed
+3. Optionally update scripts or tests if command has code or testable behavior
 
 **Files typically involved**:
-- `.agents/skills/*/SKILL.md`
-- `.cursor/skills/*/SKILL.md`
-- `.agents/skills/*/agents/openai.yaml`
+- `commands/*.md`
+- `README.md`
+- `AGENTS.md`
+- `tests/**/*.js`
 
 **Example commit sequence**:
 ```
-Copy or adapt SKILL.md to .agents/skills/{skill}/SKILL.md and/or .cursor/skills/{skill}/SKILL.md
-Optionally add harness-specific openai.yaml or config files
-Address review feedback to align with CONTRIBUTING template
+Create or update a command file in commands/
+Update related documentation (README.md, AGENTS.md, etc.) if needed
+Optionally update scripts or tests if command has code or testable behavior
 ```
 
-### Add Or Update Hook
+### Feature Development Or Refactor
 
-Adds or updates git or bash hooks to enforce workflow, quality, or security policies.
+Implements a new feature or refactors an existing one, including code, documentation, and tests.
 
-**Frequency**: ~1 times per month
+**Frequency**: ~2 times per month
 
 **Steps**:
-1. Add or update hook scripts in hooks/ or scripts/hooks/
-2. Register the hook in hooks/hooks.json or similar config
-3. Optionally add or update tests in tests/hooks/
-
-**Files typically involved**:
-- `hooks/*.hook`
-- `hooks/hooks.json`
-- `scripts/hooks/*.js`
-- `tests/hooks/*.test.js`
-- `.cursor/hooks.json`
-
-**Example commit sequence**:
-```
-Add or update hook scripts in hooks/ or scripts/hooks/
-Register the hook in hooks/hooks.json or similar config
-Optionally add or update tests in tests/hooks/
-```
-
-### Address Review Feedback
-
-Addresses code review feedback by updating documentation, scripts, or configuration for clarity, correctness, or convention alignment.
-
-**Frequency**: ~4 times per month
-
-**Steps**:
-1. Edit SKILL.md, agent, or command files to address reviewer comments
-2. Update examples, headings, or configuration as requested
-3. Iterate until all review feedback is resolved
+1. Implement or refactor code in skills/, agents/, scripts/, or commands/
+2. Update or add relevant documentation (README.md, AGENTS.md, WORKING-CONTEXT.md, etc.)
+3. Update or add tests in tests/
+4. Update manifests or configuration files if needed
 
 **Files typically involved**:
 - `skills/*/SKILL.md`
 - `agents/*.md`
+- `scripts/**/*.js`
 - `commands/*.md`
-- `.agents/skills/*/SKILL.md`
-- `.cursor/skills/*/SKILL.md`
+- `README.md`
+- `AGENTS.md`
+- `WORKING-CONTEXT.md`
+- `tests/**/*.js`
+- `manifests/*.json`
 
 **Example commit sequence**:
 ```
-Edit SKILL.md, agent, or command files to address reviewer comments
-Update examples, headings, or configuration as requested
-Iterate until all review feedback is resolved
+Implement or refactor code in skills/, agents/, scripts/, or commands/
+Update or add relevant documentation (README.md, AGENTS.md, WORKING-CONTEXT.md, etc.)
+Update or add tests in tests/
+Update manifests or configuration files if needed
+```
+
+### Add Or Update Install Target
+
+Adds or updates an install target (integration with external tool or platform), including scripts, schemas, and tests.
+
+**Frequency**: ~2 times per month
+
+**Steps**:
+1. Add or update install scripts (install.sh, install.js, uninstall.sh, uninstall.js) in a tool-specific directory
+2. Update manifests/install-modules.json and schemas/ecc-install-config.schema.json
+3. Update scripts/lib/install-manifests.js and scripts/lib/install-targets/*.js
+4. Add or update tests in tests/lib/install-targets.test.js
+
+**Files typically involved**:
+- `*/install.sh`
+- `*/install.js`
+- `*/uninstall.sh`
+- `*/uninstall.js`
+- `manifests/install-modules.json`
+- `schemas/ecc-install-config.schema.json`
+- `schemas/install-modules.schema.json`
+- `scripts/lib/install-manifests.js`
+- `scripts/lib/install-targets/*.js`
+- `tests/lib/install-targets.test.js`
+
+**Example commit sequence**:
+```
+Add or update install scripts (install.sh, install.js, uninstall.sh, uninstall.js) in a tool-specific directory
+Update manifests/install-modules.json and schemas/ecc-install-config.schema.json
+Update scripts/lib/install-manifests.js and scripts/lib/install-targets/*.js
+Add or update tests in tests/lib/install-targets.test.js
+```
+
+### Documentation Update Or Sync
+
+Updates documentation, synchronizes guidance, or adds new docs related to workflows, skills, or plugins.
+
+**Frequency**: ~2 times per month
+
+**Steps**:
+1. Edit or add markdown files in docs/, README.md, AGENTS.md, WORKING-CONTEXT.md, or plugin directories
+2. Synchronize documentation across multiple language or context variants if needed
+3. Update related configuration or manifest files if documentation references them
+
+**Files typically involved**:
+- `README.md`
+- `README.zh-CN.md`
+- `AGENTS.md`
+- `WORKING-CONTEXT.md`
+- `docs/**/*.md`
+- `.claude-plugin/README.md`
+- `.codex-plugin/README.md`
+- `.claude/commands/*.md`
+
+**Example commit sequence**:
+```
+Edit or add markdown files in docs/, README.md, AGENTS.md, WORKING-CONTEXT.md, or plugin directories
+Synchronize documentation across multiple language or context variants if needed
+Update related configuration or manifest files if documentation references them
+```
+
+### Ci Cd Or Dependency Update
+
+Updates CI/CD workflows or bumps dependencies (e.g., GitHub Actions, npm packages).
+
+**Frequency**: ~2 times per month
+
+**Steps**:
+1. Edit workflow files in .github/workflows/
+2. Update package.json and yarn.lock for npm dependencies
+3. Update lockfiles or schema files as needed
+
+**Files typically involved**:
+- `.github/workflows/*.yml`
+- `package.json`
+- `yarn.lock`
+- `package-lock.json`
+
+**Example commit sequence**:
+```
+Edit workflow files in .github/workflows/
+Update package.json and yarn.lock for npm dependencies
+Update lockfiles or schema files as needed
 ```
 
 
