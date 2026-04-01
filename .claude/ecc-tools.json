@@ -2,7 +2,7 @@
   "version": "1.3",
   "schemaVersion": "1.0",
   "generatedBy": "ecc-tools",
-  "generatedAt": "2026-03-20T12:07:36.496Z",
+  "generatedAt": "2026-04-01T21:06:47.502Z",
   "repo": "https://github.com/affaan-m/everything-claude-code",
   "profiles": {
     "requested": "full",
@@ -148,9 +148,9 @@
     ".claude/research/everything-claude-code-research-playbook.md",
     ".claude/team/everything-claude-code-team-config.json",
     ".claude/enterprise/controls.md",
-    ".claude/commands/database-migration.md",
     ".claude/commands/feature-development.md",
-    ".claude/commands/add-language-rules.md"
+    ".claude/commands/refactoring.md",
+    ".claude/commands/add-new-skill.md"
   ],
   "packageFiles": {
     "runtime-core": [
@@ -178,9 +178,9 @@
       ".claude/enterprise/controls.md"
     ],
     "workflow-pack": [
-      ".claude/commands/database-migration.md",
       ".claude/commands/feature-development.md",
-      ".claude/commands/add-language-rules.md"
+      ".claude/commands/refactoring.md",
+      ".claude/commands/add-new-skill.md"
     ]
   },
   "moduleFiles": {
@@ -209,9 +209,9 @@
       ".claude/enterprise/controls.md"
     ],
     "workflow-pack": [
-      ".claude/commands/database-migration.md",
       ".claude/commands/feature-development.md",
-      ".claude/commands/add-language-rules.md"
+      ".claude/commands/refactoring.md",
+      ".claude/commands/add-new-skill.md"
     ]
   },
   "files": [
@@ -287,32 +287,32 @@
     },
     {
       "moduleId": "workflow-pack",
-      "path": ".claude/commands/database-migration.md",
-      "description": "Workflow command scaffold for database-migration."
-    },
-    {
-      "moduleId": "workflow-pack",
       "path": ".claude/commands/feature-development.md",
       "description": "Workflow command scaffold for feature-development."
     },
     {
       "moduleId": "workflow-pack",
-      "path": ".claude/commands/add-language-rules.md",
-      "description": "Workflow command scaffold for add-language-rules."
+      "path": ".claude/commands/refactoring.md",
+      "description": "Workflow command scaffold for refactoring."
+    },
+    {
+      "moduleId": "workflow-pack",
+      "path": ".claude/commands/add-new-skill.md",
+      "description": "Workflow command scaffold for add-new-skill."
     }
   ],
   "workflows": [
-    {
-      "command": "database-migration",
-      "path": ".claude/commands/database-migration.md"
-    },
     {
       "command": "feature-development",
       "path": ".claude/commands/feature-development.md"
     },
     {
-      "command": "add-language-rules",
-      "path": ".claude/commands/add-language-rules.md"
+      "command": "refactoring",
+      "path": ".claude/commands/refactoring.md"
+    },
+    {
+      "command": "add-new-skill",
+      "path": ".claude/commands/add-new-skill.md"
     }
   ],
   "adapters": {
@@ -320,9 +320,9 @@
       "skillPath": ".claude/skills/everything-claude-code/SKILL.md",
       "identityPath": ".claude/identity.json",
       "commandPaths": [
-        ".claude/commands/database-migration.md",
         ".claude/commands/feature-development.md",
-        ".claude/commands/add-language-rules.md"
+        ".claude/commands/refactoring.md",
+        ".claude/commands/add-new-skill.md"
       ]
     },
     "codex": {
