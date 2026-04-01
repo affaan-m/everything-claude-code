@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "everything-claude-code",
-  "description": "Battle-tested Claude Code configurations from an Anthropic hackathon winner — agents, skills, hooks, commands, and rules evolved over 10+ months of intensive daily use",
+  "description": "Battle-tested Claude Code configurations from an Anthropic hackathon winner — agents, skills, hooks, rules, and legacy command shims evolved over 10+ months of intensive daily use",
   "owner": {
     "name": "Affaan Mustafa",
     "email": "me@affaanmustafa.com"
@@ -13,7 +13,7 @@
     {
       "name": "everything-claude-code",
       "source": "./",
-      "description": "The most comprehensive Claude Code plugin — 14+ agents, 56+ skills, 33+ commands, and production-ready hooks for TDD, security scanning, code review, and continuous learning",
+      "description": "The most comprehensive Claude Code plugin — 36 agents, 142 skills, 68 legacy command shims, and production-ready hooks for TDD, security scanning, code review, and continuous learning",
       "version": "1.9.0",
       "author": {
         "name": "Affaan Mustafa",

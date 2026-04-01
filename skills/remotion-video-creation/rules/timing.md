@@ -13,7 +13,7 @@ import {interpolate} from 'remotion';
 const opacity = interpolate(frame, [0, 100], [0, 1]);
 ```
 
-By default, the values are not clamped, so the value can go outside the range [0, 1].  
+By default, the values are not clamped, so the value can go outside the range [0, 1].
 Here is how they can be clamped:
 
 ```ts title="Going from 0 to 1 over 100 frames with extrapolation"
@@ -25,7 +25,7 @@ const opacity = interpolate(frame, [0, 100], [0, 1], {
 
 ## Spring animations
 
-Spring animations have a more natural motion.  
+Spring animations have a more natural motion.
 They go from 0 to 1 over time.
 
 ```ts title="Spring animation from 0 to 1 over 100 frames"
@@ -42,7 +42,7 @@ const scale = spring({
 
 ### Physical properties
 
-The default configuration is: `mass: 1, damping: 10, stiffness: 100`.  
+The default configuration is: `mass: 1, damping: 10, stiffness: 100`.
 This leads to the animation having a bit of bounce before it settles.
 
 The config can be overwritten like this:
@@ -68,7 +68,7 @@ const heavy = {damping: 15, stiffness: 80, mass: 2}; // Heavy, slow, small bounc
 
 ### Delay
 
-The animation starts immediately by default.  
+The animation starts immediately by default.
 Use the `delay` parameter to delay the animation by a number of frames.
 
 ```tsx
@@ -81,7 +81,7 @@ const entrance = spring({
 
 ### Duration
 
-A `spring()` has a natural duration based on the physical properties.  
+A `spring()` has a natural duration based on the physical properties.
 To stretch the animation to a specific duration, use the `durationInFrames` parameter.
 
 ```tsx
@@ -144,7 +144,7 @@ const value1 = interpolate(frame, [0, 100], [0, 1], {
 });
 ```
 
-The default easing is `Easing.linear`.  
+The default easing is `Easing.linear`.
 There are various other convexities:
 
 - `Easing.in` for starting slow and accelerating

@@ -276,6 +276,13 @@ function createInstallTargetAdapter(config) {
         input
       ));
     },
+    supportsModule(module, input = {}) {
+      if (typeof config.supportsModule === 'function') {
+        return config.supportsModule(module, input, adapter);
+      }
+
+      return true;
+    },
     validate(input = {}) {
       if (typeof config.validate === 'function') {
         return config.validate(input, adapter);

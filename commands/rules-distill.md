@@ -1,11 +1,20 @@
 ---
-description: "Scan skills to extract cross-cutting principles and distill them into rules"
+description: Legacy slash-entry shim for the rules-distill skill. Prefer the skill directly.
 ---
 
-# /rules-distill — Distill Principles from Skills into Rules
+# Rules Distill (Legacy Shim)
 
-Scan installed skills, extract cross-cutting principles, and distill them into rules.
+Use this only if you still invoke `/rules-distill`. The maintained workflow lives in `skills/rules-distill/SKILL.md`.
 
-## Process
+## Canonical Surface
 
-Follow the full workflow defined in the `rules-distill` skill.
+- Prefer the `rules-distill` skill directly.
+- Keep this file only as a compatibility entry point.
+
+## Arguments
+
+`$ARGUMENTS`
+
+## Delegation
+
+Apply the `rules-distill` skill and follow its inventory, cross-read, and verdict workflow instead of duplicating that logic here.

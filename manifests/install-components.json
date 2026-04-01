@@ -146,6 +146,14 @@
       ]
     },
     {
+      "id": "capability:operators",
+      "family": "capability",
+      "description": "Connected-app operator workflows for setup audits, billing operations, program tracking, and Google Workspace.",
+      "modules": [
+        "operator-workflows"
+      ]
+    },
+    {
       "id": "capability:social",
       "family": "capability",
       "description": "Social publishing and distribution skills.",

@@ -253,46 +253,142 @@ function runTests() {
     );
   })) passed++; else failed++;
 
+  if (test('validates projectRoot and homeDir option types before adapter planning', () => {
+    assert.throws(
+      () => resolveInstallPlan({ profileId: 'core', target: 'cursor', projectRoot: 42 }),
+      /projectRoot must be a non-empty string when provided/
+    );
+    assert.throws(
+      () => resolveInstallPlan({ profileId: 'core', target: 'claude', homeDir: {} }),
+      /homeDir must be a non-empty string when provided/
+    );
+  })) passed++; else failed++;
+
   if (test('skips a requested module when its dependency chain does not support the target', () => {
     const repoRoot = createTestRepo();
-    writeJson(path.join(repoRoot, 'manifests', 'install-modules.json'), {
-      version: 1,
-      modules: [
-        {
-          id: 'parent',
-          kind: 'skills',
-          description: 'Parent',
-          paths: ['parent'],
-          targets: ['claude'],
-          dependencies: ['child'],
-          defaultInstall: false,
-          cost: 'light',
-          stability: 'stable'
-        },
-        {
-          id: 'child',
-          kind: 'skills',
-          description: 'Child',
-          paths: ['child'],
-          targets: ['cursor'],
-          dependencies: [],
-          defaultInstall: false,
-          cost: 'light',
-          stability: 'stable'
+    try {
+      writeJson(path.join(repoRoot, 'manifests', 'install-modules.json'), {
+        version: 1,
+        modules: [
+          {
+            id: 'parent',
+            kind: 'skills',
+            description: 'Parent',
+            paths: ['parent'],
+            targets: ['claude'],
+            dependencies: ['child'],
+            defaultInstall: false,
+            cost: 'light',
+            stability: 'stable'
+          },
+          {
+            id: 'child',
+            kind: 'skills',
+            description: 'Child',
+            paths: ['child'],
+            targets: ['cursor'],
+            dependencies: [],
+            defaultInstall: false,
+            cost: 'light',
+            stability: 'stable'
+          }
+        ]
+      });
+      writeJson(path.join(repoRoot, 'manifests', 'install-profiles.json'), {
+        version: 1,
+        profiles: {
+          core: { description: 'Core', modules: ['parent'] }
         }
-      ]
-    });
-    writeJson(path.join(repoRoot, 'manifests', 'install-profiles.json'), {
-      version: 1,
-      profiles: {
-        core: { description: 'Core', modules: ['parent'] }
-      }
-    });
+      });
 
-    const plan = resolveInstallPlan({ repoRoot, profileId: 'core', target: 'claude' });
-    assert.deepStrictEqual(plan.selectedModuleIds, []);
-    assert.deepStrictEqual(plan.skippedModuleIds, ['parent']);
-    cleanupTestRepo(repoRoot);
+      const plan = resolveInstallPlan({ repoRoot, profileId: 'core', target: 'claude' });
+      assert.deepStrictEqual(plan.selectedModuleIds, []);
+      assert.deepStrictEqual(plan.skippedModuleIds, ['parent']);
+    } finally {
+      cleanupTestRepo(repoRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('fails fast when install manifest module targets is not an array', () => {
+    const repoRoot = createTestRepo();
+    try {
+      writeJson(path.join(repoRoot, 'manifests', 'install-modules.json'), {
+        version: 1,
+        modules: [
+          {
+            id: 'parent',
+            kind: 'skills',
+            description: 'Parent',
+            paths: ['parent'],
+            targets: 'claude',
+            dependencies: [],
+            defaultInstall: false,
+            cost: 'light',
+            stability: 'stable'
+          }
+        ]
+      });
+      writeJson(path.join(repoRoot, 'manifests', 'install-profiles.json'), {
+        version: 1,
+        profiles: {
+          core: { description: 'Core', modules: ['parent'] }
+        }
+      });
+
+      assert.throws(
+        () => resolveInstallPlan({ repoRoot, profileId: 'core', target: 'claude' }),
+        /Install module parent has invalid targets; expected an array of supported target ids/
+      );
+    } finally {
+      cleanupTestRepo(repoRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('keeps antigravity modules selected while filtering unsupported source paths', () => {
+    const repoRoot = createTestRepo();
+    try {
+      writeJson(path.join(repoRoot, 'manifests', 'install-modules.json'), {
+        version: 1,
+        modules: [
+          {
+            id: 'unsupported-antigravity',
+            kind: 'skills',
+            description: 'Unsupported',
+            paths: ['.cursor', 'skills/example'],
+            targets: ['antigravity'],
+            dependencies: [],
+            defaultInstall: false,
+            cost: 'light',
+            stability: 'stable'
+          }
+        ]
+      });
+      writeJson(path.join(repoRoot, 'manifests', 'install-profiles.json'), {
+        version: 1,
+        profiles: {
+          core: { description: 'Core', modules: ['unsupported-antigravity'] }
+        }
+      });
+
+      const plan = resolveInstallPlan({
+        repoRoot,
+        profileId: 'core',
+        target: 'antigravity',
+        projectRoot: '/workspace/app',
+      });
+      assert.deepStrictEqual(plan.selectedModuleIds, ['unsupported-antigravity']);
+      assert.deepStrictEqual(plan.skippedModuleIds, []);
+      assert.ok(
+        plan.operations.every(operation => operation.sourceRelativePath !== '.cursor'),
+        'Unsupported antigravity paths should be filtered from planned operations'
+      );
+      assert.ok(
+        plan.operations.some(operation => operation.sourceRelativePath === 'skills/example'),
+        'Supported antigravity skill paths should still be planned'
+      );
+    } finally {
+      cleanupTestRepo(repoRoot);
+    }
   })) passed++; else failed++;
 
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);

@@ -20,17 +20,70 @@ function readJsonObject(filePath, label) {
   return parsed;
 }
 
+function buildLegacyHookSignature(entry) {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+    return null;
+  }
+
+  if (typeof entry.matcher !== 'string' || !Array.isArray(entry.hooks)) {
+    return null;
+  }
+
+  const hookSignature = entry.hooks.map(hook => JSON.stringify({
+    type: hook && typeof hook === 'object' ? hook.type : undefined,
+    command: hook && typeof hook === 'object' ? hook.command : undefined,
+    timeout: hook && typeof hook === 'object' ? hook.timeout : undefined,
+    async: hook && typeof hook === 'object' ? hook.async : undefined,
+  }));
+
+  return JSON.stringify({
+    matcher: entry.matcher,
+    hooks: hookSignature,
+  });
+}
+
+function getHookEntryAliases(entry) {
+  const aliases = [];
+
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+    return aliases;
+  }
+
+  if (typeof entry.id === 'string' && entry.id.trim().length > 0) {
+    aliases.push(`id:${entry.id.trim()}`);
+  }
+
+  const legacySignature = buildLegacyHookSignature(entry);
+  if (legacySignature) {
+    aliases.push(`legacy:${legacySignature}`);
+  }
+
+  aliases.push(`json:${JSON.stringify(entry)}`);
+
+  return aliases;
+}
+
 function mergeHookEntries(existingEntries, incomingEntries) {
   const mergedEntries = [];
   const seenEntries = new Set();
 
   for (const entry of [...existingEntries, ...incomingEntries]) {
-    const entryKey = JSON.stringify(entry);
-    if (seenEntries.has(entryKey)) {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
       continue;
     }
 
-    seenEntries.add(entryKey);
+    if ('id' in entry && typeof entry.id !== 'string') {
+      continue;
+    }
+
+    const aliases = getHookEntryAliases(entry);
+    if (aliases.some(alias => seenEntries.has(alias))) {
+      continue;
+    }
+
+    for (const alias of aliases) {
+      seenEntries.add(alias);
+    }
     mergedEntries.push(entry);
   }
 

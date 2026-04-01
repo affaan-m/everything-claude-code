@@ -10,7 +10,8 @@
             "command": "npx block-no-verify@1.1.2"
           }
         ],
-        "description": "Block git hook-bypass flag to protect pre-commit, commit-msg, and pre-push hooks from being skipped"
+        "description": "Block git hook-bypass flag to protect pre-commit, commit-msg, and pre-push hooks from being skipped",
+        "id": "pre:bash:block-no-verify"
       },
       {
         "matcher": "Bash",
@@ -20,7 +21,8 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/auto-tmux-dev.js\""
           }
         ],
-        "description": "Auto-start dev servers in tmux with directory-based session names"
+        "description": "Auto-start dev servers in tmux with directory-based session names",
+        "id": "pre:bash:auto-tmux-dev"
       },
       {
         "matcher": "Bash",
@@ -30,7 +32,8 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:bash:tmux-reminder\" \"scripts/hooks/pre-bash-tmux-reminder.js\" \"strict\""
           }
         ],
-        "description": "Reminder to use tmux for long-running commands"
+        "description": "Reminder to use tmux for long-running commands",
+        "id": "pre:bash:tmux-reminder"
       },
       {
         "matcher": "Bash",
@@ -40,7 +43,8 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:bash:git-push-reminder\" \"scripts/hooks/pre-bash-git-push-reminder.js\" \"strict\""
           }
         ],
-        "description": "Reminder before git push to review changes"
+        "description": "Reminder before git push to review changes",
+        "id": "pre:bash:git-push-reminder"
       },
       {
         "matcher": "Bash",
@@ -50,7 +54,8 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:bash:commit-quality\" \"scripts/hooks/pre-bash-commit-quality.js\" \"strict\""
           }
         ],
-        "description": "Pre-commit quality check: lint staged files, validate commit message format, detect console.log/debugger/secrets before committing"
+        "description": "Pre-commit quality check: lint staged files, validate commit message format, detect console.log/debugger/secrets before committing",
+        "id": "pre:bash:commit-quality"
       },
       {
         "matcher": "Write",
@@ -60,7 +65,8 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:write:doc-file-warning\" \"scripts/hooks/doc-file-warning.js\" \"standard,strict\""
           }
         ],
-        "description": "Doc file warning: warn about non-standard documentation files (exit code 0; warns only)"
+        "description": "Doc file warning: warn about non-standard documentation files (exit code 0; warns only)",
+        "id": "pre:write:doc-file-warning"
       },
       {
         "matcher": "Edit|Write",
@@ -70,7 +76,8 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:edit-write:suggest-compact\" \"scripts/hooks/suggest-compact.js\" \"standard,strict\""
           }
         ],
-        "description": "Suggest manual compaction at logical intervals"
+        "description": "Suggest manual compaction at logical intervals",
+        "id": "pre:edit-write:suggest-compact"
       },
       {
         "matcher": "*",
@@ -82,7 +89,8 @@
             "timeout": 10
           }
         ],
-        "description": "Capture tool use observations for continuous learning"
+        "description": "Capture tool use observations for continuous learning",
+        "id": "pre:observe:continuous-learning"
       },
       {
         "matcher": "Bash|Write|Edit|MultiEdit",
@@ -93,7 +101,8 @@
             "timeout": 15
           }
         ],
-        "description": "Optional InsAIts AI security monitor for Bash/Edit/Write flows. Enable with ECC_ENABLE_INSAITS=1. Requires: pip install insa-its"
+        "description": "Optional InsAIts AI security monitor for Bash/Edit/Write flows. Enable with ECC_ENABLE_INSAITS=1. Requires: pip install insa-its",
+        "id": "pre:insaits:security"
       },
       {
         "matcher": "Bash|Write|Edit|MultiEdit",
@@ -104,7 +113,8 @@
             "timeout": 10
           }
         ],
-        "description": "Capture governance events (secrets, policy violations, approval requests). Enable with ECC_GOVERNANCE_CAPTURE=1"
+        "description": "Capture governance events (secrets, policy violations, approval requests). Enable with ECC_GOVERNANCE_CAPTURE=1",
+        "id": "pre:governance-capture"
       },
       {
         "matcher": "Write|Edit|MultiEdit",
@@ -115,7 +125,8 @@
             "timeout": 5
           }
         ],
-        "description": "Block modifications to linter/formatter config files. Steers agent to fix code instead of weakening configs."
+        "description": "Block modifications to linter/formatter config files. Steers agent to fix code instead of weakening configs.",
+        "id": "pre:config-protection"
       },
       {
         "matcher": "*",
@@ -125,7 +136,8 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:mcp-health-check\" \"scripts/hooks/mcp-health-check.js\" \"standard,strict\""
           }
         ],
-        "description": "Check MCP server health before MCP tool execution and block unhealthy MCP calls"
+        "description": "Check MCP server health before MCP tool execution and block unhealthy MCP calls",
+        "id": "pre:mcp-health-check"
       }
     ],
     "PreCompact": [
@@ -137,7 +149,8 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"pre:compact\" \"scripts/hooks/pre-compact.js\" \"standard,strict\""
           }
         ],
-        "description": "Save state before context compaction"
+        "description": "Save state before context compaction",
+        "id": "pre:compact"
       }
     ],
     "SessionStart": [
@@ -149,7 +162,8 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start-bootstrap.js\""
           }
         ],
-        "description": "Load previous context and detect package manager on new session"
+        "description": "Load previous context and detect package manager on new session",
+        "id": "session:start"
       }
     ],
     "PostToolUse": [
@@ -158,20 +172,22 @@
         "hooks": [
           {
             "type": "command",
-            "command": "#!/bin/bash\nmkdir -p ~/.claude; INPUT=$(cat);\necho \"$INPUT\" | jq -r '\"[\" + (now | todate) + \"] \" + ((.tool_input.command // \"?\") | gsub(\"\n\"; \" \") | gsub(\"--token[= ][^ ]*\"; \"--token=<REDACTED>\") | gsub(\"Authorization:[: ]*[^ ]*[: ]*[^ ]*\"; \"Authorization:<REDACTED>\") | gsub(\"AKIA[A-Z0-9]{16}\"; \"<REDACTED>\") | gsub(\"ASIA[A-Z0-9]{16}\"; \"<REDACTED>\") | gsub(\"password[= ][^ ]*\"; \"password=<REDACTED>\") | gsub(\"ghp_[A-Za-z0-9_]+\"; \"<REDACTED>\") | gsub(\"gho_[A-Za-z0-9_]+\"; \"<REDACTED>\") | gsub(\"ghs_[A-Za-z0-9_]+\"; \"<REDACTED>\") | gsub(\"github_pat_[A-Za-z0-9_]+\"; \"<REDACTED>\"))' >> ~/.claude/bash-commands.log 2>/dev/null || true;\nprintf '%s\n' \"$INPUT\""
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-bash-command-log.js\" audit"
           }
         ],
-        "description": "Audit log all bash commands to ~/.claude/bash-commands.log"
+        "description": "Audit log all bash commands to ~/.claude/bash-commands.log",
+        "id": "post:bash:command-log-audit"
       },
       {
         "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "#!/bin/bash\nmkdir -p ~/.claude; INPUT=$(cat);\necho \"$INPUT\" | jq -r '\"[\" + (now | todate) + \"] tool=Bash command=\" + ((.tool_input.command // \"?\") | gsub(\"\n\"; \" \") | gsub(\"--token[= ][^ ]*\"; \"--token=<REDACTED>\") | gsub(\"Authorization:[: ]*[^ ]*[: ]*[^ ]*\"; \"Authorization:<REDACTED>\") | gsub(\"AKIA[A-Z0-9]{16}\"; \"<REDACTED>\") | gsub(\"ASIA[A-Z0-9]{16}\"; \"<REDACTED>\") | gsub(\"password[= ][^ ]*\"; \"password=<REDACTED>\") | gsub(\"ghp_[A-Za-z0-9_]+\"; \"<REDACTED>\") | gsub(\"gho_[A-Za-z0-9_]+\"; \"<REDACTED>\") | gsub(\"ghs_[A-Za-z0-9_]+\"; \"<REDACTED>\") | gsub(\"github_pat_[A-Za-z0-9_]+\"; \"<REDACTED>\"))' >> ~/.claude/cost-tracker.log 2>/dev/null || true;\nprintf '%s\n' \"$INPUT\""
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-bash-command-log.js\" cost"
           }
         ],
-        "description": "Cost tracker - log bash tool usage with timestamps"
+        "description": "Cost tracker - log bash tool usage with timestamps",
+        "id": "post:bash:command-log-cost"
       },
       {
         "matcher": "Bash",
@@ -181,7 +197,8 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:bash:pr-created\" \"scripts/hooks/post-bash-pr-created.js\" \"standard,strict\""
           }
         ],
-        "description": "Log PR URL and provide review command after PR creation"
+        "description": "Log PR URL and provide review command after PR creation",
+        "id": "post:bash:pr-created"
       },
       {
         "matcher": "Bash",
@@ -193,7 +210,8 @@
             "timeout": 30
           }
         ],
-        "description": "Example: async hook for build analysis (runs in background without blocking)"
+        "description": "Example: async hook for build analysis (runs in background without blocking)",
+        "id": "post:bash:build-complete"
       },
       {
         "matcher": "Edit|Write|MultiEdit",
@@ -205,7 +223,8 @@
             "timeout": 30
           }
         ],
-        "description": "Run quality gate checks after file edits"
+        "description": "Run quality gate checks after file edits",
+        "id": "post:quality-gate"
       },
       {
         "matcher": "Edit|Write|MultiEdit",
@@ -215,7 +234,8 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:edit:accumulate\" \"scripts/hooks/post-edit-accumulator.js\" \"standard,strict\""
           }
         ],
-        "description": "Record edited JS/TS file paths for batch format+typecheck at Stop time"
+        "description": "Record edited JS/TS file paths for batch format+typecheck at Stop time",
+        "id": "post:edit:accumulator"
       },
       {
         "matcher": "Edit",
@@ -225,7 +245,8 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:edit:console-warn\" \"scripts/hooks/post-edit-console-warn.js\" \"standard,strict\""
           }
         ],
-        "description": "Warn about console.log statements after edits"
+        "description": "Warn about console.log statements after edits",
+        "id": "post:edit:console-warn"
       },
       {
         "matcher": "Bash|Write|Edit|MultiEdit",
@@ -236,7 +257,8 @@
             "timeout": 10
           }
         ],
-        "description": "Capture governance events from tool outputs. Enable with ECC_GOVERNANCE_CAPTURE=1"
+        "description": "Capture governance events from tool outputs. Enable with ECC_GOVERNANCE_CAPTURE=1",
+        "id": "post:governance-capture"
       },
       {
         "matcher": "*",
@@ -248,7 +270,8 @@
             "timeout": 10
           }
         ],
-        "description": "Capture tool use results for continuous learning"
+        "description": "Capture tool use results for continuous learning",
+        "id": "post:observe:continuous-learning"
       }
     ],
     "PostToolUseFailure": [
@@ -260,7 +283,8 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:mcp-health-check\" \"scripts/hooks/mcp-health-check.js\" \"standard,strict\""
           }
         ],
-        "description": "Track failed MCP tool calls, mark unhealthy servers, and attempt reconnect"
+        "description": "Track failed MCP tool calls, mark unhealthy servers, and attempt reconnect",
+        "id": "post:mcp-health-check"
       }
     ],
     "Stop": [
@@ -269,11 +293,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"stop:format-typecheck\" \"scripts/hooks/stop-format-typecheck.js\" \"standard,strict\"",
+            "command": "node -e \"const fs=require('fs');const path=require('path');const {spawnSync}=require('child_process');const raw=fs.readFileSync(0,'utf8');const rel=path.join('scripts','hooks','run-with-flags.js');const hasRunnerRoot=candidate=>{const value=typeof candidate==='string'?candidate.trim():'';return value.length>0&&fs.existsSync(path.join(path.resolve(value),rel));};const root=(()=>{const envRoot=process.env.CLAUDE_PLUGIN_ROOT||'';if(hasRunnerRoot(envRoot))return path.resolve(envRoot.trim());const home=require('os').homedir();const claudeDir=path.join(home,'.claude');if(hasRunnerRoot(claudeDir))return claudeDir;for(const candidate of [path.join(claudeDir,'plugins','everything-claude-code'),path.join(claudeDir,'plugins','everything-claude-code@everything-claude-code'),path.join(claudeDir,'plugins','marketplace','everything-claude-code')]){if(hasRunnerRoot(candidate))return candidate;}try{const cacheBase=path.join(claudeDir,'plugins','cache','everything-claude-code');for(const org of fs.readdirSync(cacheBase,{withFileTypes:true})){if(!org.isDirectory())continue;for(const version of fs.readdirSync(path.join(cacheBase,org.name),{withFileTypes:true})){if(!version.isDirectory())continue;const candidate=path.join(cacheBase,org.name,version.name);if(hasRunnerRoot(candidate))return candidate;}}}catch{}return claudeDir;})();const script=path.join(root,rel);if(fs.existsSync(script)){const result=spawnSync(process.execPath,[script,'stop:format-typecheck','scripts/hooks/stop-format-typecheck.js','standard,strict'],{input:raw,encoding:'utf8',env:process.env,cwd:process.cwd(),timeout:300000});const stdout=typeof result.stdout==='string'?result.stdout:'';if(stdout)process.stdout.write(stdout);else process.stdout.write(raw);if(result.stderr)process.stderr.write(result.stderr);if(result.error||result.status===null||result.signal){const reason=result.error?result.error.message:(result.signal?'signal '+result.signal:'missing exit status');process.stderr.write('[Stop] ERROR: hook runner failed: '+reason+String.fromCharCode(10));process.exit(1);}process.exit(Number.isInteger(result.status)?result.status:0);}process.stderr.write('[Stop] WARNING: could not resolve ECC plugin root; skipping hook'+String.fromCharCode(10));process.stdout.write(raw);\"",
             "timeout": 300
           }
         ],
-        "description": "Batch format (Biome/Prettier) and typecheck (tsc) all JS/TS files edited this response — runs once at Stop instead of after every Edit"
+        "description": "Batch format (Biome/Prettier) and typecheck (tsc) all JS/TS files edited this response — runs once at Stop instead of after every Edit",
+        "id": "stop:format-typecheck"
       },
       {
         "matcher": "*",
@@ -283,7 +308,8 @@
             "command": "node -e \"const fs=require('fs');const path=require('path');const {spawnSync}=require('child_process');const raw=fs.readFileSync(0,'utf8');const rel=path.join('scripts','hooks','run-with-flags.js');const hasRunnerRoot=candidate=>{const value=typeof candidate==='string'?candidate.trim():'';return value.length>0&&fs.existsSync(path.join(path.resolve(value),rel));};const root=(()=>{const envRoot=process.env.CLAUDE_PLUGIN_ROOT||'';if(hasRunnerRoot(envRoot))return path.resolve(envRoot.trim());const home=require('os').homedir();const claudeDir=path.join(home,'.claude');if(hasRunnerRoot(claudeDir))return claudeDir;for(const candidate of [path.join(claudeDir,'plugins','everything-claude-code'),path.join(claudeDir,'plugins','everything-claude-code@everything-claude-code'),path.join(claudeDir,'plugins','marketplace','everything-claude-code')]){if(hasRunnerRoot(candidate))return candidate;}try{const cacheBase=path.join(claudeDir,'plugins','cache','everything-claude-code');for(const org of fs.readdirSync(cacheBase,{withFileTypes:true})){if(!org.isDirectory())continue;for(const version of fs.readdirSync(path.join(cacheBase,org.name),{withFileTypes:true})){if(!version.isDirectory())continue;const candidate=path.join(cacheBase,org.name,version.name);if(hasRunnerRoot(candidate))return candidate;}}}catch{}return claudeDir;})();const script=path.join(root,rel);if(fs.existsSync(script)){const result=spawnSync(process.execPath,[script,'stop:check-console-log','scripts/hooks/check-console-log.js','standard,strict'],{input:raw,encoding:'utf8',env:process.env,cwd:process.cwd(),timeout:30000});const stdout=typeof result.stdout==='string'?result.stdout:'';if(stdout)process.stdout.write(stdout);else process.stdout.write(raw);if(result.stderr)process.stderr.write(result.stderr);if(result.error||result.status===null||result.signal){const reason=result.error?result.error.message:(result.signal?'signal '+result.signal:'missing exit status');process.stderr.write('[Stop] ERROR: hook runner failed: '+reason+String.fromCharCode(10));process.exit(1);}process.exit(Number.isInteger(result.status)?result.status:0);}process.stderr.write('[Stop] WARNING: could not resolve ECC plugin root; skipping hook'+String.fromCharCode(10));process.stdout.write(raw);\""
           }
         ],
-        "description": "Check for console.log in modified files after each response"
+        "description": "Check for console.log in modified files after each response",
+        "id": "stop:check-console-log"
       },
       {
         "matcher": "*",
@@ -295,7 +321,8 @@
             "timeout": 10
           }
         ],
-        "description": "Persist session state after each response (Stop carries transcript_path)"
+        "description": "Persist session state after each response (Stop carries transcript_path)",
+        "id": "stop:session-end"
       },
       {
         "matcher": "*",
@@ -307,7 +334,8 @@
             "timeout": 10
           }
         ],
-        "description": "Evaluate session for extractable patterns"
+        "description": "Evaluate session for extractable patterns",
+        "id": "stop:evaluate-session"
       },
       {
         "matcher": "*",
@@ -319,7 +347,8 @@
             "timeout": 10
           }
         ],
-        "description": "Track token and cost metrics per session"
+        "description": "Track token and cost metrics per session",
+        "id": "stop:cost-tracker"
       },
       {
         "matcher": "*",
@@ -331,7 +360,8 @@
             "timeout": 10
           }
         ],
-        "description": "Send desktop notification (macOS/WSL) with task summary when Claude responds"
+        "description": "Send desktop notification (macOS/WSL) with task summary when Claude responds",
+        "id": "stop:desktop-notify"
       }
     ],
     "SessionEnd": [
@@ -345,7 +375,8 @@
             "timeout": 10
           }
         ],
-        "description": "Session end lifecycle marker (non-blocking)"
+        "description": "Session end lifecycle marker (non-blocking)",
+        "id": "session:end:marker"
       }
     ]
   }

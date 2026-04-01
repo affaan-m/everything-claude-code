@@ -304,6 +304,31 @@
       "stability": "stable"
     },
     {
+      "id": "operator-workflows",
+      "kind": "skills",
+      "description": "Connected-app operator workflows for setup audits, billing operations, program tracking, and Google Workspace.",
+      "paths": [
+        "skills/customer-billing-ops",
+        "skills/google-workspace-ops",
+        "skills/project-flow-ops",
+        "skills/workspace-surface-audit"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode",
+        "codebuddy"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "beta"
+    },
+    {
       "id": "social-distribution",
       "kind": "skills",
       "description": "Social publishing and distribution skills.",
@@ -333,6 +358,7 @@
       "paths": [
         "skills/fal-ai-media",
         "skills/remotion-video-creation",
+        "skills/ui-demo",
         "skills/video-editing",
         "skills/videodb"
       ],

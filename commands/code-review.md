@@ -219,10 +219,10 @@ Create review artifact at `.claude/PRPs/reviews/pr-<NUMBER>-review.md`:
 
 | Check | Result |
 |---|---|
-| Type check | ✅ Pass / ❌ Fail / ⏭️ Skipped |
-| Lint | ✅ / ❌ / ⏭️ |
-| Tests | ✅ / ❌ / ⏭️ |
-| Build | ✅ / ❌ / ⏭️ |
+| Type check | Pass / Fail / Skipped |
+| Lint | Pass / Fail / Skipped |
+| Tests | Pass / Fail / Skipped |
+| Build | Pass / Fail / Skipped |
 
 ## Files Reviewed
 <list of files with change type: Added/Modified/Deleted>

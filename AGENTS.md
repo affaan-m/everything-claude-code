@@ -1,6 +1,6 @@
 # Everything Claude Code (ECC) — Agent Instructions
 
-This is a **production-ready AI coding plugin** providing 36 specialized agents, 142 skills, 68 commands, and automated hook workflows for software development.
+This is a **production-ready AI coding plugin** providing 36 specialized agents, 147 skills, 68 commands, and automated hook workflows for software development.
 
 **Version:** 1.9.0
 
@@ -116,6 +116,12 @@ Troubleshoot failures: check test isolation → verify mocks → fix implementat
    - If there is no obvious project doc location, ask before creating a new top-level file
 5. **Commit** — Conventional commits format, comprehensive PR summaries
 
+## Workflow Surface Policy
+
+- `skills/` is the canonical workflow surface.
+- New workflow contributions should land in `skills/` first.
+- `commands/` is a legacy slash-entry compatibility surface and should only be added or updated when a shim is still required for migration or cross-harness parity.
+
 ## Git Workflow
 
 **Commit format:** `<type>: <description>` — Types: feat, fix, refactor, docs, test, chore, perf, ci
@@ -140,7 +146,7 @@ Troubleshoot failures: check test isolation → verify mocks → fix implementat
 
 ```
 agents/          — 36 specialized subagents
-skills/          — 142 workflow skills and domain knowledge
+skills/          — 147 workflow skills and domain knowledge
 commands/        — 68 slash commands
 hooks/           — Trigger-based automations
 rules/           — Always-follow guidelines (common + per-language)
@@ -148,6 +154,8 @@ scripts/         — Cross-platform Node.js utilities
 mcp-configs/     — 14 MCP server configurations
 tests/           — Test suite
 ```
+
+`commands/` remains in the repo for compatibility, but the long-term direction is skills-first.
 
 ## Success Metrics
 

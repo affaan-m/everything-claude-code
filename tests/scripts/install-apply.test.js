@@ -423,6 +423,49 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (test('reinstall deduplicates legacy hooks without ids against new managed ids', () => {
+    const homeDir = createTempDir('install-apply-home-');
+    const projectDir = createTempDir('install-apply-project-');
+
+    try {
+      const firstInstall = run(['--profile', 'core'], { cwd: projectDir, homeDir });
+      assert.strictEqual(firstInstall.code, 0, firstInstall.stderr);
+
+      const settingsPath = path.join(homeDir, '.claude', 'settings.json');
+      const afterFirstInstall = readJson(settingsPath);
+      const legacySettings = JSON.parse(JSON.stringify(afterFirstInstall));
+
+      for (const entries of Object.values(legacySettings.hooks)) {
+        if (!Array.isArray(entries)) {
+          continue;
+        }
+        for (const entry of entries) {
+          delete entry.id;
+        }
+      }
+
+      fs.writeFileSync(settingsPath, JSON.stringify(legacySettings, null, 2));
+      const legacyPreToolUseLength = legacySettings.hooks.PreToolUse.length;
+
+      const secondInstall = run(['--profile', 'core'], { cwd: projectDir, homeDir });
+      assert.strictEqual(secondInstall.code, 0, secondInstall.stderr);
+
+      const afterSecondInstall = readJson(settingsPath);
+      assert.strictEqual(
+        afterSecondInstall.hooks.PreToolUse.length,
+        legacyPreToolUseLength,
+        'legacy hook installs should not duplicate when ids are introduced'
+      );
+      assert.ok(
+        afterSecondInstall.hooks.PreToolUse.every(entry => entry && typeof entry === 'object'),
+        'merged hook entries should remain valid objects'
+      );
+    } finally {
+      cleanup(homeDir);
+      cleanup(projectDir);
+    }
+  })) passed++; else failed++;
+
   if (test('fails when existing settings.json is malformed', () => {
     const homeDir = createTempDir('install-apply-home-');
     const projectDir = createTempDir('install-apply-project-');

@@ -54,7 +54,7 @@ NC='\033[0m'
 
 log()    { echo -e "${BLUE}[GAN-HARNESS]${NC} $*"; }
 ok()     { echo -e "${GREEN}[✓]${NC} $*"; }
-warn()   { echo -e "${YELLOW}[⚠]${NC} $*"; }
+warn()   { echo -e "${YELLOW}[WARN]${NC} $*"; }
 fail()   { echo -e "${RED}[✗]${NC} $*"; }
 phase()  { echo -e "\n${PURPLE}═══════════════════════════════════════════════${NC}"; echo -e "${PURPLE}  $*${NC}"; echo -e "${PURPLE}═══════════════════════════════════════════════${NC}\n"; }
 
@@ -159,7 +159,7 @@ for (( i=1; i<=MAX_ITERATIONS; i++ )); do
   log "━━━ Iteration $i / $MAX_ITERATIONS ━━━"
 
   # ── GENERATE ──
-  echo -e "${GREEN}▶ GENERATOR (iteration $i)${NC}"
+  echo -e "${GREEN}>> GENERATOR (iteration $i)${NC}"
 
   FEEDBACK_CONTEXT=""
   if [ $i -gt 1 ] && [ -f "${FEEDBACK_DIR}/feedback-$(printf '%03d' $((i-1))).md" ]; then
@@ -181,7 +181,7 @@ Update gan-harness/generator-state.md." \
   ok "Generator completed iteration $i"
 
   # ── EVALUATE ──
-  echo -e "${RED}▶ EVALUATOR (iteration $i)${NC}"
+  echo -e "${RED}>> EVALUATOR (iteration $i)${NC}"
 
   claude -p --model "$EVALUATOR_MODEL" \
     --allowedTools "Read,Write,Bash,Grep,Glob" \
@@ -217,7 +217,7 @@ Include the weighted TOTAL score in the format: | **TOTAL** | | | **X.X** |" \
   # ── CHECK PASS ──
   if score_passes "$SCORE" "$PASS_THRESHOLD"; then
     echo ""
-    ok "🎉 PASSED at iteration $i with score $SCORE (threshold: $PASS_THRESHOLD)"
+    ok "PASSED at iteration $i with score $SCORE (threshold: $PASS_THRESHOLD)"
     break
   fi
 
@@ -256,7 +256,7 @@ cat > "${HARNESS_DIR}/build-report.md" << EOF
 # GAN Harness Build Report
 
 **Brief:** $BRIEF
-**Result:** $(score_passes "$FINAL_SCORE" "$PASS_THRESHOLD" && echo "✅ PASS" || echo "❌ FAIL")
+**Result:** $(score_passes "$FINAL_SCORE" "$PASS_THRESHOLD" && echo "PASS" || echo "FAIL")
 **Iterations:** $NUM_ITERATIONS / $MAX_ITERATIONS
 **Final Score:** $FINAL_SCORE / 10.0 (threshold: $PASS_THRESHOLD)
 **Elapsed:** $ELAPSED
@@ -287,9 +287,9 @@ ok "Report written to ${HARNESS_DIR}/build-report.md"
 echo ""
 log "━━━ Final Results ━━━"
 if score_passes "$FINAL_SCORE" "$PASS_THRESHOLD"; then
-  echo -e "${GREEN}  Result:     PASS ✅${NC}"
+  echo -e "${GREEN}  Result:     PASS${NC}"
 else
-  echo -e "${RED}  Result:     FAIL ❌${NC}"
+  echo -e "${RED}  Result:     FAIL${NC}"
 fi
 echo -e "  Score:      ${CYAN}${FINAL_SCORE}${NC} / 10.0"
 echo -e "  Iterations: ${NUM_ITERATIONS} / ${MAX_ITERATIONS}"

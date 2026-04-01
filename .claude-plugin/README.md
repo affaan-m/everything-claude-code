@@ -6,7 +6,7 @@ These constraints are not obvious from public examples and have caused repeated 
 
 ### Custom Endpoints and Gateways
 
-ECC does not override Claude Code transport settings. If Claude Code is configured to run through an official LLM gateway or a compatible custom endpoint, the plugin continues to work because hooks, commands, and skills execute locally after the CLI starts successfully.
+ECC does not override Claude Code transport settings. If Claude Code is configured to run through an official LLM gateway or a compatible custom endpoint, the plugin continues to work because hooks, skills, and any retained legacy command shims execute locally after the CLI starts successfully.
 
 Use Claude Code's own environment/configuration for transport selection, for example:
 
