@@ -1,12 +1,12 @@
 ---
 name: kotlin-patterns
-description: Idiomatic Kotlin patterns, best practices, and conventions for building robust, efficient, and maintainable Kotlin applications with coroutines, null safety, and DSL builders.
+description: Idiomatic Kotlin patterns, best practices, and conventions for building reliable, efficient, and maintainable Kotlin applications with coroutines, null safety, and DSL builders.
 origin: ECC
 ---
 
 # Kotlin Development Patterns
 
-Idiomatic Kotlin patterns and best practices for building robust, efficient, and maintainable applications.
+Idiomatic Kotlin patterns and best practices for building reliable, efficient, and maintainable applications.
 
 ## When to Use
 
@@ -53,7 +53,7 @@ suspend fun fetchUserWithPosts(userId: String): UserProfile =
 
 ### 1. Null Safety
 
-Kotlin's type system distinguishes nullable and non-nullable types. Leverage it fully.
+Kotlin's type system distinguishes nullable and non-nullable types. Use it fully.
 
 ```kotlin
 // Good: Use non-nullable types by default
@@ -708,4 +708,4 @@ user?.let { u ->
 user?.address?.city?.let { process(it) }
 ```
 
-**Remember**: Kotlin code should be concise but readable. Leverage the type system for safety, prefer immutability, and use coroutines for concurrency. When in doubt, let the compiler help you.
+**Remember**: Kotlin code should be concise but readable. Use the type system for safety, prefer immutability, and use coroutines for concurrency. When in doubt, let the compiler help you.

@@ -6,7 +6,7 @@ origin: ECC
 
 # Django Security Best Practices
 
-Comprehensive security guidelines for Django applications to protect against common vulnerabilities.
+Security guidelines for Django applications to protect against common vulnerabilities.
 
 ## When to Activate
 

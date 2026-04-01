@@ -436,4 +436,4 @@ pgClient.on('notification', async (msg) => {
 - Check merge operations
 - Review slow query log
 
-**Remember**: ClickHouse excels at analytical workloads. Design tables for your query patterns, batch inserts, and leverage materialized views for real-time aggregations.
+**Remember**: ClickHouse excels at analytical workloads. Design tables for your query patterns, batch inserts, and use materialized views for real-time aggregations.

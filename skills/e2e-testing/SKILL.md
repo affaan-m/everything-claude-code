@@ -6,7 +6,7 @@ origin: ECC
 
 # E2E Testing Patterns
 
-Comprehensive Playwright patterns for building stable, fast, and maintainable E2E test suites.
+Playwright patterns for building stable, fast, and maintainable E2E test suites.
 
 ## Test File Organization
 

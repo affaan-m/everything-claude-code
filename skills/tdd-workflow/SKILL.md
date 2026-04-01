@@ -6,7 +6,7 @@ origin: ECC
 
 # Test-Driven Development Workflow
 
-This skill ensures all code development follows TDD principles with comprehensive test coverage.
+This skill ensures all code development follows TDD principles with thorough test coverage.
 
 ## When to Activate
 
@@ -72,7 +72,7 @@ so that I can find relevant markets even without exact keywords.
 ```
 
 ### Step 2: Generate Test Cases
-For each user journey, create comprehensive test cases:
+For each user journey, create thorough test cases:
 
 ```typescript
 describe('Semantic Search', () => {

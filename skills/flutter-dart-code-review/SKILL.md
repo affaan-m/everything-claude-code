@@ -6,7 +6,7 @@ origin: ECC
 
 # Flutter/Dart Code Review Best Practices
 
-Comprehensive, library-agnostic checklist for reviewing Flutter/Dart applications. These principles apply regardless of which state management solution, routing library, or DI framework is used.
+Library-agnostic checklist for reviewing Flutter/Dart applications. These principles apply regardless of which state management solution, routing library, or DI framework is used.
 
 ---
 
@@ -387,7 +387,7 @@ class UserError extends UserState {
 ### Configuration:
 - [ ] `analysis_options.yaml` present with strict settings enabled
 - [ ] Strict analyzer settings: `strict-casts: true`, `strict-inference: true`, `strict-raw-types: true`
-- [ ] A comprehensive lint rule set is included (very_good_analysis, flutter_lints, or custom strict rules)
+- [ ] A thorough lint rule set is included (very_good_analysis, flutter_lints, or custom strict rules)
 - [ ] All sub-packages in monorepos inherit or share the root analysis options
 
 ### Enforcement:

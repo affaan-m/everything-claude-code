@@ -6,7 +6,7 @@ origin: ECC
 
 # Ktor Server Patterns
 
-Comprehensive Ktor patterns for building robust, maintainable HTTP servers with Kotlin coroutines.
+Ktor patterns for building reliable, maintainable HTTP servers with Kotlin coroutines.
 
 ## When to Activate
 

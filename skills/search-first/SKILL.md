@@ -132,7 +132,7 @@ Need: Check markdown files for broken links
 Search: npm "markdown dead link checker"
 Found: textlint-rule-no-dead-link (score: 9/10)
 Action: ADOPT — npm install textlint-rule-no-dead-link
-Result: Zero custom code, battle-tested solution
+Result: Zero custom code, well-tested solution
 ```
 
 ### Example 2: "Add HTTP client wrapper"

@@ -6,7 +6,7 @@ origin: ECC
 
 # Laravel Security Best Practices
 
-Comprehensive security guidance for Laravel applications to protect against common vulnerabilities.
+Security guidance for Laravel applications to protect against common vulnerabilities.
 
 ## When to Activate
 

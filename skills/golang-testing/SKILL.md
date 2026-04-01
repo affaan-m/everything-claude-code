@@ -6,7 +6,7 @@ origin: ECC
 
 # Go Testing Patterns
 
-Comprehensive Go testing patterns for writing reliable, maintainable tests following TDD methodology.
+Go testing patterns for writing reliable, maintainable tests following TDD methodology.
 
 ## When to Activate
 
@@ -71,7 +71,7 @@ func Add(a, b int) int {
 
 ## Table-Driven Tests
 
-The standard pattern for Go tests. Enables comprehensive coverage with minimal code.
+The standard pattern for Go tests. Enables thorough coverage with minimal code.
 
 ```go
 func TestAdd(t *testing.T) {
@@ -682,7 +682,7 @@ go test -count=10 ./...
 
 **DO:**
 - Write tests FIRST (TDD)
-- Use table-driven tests for comprehensive coverage
+- Use table-driven tests for thorough coverage
 - Test behavior, not implementation
 - Use `t.Helper()` in helper functions
 - Use `t.Parallel()` for independent tests

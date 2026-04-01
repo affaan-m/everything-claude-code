@@ -74,7 +74,7 @@ main (production releases)
 ```
 
 **Rules:**
-- `main` contains production-ready code only
+- `main` contains release-ready code only
 - `develop` is the integration branch
 - Feature branches from `develop`, merge back to `develop`
 - Release branches from `develop`, merge to `main` and `develop`

@@ -216,7 +216,7 @@ The detailed response includes:
 1. **Always filter by health** — Use `health_score: "Healthy"` for production projects
 2. **Match Laravel version** — Always check `laravel_compatibility` matches the target project
 3. **Check vendor reputation** — Prefer packages from known vendors (spatie, laravel, etc.)
-4. **Review before recommending** — Use GetPluginDetailsTool for a comprehensive assessment
+4. **Review before recommending** — Use GetPluginDetailsTool for a detailed assessment
 5. **No API key needed** — The MCP is free, no authentication required
 
 ---

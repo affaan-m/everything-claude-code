@@ -1,12 +1,12 @@
 ---
 name: verification-loop
-description: "A comprehensive verification system for Claude Code sessions."
+description: "A multi-step verification system for Claude Code sessions."
 origin: ECC
 ---
 
 # Verification Loop Skill
 
-A comprehensive verification system for Claude Code sessions.
+A multi-step verification system for Claude Code sessions.
 
 ## When to Use
 
@@ -123,4 +123,4 @@ Run: /verify
 ## Integration with Hooks
 
 This skill complements PostToolUse hooks but provides deeper verification.
-Hooks catch issues immediately; this skill provides comprehensive review.
+Hooks catch issues immediately; this skill provides full review.

@@ -1,12 +1,12 @@
 ---
 name: perl-patterns
-description: Modern Perl 5.36+ idioms, best practices, and conventions for building robust, maintainable Perl applications.
+description: Modern Perl 5.36+ idioms, best practices, and conventions for building reliable, maintainable Perl applications.
 origin: ECC
 ---
 
 # Modern Perl Development Patterns
 
-Idiomatic Perl 5.36+ patterns and best practices for building robust, maintainable applications.
+Idiomatic Perl 5.36+ patterns and best practices for building reliable, maintainable applications.
 
 ## When to Activate
 
@@ -501,4 +501,4 @@ use Module::Runtime 'require_module';    # Good: safe module loading
 require_module($module);
 ```
 
-**Remember**: Modern Perl is clean, readable, and safe. Let `use v5.36` handle the boilerplate, use Moo for objects, and prefer CPAN's battle-tested modules over hand-rolled solutions.
+**Remember**: Modern Perl is clean, readable, and safe. Let `use v5.36` handle the boilerplate, use Moo for objects, and prefer CPAN's well-tested modules over hand-rolled solutions.
