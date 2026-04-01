@@ -7,6 +7,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const TOML = require('@iarna/toml');
 
 const repoRoot = path.join(__dirname, '..', '..');
 const installScript = path.join(repoRoot, 'scripts', 'codex', 'install-global-git-hooks.sh');
@@ -99,8 +100,10 @@ if (
     const configPath = path.join(codexDir, 'config.toml');
     const agentsPath = path.join(codexDir, 'AGENTS.md');
     const config = [
-      'multi_agent = true',
       'persistent_instructions = ""',
+      '',
+      '[agents]',
+      'explorer = { description = "Read-only codebase explorer for gathering evidence before changes are proposed." }',
       '',
       '[mcp_servers.context7]',
       'command = "npx"',
@@ -132,22 +135,36 @@ if (
       assert.match(syncedAgents, /^# Codex Supplement \(From ECC \.codex\/AGENTS\.md\)/m);
 
       const syncedConfig = fs.readFileSync(configPath, 'utf8');
-      assert.match(syncedConfig, /^approval_policy\s*=\s*"on-request"$/m);
-      assert.match(syncedConfig, /^sandbox_mode\s*=\s*"workspace-write"$/m);
-      assert.match(syncedConfig, /^web_search\s*=\s*"live"$/m);
-      assert.match(syncedConfig, /^\[features\]$/m);
-      assert.match(syncedConfig, /^\s*multi_agent\s*=\s*true$/m);
-      assert.match(syncedConfig, /^\[profiles\.strict\]$/m);
-      assert.match(syncedConfig, /^\[profiles\.yolo\]$/m);
-      assert.match(syncedConfig, /^\[agents\]$/m);
-      assert.match(syncedConfig, /^\[agents\.explorer\]$/m);
-      assert.match(syncedConfig, /^\[agents\.reviewer\]$/m);
-      assert.match(syncedConfig, /^\[agents\.docs_researcher\]$/m);
-      assert.match(syncedConfig, /^\[mcp_servers\.exa\]$/m);
-      assert.match(syncedConfig, /^\[mcp_servers\.github\]$/m);
-      assert.match(syncedConfig, /^\[mcp_servers\.memory\]$/m);
-      assert.match(syncedConfig, /^\[mcp_servers\.sequential-thinking\]$/m);
-      assert.match(syncedConfig, /^\[mcp_servers\.context7\]$/m);
+      const parsedConfig = TOML.parse(syncedConfig);
+      assert.strictEqual(parsedConfig.approval_policy, 'on-request');
+      assert.strictEqual(parsedConfig.sandbox_mode, 'workspace-write');
+      assert.strictEqual(parsedConfig.web_search, 'live');
+      assert.ok(!Object.prototype.hasOwnProperty.call(parsedConfig, 'multi_agent'));
+      assert.ok(parsedConfig.features);
+      assert.strictEqual(parsedConfig.features.multi_agent, true);
+      assert.ok(parsedConfig.profiles);
+      assert.strictEqual(parsedConfig.profiles.strict.approval_policy, 'on-request');
+      assert.strictEqual(parsedConfig.profiles.yolo.approval_policy, 'never');
+      assert.ok(parsedConfig.agents);
+      assert.strictEqual(parsedConfig.agents.max_threads, 6);
+      assert.strictEqual(parsedConfig.agents.max_depth, 1);
+      assert.strictEqual(
+        parsedConfig.agents.explorer.config_file,
+        'agents/explorer.toml',
+      );
+      assert.strictEqual(
+        parsedConfig.agents.reviewer.config_file,
+        'agents/reviewer.toml',
+      );
+      assert.strictEqual(
+        parsedConfig.agents.docs_researcher.config_file,
+        'agents/docs-researcher.toml',
+      );
+      assert.ok(parsedConfig.mcp_servers.exa);
+      assert.ok(parsedConfig.mcp_servers.github);
+      assert.ok(parsedConfig.mcp_servers.memory);
+      assert.ok(parsedConfig.mcp_servers['sequential-thinking']);
+      assert.ok(parsedConfig.mcp_servers.context7);
 
       for (const roleFile of ['explorer.toml', 'reviewer.toml', 'docs-researcher.toml']) {
         assert.ok(fs.existsSync(path.join(codexDir, 'agents', roleFile)));

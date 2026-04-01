@@ -33,9 +33,14 @@ const TABLE_PATHS = [
   'agents.reviewer',
   'agents.docs_researcher',
 ];
+const TOML_HEADER_RE = /^[ \t]*(?:\[[^[\]\n][^\]\n]*\]|\[\[[^[\]\n][^\]\n]*\]\])[ \t]*(?:#.*)?$/m;
 
 function log(message) {
   console.log(`[ecc-codex] ${message}`);
+}
+
+function warn(message) {
+  console.warn(`[ecc-codex] WARNING: ${message}`);
 }
 
 function getNested(obj, pathParts) {
@@ -62,13 +67,13 @@ function setNested(obj, pathParts, value) {
 }
 
 function findFirstTableIndex(raw) {
-  const match = /^\s*\[/m.exec(raw);
+  const match = TOML_HEADER_RE.exec(raw);
   return match ? match.index : -1;
 }
 
 function findTableRange(raw, tablePath) {
   const escaped = tablePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const headerPattern = new RegExp(`^\\s*\\[${escaped}\\]\\s*(?:#.*)?$`, 'm');
+  const headerPattern = new RegExp(`^[ \\t]*\\[${escaped}\\][ \\t]*(?:#.*)?$`, 'm');
   const match = headerPattern.exec(raw);
   if (!match) {
     return null;
@@ -76,7 +81,7 @@ function findTableRange(raw, tablePath) {
 
   const headerEnd = raw.indexOf('\n', match.index);
   const bodyStart = headerEnd === -1 ? raw.length : headerEnd + 1;
-  const nextHeaderRel = raw.slice(bodyStart).search(/^\s*\[/m);
+  const nextHeaderRel = raw.slice(bodyStart).search(TOML_HEADER_RE);
   const bodyEnd = nextHeaderRel === -1 ? raw.length : bodyStart + nextHeaderRel;
   return { bodyStart, bodyEnd };
 }
@@ -104,10 +109,55 @@ function appendBlock(raw, block) {
   return prefix ? `${prefix}\n\n${normalizedBlock}\n` : `${normalizedBlock}\n`;
 }
 
-function appendToTable(raw, tablePath, block) {
+function stringifyValue(value) {
+  return TOML.stringify({ value }).trim().replace(/^value = /, '');
+}
+
+function updateInlineTableKeys(raw, tablePath, missingKeys) {
+  const pathParts = tablePath.split('.');
+  if (pathParts.length < 2) {
+    return null;
+  }
+
+  const parentPath = pathParts.slice(0, -1).join('.');
+  const parentRange = findTableRange(raw, parentPath);
+  if (!parentRange) {
+    return null;
+  }
+
+  const tableKey = pathParts[pathParts.length - 1];
+  const escapedKey = tableKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const body = raw.slice(parentRange.bodyStart, parentRange.bodyEnd);
+  const lines = body.split('\n');
+  for (let index = 0; index < lines.length; index += 1) {
+    const inlinePattern = new RegExp(`^(\\s*${escapedKey}\\s*=\\s*\\{)(.*?)(\\}\\s*(?:#.*)?)$`);
+    const match = inlinePattern.exec(lines[index]);
+    if (!match) {
+      continue;
+    }
+
+    const additions = Object.entries(missingKeys)
+      .map(([key, value]) => `${key} = ${stringifyValue(value)}`)
+      .join(', ');
+    const existingEntries = match[2].trim();
+    const nextEntries = existingEntries ? `${existingEntries}, ${additions}` : additions;
+    lines[index] = `${match[1]}${nextEntries}${match[3]}`;
+    return `${raw.slice(0, parentRange.bodyStart)}${lines.join('\n')}${raw.slice(parentRange.bodyEnd)}`;
+  }
+  return null;
+}
+
+function appendToTable(raw, tablePath, block, missingKeys = null) {
   const range = findTableRange(raw, tablePath);
   if (!range) {
-    return appendBlock(raw, block);
+    if (missingKeys) {
+      const inlineUpdated = updateInlineTableKeys(raw, tablePath, missingKeys);
+      if (inlineUpdated) {
+        return inlineUpdated;
+      }
+    }
+    warn(`Skipping missing keys for [${tablePath}] because it has no standalone header and could not be safely updated`);
+    return raw;
   }
 
   const before = raw.slice(0, range.bodyEnd).trimEnd();
@@ -232,7 +282,7 @@ function main() {
 
   for (const { tablePath, missingKeys } of missingTableKeys) {
     log(`  [add-keys] [${tablePath}] -> ${Object.keys(missingKeys).join(', ')}`);
-    nextRaw = appendToTable(nextRaw, tablePath, stringifyTableKeys(missingKeys));
+    nextRaw = appendToTable(nextRaw, tablePath, stringifyTableKeys(missingKeys), missingKeys);
   }
 
   for (const tablePath of missingTables) {
