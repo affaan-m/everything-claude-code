@@ -147,6 +147,16 @@ function updateInlineTableKeys(raw, tablePath, missingKeys) {
   return null;
 }
 
+function appendImplicitTable(raw, tablePath, missingKeys) {
+  const candidate = appendBlock(raw, stringifyTable(tablePath, missingKeys));
+  try {
+    TOML.parse(candidate);
+    return candidate;
+  } catch {
+    return null;
+  }
+}
+
 function appendToTable(raw, tablePath, block, missingKeys = null) {
   const range = findTableRange(raw, tablePath);
   if (!range) {
@@ -154,6 +164,11 @@ function appendToTable(raw, tablePath, block, missingKeys = null) {
       const inlineUpdated = updateInlineTableKeys(raw, tablePath, missingKeys);
       if (inlineUpdated) {
         return inlineUpdated;
+      }
+
+      const appendedTable = appendImplicitTable(raw, tablePath, missingKeys);
+      if (appendedTable) {
+        return appendedTable;
       }
     }
     warn(`Skipping missing keys for [${tablePath}] because it has no standalone header and could not be safely updated`);

@@ -177,6 +177,41 @@ if (
   passed++;
 else failed++;
 
+if (
+  test('sync adds parent-table keys when the target only declares an implicit parent table', () => {
+    const homeDir = createTempDir('codex-sync-implicit-parent-home-');
+    const codexDir = path.join(homeDir, '.codex');
+    const configPath = path.join(codexDir, 'config.toml');
+    const config = [
+      'persistent_instructions = ""',
+      '',
+      '[agents.explorer]',
+      'description = "Read-only codebase explorer for gathering evidence before changes are proposed."',
+      '',
+    ].join('\n');
+
+    try {
+      fs.mkdirSync(codexDir, { recursive: true });
+      fs.writeFileSync(configPath, config);
+
+      const syncResult = runBash(syncScript, [], makeHermeticCodexEnv(homeDir, codexDir));
+      assert.strictEqual(syncResult.status, 0, `${syncResult.stdout}\n${syncResult.stderr}`);
+
+      const parsedConfig = TOML.parse(fs.readFileSync(configPath, 'utf8'));
+      assert.strictEqual(parsedConfig.agents.max_threads, 6);
+      assert.strictEqual(parsedConfig.agents.max_depth, 1);
+      assert.strictEqual(
+        parsedConfig.agents.explorer.config_file,
+        'agents/explorer.toml',
+      );
+    } finally {
+      cleanup(homeDir);
+    }
+  })
+)
+  passed++;
+else failed++;
+
 console.log(`\nPassed: ${passed}`);
 console.log(`Failed: ${failed}`);
 process.exit(failed > 0 ? 1 : 0);
