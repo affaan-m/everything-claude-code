@@ -353,6 +353,45 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (test('resolves CLAUDE_PLUGIN_ROOT placeholders in installed claude hooks', () => {
+    const homeDir = createTempDir('install-apply-home-');
+    const projectDir = createTempDir('install-apply-project-');
+
+    try {
+      const result = run(['--profile', 'core'], { cwd: projectDir, homeDir });
+      assert.strictEqual(result.code, 0, result.stderr);
+
+      const claudeRoot = path.join(homeDir, '.claude');
+      const settings = readJson(path.join(claudeRoot, 'settings.json'));
+      const installedHooks = readJson(path.join(claudeRoot, 'hooks', 'hooks.json'));
+
+      const autoTmuxEntry = settings.hooks.PreToolUse.find(entry => entry.id === 'pre:bash:auto-tmux-dev');
+      assert.ok(autoTmuxEntry, 'settings.json should include the auto tmux hook');
+      assert.ok(
+        autoTmuxEntry.hooks[0].command.includes(path.join(claudeRoot, 'scripts', 'hooks', 'auto-tmux-dev.js')),
+        'settings.json should use the installed Claude root for hook commands'
+      );
+      assert.ok(
+        !autoTmuxEntry.hooks[0].command.includes('${CLAUDE_PLUGIN_ROOT}'),
+        'settings.json should not retain CLAUDE_PLUGIN_ROOT placeholders after install'
+      );
+
+      const installedAutoTmuxEntry = installedHooks.hooks.PreToolUse.find(entry => entry.id === 'pre:bash:auto-tmux-dev');
+      assert.ok(installedAutoTmuxEntry, 'hooks/hooks.json should include the auto tmux hook');
+      assert.ok(
+        installedAutoTmuxEntry.hooks[0].command.includes(path.join(claudeRoot, 'scripts', 'hooks', 'auto-tmux-dev.js')),
+        'hooks/hooks.json should use the installed Claude root for hook commands'
+      );
+      assert.ok(
+        !installedAutoTmuxEntry.hooks[0].command.includes('${CLAUDE_PLUGIN_ROOT}'),
+        'hooks/hooks.json should not retain CLAUDE_PLUGIN_ROOT placeholders after install'
+      );
+    } finally {
+      cleanup(homeDir);
+      cleanup(projectDir);
+    }
+  })) passed++; else failed++;
+
   if (test('preserves existing settings fields and hook entries when merging hooks', () => {
     const homeDir = createTempDir('install-apply-home-');
     const projectDir = createTempDir('install-apply-project-');

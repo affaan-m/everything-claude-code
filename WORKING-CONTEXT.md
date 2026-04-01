@@ -59,6 +59,8 @@ Public ECC plugin repo for agents, skills, commands, hooks, rules, install surfa
 - Direct-port candidates landed after audit:
   - `#1078` hook-id dedupe for managed Claude hook reinstalls
   - `#844` ui-demo skill
+  - `#1110` install-time Claude hook root resolution
+  - `#1106` portable Codex Context7 key extraction
 - Port or rebuild inside ECC after full audit:
   - `#894` Jira integration
   - `#814` + `#808` rebuild as a single consolidated notifications lane for Opencode and cross-harness surfaces
@@ -97,3 +99,6 @@ Keep this file detailed for only the current sprint, blockers, and next actions.
 - 2026-04-01: Collapsed the obvious command/skill duplicates into thin legacy shims so `skills/` now hold the maintained bodies for NanoClaw, context-budget, DevFleet, docs lookup, E2E, evals, orchestration, prompt optimization, rules distillation, TDD, and verification.
 - 2026-04-01: Ported the self-contained core of `#844` directly into `main` as `skills/ui-demo/SKILL.md` and registered it under the `media-generation` install module instead of merging the PR wholesale.
 - 2026-04-01: Added the first connected-workflow operator lane as ECC-native skills instead of leaving the surface as raw plugins or APIs: `workspace-surface-audit`, `customer-billing-ops`, `project-flow-ops`, and `google-workspace-ops`. These are tracked under the new `operator-workflows` install module.
+- 2026-04-01: Direct-ported the real fix from the unresolved hook-path PR lane into the active installer. Claude installs now replace `${CLAUDE_PLUGIN_ROOT}` with the concrete install root in both `settings.json` and the copied `hooks/hooks.json`, which keeps PreToolUse/PostToolUse hooks working outside plugin-managed env injection.
+- 2026-04-01: Replaced the GNU-only `grep -P` parser in `scripts/sync-ecc-to-codex.sh` with a portable Node parser for Context7 key extraction. Added source-level regression coverage so BSD/macOS syncs do not drift back to non-portable parsing.
+- 2026-04-01: Targeted regression suite after the direct ports is green: `tests/scripts/install-apply.test.js`, `tests/scripts/sync-ecc-to-codex.test.js`, and `tests/scripts/codex-hooks.test.js`.

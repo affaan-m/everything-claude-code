@@ -20,16 +20,43 @@ function readJsonObject(filePath, label) {
   return parsed;
 }
 
-function buildLegacyHookSignature(entry) {
+function replacePluginRootPlaceholders(value, pluginRoot) {
+  if (!pluginRoot) {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    return value.split('${CLAUDE_PLUGIN_ROOT}').join(pluginRoot);
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(item => replacePluginRootPlaceholders(item, pluginRoot));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nestedValue]) => [
+        key,
+        replacePluginRootPlaceholders(nestedValue, pluginRoot),
+      ])
+    );
+  }
+
+  return value;
+}
+
+function buildLegacyHookSignature(entry, pluginRoot) {
   if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
     return null;
   }
 
-  if (typeof entry.matcher !== 'string' || !Array.isArray(entry.hooks)) {
+  const normalizedEntry = replacePluginRootPlaceholders(entry, pluginRoot);
+
+  if (typeof normalizedEntry.matcher !== 'string' || !Array.isArray(normalizedEntry.hooks)) {
     return null;
   }
 
-  const hookSignature = entry.hooks.map(hook => JSON.stringify({
+  const hookSignature = normalizedEntry.hooks.map(hook => JSON.stringify({
     type: hook && typeof hook === 'object' ? hook.type : undefined,
     command: hook && typeof hook === 'object' ? hook.command : undefined,
     timeout: hook && typeof hook === 'object' ? hook.timeout : undefined,
@@ -37,33 +64,35 @@ function buildLegacyHookSignature(entry) {
   }));
 
   return JSON.stringify({
-    matcher: entry.matcher,
+    matcher: normalizedEntry.matcher,
     hooks: hookSignature,
   });
 }
 
-function getHookEntryAliases(entry) {
+function getHookEntryAliases(entry, pluginRoot) {
   const aliases = [];
 
   if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
     return aliases;
   }
 
-  if (typeof entry.id === 'string' && entry.id.trim().length > 0) {
-    aliases.push(`id:${entry.id.trim()}`);
+  const normalizedEntry = replacePluginRootPlaceholders(entry, pluginRoot);
+
+  if (typeof normalizedEntry.id === 'string' && normalizedEntry.id.trim().length > 0) {
+    aliases.push(`id:${normalizedEntry.id.trim()}`);
   }
 
-  const legacySignature = buildLegacyHookSignature(entry);
+  const legacySignature = buildLegacyHookSignature(normalizedEntry, pluginRoot);
   if (legacySignature) {
     aliases.push(`legacy:${legacySignature}`);
   }
 
-  aliases.push(`json:${JSON.stringify(entry)}`);
+  aliases.push(`json:${JSON.stringify(normalizedEntry)}`);
 
   return aliases;
 }
 
-function mergeHookEntries(existingEntries, incomingEntries) {
+function mergeHookEntries(existingEntries, incomingEntries, pluginRoot) {
   const mergedEntries = [];
   const seenEntries = new Set();
 
@@ -76,7 +105,7 @@ function mergeHookEntries(existingEntries, incomingEntries) {
       continue;
     }
 
-    const aliases = getHookEntryAliases(entry);
+    const aliases = getHookEntryAliases(entry, pluginRoot);
     if (aliases.some(alias => seenEntries.has(alias))) {
       continue;
     }
@@ -84,7 +113,7 @@ function mergeHookEntries(existingEntries, incomingEntries) {
     for (const alias of aliases) {
       seenEntries.add(alias);
     }
-    mergedEntries.push(entry);
+    mergedEntries.push(replacePluginRootPlaceholders(entry, pluginRoot));
   }
 
   return mergedEntries;
@@ -100,6 +129,7 @@ function buildMergedSettings(plan) {
     return null;
   }
 
+  const pluginRoot = plan.targetRoot;
   const hooksDestinationPath = path.join(plan.targetRoot, 'hooks', 'hooks.json');
   const hooksSourcePath = findHooksSourcePath(plan, hooksDestinationPath) || hooksDestinationPath;
   if (!fs.existsSync(hooksSourcePath)) {
@@ -107,7 +137,7 @@ function buildMergedSettings(plan) {
   }
 
   const hooksConfig = readJsonObject(hooksSourcePath, 'hooks config');
-  const incomingHooks = hooksConfig.hooks;
+  const incomingHooks = replacePluginRootPlaceholders(hooksConfig.hooks, pluginRoot);
   if (!incomingHooks || typeof incomingHooks !== 'object' || Array.isArray(incomingHooks)) {
     throw new Error(`Invalid hooks config at ${hooksSourcePath}: expected "hooks" to be a JSON object`);
   }
@@ -126,7 +156,7 @@ function buildMergedSettings(plan) {
   for (const [eventName, incomingEntries] of Object.entries(incomingHooks)) {
     const currentEntries = Array.isArray(existingHooks[eventName]) ? existingHooks[eventName] : [];
     const nextEntries = Array.isArray(incomingEntries) ? incomingEntries : [];
-    mergedHooks[eventName] = mergeHookEntries(currentEntries, nextEntries);
+    mergedHooks[eventName] = mergeHookEntries(currentEntries, nextEntries, pluginRoot);
   }
 
   const mergedSettings = {
@@ -137,6 +167,11 @@ function buildMergedSettings(plan) {
   return {
     settingsPath,
     mergedSettings,
+    hooksDestinationPath,
+    resolvedHooksConfig: {
+      ...hooksConfig,
+      hooks: incomingHooks,
+    },
   };
 }
 
@@ -149,6 +184,12 @@ function applyInstallPlan(plan) {
   }
 
   if (mergedSettingsPlan) {
+    fs.mkdirSync(path.dirname(mergedSettingsPlan.hooksDestinationPath), { recursive: true });
+    fs.writeFileSync(
+      mergedSettingsPlan.hooksDestinationPath,
+      JSON.stringify(mergedSettingsPlan.resolvedHooksConfig, null, 2) + '\n',
+      'utf8'
+    );
     fs.mkdirSync(path.dirname(mergedSettingsPlan.settingsPath), { recursive: true });
     fs.writeFileSync(
       mergedSettingsPlan.settingsPath,

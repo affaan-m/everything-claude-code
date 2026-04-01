@@ -106,7 +106,23 @@ extract_toml_value() {
 
 extract_context7_key() {
   local file="$1"
-  grep -oP -- '--key",[[:space:]]*"\K[^"]+' "$file" | head -n 1 || true
+  node - "$file" <<'EOF'
+const fs = require('fs');
+
+const filePath = process.argv[2];
+let source = '';
+
+try {
+  source = fs.readFileSync(filePath, 'utf8');
+} catch {
+  process.exit(0);
+}
+
+const match = source.match(/--key",\s*"([^"]+)"/);
+if (match && match[1]) {
+  process.stdout.write(`${match[1]}\n`);
+}
+EOF
 }
 
 generate_prompt_file() {
