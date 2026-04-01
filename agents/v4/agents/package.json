@@ -1,0 +1,53 @@
+{
+  "name": "@shadow-dcp/agents",
+  "version": "1.0.0",
+  "description": "Task-driven swarm orchestration system - framework agnostic",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    },
+    "./orchestration": {
+      "import": "./orchestration/task-orchestrator.js",
+      "types": "./orchestration/task-orchestrator.d.ts"
+    },
+    "./tasks": {
+      "import": "./tasks/task-registry.js",
+      "types": "./tasks/task-registry.d.ts"
+    },
+    "./tools": {
+      "import": "./tools/task-tools.js",
+      "types": "./tools/task-tools.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "example": "node --loader ts-node/esm example.ts",
+    "clean": "rm -rf *.js *.d.ts *.map orchestration/*.js orchestration/*.d.ts tasks/*.js tasks/*.d.ts tools/*.js tools/*.d.ts"
+  },
+  "keywords": [
+    "orchestration",
+    "swarm",
+    "task",
+    "agent",
+    "distributed",
+    "coordination",
+    "capability-based",
+    "framework-agnostic"
+  ],
+  "dependencies": {
+    "yaml": "^2.3.4",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "name": "@shadow-dcp/v4",
+  "version": "4.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shadow DCP v4 - Task-driven swarm orchestration system",
+  "workspaces": [
+    "agents"
+  ],
+  "scripts": {
+    "build": "cd agents && npm run build",
+    "dev": "cd agents && npm run dev",
+    "example": "cd agents && npm run example",
+    "test": "vitest run",
+    "test:unit": "vitest run __tests__/unit",
+    "test:integration": "vitest run __tests__/integration",
+    "test:integration:watch": "vitest watch __tests__/integration",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "cd agents && tsc --noEmit",
+    "clean": "rm -rf node_modules agents/node_modules agents/*.js agents/*.d.ts agents/**/*.js agents/**/*.d.ts",
+    "orchestrators:build-guards": "tsx orchestrators/run-build-guards.ts",
+    "orchestrators:service-integration": "tsx orchestrators/run-service-integration.ts",
+    "orchestrators:integrity": "tsx orchestrators/run-integrity.ts",
+    "orchestrators:contract-parity": "tsx orchestrators/run-contract-parity.ts",
+    "orchestrators:environment-smoke": "tsx orchestrators/run-environment-smoke.ts",
+    "orchestrators:playwright-ui": "tsx orchestrators/run-playwright-ui.ts",
+    "orchestrators:all": "tsx orchestrators/run-all.ts",
+    "orchestrators:dcpm-integration": "tsx orchestrators/run-dcpm-integration.ts",
+    "orchestrators:jira-ticket-workflow": "tsx orchestrators/run-jira-ticket-workflow.ts",
+    "orchestrators:example": "tsx orchestrators/example.ts",
+    "orchestrators:pr-critique": "tsx orchestrators/run-pr-critique.ts",
+    "orchestrators:ticket-to-pr": "tsx orchestrators/run-ticket-to-pr.ts",
+    "orchestrators:unit-test-swarm": "tsx orchestrators/run-unit-test-swarm.ts",
+    "orchestrators:unit-test-swarm:dry-run": "tsx orchestrators/run-unit-test-swarm.ts --dry-run",
+    "orchestrators:backlog-sprint": "tsx orchestrators/run-backlog-sprint.ts",
+    "orchestrators:backlog-sprint:dry-run": "tsx orchestrators/run-backlog-sprint.ts --dry-run"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^4.0.16",
+    "tsx": "^4.21.0",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.16"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-lambda": "^3.1014.0",
+    "@aws-sdk/client-timestream-query": "^3.1014.0",
+    "pg": "^8.20.0",
+    "yaml": "^2.8.3",
+    "zod": "^3.22.4"
+  }
+}

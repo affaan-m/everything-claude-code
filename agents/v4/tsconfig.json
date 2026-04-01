@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@shadow-dcp/agents": ["./agents"],
+      "@shadow-dcp/agents/*": ["./agents/*"]
+    }
+  },
+  "references": [
+    { "path": "./agents" }
+  ],
+  "include": ["*.ts", "agents/**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/*.d.ts"]
+}
