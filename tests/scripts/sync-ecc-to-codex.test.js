@@ -35,6 +35,32 @@ const runOrEchoSource = (() => {
 
   return '';
 })();
+const extractContext7KeySource = (() => {
+  const start = normalizedSource.indexOf('extract_context7_key() {');
+  if (start < 0) {
+    return '';
+  }
+
+  let depth = 0;
+  let bodyStart = normalizedSource.indexOf('{', start);
+  if (bodyStart < 0) {
+    return '';
+  }
+
+  for (let i = bodyStart; i < normalizedSource.length; i++) {
+    const char = normalizedSource[i];
+    if (char === '{') {
+      depth += 1;
+    } else if (char === '}') {
+      depth -= 1;
+      if (depth === 0) {
+        return normalizedSource.slice(start, i + 1);
+      }
+    }
+  }
+
+  return '';
+})();
 
 function test(name, fn) {
   try {
@@ -72,6 +98,12 @@ function runTests() {
     // Skills sync rm/cp calls were removed — Codex reads from ~/.agents/skills/ natively
     assert.ok(!source.includes('run_or_echo rm -rf "$dest"'), 'skill sync rm should be removed');
     assert.ok(!source.includes('run_or_echo cp -R "$skill_dir" "$dest"'), 'skill sync cp should be removed');
+  })) passed++; else failed++;
+
+  if (test('extract_context7_key avoids non-portable grep -P', () => {
+    assert.ok(extractContext7KeySource, 'Expected to locate extract_context7_key function body');
+    assert.ok(!extractContext7KeySource.includes('grep -oP'), 'extract_context7_key should not rely on grep -P');
+    assert.ok(extractContext7KeySource.includes("perl -ne"), 'extract_context7_key should use a portable parser');
   })) passed++; else failed++;
 
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);

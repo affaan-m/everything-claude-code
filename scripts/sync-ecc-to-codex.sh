@@ -106,7 +106,7 @@ extract_toml_value() {
 
 extract_context7_key() {
   local file="$1"
-  grep -oP -- '--key",[[:space:]]*"\K[^"]+' "$file" | head -n 1 || true
+  perl -ne 'if (/--key",\s*"([^"]+)"/) { print "$1\n"; exit }' "$file" || true
 }
 
 generate_prompt_file() {
