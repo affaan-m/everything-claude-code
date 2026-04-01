@@ -7,9 +7,9 @@
     ".agents/skills/everything-claude-code/SKILL.md"
   ],
   "commandFiles": [
-    ".claude/commands/database-migration.md",
     ".claude/commands/feature-development.md",
-    ".claude/commands/add-language-rules.md"
+    ".claude/commands/refactoring.md",
+    ".claude/commands/add-new-skill.md"
   ],
-  "updatedAt": "2026-03-20T12:07:36.496Z"
+  "updatedAt": "2026-04-01T22:42:42.413Z"
 }
