@@ -28,8 +28,10 @@ jobs:
           fetch-depth: 0
 
       - name: Validate version tag
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
         run: |
-          if ! [[ "${{ inputs.tag }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if ! [[ "$INPUT_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Invalid version tag format. Expected vX.Y.Z"
             exit 1
           fi
