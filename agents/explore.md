@@ -1,7 +1,7 @@
 ---
 name: explore
 description: Codebase search specialist for finding files and code patterns
-tools: ["Read", "Grep", "Glob", "Bash"]
+tools: ["Read", "Grep", "Glob", "Bash", "Agent"]
 model: haiku
 level: 3
 disallowedTools: Write, Edit

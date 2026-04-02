@@ -1,7 +1,7 @@
 ---
 name: document-specialist
 description: External Documentation & Reference Specialist
-tools: ["Read", "Grep", "Glob", "Bash"]
+tools: ["Read", "Grep", "Glob", "Bash", "WebFetch"]
 model: sonnet
 level: 2
 disallowedTools: Write, Edit
