@@ -1,442 +1,159 @@
----
-name: everything-claude-code-conventions
-description: Development conventions and patterns for everything-claude-code. JavaScript project with conventional commits.
----
+```markdown
+# everything-claude-code Development Patterns
 
-# Everything Claude Code Conventions
-
-> Generated from [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code) on 2026-03-20
+> Auto-generated skill from repository analysis
 
 ## Overview
 
-This skill teaches Claude the development patterns and conventions used in everything-claude-code.
+This skill introduces the core development patterns, coding conventions, and collaborative workflows used in the `everything-claude-code` repository. The codebase is written in JavaScript (no framework), with a focus on modular skills, agentic commands, and extensible hooks. Contributions follow conventional commit messages, maintain a consistent code style, and leverage automated testing with Vitest.
 
-## Tech Stack
+## Coding Conventions
 
-- **Primary Language**: JavaScript
-- **Architecture**: hybrid module organization
-- **Test Location**: separate
+**File Naming**
+- Use `camelCase` for JavaScript files and scripts.
+  - Example: `mySkill.js`, `doSomethingUseful.js`
 
-## When to Use This Skill
+**Import Style**
+- Use relative imports for modules.
+  ```js
+  // Example
+  import helper from './helper.js';
+  ```
 
-Activate this skill when:
-- Making changes to this repository
-- Adding new features following established patterns
-- Writing tests that match project conventions
-- Creating commits with proper message format
+**Export Style**
+- Mixed: both default and named exports are used.
+  ```js
+  // Default export
+  export default function myFunction() { ... }
 
-## Commit Conventions
+  // Named export
+  export function helper() { ... }
+  ```
 
-Follow these commit message conventions based on 500 analyzed commits.
+**Commit Messages**
+- Follow [Conventional Commits](https://www.conventionalcommits.org/):
+  - Prefixes: `fix:`, `feat:`, `docs:`
+  - Example: `feat: add gacha skill with probability config`
 
-### Commit Style: Conventional Commits
+**Directory Structure**
+- Skills: `skills/<skill-name>/`
+- Commands: `commands/`, `.opencode/commands/`, `.claude/commands/`
+- Agents: `agents/`, `agents/v4/agents/`
+- Hooks: `scripts/hooks/`, `hooks/`
+- Tests: `tests/scripts/`, `tests/hooks/`
 
-### Prefixes Used
+## Workflows
 
-- `fix`
-- `test`
-- `feat`
-- `docs`
+### Add or Update Skill
+**Trigger:** When adding or updating a skill for Claude Code  
+**Command:** `/add-skill`
 
-### Message Guidelines
+1. Create or modify `skills/<skill-name>/SKILL.md`
+2. Optionally add/update scripts, references, or README under `skills/<skill-name>/`
+3. Optionally add/update tests in `tests/scripts/<skill-name>-*.test.js`
+4. Update `AGENTS.md` and/or `README.md` if the skill is noteworthy
 
-- Average message length: ~65 characters
-- Keep first line concise and descriptive
-- Use imperative mood ("Add feature" not "Added feature")
-
-
-*Commit message example*
-
-```text
-feat(rules): add C# language support
+**Example:**
+```bash
+# Add a new skill
+mkdir skills/gacha
+touch skills/gacha/SKILL.md
+echo "// implementation" > skills/gacha/gacha.js
+echo "// test" > tests/scripts/gacha-gacha.test.js
 ```
-
-*Commit message example*
-
-```text
-chore(deps-dev): bump flatted (#675)
-```
-
-*Commit message example*
-
-```text
-fix: auto-detect ECC root from plugin cache when CLAUDE_PLUGIN_ROOT is unset (#547) (#691)
-```
-
-*Commit message example*
-
-```text
-docs: add Antigravity setup and usage guide (#552)
-```
-
-*Commit message example*
-
-```text
-merge: PR #529 — feat(skills): add documentation-lookup, bun-runtime, nextjs-turbopack; feat(agents): add rust-reviewer
-```
-
-*Commit message example*
-
-```text
-Revert "Add Kiro IDE support (.kiro/) (#548)"
-```
-
-*Commit message example*
-
-```text
-Add Kiro IDE support (.kiro/) (#548)
-```
-
-*Commit message example*
-
-```text
-feat: add block-no-verify hook for Claude Code and Cursor (#649)
-```
-
-## Architecture
-
-### Project Structure: Single Package
-
-This project uses **hybrid** module organization.
-
-### Configuration Files
-
-- `.github/workflows/ci.yml`
-- `.github/workflows/maintenance.yml`
-- `.github/workflows/monthly-metrics.yml`
-- `.github/workflows/release.yml`
-- `.github/workflows/reusable-release.yml`
-- `.github/workflows/reusable-test.yml`
-- `.github/workflows/reusable-validate.yml`
-- `.opencode/package.json`
-- `.opencode/tsconfig.json`
-- `.prettierrc`
-- `eslint.config.js`
-- `package.json`
-
-### Guidelines
-
-- This project uses a hybrid organization
-- Follow existing patterns when adding new code
-
-## Code Style
-
-### Language: JavaScript
-
-### Naming Conventions
-
-| Element | Convention |
-|---------|------------|
-| Files | camelCase |
-| Functions | camelCase |
-| Classes | PascalCase |
-| Constants | SCREAMING_SNAKE_CASE |
-
-### Import Style: Relative Imports
-
-### Export Style: Mixed Style
-
-
-*Preferred import style*
-
-```typescript
-// Use relative imports
-import { Button } from '../components/Button'
-import { useAuth } from './hooks/useAuth'
-```
-
-## Testing
-
-### Test Framework
-
-No specific test framework detected — use the repository's existing test patterns.
-
-### File Pattern: `*.test.js`
-
-### Test Types
-
-- **Unit tests**: Test individual functions and components in isolation
-- **Integration tests**: Test interactions between multiple components/services
-
-### Coverage
-
-This project has coverage reporting configured. Aim for 80%+ coverage.
-
-
-## Error Handling
-
-### Error Handling Style: Try-Catch Blocks
-
-
-*Standard error handling pattern*
-
-```typescript
-try {
-  const result = await riskyOperation()
-  return result
-} catch (error) {
-  console.error('Operation failed:', error)
-  throw new Error('User-friendly message')
-}
-```
-
-## Common Workflows
-
-These workflows were detected from analyzing commit patterns.
-
-### Database Migration
-
-Database schema changes with migration files
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create migration file
-2. Update schema definitions
-3. Generate/update types
-
-**Files typically involved**:
-- `**/schema.*`
-- `migrations/*`
-
-**Example commit sequence**:
-```
-feat: implement --with/--without selective install flags (#679)
-fix: sync catalog counts with filesystem (27 agents, 113 skills, 58 commands) (#693)
-feat(rules): add Rust language rules (rebased #660) (#686)
-```
-
-### Feature Development
-
-Standard feature implementation workflow
-
-**Frequency**: ~22 times per month
-
-**Steps**:
-1. Add feature implementation
-2. Add tests for feature
-3. Update documentation
-
-**Files typically involved**:
-- `manifests/*`
-- `schemas/*`
-- `**/*.test.*`
-- `**/api/**`
-
-**Example commit sequence**:
-```
-feat(skills): add documentation-lookup, bun-runtime, nextjs-turbopack; feat(agents): add rust-reviewer
-docs(skills): align documentation-lookup with CONTRIBUTING template; add cross-harness (Codex/Cursor) skill copies
-fix: address PR review — skill template (When to use, How it works, Examples), bun.lock, next build note, rust-reviewer CI note, doc-lookup privacy/uncertainty
-```
-
-### Add Language Rules
-
-Adds a new programming language to the rules system, including coding style, hooks, patterns, security, and testing guidelines.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create a new directory under rules/{language}/
-2. Add coding-style.md, hooks.md, patterns.md, security.md, and testing.md files with language-specific content
-3. Optionally reference or link to related skills
-
-**Files typically involved**:
-- `rules/*/coding-style.md`
-- `rules/*/hooks.md`
-- `rules/*/patterns.md`
-- `rules/*/security.md`
-- `rules/*/testing.md`
-
-**Example commit sequence**:
-```
-Create a new directory under rules/{language}/
-Add coding-style.md, hooks.md, patterns.md, security.md, and testing.md files with language-specific content
-Optionally reference or link to related skills
-```
-
-### Add New Skill
-
-Adds a new skill to the system, documenting its workflow, triggers, and usage, often with supporting scripts.
-
-**Frequency**: ~4 times per month
-
-**Steps**:
-1. Create a new directory under skills/{skill-name}/
-2. Add SKILL.md with documentation (When to Use, How It Works, Examples, etc.)
-3. Optionally add scripts or supporting files under skills/{skill-name}/scripts/
-4. Address review feedback and iterate on documentation
-
-**Files typically involved**:
-- `skills/*/SKILL.md`
-- `skills/*/scripts/*.sh`
-- `skills/*/scripts/*.js`
-
-**Example commit sequence**:
-```
-Create a new directory under skills/{skill-name}/
-Add SKILL.md with documentation (When to Use, How It Works, Examples, etc.)
-Optionally add scripts or supporting files under skills/{skill-name}/scripts/
-Address review feedback and iterate on documentation
-```
-
-### Add New Agent
-
-Adds a new agent to the system for code review, build resolution, or other automated tasks.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Create a new agent markdown file under agents/{agent-name}.md
-2. Register the agent in AGENTS.md
-3. Optionally update README.md and docs/COMMAND-AGENT-MAP.md
-
-**Files typically involved**:
-- `agents/*.md`
-- `AGENTS.md`
-- `README.md`
-- `docs/COMMAND-AGENT-MAP.md`
-
-**Example commit sequence**:
-```
-Create a new agent markdown file under agents/{agent-name}.md
-Register the agent in AGENTS.md
-Optionally update README.md and docs/COMMAND-AGENT-MAP.md
-```
-
-### Add New Command
-
-Adds a new command to the system, often paired with a backing skill.
-
-**Frequency**: ~1 times per month
-
-**Steps**:
-1. Create a new markdown file under commands/{command-name}.md
-2. Optionally add or update a backing skill under skills/{skill-name}/SKILL.md
-
-**Files typically involved**:
-- `commands/*.md`
-- `skills/*/SKILL.md`
-
-**Example commit sequence**:
-```
-Create a new markdown file under commands/{command-name}.md
-Optionally add or update a backing skill under skills/{skill-name}/SKILL.md
-```
-
-### Sync Catalog Counts
-
-Synchronizes the documented counts of agents, skills, and commands in AGENTS.md and README.md with the actual repository state.
-
-**Frequency**: ~3 times per month
-
-**Steps**:
-1. Update agent, skill, and command counts in AGENTS.md
-2. Update the same counts in README.md (quick-start, comparison table, etc.)
-3. Optionally update other documentation files
-
-**Files typically involved**:
-- `AGENTS.md`
-- `README.md`
-
-**Example commit sequence**:
-```
-Update agent, skill, and command counts in AGENTS.md
-Update the same counts in README.md (quick-start, comparison table, etc.)
-Optionally update other documentation files
-```
-
-### Add Cross Harness Skill Copies
-
-Adds skill copies for different agent harnesses (e.g., Codex, Cursor, Antigravity) to ensure compatibility across platforms.
-
-**Frequency**: ~2 times per month
-
-**Steps**:
-1. Copy or adapt SKILL.md to .agents/skills/{skill}/SKILL.md and/or .cursor/skills/{skill}/SKILL.md
-2. Optionally add harness-specific openai.yaml or config files
-3. Address review feedback to align with CONTRIBUTING template
-
-**Files typically involved**:
-- `.agents/skills/*/SKILL.md`
-- `.cursor/skills/*/SKILL.md`
-- `.agents/skills/*/agents/openai.yaml`
-
-**Example commit sequence**:
-```
-Copy or adapt SKILL.md to .agents/skills/{skill}/SKILL.md and/or .cursor/skills/{skill}/SKILL.md
-Optionally add harness-specific openai.yaml or config files
-Address review feedback to align with CONTRIBUTING template
-```
-
-### Add Or Update Hook
-
-Adds or updates git or bash hooks to enforce workflow, quality, or security policies.
-
-**Frequency**: ~1 times per month
-
-**Steps**:
-1. Add or update hook scripts in hooks/ or scripts/hooks/
-2. Register the hook in hooks/hooks.json or similar config
-3. Optionally add or update tests in tests/hooks/
-
-**Files typically involved**:
-- `hooks/*.hook`
-- `hooks/hooks.json`
-- `scripts/hooks/*.js`
-- `tests/hooks/*.test.js`
-- `.cursor/hooks.json`
-
-**Example commit sequence**:
-```
-Add or update hook scripts in hooks/ or scripts/hooks/
-Register the hook in hooks/hooks.json or similar config
-Optionally add or update tests in tests/hooks/
-```
-
-### Address Review Feedback
-
-Addresses code review feedback by updating documentation, scripts, or configuration for clarity, correctness, or convention alignment.
-
-**Frequency**: ~4 times per month
-
-**Steps**:
-1. Edit SKILL.md, agent, or command files to address reviewer comments
-2. Update examples, headings, or configuration as requested
-3. Iterate until all review feedback is resolved
-
-**Files typically involved**:
-- `skills/*/SKILL.md`
-- `agents/*.md`
-- `commands/*.md`
-- `.agents/skills/*/SKILL.md`
-- `.cursor/skills/*/SKILL.md`
-
-**Example commit sequence**:
-```
-Edit SKILL.md, agent, or command files to address reviewer comments
-Update examples, headings, or configuration as requested
-Iterate until all review feedback is resolved
-```
-
-
-## Best Practices
-
-Based on analysis of the codebase, follow these practices:
-
-### Do
-
-- Use conventional commit format (feat:, fix:, etc.)
-- Follow *.test.js naming pattern
-- Use camelCase for file names
-- Prefer mixed exports
-
-### Don't
-
-- Don't write vague commit messages
-- Don't skip tests for new features
-- Don't deviate from established patterns without discussion
 
 ---
 
-*This skill was auto-generated by [ECC Tools](https://ecc.tools). Review and customize as needed for your team.*
+### Add or Update Command
+**Trigger:** When introducing or updating a system command  
+**Command:** `/add-command`
+
+1. Create or modify `commands/<command-name>.md`
+2. Optionally update `.opencode/commands/` or `.claude/commands/` for internal/agentic commands
+3. Optionally add/update implementation in `scripts/<command-name>.js`
+4. Optionally add/update tests in `tests/scripts/<command-name>.test.js`
+
+**Example:**
+```bash
+touch commands/retry.md
+echo "// implementation" > scripts/retry.js
+echo "// test" > tests/scripts/retry.test.js
+```
+
+---
+
+### Add or Update Hook
+**Trigger:** When adding or updating a git/system hook  
+**Command:** `/add-hook`
+
+1. Create or modify `scripts/hooks/<hook-name>.js`
+2. Update `hooks/hooks.json` to register/document the hook
+3. Optionally update `hooks/README.md`
+4. Add/update tests in `tests/hooks/<hook-name>.test.js`
+
+**Example:**
+```bash
+touch scripts/hooks/precommit.js
+vim hooks/hooks.json
+echo "// test" > tests/hooks/precommit.test.js
+```
+
+---
+
+### Add or Update Agent
+**Trigger:** When adding or updating an agent  
+**Command:** `/add-agent`
+
+1. Create or modify `agents/<agent-name>.md` or `agents/v4/agents/<agent-name>.ts`
+2. Optionally update orchestrators/config under `agents/v4/orchestrators/`
+3. Update `AGENTS.md` and/or `README.md`
+
+---
+
+### Add or Update MCP Server Config
+**Trigger:** When registering/updating an MCP server configuration  
+**Command:** `/add-mcp-server`
+
+1. Edit `mcp-configs/mcp-servers.json` to add/update server entries
+2. Optionally update documentation or related files
+
+---
+
+### Add or Update CI Workflow
+**Trigger:** When changing CI/CD behavior or security  
+**Command:** `/update-ci`
+
+1. Edit `.github/workflows/*.yml`
+2. Optionally update `CLAUDE.md` or related documentation
+
+---
+
+## Testing Patterns
+
+- **Framework:** [Vitest](https://vitest.dev/)
+- **File Pattern:** `*.test.js` (e.g., `gacha-gacha.test.js`)
+- **Location:** `tests/scripts/` for skills/commands, `tests/hooks/` for hooks
+
+**Example Test:**
+```js
+import { describe, it, expect } from 'vitest';
+import gacha from '../../skills/gacha/gacha.js';
+
+describe('gacha skill', () => {
+  it('returns a valid result', () => {
+    expect(gacha()).toBeDefined();
+  });
+});
+```
+
+## Commands
+
+| Command         | Purpose                                                 |
+|-----------------|---------------------------------------------------------|
+| /add-skill      | Add or update a skill, including docs and tests         |
+| /add-command    | Add or update a system/agentic command                  |
+| /add-hook       | Add or update a git or system hook                      |
+| /add-agent      | Add or update an agent and related documentation        |
+| /add-mcp-server | Add or update MCP server configuration                  |
+| /update-ci      | Add or update CI/CD workflow files                      |
+```
