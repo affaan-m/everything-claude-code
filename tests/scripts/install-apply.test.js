@@ -367,10 +367,15 @@ function runTests() {
       const settings = readJson(path.join(claudeRoot, 'settings.json'));
       const installedHooks = readJson(path.join(claudeRoot, 'hooks', 'hooks.json'));
 
+      // Normalize separators for cross-platform comparison — the replacement produces
+      // mixed separators on Windows (backslash root + forward-slash suffix from JSON)
+      const normSep = (s) => s.replace(/\\/g, '/');
+      const expectedFragment = normSep(path.join(claudeRoot, 'scripts', 'hooks', 'auto-tmux-dev.js'));
+
       const autoTmuxEntry = settings.hooks.PreToolUse.find(entry => entry.id === 'pre:bash:auto-tmux-dev');
       assert.ok(autoTmuxEntry, 'settings.json should include the auto tmux hook');
       assert.ok(
-        autoTmuxEntry.hooks[0].command.includes(path.join(claudeRoot, 'scripts', 'hooks', 'auto-tmux-dev.js')),
+        normSep(autoTmuxEntry.hooks[0].command).includes(expectedFragment),
         'settings.json should use the installed Claude root for hook commands'
       );
       assert.ok(
@@ -381,7 +386,7 @@ function runTests() {
       const installedAutoTmuxEntry = installedHooks.hooks.PreToolUse.find(entry => entry.id === 'pre:bash:auto-tmux-dev');
       assert.ok(installedAutoTmuxEntry, 'hooks/hooks.json should include the auto tmux hook');
       assert.ok(
-        installedAutoTmuxEntry.hooks[0].command.includes(path.join(claudeRoot, 'scripts', 'hooks', 'auto-tmux-dev.js')),
+        normSep(installedAutoTmuxEntry.hooks[0].command).includes(expectedFragment),
         'hooks/hooks.json should use the installed Claude root for hook commands'
       );
       assert.ok(
