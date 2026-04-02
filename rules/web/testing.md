@@ -66,7 +66,7 @@ test.describe("Landing Page", () => {
   test("scrollytelling section triggers on scroll", async ({ page }) => {
     await page.goto("/");
     await page.evaluate(() => window.scrollTo(0, window.innerHeight * 2));
-    await page.waitForTimeout(1000);
+    // Use a deterministic wait — never waitForTimeout in assertions
     await expect(page.locator(".sticky-visual")).toBeVisible();
   });
 
@@ -93,4 +93,4 @@ test.describe("Landing Page", () => {
 - Test utility functions (throttle, debounce, scroll calculations)
 - Test data transformations for dynamic content
 - Test custom hooks (useScrollProgress, useReducedMotion)
-- Skip testing pure visual/animation components — use visual regression instead
+- For pure visual/animation components, prefer visual regression tests over unit tests — but ensure overall unit test coverage targets from [common/testing.md](../common/testing.md) (80%+) are still met across the project. Visual regression supplements coverage; it does not replace it.

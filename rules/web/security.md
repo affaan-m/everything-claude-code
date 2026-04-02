@@ -4,22 +4,35 @@
 
 ## Content Security Policy
 
-Always configure CSP headers for production:
+Always configure CSP headers for production.
+
+### Nonce-Based CSP (Recommended)
+
+Use a per-request nonce to allowlist inline scripts instead of `'unsafe-inline'`.
+The server generates a random nonce for each response and injects it into both
+the CSP header and any `<script>` tags. This prevents execution of injected scripts
+that lack the matching nonce.
 
 ```
 Content-Security-Policy:
   default-src 'self';
-  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+  script-src 'self' 'nonce-{RANDOM}' https://cdn.jsdelivr.net;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   img-src 'self' data: https:;
   font-src 'self' https://fonts.gstatic.com;
-  connect-src 'self' https://api.*;
+  connect-src 'self' https://*.example.com;
   frame-src 'none';
   object-src 'none';
   base-uri 'self';
 ```
 
-Adjust per project needs. `unsafe-inline` for scripts should be replaced with nonces when possible.
+Where `{RANDOM}` is a cryptographically random base64 value regenerated on every
+HTTP response (e.g., via middleware). Each inline script must include the matching
+`nonce` attribute: `<script nonce="{RANDOM}">...</script>`.
+
+Adjust allowed origins per project needs. `'unsafe-inline'` remains acceptable for
+`style-src` where nonce injection into every styled element is impractical, but
+should never appear in `script-src`.
 
 ## XSS Prevention
 
