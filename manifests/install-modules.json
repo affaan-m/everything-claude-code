@@ -197,8 +197,7 @@
         "skills/project-guidelines-example",
         "skills/skill-stocktake",
         "skills/strategic-compact",
-        "skills/tdd-workflow",
-        "skills/verification-loop"
+        "skills/tdd-workflow"
       ],
       "targets": [
         "claude",

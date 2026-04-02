@@ -57,9 +57,8 @@ Type `/` in chat and select from the menu, or use:
 
 | Skill | Use For |
 |-------|---------|
-| `tdd-workflow` | Red-green-refactor TDD cycle |
+| `tdd-workflow` | Red-green-refactor TDD cycle + pre-PR verification gate |
 | `security-review` | Comprehensive security audit |
-| `verification-loop` | Continuous validation and improvement |
 | `coding-standards` | Code style and standards enforcement |
 | `api-design` | RESTful API design patterns |
 | `frontend-patterns` | React/Vue/Angular best practices |
@@ -207,7 +206,7 @@ Toggle hooks in the Agent Hooks panel or edit `.kiro/hooks/*.kiro.hook` files.
    "Analyze the user module architecture"
 
 2. /agent swap refactor-cleaner
-   #verification-loop
+   #tdd-workflow
    "Refactor based on the analysis"
 
 3. /agent swap code-reviewer

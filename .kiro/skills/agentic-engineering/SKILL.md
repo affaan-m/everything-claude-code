@@ -130,6 +130,6 @@ Outcome: Success
 ## Integration with Other Skills
 
 - **tdd-workflow**: Combine with eval-first loop for test-driven development
-- **verification-loop**: Use for continuous validation during implementation
+- **tdd-workflow**: Also provides a pre-PR verification gate for continuous validation during implementation
 - **search-first**: Apply before implementation to find existing solutions
 - **coding-standards**: Reference during code review phase

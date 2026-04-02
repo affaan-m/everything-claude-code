@@ -150,7 +150,7 @@ mkdir -p $TARGET/skills $TARGET/rules
 | `security-review` | 安全检查清单：身份验证、输入、密钥、API、支付功能 |
 | `strategic-compact` | 在逻辑间隔处建议手动上下文压缩 |
 | `tdd-workflow` | 强制要求 TDD，覆盖率 80% 以上：单元测试、集成测试、端到端测试 |
-| `verification-loop` | 验证和质量循环模式 |
+| `tdd-workflow` | TDD 方法论 + PR 前验证门控 |
 
 **类别：业务与内容（5 项技能）**
 

@@ -356,14 +356,6 @@
       ]
     },
     {
-      "id": "skill:verification-loop",
-      "family": "skill",
-      "description": "Verification loop for code quality assurance.",
-      "modules": [
-        "workflow-quality"
-      ]
-    },
-    {
       "id": "skill:strategic-compact",
       "family": "skill",
       "description": "Strategic context compaction for long sessions.",

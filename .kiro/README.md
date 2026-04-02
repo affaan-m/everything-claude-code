@@ -83,10 +83,9 @@ Skills are on-demand workflows invocable via the `/` menu in chat.
 
 | Skill | Description |
 |-------|-------------|
-| `tdd-workflow` | Enforces test-driven development with 80%+ coverage including unit, integration, and E2E tests. Use when writing new features or fixing bugs. |
+| `tdd-workflow` | Enforces TDD with 80%+ coverage (unit, integration, E2E) and includes a pre-PR verification gate (build, type check, lint, tests, security scan, diff review). Use when writing features, fixing bugs, or before creating PRs. |
 | `coding-standards` | Universal coding standards and best practices for TypeScript, JavaScript, React, and Node.js. Use when starting projects, reviewing code, or refactoring. |
 | `security-review` | Comprehensive security checklist and patterns. Use when adding authentication, handling user input, creating API endpoints, or working with secrets. |
-| `verification-loop` | Comprehensive verification system that runs build, type check, lint, tests, security scan, and diff review. Use after completing features or before creating PRs. |
 | `api-design` | RESTful API design patterns and best practices. Use when designing new APIs or refactoring existing endpoints. |
 | `frontend-patterns` | React, Next.js, and frontend architecture patterns. Use when building UI components or optimizing frontend performance. |
 | `backend-patterns` | Node.js, Express, and backend architecture patterns. Use when building APIs, services, or backend infrastructure. |
@@ -272,8 +271,6 @@ Shell scripts used by hooks to perform quality checks and formatting.
 │   │   └── SKILL.md              # Coding standards skill
 │   ├── security-review/
 │   │   └── SKILL.md              # Security review skill
-│   ├── verification-loop/
-│   │   └── SKILL.md              # Verification loop skill
 │   ├── api-design/
 │   │   └── SKILL.md              # API design skill
 │   ├── frontend-patterns/
@@ -361,7 +358,7 @@ All files are yours to modify after installation. The installer never overwrites
 3. **Review your code**: Switch to `code-reviewer` agent after writing code
 4. **Check security**: Use `security-reviewer` agent for auth, API endpoints, or sensitive data handling
 5. **Run quality gate**: Trigger the `quality-gate` hook before committing
-6. **Verify comprehensively**: Use the `verification-loop` skill before creating PRs
+6. **Verify comprehensively**: Use the `tdd-workflow` skill's verification gate before creating PRs
 
 The auto-loaded steering files (coding-style, security, testing) ensure consistent standards throughout your session.
 
@@ -404,10 +401,10 @@ kiro-cli --agent code-reviewer
 # 2. Review specific files or directories
 > "Review the changes in src/api/users.ts"
 
-# 3. Use the verification-loop skill for comprehensive checks
-> /verification-loop
+# 3. Use the tdd-workflow verification gate for comprehensive checks
+> /verify
 
-# 4. The verification loop will:
+# 4. The verification gate will:
 # - Run build and type checks
 # - Run linter
 # - Run all tests
@@ -561,8 +558,8 @@ kiro-cli --agent refactor-cleaner
 # - Suggest consolidation opportunities
 # - Refactor safely without breaking changes
 
-# 3. Use verification-loop after refactoring
-> /verification-loop
+# 3. Use verification gate after refactoring
+> /verify
 # Ensures all tests still pass after refactoring
 ```
 

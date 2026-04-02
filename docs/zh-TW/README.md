@@ -168,10 +168,9 @@ everything-claude-code/
 |   |-- continuous-learning-v2/     # 基於本能的學習與信心評分
 |   |-- iterative-retrieval/        # 子代理程式的漸進式上下文精煉
 |   |-- strategic-compact/          # 手動壓縮建議（完整指南）
-|   |-- tdd-workflow/               # TDD 方法論
+|   |-- tdd-workflow/               # TDD 方法論 + PR 前驗證門控
 |   |-- security-review/            # 安全性檢查清單
 |   |-- eval-harness/               # 驗證迴圈評估（完整指南）
-|   |-- verification-loop/          # 持續驗證（完整指南）
 |   |-- golang-patterns/            # Go 慣用語法和最佳實務（新增）
 |   |-- golang-testing/             # Go 測試模式、TDD、基準測試（新增）
 |

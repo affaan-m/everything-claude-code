@@ -1,6 +1,6 @@
 ---
 name: tdd-workflow
-description: Use this skill when writing new features, fixing bugs, or refactoring code. Enforces test-driven development with 80%+ coverage including unit, integration, and E2E tests.
+description: Use this skill when writing new features, fixing bugs, or refactoring code. Enforces test-driven development with 80%+ coverage including unit, integration, and E2E tests. Includes pre-PR verification gates (build, type-check, lint, security, diff review).
 origin: ECC
 ---
 
@@ -15,6 +15,9 @@ This skill ensures all code development follows TDD principles with comprehensiv
 - Refactoring existing code
 - Adding API endpoints
 - Creating new components
+- After completing a feature or significant code change (verification gate)
+- Before creating a PR (pre-PR verification)
+- When you want to ensure quality gates pass
 
 ## Core Principles
 
@@ -230,57 +233,10 @@ describe('GET /api/markets', () => {
 ```
 
 ### E2E Test Pattern (Playwright)
-```typescript
-import { test, expect } from '@playwright/test'
 
-test('user can search and filter markets', async ({ page }) => {
-  // Navigate to markets page
-  await page.goto('/')
-  await page.click('a[href="/markets"]')
-
-  // Verify page loaded
-  await expect(page.locator('h1')).toContainText('Markets')
-
-  // Search for markets
-  await page.fill('input[placeholder="Search markets"]', 'election')
-
-  // Wait for debounce and results
-  await page.waitForTimeout(600)
-
-  // Verify search results displayed
-  const results = page.locator('[data-testid="market-card"]')
-  await expect(results).toHaveCount(5, { timeout: 5000 })
-
-  // Verify results contain search term
-  const firstResult = results.first()
-  await expect(firstResult).toContainText('election', { ignoreCase: true })
-
-  // Filter by status
-  await page.click('button:has-text("Active")')
-
-  // Verify filtered results
-  await expect(results).toHaveCount(3)
-})
-
-test('user can create a new market', async ({ page }) => {
-  // Login first
-  await page.goto('/creator-dashboard')
-
-  // Fill market creation form
-  await page.fill('input[name="name"]', 'Test Market')
-  await page.fill('textarea[name="description"]', 'Test description')
-  await page.fill('input[name="endDate"]', '2025-12-31')
-
-  // Submit form
-  await page.click('button[type="submit"]')
-
-  // Verify success message
-  await expect(page.locator('text=Market created successfully')).toBeVisible()
-
-  // Verify redirect to market page
-  await expect(page).toHaveURL(/\/markets\/test-market/)
-})
-```
+For comprehensive Playwright patterns including Page Object Model, configuration,
+flaky test strategies, artifact management, and CI/CD integration, see the
+[e2e-testing skill](../e2e-testing/SKILL.md).
 
 ## Test File Organization
 
@@ -457,6 +413,116 @@ npm test && npm run lint
 - Fast test execution (< 30s for unit tests)
 - E2E tests cover critical user flows
 - Tests catch bugs before production
+
+## Pre-PR Verification Gate
+
+After completing the TDD cycle, run a full verification gate before creating a PR.
+This replaces the former `verification-loop` skill.
+
+### Phase 1: Build Verification
+```bash
+# Check if project builds
+npm run build 2>&1 | tail -20
+# OR
+pnpm build 2>&1 | tail -20
+```
+
+If build fails, STOP and fix before continuing.
+
+### Phase 2: Type Check
+```bash
+# TypeScript projects
+npx tsc --noEmit 2>&1 | head -30
+
+# Python projects
+pyright . 2>&1 | head -30
+```
+
+Report all type errors. Fix critical ones before continuing.
+
+### Phase 3: Lint Check
+```bash
+# JavaScript/TypeScript
+npm run lint 2>&1 | head -30
+
+# Python
+ruff check . 2>&1 | head -30
+```
+
+### Phase 4: Test Suite
+```bash
+# Run tests with coverage
+npm run test -- --coverage 2>&1 | tail -50
+
+# Check coverage threshold
+# Target: 80% minimum
+```
+
+Report:
+- Total tests: X
+- Passed: X
+- Failed: X
+- Coverage: X%
+
+### Phase 5: Security Scan
+```bash
+# Check for secrets
+grep -rn "sk-" --include="*.ts" --include="*.js" . 2>/dev/null | head -10
+grep -rn "api_key" --include="*.ts" --include="*.js" . 2>/dev/null | head -10
+
+# Check for console.log
+grep -rn "console.log" --include="*.ts" --include="*.tsx" src/ 2>/dev/null | head -10
+```
+
+### Phase 6: Diff Review
+```bash
+# Show what changed
+git diff --stat
+git diff HEAD~1 --name-only
+```
+
+Review each changed file for:
+- Unintended changes
+- Missing error handling
+- Potential edge cases
+
+### Verification Report Format
+
+After running all phases, produce a verification report:
+
+```
+VERIFICATION REPORT
+==================
+
+Build:     [PASS/FAIL]
+Types:     [PASS/FAIL] (X errors)
+Lint:      [PASS/FAIL] (X warnings)
+Tests:     [PASS/FAIL] (X/Y passed, Z% coverage)
+Security:  [PASS/FAIL] (X issues)
+Diff:      [X files changed]
+
+Overall:   [READY/NOT READY] for PR
+
+Issues to Fix:
+1. ...
+2. ...
+```
+
+### Continuous Verification
+
+For long sessions, run verification every 15 minutes or after major changes:
+
+```markdown
+Set a mental checkpoint:
+- After completing each function
+- After finishing a component
+- Before moving to next task
+
+Run: /verify
+```
+
+This verification gate complements PostToolUse hooks but provides deeper,
+comprehensive review.
 
 ---
 

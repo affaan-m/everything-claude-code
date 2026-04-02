@@ -314,10 +314,9 @@ everything-claude-code/
 |   |-- continuous-learning-v2/     # 基于直觉的学习与置信度评分
 |   |-- iterative-retrieval/        # 子代理渐进式上下文优化
 |   |-- strategic-compact/          # 手动压缩建议（长文指南）
-|   |-- tdd-workflow/               # TDD 方法论
+|   |-- tdd-workflow/               # TDD 方法论 + PR 前验证门控
 |   |-- security-review/            # 安全检查清单
 |   |-- eval-harness/               # 验证循环评估（长文指南）
-|   |-- verification-loop/          # 持续验证（长文指南）
 |   |-- videodb/                   # 视频与音频：导入、搜索、编辑、生成与流式处理（新增）
 |   |-- golang-patterns/            # Go 习惯用法与最佳实践
 |   |-- golang-testing/             # Go 测试模式、TDD 与基准测试
@@ -1049,7 +1048,7 @@ Codex macOS 应用：
 | eval-harness | 评估驱动的开发 |
 | strategic-compact | 上下文管理 |
 | api-design | REST API 设计模式 |
-| verification-loop | 构建、测试、代码检查、类型检查、安全 |
+| tdd-workflow | TDD + 构建、测试、代码检查、类型检查、安全验证 |
 
 ### 关键限制
 

@@ -168,7 +168,6 @@ The default OpenCode config loads 11 curated ECC skills via the `instructions` a
 - tdd-workflow
 - strategic-compact
 - eval-harness
-- verification-loop
 - api-design
 - e2e-testing
 

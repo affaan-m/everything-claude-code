@@ -215,10 +215,9 @@ everything-claude-code/
 |   |-- continuous-learning-v2/     # 信頼度スコア付き直感ベース学習
 |   |-- iterative-retrieval/        # サブエージェント用の段階的コンテキスト精製
 |   |-- strategic-compact/          # 手動圧縮提案（長文ガイド）
-|   |-- tdd-workflow/               # TDD 方法論
+|   |-- tdd-workflow/               # TDD 方法論 + PR 前検証ゲート
 |   |-- security-review/            # セキュリティチェックリスト
 |   |-- eval-harness/               # 検証ループ評価（長文ガイド）
-|   |-- verification-loop/          # 継続的検証（長文ガイド）
 |   |-- golang-patterns/            # Go イディオムとベストプラクティス
 |   |-- golang-testing/             # Go テストパターン、TDD、ベンチマーク
 |   |-- cpp-testing/                # C++ テスト GoogleTest、CMake/CTest（新規）

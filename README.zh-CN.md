@@ -190,10 +190,9 @@ everything-claude-code/
 |   |-- continuous-learning-v2/     # 基于直觉的学习与置信度评分
 |   |-- iterative-retrieval/        # 子代理的渐进式上下文细化
 |   |-- strategic-compact/          # 手动压缩建议（详细指南）
-|   |-- tdd-workflow/               # TDD 方法论
+|   |-- tdd-workflow/               # TDD 方法论 + PR 前验证门控
 |   |-- security-review/            # 安全检查清单
 |   |-- eval-harness/               # 验证循环评估（详细指南）
-|   |-- verification-loop/          # 持续验证（详细指南）
 |   |-- golang-patterns/            # Go 惯用语和最佳实践（新增）
 |   |-- golang-testing/             # Go 测试模式、TDD、基准测试（新增）
 |   |-- cpp-testing/                # C++ 测试模式、GoogleTest、CMake/CTest（新增）

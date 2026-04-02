@@ -36,8 +36,8 @@ This document lists each slash command and the primary agent(s) or skills it inv
 | `/promote` | — | continuous-learning-v2 |
 | `/projects` | — | continuous-learning-v2 |
 | `/skill-create` | — | skill-create-output script, git history |
-| `/checkpoint` | — | verification-loop skill |
-| `/verify` | — | verification-loop skill |
+| `/checkpoint` | — | tdd-workflow skill (verification gate) |
+| `/verify` | — | tdd-workflow skill (verification gate) |
 | `/eval` | — | eval-harness skill |
 | `/test-coverage` | — | Coverage analysis |
 | `/sessions` | — | Session history |
@@ -55,7 +55,7 @@ This document lists each slash command and the primary agent(s) or skills it inv
 ## Skills referenced by commands
 
 - **continuous-learning**, **continuous-learning-v2**: `/learn`, `/learn-eval`, `/instinct-*`, `/evolve`, `/promote`, `/projects`
-- **verification-loop**: `/checkpoint`, `/verify`
+- **tdd-workflow** (verification gate): `/checkpoint`, `/verify`
 - **eval-harness**: `/eval`
 - **security-scan**: `/security-scan` (runs AgentShield)
 - **strategic-compact**: suggested at compaction points (hooks)

@@ -120,7 +120,7 @@ Options:
 | `security-review` | セキュリティチェックリスト: 認証、入力、シークレット、API、決済機能 |
 | `strategic-compact` | 論理的な間隔で手動コンテキスト圧縮を提案 |
 | `tdd-workflow` | 80%以上のカバレッジで TDD を強制: ユニット、統合、E2E |
-| `verification-loop` | 検証と品質ループのパターン |
+| `tdd-workflow` | TDD 方法論 + PR 前検証ゲート |
 
 **スタンドアロン**
 

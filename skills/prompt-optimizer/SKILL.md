@@ -117,9 +117,9 @@ Map intent + scope + tech stack (from Phase 0) to specific ECC components.
 
 | Intent | Commands | Skills | Agents |
 |--------|----------|--------|--------|
-| New Feature | /plan, /tdd, /code-review, /verify | tdd-workflow, verification-loop | planner, tdd-guide, code-reviewer |
+| New Feature | /plan, /tdd, /code-review, /verify | tdd-workflow | planner, tdd-guide, code-reviewer |
 | Bug Fix | /tdd, /build-fix, /verify | tdd-workflow | tdd-guide, build-error-resolver |
-| Refactor | /refactor-clean, /code-review, /verify | verification-loop | refactor-cleaner, code-reviewer |
+| Refactor | /refactor-clean, /code-review, /verify | tdd-workflow | refactor-cleaner, code-reviewer |
 | Research | /plan | search-first, iterative-retrieval | — |
 | Testing | /tdd, /e2e, /test-coverage | tdd-workflow, e2e-testing | tdd-guide, e2e-runner |
 | Review | /code-review | security-review | code-reviewer, security-reviewer |

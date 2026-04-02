@@ -99,9 +99,9 @@ metadata:
 
 | 意图 | 命令 | 技能 | 代理 |
 |--------|----------|--------|--------|
-| 新功能 | /plan, /tdd, /code-review, /verify | tdd-workflow, verification-loop | planner, tdd-guide, code-reviewer |
+| 新功能 | /plan, /tdd, /code-review, /verify | tdd-workflow | planner, tdd-guide, code-reviewer |
 | 错误修复 | /tdd, /build-fix, /verify | tdd-workflow | tdd-guide, build-error-resolver |
-| 重构 | /refactor-clean, /code-review, /verify | verification-loop | refactor-cleaner, code-reviewer |
+| 重构 | /refactor-clean, /code-review, /verify | tdd-workflow | refactor-cleaner, code-reviewer |
 | 研究 | /plan | search-first, iterative-retrieval | — |
 | 测试 | /tdd, /e2e, /test-coverage | tdd-workflow, e2e-testing | tdd-guide, e2e-runner |
 | 审查 | /code-review | security-review | code-reviewer, security-reviewer |

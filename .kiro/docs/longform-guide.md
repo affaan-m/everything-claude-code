@@ -107,7 +107,7 @@ Hooks create a safety net and capture knowledge automatically.
    → Agent identifies coupling, cohesion issues
    → Agent suggests refactoring strategy
 
-2. Invoke refactor-cleaner agent with verification-loop skill
+2. Invoke refactor-cleaner agent with tdd-workflow skill
    → Agent refactors incrementally
    → Agent runs tests after each change
    → Agent validates behavior preservation

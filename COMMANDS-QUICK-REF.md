@@ -12,7 +12,7 @@
 | `/tdd` | Enforce test-driven development: scaffold interface → write failing test → implement → verify 80%+ coverage |
 | `/code-review` | Full code quality, security, and maintainability review of changed files |
 | `/build-fix` | Detect and fix build errors — delegates to the right build-resolver agent automatically |
-| `/verify` | Run the full verification loop: build → lint → test → type-check |
+| `/verify` | Run the full verification gate: build → lint → test → type-check (via tdd-workflow) |
 | `/quality-gate` | Quality gate check against project standards |
 
 ---

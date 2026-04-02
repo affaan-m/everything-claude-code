@@ -117,7 +117,7 @@ Plan a user authentication feature with these security requirements:
 **Risk**: May accidentally remove security checks during refactoring.
 
 **Mitigation**:
-- Use verification-loop skill to validate behavior preservation
+- Use tdd-workflow verification gate to validate behavior preservation
 - Include security tests in test suite
 - Review diffs carefully for removed security code
 - Run security-reviewer after refactoring

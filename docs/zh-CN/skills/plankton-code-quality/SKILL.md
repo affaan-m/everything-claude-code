@@ -131,7 +131,7 @@ claude
 1. 将 ECC 安装为你的插件（代理、技能、命令、规则）
 2. 添加 Plankton 钩子以实现编写时质量强制执行
 3. 使用 AgentShield 进行安全审计
-4. 在 PR 之前使用 ECC 的 verification-loop 作为最后一道关卡
+4. 在 PR 之前使用 ECC 的 tdd-workflow 验证门控作为最后一道关卡
 
 ### 避免钩子冲突
 

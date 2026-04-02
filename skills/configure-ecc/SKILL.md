@@ -146,7 +146,7 @@ For each selected category, print the full list of skills below and ask the user
 | `security-review` | Security checklist: auth, input, secrets, API, payment features |
 | `strategic-compact` | Suggests manual context compaction at logical intervals |
 | `tdd-workflow` | Enforces TDD with 80%+ coverage: unit, integration, E2E |
-| `verification-loop` | Verification and quality loop patterns |
+| `tdd-workflow` | TDD methodology with pre-PR verification gate |
 
 **Category: Business & Content (5 skills)**
 

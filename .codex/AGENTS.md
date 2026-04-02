@@ -33,7 +33,7 @@ Available skills:
 - eval-harness — Eval-driven development
 - strategic-compact — Context management
 - api-design — REST API design patterns
-- verification-loop — Build, test, lint, typecheck, security
+- tdd-workflow — TDD + build, test, lint, typecheck, security verification
 - deep-research — Multi-source research with firecrawl and exa MCPs
 - exa-search — Neural search via Exa MCP for web, code, and companies
 - claude-api — Anthropic Claude API patterns and SDKs
