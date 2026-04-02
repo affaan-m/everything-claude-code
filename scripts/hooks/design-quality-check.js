@@ -36,20 +36,34 @@ function run(inputOrRaw, _options = {}) {
     return { exitCode: 0 };
   }
 
-  const filePath = String(input?.tool_input?.file_path || '');
+  // Extract file paths: Write/Edit use tool_input.file_path,
+  // MultiEdit uses tool_input.edits[] where each edit has a file_path
+  const toolInput = input?.tool_input || {};
+  let filePaths = [];
 
-  if (!filePath || !FRONTEND_EXTENSIONS.test(filePath)) {
-    // Not a frontend file — skip silently
+  if (toolInput.file_path) {
+    filePaths = [String(toolInput.file_path)];
+  } else if (Array.isArray(toolInput.edits)) {
+    filePaths = toolInput.edits
+      .map(edit => String(edit?.file_path || ''))
+      .filter(Boolean);
+  }
+
+  const frontendPaths = filePaths.filter(fp => FRONTEND_EXTENSIONS.test(fp));
+
+  if (frontendPaths.length === 0) {
+    // No frontend files — skip silently
     return { exitCode: 0 };
   }
 
-  // Frontend file detected — emit design quality reminder
+  // Frontend file(s) detected — emit design quality reminder
   const checklist = DESIGN_CHECKLIST.map(item => `  - ${item}`).join('\n');
+  const pathList = frontendPaths.map(fp => `  → ${fp}`).join('\n');
 
   return {
     exitCode: 0,
     stderr:
-      `[Hook] DESIGN CHECK: Frontend file modified → ${filePath}\n` +
+      `[Hook] DESIGN CHECK: Frontend file(s) modified:\n${pathList}\n` +
       '[Hook] Verify this is not generic/template-looking UI. Check for:\n' +
       checklist + '\n' +
       '[Hook] If it looks like default AI-generated output, iterate on the design.',
