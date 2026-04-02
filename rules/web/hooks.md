@@ -16,7 +16,7 @@ Run Prettier (or Biome) after every file write to keep formatting consistent:
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
-        "command": "npx prettier --write $FILE_PATH",
+        "command": "npx prettier --write \"$FILE_PATH\"",
         "description": "Auto-format written files with Prettier"
       }
     ]
@@ -34,7 +34,7 @@ Run ESLint after edits to catch issues before they accumulate:
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
-        "command": "npx eslint --fix $FILE_PATH",
+        "command": "npx eslint --fix \"$FILE_PATH\"",
         "description": "Auto-fix lint issues on edited files"
       }
     ]
@@ -70,7 +70,7 @@ Lint stylesheets on save to enforce CSS conventions and catch errors:
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
-        "command": "npx stylelint --fix $FILE_PATH",
+        "command": "npx stylelint --fix \"$FILE_PATH\"",
         "description": "Auto-fix CSS lint issues"
       }
     ]
@@ -90,7 +90,7 @@ Prevent writing files that exceed the recommended 800-line limit:
     "PreToolUse": [
       {
         "matcher": "Write",
-        "command": "wc -l < $FILE_PATH | awk '{if ($1 > 800) exit 1}'",
+        "command": "wc -l < \"$FILE_PATH\" | awk '{if ($1 > 800) exit 1}'",
         "description": "Warn if file exceeds 800 lines"
       }
     ]
