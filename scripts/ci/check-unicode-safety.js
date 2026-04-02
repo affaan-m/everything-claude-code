@@ -196,7 +196,8 @@ for (const filePath of listFiles(repoRoot)) {
   let text;
   try {
     text = fs.readFileSync(filePath, 'utf8');
-  } catch {
+  } catch (err) {
+    process.stderr.write(`[check-unicode-safety] Could not read ${filePath}: ${err.message}\n`);
     continue;
   }
 

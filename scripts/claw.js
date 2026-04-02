@@ -40,7 +40,8 @@ function listSessions(dir) {
 function loadHistory(filePath) {
   try {
     return fs.readFileSync(filePath, 'utf8');
-  } catch {
+  } catch (err) {
+    process.stderr.write(`[claw] Could not load history from ${filePath}: ${err.message}\n`);
     return '';
   }
 }
@@ -67,8 +68,8 @@ function loadECCContext(skillList) {
     const skillPath = path.join(process.cwd(), 'skills', name, 'SKILL.md');
     try {
       chunks.push(fs.readFileSync(skillPath, 'utf8'));
-    } catch {
-      // Skip missing skills silently to keep REPL usable.
+    } catch (err) {
+      process.stderr.write(`[claw] Could not load skill '${name}': ${err.message}\n`);
     }
   }
 

@@ -20,7 +20,8 @@ function collectRuleFiles(dir) {
   let entries;
   try {
     entries = fs.readdirSync(dir, { withFileTypes: true });
-  } catch {
+  } catch (err) {
+    process.stderr.write(`[validate-rules] Could not read directory ${dir}: ${err.message}\n`);
     return files;
   }
 

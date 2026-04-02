@@ -122,7 +122,8 @@ function countFiles(rootDir, relativeDir, extension) {
 function safeRead(rootDir, relativePath) {
   try {
     return readText(rootDir, relativePath);
-  } catch (_error) {
+  } catch (err) {
+    process.stderr.write(`[harness-audit] Could not read ${relativePath}: ${err.message}\n`);
     return '';
   }
 }
@@ -134,7 +135,8 @@ function safeParseJson(text) {
 
   try {
     return JSON.parse(text);
-  } catch (_error) {
+  } catch (err) {
+    process.stderr.write(`[harness-audit] JSON parse error: ${err.message}\n`);
     return null;
   }
 }

@@ -44,8 +44,8 @@ function validateCommands() {
         if (fs.statSync(skillPath).isDirectory()) {
           validSkills.add(f);
         }
-      } catch {
-        // skip unreadable entries
+      } catch (err) {
+        process.stderr.write(`[validate-commands] Could not stat ${skillPath}: ${err.message}\n`);
       }
     }
   }
