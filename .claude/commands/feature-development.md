@@ -14,8 +14,9 @@ Standard feature implementation workflow
 
 ## Common Files
 
-- `manifests/*`
-- `schemas/*`
+- `.opencode/*`
+- `.opencode/plugins/*`
+- `.opencode/plugins/lib/*`
 - `**/*.test.*`
 - `**/api/**`
 
