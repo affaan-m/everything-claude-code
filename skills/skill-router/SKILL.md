@@ -1,5 +1,9 @@
 ---
-description: Route a task to the right skill bundle. Reads lightweight index, picks bundle(s), then loads only what's needed.
+name: skill-router
+description: >-
+  Route a task to the right skill bundle. Reads lightweight index,
+  picks bundle(s), then loads only what's needed.
+origin: community
 ---
 
 # Skill Router
@@ -31,7 +35,8 @@ Each bundle groups related skills. Pick the **minimum** bundles needed for the t
 | `bundles:domain-ops` | Supply chain, logistics, energy, customs, manufacturing |
 | `bundles:session-mgmt` | Save/resume sessions, instincts, continuous learning, context budget |
 | `bundles:orchestration` | Multi-agent coordination, loops, team building, dispatch, DevFleet |
-| `bundles:harness-admin` | Claude Code config, skill auditing, code quality hooks, refactoring, doc updates |
+| `bundles:harness-admin` | Claude Code config, skill auditing, utilities |
+| `bundles:code-quality` | Code quality, refactoring, documentation, codebase analysis |
 
 ## Routing Rules
 

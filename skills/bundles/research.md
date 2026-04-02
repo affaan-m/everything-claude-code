@@ -22,7 +22,7 @@ Activate ALL research skills and MCPs for comprehensive investigation:
 - **firecrawl** — Deep web scraping
 - **notebooklm** — Document-grounded research
 - **context7** — Library/API documentation
-- **github** — Code search across GitHub
+- **GitHub** — Code search across GitHub
 
 ## Research protocol
 1. Define research questions clearly

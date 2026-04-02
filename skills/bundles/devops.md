@@ -24,7 +24,7 @@ description: DevOps & Deployment bundle — Docker, CI/CD, testing, and producti
 
 ## MCP servers
 - **playwright** — Browser automation for E2E
-- **github** — PR checks, CI status
+- **GitHub** — PR checks, CI status
 
 ## Deployment checklist
 - [ ] All tests pass (unit + integration + E2E)

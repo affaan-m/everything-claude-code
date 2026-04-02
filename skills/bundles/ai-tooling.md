@@ -25,7 +25,7 @@ For building AI-powered tools, MCP servers, agent systems, and working with the 
 
 ## MCP servers
 - **context7** — Library/API documentation lookup
-- **github** — Code search for existing implementations
+- **GitHub** — Code search for existing implementations
 
 ## Task
 $ARGUMENTS

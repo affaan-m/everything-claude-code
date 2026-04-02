@@ -21,7 +21,7 @@ description: Planning & Architecture bundle — design, plan, and decompose comp
 
 ## MCP servers
 - **dispatch** — detect_complexity, dispatch_task, project_health
-- **github** — Check existing issues, PRs, code
+- **GitHub** — Check existing issues, PRs, code
 
 ## Planning protocol
 1. Restate requirements in your own words
