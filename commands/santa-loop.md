@@ -1,10 +1,14 @@
 ---
-description: Adversarial dual-review convergence loop — two independent model reviewers must both approve before code ships.
+description: "Adversarial dual-review convergence loop — two independent model reviewers must both approve before code ships. Implements Ronald Skelton's santa-method with model diversity via argus-dispatch."
+origin: "Chris Yau (@chris-yyau)"
+based-on: "santa-method by Ronald Skelton (RapportScore.ai)"
 ---
 
 # Santa Loop
 
-Adversarial dual-review convergence loop using the santa-method skill. Two independent reviewers — different models, no shared context — must both return NICE before code ships.
+Adversarial dual-review convergence loop implementing Ronald Skelton's [santa-method](../skills/santa-method/SKILL.md) skill with model diversity via [argus-dispatch](../skills/argus-dispatch/SKILL.md). Two independent reviewers — different models, no shared context — must both return NICE before code ships.
+
+Make a list, check it twice. If it's naughty, fix it until it's nice.
 
 ## Purpose
 
@@ -45,7 +49,7 @@ Add domain-specific criteria based on file types (e.g., type safety for TS, memo
 
 ### Step 3: Dual Independent Review
 
-Launch two reviewers **in parallel** using the Agent tool (both in a single message for concurrent execution). Both must complete before proceeding to the verdict gate.
+Launch two reviewers **in parallel** (both in a single message for concurrent execution). Both must complete before proceeding to the verdict gate.
 
 Each reviewer evaluates every rubric criterion as PASS or FAIL, then returns structured JSON:
 
@@ -70,37 +74,31 @@ Launch an Agent (subagent_type: `code-reviewer`, model: `opus`) with the full ru
 - "You are an independent quality reviewer. You have NOT seen any other review. Your job is to find problems, not to approve."
 - Return the structured JSON verdict above
 
-#### Reviewer B: External Model (Claude fallback only if no external CLI installed)
+#### Reviewer B: External Model (preferred) or Claude Fallback
 
-First, detect which CLIs are available:
-```bash
-command -v codex >/dev/null 2>&1 && echo "codex" || true
-command -v gemini >/dev/null 2>&1 && echo "gemini" || true
-```
+**With argus-dispatch installed and external CLIs available:**
 
-Build the reviewer prompt (identical rubric + instructions as Reviewer A) and write it to a unique temp file:
+Locate the dispatch script and send the review:
+
 ```bash
-PROMPT_FILE=$(mktemp /tmp/santa-reviewer-b-XXXXXX.txt)
-cat > "$PROMPT_FILE" << 'EOF'
-... full rubric + file contents + reviewer instructions ...
+# Find argus-dispatch.sh (searches plugin paths)
+DISPATCH=""
+for base in ~/.claude/plugins/*/skills/argus-dispatch/scripts ~/.claude/skills/argus-dispatch/scripts; do
+  [[ -x "$base/argus-dispatch.sh" ]] && DISPATCH="$base/argus-dispatch.sh" && break
+done
+
+if [[ -x "$DISPATCH" ]]; then
+  PROMPT_FILE=$(mktemp "${TMPDIR:-/tmp}/argus-reviewer-b-XXXXXX.txt")
+  cat > "$PROMPT_FILE" << 'EOF'
+  ... full rubric + file contents + reviewer instructions ...
 EOF
+  "$DISPATCH" --cli auto --timeout 600 --prompt "$(cat "$PROMPT_FILE")"
+  rm -f "$PROMPT_FILE"
+fi
 ```
 
-Use the first available CLI:
+**Without external CLIs (Claude-only fallback):**
 
-**Codex CLI** (if installed)
-```bash
-codex exec --sandbox read-only -m gpt-5.4 -C "$(pwd)" - < "$PROMPT_FILE"
-rm -f "$PROMPT_FILE"
-```
-
-**Gemini CLI** (if installed and codex is not)
-```bash
-gemini -p "$(cat "$PROMPT_FILE")" -m gemini-2.5-pro
-rm -f "$PROMPT_FILE"
-```
-
-**Claude Agent fallback** (only if neither `codex` nor `gemini` is installed)
 Launch a second Claude Agent (subagent_type: `code-reviewer`, model: `opus`). Log a warning that both reviewers share the same model family — true model diversity was not achieved but context isolation is still enforced.
 
 In all cases, the reviewer must return the same structured JSON verdict as Reviewer A.
@@ -166,10 +164,19 @@ Result:     [PUSHED / ESCALATED TO USER]
 ## Notes
 
 - Reviewer A (Claude Opus) always runs — guarantees at least one strong reviewer regardless of tooling.
-- Model diversity is the goal for Reviewer B. GPT-5.4 or Gemini 2.5 Pro gives true independence — different training data, different biases, different blind spots. The Claude-only fallback still provides value via context isolation but loses model diversity.
-- Strongest available models are used: Opus for Reviewer A, GPT-5.4 or Gemini 2.5 Pro for Reviewer B.
-- External reviewers run with `--sandbox read-only` (Codex) to prevent repo mutation during review.
+- Model diversity is the goal for Reviewer B. A different model family (GPT, Gemini, etc.) gives true independence — different training data, different biases, different blind spots. The Claude-only fallback still provides value via context isolation but loses model diversity.
+- Strongest available models should be used for both reviewers.
+- External reviewers run in read-only sandbox mode to prevent repo mutation during review.
 - Fresh reviewers each round prevents anchoring bias from prior findings.
 - The rubric is the most important input. Tighten it if reviewers rubber-stamp or flag subjective style issues.
 - Commits happen on NAUGHTY rounds so fixes are preserved even if the loop is interrupted.
 - Push only happens after NICE — never mid-loop.
+
+## Integration
+
+| Skill | Relationship |
+|-------|-------------|
+| santa-method | Santa-loop is the practical git-workflow implementation of santa-method's theory |
+| argus-dispatch | Used to send Reviewer B to an external model for true model diversity |
+| argus-council | Council for pre-build decisions, santa-loop for post-build verification |
+| argus-review | Per-commit review (fast), santa-loop for high-stakes verification (thorough) |
