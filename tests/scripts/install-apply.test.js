@@ -25,9 +25,11 @@ function readJson(filePath) {
 const REPO_ROOT = path.join(__dirname, '..', '..');
 
 function run(args = [], options = {}) {
+  const homeDir = options.homeDir || process.env.HOME;
   const env = {
     ...process.env,
-    HOME: options.homeDir || process.env.HOME,
+    HOME: homeDir,
+    USERPROFILE: homeDir, // Windows: os.homedir() reads USERPROFILE, not HOME
     ...(options.env || {}),
   };
 

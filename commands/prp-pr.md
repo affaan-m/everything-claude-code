@@ -177,7 +177,7 @@ Next steps:
 
 ## Edge Cases
 
-- **No `gh` CLI**: Stop with: "GitHub CLI (`gh`) is required. Install: https://cli.github.com/"
+- **No `gh` CLI**: Stop with: "GitHub CLI (`gh`) is required. Install: <https://cli.github.com/>"
 - **Not authenticated**: Stop with: "Run `gh auth login` first."
 - **Force push needed**: If remote has diverged and rebase was done, use `git push --force-with-lease` (never `--force`).
 - **Multiple PR templates**: If `.github/PULL_REQUEST_TEMPLATE/` has multiple files, list them and ask user to choose.

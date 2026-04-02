@@ -24,20 +24,20 @@ Apply the orchestration skills instead of maintaining a second workflow spec her
 - Keep handoffs structured, but let the skills define the maintained sequencing rules.
 Security Reviewer: [summary]
 
-FILES CHANGED
--------------
+### FILES CHANGED
+
 [List all files modified]
 
-TEST RESULTS
-------------
+### TEST RESULTS
+
 [Test pass/fail summary]
 
-SECURITY STATUS
----------------
+### SECURITY STATUS
+
 [Security findings]
 
-RECOMMENDATION
---------------
+### RECOMMENDATION
+
 [SHIP / NEEDS WORK / BLOCKED]
 ```
 
@@ -111,7 +111,7 @@ Telemetry:
 
 This keeps planner, implementer, reviewer, and loop workers legible from the operator surface.
 
-## Arguments
+## Workflow Arguments
 
 $ARGUMENTS:
 - `feature <description>` - Full feature workflow
