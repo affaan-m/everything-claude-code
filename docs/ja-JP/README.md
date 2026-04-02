@@ -1,3 +1,11 @@
+## 日本語詳細ガイド
+
+- [ECC 詳細ガイド](./ECC-GUIDE.md)
+- [ECC 参照インデックス](./ECC-REFERENCE-INDEX.md)
+- [ECC コマンドリファレンス](./ECC-COMMANDS-REFERENCE.md)
+- [ECC スキルカタログ](./ECC-SKILLS-CATALOG.md)
+- [ECC 付録](./ECC-APPENDIX.md)
+
 **言語:** English | [简体中文](../../README.zh-CN.md) | [繁體中文](../zh-TW/README.md) | [日本語](README.md) | [한국어](../ko-KR/README.md)
 
 # Everything Claude Code
