@@ -7,6 +7,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const TOML = require('@iarna/toml');
 
 const repoRoot = path.join(__dirname, '..', '..');
 const installScript = path.join(repoRoot, 'scripts', 'codex', 'install-global-git-hooks.sh');
@@ -93,29 +94,16 @@ if (os.platform() === 'win32') {
 else failed++;
 
 if (
-  test('sync preserves baseline config and accepts the legacy context7 MCP section', () => {
+  test('sync installs the missing Codex baseline and accepts the legacy context7 MCP section', () => {
     const homeDir = createTempDir('codex-sync-home-');
     const codexDir = path.join(homeDir, '.codex');
     const configPath = path.join(codexDir, 'config.toml');
     const agentsPath = path.join(codexDir, 'AGENTS.md');
     const config = [
-      'approval_policy = "on-request"',
-      'sandbox_mode = "workspace-write"',
-      'web_search = "live"',
       'persistent_instructions = ""',
       '',
-      '[features]',
-      'multi_agent = true',
-      '',
-      '[profiles.strict]',
-      'approval_policy = "on-request"',
-      'sandbox_mode = "read-only"',
-      'web_search = "cached"',
-      '',
-      '[profiles.yolo]',
-      'approval_policy = "never"',
-      'sandbox_mode = "workspace-write"',
-      'web_search = "live"',
+      '[agents]',
+      'explorer = { description = "Read-only codebase explorer for gathering evidence before changes are proposed." }',
       '',
       '[mcp_servers.context7]',
       'command = "npx"',
@@ -147,13 +135,63 @@ if (
       assert.match(syncedAgents, /^# Codex Supplement \(From ECC \.codex\/AGENTS\.md\)/m);
 
       const syncedConfig = fs.readFileSync(configPath, 'utf8');
-      assert.match(syncedConfig, /^multi_agent\s*=\s*true$/m);
-      assert.match(syncedConfig, /^\[profiles\.strict\]$/m);
-      assert.match(syncedConfig, /^\[profiles\.yolo\]$/m);
-      assert.match(syncedConfig, /^\[mcp_servers\.github\]$/m);
-      assert.match(syncedConfig, /^\[mcp_servers\.memory\]$/m);
-      assert.match(syncedConfig, /^\[mcp_servers\.sequential-thinking\]$/m);
-      assert.match(syncedConfig, /^\[mcp_servers\.context7\]$/m);
+      const parsedConfig = TOML.parse(syncedConfig);
+      assert.strictEqual(parsedConfig.approval_policy, 'on-request');
+      assert.strictEqual(parsedConfig.sandbox_mode, 'workspace-write');
+      assert.strictEqual(parsedConfig.web_search, 'live');
+      assert.ok(!Object.prototype.hasOwnProperty.call(parsedConfig, 'multi_agent'));
+      assert.ok(parsedConfig.features);
+      assert.strictEqual(parsedConfig.features.multi_agent, true);
+      assert.ok(parsedConfig.profiles);
+      assert.strictEqual(parsedConfig.profiles.strict.approval_policy, 'on-request');
+      assert.strictEqual(parsedConfig.profiles.yolo.approval_policy, 'never');
+      assert.ok(parsedConfig.agents);
+      assert.strictEqual(parsedConfig.agents.max_threads, 6);
+      assert.strictEqual(parsedConfig.agents.max_depth, 1);
+      assert.strictEqual(parsedConfig.agents.explorer.config_file, 'agents/explorer.toml');
+      assert.strictEqual(parsedConfig.agents.reviewer.config_file, 'agents/reviewer.toml');
+      assert.strictEqual(parsedConfig.agents.docs_researcher.config_file, 'agents/docs-researcher.toml');
+      assert.ok(parsedConfig.mcp_servers.exa);
+      assert.ok(parsedConfig.mcp_servers.github);
+      assert.ok(parsedConfig.mcp_servers.memory);
+      assert.ok(parsedConfig.mcp_servers['sequential-thinking']);
+      assert.ok(parsedConfig.mcp_servers.context7);
+
+      for (const roleFile of ['explorer.toml', 'reviewer.toml', 'docs-researcher.toml']) {
+        assert.ok(fs.existsSync(path.join(codexDir, 'agents', roleFile)));
+      }
+    } finally {
+      cleanup(homeDir);
+    }
+  })
+)
+  passed++;
+else failed++;
+
+if (
+  test('sync adds parent-table keys when the target only declares an implicit parent table', () => {
+    const homeDir = createTempDir('codex-sync-implicit-parent-home-');
+    const codexDir = path.join(homeDir, '.codex');
+    const configPath = path.join(codexDir, 'config.toml');
+    const config = [
+      'persistent_instructions = ""',
+      '',
+      '[agents.explorer]',
+      'description = "Read-only codebase explorer for gathering evidence before changes are proposed."',
+      '',
+    ].join('\n');
+
+    try {
+      fs.mkdirSync(codexDir, { recursive: true });
+      fs.writeFileSync(configPath, config);
+
+      const syncResult = runBash(syncScript, [], makeHermeticCodexEnv(homeDir, codexDir));
+      assert.strictEqual(syncResult.status, 0, `${syncResult.stdout}\n${syncResult.stderr}`);
+
+      const parsedConfig = TOML.parse(fs.readFileSync(configPath, 'utf8'));
+      assert.strictEqual(parsedConfig.agents.max_threads, 6);
+      assert.strictEqual(parsedConfig.agents.max_depth, 1);
+      assert.strictEqual(parsedConfig.agents.explorer.config_file, 'agents/explorer.toml');
     } finally {
       cleanup(homeDir);
     }

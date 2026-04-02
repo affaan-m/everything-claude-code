@@ -24,7 +24,7 @@ async function runTests() {
   let store
   try {
     store = await import(pathToFileURL(storePath).href)
-  } catch (err) {
+  } catch (_err) {
     console.log('\n[warn] Skipping: build .opencode first (cd .opencode && npm run build)\n')
     process.exit(0)
   }

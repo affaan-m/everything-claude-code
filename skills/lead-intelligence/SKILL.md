@@ -21,7 +21,7 @@ Agent-powered lead intelligence pipeline that finds, scores, and reaches high-va
 
 ### Required
 - **Exa MCP** — Deep web search for people, companies, and signals (`web_search_exa`)
-- **X API** — Follower/following graph, mutual analysis, recent activity (`X_BEARER_TOKEN`, `X_ACCESS_TOKEN`)
+- **X API** — Follower/following graph, mutual analysis, recent activity (`X_BEARER_TOKEN`, plus write-context credentials such as `X_CONSUMER_KEY`, `X_CONSUMER_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_TOKEN_SECRET`)
 
 ### Optional (enhance results)
 - **LinkedIn** — Direct API if available, otherwise browser control for search, profile inspection, and drafting
@@ -43,35 +43,9 @@ Agent-powered lead intelligence pipeline that finds, scores, and reaches high-va
 
 Do not draft outbound from generic sales copy.
 
-Before writing a message, build a voice profile from real source material. Prefer:
-
-- recent X posts and threads
-- published articles, memos, or launch notes
-- prior outreach emails that actually worked
-- docs, changelogs, or product writing if those are the strongest signals
+Run `brand-voice` first whenever the user's voice matters. Reuse its `VOICE PROFILE` instead of re-deriving style ad hoc inside this skill.
 
 If live X access is available, pull recent original posts before drafting. If not, use supplied examples or the best repo/site material available.
-
-Extract:
-
-- sentence length and rhythm
-- how compressed or explanatory the writing is
-- how parentheses are used
-- whether capitalization is conventional or situational
-- how often questions are used
-- phrases or transitions the author never uses
-
-For Affaan / ECC style specifically:
-
-- direct, compressed, concrete
-- strong preference for specifics, mechanisms, and receipts
-- parentheticals are for qualification or over-clarification, not jokes
-- lowercase is optional, not mandatory
-- no fake curiosity hooks
-- no "not X, just Y"
-- no "no fluff"
-- no LinkedIn thought-leader cadence
-- no bait question at the end
 
 ## Stage 1: Signal Scoring
 
@@ -115,11 +89,12 @@ x_search = search_recent_tweets(
 
 For each scored target, analyze the user's social graph to find the warmest path.
 
-### Algorithm
+### Ranking Model
 
 1. Pull user's X following list and LinkedIn connections
 2. For each high-signal target, check for shared connections
-3. Rank mutuals by:
+3. Apply the `social-graph-ranker` model to score bridge value
+4. Rank mutuals by:
 
 | Factor | Weight |
 |--------|--------|
@@ -129,46 +104,19 @@ For each scored target, analyze the user's social graph to find the warmest path
 | Industry alignment | 15% — same vertical = natural intro |
 | Mutual's X handle / LinkedIn | 10% — identifiability for outreach |
 
-### Weighted Bridge Ranking
+Canonical rule:
 
-Treat this as the canonical network-ranking stage for lead intelligence. Do not run a separate graph skill when this stage is enough.
+```text
+Use social-graph-ranker when the user wants the graph math itself,
+the bridge ranking as a standalone report, or explicit decay-model tuning.
+```
 
-Given:
-- `T` = target leads
-- `M` = your mutuals / existing connections
-- `d(m, t)` = shortest hop distance from mutual `m` to target `t`
-- `w(t)` = target weight from signal scoring
-
-Compute the base bridge score for each mutual:
+Inside this skill, use the same weighted bridge model:
 
 ```text
 B(m) = Σ_{t ∈ T} w(t) · λ^(d(m,t) - 1)
-```
-
-Where:
-- `λ` is the decay factor, usually `0.5`
-- a direct connection contributes full value
-- each extra hop halves the contribution
-
-For second-order reach, expand one level into the mutual's own network:
-
-```text
-B_ext(m) = B(m) + α · Σ_{m' ∈ N(m) \\ M} Σ_{t ∈ T} w(t) · λ^(d(m',t))
-```
-
-Where:
-- `N(m) \\ M` is the set of people the mutual knows that you do not
-- `α` is the second-order discount, usually `0.3`
-
-Then rank by response-adjusted bridge value:
-
-```text
 R(m) = B_ext(m) · (1 + β · engagement(m))
 ```
-
-Where:
-- `engagement(m)` is a normalized responsiveness score
-- `β` is the engagement bonus, usually `0.2`
 
 Interpretation:
 - Tier 1: high `R(m)` and direct bridge paths -> warm intro asks
@@ -178,6 +126,8 @@ Interpretation:
 ### Output Format
 
 ```
+
+If the user explicitly wants the ranking engine broken out, the math visualized, or the network scored outside the full lead workflow, run `social-graph-ranker` as a standalone pass first and feed the result back into this pipeline.
 MUTUAL RANKING REPORT
 =====================
 
@@ -333,8 +283,8 @@ Users should set these environment variables:
 export X_BEARER_TOKEN="..."
 export X_ACCESS_TOKEN="..."
 export X_ACCESS_TOKEN_SECRET="..."
-export X_API_KEY="..."
-export X_API_SECRET="..."
+export X_CONSUMER_KEY="..."
+export X_CONSUMER_SECRET="..."
 export EXA_API_KEY="..."
 
 # Optional
@@ -364,3 +314,8 @@ Agent workflow:
 
 Output: Ranked list with warm paths, voice profile summary, and channel-specific outreach drafts or drafts-in-app
 ```
+
+## Related Skills
+
+- `brand-voice` for canonical voice capture
+- `connections-optimizer` for review-first network pruning and expansion before outreach

@@ -282,10 +282,12 @@
       "description": "Business, writing, market, and investor communication skills.",
       "paths": [
         "skills/article-writing",
+        "skills/brand-voice",
         "skills/content-engine",
         "skills/investor-materials",
         "skills/investor-outreach",
         "skills/lead-intelligence",
+        "skills/social-graph-ranker",
         "skills/market-research"
       ],
       "targets": [
@@ -306,8 +308,9 @@
     {
       "id": "operator-workflows",
       "kind": "skills",
-      "description": "Connected-app operator workflows for setup audits, billing operations, program tracking, and Google Workspace.",
+      "description": "Connected-app operator workflows for setup audits, billing operations, program tracking, Google Workspace, and network optimization.",
       "paths": [
+        "skills/connections-optimizer",
         "skills/customer-billing-ops",
         "skills/google-workspace-ops",
         "skills/project-flow-ops",
@@ -354,9 +357,10 @@
     {
       "id": "media-generation",
       "kind": "skills",
-      "description": "Media generation and AI-assisted editing skills.",
+      "description": "Media generation, technical explainers, and AI-assisted editing skills.",
       "paths": [
         "skills/fal-ai-media",
+        "skills/manim-video",
         "skills/remotion-video-creation",
         "skills/ui-demo",
         "skills/video-editing",

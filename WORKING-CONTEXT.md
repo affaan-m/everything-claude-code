@@ -36,6 +36,7 @@ Public ECC plugin repo for agents, skills, commands, hooks, rules, install surfa
   - continue one-by-one audit of overlapping or low-signal skill content
   - move repo guidance and contribution flow to skills-first, leaving commands only as explicit compatibility shims
   - add operator skills that wrap connected surfaces instead of exposing only raw APIs or disconnected primitives
+  - land the canonical voice system, network-optimization lane, and reusable Manim explainer lane
 - Security:
   - keep dependency posture clean
   - preserve self-contained hook and MCP behavior
@@ -61,6 +62,8 @@ Public ECC plugin repo for agents, skills, commands, hooks, rules, install surfa
   - `#844` ui-demo skill
   - `#1110` install-time Claude hook root resolution
   - `#1106` portable Codex Context7 key extraction
+  - `#1107` Codex baseline merge and sample agent-role sync
+  - `#1119` stale CI/lint cleanup that still contained safe low-risk fixes
 - Port or rebuild inside ECC after full audit:
   - `#894` Jira integration
   - `#814` + `#808` rebuild as a single consolidated notifications lane for Opencode and cross-harness surfaces
@@ -102,3 +105,9 @@ Keep this file detailed for only the current sprint, blockers, and next actions.
 - 2026-04-01: Direct-ported the real fix from the unresolved hook-path PR lane into the active installer. Claude installs now replace `${CLAUDE_PLUGIN_ROOT}` with the concrete install root in both `settings.json` and the copied `hooks/hooks.json`, which keeps PreToolUse/PostToolUse hooks working outside plugin-managed env injection.
 - 2026-04-01: Replaced the GNU-only `grep -P` parser in `scripts/sync-ecc-to-codex.sh` with a portable Node parser for Context7 key extraction. Added source-level regression coverage so BSD/macOS syncs do not drift back to non-portable parsing.
 - 2026-04-01: Targeted regression suite after the direct ports is green: `tests/scripts/install-apply.test.js`, `tests/scripts/sync-ecc-to-codex.test.js`, and `tests/scripts/codex-hooks.test.js`.
+- 2026-04-01: Ported the useful core of `#1107` directly into `main` as an add-only Codex baseline merge. `scripts/sync-ecc-to-codex.sh` now fills missing non-MCP defaults from `.codex/config.toml`, syncs sample agent role files into `~/.codex/agents`, and preserves user config instead of replacing it. Added regression coverage for sparse configs and implicit parent tables.
+- 2026-04-01: Ported the safe low-risk cleanup from `#1119` directly into `main` instead of keeping an obsolete CI PR open. This included `.mjs` eslint handling, stricter null checks, Windows home-dir coverage in bash-log tests, and longer Trae shell-test timeouts.
+- 2026-04-01: Added `brand-voice` as the canonical source-derived writing-style system and wired the content lane to treat it as the shared voice source of truth instead of duplicating partial style heuristics across skills.
+- 2026-04-01: Added `connections-optimizer` as the review-first social-graph reorganization workflow for X and LinkedIn, with explicit pruning modes, browser fallback expectations, and Apple Mail drafting guidance.
+- 2026-04-01: Added `manim-video` as the reusable technical explainer lane and seeded it with a starter network-graph scene so launch and systems animations do not depend on one-off scratch scripts.
+- 2026-04-02: Re-extracted `social-graph-ranker` as a standalone primitive because the weighted bridge-decay model is reusable outside the full lead workflow. `lead-intelligence` now points to it for canonical graph ranking instead of carrying the full algorithm explanation inline, while `connections-optimizer` stays the broader operator layer for pruning, adds, and outbound review packs.

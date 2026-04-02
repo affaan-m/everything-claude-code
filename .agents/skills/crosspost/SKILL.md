@@ -37,6 +37,8 @@ Use `content-engine` first if the source still needs voice shaping.
 
 ### Step 2: Capture the Voice Fingerprint
 
+Run `brand-voice` first if the source voice is not already captured in the current session.
+
 Before adapting, note:
 - how blunt or explanatory the source is
 - whether the source uses fragments, lists, or longer transitions
@@ -110,5 +112,6 @@ Before delivering:
 
 ## Related Skills
 
+- `brand-voice` for reusable source-derived voice capture
 - `content-engine` for voice capture and source shaping
 - `x-api` for X publishing workflows

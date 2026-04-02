@@ -36,27 +36,24 @@ Before drafting, identify the source set:
 - prior posts from the same author
 
 If the user wants a specific voice, build a voice profile from real examples before writing.
+Use `brand-voice` as the canonical workflow when voice consistency matters across more than one output.
 
 ## Voice Capture Workflow
 
-Collect 5 to 20 examples when available. Good sources:
-- articles or essays
-- X posts or threads
-- docs or release notes
-- newsletters
-- previous launch posts
+Run `brand-voice` first when:
 
-If live X access is available, use `x-api` to pull recent original posts before drafting. If not, use the examples already provided or present in the repo.
+- there are multiple downstream outputs
+- the user explicitly cares about writing style
+- the content is launch, outreach, or reputation-sensitive
 
-Extract and write down:
-- sentence length and rhythm
-- how compressed or explanatory the writing is
-- whether capitalization is conventional, mixed, or situational
-- how parentheses are used
-- whether the writer uses fragments, lists, or abrupt pivots
-- how often the writer asks questions
-- how sharp, formal, opinionated, or dry the voice is
-- what the writer never does
+At minimum, produce a compact `VOICE PROFILE` covering:
+- rhythm
+- compression
+- capitalization
+- parenthetical use
+- question use
+- preferred moves
+- banned moves
 
 Do not start drafting until the voice profile is clear enough to enforce.
 
@@ -148,3 +145,9 @@ Before delivering:
 - no fake engagement bait remains
 - no duplicated copy across platforms unless requested
 - any CTA is earned and user-approved
+
+## Related Skills
+
+- `brand-voice` for source-derived voice profiles
+- `crosspost` for platform-specific distribution
+- `x-api` for sourcing recent posts and publishing approved X output
