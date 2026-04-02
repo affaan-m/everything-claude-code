@@ -352,7 +352,7 @@ if [ "$OBSERVER_ENABLED" = "true" ]; then
         fi
       ) 9>"$LAZY_START_LOCK"
     else
-      # macOS fallback: use lockfile if available, otherwise skip
+      # macOS fallback: use lockfile if available, otherwise mkdir-based lock
       if command -v lockfile >/dev/null 2>&1; then
         # Use subshell to isolate exit and add trap for cleanup
         (
@@ -364,6 +364,17 @@ if [ "$OBSERVER_ENABLED" = "true" ]; then
             nohup "${SKILL_ROOT}/agents/start-observer.sh" start >/dev/null 2>&1 &
           fi
           rm -f "$LAZY_START_LOCK" 2>/dev/null || true
+        )
+      else
+        # POSIX fallback: mkdir is atomic -- fails if dir already exists
+        (
+          trap 'rmdir "${LAZY_START_LOCK}.d" 2>/dev/null || true' EXIT
+          mkdir "${LAZY_START_LOCK}.d" 2>/dev/null || exit 0
+          _CHECK_OBSERVER_RUNNING "${PROJECT_DIR}/.observer.pid" || true
+          _CHECK_OBSERVER_RUNNING "${CONFIG_DIR}/.observer.pid" || true
+          if [ ! -f "${PROJECT_DIR}/.observer.pid" ] && [ ! -f "${CONFIG_DIR}/.observer.pid" ]; then
+            nohup "${SKILL_ROOT}/agents/start-observer.sh" start >/dev/null 2>&1 &
+          fi
         )
       fi
     fi
