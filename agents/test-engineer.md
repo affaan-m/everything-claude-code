@@ -1,7 +1,8 @@
 ---
 name: test-engineer
 description: Test strategy, integration/e2e coverage, flaky test hardening, TDD workflows
-model: claude-sonnet-4-6
+tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
+model: sonnet
 level: 3
 ---
 

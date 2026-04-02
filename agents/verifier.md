@@ -1,7 +1,8 @@
 ---
 name: verifier
 description: Verification strategy, evidence-based completion checks, test adequacy
-model: claude-sonnet-4-6
+tools: ["Read", "Bash", "Grep", "Glob"]
+model: sonnet
 level: 3
 ---
 

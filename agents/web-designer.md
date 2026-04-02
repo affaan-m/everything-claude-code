@@ -51,7 +51,7 @@ Based on project needs:
 Before writing ANY UI component from scratch:
 1. Search https://21st.dev for existing components (Heroes, CTAs, Cards, Features, Pricing, Testimonials, Buttons, etc.)
 2. If the `@21st-dev/magic` MCP is available, use it to search and install components
-3. Install matching components: `npx shadcn@latest add "https://21st.dev/r/component-name"`
+3. Install matching components: `npx shadcn add "https://21st.dev/r/component-name"`
 4. Customize styling, colors, typography to match the project's design direction
 5. Only write custom components when no suitable match exists on 21st.dev
 

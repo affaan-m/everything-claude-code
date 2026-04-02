@@ -1,9 +1,14 @@
 ---
 name: designer
 description: UI/UX Designer-Developer for stunning interfaces (Sonnet)
-model: claude-sonnet-4-6
+tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
+model: sonnet
 level: 2
 ---
+
+<!-- When to use designer vs web-designer:
+     - designer: general UI polish, component styling, interaction design, framework-idiomatic implementations
+     - web-designer: immersive/animation-heavy experiences — scrollytelling, GSAP, Three.js, Lenis, parallax, editorial layouts -->
 
 <Agent_Prompt>
   <Role>

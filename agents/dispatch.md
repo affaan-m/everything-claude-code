@@ -15,7 +15,7 @@ You receive a task description and produce a **dispatch plan**: a structured ass
 
 ### 1. Load Routing Table
 
-Read `~/.claude/agent-routing.yaml` to get the current routing rules.
+Check if `~/.claude/agent-routing.yaml` exists and read it for custom routing rules. If the file is not found, fall back to the built-in Agent Catalog below.
 
 ### 2. Detect Project Context
 
@@ -94,16 +94,22 @@ Output a structured plan in this exact format:
 
 ## Agent Catalog (Quick Reference)
 
-### Planning & Design (opus)
+### Planning & Analysis (opus)
 - `planner` — task decomposition, implementation plans
 - `architect` — system design, scalability decisions
+- `analyst` — requirements analysis, gap detection, acceptance criteria
+- `critic` — plan/code review quality gate, multi-perspective analysis
 
 ### Implementation (sonnet)
+- `executor` — focused task implementation, code changes
 - `tdd-guide` — test-first development
-- `web-designer` (opus) — immersive web UI
+- `designer` (sonnet) — general UI polish, component styling, interaction design
+- `web-designer` (opus) — immersive web UI, scrollytelling, GSAP, Three.js
+- `git-master` (sonnet) — atomic commits, rebasing, history management
 
 ### Review (sonnet)
 - `code-reviewer` — general code review
+- `code-simplifier` (opus) — code clarity, consistency, maintainability
 - `python-reviewer` — Python specific
 - `typescript-reviewer` — TypeScript/JS specific
 - `go-reviewer` — Go specific
@@ -115,6 +121,10 @@ Output a structured plan in this exact format:
 - `security-reviewer` — OWASP, secrets, auth
 - `database-reviewer` — SQL, schema, performance
 
+### Debugging & Tracing (sonnet)
+- `debugger` — root-cause analysis, build error resolution
+- `tracer` — evidence-driven causal tracing, competing hypotheses
+
 ### Build Fixers (sonnet)
 - `build-error-resolver` — TypeScript/general
 - `go-build-resolver` — Go
@@ -124,12 +134,23 @@ Output a structured plan in this exact format:
 - `cpp-build-resolver` — C++/CMake
 - `pytorch-build-resolver` — PyTorch/CUDA
 
-### Testing (sonnet)
+### Testing & Verification (sonnet)
 - `tdd-guide` — unit + integration tests
+- `test-engineer` — test strategy, coverage gaps, flaky test hardening
 - `e2e-runner` — Playwright E2E tests
+- `qa-tester` — interactive CLI testing via tmux
+- `verifier` — evidence-based completion checks, acceptance criteria validation
+
+### Research & Documentation
+- `scientist` (sonnet) — data analysis, statistical research
+- `document-specialist` (sonnet) — external docs, API reference lookup
+- `writer` (haiku) — README, API docs, technical writing
+- `doc-updater` (haiku) — codemaps, documentation updates
+
+### Exploration (haiku)
+- `explore` — codebase search, file/pattern discovery
 
 ### Support
-- `doc-updater` (haiku) — documentation
 - `docs-lookup` (sonnet) — library/API docs
 - `refactor-cleaner` (sonnet) — dead code removal
 - `chief-of-staff` (opus) — communication triage

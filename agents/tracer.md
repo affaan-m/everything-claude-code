@@ -1,7 +1,8 @@
 ---
 name: tracer
 description: Evidence-driven causal tracing with competing hypotheses, evidence for/against, uncertainty tracking, and next-probe recommendations
-model: claude-sonnet-4-6
+tools: ["Read", "Grep", "Glob", "Bash"]
+model: sonnet
 level: 3
 ---
 
