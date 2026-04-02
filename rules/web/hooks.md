@@ -82,7 +82,9 @@ Lint stylesheets on save to enforce CSS conventions and catch errors:
 
 ### Validate File Size
 
-Prevent writing files that exceed the recommended 800-line limit:
+Prevent writing files that exceed the recommended 800-line limit. Since PreToolUse fires
+**before** the Write tool executes, the file may not exist yet on disk. Instead, check the
+`content` field from the tool's input arguments (passed as JSON on stdin):
 
 ```json
 {
@@ -90,8 +92,8 @@ Prevent writing files that exceed the recommended 800-line limit:
     "PreToolUse": [
       {
         "matcher": "Write",
-        "command": "wc -l < \"$FILE_PATH\" | awk '{if ($1 > 800) exit 1}'",
-        "description": "Warn if file exceeds 800 lines"
+        "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const c=i.tool_input?.content||'';const lines=c.split('\\n').length;if(lines>800){console.error('[Hook] BLOCKED: File exceeds 800 lines ('+lines+' lines)');console.error('[Hook] Split into smaller, focused modules');process.exit(2)}console.log(d)})\"",
+        "description": "Block writes that exceed 800 lines"
       }
     ]
   }
