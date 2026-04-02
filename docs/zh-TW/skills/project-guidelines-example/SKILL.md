@@ -340,6 +340,6 @@ SUPABASE_KEY=eyJ...
 ## 相關技能
 
 - `coding-standards.md` - 一般程式碼最佳實務
-- `backend-patterns.md` - API 和資料庫模式
+- `api-backend.md` - API 和資料庫模式
 - `frontend-patterns.md` - React 和 Next.js 模式
 - `tdd-workflow/` - 測試驅動開發方法論

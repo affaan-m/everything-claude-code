@@ -228,7 +228,7 @@ everything-claude-code/
 |
 |-- skills/           # 워크플로우 정의와 도메인 지식
 |   |-- coding-standards/           # 언어 모범 사례
-|   |-- backend-patterns/           # API, 데이터베이스, 캐싱 패턴
+|   |-- api-backend/           # API, 데이터베이스, 캐싱 패턴
 |   |-- frontend-patterns/          # React, Next.js 패턴
 |   |-- continuous-learning/        # 세션에서 패턴 자동 추출
 |   |-- continuous-learning-v2/     # 신뢰도 점수가 있는 직관 기반 학습

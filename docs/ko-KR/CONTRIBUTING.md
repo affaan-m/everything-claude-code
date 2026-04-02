@@ -130,7 +130,7 @@ function example() {
 |------|------|
 | `coding-standards/` | TypeScript/JavaScript 패턴 |
 | `frontend-patterns/` | React와 Next.js 모범 사례 |
-| `backend-patterns/` | API와 데이터베이스 패턴 |
+| `api-backend/` | API와 데이터베이스 패턴 |
 | `security-review/` | 보안 체크리스트 |
 
 ---

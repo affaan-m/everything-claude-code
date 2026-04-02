@@ -136,7 +136,7 @@ Map intent + scope + tech stack (from Phase 0) to specific ECC components.
 | Go | golang-patterns, golang-testing | go-reviewer, go-build-resolver |
 | Spring Boot / Java | springboot-patterns, springboot-tdd, springboot-security, springboot-verification, java-coding-standards, jpa-patterns | code-reviewer |
 | Kotlin / Android | kotlin-coroutines-flows, compose-multiplatform-patterns, android-clean-architecture | kotlin-reviewer |
-| TypeScript / React | frontend-patterns, backend-patterns, coding-standards | code-reviewer |
+| TypeScript / React | frontend-patterns, api-backend, coding-standards | code-reviewer |
 | Swift / iOS | swiftui-patterns, swift-concurrency-6-2, swift-actor-persistence, swift-protocol-di-testing | code-reviewer |
 | PostgreSQL | postgres-patterns, database-migrations | database-reviewer |
 | Perl | perl-patterns, perl-testing, perl-security | code-reviewer |

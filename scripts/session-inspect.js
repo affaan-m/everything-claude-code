@@ -32,7 +32,7 @@ function usage() {
     '  node scripts/session-inspect.js claude:latest',
     '  node scripts/session-inspect.js latest --target-type claude-history',
     '  node scripts/session-inspect.js skills:health',
-    '  node scripts/session-inspect.js skills:amendify --skill api-design',
+    '  node scripts/session-inspect.js skills:amendify --skill api-backend',
     '  node scripts/session-inspect.js claude:a1b2c3d4 --write /tmp/session.json'
   ].join('\n'));
 }

@@ -140,7 +140,7 @@ SELECT pg_reload_conf();
 
 - Agent: `database-reviewer` - Tam veritabanı inceleme iş akışı
 - Skill: `clickhouse-io` - ClickHouse analytics kalıpları
-- Skill: `backend-patterns` - API ve backend kalıpları
+- Skill: `api-backend` - API ve backend kalıpları
 
 ---
 

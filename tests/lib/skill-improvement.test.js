@@ -116,24 +116,24 @@ test('amendify proposes SKILL.md patch content from failure evidence', () => {
   const records = [
     createSkillObservation({
       task: 'Add API rate limiting',
-      skill: { id: 'api-design', path: 'skills/api-design/SKILL.md' },
+      skill: { id: 'api-backend', path: 'skills/api-backend/SKILL.md' },
       success: false,
       error: 'missing rate limiting guidance',
       feedback: 'No rate-limit section'
     }),
     createSkillObservation({
       task: 'Design public API error envelopes',
-      skill: { id: 'api-design', path: 'skills/api-design/SKILL.md' },
+      skill: { id: 'api-backend', path: 'skills/api-backend/SKILL.md' },
       success: false,
       error: 'missing error response examples',
       feedback: 'Need explicit examples'
     })
   ];
 
-  const proposal = proposeSkillAmendment('api-design', records);
+  const proposal = proposeSkillAmendment('api-backend', records);
 
   assert.strictEqual(proposal.schemaVersion, 'ecc.skill-amendment-proposal.v1');
-  assert.strictEqual(proposal.skill.id, 'api-design');
+  assert.strictEqual(proposal.skill.id, 'api-backend');
   assert.strictEqual(proposal.status, 'proposed');
   assert.ok(proposal.patch.preview.includes('## Failure-Driven Amendments'));
   assert.ok(proposal.patch.preview.includes('rate limiting'));

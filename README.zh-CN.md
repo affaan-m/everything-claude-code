@@ -184,7 +184,7 @@ everything-claude-code/
 |
 |-- skills/           # 工作流定义和领域知识
 |   |-- coding-standards/           # 语言最佳实践
-|   |-- backend-patterns/           # API、数据库、缓存模式
+|   |-- api-backend/                # REST API 设计、后端架构、数据库、缓存模式
 |   |-- frontend-patterns/          # React、Next.js 模式
 |   |-- continuous-learning/        # 从会话中自动提取模式（详细指南）
 |   |-- continuous-learning-v2/     # 基于直觉的学习与置信度评分

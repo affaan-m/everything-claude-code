@@ -162,7 +162,7 @@ everything-claude-code/
 |
 |-- skills/           # 工作流程定義和領域知識
 |   |-- coding-standards/           # 程式語言最佳實務
-|   |-- backend-patterns/           # API、資料庫、快取模式
+|   |-- api-backend/           # API、資料庫、快取模式
 |   |-- frontend-patterns/          # React、Next.js 模式
 |   |-- continuous-learning/        # 從工作階段自動擷取模式（完整指南）
 |   |-- continuous-learning-v2/     # 基於本能的學習與信心評分

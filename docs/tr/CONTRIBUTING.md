@@ -132,7 +132,7 @@ Bu skill'in uygulandığı senaryoları açıklayın.
 |-------|---------|
 | `coding-standards/` | TypeScript/JavaScript pattern'leri |
 | `frontend-patterns/` | React ve Next.js en iyi uygulamaları |
-| `backend-patterns/` | API ve veritabanı pattern'leri |
+| `api-backend/` | API ve veritabanı pattern'leri |
 | `security-review/` | Güvenlik kontrol listesi |
 
 ---

@@ -209,7 +209,7 @@ everything-claude-code/
 |
 |-- skills/           # ワークフロー定義と領域知識
 |   |-- coding-standards/           # 言語ベストプラクティス
-|   |-- backend-patterns/           # API、データベース、キャッシュパターン
+|   |-- api-backend/           # API、データベース、キャッシュパターン
 |   |-- frontend-patterns/          # React、Next.js パターン
 |   |-- continuous-learning/        # セッションからパターンを自動抽出（長文ガイド）
 |   |-- continuous-learning-v2/     # 信頼度スコア付き直感ベース学習

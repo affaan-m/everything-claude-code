@@ -87,9 +87,8 @@ Skills are on-demand workflows invocable via the `/` menu in chat.
 | `coding-standards` | Universal coding standards and best practices for TypeScript, JavaScript, React, and Node.js. Use when starting projects, reviewing code, or refactoring. |
 | `security-review` | Comprehensive security checklist and patterns. Use when adding authentication, handling user input, creating API endpoints, or working with secrets. |
 | `verification-loop` | Comprehensive verification system that runs build, type check, lint, tests, security scan, and diff review. Use after completing features or before creating PRs. |
-| `api-design` | RESTful API design patterns and best practices. Use when designing new APIs or refactoring existing endpoints. |
+| `api-backend` | REST API design, backend architecture, database, and caching patterns. Use when designing APIs, building services, or optimizing backend infrastructure. |
 | `frontend-patterns` | React, Next.js, and frontend architecture patterns. Use when building UI components or optimizing frontend performance. |
-| `backend-patterns` | Node.js, Express, and backend architecture patterns. Use when building APIs, services, or backend infrastructure. |
 | `e2e-testing` | End-to-end testing with Playwright or Cypress. Use when adding E2E tests or improving test coverage. |
 | `golang-patterns` | Go idioms, concurrency patterns, and best practices. Use when writing Go code or reviewing Go projects. |
 | `golang-testing` | Go testing patterns with table-driven tests and benchmarks. Use when writing Go tests or improving test coverage. |
@@ -274,12 +273,10 @@ Shell scripts used by hooks to perform quality checks and formatting.
 │   │   └── SKILL.md              # Security review skill
 │   ├── verification-loop/
 │   │   └── SKILL.md              # Verification loop skill
-│   ├── api-design/
-│   │   └── SKILL.md              # API design skill
+│   ├── api-backend/
+│   │   └── SKILL.md              # REST API design and backend patterns skill
 │   ├── frontend-patterns/
 │   │   └── SKILL.md              # Frontend patterns skill
-│   ├── backend-patterns/
-│   │   └── SKILL.md              # Backend patterns skill
 │   ├── e2e-testing/
 │   │   └── SKILL.md              # E2E testing skill
 │   ├── golang-patterns/

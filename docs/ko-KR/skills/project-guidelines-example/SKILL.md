@@ -344,6 +344,6 @@ SUPABASE_KEY=eyJ...
 ## 관련 스킬
 
 - `coding-standards.md` - 일반 코딩 모범 사례
-- `backend-patterns.md` - API 및 데이터베이스 패턴
+- `api-backend.md` - API 및 데이터베이스 패턴
 - `frontend-patterns.md` - React 및 Next.js 패턴
 - `tdd-workflow/` - 테스트 주도 개발 방법론

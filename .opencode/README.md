@@ -158,10 +158,10 @@ export ECC_DISABLED_HOOKS="pre:bash:tmux-reminder,post:edit:typecheck"
 
 ## Skills
 
-The default OpenCode config loads 11 curated ECC skills via the `instructions` array:
+The default OpenCode config loads 10 curated ECC skills via the `instructions` array:
 
 - coding-standards
-- backend-patterns
+- api-backend
 - frontend-patterns
 - frontend-slides
 - security-review
@@ -169,7 +169,6 @@ The default OpenCode config loads 11 curated ECC skills via the `instructions` a
 - strategic-compact
 - eval-harness
 - verification-loop
-- api-design
 - e2e-testing
 
 Additional specialized skills are shipped in `skills/` but not loaded by default to keep OpenCode sessions lean:

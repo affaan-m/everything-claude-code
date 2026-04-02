@@ -344,6 +344,6 @@ SUPABASE_KEY=eyJ...
 ## Related Skills
 
 - `coding-standards.md` - General coding best practices
-- `backend-patterns.md` - API and database patterns
+- `api-backend.md` - REST API design, backend architecture, database patterns
 - `frontend-patterns.md` - React and Next.js patterns
 - `tdd-workflow/` - Test-driven development methodology

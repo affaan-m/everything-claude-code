@@ -109,7 +109,7 @@ mkdir -p $TARGET/skills $TARGET/rules
 
 | 技能 | 描述 |
 |-------|-------------|
-| `backend-patterns` | Node.js/Express/Next.js 的后端架构、API 设计、服务器端最佳实践 |
+| `api-backend` | Node.js/Express/Next.js 的后端架构、API 设计、服务器端最佳实践 |
 | `coding-standards` | TypeScript、JavaScript、React、Node.js 的通用编码标准 |
 | `django-patterns` | Django 架构、使用 DRF 的 REST API、ORM、缓存、信号、中间件 |
 | `django-security` | Django 安全性：认证、CSRF、SQL 注入、XSS 防护 |

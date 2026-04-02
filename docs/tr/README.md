@@ -243,7 +243,7 @@ everything-claude-code/
 |
 |-- skills/           # İş akışı tanımları ve domain bilgisi
 |   |-- coding-standards/           # Dil en iyi uygulamaları
-|   |-- backend-patterns/           # API, veritabanı, caching pattern'leri
+|   |-- api-backend/           # API, veritabanı, caching pattern'leri
 |   |-- frontend-patterns/          # React, Next.js pattern'leri
 |   |-- security-review/            # Güvenlik kontrol listesi
 |   |-- tdd-workflow/               # TDD metodolojisi

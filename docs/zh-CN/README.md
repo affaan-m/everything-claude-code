@@ -302,7 +302,7 @@ everything-claude-code/
 |-- skills/           # 工作流定义与领域知识
 |   |-- coding-standards/           # 语言最佳实践
 |   |-- clickhouse-io/              # ClickHouse 分析、查询与数据工程
-|   |-- backend-patterns/           # API、数据库与缓存模式
+|   |-- api-backend/           # API、数据库与缓存模式
 |   |-- frontend-patterns/          # React、Next.js 模式
 |   |-- frontend-slides/            # HTML 幻灯片与 PPTX 转 Web 演示工作流（新增）
 |   |-- article-writing/            # 按指定风格撰写长文，避免通用 AI 语气（新增）
@@ -345,7 +345,7 @@ everything-claude-code/
 |   |-- nutrient-document-processing/ # 使用 Nutrient API 的文档处理（新增）
 |   |-- project-guidelines-example/   # 项目专用技能模板
 |   |-- database-migrations/         # 迁移模式（Prisma、Drizzle、Django、Go）（新增）
-|   |-- api-design/                  # REST API 设计、分页与错误响应（新增）
+|   |-- api-backend/ (merged)                  # REST API 设计、分页与错误响应（新增）
 |   |-- deployment-patterns/         # CI/CD、Docker、健康检查与回滚（新增）
 |   |-- docker-patterns/            # Docker Compose、网络、卷与容器安全（新增）
 |   |-- e2e-testing/                 # Playwright 端到端模式与页面对象模型（新增）
@@ -1044,11 +1044,10 @@ Codex macOS 应用：
 | market-research | 带来源归属的市场和竞争对手研究 |
 | investor-materials | 幻灯片、备忘录、模型和一页纸文档 |
 | investor-outreach | 个性化外联、跟进和介绍摘要 |
-| backend-patterns | API 设计、数据库、缓存 |
+| api-backend | REST API 设计、后端架构、数据库、缓存 |
 | e2e-testing | Playwright 端到端测试 |
 | eval-harness | 评估驱动的开发 |
 | strategic-compact | 上下文管理 |
-| api-design | REST API 设计模式 |
 | verification-loop | 构建、测试、代码检查、类型检查、安全 |
 
 ### 关键限制

@@ -340,6 +340,6 @@ SUPABASE_KEY=eyJ...
 ## 関連スキル
 
 - `coding-standards.md` - 一般的なコーディングベストプラクティス
-- `backend-patterns.md` - APIとデータベースパターン
+- `api-backend.md` - APIとデータベースパターン
 - `frontend-patterns.md` - ReactとNext.jsパターン
 - `tdd-workflow/` - テスト駆動開発の方法論

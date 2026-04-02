@@ -133,7 +133,7 @@ function example() {
 |-------|---------|
 | `coding-standards/` | TypeScript/JavaScriptパターン |
 | `frontend-patterns/` | ReactとNext.jsのベストプラクティス |
-| `backend-patterns/` | APIとデータベースのパターン |
+| `api-backend/` | APIとデータベースのパターン |
 | `security-review/` | セキュリティチェックリスト |
 
 ---

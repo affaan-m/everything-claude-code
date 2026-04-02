@@ -8,7 +8,7 @@
 - `python-patterns/` - Python 設計パターン
 - `golang-patterns/` - Go 設計パターン
 - `frontend-patterns/` - React/Next.js パターン
-- `backend-patterns/` - API とデータベースパターン
+- `api-backend/` - API とデータベースパターン
 
 ### 言語別テスト
 - `python-testing/` - Python テスト戦略

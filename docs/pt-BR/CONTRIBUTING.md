@@ -132,7 +132,7 @@ Descreva cenários onde esta skill se aplica.
 |-------|-----------|
 | `coding-standards/` | Padrões TypeScript/JavaScript |
 | `frontend-patterns/` | Melhores práticas React e Next.js |
-| `backend-patterns/` | Padrões de API e banco de dados |
+| `api-backend/` | Padrões de API e banco de dados |
 | `security-review/` | Checklist de segurança |
 
 ---

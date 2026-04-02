@@ -106,8 +106,7 @@
       "description": "Core framework, language, and application-engineering skills.",
       "paths": [
         "skills/android-clean-architecture",
-        "skills/api-design",
-        "skills/backend-patterns",
+        "skills/api-backend",
         "skills/coding-standards",
         "skills/compose-multiplatform-patterns",
         "skills/cpp-coding-standards",

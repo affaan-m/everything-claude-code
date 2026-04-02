@@ -61,9 +61,8 @@ Type `/` in chat and select from the menu, or use:
 | `security-review` | Comprehensive security audit |
 | `verification-loop` | Continuous validation and improvement |
 | `coding-standards` | Code style and standards enforcement |
-| `api-design` | RESTful API design patterns |
+| `api-backend` | REST API design and backend architecture patterns |
 | `frontend-patterns` | React/Vue/Angular best practices |
-| `backend-patterns` | Server-side architecture patterns |
 | `e2e-testing` | End-to-end testing strategies |
 | `golang-patterns` | Go idioms and patterns |
 | `golang-testing` | Go testing best practices |

@@ -84,7 +84,7 @@ Options:
 
 | スキル | 説明 |
 |-------|-------------|
-| `backend-patterns` | バックエンドアーキテクチャ、API設計、Node.js/Express/Next.js のサーバーサイドベストプラクティス |
+| `api-backend` | バックエンドアーキテクチャ、API設計、Node.js/Express/Next.js のサーバーサイドベストプラクティス |
 | `coding-standards` | TypeScript、JavaScript、React、Node.js の汎用コーディング標準 |
 | `django-patterns` | Django アーキテクチャ、DRF による REST API、ORM、キャッシング、シグナル、ミドルウェア |
 | `django-security` | Django セキュリティ: 認証、CSRF、SQL インジェクション、XSS 防止 |

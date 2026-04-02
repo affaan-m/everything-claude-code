@@ -140,7 +140,7 @@ SELECT pg_reload_conf();
 
 - 에이전트: `database-reviewer` - 전체 데이터베이스 리뷰 워크플로우
 - 스킬: `clickhouse-io` - ClickHouse 분석 패턴
-- 스킬: `backend-patterns` - API 및 백엔드 패턴
+- 스킬: `api-backend` - API 및 백엔드 패턴
 
 ---
 

@@ -388,9 +388,9 @@
       ]
     },
     {
-      "id": "skill:backend-patterns",
+      "id": "skill:api-backend",
       "family": "skill",
-      "description": "API design, database, and backend engineering patterns.",
+      "description": "REST API design, backend architecture, database, and caching patterns.",
       "modules": [
         "framework-language"
       ]

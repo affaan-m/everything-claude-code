@@ -115,7 +115,7 @@ jest --ci                           # Tests (Jest)
 
 ## 参考
 
-此仓库尚未提供专用的 `typescript-patterns` 技能。有关详细的 TypeScript 和 JavaScript 模式，请根据正在审查的代码使用 `coding-standards` 加上 `frontend-patterns` 或 `backend-patterns`。
+此仓库尚未提供专用的 `typescript-patterns` 技能。有关详细的 TypeScript 和 JavaScript 模式，请根据正在审查的代码使用 `coding-standards` 加上 `frontend-patterns` 或 `api-backend`。
 
 ***
 

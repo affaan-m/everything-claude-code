@@ -105,7 +105,7 @@ jest --ci                           # Testler (Jest)
 
 ## Referans
 
-Bu repo henüz özel bir `typescript-patterns` skill'i sunmuyor. Detaylı TypeScript ve JavaScript kalıpları için, incelenen koda göre `coding-standards` artı `frontend-patterns` veya `backend-patterns` kullanın.
+Bu repo henüz özel bir `typescript-patterns` skill'i sunmuyor. Detaylı TypeScript ve JavaScript kalıpları için, incelenen koda göre `coding-standards` artı `frontend-patterns` veya `api-backend` kullanın.
 
 ---
 

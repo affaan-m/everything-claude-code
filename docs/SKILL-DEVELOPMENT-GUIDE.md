@@ -275,11 +275,11 @@ description: Systematic code review process for quality and security.
 
 Specialized knowledge for specific domains (security, performance, etc.).
 
-**Examples:** `security-review`, `performance-optimization`, `api-design`
+**Examples:** `security-review`, `performance-optimization`, `api-backend`
 
 ```markdown
 ---
-name: api-design
+name: api-backend
 description: REST and GraphQL API design patterns, versioning, and best practices.
 ---
 

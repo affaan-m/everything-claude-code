@@ -37,4 +37,4 @@ paths:
 
 ## Reference
 
-See skill: `backend-patterns` for broader service/repository layering guidance.
+See skill: `api-backend` for broader service/repository layering guidance.

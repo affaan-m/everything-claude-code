@@ -327,7 +327,7 @@ everything-claude-code/
 |-- skills/           # Workflow definitions and domain knowledge
 |   |-- coding-standards/           # Language best practices
 |   |-- clickhouse-io/              # ClickHouse analytics, queries, data engineering
-|   |-- backend-patterns/           # API, database, caching patterns
+|   |-- api-backend/                # REST API design, backend architecture, database, caching patterns
 |   |-- frontend-patterns/          # React, Next.js patterns
 |   |-- frontend-slides/            # HTML slide decks and PPTX-to-web presentation workflows (NEW)
 |   |-- article-writing/            # Long-form writing in a supplied voice without generic AI tone (NEW)
@@ -370,7 +370,7 @@ everything-claude-code/
 |   |-- nutrient-document-processing/ # Document processing with Nutrient API (NEW)
 |   |-- project-guidelines-example/   # Template for project-specific skills
 |   |-- database-migrations/         # Migration patterns (Prisma, Drizzle, Django, Go) (NEW)
-|   |-- api-design/                  # REST API design, pagination, error responses (NEW)
+|   |-- (merged into api-backend)
 |   |-- deployment-patterns/         # CI/CD, Docker, health checks, rollbacks (NEW)
 |   |-- docker-patterns/            # Docker Compose, networking, volumes, container security (NEW)
 |   |-- e2e-testing/                 # Playwright E2E patterns and Page Object Model (NEW)
@@ -1059,11 +1059,10 @@ Skills at `.agents/skills/` are auto-loaded by Codex:
 | market-research | Source-attributed market and competitor research |
 | investor-materials | Decks, memos, models, and one-pagers |
 | investor-outreach | Personalized outreach, follow-ups, and intro blurbs |
-| backend-patterns | API design, database, caching |
+| api-backend | REST API design, backend architecture, database, caching |
 | e2e-testing | Playwright E2E tests |
 | eval-harness | Eval-driven development |
 | strategic-compact | Context management |
-| api-design | REST API design patterns |
 | verification-loop | Build, test, lint, typecheck, security |
 
 ### Key Limitation

@@ -217,7 +217,7 @@ function runTests() {
           observationId: 'obs-1',
           timestamp: '2026-03-14T12:00:00.000Z',
           task: 'Add rate limiting',
-          skill: { id: 'api-design', path: 'skills/api-design/SKILL.md' },
+          skill: { id: 'api-backend', path: 'skills/api-backend/SKILL.md' },
           outcome: { success: false, status: 'failure', error: 'missing rate limiting guidance', feedback: 'Need rate limiting examples' },
           run: { variant: 'baseline', amendmentId: null, sessionId: 'sess-1' }
         })
@@ -225,11 +225,11 @@ function runTests() {
     );
 
     try {
-      const result = run(['skills:amendify', '--skill', 'api-design'], { cwd: projectRoot });
+      const result = run(['skills:amendify', '--skill', 'api-backend'], { cwd: projectRoot });
       assert.strictEqual(result.code, 0, result.stderr);
       const payload = JSON.parse(result.stdout);
       assert.strictEqual(payload.schemaVersion, 'ecc.skill-amendment-proposal.v1');
-      assert.strictEqual(payload.skill.id, 'api-design');
+      assert.strictEqual(payload.skill.id, 'api-backend');
       assert.ok(payload.patch.preview.includes('Failure-Driven Amendments'));
     } finally {
       fs.rmSync(projectRoot, { recursive: true, force: true });

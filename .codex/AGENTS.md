@@ -28,11 +28,10 @@ Available skills:
 - market-research — Source-attributed market and competitor research
 - investor-materials — Decks, memos, models, and one-pagers
 - investor-outreach — Personalized investor outreach and follow-ups
-- backend-patterns — API design, database, caching
+- api-backend — REST API design, backend architecture, database, caching
 - e2e-testing — Playwright E2E tests
 - eval-harness — Eval-driven development
 - strategic-compact — Context management
-- api-design — REST API design patterns
 - verification-loop — Build, test, lint, typecheck, security
 - deep-research — Multi-source research with firecrawl and exa MCPs
 - exa-search — Neural search via Exa MCP for web, code, and companies

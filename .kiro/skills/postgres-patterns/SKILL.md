@@ -144,7 +144,7 @@ SELECT pg_reload_conf();
 ## Related
 
 - Agent: `database-reviewer` - Full database review workflow
-- Skill: `backend-patterns` - API and backend patterns
+- Skill: `api-backend` - REST API design and backend patterns
 - Skill: `database-migrations` - Safe schema changes
 
 ## When to Use This Skill

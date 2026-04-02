@@ -129,7 +129,7 @@ function example() {
 |-------|---------|
 | `coding-standards/` | TypeScript/JavaScript 模式 |
 | `frontend-patterns/` | React 和 Next.js 最佳实践 |
-| `backend-patterns/` | API 和数据库模式 |
+| `api-backend/` | API 和数据库模式 |
 | `security-review/` | 安全检查清单 |
 
 ***

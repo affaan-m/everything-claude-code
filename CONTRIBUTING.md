@@ -140,7 +140,7 @@ Link to complementary skills (e.g., `related-skill-1`, `related-skill-2`).
 | **Language Standards** | Idioms, conventions, best practices | `python-patterns`, `golang-patterns` |
 | **Framework Patterns** | Framework-specific guidance | `django-patterns`, `nextjs-patterns` |
 | **Workflow** | Step-by-step processes | `tdd-workflow`, `refactoring-workflow` |
-| **Domain Knowledge** | Specialized domains | `security-review`, `api-design` |
+| **Domain Knowledge** | Specialized domains | `security-review`, `api-backend` |
 | **Tool Integration** | Tool/library usage | `docker-patterns`, `supabase-patterns` |
 | **Template** | Project-specific skill templates | `project-guidelines-example` |
 
@@ -162,7 +162,7 @@ Link to complementary skills (e.g., `related-skill-1`, `related-skill-2`).
 |-------|----------|---------|
 | `coding-standards/` | Language Standards | TypeScript/JavaScript patterns |
 | `frontend-patterns/` | Framework Patterns | React and Next.js best practices |
-| `backend-patterns/` | Framework Patterns | API and database patterns |
+| `api-backend/` | Framework Patterns | REST API design, backend architecture, database, caching |
 | `security-review/` | Domain Knowledge | Security checklist |
 | `tdd-workflow/` | Workflow | Test-driven development process |
 | `project-guidelines-example/` | Template | Project-specific skill template |

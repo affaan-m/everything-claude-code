@@ -139,7 +139,7 @@ SELECT pg_reload_conf();
 
 - Agent：`database-reviewer` - 完整資料庫審查工作流程
 - Skill：`clickhouse-io` - ClickHouse 分析模式
-- Skill：`backend-patterns` - API 和後端模式
+- Skill：`api-backend` - API 和後端模式
 
 ---
 

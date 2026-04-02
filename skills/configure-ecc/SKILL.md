@@ -105,7 +105,7 @@ For each selected category, print the full list of skills below and ask the user
 
 | Skill | Description |
 |-------|-------------|
-| `backend-patterns` | Backend architecture, API design, server-side best practices for Node.js/Express/Next.js |
+| `api-backend` | REST API design, backend architecture, database, caching, server-side best practices |
 | `coding-standards` | Universal coding standards for TypeScript, JavaScript, React, Node.js |
 | `django-patterns` | Django architecture, REST API with DRF, ORM, caching, signals, middleware |
 | `django-security` | Django security: auth, CSRF, SQL injection, XSS prevention |
