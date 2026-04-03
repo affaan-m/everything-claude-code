@@ -12,6 +12,23 @@ CORRECT: update(original, field, value) → returns new copy with change
 
 Rationale: Immutable data prevents hidden side effects, makes debugging easier, and enables safe concurrency.
 
+## Core Principles
+
+### KISS (Keep It Simple, Stupid)
+- Simplest solution that works
+- No premature optimization
+- Easy to understand > clever code
+
+### DRY (Don't Repeat Yourself)
+- Extract common logic into functions/utilities
+- Avoid copy-paste programming
+- Create reusable abstractions when patterns repeat 3+ times
+
+### YAGNI (You Aren't Gonna Need It)
+- Don't build features before they're needed
+- Avoid speculative generality
+- Start simple, refactor when needed
+
 ## File Organization
 
 MANY SMALL FILES > FEW LARGE FILES:
@@ -35,6 +52,17 @@ ALWAYS validate at system boundaries:
 - Use schema-based validation where available
 - Fail fast with clear error messages
 - Never trust external data (API responses, user input, file content)
+
+## Code Smells to Avoid
+
+### Deep Nesting (>4 levels)
+Use early returns instead of nested conditionals.
+
+### Magic Numbers
+Use named constants instead of unexplained literals.
+
+### Long Functions (>50 lines)
+Split into focused smaller functions with clear responsibilities.
 
 ## Code Quality Checklist
 
