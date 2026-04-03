@@ -14,10 +14,7 @@ Standard feature implementation workflow
 
 ## Common Files
 
-- `manifests/*`
-- `schemas/*`
-- `**/*.test.*`
-- `**/api/**`
+- `.claude/commands/*`
 
 ## Suggested Sequence
 
