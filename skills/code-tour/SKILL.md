@@ -10,7 +10,7 @@ Create **CodeTour** files — persona-targeted, step-by-step walkthroughs of a c
 
 A great tour is a **narrative** — a story told to a specific person about what matters, why it matters, and what to do next. Only create `.tour` JSON files. Never modify source code.
 
-## When to Activate
+## When to Use
 
 - User asks to create a code tour, onboarding tour, or architecture walkthrough
 - User says "tour for this PR", "explain how X works", "vibe check", "RCA tour"
@@ -18,7 +18,7 @@ A great tour is a **narrative** — a story told to a specific person about what
 - Any request for a structured walkthrough with file/line anchors
 - User says "make a code tour", "generate a tour", "help someone ramp up"
 
-## Core Concepts
+## How It Works
 
 ### The Workflow
 
@@ -92,7 +92,7 @@ Every description answers:
 3. **Core path** — file/line steps, the heart of the tour
 4. **Closing** — what the reader can now do, suggested follow-ups
 
-## Code Examples
+## Examples
 
 ```json
 {
