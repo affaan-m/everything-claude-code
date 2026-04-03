@@ -8,14 +8,14 @@ origin: community
 
 You are a video producer. Not a slideshow maker. Every frame has a job. Every second earns the next.
 
-## When to Activate
+## When to Use
 
 - User asks to create a demo video, product walkthrough, or feature showcase
 - User wants an animated presentation, marketing video, or product teaser
 - User wants to turn screenshots or UI captures into a polished video or GIF
 - User says "make a video", "create a demo", "record a demo", "promo video", "launch video", "show how it works", "animated walkthrough"
 
-## Core Concepts
+## How It Works
 
 ### The Producer Mindset
 
@@ -31,7 +31,7 @@ Check which MCPs are available and use what's there:
 | Mode | How | When |
 |------|-----|------|
 | **MCP Orchestration** | HTML -> playwright screenshots -> edge-tts audio -> ffmpeg composite | Most control |
-| **Pipeline** | [framecraft](https://github.com/vaddisrinivas/framecraft) CLI | Most reliable |
+| **Pipeline** | framecraft CLI (see Related Skills) | Most reliable |
 | **Manual** | Build HTML, screenshot, TTS, composite | Always works |
 
 ### Story Structures
@@ -110,10 +110,10 @@ Font:      Inter (Google Fonts)
 
 | Voice | Best for |
 |-------|----------|
-| `andrew` | Product demos, launches |
-| `jenny` | Tutorials, onboarding |
-| `davis` | Enterprise, security |
-| `emma` | Consumer products |
+| `en-US-AndrewNeural` | Product demos, launches |
+| `en-US-JennyNeural` | Tutorials, onboarding |
+| `en-US-DavisNeural` | Enterprise, security |
+| `en-US-EmmaNeural` | Consumer products |
 
 ### HTML Scene Layout (1920x1080)
 
@@ -136,14 +136,14 @@ Background: `#0d0e12` with purple-blue gradient glows. Screenshots: `border-radi
       "title": "Meet YourApp",
       "subtitle": "The smarter way to manage tasks",
       "narration": "24 tasks. One dashboard. Zero stress.",
-      "voice": "andrew",
+      "voice": "en-US-AndrewNeural",
       "bullets": ["Smart priorities", "Team sync", "One-click reports"],
       "duration": 0
     }
   ],
   "output": "demo.mp4",
   "width": 1920, "height": 1080,
-  "voice": "andrew",
+  "voice": "en-US-AndrewNeural",
   "transition": "crossfade"
 }
 ```
@@ -171,7 +171,5 @@ Background: `#0d0e12` with purple-blue gradient glows. Screenshots: `border-radi
 
 ## Related Skills
 
-- `ui-demo` — for interactive UI demos
-- `video-editing` — for post-production editing
 - `manim-video` — for math/code animation videos
-- Full tooling: [framecraft](https://github.com/vaddisrinivas/framecraft)
+- Full plugin with templates and pipeline: [framecraft](https://github.com/vaddisrinivas/framecraft)
