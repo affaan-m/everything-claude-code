@@ -106,7 +106,7 @@ cp -r everything-claude-code/rules/perl ~/.claude/rules/
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**完成！** 你现在可以使用 38 个代理、156 个技能和 72 个命令。
+**完成！** 你现在可以使用 38 个代理、157 个技能和 72 个命令。
 
 ### multi-* 命令需要额外配置
 
