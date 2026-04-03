@@ -135,4 +135,4 @@ Every description answers:
 
 - `codebase-onboarding` — broader onboarding beyond tour files
 - `coding-standards` — code conventions that tours can reference
-- Full skill with validation scripts: [code-tour repo](https://github.com/vaddisrinivas/code-tour)
+- VS Code extension: [microsoft/codetour](https://github.com/microsoft/codetour)
