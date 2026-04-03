@@ -127,7 +127,7 @@ Font:      Inter (Google Fonts)
 
 Background: `#0d0e12` with purple-blue gradient glows. Screenshots: `border-radius: 12px` + `box-shadow`. Never show raw screenshots.
 
-## Code Examples
+## Examples
 
 ```json
 {
