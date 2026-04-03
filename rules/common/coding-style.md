@@ -53,6 +53,15 @@ ALWAYS validate at system boundaries:
 - Fail fast with clear error messages
 - Never trust external data (API responses, user input, file content)
 
+## Naming Conventions
+
+- **Variables / functions**: `camelCase` with descriptive names (`fetchMarketData`, not `market`)
+- **Booleans**: prefix with `is`, `has`, `should`, `can` (`isUserAuthenticated`, not `flag`)
+- **Interfaces / types**: `PascalCase` (`Market`, `MarketResponse`)
+- **Constants**: `UPPER_SNAKE_CASE` (`MAX_RETRIES`, `DEBOUNCE_DELAY_MS`)
+- **Custom hooks**: `camelCase` with `use` prefix (`useDebounce`, `useAuth`)
+- **Components**: `PascalCase` (`Button`, `MarketCard`)
+
 ## Code Smells to Avoid
 
 ### Deep Nesting (>4 levels)

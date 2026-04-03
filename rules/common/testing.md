@@ -27,3 +27,36 @@ MANDATORY workflow:
 ## Agent Support
 
 - **tdd-guide** - Use PROACTIVELY for new features, enforces write-tests-first
+
+## Test Structure (AAA Pattern)
+
+All tests MUST follow the Arrange-Act-Assert structure:
+
+```typescript
+test('calculates similarity correctly', () => {
+  // Arrange
+  const vector1 = [1, 0, 0]
+  const vector2 = [0, 1, 0]
+
+  // Act
+  const similarity = calculateCosineSimilarity(vector1, vector2)
+
+  // Assert
+  expect(similarity).toBe(0)
+})
+```
+
+### Test Naming
+
+Tests MUST use descriptive names that explain what is being tested:
+
+```typescript
+// Good
+test('returns empty array when no markets match query', () => {})
+test('throws error when OpenAI API key is missing', () => {})
+test('falls back to substring search when Redis unavailable', () => {})
+
+// Bad
+test('works', () => {})
+test('test search', () => {})
+```
