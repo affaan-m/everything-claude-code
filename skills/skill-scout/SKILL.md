@@ -8,7 +8,7 @@ origin: community
 
 Search for existing community and marketplace skills before creating a new one. Avoid reinventing the wheel.
 
-## When to Activate
+## When to Use
 
 - The user says "create a skill", "build a skill", "make a skill", "new skill", or invokes `/skill-create`
 - The user asks "is there a skill for X?" or "does a skill exist that does Y?"
@@ -22,7 +22,7 @@ Run this workflow **before** invoking `/skill-create`. If the user explicitly sa
 
 **Use lightweight models to minimize token cost.** Delegate all search work to `haiku`-model agents running in parallel. Only escalate to the main conversation for the final presentation and user decision.
 
-## Workflow
+## How It Works
 
 ### Step 1 — Capture Intent
 
@@ -129,6 +129,11 @@ Ask the user:
 - **Option B**: "Fork/extend skill `X`" — copy it locally and modify.
 - **Option C**: "Create from scratch" — hand off to `/skill-create`.
 
+**Before adopting any external skill (Option A or B)**, vet it first:
+- Review the SKILL.md content for unexpected commands or file system operations
+- Check GitHub repo activity, open issues, and contributor history
+- Never install skills that execute arbitrary code without user review
+
 Only proceed to creation after the user explicitly chooses Option C (or no matches were found).
 
 ## Anti-Patterns
@@ -164,16 +169,21 @@ Avoid these common mistakes:
 - Full SKILL.md content is only read on-demand when the user asks for details on a specific match.
 - Cap web search to 3 queries max per run.
 
-## Code Examples
+## Examples
 
 ### Agent A — Local Marketplace Grep
 
 ```bash
-# Search skill names matching keywords
+# Search skill names across all three sources
 ls ~/.claude/plugins/marketplaces/everything-claude-code/skills/ | grep -iE "blog|article|writing|content"
+ls ~/.claude/plugins/marketplaces/claude-plugins-official/plugins/ | grep -iE "blog|article|writing|content"
+ls ~/.claude/skills/ | grep -iE "blog|article|writing|content"
 
-# Search descriptions in SKILL.md frontmatter
-grep -rlE "blog|article|writing" ~/.claude/skills/*/SKILL.md \
+# Search descriptions in SKILL.md frontmatter across all sources
+grep -rlE "blog|article|writing" \
+  ~/.claude/plugins/marketplaces/everything-claude-code/skills/*/SKILL.md \
+  ~/.claude/plugins/marketplaces/claude-plugins-official/plugins/*/SKILL.md \
+  ~/.claude/skills/*/SKILL.md \
   | xargs head -5
 ```
 
@@ -202,7 +212,7 @@ search("SKILL.md blog article", num_results=5)
 | 3 | blog-writer     | GitHub      | Blog writing with SEO (42 stars)     | url  |
 ```
 
-## Example
+### Full Walkthrough
 
 User says: "I want a skill that helps me write blog posts"
 
@@ -215,7 +225,7 @@ Synonyms: `essay`, `guide`, `draft`, `publish`
 - `brand-voice` (ECC) — "Build a writing style profile from real posts"
 
 **Agent B** finds on GitHub:
-- `awesome-claude-skills/blog-writer` (42 stars) — "Structured blog writing with SEO optimization"
+- `awesome-claude-skills/blog-writer` (42 stars) — "Structured blog writing with SEO"
 
 **Agent C** finds on the web:
 - Blog post: "My custom Claude skill for technical writing" — url
