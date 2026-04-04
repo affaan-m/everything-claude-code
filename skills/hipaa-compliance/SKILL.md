@@ -10,7 +10,7 @@ Activates automatically when detecting healthcare context — patient records, m
 
 ---
 
-## When to Activate
+## When to Use
 
 ### Auto-detect (no explicit mention needed)
 
@@ -40,6 +40,19 @@ Activates automatically when detecting healthcare context — patient records, m
 ### The 18 PHI Identifiers
 
 Names, geographic data (smaller than state), dates (except year) related to an individual, phone numbers, fax numbers, email addresses, SSNs, MRNs, health plan beneficiary numbers, account numbers, certificate/license numbers, VINs, device identifiers, URLs, IPs, biometrics, full-face photos, and any other unique identifying number or code.
+
+---
+
+## How It Works
+
+HIPAA compliance functions by enforcing the "Minimum Necessary" rule through a combination of administrative, physical, and technical safeguards to ensure the Confidentiality, Integrity, and Availability (CIA) of Protected Health Information (PHI).
+
+### Core Function Pillars
+
+- **Identification**: Determining if a data element (like an IP address, name, or medical ID) qualifies as PHI or ePHI.
+- **Encryption**: Protecting data "at rest" (on your hard drive) and "in transit" (moving over the network) using industry-standard protocols like AES-256 and TLS 1.2+.
+- **Access Control**: Implementing Role-Based Access Control (RBAC) to ensure only authorized personnel can view specific health data.
+- **Auditability**: Maintaining "Always-On" logging to track who accessed what data and when, providing a permanent trail for compliance reviews.
 
 ---
 
@@ -197,6 +210,24 @@ Request → AuthN (who are you?) → AuthZ (are you allowed this record?) → PH
 ```
 
 **Never include PHI values in the log record itself.**
+
+---
+
+## Examples
+
+### 1. Data Analysis (Compliant vs. Non-Compliant)
+
+- **Non-Compliant:** A data analyst downloads a CSV containing patient names and heart rates to their local machine to run a Python script.
+- **Compliant:** The analyst uses a **Safe Harbor** dataset where names have been replaced with randomized UUIDs, and the analysis is performed within a SOC2/HIPAA-certified cloud environment (e.g., AWS Nitro Enclave or Google Cloud Healthcare API).
+
+### 2. Application Logging
+
+- **Non-Compliant:** `python
+logger.info(f"User {patient_name} updated their prescription for {medication_name}")`
+
+- **Compliant:** `python
+logger.info(f"User {user_id} updated a record in the 'Prescriptions' table")`
+  _Note: The specific health data is kept in the encrypted database, not the plaintext application logs._
 
 ---
 
