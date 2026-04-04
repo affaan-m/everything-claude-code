@@ -78,7 +78,6 @@ Use Exa or WebSearch to find skills shared on blogs, forums, community posts:
 "claude code skill" + <keywords>
 "SKILL.md" + <keywords>
 "everything-claude-code" + <keywords>
-site:github.com "claude" "skill" <keywords>
 ```
 
 For each result, extract: title, URL, brief summary.
@@ -156,7 +155,7 @@ Avoid these common mistakes:
 - `/skill-create` — Create a new skill from scratch (hand off here after Option C)
 - `/search-first` — General "search before building" philosophy; skill-scout is the skill-specific implementation
 - `/skill-stocktake` — Audit installed skills for health, duplicates, and gaps; complements skill-scout's discovery focus
-- `/skill-health` — Check a single skill's quality and compliance
+
 
 ## Cost Control
 
@@ -174,7 +173,7 @@ Avoid these common mistakes:
 ls ~/.claude/plugins/marketplaces/everything-claude-code/skills/ | grep -iE "blog|article|writing|content"
 
 # Search descriptions in SKILL.md frontmatter
-grep -rl "blog\|article\|writing" ~/.claude/skills/*/SKILL.md --include="SKILL.md" \
+grep -rlE "blog|article|writing" ~/.claude/skills/*/SKILL.md \
   | xargs head -5
 ```
 
