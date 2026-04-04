@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Instinct CLI - Manage instincts for Continuous Learning v2
 
@@ -32,7 +32,12 @@ try:
     import fcntl
     _HAS_FCNTL = True
 except ImportError:
-    _HAS_FCNTL = False  # Windows — skip file locking
+    _HAS_FCNTL = False
+    try:
+        import msvcrt
+        _HAS_MSVCRT = True
+    except ImportError:
+        _HAS_MSVCRT = False
 
 # ─────────────────────────────────────────────
 # Configuration
@@ -224,6 +229,16 @@ def _update_registry(pid: str, pname: str, proot: str, premote: str) -> None:
         if _HAS_FCNTL:
             lock_fd = open(lock_path, "w")
             fcntl.flock(lock_fd, fcntl.LOCK_EX)
+        elif _HAS_MSVCRT:
+            # Windows: msvcrt.locking requires an integer fd and a byte region.
+            # We open the lock file in binary mode to get a raw fd.
+            lock_fd = open(lock_path, "wb")
+            lock_fd.write(b'\x00')
+            lock_fd.flush()
+            try:
+                msvcrt.locking(lock_fd.fileno(), msvcrt.LK_NBLCK, 1)
+            except OSError:
+                pass  # contended -- proceed without lock
 
         try:
             with open(REGISTRY_FILE, encoding="utf-8") as f:
@@ -246,7 +261,13 @@ def _update_registry(pid: str, pname: str, proot: str, premote: str) -> None:
         os.replace(tmp_file, REGISTRY_FILE)
     finally:
         if lock_fd is not None:
-            fcntl.flock(lock_fd, fcntl.LOCK_UN)
+            if _HAS_FCNTL:
+                fcntl.flock(lock_fd, fcntl.LOCK_UN)
+            elif _HAS_MSVCRT:
+                try:
+                    msvcrt.locking(lock_fd.fileno(), msvcrt.LK_UNLCK, 1)
+                except OSError:
+                    pass
             lock_fd.close()
 
 

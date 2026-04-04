@@ -41,7 +41,10 @@ fi
 # Use mktemp for a collision-safe temp file (concurrent runs on the same RESULTS_JSON
 # would race on a predictable ".tmp" suffix; random suffix prevents silent overwrites).
 tmp=$(mktemp "${RESULTS_JSON}.XXXXXX")
-trap 'rm -f "$tmp"' EXIT
+_tmp_input="$(mktemp)"
+trap 'rm -f "$tmp" "$_tmp_input"' EXIT
+
+echo "$input_json" > "$_tmp_input"
 
 jq -s \
   --arg ea "$EVALUATED_AT" \
@@ -51,6 +54,6 @@ jq -s \
    .skills = ($existing.skills + ($new.skills // {})) |
    if ($new | has("mode")) then .mode = $new.mode else . end |
    if ($new | has("batch_progress")) then .batch_progress = $new.batch_progress else . end' \
-  "$RESULTS_JSON" <(echo "$input_json") > "$tmp"
+  "$RESULTS_JSON" "$_tmp_input" > "$tmp"
 
 mv "$tmp" "$RESULTS_JSON"

@@ -196,20 +196,40 @@ case "$ACTION" in
     touch "$LOG_FILE"
     start_line=$(wc -l < "$LOG_FILE" 2>/dev/null || echo 0)
 
-    nohup env \
-      CONFIG_DIR="$CONFIG_DIR" \
-      PID_FILE="$PID_FILE" \
-      LOG_FILE="$LOG_FILE" \
-      OBSERVATIONS_FILE="$OBSERVATIONS_FILE" \
-      INSTINCTS_DIR="$INSTINCTS_DIR" \
-      PROJECT_DIR="$PROJECT_DIR" \
-      PROJECT_NAME="$PROJECT_NAME" \
-      PROJECT_ID="$PROJECT_ID" \
-      MIN_OBSERVATIONS="$MIN_OBSERVATIONS" \
-      OBSERVER_INTERVAL_SECONDS="$OBSERVER_INTERVAL_SECONDS" \
-      CLV2_IS_WINDOWS="$IS_WINDOWS" \
-      CLV2_OBSERVER_PROMPT_PATTERN="$CLV2_OBSERVER_PROMPT_PATTERN" \
-      "$OBSERVER_LOOP_SCRIPT" >> "$LOG_FILE" 2>&1 &
+    # Cross-platform background launch: nohup is unavailable on Windows/Git Bash.
+    # On Windows, use "env ... & disown" which works in Git Bash.
+    # On macOS/Linux, use nohup for SIGHUP immunity.
+    if [ "$IS_WINDOWS" = "true" ]; then
+      env \
+        CONFIG_DIR="$CONFIG_DIR" \
+        PID_FILE="$PID_FILE" \
+        LOG_FILE="$LOG_FILE" \
+        OBSERVATIONS_FILE="$OBSERVATIONS_FILE" \
+        INSTINCTS_DIR="$INSTINCTS_DIR" \
+        PROJECT_DIR="$PROJECT_DIR" \
+        PROJECT_NAME="$PROJECT_NAME" \
+        PROJECT_ID="$PROJECT_ID" \
+        MIN_OBSERVATIONS="$MIN_OBSERVATIONS" \
+        OBSERVER_INTERVAL_SECONDS="$OBSERVER_INTERVAL_SECONDS" \
+        CLV2_IS_WINDOWS="$IS_WINDOWS" \
+        CLV2_OBSERVER_PROMPT_PATTERN="$CLV2_OBSERVER_PROMPT_PATTERN" \
+        "$OBSERVER_LOOP_SCRIPT" >> "$LOG_FILE" 2>&1 & disown
+    else
+      nohup env \
+        CONFIG_DIR="$CONFIG_DIR" \
+        PID_FILE="$PID_FILE" \
+        LOG_FILE="$LOG_FILE" \
+        OBSERVATIONS_FILE="$OBSERVATIONS_FILE" \
+        INSTINCTS_DIR="$INSTINCTS_DIR" \
+        PROJECT_DIR="$PROJECT_DIR" \
+        PROJECT_NAME="$PROJECT_NAME" \
+        PROJECT_ID="$PROJECT_ID" \
+        MIN_OBSERVATIONS="$MIN_OBSERVATIONS" \
+        OBSERVER_INTERVAL_SECONDS="$OBSERVER_INTERVAL_SECONDS" \
+        CLV2_IS_WINDOWS="$IS_WINDOWS" \
+        CLV2_OBSERVER_PROMPT_PATTERN="$CLV2_OBSERVER_PROMPT_PATTERN" \
+        "$OBSERVER_LOOP_SCRIPT" >> "$LOG_FILE" 2>&1 &
+    fi
 
     # Wait for PID file
     sleep 2

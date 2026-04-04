@@ -297,13 +297,13 @@ When the same instinct appears in multiple projects with high confidence, it's a
 
 ```bash
 # Promote a specific instinct
-python3 instinct-cli.py promote prefer-explicit-errors
+python instinct-cli.py promote prefer-explicit-errors
 
 # Auto-promote all qualifying instincts
-python3 instinct-cli.py promote
+python instinct-cli.py promote
 
 # Preview without changes
-python3 instinct-cli.py promote --dry-run
+python instinct-cli.py promote --dry-run
 ```
 
 The `/evolve` command also suggests promotion candidates.

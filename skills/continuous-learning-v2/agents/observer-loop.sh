@@ -9,9 +9,9 @@ set +e
 unset CLAUDECODE
 
 SLEEP_PID=""
-USR1_FIRED=0
 ANALYZING=0
 LAST_ANALYSIS_EPOCH=0
+TRIGGER_FILE="${PROJECT_DIR}/.observer-trigger"
 # Minimum seconds between analyses (prevents rapid re-triggering)
 ANALYSIS_COOLDOWN="${ECC_OBSERVER_ANALYSIS_COOLDOWN:-60}"
 IDLE_TIMEOUT_SECONDS="${ECC_OBSERVER_IDLE_TIMEOUT_SECONDS:-1800}"
@@ -222,22 +222,17 @@ PROMPT
   fi
 }
 
-on_usr1() {
-  [ -n "$SLEEP_PID" ] && kill "$SLEEP_PID" 2>/dev/null
-  SLEEP_PID=""
-  USR1_FIRED=1
-
+process_trigger_or_periodic() {
   # Re-entrancy guard: skip if analysis is already running (#521)
   if [ "$ANALYZING" -eq 1 ]; then
-    echo "[$(date)] Analysis already in progress, skipping signal" >> "$LOG_FILE"
     return
   fi
 
   # Cooldown: skip if last analysis was too recent (#521)
+  local now_epoch elapsed
   now_epoch=$(date +%s)
   elapsed=$(( now_epoch - LAST_ANALYSIS_EPOCH ))
   if [ "$elapsed" -lt "$ANALYSIS_COOLDOWN" ]; then
-    echo "[$(date)] Analysis cooldown active (${elapsed}s < ${ANALYSIS_COOLDOWN}s), skipping" >> "$LOG_FILE"
     return
   fi
 
@@ -246,14 +241,13 @@ on_usr1() {
   LAST_ANALYSIS_EPOCH=$(date +%s)
   ANALYZING=0
 }
-trap on_usr1 USR1
 
 echo "$$" > "$PID_FILE"
 echo "[$(date)] Observer started for ${PROJECT_NAME} (PID: $$)" >> "$LOG_FILE"
 
 # Prune expired pending instincts before analysis
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-"${CLV2_PYTHON_CMD:-python3}" "${SCRIPT_DIR}/../scripts/instinct-cli.py" prune --quiet >> "$LOG_FILE" 2>&1 || echo "[$(date)] Warning: instinct prune failed (non-fatal)" >> "$LOG_FILE"
+"${CLV2_PYTHON_CMD:-python}" "${SCRIPT_DIR}/../scripts/instinct-cli.py" prune --quiet >> "$LOG_FILE" 2>&1 || echo "[$(date)] Warning: instinct prune failed (non-fatal)" >> "$LOG_FILE"
 
 while true; do
   exit_if_idle_without_sessions
@@ -263,9 +257,8 @@ while true; do
   SLEEP_PID=""
 
   exit_if_idle_without_sessions
-  if [ "$USR1_FIRED" -eq 1 ]; then
-    USR1_FIRED=0
-  else
-    analyze_observations
+  if [ -f "$TRIGGER_FILE" ]; then
+    rm -f "$TRIGGER_FILE"
   fi
+  process_trigger_or_periodic
 done

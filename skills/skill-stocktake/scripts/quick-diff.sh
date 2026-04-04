@@ -51,6 +51,9 @@ i=0
 
 process_dir() {
   local dir="$1"
+  local _pd_find_tmp
+  _pd_find_tmp="$(mktemp)"
+  find "$dir" -name "*.md" -type f 2>/dev/null | sort > "$_pd_find_tmp"
   while IFS= read -r file; do
     local mtime dp is_new
     mtime=$(date -u -r "$file" +%Y-%m-%dT%H:%M:%SZ)
@@ -74,7 +77,8 @@ process_dir() {
       '{path:$path,mtime:$mtime,is_new:$is_new}' \
       > "$tmpdir/$i.json"
     i=$((i+1))
-  done < <(find "$dir" -name "*.md" -type f 2>/dev/null | sort)
+  done < "$_pd_find_tmp"
+  rm -f "$_pd_find_tmp"
 }
 
 [[ -d "$GLOBAL_DIR" ]] && process_dir "$GLOBAL_DIR"

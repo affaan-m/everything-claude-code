@@ -12,7 +12,7 @@ A background agent that analyzes observations from Claude Code sessions to detec
 
 - After enough observations accumulate (configurable, default 20)
 - On a scheduled interval (configurable, default 5 minutes)
-- When triggered on demand via SIGUSR1 to the observer process
+- When triggered on demand via a sentinel file (.observer-trigger) checked by the observer loop
 
 ## Input
 

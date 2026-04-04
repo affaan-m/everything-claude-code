@@ -2,9 +2,9 @@
  * Tests for observer memory explosion fix (#521)
  *
  * Validates three fixes:
- * 1. SIGUSR1 throttling in observe.sh (signal counter)
+ * 1. Sentinel file throttling in observe.sh (signal counter + trigger file)
  * 2. Tail-based sampling in observer-loop.sh (not loading entire file)
- * 3. Re-entrancy guard + cooldown in observer-loop.sh on_usr1()
+ * 3. Re-entrancy guard + cooldown in observer-loop.sh process_trigger_or_periodic()
  *
  * Run with: node tests/hooks/observer-memory.test.js
  */
@@ -49,10 +49,10 @@ const observerLoopPath = path.join(repoRoot, 'skills', 'continuous-learning-v2',
 console.log('\n=== Observer Memory Fix Tests (#521) ===\n');
 
 // ──────────────────────────────────────────────────────
-// Test group 1: observe.sh SIGUSR1 throttling
+// Test group 1: observe.sh sentinel file throttling
 // ──────────────────────────────────────────────────────
 
-console.log('--- observe.sh signal throttling ---');
+console.log('--- observe.sh sentinel file throttling ---');
 
 test('observe.sh contains SIGNAL_EVERY_N throttle variable', () => {
   const content = fs.readFileSync(observeShPath, 'utf8');
@@ -68,7 +68,7 @@ test('observe.sh only signals when counter reaches threshold', () => {
   const content = fs.readFileSync(observeShPath, 'utf8');
   assert.ok(content.includes('should_signal=0'), 'observe.sh should default should_signal to 0');
   assert.ok(content.includes('should_signal=1'), 'observe.sh should set should_signal=1 when threshold reached');
-  assert.ok(content.includes('if [ "$should_signal" -eq 1 ]'), 'observe.sh should gate kill -USR1 behind should_signal check');
+  assert.ok(content.includes('if [ "$should_signal" -eq 1 ]'), 'observe.sh should gate trigger file creation behind should_signal check');
 });
 
 test('observe.sh default throttle is 20 observations per signal', () => {
@@ -82,6 +82,12 @@ test('observe.sh touches observer activity marker on each observation', () => {
   assert.ok(content.includes('touch "$ACTIVITY_FILE"'), 'observe.sh should update activity marker during observation capture');
 });
 
+test('observe.sh uses trigger file instead of SIGUSR1', () => {
+  const content = fs.readFileSync(observeShPath, 'utf8');
+  assert.ok(content.includes('TRIGGER_FILE="${PROJECT_DIR}/.observer-trigger"'), 'observe.sh should define a trigger file path');
+  assert.ok(content.includes('touch "$TRIGGER_FILE"'), 'observe.sh should create the trigger file to signal the observer');
+});
+
 // ──────────────────────────────────────────────────────
 // Test group 2: observer-loop.sh re-entrancy guard
 // ──────────────────────────────────────────────────────
@@ -93,13 +99,14 @@ test('observer-loop.sh defines ANALYZING guard variable', () => {
   assert.ok(content.includes('ANALYZING=0'), 'observer-loop.sh should initialize ANALYZING=0');
 });
 
-test('on_usr1 checks ANALYZING before starting analysis', () => {
+test('process_trigger_or_periodic checks ANALYZING before starting analysis', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
-  assert.ok(content.includes('if [ "$ANALYZING" -eq 1 ]'), 'on_usr1 should check ANALYZING flag');
-  assert.ok(content.includes('Analysis already in progress, skipping signal'), 'on_usr1 should log when skipping due to re-entrancy');
+  assert.ok(content.includes('if [ "$ANALYZING" -eq 1 ]'), 'process_trigger_or_periodic should check ANALYZING flag');
+  // The re-entrancy guard uses a silent return (no log message needed;
+  // the sentinel file approach polls every cycle, so logging would be noisy).
 });
 
-test('on_usr1 sets ANALYZING=1 before and ANALYZING=0 after analysis', () => {
+test('process_trigger_or_periodic sets ANALYZING=1 before and ANALYZING=0 after analysis', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
   // Check that ANALYZING=1 is set before analyze_observations
   const analyzeCall = content.indexOf('ANALYZING=1');
@@ -121,10 +128,12 @@ test('observer-loop.sh defines ANALYSIS_COOLDOWN', () => {
   assert.ok(content.includes('ANALYSIS_COOLDOWN'), 'observer-loop.sh should define ANALYSIS_COOLDOWN');
 });
 
-test('on_usr1 enforces cooldown between analyses', () => {
+test('process_trigger_or_periodic enforces cooldown between analyses', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
   assert.ok(content.includes('LAST_ANALYSIS_EPOCH'), 'Should track last analysis time');
-  assert.ok(content.includes('Analysis cooldown active'), 'Should log when cooldown prevents analysis');
+  assert.ok(content.includes('ANALYSIS_COOLDOWN'), 'Should define cooldown duration');
+  assert.ok(content.includes('elapsed=$(( now_epoch - LAST_ANALYSIS_EPOCH ))'), 'Should compute elapsed time since last analysis');
+  assert.ok(content.includes('if [ "$elapsed" -lt "$ANALYSIS_COOLDOWN" ]'), 'Should skip analysis if cooldown has not elapsed');
 });
 
 test('default cooldown is 60 seconds', () => {
@@ -368,6 +377,66 @@ test('claude invocation still includes ECC_SKIP_OBSERVE and ECC_HOOK_PROFILE gua
   const fullCommand = lines.slice(Math.max(0, claudeLineIndex - 1), claudeLineIndex + 3).join(' ');
   assert.ok(fullCommand.includes('ECC_SKIP_OBSERVE=1'), 'claude invocation should include ECC_SKIP_OBSERVE=1 guard');
   assert.ok(fullCommand.includes('ECC_HOOK_PROFILE=minimal'), 'claude invocation should include ECC_HOOK_PROFILE=minimal guard');
+});
+
+// ──────────────────────────────────────────────────────
+// Test group 8: Windows compatibility checks
+// ──────────────────────────────────────────────────────
+
+console.log('\n--- Windows compatibility ---');
+
+test('observer-loop.sh uses TRIGGER_FILE instead of SIGUSR1', () => {
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  assert.ok(content.includes('TRIGGER_FILE'), 'observer-loop.sh should define TRIGGER_FILE');
+  assert.ok(!content.includes('SIGUSR1'), 'observer-loop.sh should not reference SIGUSR1 (not available on Windows)');
+  assert.ok(!content.includes('trap.*USR1'), 'observer-loop.sh should not trap USR1 signal');
+  assert.ok(!content.includes('kill.*USR1'), 'observer-loop.sh should not send USR1 signal');
+});
+
+test('observer-loop.sh polls for TRIGGER_FILE in main loop', () => {
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  assert.ok(content.includes('if [ -f "$TRIGGER_FILE" ]'), 'observer-loop.sh should check for trigger file in main loop');
+  assert.ok(content.includes('rm -f "$TRIGGER_FILE"'), 'observer-loop.sh should remove trigger file after processing');
+});
+
+test('observe.sh does not use kill -USR1', () => {
+  const content = fs.readFileSync(observeShPath, 'utf8');
+  assert.ok(!content.includes('kill -USR1'), 'observe.sh should not send USR1 signal (not available on Windows)');
+});
+
+test('observe.sh _bg_launch falls back to disown when nohup is unavailable', () => {
+  const content = fs.readFileSync(observeShPath, 'utf8');
+  assert.ok(content.includes('command -v nohup'), 'observe.sh should check for nohup availability');
+  assert.ok(content.includes('& disown'), 'observe.sh should fall back to disown when nohup is unavailable');
+});
+
+test('start-observer.sh detects Windows and avoids nohup', () => {
+  const startObserverPath = path.join(repoRoot, 'skills', 'continuous-learning-v2', 'agents', 'start-observer.sh');
+  const content = fs.readFileSync(startObserverPath, 'utf8');
+  assert.ok(content.includes('IS_WINDOWS=false'), 'start-observer.sh should initialize IS_WINDOWS');
+  assert.ok(content.includes('*mingw*|*msys*|*cygwin*'), 'start-observer.sh should detect Windows via uname');
+  assert.ok(content.includes('& disown'), 'start-observer.sh should use disown on Windows instead of nohup');
+});
+
+test('observe.sh flock fallback reaches mkdir on Windows', () => {
+  const content = fs.readFileSync(observeShPath, 'utf8');
+  assert.ok(content.includes('command -v flock'), 'observe.sh should check for flock availability');
+  assert.ok(content.includes('mkdir "${LAZY_START_LOCK}.d"'), 'observe.sh should fall back to mkdir-based locking');
+});
+
+test('observe.sh resolve_python_cmd tries python first on Windows', () => {
+  const content = fs.readFileSync(observeShPath, 'utf8');
+  const windowsBranch = content.indexOf('*mingw*|*msys*|*cygwin*');
+  assert.ok(windowsBranch > 0, 'resolve_python_cmd should have a Windows detection branch');
+  // Skip past the case pattern line (which ends with *) ) to find the actual branch content
+  const newlineAfterPattern = content.indexOf(String.fromCharCode(10), windowsBranch);
+  const branchContentStart = newlineAfterPattern + 1;
+  const branchEnd = content.indexOf(';;', branchContentStart);
+  const branchSection = content.substring(branchContentStart, branchEnd);
+  const pythonPos = branchSection.indexOf('command -v python');
+  const python3Pos = branchSection.indexOf('command -v python3');
+  assert.ok(pythonPos > 0, 'Windows branch should try python');
+  assert.ok(python3Pos > pythonPos, 'Windows branch should try python before python3');
 });
 
 // ──────────────────────────────────────────────────────

@@ -16,10 +16,13 @@ if [[ ! -d "$RULES_DIR" ]]; then
 fi
 
 # Collect all .md files (excluding _archived/)
+_tmp_rules_find="$(mktemp)"
+find "$RULES_DIR" -name '*.md' -not -path '*/_archived/*' -print | sort > "$_tmp_rules_find"
 files=()
 while IFS= read -r f; do
   files+=("$f")
-done < <(find "$RULES_DIR" -name '*.md' -not -path '*/_archived/*' -print | sort)
+done < "$_tmp_rules_find"
+rm -f "$_tmp_rules_find"
 
 total=${#files[@]}
 

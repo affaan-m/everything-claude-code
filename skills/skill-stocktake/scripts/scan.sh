@@ -94,6 +94,10 @@ scan_dir_to_json() {
       "$OBSERVATIONS" 2>/dev/null | sort | uniq -c)
   fi
 
+  local _scan_find_tmp
+  _scan_find_tmp="$(mktemp)"
+  find "$dir" -name "*.md" -type f 2>/dev/null | sort > "$_scan_find_tmp"
+
   local i=0
   while IFS= read -r file; do
     local name desc mtime u7 u30 dp
@@ -118,7 +122,8 @@ scan_dir_to_json() {
       '{path:$path,name:$name,description:$description,use_7d:$use_7d,use_30d:$use_30d,mtime:$mtime}' \
       > "$tmpdir/$i.json"
     i=$((i+1))
-  done < <(find "$dir" -name "*.md" -type f 2>/dev/null | sort)
+  done < "$_scan_find_tmp"
+  rm -f "$_scan_find_tmp"
 
   if [[ $i -eq 0 ]]; then
     echo "[]"
@@ -152,7 +157,12 @@ if [[ -n "$CWD_SKILLS_DIR" && -d "$CWD_SKILLS_DIR" ]]; then
 fi
 
 # Merge global + project skills into one array
-all_skills=$(jq -s 'add' <(echo "$global_skills") <(echo "$project_skills"))
+_tmp_global="$(mktemp)"
+_tmp_project="$(mktemp)"
+echo "$global_skills" > "$_tmp_global"
+echo "$project_skills" > "$_tmp_project"
+all_skills=$(jq -s 'add' "$_tmp_global" "$_tmp_project")
+rm -f "$_tmp_global" "$_tmp_project"
 
 jq -n \
   --arg global_found "$global_found" \

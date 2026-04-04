@@ -33,15 +33,29 @@ resolve_python_cmd() {
     return 0
   fi
 
-  if command -v python3 >/dev/null 2>&1; then
-    printf '%s\n' python3
-    return 0
-  fi
-
-  if command -v python >/dev/null 2>&1; then
-    printf '%s\n' python
-    return 0
-  fi
+  # On Windows (Git Bash/MSYS2), python3 is rarely available; try python first
+  case "$(uname -s 2>/dev/null | tr '[:upper:]' '[:lower:]')" in
+    *mingw*|*msys*|*cygwin*)
+      if command -v python >/dev/null 2>&1; then
+        printf '%s\n' python
+        return 0
+      fi
+      if command -v python3 >/dev/null 2>&1; then
+        printf '%s\n' python3
+        return 0
+      fi
+      ;;
+    *)
+      if command -v python3 >/dev/null 2>&1; then
+        printf '%s\n' python3
+        return 0
+      fi
+      if command -v python >/dev/null 2>&1; then
+        printf '%s\n' python
+        return 0
+      fi
+      ;;
+  esac
 
   return 1
 }
@@ -285,8 +299,19 @@ print(json.dumps(observation))
 
 # Lazy-start observer if enabled but not running (first-time setup)
 # Use flock for atomic check-then-act to prevent race conditions
-# Fallback for macOS (no flock): use lockfile or skip
+# Fallback for macOS/Windows (no flock): use lockfile or mkdir
 LAZY_START_LOCK="${PROJECT_DIR}/.observer-start.lock"
+
+# Cross-platform background launch: nohup is unavailable on Windows/Git Bash.
+# On Windows, use "command & disown" which works in Git Bash.
+# On macOS/Linux, use nohup for SIGHUP immunity.
+_bg_launch() {
+  if command -v nohup >/dev/null 2>&1; then
+    nohup "$@" >/dev/null 2>&1 &
+  else
+    "$@" >/dev/null 2>&1 & disown
+  fi
+}
 _CHECK_OBSERVER_RUNNING() {
   local pid_file="$1"
   if [ -f "$pid_file" ]; then
@@ -348,7 +373,7 @@ if [ "$OBSERVER_ENABLED" = "true" ]; then
         _CHECK_OBSERVER_RUNNING "${PROJECT_DIR}/.observer.pid" || true
         _CHECK_OBSERVER_RUNNING "${CONFIG_DIR}/.observer.pid" || true
         if [ ! -f "${PROJECT_DIR}/.observer.pid" ] && [ ! -f "${CONFIG_DIR}/.observer.pid" ]; then
-          nohup "${SKILL_ROOT}/agents/start-observer.sh" start >/dev/null 2>&1 &
+          _bg_launch "${SKILL_ROOT}/agents/start-observer.sh" start
         fi
       ) 9>"$LAZY_START_LOCK"
     else
@@ -361,7 +386,7 @@ if [ "$OBSERVER_ENABLED" = "true" ]; then
           _CHECK_OBSERVER_RUNNING "${PROJECT_DIR}/.observer.pid" || true
           _CHECK_OBSERVER_RUNNING "${CONFIG_DIR}/.observer.pid" || true
           if [ ! -f "${PROJECT_DIR}/.observer.pid" ] && [ ! -f "${CONFIG_DIR}/.observer.pid" ]; then
-            nohup "${SKILL_ROOT}/agents/start-observer.sh" start >/dev/null 2>&1 &
+            _bg_launch "${SKILL_ROOT}/agents/start-observer.sh" start
           fi
           rm -f "$LAZY_START_LOCK" 2>/dev/null || true
         )
@@ -373,7 +398,7 @@ if [ "$OBSERVER_ENABLED" = "true" ]; then
           _CHECK_OBSERVER_RUNNING "${PROJECT_DIR}/.observer.pid" || true
           _CHECK_OBSERVER_RUNNING "${CONFIG_DIR}/.observer.pid" || true
           if [ ! -f "${PROJECT_DIR}/.observer.pid" ] && [ ! -f "${CONFIG_DIR}/.observer.pid" ]; then
-            nohup "${SKILL_ROOT}/agents/start-observer.sh" start >/dev/null 2>&1 &
+            _bg_launch "${SKILL_ROOT}/agents/start-observer.sh" start
           fi
         )
       fi
@@ -381,11 +406,12 @@ if [ "$OBSERVER_ENABLED" = "true" ]; then
   fi
 fi
 
-# Throttle SIGUSR1: only signal observer every N observations (#521)
-# This prevents rapid signaling when tool calls fire every second,
-# which caused runaway parallel Claude analysis processes.
+# Throttle trigger: only notify observer every N observations (#521)
+# Uses sentinel file instead of SIGUSR1 (which does not exist on Windows).
+# The observer loop polls for the sentinel file each cycle.
 SIGNAL_EVERY_N="${ECC_OBSERVER_SIGNAL_EVERY_N:-20}"
 SIGNAL_COUNTER_FILE="${PROJECT_DIR}/.observer-signal-counter"
+TRIGGER_FILE="${PROJECT_DIR}/.observer-trigger"
 ACTIVITY_FILE="${PROJECT_DIR}/.observer-last-activity"
 
 touch "$ACTIVITY_FILE" 2>/dev/null || true
@@ -403,7 +429,7 @@ else
   echo "1" > "$SIGNAL_COUNTER_FILE"
 fi
 
-# Signal observer if running and throttle allows (check both project-scoped and global observer, deduplicate)
+# Write sentinel trigger file if throttle allows and observer is running
 if [ "$should_signal" -eq 1 ]; then
   signaled_pids=" "
   for pid_file in "${PROJECT_DIR}/.observer.pid" "${CONFIG_DIR}/.observer.pid"; do
@@ -418,7 +444,7 @@ if [ "$should_signal" -eq 1 ]; then
         *" $observer_pid "*) continue ;;
       esac
       if kill -0 "$observer_pid" 2>/dev/null; then
-        kill -USR1 "$observer_pid" 2>/dev/null || true
+        touch "$TRIGGER_FILE" 2>/dev/null || true
         signaled_pids="${signaled_pids}${observer_pid} "
       fi
     fi
