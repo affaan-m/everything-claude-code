@@ -1,12 +1,12 @@
 ---
 name: hipaa-compliance
-description: A general-purpose compliance advisor for systems that store, process, or transmit Protected Health Information (PHI). Language and database-agnostic. Applies to any architecture.
+description: A general-purpose compliance advisor for systems that store, process, or transmit Protected Health Information (PHI). Language- and database-agnostic. Applies to any architecture.
 origin: ECC
 ---
 
 # HIPAA Compliance Skill
 
-Activates automatically when detecting healthcare context — patient records, medical data, health identifiers, clinical systems, EHR/EMR, insurance data, or any mention of HIPAA, PHI, or HL7/FHIR. Also activates when the user explicitly asks about HIPAA compliance. Use this skill whenever building, reviewing, or designing any system that may touch sensitive health data, even if HIPAA is not explicitly mentioned. Produces compliance checklists, architecture guidance, and tiered anti-pattern warnings (warn for minor issues, block for critical ones). A general-purpose compliance advisor for systems that store, process, or transmit Protected Health Information (PHI). Language- and database-agnostic. Applies to any architecture.
+Activates automatically when detecting healthcare context — patient records, medical data, health identifiers, clinical systems, EHR/EMR, insurance data, or any mention of HIPAA, PHI, or HL7/FHIR. Also activates when the user explicitly asks about HIPAA compliance. Use this skill whenever building, reviewing, or designing any system that may touch sensitive health data, even if HIPAA is not explicitly mentioned. Produces compliance checklists, architecture guidance, and tiered anti-pattern warnings (warn for minor issues, block for critical ones).
 
 ---
 
