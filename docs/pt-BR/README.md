@@ -16,7 +16,7 @@
 ![Java](https://img.shields.io/badge/-Java-ED8B00?logo=openjdk&logoColor=white)
 ![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown&logoColor=white)
 
-> **50K+ estrelas** | **6K+ forks** | **30 contribuidores** | **6 idiomas suportados** | **Vencedor do Hackathon Anthropic**
+> **50K+ estrelas** | **6K+ forks** | **30 contribuidores** | **7 idiomas suportados** | **Vencedor do Hackathon Anthropic**
 
 ---
 
