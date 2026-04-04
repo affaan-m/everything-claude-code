@@ -1047,8 +1047,8 @@ Codex macOS app:
 |-----------|-------|---------|
 | Config | 1 | `.codex/config.toml` — top-level approvals/sandbox/web_search, MCP servers, notifications, profiles |
 | AGENTS.md | 2 | Root (universal) + `.codex/AGENTS.md` (Codex-specific supplement) |
-| Skills | 16 | `.agents/skills/` — SKILL.md + agents/openai.yaml per skill |
-| MCP Servers | 6 | Supabase, Playwright, Context7, GitHub, Memory, Sequential Thinking (auto-merged via add-only sync) |
+| Skills | 30 | `.agents/skills/` — SKILL.md + agents/openai.yaml per skill |
+| MCP Servers | 6 | GitHub, Context7, Exa, Memory, Playwright, Sequential Thinking (7 with Supabase via `--update-mcp` sync) |
 | Profiles | 2 | `strict` (read-only sandbox) and `yolo` (full auto-approve) |
 | Agent Roles | 3 | `.codex/agents/` — explorer, reviewer, docs-researcher |
 
@@ -1058,22 +1058,36 @@ Skills at `.agents/skills/` are auto-loaded by Codex:
 
 | Skill | Description |
 |-------|-------------|
-| tdd-workflow | Test-driven development with 80%+ coverage |
-| security-review | Comprehensive security checklist |
-| coding-standards | Universal coding standards |
-| frontend-patterns | React/Next.js patterns |
-| frontend-slides | HTML presentations, PPTX conversion, visual style exploration |
+| api-design | REST API design patterns |
 | article-writing | Long-form writing from notes and voice references |
-| content-engine | Platform-native social content and repurposing |
-| market-research | Source-attributed market and competitor research |
-| investor-materials | Decks, memos, models, and one-pagers |
-| investor-outreach | Personalized outreach, follow-ups, and intro blurbs |
 | backend-patterns | API design, database, caching |
+| brand-voice | Source-derived writing style profiles from real content |
+| bun-runtime | Bun as runtime, package manager, bundler, and test runner |
+| claude-api | Anthropic Claude API patterns for Python and TypeScript |
+| coding-standards | Universal coding standards |
+| content-engine | Platform-native social content and repurposing |
+| crosspost | Multi-platform content distribution across X, LinkedIn, Threads |
+| deep-research | Multi-source research with synthesis and source attribution |
+| dmux-workflows | Multi-agent orchestration using tmux pane manager |
+| documentation-lookup | Up-to-date library and framework docs via Context7 MCP |
 | e2e-testing | Playwright E2E tests |
 | eval-harness | Eval-driven development |
+| everything-claude-code | Development conventions and patterns for the project |
+| exa-search | Neural search via Exa MCP for web, code, company research |
+| fal-ai-media | Unified media generation for images, video, and audio |
+| frontend-patterns | React/Next.js patterns |
+| frontend-slides | HTML presentations, PPTX conversion, visual style exploration |
+| investor-materials | Decks, memos, models, and one-pagers |
+| investor-outreach | Personalized outreach, follow-ups, and intro blurbs |
+| market-research | Source-attributed market and competitor research |
+| mcp-server-patterns | Build MCP servers with Node/TypeScript SDK |
+| nextjs-turbopack | Next.js 16+ and Turbopack incremental bundling |
+| security-review | Comprehensive security checklist |
 | strategic-compact | Context management |
-| api-design | REST API design patterns |
+| tdd-workflow | Test-driven development with 80%+ coverage |
 | verification-loop | Build, test, lint, typecheck, security |
+| video-editing | AI-assisted video editing workflows with FFmpeg and Remotion |
+| x-api | X/Twitter API integration for posting and analytics |
 
 ### Key Limitation
 
@@ -1081,7 +1095,7 @@ Codex does **not yet provide Claude-style hook execution parity**. ECC enforceme
 
 ### Multi-Agent Support
 
-Current Codex builds support experimental multi-agent workflows.
+Current Codex builds support stable multi-agent workflows.
 
 - Enable `features.multi_agent = true` in `.codex/config.toml`
 - Define roles under `[agents.<name>]`
