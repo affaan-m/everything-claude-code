@@ -329,3 +329,4 @@ Safe patterns:
 
 - `architecture-decision-records` — record HIPAA-relevant architectural decisions as ADRs
 - `api-design` — apply minimum necessary and secure design to API contracts
+- `healthcare-phi-compliance` — PHI/PII compliance patterns (RLS, schema tagging, multi-framework coverage including DISHA and GDPR)
