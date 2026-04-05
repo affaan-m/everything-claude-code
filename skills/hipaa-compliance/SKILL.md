@@ -222,12 +222,9 @@ Request → AuthN (who are you?) → AuthZ (are you allowed this record?) → PH
 
 ### 2. Application Logging
 
-- **Non-Compliant:** `python
-logger.info(f"User {patient_name} updated their prescription for {medication_name}")`
-
-- **Compliant:** `python
-logger.info(f"User {user_id} updated a record in the 'Prescriptions' table")`
-  _Note: The specific health data is kept in the encrypted database, not the plaintext application logs._
+- **Non-Compliant:**
+  ```python
+  logger.info(f"User {patient_name} updated their prescription for {medication_name}")
 
 ---
 
