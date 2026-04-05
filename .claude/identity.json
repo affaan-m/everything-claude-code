@@ -2,7 +2,7 @@
   "version": "2.0",
   "technicalLevel": "technical",
   "preferredStyle": {
-    "verbosity": "minimal",
+    "verbosity": "detailed",
     "codeComments": true,
     "explanations": true
   },
@@ -10,5 +10,5 @@
     "javascript"
   ],
   "suggestedBy": "ecc-tools-repo-analysis",
-  "createdAt": "2026-03-20T12:07:57.119Z"
+  "createdAt": "2026-04-05T20:55:22.133Z"
 }
