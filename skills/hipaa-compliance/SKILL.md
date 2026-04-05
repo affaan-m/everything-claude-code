@@ -218,7 +218,7 @@ Request → AuthN (who are you?) → AuthZ (are you allowed this record?) → PH
 ### 1. Data Analysis (Compliant vs. Non-Compliant)
 
 - **Non-Compliant:** A data analyst downloads a CSV containing patient names and heart rates to their local machine to run a Python script.
-- **Compliant:** The analyst uses a **Safe Harbor** dataset where names have been replaced with randomized UUIDs, and the analysis is performed within a SOC2/HIPAA-certified cloud environment (e.g., AWS Nitro Enclave or Google Cloud Healthcare API).
+- **Compliant:** The analyst uses a de-identified dataset that satisfies HIPAA Safe Harbor (all 18 identifiers removed, or expert determination documented), and performs analysis only in a HIPAA-eligible environment with a signed BAA and appropriate access/audit controls.
 
 ### 2. Application Logging
 
