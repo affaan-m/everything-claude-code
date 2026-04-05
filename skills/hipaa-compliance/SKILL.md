@@ -128,7 +128,7 @@ Run this when building anything that touches PHI:
 - [ ] Log records include: user/service ID, action, resource ID, timestamp
 - [ ] No PHI values appear in log output (log IDs and events, not content)
 - [ ] Audit logs are immutable and stored separately from application logs
-- [ ] Log retention meets the 6-year HIPAA requirement
+- [ ] Log retention follows applicable state laws and organizational data retention policies.
 
 **Third Parties**
 
@@ -223,8 +223,18 @@ Request → AuthN (who are you?) → AuthZ (are you allowed this record?) → PH
 ### 2. Application Logging
 
 - **Non-Compliant:**
+
   ```python
   logger.info(f"User {patient_name} updated their prescription for {medication_name}")
+  ```
+
+- **Compliant:**
+
+  ```python
+  logger.info(f"User {user_id} updated a record in the 'Prescriptions' table")
+  ```
+
+  _Note: The specific health data is kept in the encrypted database, not the plaintext application logs._
 
 ---
 
