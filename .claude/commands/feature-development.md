@@ -14,10 +14,7 @@ Standard feature implementation workflow
 
 ## Common Files
 
-- `manifests/*`
-- `schemas/*`
-- `**/*.test.*`
-- `**/api/**`
+- Inspect the files touched by the related commits before editing.
 
 ## Suggested Sequence
 
