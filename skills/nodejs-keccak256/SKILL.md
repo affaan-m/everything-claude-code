@@ -139,7 +139,7 @@ function pubkeyToAddress(pubkeyBytes: Uint8Array): string {
 
 ```bash
 # Find dangerous patterns — NIST SHA3 used where Keccak is needed
-grep -rn "createHash.*sha3" --include="*.ts" --include="*.js" .
+grep -rn "createHash.*sha3" --include="*.ts" --include="*.js" --exclude-dir=node_modules .
 
 # Confirm all ethereum hashing uses keccak
 grep -rn "keccak256" --include="*.ts" --include="*.js" . | grep -v node_modules
