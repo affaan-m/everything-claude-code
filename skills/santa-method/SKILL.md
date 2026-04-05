@@ -283,6 +283,9 @@ def santa_batch(items, rubric, sample_rate=0.15):
 | Eval Harness | Santa Method results feed eval metrics. Track pass@k across Santa runs to measure generator quality over time. |
 | Continuous Learning v2 | Santa findings become instincts. Repeated failures on the same criterion → learned behavior to avoid the pattern. |
 | Strategic Compact | Run Santa BEFORE compacting. Don't lose review context mid-verification. |
+| Council | Complementary. Council explores options BEFORE implementation; Santa verifies AFTER. |
+| Deep Review | Deep-review is per-commit quality (SAST + smart context + LLM). Santa is adversarial dual-model verification for high-stakes output. |
+| Design Review | Design-review validates plans; Santa validates implementations. Run design-review before coding, Santa after. |
 
 ## Metrics
 

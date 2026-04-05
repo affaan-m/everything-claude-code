@@ -124,3 +124,11 @@ Run: /verify
 
 This skill complements PostToolUse hooks but provides deeper verification.
 Hooks catch issues immediately; this skill provides comprehensive review.
+
+## Integration with Other Skills
+
+| Skill | Relationship |
+|-------|-------------|
+| Deep Review | Run verification-loop FIRST (build, lint, test, type-check). Deep-review runs SECOND (semantic LLM review with SAST and cross-file context). |
+| Santa Method | Verification-loop for deterministic checks; Santa for adversarial semantic verification. |
+| Design Review | Verification-loop checks code; design-review checks plans/specs. |
