@@ -8,14 +8,18 @@ origin: community
 
 Critical vulnerability patterns and fixes for Solidity AMM contracts, liquidity pools, and swap functions.
 
-## When to Activate
+## When to Use
 
 - Writing or auditing a Solidity AMM or liquidity pool contract
 - Implementing a swap function that holds token balances
 - Reviewing any contract that uses `token.balanceOf(address(this))` for share math
 - Adding admin functions (fee setters, pausers) to a DeFi contract
 
-## Critical Vulnerability Patterns
+## How It Works
+
+This skill provides a pattern library of common AMM vulnerabilities with corresponding safe implementations. Each pattern shows both the vulnerable and hardened code so you can identify and fix issues during code review or development.
+
+## Examples
 
 ### 1. Reentrancy — Always Use CEI Order
 
@@ -31,11 +35,13 @@ function withdraw(uint256 amount) external {
 **Safe (Checks → Effects → Interactions):**
 ```solidity
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+using SafeERC20 for IERC20;
 
 function withdraw(uint256 amount) external nonReentrant {
     require(balances[msg.sender] >= amount, "Insufficient");
-    balances[msg.sender] -= amount;    // Effect FIRST
-    token.transfer(msg.sender, amount); // Interaction LAST
+    balances[msg.sender] -= amount;                 // Effect FIRST
+    token.safeTransfer(msg.sender, amount);          // Interaction LAST (checked)
 }
 ```
 
@@ -46,19 +52,25 @@ Never write your own reentrancy guard — use OpenZeppelin or Solmate.
 Relying on `token.balanceOf(address(this))` for share math lets an attacker inflate the denominator by sending tokens directly to the contract, manipulating the share price.
 
 ```solidity
-// VULNERABLE: attacker donates tokens → inflates denominator → first depositor gets 0 shares
+// VULNERABLE: attacker pre-seeds balance via direct transfer, then first
+// legitimate depositor's (assets * totalShares) / inflatedBalance rounds
+// to 0 shares — attacker redeems to steal the deposit.
 function deposit(uint256 assets) external returns (uint256 shares) {
     shares = (assets * totalShares) / token.balanceOf(address(this));
 }
 
-// SAFE: track internal accounting separately from actual balance
+// SAFE: track internal accounting separately from actual balance;
+// use SafeERC20 and measure actual tokens received for fee-on-transfer safety.
 uint256 private _totalAssets;
 
-function deposit(uint256 assets) external returns (uint256 shares) {
-    shares = totalShares == 0 ? assets : (assets * totalShares) / _totalAssets;
-    _totalAssets += assets;
+function deposit(uint256 assets) external nonReentrant returns (uint256 shares) {
+    uint256 balBefore = token.balanceOf(address(this));
+    token.safeTransferFrom(msg.sender, address(this), assets);
+    uint256 received = token.balanceOf(address(this)) - balBefore;
+
+    shares = totalShares == 0 ? received : (received * totalShares) / _totalAssets;
+    _totalAssets += received;
     totalShares += shares;
-    token.transferFrom(msg.sender, address(this), assets);
 }
 ```
 
@@ -128,9 +140,11 @@ contract MyAMM is Ownable2Step {
 
 ## Security Checklist
 
-- [ ] All state-changing functions have `nonReentrant`
+- [ ] Reentrancy-exposed entrypoints (deposit, withdraw, swap) have `nonReentrant`
 - [ ] CEI order enforced: Checks → Effects → Interactions
-- [ ] No `token.balanceOf(this)` for share math (use internal accounting)
+- [ ] No `token.balanceOf(address(this))` for share math (use internal accounting)
+- [ ] ERC-20 transfers use `SafeERC20` (handles non-standard return values)
+- [ ] Deposits measure actual tokens received (fee-on-transfer safe)
 - [ ] Price oracle uses TWAP — not spot price
 - [ ] Every swap has `amountOutMin` and `deadline` params
 - [ ] Integer overflow safe (Solidity 0.8+ built-in checks + `FullMath` for mulDiv)

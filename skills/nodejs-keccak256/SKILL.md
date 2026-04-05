@@ -8,13 +8,13 @@ origin: community
 
 One of the most common silent bugs in Ethereum JavaScript tooling. Node.js `crypto` implements NIST SHA3, which **produces different output** than Ethereum's Keccak-256. No error is thrown — the hash just silently differs.
 
-## When to Activate
+## When to Use
 
 - Computing any hash for Ethereum: function selectors, event topics, EIP-712 type hashes, storage slot derivation, address-from-pubkey derivation
 - Writing or reviewing any code that calls `crypto.createHash('sha3-256')` for blockchain use
 - Verifying signatures, Merkle proofs, or on-chain commitments in JavaScript/TypeScript
 
-## The Problem
+## How It Works
 
 Ethereum was built on Keccak-256 — the **pre-standardization** version of SHA3. NIST later modified the padding before standardizing SHA3. The two algorithms produce different digests for the same input.
 
@@ -32,7 +32,7 @@ console.log(nistSha3 === keccak);  // false — SILENT MISMATCH
 
 **Impact:** wrong function selectors, broken storage slot reads, failed EIP-712 signature verification, incorrect Ethereum address derivation from public keys.
 
-## Correct Libraries
+## Examples
 
 ### ethers v6 (recommended)
 
@@ -51,7 +51,7 @@ const topic = id('Transfer(address,address,uint256)');
 // Equivalent of abi.encodePacked(...) in Solidity
 const packed = solidityPackedKeccak256(
     ['address', 'uint256'],
-    ['0x742d35Cc6634C0532925a3b8D4C9B5698', 100n]
+    ['0x742d35Cc6634C0532925a3b8D4C9B569890FaC1c', 100n]
 );
 ```
 
@@ -66,8 +66,16 @@ const hash = keccak256(toBytes('hello'));
 ### web3.js
 
 ```javascript
-const hash  = web3.utils.keccak256('hello');
-const hash2 = web3.utils.soliditySha3('hello');  // alias
+// web3.utils.keccak256 — the primary Keccak-256 function
+const hash = web3.utils.keccak256('hello');
+
+// web3.utils.soliditySha3 — NOT a plain alias for keccak256.
+// It applies Solidity's abi.encodePacked() before hashing,
+// so soliditySha3('hello') !== keccak256('hello') for typed inputs.
+const packed = web3.utils.soliditySha3(
+    { type: 'address', value: '0x742d35Cc6634C0532925a3b8D4C9B569890FaC1c' },
+    { type: 'uint256', value: '100' }
+);
 ```
 
 ### js-sha3 (lightweight, no framework)
@@ -130,9 +138,8 @@ function pubkeyToAddress(pubkeyBytes: Uint8Array): string {
 ## Audit Your Codebase
 
 ```bash
-# Find dangerous patterns — sha3 variants in Node.js crypto
+# Find dangerous patterns — NIST SHA3 used where Keccak is needed
 grep -rn "createHash.*sha3" --include="*.ts" --include="*.js" .
-grep -rn "createHash.*sha-256\b" --include="*.ts" --include="*.js" .
 
 # Confirm all ethereum hashing uses keccak
 grep -rn "keccak256" --include="*.ts" --include="*.js" . | grep -v node_modules

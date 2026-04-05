@@ -8,7 +8,7 @@ origin: community
 
 Silent decimal mismatches are one of the most common bugs in cross-chain DeFi bots and portfolio tools. They produce values that are 10^12 times wrong with no error thrown.
 
-## When to Activate
+## When to Use
 
 - Reading ERC-20 token balances in Python, TypeScript, or Solidity
 - Calculating USD values from on-chain balances
@@ -16,7 +16,7 @@ Silent decimal mismatches are one of the most common bugs in cross-chain DeFi bo
 - Handling bridged tokens (amounts may change precision at the bridge)
 - Building a portfolio tracker, trading bot, or DeFi aggregator
 
-## The Core Problem
+## How It Works
 
 Most developers assume USDC = 6 decimals. **This is wrong on BSC.**
 
@@ -29,9 +29,14 @@ Most developers assume USDC = 6 decimals. **This is wrong on BSC.**
 
 If you hardcode 6 decimals for BSC USDT, you'll read a $1,000 balance as `$0.000000001` — with no error.
 
-## Always Query Decimals at Runtime
+The fix is simple: always query `decimals()` from the contract at runtime, cache by `(chain_id, token_address)`, and use `Decimal` (not `float`) for financial math.
+
+## Examples
+
+### Always Query Decimals at Runtime
 
 ```python
+from decimal import Decimal
 from web3 import Web3
 
 ERC20_ABI = [
@@ -42,7 +47,7 @@ ERC20_ABI = [
      "outputs": [{"type": "uint256"}], "stateMutability": "view"},
 ]
 
-def get_token_balance(w3: Web3, token_address: str, wallet: str) -> float:
+def get_token_balance(w3: Web3, token_address: str, wallet: str) -> Decimal:
     contract = w3.eth.contract(
         address=Web3.to_checksum_address(token_address),
         abi=ERC20_ABI
@@ -51,15 +56,15 @@ def get_token_balance(w3: Web3, token_address: str, wallet: str) -> float:
     raw = contract.functions.balanceOf(
         Web3.to_checksum_address(wallet)
     ).call()
-    return raw / (10 ** decimals)
+    return Decimal(raw) / Decimal(10 ** decimals)
 
 # NEVER do this:
 # usdt_balance = raw / 1_000_000  # Hardcoded — breaks on BSC
 ```
 
-## Cache Decimals by (chain_id, token_address)
+### Cache Decimals by (chain_id, token_address)
 
-Decimals don't change — cache after first fetch to avoid repeated RPC calls:
+Decimals are set once at deploy time and are effectively immutable for standard ERC-20 tokens. Cache after first fetch to avoid repeated RPC calls. For long-running services, consider a TTL-based cache as a defensive measure against proxy upgrades:
 
 ```python
 from functools import lru_cache
@@ -74,33 +79,29 @@ def get_decimals(chain_id: int, token_address: str) -> int:
     return contract.functions.decimals().call()
 ```
 
-## Edge Cases
+### Edge Cases
 
-### Tokens with 0 Decimals
-Some NFT wrapper tokens or governance tokens are whole-number units. `decimals()` returning `0` is valid — don't treat it as a missing function or error.
+**Tokens with 0 Decimals:** Some NFT wrapper tokens or governance tokens are whole-number units. `decimals()` returning `0` is valid — the math `10 ** 0 == 1` handles it correctly:
 
 ```python
 decimals = contract.functions.decimals().call()
-divisor = 10 ** decimals if decimals > 0 else 1
-human_amount = raw / divisor
+human_amount = Decimal(raw) / Decimal(10 ** decimals)
 ```
 
-### Tokens Without `decimals()` (Old Tokens)
-Some early ERC-20 tokens don't implement `decimals()`. Wrap defensively:
+**Tokens Without `decimals()` (Old Tokens):** Some early ERC-20 tokens don't implement `decimals()`. Wrap defensively, but log a warning so the issue is visible:
 
 ```python
 try:
     decimals = contract.functions.decimals().call()
-except Exception:
+except ContractLogicError:
     import logging
-    logging.warning(f"No decimals() on {token_address}, defaulting to 18")
+    logging.warning(f"decimals() reverted on {token_address} (chain {chain_id}), defaulting to 18")
     decimals = 18
 ```
 
-### Bridged Tokens Change Precision
-A 6-decimal USDC bridged through an old bridge may emerge as 18-decimal on the destination. Always re-query decimals after a bridge — never assume they match the source chain.
+**Bridged Tokens Change Precision:** A 6-decimal USDC bridged through an old bridge may emerge as 18-decimal on the destination. Always re-query decimals after a bridge — never assume they match the source chain.
 
-## Solidity: Normalize to 18 Decimals (WAD)
+### Solidity: Normalize to 18 Decimals (WAD)
 
 When accepting arbitrary ERC-20 tokens in a Solidity contract, normalize to 18-decimal WAD internally:
 
@@ -117,7 +118,7 @@ function normalizeToWad(address token, uint256 amount) internal view returns (ui
 }
 ```
 
-## TypeScript (ethers.js)
+### TypeScript (ethers.js)
 
 ```typescript
 import { Contract, formatUnits } from 'ethers';
@@ -135,7 +136,7 @@ async function getBalance(provider: any, tokenAddress: string, wallet: string): 
 }
 ```
 
-## Quick Check via Cast
+### Quick Check via Cast
 
 ```bash
 # Check token decimals on any chain
