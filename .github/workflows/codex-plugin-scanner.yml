@@ -1,0 +1,36 @@
+name: Codex Plugin Scanner CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.codex-plugin/**'
+      - 'skills/**'
+      - '.mcp.json'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.codex-plugin/**'
+      - 'skills/**'
+      - '.mcp.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scanner-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: Plugin Scanner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
+
+      - name: Run scanner
+        uses: hashgraph-online/codex-plugin-scanner@b45d6b583afe05819b24edc8e6418c9ad2e1f1d0 # v1
+        with:
+          args: scan --fail-on critical
