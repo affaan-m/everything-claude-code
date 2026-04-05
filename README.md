@@ -559,16 +559,16 @@ Use `/security-scan` in Claude Code to run it, or add to CI with the [GitHub Act
 
 ### Continuous Improvement — Learning & Discipline Loop
 
-Structured self-improvement system with instinct-based learning (Mulahazah), MCP server, and GitHub Action for agent discipline scoring.
+Third-party structured self-improvement system with instinct-based learning (Mulahazah), MCP server, and GitHub Action for agent discipline scoring. Complements the built-in Continuous Learning v2 system with discipline metrics and GitHub Action integration.
 
 ```bash
-npm install continuous-improvement
+npm install -g continuous-improvement
 
-# Beginner mode: status, instincts, reflection
-claude-code --add-plugin continuous-improvement --mode beginner
+# Add to Claude Code:
+claude mcp add continuous-improvement
 
-# Expert mode: full learning system with dashboard, packs, linting
-claude-code --add-plugin continuous-improvement --mode expert --pack react
+# Or run directly with a starter pack (React, Python, or Go):
+continuous-improvement --mode beginner --pack react
 ```
 
 **What it does:**
