@@ -42,6 +42,7 @@
     ".codex/",
     ".cursor/",
     ".opencode/commands/",
+    ".opencode/dist/",
     ".opencode/instructions/",
     ".opencode/plugins/",
     ".opencode/prompts/",
@@ -103,6 +104,8 @@
   },
   "scripts": {
     "postinstall": "echo '\\n  ecc-universal installed!\\n  Run: npx ecc typescript\\n  Compat: npx ecc-install typescript\\n  Docs: https://github.com/affaan-m/everything-claude-code\\n'",
+    "build:opencode": "cd .opencode && npm install --ignore-scripts && npx tsc",
+    "prepublishOnly": "npm run build:opencode",
     "catalog:check": "node scripts/ci/catalog.js --text",
     "catalog:sync": "node scripts/ci/catalog.js --write --text",
     "lint": "eslint . && markdownlint '**/*.md' --ignore node_modules",
