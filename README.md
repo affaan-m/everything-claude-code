@@ -557,6 +557,38 @@ Use `/security-scan` in Claude Code to run it, or add to CI with the [GitHub Act
 
 [GitHub](https://github.com/affaan-m/agentshield) | [npm](https://www.npmjs.com/package/ecc-agentshield)
 
+### Continuous Improvement — Learning & Discipline Loop
+
+Structured self-improvement system with instinct-based learning (Mulahazah), MCP server, and GitHub Action for agent discipline scoring.
+
+```bash
+npm install continuous-improvement
+
+# Beginner mode: status, instincts, reflection
+claude-code --add-plugin continuous-improvement --mode beginner
+
+# Expert mode: full learning system with dashboard, packs, linting
+claude-code --add-plugin continuous-improvement --mode expert --pack react
+```
+
+**What it does:**
+- **Mulahazah learning** — Auto-capture observations from tool calls, learn patterns, suggest behaviors with confidence scoring (0.0-0.9)
+- **Discipline score** — GitHub Action linter analyzes agent transcripts for 7 Law compliance, detects research gaps, edit patterns, verification failures
+- **Dashboard** — Real-time instinct health with confidence distribution, stale detection, top performers
+- **Starter packs** — Pre-built instinct collections for React, Python, Go (24 instincts total)
+- **Zero dependencies** — Runs standalone, no network access, read-only hooks (<50ms)
+- **MCP tools** — `ci_status` (project overview), `ci_instincts` (learned behaviors), `ci_reflect` (session reflection), `ci_dashboard` (visual health), `ci_load_pack` (one-command pack install)
+
+**Use in CI/CD:**
+```yaml
+- uses: naimkatiman/continuous-improvement@v3.1.0
+  with:
+    transcript-path: ./observations.jsonl
+    strict: true
+```
+
+[GitHub](https://github.com/naimkatiman/continuous-improvement) | [npm](https://www.npmjs.com/package/continuous-improvement)
+
 ### Continuous Learning v2
 
 The instinct-based learning system automatically learns your patterns:
