@@ -173,7 +173,7 @@
     },
     "protect-mcp": {
       "command": "npx",
-      "args": ["-y", "protect-mcp", "serve"],
+      "args": ["-y", "protect-mcp@0.5.3", "serve"],
       "description": "Agent governance gateway — Cedar policy enforcement (allow/deny/rate-limit per tool) + Ed25519 signed receipts for every tool call. Shadow mode by default (log without blocking). Add --enforce flag to block policy violations. Setup: npx protect-mcp init-hooks"
     }
   },
