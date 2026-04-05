@@ -83,9 +83,10 @@ Spot price from a pool can be manipulated in the same block via flash loan. Alwa
 uint256 price = reserve0 / reserve1;  // Flash-loan manipulatable
 
 // SAFE: Uniswap V3 TWAP (30-minute window)
-(int56[] memory tickCumulatives,) = IUniswapV3Pool(pool).observe(
-    new uint32[](2) /* [1800, 0] */
-);
+uint32[] memory secondsAgos = new uint32[](2);
+secondsAgos[0] = 1800;  // 30 minutes ago
+secondsAgos[1] = 0;     // now
+(int56[] memory tickCumulatives,) = IUniswapV3Pool(pool).observe(secondsAgos);
 int24 twapTick = int24(
     (tickCumulatives[1] - tickCumulatives[0]) / int56(uint56(30 minutes))
 );
