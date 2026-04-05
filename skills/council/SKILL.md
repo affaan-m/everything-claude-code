@@ -1,10 +1,7 @@
 ---
 name: council
-description: >
-  Convene a 4-voice AI council for diverse perspectives on ambiguous decisions.
-  Use when the user wants multiple opinions on decisions, tradeoffs, design choices,
-  architecture strategy, or go/no-go calls. NOT for code review (use santa-method),
-  implementation planning (use planner), or system design (use architect).
+description: "Convene a 4-voice AI council for diverse perspectives on ambiguous decisions, tradeoffs, and go/no-go calls. NOT for code review, implementation planning, or system design."
+origin: community
 ---
 
 # Council
@@ -27,7 +24,7 @@ Invoke council when:
 | Verifying output quality (pass/fail) | **santa-method** — dual independent review with convergence loop |
 | Breaking a feature into implementation steps | **planner** — step-by-step implementation plan |
 | Designing system architecture | **architect** — component design, data flow, scalability |
-| Reviewing code for bugs/security | **code-reviewer** or language-specific reviewer agents |
+| Reviewing code for bugs/security | **code-reviewer** (quality review) or **santa-method** (adversarial pass/fail verification) |
 | Simple factual questions | Just answer directly |
 | Clear tasks with obvious solutions | Just do the task |
 
@@ -44,7 +41,7 @@ Council is for **decisions under ambiguity**, not for tasks with deterministic a
 
 All three external voices are fresh Agent subagents with **zero conversation context**. They receive only the question and optional code/context snippets. This is the core anti-anchoring mechanism: they see what the in-context Architect has stopped noticing due to conversational drift.
 
-## Process
+## How It Works
 
 ### Step 1: Extract the Question
 
@@ -210,7 +207,7 @@ After presenting the verdict, evaluate whether the council produced a **recommen
 - Dissent was noted but didn't change the recommendation
 - The council was informational only (no decision at stake)
 
-**When the filter triggers**, write a lesson to `~/.claude/notes/lesson-council-{YYYY-MM-DD}-{slug}.md`:
+**When the filter triggers**, write a lesson to `~/.claude/notes/lesson-council-{YYYY-MM-DD}-{slug}.md` where `{slug}` is derived from the first 3-5 words of the decision question, lowercased and hyphenated (e.g., "Should we use Redis?" becomes `should-we-use-redis`). If the filename already exists, append `-2`, `-3`, etc.:
 
 ```markdown
 ---
@@ -231,6 +228,20 @@ last_validated: "{YYYY-MM-DD}"
 ```
 
 Add a one-line pointer to `~/.claude/notes/NOTES.md`. Keep the lesson under 150 words.
+
+## Examples
+
+**Good council questions:**
+- "Should we use a monorepo or polyrepo for this project?"
+- "Is it worth migrating from REST to GraphQL given our team size?"
+- "Should we ship this feature behind a flag or wait for full implementation?"
+- "Redis vs PostgreSQL for our caching layer — what are the tradeoffs?"
+
+**Bad council questions (use other tools instead):**
+- "Review this PR for bugs" → use **code-reviewer**
+- "Break this feature into implementation steps" → use **planner**
+- "Design the database schema" → use **architect**
+- "Is this code correct?" → use **santa-method**
 
 ## Integration
 
