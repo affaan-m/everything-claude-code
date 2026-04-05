@@ -1,0 +1,10 @@
+# Pre-existing issues in docs — not checked by CI
+docs/
+the-security-guide.md
+SECURITY.md
+README.md
+README.zh-CN.md
+CHANGELOG.md
+CONTRIBUTING.md
+SPONSORS.md
+SPONSORING.md
