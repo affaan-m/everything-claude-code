@@ -154,5 +154,5 @@ grep -rn "keccak256" --include="*.ts" --include="*.js" . | grep -v node_modules
 | EIP-712 type hash | `keccak256(toUtf8Bytes(typeString))` |
 | Merkle leaf | `keccak256(abiCoder.encode([...], [...]))` |
 | Storage slot (mapping) | `keccak256(abiCoder.encode(['key_type','uint256'], [key, slot]))` |
-| Address from pubkey | `keccak256(pubkeyBytes.slice(1)).slice(-40)` |
+| Address from pubkey | `'0x' + keccak256(pubkeyBytes.slice(1)).slice(-40)` |
 | **NEVER for Ethereum** | `crypto.createHash('sha3-256')` |

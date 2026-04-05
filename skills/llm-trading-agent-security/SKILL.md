@@ -79,19 +79,19 @@ Never submit a transaction the agent hasn't seen simulated successfully:
 class SlippageError(Exception):
     pass
 
-async def safe_execute(self, tx: dict) -> str:
+async def safe_execute(self, tx: dict, expected_min_out: int | None = None) -> str:
     # 1. Simulate
     sim_result = await self.w3.eth.call(tx)
 
     # 2. Validate simulated output — require min_amount_out (no silent bypass)
-    min_out = tx.get('min_amount_out')
+    min_out = expected_min_out
     if min_out is None:
         raise ValueError("min_amount_out is required — refusing to send without slippage bound")
     actual_out = decode_uint256(sim_result)
     if actual_out < min_out:
         raise SlippageError(f"Simulation: {actual_out} < {min_out}")
 
-    # 3. Only then send
+    # 3. Only then send (tx dict contains only RPC-valid fields)
     signed = self.account.sign_transaction(tx)
     return await self.w3.eth.send_raw_transaction(signed.raw_transaction)
 ```

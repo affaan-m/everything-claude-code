@@ -93,7 +93,7 @@ human_amount = Decimal(raw) / Decimal(10 ** decimals)
 ```python
 try:
     decimals = contract.functions.decimals().call()
-except ContractLogicError:
+except Exception as e:  # web3.exceptions.ContractLogicError or similar
     import logging
     logging.warning(f"decimals() reverted on {token_address} (chain {chain_id}), defaulting to 18")
     decimals = 18

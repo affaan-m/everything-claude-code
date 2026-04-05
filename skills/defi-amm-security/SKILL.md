@@ -84,7 +84,7 @@ uint256 price = reserve0 / reserve1;  // Flash-loan manipulatable
 
 // SAFE: Uniswap V3 TWAP (30-minute window)
 (int56[] memory tickCumulatives,) = IUniswapV3Pool(pool).observe(
-    buildSecondsAgos(30 minutes)
+    new uint32[](2) /* [1800, 0] */
 );
 int24 twapTick = int24(
     (tickCumulatives[1] - tickCumulatives[0]) / int56(uint56(30 minutes))
