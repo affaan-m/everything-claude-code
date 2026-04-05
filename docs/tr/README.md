@@ -391,8 +391,8 @@ Her component tamamen bağımsızdır.
 <summary><b>Bu Cursor / OpenCode / Codex / Antigravity ile çalışır mı?</b></summary>
 
 Evet. ECC çapraz platformdur:
-- **Cursor**: `.cursor/` içinde önceden çevrilmiş config'ler. [Cursor IDE Desteği](#cursor-ide-desteği) bölümüne bakın.
-- **OpenCode**: `.opencode/` içinde tam plugin desteği. [OpenCode Desteği](#-opencode-desteği) bölümüne bakın.
+- **Cursor**: `.cursor/` içinde önceden çevrilmiş config'ler. [Cursor IDE Desteği](../../README.md#cursor-ide-support) bölümüne bakın.
+- **OpenCode**: `.opencode/` içinde tam plugin desteği. [OpenCode Desteği](../../README.md#opencode-support) bölümüne bakın.
 - **Codex**: macOS app ve CLI için birinci sınıf destek. PR [#257](https://github.com/affaan-m/everything-claude-code/pull/257)'ye bakın.
 - **Antigravity**: İş akışları, skill'ler ve `.agent/` içinde düzleştirilmiş rule'lar için sıkı entegre kurulum.
 - **Claude Code**: Native — bu birincil hedeftir.

@@ -14,7 +14,7 @@ If you discover a security vulnerability in ECC, please report it responsibly.
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
-Instead, email **security@ecc.tools** with:
+Instead, email **<security@ecc.tools>** with:
 
 - A description of the vulnerability
 - Steps to reproduce

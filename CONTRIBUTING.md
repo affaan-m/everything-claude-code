@@ -73,7 +73,7 @@ git add . && git commit -m "feat: add my-skill" && git push -u origin feat/my-co
 
 Skills are knowledge modules that Claude Code loads based on context.
 
-> ** Comprehensive Guide:** For detailed guidance on creating effective skills, see [Skill Development Guide](docs/SKILL-DEVELOPMENT-GUIDE.md). It covers:
+> **Comprehensive Guide:** For detailed guidance on creating effective skills, see [Skill Development Guide](docs/SKILL-DEVELOPMENT-GUIDE.md). It covers:
 > - Skill architecture and categories
 > - Writing effective content with examples
 > - Best practices and common patterns

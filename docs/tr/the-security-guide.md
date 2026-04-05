@@ -447,7 +447,7 @@ Kurulumunuzu tarayın: [github.com/affaan-m/agentshield](https://github.com/affa
 Önceki kılavuzları okumadıysanız, buradan başlayın:
 
 > [Claude Code'un Her Şeyine Dair Kısa Kılavuz](https://x.com/affaanmustafa/status/2012378465664745795)
-
+>
 > [Claude Code'un Her Şeyine Dair Uzun Kılavuz](https://x.com/affaanmustafa/status/2014040193557471352)
 
 gidip yapın ve ayrıca bu repo'ları kaydedin:
