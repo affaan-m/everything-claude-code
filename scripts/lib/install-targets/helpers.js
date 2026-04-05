@@ -2,6 +2,37 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
+/**
+ * Maps platform-specific source path prefixes to the install target that owns them.
+ * Paths matching a foreign platform's prefix are excluded during install planning
+ * so that, e.g., `.cursor/` files are not copied into `~/.codex/`.
+ */
+const PLATFORM_SOURCE_PATH_OWNERS = Object.freeze({
+  '.claude-plugin': 'claude',
+  '.codex': 'codex',
+  '.cursor': 'cursor',
+  '.gemini': 'gemini',
+  '.opencode': 'opencode',
+  '.codebuddy': 'codebuddy',
+});
+
+/**
+ * Returns true when `sourceRelativePath` belongs to a platform other than
+ * `adapterTarget`.  Shared paths (e.g. `mcp-configs`, `scripts/`) are never
+ * considered foreign.
+ */
+function isForeignPlatformPath(sourceRelativePath, adapterTarget) {
+  const normalizedPath = normalizeRelativePath(sourceRelativePath);
+
+  for (const [prefix, ownerTarget] of Object.entries(PLATFORM_SOURCE_PATH_OWNERS)) {
+    if (normalizedPath === prefix || normalizedPath.startsWith(`${prefix}/`)) {
+      return ownerTarget !== adapterTarget;
+    }
+  }
+
+  return false;
+}
+
 function normalizeRelativePath(relativePath) {
   return String(relativePath || '')
     .replace(/\\/g, '/')
@@ -260,21 +291,25 @@ function createInstallTargetAdapter(config) {
       if (Array.isArray(input.modules)) {
         return input.modules.flatMap(module => {
           const paths = Array.isArray(module.paths) ? module.paths : [];
-          return paths.map(sourceRelativePath => adapter.createScaffoldOperation(
-            module.id,
-            sourceRelativePath,
-            input
-          ));
+          return paths
+            .filter(p => !isForeignPlatformPath(p, config.target))
+            .map(sourceRelativePath => adapter.createScaffoldOperation(
+              module.id,
+              sourceRelativePath,
+              input
+            ));
         });
       }
 
       const module = input.module || {};
       const paths = Array.isArray(module.paths) ? module.paths : [];
-      return paths.map(sourceRelativePath => adapter.createScaffoldOperation(
-        module.id,
-        sourceRelativePath,
-        input
-      ));
+      return paths
+        .filter(p => !isForeignPlatformPath(p, config.target))
+        .map(sourceRelativePath => adapter.createScaffoldOperation(
+          module.id,
+          sourceRelativePath,
+          input
+        ));
     },
     supportsModule(module, input = {}) {
       if (typeof config.supportsModule === 'function') {
@@ -310,5 +345,6 @@ module.exports = {
   ),
   createNamespacedFlatRuleOperations,
   createRemappedOperation,
+  isForeignPlatformPath,
   normalizeRelativePath,
 };

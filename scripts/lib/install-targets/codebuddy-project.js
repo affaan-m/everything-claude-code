@@ -3,6 +3,7 @@ const path = require('path');
 const {
   createFlatRuleOperations,
   createInstallTargetAdapter,
+  isForeignPlatformPath,
 } = require('./helpers');
 
 module.exports = createInstallTargetAdapter({
@@ -30,7 +31,9 @@ module.exports = createInstallTargetAdapter({
 
     return modules.flatMap(module => {
       const paths = Array.isArray(module.paths) ? module.paths : [];
-      return paths.flatMap(sourceRelativePath => {
+      return paths
+        .filter(p => !isForeignPlatformPath(p, 'codebuddy'))
+        .flatMap(sourceRelativePath => {
         if (sourceRelativePath === 'rules') {
           return createFlatRuleOperations({
             moduleId: module.id,
