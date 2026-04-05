@@ -32,7 +32,7 @@ module.exports = createInstallTargetAdapter({
     return modules.flatMap(module => {
       const paths = Array.isArray(module.paths) ? module.paths : [];
       return paths
-        .filter(p => !isForeignPlatformPath(p, 'codebuddy'))
+        .filter(p => !isForeignPlatformPath(p, adapter.target))
         .flatMap(sourceRelativePath => {
         if (sourceRelativePath === 'rules') {
           return createFlatRuleOperations({
