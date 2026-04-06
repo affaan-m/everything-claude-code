@@ -101,7 +101,7 @@ npm test  # or pytest, cargo test, go test, etc.
 git diff HEAD~1 -- "*.test.*" "*.spec.*"
 
 # Verify no secrets were introduced
-grep -rn "sk-\|pk_\|AKIA\|password\s*=" src/ --include="*.ts" --include="*.py"
+grep -E -rn "sk-|pk_|AKIA|password[[:space:]]*=" src/ --include="*.ts" --include="*.py"
 ```
 
 **Never mark a task done without running verification commands.** An agent saying "done" is not evidence — test output is evidence.
