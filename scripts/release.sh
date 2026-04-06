@@ -74,6 +74,13 @@ update_version "$PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSIO
 update_version "$MARKETPLACE_JSON" "0,/\"version\": *\"[^\"]*\"/s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_version "$OPENCODE_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 
+# Build OpenCode dist and verify npm pack payload before tagging
+echo "Building OpenCode dist..."
+node scripts/build-opencode.js
+echo "Verifying npm pack payload..."
+node tests/scripts/build-opencode.test.js
+echo "Build verification passed."
+
 # Stage, commit, tag, and push
 git add "$ROOT_PACKAGE_JSON" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$OPENCODE_PACKAGE_JSON"
 git commit -m "chore: bump plugin version to $VERSION"
