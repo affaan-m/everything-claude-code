@@ -41,6 +41,9 @@ Hoạt động trên **Claude Code**, **Codex**, **Cursor**, **OpenCode**, **Gem
 **Thương hiệu hiện tại:** EraGenAI  
 **Tác giả bảo trì:** NhuanLT
 
+**Tài liệu tiếng Việt (tổng quan chức năng + cách dùng với Claude/GPT):**  
+[`docs/vi-VN/FRAMEWORK-OVERVIEW.md`](docs/vi-VN/FRAMEWORK-OVERVIEW.md)
+
 ---
 
 ## The Guides
