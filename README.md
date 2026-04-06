@@ -1389,6 +1389,18 @@ These configs work for my workflow. You should:
 
 ---
 
+## Community Projects
+
+Projects built on or inspired by Everything Claude Code:
+
+| Project | Description |
+|---------|-------------|
+| [EVC](https://github.com/SaigonXIII/evc) | Marketing agent workspace — 42 commands for content operators, brand governance, and multi-channel publishing. [Visual overview](https://saigonxiii.github.io/evc). |
+
+*Built something with ECC? Open a PR to add it here.*
+
+---
+
 ## Sponsors
 
 This project is free and open source. Sponsors help keep it maintained and growing.
