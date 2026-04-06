@@ -62,7 +62,7 @@ sqlite3 -header -column ~/.claude-cost-tracker/usage.db "
 ```bash
 sqlite3 -header -column ~/.claude-cost-tracker/usage.db "
   SELECT project, ROUND(SUM(cost_usd), 4) as cost, COUNT(*) as calls
-  FROM usage GROUP BY project ORDER BY cost DESC LIMIT 20;
+  FROM usage GROUP BY project ORDER BY cost DESC;
 "
 ```
 
@@ -87,7 +87,7 @@ sqlite3 -header -column ~/.claude-cost-tracker/usage.db "
 Present the results as a formatted report with:
 
 1. **Summary** -- today's spend, yesterday's spend, trend direction (up/down), total spend
-2. **By Project** -- top 20 projects ranked by cost
+2. **By Project** -- table of projects ranked by cost
 3. **By Tool** -- table of tools ranked by cost
 4. **Last 7 Days** -- daily cost trend
 
