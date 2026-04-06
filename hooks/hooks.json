@@ -84,7 +84,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags-shell.sh\" \"pre:observe\" \"skills/continuous-learning-v2/hooks/observe.sh\" \"standard,strict\"",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags-shell.js\" \"pre:observe\" \"skills/continuous-learning-v2/hooks/observe.sh\" \"standard,strict\"",
             "async": true,
             "timeout": 10
           }
@@ -277,7 +277,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags-shell.sh\" \"post:observe\" \"skills/continuous-learning-v2/hooks/observe.sh\" \"standard,strict\"",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags-shell.js\" \"post:observe\" \"skills/continuous-learning-v2/hooks/observe.sh\" \"standard,strict\"",
             "async": true,
             "timeout": 10
           }
