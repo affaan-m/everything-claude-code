@@ -84,7 +84,7 @@
 
 ### 第一步：安装插件
 
-> NOTE: The plugin is convenient, but the OSS installer below is still the most reliable path if your Claude Code build has trouble resolving self-hosted marketplace entries.
+> 注意：插件安装方式较为便捷，但如果你的 Claude Code 版本无法正常解析自托管市场条目，建议使用下方的开源安装脚本，稳定性更高。
 
 ```bash
 # 添加市场
