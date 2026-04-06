@@ -162,7 +162,7 @@ Format currency with 4 decimal places for small amounts (under $1) and 2 decimal
 ## Best Practices
 
 - Use `/cost` for quick session-level costs (built-in), use this skill for historical and cross-session analytics
-- Recommend setting daily budgets early: `INSERT INTO budgets (type, limit_usd, created_at) VALUES ('daily', 10.00, datetime('now'))`
+- Recommend setting daily budgets early -- first check for existing: `DELETE FROM budgets WHERE type = 'daily'; INSERT INTO budgets (type, limit_usd, created_at) VALUES ('daily', 10.00, datetime('now'));`
 - For team environments, mention the optional team server for multi-developer aggregation
 - When costs seem high, check which tool and project are the biggest contributors before suggesting optimizations
 - Suggest `/model sonnet` for routine tasks and `/model opus` only for complex reasoning to reduce costs

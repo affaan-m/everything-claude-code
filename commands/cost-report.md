@@ -62,7 +62,7 @@ sqlite3 -header -column ~/.claude-cost-tracker/usage.db "
 ```bash
 sqlite3 -header -column ~/.claude-cost-tracker/usage.db "
   SELECT project, ROUND(SUM(cost_usd), 4) as cost, COUNT(*) as calls
-  FROM usage GROUP BY project ORDER BY cost DESC;
+  FROM usage GROUP BY project ORDER BY cost DESC LIMIT 20;
 "
 ```
 
@@ -142,7 +142,7 @@ User: /cost-report csv
 Also run:
 
 ```bash
-sqlite3 -csv -header ~/.claude-cost-tracker/usage.db "SELECT * FROM usage ORDER BY timestamp DESC LIMIT 100;"
+sqlite3 -csv -header ~/.claude-cost-tracker/usage.db "SELECT timestamp, developer, project, tool_name, input_tokens, output_tokens, cost_usd, session_id, model FROM usage ORDER BY timestamp DESC LIMIT 100;"
 ```
 
 ## Integration with Other Commands
