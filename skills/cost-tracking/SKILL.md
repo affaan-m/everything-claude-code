@@ -8,7 +8,7 @@ origin: community
 
 Real-time token usage and cost analytics for Claude Code. Query a local SQLite database to report spending by developer, project, session, tool, and date -- with budget enforcement and multi-model pricing.
 
-## When to Activate
+## When to Use
 
 - User asks "how much have I spent?" or "what's my cost?"
 - User mentions budgets, spending limits, or cost overruns
@@ -16,25 +16,19 @@ Real-time token usage and cost analytics for Claude Code. Query a local SQLite d
 - User asks about token usage or model pricing
 - User wants a cost breakdown by tool, project, or date
 
-## Prerequisites
+## How It Works
 
-This skill requires the `claude-cost-tracker` plugin, which records token usage after every tool call via a PostToolUse hook.
+This skill queries a local SQLite database at `~/.claude-cost-tracker/usage.db`, populated by the `claude-cost-tracker` plugin. The plugin records token usage after every tool call via a PostToolUse hook.
 
-Install the plugin:
+### Prerequisites
+
+Install the plugin from the official directory:
 
 ```
 /plugin install claude-cost-tracker@claude-plugins-official
 ```
 
-Or from GitHub:
-
-```
-/plugin install https://github.com/MayurBhavsar/claude-cost-tracker-plugin
-```
-
-Data is stored locally at `~/.claude-cost-tracker/usage.db` (SQLite). If this file does not exist, tell the user the cost tracker is not set up and suggest installing the plugin.
-
-## Core Concepts
+If the database file does not exist, tell the user the cost tracker is not set up and suggest installing the plugin from the official directory.
 
 ### Database Schema
 
@@ -66,7 +60,7 @@ Supporting tables: `alerts` (spend thresholds), `budgets` (daily/weekly/monthly 
 | Opus 4.5 | $15.00 | $75.00 | $1.50 | $18.75 |
 | Haiku 4.5 | $0.80 | $4.00 | $0.08 | $1.00 |
 
-## Code Examples
+## Examples
 
 ### Quick Summary
 

@@ -5,7 +5,7 @@ argument-hint: [csv]
 
 # Cost Report
 
-Query the local cost tracking database and present a formatted spending report.
+Query the local cost-tracking database and present a formatted spending report.
 
 ## What This Command Does
 
@@ -26,16 +26,10 @@ Use `/cost-report` when:
 
 This command requires the `claude-cost-tracker` plugin to be installed and active. The plugin records token usage after every tool call via a PostToolUse hook.
 
-Install:
+Install from the official directory:
 
 ```
 /plugin install claude-cost-tracker@claude-plugins-official
-```
-
-Or from GitHub:
-
-```
-/plugin install https://github.com/MayurBhavsar/claude-cost-tracker-plugin
 ```
 
 ## How It Works
