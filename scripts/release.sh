@@ -68,18 +68,21 @@ update_version() {
   fi
 }
 
-# Update all shipped package/plugin manifests
-update_version "$ROOT_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
-update_version "$PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
-update_version "$MARKETPLACE_JSON" "0,/\"version\": *\"[^\"]*\"/s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
-update_version "$OPENCODE_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
-
-# Build OpenCode dist and verify npm pack payload before tagging
+# Build OpenCode dist and verify npm pack payload before touching manifests
 echo "Building OpenCode dist..."
 node scripts/build-opencode.js
 echo "Verifying npm pack payload..."
 node tests/scripts/build-opencode.test.js
 echo "Build verification passed."
+
+# Clean up build artifacts so working tree stays clean
+rm -rf .opencode/dist
+
+# Update all shipped package/plugin manifests
+update_version "$ROOT_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
+update_version "$PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
+update_version "$MARKETPLACE_JSON" "0,/\"version\": *\"[^\"]*\"/s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
+update_version "$OPENCODE_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 
 # Stage, commit, tag, and push
 git add "$ROOT_PACKAGE_JSON" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$OPENCODE_PACKAGE_JSON"
