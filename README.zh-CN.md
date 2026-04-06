@@ -790,7 +790,7 @@ node tests/hooks/hooks.test.js
 
 - **快速上手指南（入门首选）：** [Everything Claude Code 简明指南](https://x.com/affaanmustafa/status/2012378465664745795)
 - **长文指南（高阶进阶）：** [Everything Claude Code 完整版深度指南](https://x.com/affaanmustafa/status/2014040193557471352)
-- **安全指南：** [安全指南]() | [推文详解](https://x.com/affaanmustafa/status/2033263813387223421)
+- **安全指南：** [安全指南](./the-security-guide.md) | [推文详解](https://x.com/affaanmustafa/status/2033263813387223421)
 - **关注作者：** [@affaanmustafa](https://x.com/affaanmustafa)
 
 ---
