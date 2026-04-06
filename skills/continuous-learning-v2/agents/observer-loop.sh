@@ -183,6 +183,11 @@ PROMPT
     max_turns=20
   fi
 
+  # Read prompt content before cd to avoid Windows path mismatch (#1296).
+    # On Windows (Git Bash/MSYS2), mktemp returns a path that may differ from the MSYS-style
+      # path used by other tools after cd. Read content now, before cd, to avoid the mismatch.
+        prompt_content="$(cat "$prompt_file")"
+          rm -f "$prompt_file"
   # Ensure CWD is PROJECT_DIR so the relative analysis_relpath resolves correctly
   # on all platforms, not just when the observer happens to be launched from the project root.
   cd "$PROJECT_DIR" || { echo "[$(date)] Failed to cd to PROJECT_DIR ($PROJECT_DIR), skipping analysis" >> "$LOG_FILE"; rm -f "$prompt_file" "$analysis_file"; return; }
@@ -191,11 +196,9 @@ PROMPT
   # Pass prompt via -p flag instead of stdin redirect for Windows compatibility (#842).
   ECC_SKIP_OBSERVE=1 ECC_HOOK_PROFILE=minimal claude --model haiku --max-turns "$max_turns" --print \
     --allowedTools "Read,Write" \
-    -p "$(cat "$prompt_file")" >> "$LOG_FILE" 2>&1 &
+    -p "$prompt_content" >> "$LOG_FILE" 2>&1 &
   claude_pid=$!
-  # prompt_file content was already expanded by the shell; remove early to avoid
-  # leaving stale temp files during the (potentially long) analysis window.
-  rm -f "$prompt_file"
+    # prompt_file was already removed above (before cd) for cross-platform safety (#1296).
 
   (
     sleep "$timeout_seconds"
