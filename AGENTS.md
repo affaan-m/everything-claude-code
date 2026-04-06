@@ -40,6 +40,8 @@ This is a **production-ready AI coding plugin** providing 49 specialized agents,
 | harness-optimizer | Harness config tuning | Reliability, cost, throughput |
 | rust-reviewer | Rust code review | Rust projects |
 | rust-build-resolver | Rust build errors | Rust build failures |
+| swift-reviewer | Swift/iOS/macOS code review | Swift/Apple platform projects |
+| swift-build-resolver | Swift/Xcode/SPM build errors | Swift build failures |
 | pytorch-build-resolver | PyTorch runtime/CUDA/training errors | PyTorch build/training failures |
 | typescript-reviewer | TypeScript/JavaScript code review | TypeScript/JavaScript projects |
 

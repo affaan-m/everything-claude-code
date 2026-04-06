@@ -41,6 +41,8 @@
 | harness-optimizer | Harness 配置调优 | 可靠性、成本、吞吐量 |
 | rust-reviewer | Rust 代码审查 | Rust 项目 |
 | rust-build-resolver | Rust 构建错误 | Rust 构建失败 |
+| swift-reviewer | Swift/iOS/macOS 代码审查 | Swift/Apple 平台项目 |
+| swift-build-resolver | Swift/Xcode/SPM 构建错误 | Swift 构建失败 |
 | pytorch-build-resolver | PyTorch 运行时/CUDA/训练错误 | PyTorch 构建/训练失败 |
 | typescript-reviewer | TypeScript/JavaScript 代码审查 | TypeScript/JavaScript 项目 |
 

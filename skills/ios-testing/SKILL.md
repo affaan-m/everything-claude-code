@@ -17,7 +17,9 @@ Use this skill when:
 - Deciding how to mock dependencies in Swift
 - Reviewing test quality in an iOS codebase
 
-## Swift Testing (Preferred)
+## How It Works
+
+### Swift Testing (Preferred)
 
 Swift Testing (`import Testing`) is the modern test framework. Use it for all new tests.
 
@@ -113,7 +115,8 @@ protocol ProfileRepository: Sendable {
     func save(_ profile: Profile) async throws
 }
 
-// Test mock
+// Test mock — @unchecked Sendable is acceptable here because test mocks
+// are only accessed from a single test at a time (no concurrent mutation)
 final class MockProfileRepository: ProfileRepository, @unchecked Sendable {
     var profileToReturn: Profile?
     var errorToThrow: Error?
@@ -253,6 +256,7 @@ Use `swift-snapshot-testing` for visual regression:
 ```swift
 import SnapshotTesting
 import SwiftUI
+import Testing
 
 @Test("ProfileView renders correctly", .tags(.snapshot))
 func profileViewSnapshot() {
@@ -299,6 +303,10 @@ xcodebuild test -scheme MyApp -destination 'platform=iOS Simulator,name=iPhone 1
 ```
 
 Target: 80%+ on domain and ViewModel layers. UI tests cover critical flows, not pixel coverage.
+
+## Examples
+
+See code snippets throughout each section above — each pattern includes compilable Swift examples with both correct and incorrect usage.
 
 ## Anti-Patterns
 

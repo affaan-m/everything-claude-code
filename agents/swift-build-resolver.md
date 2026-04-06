@@ -23,7 +23,7 @@ Run these in order:
 
 ```bash
 swift build 2>&1
-swift test 2>&1 || echo "tests not runnable"
+swift test 2>&1
 swift package resolve 2>&1
 swiftlint lint --reporter json 2>&1 || echo "SwiftLint not configured"
 ```
@@ -32,7 +32,7 @@ For Xcode projects:
 
 ```bash
 xcodebuild -list 2>&1 | head -30
-xcodebuild -scheme <scheme> -destination 'platform=iOS Simulator,name=iPhone 16' build 2>&1 | tail -50
+xcodebuild -scheme "$SCHEME" -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16' build 2>&1 | tail -50
 ```
 
 ## Resolution Workflow
@@ -76,7 +76,7 @@ swift package update
 # Check for version conflicts
 swift package resolve 2>&1 | grep -i "error\|conflict\|incompatible"
 
-# Show available versions of a package
+# Show current package manifest dependencies
 swift package dump-package 2>/dev/null | grep -A2 "dependencies"
 ```
 

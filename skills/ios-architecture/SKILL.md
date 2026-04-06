@@ -16,7 +16,9 @@ Use this skill when:
 - Deciding how to structure navigation, dependencies, or data flow
 - Reviewing architecture decisions in an iOS codebase
 
-## Layered Architecture
+## How It Works
+
+### Layered Architecture
 
 ```
 ┌─────────────────────────────┐
@@ -192,7 +194,7 @@ final class AppCoordinator {
     enum Destination: Hashable {
         case profile(id: String)
         case settings
-        case detail(Item)
+        case detail(Item)  // Item must conform to Hashable
     }
 
     enum Sheet: Identifiable {
@@ -271,6 +273,10 @@ final class DependencyContainer {
     }
 }
 ```
+
+## Examples
+
+See code snippets throughout each section above for practical examples of MVVM, Clean Architecture, Coordinator, and DI patterns.
 
 ## Anti-Patterns
 
