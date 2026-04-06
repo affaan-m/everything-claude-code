@@ -576,7 +576,7 @@ Claude Code v2.1+ 会**按照约定自动加载**已安装插件中的 `hooks/ho
 > mkdir -p .claude/rules
 > cp -r everything-claude-code/rules/common .claude/rules/
 > cp -r everything-claude-code/rules/typescript .claude/rules/     # 选择你使用的技术栈
->```
+> ```
 
 ---
 
