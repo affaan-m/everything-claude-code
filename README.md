@@ -1,4 +1,4 @@
-**Ngôn ngữ:** [Tiếng Việt](docs/vi-VN/README.md) | [English](README.md) | [Português (Brasil)](docs/pt-BR/README.md) | [简体中文](README.zh-CN.md) | [繁體中文](docs/zh-TW/README.md) | [日本語](docs/ja-JP/README.md) | [한국어](docs/ko-KR/README.md) | [Türkçe](docs/tr/README.md)
+**Ngôn ngữ:** Tiếng Việt | [English](README.md) | [Português (Brasil)](docs/pt-BR/README.md) | [简体中文](README.zh-CN.md) | [繁體中文](docs/zh-TW/README.md) | [日本語](docs/ja-JP/README.md) | [한국어](docs/ko-KR/README.md) | [Türkçe](docs/tr/README.md)
 
 # EraGenAI
 
@@ -25,7 +25,7 @@
 
 **Ngôn ngữ / Language / 语言 / 語言 / Dil**
 
-[**Tiếng Việt**](docs/vi-VN/README.md) | [English](README.md) | [Português (Brasil)](docs/pt-BR/README.md) | [简体中文](README.zh-CN.md) | [繁體中文](docs/zh-TW/README.md) | [日本語](docs/ja-JP/README.md) | [한국어](docs/ko-KR/README.md)
+[**Tiếng Việt**](README.md) | [English](README.md) | [Português (Brasil)](docs/pt-BR/README.md) | [简体中文](README.zh-CN.md) | [繁體中文](docs/zh-TW/README.md) | [日本語](docs/ja-JP/README.md) | [한국어](docs/ko-KR/README.md)
  | [Türkçe](docs/tr/README.md)
 
 </div>
