@@ -104,7 +104,7 @@ function runTests() {
     assert.ok(result.includes('color: red is nice'), 'body color line preserved');
   })) passed++; else failed++;
 
-  if (test('removes color: at EOF without trailing newline', () => {
+  if (test('keeps color: at EOF when frontmatter is unclosed', () => {
     const input = '---\nname: test\ncolor: blue';
     // No trailing newline — frontmatter regex won't match without closing ---,
     // but key removal inside matched block should handle EOF
