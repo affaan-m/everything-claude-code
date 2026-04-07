@@ -106,10 +106,8 @@ function runTests() {
 
   if (test('keeps color: at EOF when frontmatter is unclosed', () => {
     const input = '---\nname: test\ncolor: blue';
-    // No trailing newline — frontmatter regex won't match without closing ---,
-    // but key removal inside matched block should handle EOF
+    // Unclosed frontmatter: adaptContent should return input unchanged (no transform expected)
     const result = adaptContent(input);
-    // If frontmatter is unclosed, no change expected — input returned as-is
     assert.strictEqual(result, input);
   })) passed++; else failed++;
 
