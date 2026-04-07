@@ -376,6 +376,10 @@ REDIS_URL = "redis://localhost:6379"
 
 [hook]
 on-activate = """
+  if [ ! -d "$FLOX_ENV_CACHE/pgdata" ]; then
+    initdb -D "$FLOX_ENV_CACHE/pgdata" --no-locale --encoding=UTF8
+  fi
+
   venv="$FLOX_ENV_CACHE/venv"
   if [ ! -d "$venv" ]; then
     uv venv "$venv" --python python3
@@ -454,9 +458,9 @@ flox search jq                    # Verify the package exists
 flox install jq                   # Install into project environment
 
 # Or for more control, edit the manifest directly
-flox list -c > /tmp/manifest.toml
-# Add the package to [install] section
-flox edit -f /tmp/manifest.toml
+flox list -c > "$(mktemp)"
+# Add the package to [install] section, then apply
+flox edit -f "$_"
 
 # Run a command with the tool available
 flox activate -- jq '.results[]' data.json
