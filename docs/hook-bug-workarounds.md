@@ -2,6 +2,8 @@
 
 > **Source**: Community-validated workarounds from issue #644 (v2.1.79, macOS, 8 hooks, Gmail/Google Drive MCP).
 
+> **See also**: [`docs/TROUBLESHOOTING.md`](./TROUBLESHOOTING.md) for general troubleshooting. This file documents advanced hook-specific bugs with detailed root-cause analysis.
+
 ---
 
 ## Bug 1: False "Hook Error" Labels (#34713, #10936, #10463)
@@ -58,14 +60,14 @@ Alternatively, use the structured wrapper format:
 
 ### Workaround
 
-Add a `PostCompact` hook that sends a notification reminding to toggle connectors OFF/ON:
+Add a `Stop` hook that sends a notification reminding to toggle connectors OFF/ON before the next session:
 
 ```json
 {
-  "PostCompact": [{
+  "Stop": [{
     "hooks": [{
       "type": "command",
-      "command": "osascript -e 'display notification \"MCP connectors may need re-auth\" with title \"Context Compacted\" sound name \"Glass\"' 2>/dev/null; cat > /dev/null"
+      "command": "osascript -e 'display notification \"MCP connectors may need re-auth\" with title \"Session Ended\" sound name \"Glass\"' 2>/dev/null; cat > /dev/null"
     }]
   }]
 }
@@ -84,9 +86,10 @@ Add a `PostCompact` hook that sends a notification reminding to toggle connector
 Create a custom `/reload` command using SIGHUP:
 
 ```markdown
-<!-- ~/.claude/commands/reload.md -->
 Run: `kill -HUP $PPID`
 ```
+
+> **Platform note**: SIGHUP (`kill -HUP`) is supported on macOS and Linux only. On Windows, use `taskkill /F /PID <pid>` and restart manually — there is no equivalent signal-based reload.
 
 Combine with a shell wrapper function that catches exit code `129` and restarts Claude with `-c` (continue) to preserve session context while reloading hooks from disk.
 
@@ -101,8 +104,7 @@ Combine with a shell wrapper function that catches exit code `129` and restarts 
 | Setting | Value | Effect |
 |---|---|---|
 | `ENABLE_TOOL_SEARCH` | `auto:5` | Defers MCP tool definitions, reducing tokens per request |
-| `subagentModel` | `haiku` | Routes subagents to separate capacity pool |
-| `SLASH_COMMAND_TOOL_CHAR_BUDGET` | `15000` | Limits skill expansion |
+| `CLAUDE_CODE_SUBAGENT_MODEL` | `haiku` | Routes subagents to separate capacity pool |
 | `MAX_THINKING_TOKENS` | `8000` | Caps thinking overhead |
 
 Also: prefer manual `/compact` at natural breakpoints instead of relying on auto-compaction.
@@ -112,8 +114,7 @@ Also: prefer manual `/compact` at natural breakpoints instead of relying on auto
 ## General Hook Recommendations
 
 1. **Document hook exit code semantics prominently**: `exit 0` = allow, `exit 1` = error (fail-open!), `exit 2` = block. Many users use `exit 1` thinking it blocks — it does not.
-2. **`PostCompact` is supported but undocumented** — add it to your hook config to handle post-compaction cleanup or notifications.
-3. **Consider a `--validate-hooks` CLI flag** to test hook scripts before deployment.
+2. **Consider a `--validate-hooks` CLI flag** to test hook scripts before deployment.
 
 ---
 
