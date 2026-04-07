@@ -313,10 +313,10 @@ on-activate = """
 ```toml
 # BAD — manifest is committed to git
 [vars]
-API_KEY = "sk-abc123secret"
+API_KEY = "<set-at-runtime>"
 
 # GOOD — reference external config or pass at runtime
-# Use: API_KEY=sk-abc123secret flox activate
+# Use: API_KEY="<your-api-key>" flox activate
 [vars]
 API_KEY = "${API_KEY:-}"
 ```
