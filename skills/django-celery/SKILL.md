@@ -300,12 +300,14 @@ from celery.signals import task_failure
 def on_task_failure(sender, task_id, exception, args, kwargs, traceback, einfo, **kw):
     """Log all task failures to Sentry / alerting."""
     import sentry_sdk
-    sentry_sdk.capture_exception(exception, extras={
-        'task': sender.name,
-        'task_id': task_id,
-        'args': args,
-        'kwargs': kwargs,
-    })
+    with sentry_sdk.new_scope() as scope:
+        scope.set_context('celery', {
+            'task': sender.name,
+            'task_id': task_id,
+            'args': args,
+            'kwargs': kwargs,
+        })
+        sentry_sdk.capture_exception(exception)
 ```
 
 ```python
@@ -346,7 +348,7 @@ class TestSendWelcomeEmail:
 
     @pytest.mark.django_db
     def test_sends_email_to_existing_user(self, user):
-        with patch('apps.notifications.tasks.EmailService') as mock_email:
+        with patch('apps.notifications.services.EmailService') as mock_email:
             send_welcome_email(user.pk)
             mock_email.send_welcome.assert_called_once_with(user)
 
@@ -366,7 +368,7 @@ CELERY_TASK_EAGER_PROPAGATES = True  # Re-raise exceptions from tasks
 # tests/test_integration.py
 @pytest.mark.django_db
 def test_registration_triggers_welcome_email(client):
-    with patch('apps.notifications.tasks.EmailService') as mock_email:
+    with patch('apps.notifications.services.EmailService') as mock_email:
         response = client.post('/api/users/', {
             'email': 'new@example.com',
             'password': 'strongpass123',
@@ -380,7 +382,7 @@ def test_registration_triggers_welcome_email(client):
 
 ```python
 @pytest.mark.django_db
-def test_task_retries_on_connection_error(self):
+def test_task_retries_on_connection_error():
     with patch('apps.crm.services.CRMClient.sync') as mock_sync:
         mock_sync.side_effect = ConnectionError('timeout')
 

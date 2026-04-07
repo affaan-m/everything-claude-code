@@ -12,7 +12,7 @@ When invoked:
 2. Run `python manage.py check` if a Django project is present
 3. Run `ruff check .` and `mypy .` if available
 4. Focus on modified `.py` files and any related migrations
-5. Begin review immediately
+5. Wait for CI checks to pass before beginning review; if checks are still running, note which checks are pending and proceed only after green
 
 ## Review Priorities
 
