@@ -458,9 +458,10 @@ flox search jq                    # Verify the package exists
 flox install jq                   # Install into project environment
 
 # Or for more control, edit the manifest directly
-flox list -c > "$(mktemp)"
+tmp_manifest="$(mktemp)"
+flox list -c > "$tmp_manifest"
 # Add the package to [install] section, then apply
-flox edit -f "$_"
+flox edit -f "$tmp_manifest"
 
 # Run a command with the tool available
 flox activate -- jq '.results[]' data.json
