@@ -32,6 +32,12 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Write triage config
+        env:
+          NOTION_TRIAGE_CONFIG_JSON: ${{ secrets.NOTION_TRIAGE_CONFIG_JSON }}
+        run: |
+          echo "$NOTION_TRIAGE_CONFIG_JSON" > scripts/lib/notion-triage-config.json
+
       - name: Run triage
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
