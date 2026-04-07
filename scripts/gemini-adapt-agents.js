@@ -41,7 +41,7 @@ function adaptContent(content) {
   let result = content;
 
   // Rewrite only the frontmatter block (first --- ... --- section)
-  result = result.replace(/^---\r?\n([\s\S]*?\r?\n)---/m, (block) => {
+  result = result.replace(/^---\r?\n([\s\S]*?\r?\n)---/, (block) => {
     let fm = block;
 
     // Convert tools array (quoted or unquoted)

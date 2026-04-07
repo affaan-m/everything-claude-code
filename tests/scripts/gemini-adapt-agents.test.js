@@ -109,8 +109,8 @@ function runTests() {
     // No trailing newline — frontmatter regex won't match without closing ---,
     // but key removal inside matched block should handle EOF
     const result = adaptContent(input);
-    // If frontmatter is unclosed, no change expected — just verify no crash
-    assert.strictEqual(typeof result, 'string');
+    // If frontmatter is unclosed, no change expected — input returned as-is
+    assert.strictEqual(result, input);
   })) passed++; else failed++;
 
   if (test('is idempotent — already-adapted content unchanged', () => {
