@@ -141,7 +141,8 @@ function runTests() {
   // CLI integration tests
 
   if (test('CLI errors on missing directory', () => {
-    const result = run(['/nonexistent/path/agents']);
+    const missingDir = path.join(os.tmpdir(), 'gaa-nonexistent-' + Date.now());
+    const result = run([missingDir]);
     assert.strictEqual(result.code, 1);
     assert.ok(result.stderr.includes('Directory not found'));
   })) passed++; else failed++;
