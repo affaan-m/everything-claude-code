@@ -156,6 +156,7 @@ public class ProcessingService {
 @RequiredArgsConstructor
 public class EventService {
     private final EventRepository eventRepository;
+    private final ObjectMapper objectMapper;
     
     public void createSuccessEvent(Object payload, String eventType) {
         Event event = new Event();

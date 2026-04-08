@@ -265,6 +265,9 @@ class BusinessRulesRouteTest {
   @InjectMock
   EventService eventService;
 
+  @InjectMock
+  DocumentValidator documentValidator;
+
   private BusinessRulesPayload testPayload;
 
   @BeforeEach
@@ -371,8 +374,8 @@ class BusinessRulesRouteTest {
       });
       camelContext.getRouteController().startRoute("document-processing");
       
-      // Mock validator to throw exception
-      when(eventService.validate(any())).thenThrow(new ValidationException("Invalid document"));
+      // Mock validator bean to throw exception
+      when(documentValidator.validate(any())).thenThrow(new ValidationException("Invalid document"));
       
       // ACT
       producerTemplate.sendBody("direct:process-document", testPayload);
