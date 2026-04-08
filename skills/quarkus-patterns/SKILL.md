@@ -40,6 +40,8 @@ public class As2ProcessingService {
         try (SafeAutoCloseable ignored = CustomLog.startScope(logContext)) {
             
             String structureIdPartner = logContext.get(As2Constants.STRUCTURE_ID);
+            String originalFileName = logContext.get(As2Constants.FILE_NAME);
+
             
             // Conditional flow logic
             boolean isChorusFlow = Boolean.parseBoolean(logContext.get(As2Constants.CHORUS_FLOW));
