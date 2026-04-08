@@ -52,7 +52,7 @@ metadata:
    * `go.mod` → Go
    * `pyproject.toml` / `requirements.txt` → Python
    * `Cargo.toml` → Rust
-   * `build.gradle` / `pom.xml` → Java / Kotlin / Spring Boot
+   * `build.gradle` / `pom.xml` → Java / Kotlin（然后检查构建文件中的`quarkus` → Quarkus，或`spring-boot` → Spring Boot）
    * `Package.swift` → Swift
    * `Gemfile` → Ruby
    * `composer.json` → PHP

@@ -68,7 +68,7 @@ Before analyzing the prompt, detect the current project context:
    - `go.mod` → Go
    - `pyproject.toml` / `requirements.txt` → Python
    - `Cargo.toml` → Rust
-   - `build.gradle` / `pom.xml` → Java / Kotlin / Spring Boot
+   - `build.gradle` / `pom.xml` → Java / Kotlin (then check for `quarkus` in build file → Quarkus, or `spring-boot` → Spring Boot)
    - `Package.swift` → Swift
    - `Gemfile` → Ruby
    - `composer.json` → PHP
