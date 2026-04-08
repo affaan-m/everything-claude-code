@@ -252,7 +252,7 @@ Stop and report if:
 ## Output Format
 
 ```text
-Framework: [SPRING|QUARKUS|UNKNOWN]
+Framework: [SPRING|QUARKUS|BOTH|UNKNOWN]
 [FIXED] src/main/java/com/example/service/PaymentService.java:87
 Error: cannot find symbol — symbol: class IdempotencyKey
 Fix: Added import com.example.domain.IdempotencyKey
