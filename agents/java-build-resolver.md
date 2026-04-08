@@ -170,6 +170,8 @@ grep -A5 "annotationProcessorPaths\|annotationProcessor" pom.xml build.gradle
 
 ## [QUARKUS] Quarkus Specific Commands
 
+### Maven
+
 ```bash
 # Verify Quarkus build augmentation
 ./mvnw quarkus:build -q
@@ -191,12 +193,39 @@ grep -A5 "annotationProcessorPaths\|annotationProcessor" pom.xml build.gradle
 
 # Debug build-time augmentation failures
 ./mvnw compile -X 2>&1 | grep -i "augment\|build step\|extension"
+```
 
+### Gradle
+
+```bash
+# Verify Quarkus build augmentation
+./gradlew quarkusBuild
+
+# Run in dev mode to surface runtime errors
+./gradlew quarkusDev
+
+# List installed extensions
+./gradlew listExtensions
+
+# Add a missing extension
+./gradlew addExtension --extensions="<extension-name>"
+
+# Check Quarkus dependency alignment
+./gradlew dependencies --configuration runtimeClasspath | grep "io.quarkus"
+
+# Verify native build prerequisites (GraalVM)
+./gradlew build -Dquarkus.native.enabled=true -x test 2>&1 | head -50
+```
+
+### Common (both build tools)
+
+```bash
 # Check for reflection issues (native image)
 grep -rn "@RegisterForReflection" src/main/java --include="*.java"
 
-# Verify CDI bean discovery
-./mvnw quarkus:dev 2>&1 | grep -i "bean\|unsatisfied\|ambiguous"
+# Verify CDI bean discovery (run dev mode first, then check output)
+# Maven: ./mvnw quarkus:dev | Gradle: ./gradlew quarkusDev
+# Then grep logs for: bean|unsatisfied|ambiguous
 ```
 
 ## Key Principles
