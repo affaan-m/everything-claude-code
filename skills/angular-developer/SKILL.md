@@ -1,13 +1,22 @@
 ---
 name: angular-developer
 description: Generates Angular code and provides architectural guidance. Trigger when creating projects, components, or services, or for best practices on reactivity (signals, linkedSignal, resource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, or CLI tooling.
-license: MIT
-metadata:
-  author: Copyright 2026 Google LLC
-  version: '1.0'
+origin: ECC
 ---
 
 # Angular Developer Guidelines
+
+## When to Activate
+
+- Working in any Angular project or codebase
+- Creating or scaffolding a new Angular project, application, or library
+- Generating components, services, directives, pipes, guards, or resolvers
+- Implementing reactivity with Angular Signals, `linkedSignal`, or `resource`
+- Working with Angular forms (signal forms, reactive forms, or template-driven)
+- Setting up dependency injection, routing, lazy loading, or route guards
+- Adding accessibility (ARIA), animations, or component styling
+- Writing or debugging Angular-specific tests (unit, component harness, E2E)
+- Configuring Angular CLI tooling or the Angular MCP server
 
 1. Always analyze the project's Angular version before providing guidance, as best practices and available features can vary significantly between versions. If creating a new project with Angular CLI, do not specify a version unless prompted by the user.
 
@@ -127,3 +136,19 @@ When working with Angular tooling, consult the following references:
 
 - **Angular CLI**: Creating applications, generating code (components, routes, services), serving, and building. Read [cli.md](references/cli.md)
 - **Angular MCP Server**: Available tools, configuration, and experimental features. Read [mcp.md](references/mcp.md)
+
+## Anti-Patterns
+
+- Using `null` or `undefined` as initial signal form field values — use `''`, `0`, or `[]` instead
+- Accessing form field state flags without calling the field first: `form.field.valid()` — use `form.field().valid()`
+- Using `FormControl`, `FormGroup`, or `FormBuilder` in Angular v21+ — prefer Signal Forms
+- Setting `min`, `max`, `value`, `disabled`, or `readonly` HTML attributes on `[formField]` inputs — define these as schema rules instead
+- Calling `inject()` outside an injection context — use `runInInjectionContext` when needed
+- Using `effect()` for derived state that should use `computed()`
+- Referencing `$parent.$index` in nested `@for` loops — Angular does not support `$parent`; use `let outerIdx = $index` instead
+
+## Related Skills
+
+- `tdd-workflow` — test-driven development workflow applicable to Angular components and services
+- `security-review` — security checklist for web applications including Angular-specific concerns
+- `frontend-patterns` — general frontend patterns for context on React/Next.js approaches
