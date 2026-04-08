@@ -1,29 +1,27 @@
 ---
 name: quarkus-patterns
-description: Quarkus 3.x LTS architecture patterns with Camel for messaging, RESTful API design, CDI services, data access with Panache, and async processing. Use for Java Quarkus backend work with event-driven architectures.
+description: Quarkus 3.x LTSアーキテクチャパターン、Camelメッセージング、RESTful API設計、CDIサービス、Panacheデータアクセス、非同期処理。イベント駆動アーキテクチャを持つJava Quarkusバックエンド作業に使用。
 origin: ECC
 ---
 
-> **Note / 注意**: このファイルはまだ日本語に翻訳されていません。現在は英語の原文です。翻訳PRを歓迎します。
+# Quarkus 開発パターン
 
-# Quarkus Development Patterns
+Apache Camelを使用したクラウドネイティブなイベント駆動サービスのためのQuarkus 3.xアーキテクチャとAPIパターン。
 
-Quarkus 3.x architecture and API patterns for cloud-native, event-driven services with Apache Camel.
+## いつアクティブにするか
 
-## When to Activate
+- JAX-RSまたはRESTEasy ReactiveでREST APIを構築する
+- リソース → サービス → リポジトリレイヤーを構造化する
+- Apache CamelとRabbitMQでイベント駆動パターンを実装する
+- Hibernate Panache、キャッシング、またはリアクティブストリームを構成する
+- バリデーション、例外マッピング、またはページネーションを追加する
+- dev/staging/production環境のプロファイルを設定する（YAML構成）
+- LogContextとLogback/Logstashエンコーダーでカスタムロギング
+- CompletableFutureで非同期操作を行う
+- 条件付きフロー処理を実装する
+- GraalVMネイティブコンパイルで作業する
 
-- Building REST APIs with JAX-RS or RESTEasy Reactive
-- Structuring resource → service → repository layers
-- Implementing event-driven patterns with Apache Camel and RabbitMQ
-- Configuring Hibernate Panache, caching, or reactive streams
-- Adding validation, exception mapping, or pagination
-- Setting up profiles for dev/staging/production environments (YAML config)
-- Custom logging with LogContext and Logback/Logstash encoder
-- Working with CompletableFuture for async operations
-- Implementing conditional flow processing
-- Working with GraalVM native compilation
-
-## Service Layer with Multiple Dependencies (Lombok)
+## 複数依存関係を持つサービスレイヤー（Lombok）
 
 ```java
 @Slf4j
@@ -43,7 +41,7 @@ public class As2ProcessingService {
             
             String structureIdPartner = logContext.get(As2Constants.STRUCTURE_ID);
             
-            // Conditional flow logic
+            // 条件付きフローロジック
             boolean isChorusFlow = Boolean.parseBoolean(logContext.get(As2Constants.CHORUS_FLOW));
             log.info("Is CHORUS_FLOW message: {}", isChorusFlow);
             
@@ -62,7 +60,7 @@ public class As2ProcessingService {
             
             log.info("Invoice validation completed. Message is valid");
             
-            // CompletableFuture async operation
+            // CompletableFuture非同期操作
             try(InputStream inputStream = Files.newInputStream(filePath)) {
                 CompletableFuture<StoredDocumentInfo> documentInfoCompletableFuture = 
                     fileStorageService.uploadOriginalFile(inputStream, 
@@ -85,7 +83,7 @@ public class As2ProcessingService {
                     documentInfo, originalFileName, structureIdPartner, 
                     flowProfile, invoiceValidationResult.getDocumentHash());
                 
-                // Async Camel publishing
+                // 非同期Camelパブリッシング
                 businessRulesPublisher.publishAsync(payload);
                 this.eventService.createSuccessEvent(payload, "BUSINESS_RULES_MESSAGE_SENT");
             }
@@ -94,16 +92,16 @@ public class As2ProcessingService {
 }
 ```
 
-**Key Patterns:**
-- `@RequiredArgsConstructor` for constructor injection via Lombok
-- `@Slf4j` for Logback logging
-- Scoped LogContext with try-with-resources
-- Conditional flow logic based on runtime parameters
-- CompletableFuture with `.join()` for async operations
-- Event tracking for success/error scenarios
-- Async Camel message publishing
+**主要パターン:**
+- Lombokによるコンストラクタインジェクション用の`@RequiredArgsConstructor`
+- Logbackロギング用の`@Slf4j`
+- try-with-resourcesによるスコープ付きLogContext
+- ランタイムパラメータに基づく条件付きフローロジック
+- 非同期操作用の`.join()`付きCompletableFuture
+- 成功/エラーシナリオのイベントトラッキング
+- 非同期Camelメッセージパブリッシング
 
-## Custom Logging Context Pattern (Logback)
+## カスタムロギングコンテキストパターン（Logback）
 
 ```java
 @ApplicationScoped
@@ -112,14 +110,14 @@ public class ProcessingService {
     public void processDocument(Document doc) {
         LogContext logContext = CustomLog.getCurrentContext();
         try (SafeAutoCloseable ignored = CustomLog.startScope(logContext)) {
-            // Add context to all log statements
+            // すべてのログステートメントにコンテキストを追加
             logContext.put("documentId", doc.getId().toString());
             logContext.put("documentType", doc.getType());
             logContext.put("userId", SecurityContext.getUserId());
             
             log.info("Starting document processing");
             
-            // All logs within this scope inherit the context
+            // このスコープ内のすべてのログはコンテキストを継承
             processInternal(doc);
             
             log.info("Document processing completed");
@@ -131,7 +129,7 @@ public class ProcessingService {
 }
 ```
 
-**Logback Configuration (logback.xml):**
+**Logback構成（logback.xml）:**
 
 ```xml
 <configuration>
@@ -149,7 +147,7 @@ public class ProcessingService {
 </configuration>
 ```
 
-## Event Service Pattern
+## イベントサービスパターン
 
 ```java
 @ApplicationScoped
@@ -181,13 +179,13 @@ public class EventService {
     }
     
     private String serializePayload(Object payload) {
-        // JSON serialization
+        // JSONシリアライゼーション
         return objectMapper.writeValueAsString(payload);
     }
 }
 ```
 
-## Camel Message Publishing (RabbitMQ)
+## Camelメッセージパブリッシング（RabbitMQ）
 
 ```java
 @ApplicationScoped
@@ -215,7 +213,7 @@ public class BusinessRulesPublisher {
 }
 ```
 
-**Camel Route Configuration:**
+**Camelルート構成:**
 
 ```java
 @ApplicationScoped
@@ -242,7 +240,7 @@ public class BusinessRulesRoute extends RouteBuilder {
 }
 ```
 
-## Camel Direct Routes (In-Memory)
+## Camel Directルート（インメモリ）
 
 ```java
 @ApplicationScoped
@@ -250,13 +248,13 @@ public class DocumentProcessingRoute extends RouteBuilder {
     
     @Override
     public void configure() {
-        // Error handling
+        // エラーハンドリング
         onException(ValidationException.class)
             .handled(true)
             .to("direct:validation-error-handler")
             .log("Validation error: ${exception.message}");
         
-        // Main processing route
+        // メイン処理ルート
         from("direct:process-document")
             .routeId("document-processing")
             .log("Processing document: ${header.documentId}")
@@ -278,7 +276,7 @@ public class DocumentProcessingRoute extends RouteBuilder {
 }
 ```
 
-## Camel File Processing
+## Camelファイル処理
 
 ```java
 @ApplicationScoped
@@ -308,7 +306,7 @@ public class FileMonitoringRoute extends RouteBuilder {
 }
 ```
 
-## Camel Bean Invocation
+## Camel Bean呼び出し
 
 ```java
 @ApplicationScoped
@@ -328,7 +326,7 @@ public class InvoiceRoute extends RouteBuilder {
 }
 ```
 
-## REST API Structure
+## REST API構造
 
 ```java
 @Path("/api/documents")
@@ -367,7 +365,7 @@ public class DocumentResource {
 }
 ```
 
-## Repository Pattern (Panache Repository)
+## リポジトリパターン（Panache Repository）
 
 ```java
 @ApplicationScoped
@@ -389,7 +387,7 @@ public class DocumentRepository implements PanacheRepository<Document> {
 }
 ```
 
-## Service Layer with Transactions
+## トランザクション付きサービスレイヤー
 
 ```java
 @ApplicationScoped
@@ -425,7 +423,7 @@ public class DocumentService {
 }
 ```
 
-## DTOs and Validation
+## DTOとバリデーション
 
 ```java
 public record CreateDocumentRequest(
@@ -442,7 +440,7 @@ public record DocumentResponse(Long id, String referenceNumber, DocumentStatus s
 }
 ```
 
-## Exception Mapping
+## 例外マッピング
 
 ```java
 @Provider
@@ -473,7 +471,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 }
 ```
 
-## CompletableFuture Async Operations
+## CompletableFuture非同期操作
 
 ```java
 @ApplicationScoped
@@ -512,7 +510,7 @@ public class FileStorageService {
 }
 ```
 
-## Caching
+## キャッシング
 
 ```java
 @ApplicationScoped
@@ -533,7 +531,7 @@ public class DocumentCacheService {
 }
 ```
 
-## Configuration as YAML
+## YAML構成
 
 ```yaml
 # application.yml
@@ -580,7 +578,7 @@ public class DocumentCacheService {
     username: ${RABBITMQ_USER}
     password: ${RABBITMQ_PASSWORD}
 
-# Camel configuration
+# Camel構成
 camel:
   rabbitmq:
     queue:
@@ -588,7 +586,7 @@ camel:
       invoice-processing: invoice-processing-queue
 ```
 
-## Health Checks
+## ヘルスチェック
 
 ```java
 @Readiness
@@ -626,7 +624,7 @@ public class CamelHealthCheck implements HealthCheck {
 }
 ```
 
-## Dependencies (Maven)
+## 依存関係（Maven）
 
 ```xml
 <properties>
@@ -657,7 +655,7 @@ public class CamelHealthCheck implements HealthCheck {
 </dependencyManagement>
 
 <dependencies>
-    <!-- Quarkus Core -->
+    <!-- Quarkusコア -->
     <dependency>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-arc</artifactId>
@@ -667,7 +665,7 @@ public class CamelHealthCheck implements HealthCheck {
         <artifactId>quarkus-config-yaml</artifactId>
     </dependency>
     
-    <!-- Camel Extensions -->
+    <!-- Camelエクステンション -->
     <dependency>
         <groupId>org.apache.camel.quarkus</groupId>
         <artifactId>camel-quarkus-spring-rabbitmq</artifactId>
@@ -689,7 +687,7 @@ public class CamelHealthCheck implements HealthCheck {
         <scope>provided</scope>
     </dependency>
     
-    <!-- Logging -->
+    <!-- ロギング -->
     <dependency>
         <groupId>io.quarkiverse.logging.logback</groupId>
         <artifactId>quarkus-logging-logback</artifactId>
@@ -701,56 +699,56 @@ public class CamelHealthCheck implements HealthCheck {
 </dependencies>
 ```
 
-## Best Practices
+## ベストプラクティス
 
-### Architecture
-- Use `@RequiredArgsConstructor` with Lombok for constructor injection
-- Keep service layer thin; delegate complex logic to specialized classes
-- Use Camel routes for message routing and integration patterns
-- Prefer Panache Repository pattern for data access
+### アーキテクチャ
+- コンストラクタインジェクション用にLombokの`@RequiredArgsConstructor`を使用
+- サービスレイヤーは薄く保ち、複雑なロジックは専門クラスに委譲
+- メッセージルーティングと統合パターンにCamelルートを使用
+- データアクセスにはPanache Repositoryパターンを優先
 
-### Event-Driven
-- Always track operations with EventService (success/error events)
-- Use Camel `direct:` endpoints for in-memory routing
-- Use `spring-rabbitmq` component for RabbitMQ integration
-- Implement async publishing with `ProducerTemplate.asyncSendBody()`
+### イベント駆動
+- 常にEventServiceで操作をトラッキング（成功/エラーイベント）
+- インメモリルーティングにCamelの`direct:`エンドポイントを使用
+- RabbitMQ統合に`spring-rabbitmq`コンポーネントを使用
+- `ProducerTemplate.asyncSendBody()`で非同期パブリッシングを実装
 
-### Logging
-- Use Logback with Logstash encoder for structured logging
-- Propagate LogContext through service calls with `SafeAutoCloseable`
-- Add contextual information to LogContext for request tracing
-- Use `@Slf4j` instead of manual logger instantiation
+### ロギング
+- 構造化ロギング用にLogstashエンコーダー付きLogbackを使用
+- `SafeAutoCloseable`でサービスコール間でLogContextを伝播
+- リクエストトレーシング用にLogContextにコンテキスト情報を追加
+- 手動ロガーインスタンス化の代わりに`@Slf4j`を使用
 
-### Async Operations
-- Use CompletableFuture for non-blocking I/O operations
-- Call `.join()` when you need to wait for completion
-- Handle exceptions from CompletableFuture properly
-- Pass LogContext to async operations for tracing
+### 非同期操作
+- ノンブロッキングI/O操作にCompletableFutureを使用
+- 完了を待つ必要がある場合は`.join()`を呼び出す
+- CompletableFutureからの例外を適切にハンドリング
+- トレーシング用に非同期操作にLogContextを渡す
 
-### Configuration
-- Use YAML configuration (`quarkus-config-yaml`)
-- Profile-aware configuration for dev/test/prod environments
-- Externalize sensitive configuration to environment variables
-- Use `@ConfigProperty` for type-safe config injection
+### 構成
+- YAML構成を使用（`quarkus-config-yaml`）
+- dev/test/prod環境のプロファイル対応構成
+- 機密構成を環境変数に外部化
+- 型安全な構成インジェクション用に`@ConfigProperty`を使用
 
-### Validation
-- Validate at resource layer with `@Valid`
-- Use Bean Validation annotations on DTOs
-- Map exceptions to proper HTTP responses with `@Provider`
+### バリデーション
+- リソースレイヤーで`@Valid`によるバリデーション
+- DTOにBean Validationアノテーションを使用
+- `@Provider`で例外を適切なHTTPレスポンスにマッピング
 
-### Transactions
-- Use `@Transactional` on service methods that modify data
-- Keep transactions short and focused
-- Avoid calling async operations within transactions
+### トランザクション
+- データを変更するサービスメソッドに`@Transactional`を使用
+- トランザクションは短く焦点を絞る
+- トランザクション内で非同期操作を呼び出さない
 
-### Testing
-- Use `camel-quarkus-junit5` for route testing
-- Use AssertJ for assertions
-- Mock all external dependencies
-- Test conditional flow logic thoroughly
+### テスト
+- ルートテストに`camel-quarkus-junit5`を使用
+- アサーションにAssertJを使用
+- すべての外部依存関係をモック
+- 条件付きフローロジックを徹底的にテスト
 
-### Quarkus-Specific
-- Stay on latest LTS version (3.x)
-- Use Quarkus dev mode for hot reload
-- Add health checks for production readiness
-- Test native compilation compatibility periodically
+### Quarkus固有
+- 最新のLTSバージョン（3.x）を維持
+- ホットリロード用にQuarkus devモードを使用
+- 本番準備のためにヘルスチェックを追加
+- ネイティブコンパイル互換性を定期的にテスト

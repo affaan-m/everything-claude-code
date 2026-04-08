@@ -4,29 +4,27 @@ description: Quarkus Security best practices for authentication, authorization, 
 origin: ECC
 ---
 
-> **Not / Note**: Bu dosya henuz Turkceye cevrilmemistir, su anda Ingilizce orijinaldir. Ceviri PR'lari memnuniyetle karsilanir.
+# Quarkus Güvenlik İncelemesi
 
-# Quarkus Security Review
+Kimlik doğrulama, yetkilendirme ve girdi doğrulama ile Quarkus uygulamalarını güvenli hale getirmek için en iyi uygulamalar.
 
-Best practices for securing Quarkus applications with authentication, authorization, and input validation.
+## Ne Zaman Aktif Edilir
 
-## When to Activate
+- Kimlik doğrulama ekleme (JWT, OIDC, Basic Auth)
+- `@RolesAllowed` veya SecurityIdentity ile yetkilendirme uygulama
+- Kullanıcı girişini doğrulama (Bean Validation, özel doğrulayıcılar)
+- CORS veya güvenlik başlıklarını yapılandırma
+- Gizli bilgileri yönetme (Vault, ortam değişkenleri, config kaynakları)
+- Rate limiting veya brute-force koruması ekleme
+- Bağımlılıkları CVE için tarama
+- MicroProfile JWT veya SmallRye JWT ile çalışma
 
-- Adding authentication (JWT, OIDC, Basic Auth)
-- Implementing authorization with @RolesAllowed or SecurityIdentity
-- Validating user input (Bean Validation, custom validators)
-- Configuring CORS or security headers
-- Managing secrets (Vault, environment variables, config sources)
-- Adding rate limiting or brute-force protection
-- Scanning dependencies for CVEs
-- Working with MicroProfile JWT or SmallRye JWT
+## Kimlik Doğrulama
 
-## Authentication
-
-### JWT Authentication
+### JWT Kimlik Doğrulama
 
 ```java
-// Resource protected with JWT
+// JWT ile korunan resource
 @Path("/api/protected")
 @Authenticated
 public class ProtectedResource {
@@ -50,7 +48,7 @@ public class ProtectedResource {
 }
 ```
 
-Configuration (application.properties):
+Yapılandırma (application.properties):
 ```properties
 mp.jwt.verify.publickey.location=publicKey.pem
 mp.jwt.verify.issuer=https://auth.example.com
@@ -61,7 +59,7 @@ quarkus.oidc.client-id=backend-service
 quarkus.oidc.credentials.secret=${OIDC_SECRET}
 ```
 
-### Custom Authentication Filter
+### Özel Kimlik Doğrulama Filtresi
 
 ```java
 @Provider
@@ -77,7 +75,7 @@ public class CustomAuthFilter implements ContainerRequestFilter {
     
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
       String token = authHeader.substring(7);
-      // Validate token and set SecurityIdentity
+      // Token'ı doğrula ve SecurityIdentity'yi ayarla
       if (!validateToken(token)) {
         requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
       }
@@ -85,15 +83,15 @@ public class CustomAuthFilter implements ContainerRequestFilter {
   }
 
   private boolean validateToken(String token) {
-    // Token validation logic
+    // Token doğrulama mantığı
     return true;
   }
 }
 ```
 
-## Authorization
+## Yetkilendirme
 
-### Role-Based Access Control
+### Rol Tabanlı Erişim Kontrolü
 
 ```java
 @Path("/api/admin")
@@ -125,7 +123,7 @@ public class UserResource {
   @Path("/{id}")
   @RolesAllowed("USER")
   public Response getUser(@PathParam("id") Long id) {
-    // Check ownership
+    // Sahipliği kontrol et
     if (!securityIdentity.hasRole("ADMIN") && 
         !isOwner(id, securityIdentity.getPrincipal().getName())) {
       return Response.status(Response.Status.FORBIDDEN).build();
@@ -139,7 +137,7 @@ public class UserResource {
 }
 ```
 
-### Programmatic Security
+### Programatik Güvenlik
 
 ```java
 @ApplicationScoped
@@ -163,18 +161,18 @@ public class SecurityService {
 }
 ```
 
-## Input Validation
+## Girdi Doğrulama
 
 ### Bean Validation
 
 ```java
-// BAD: No validation
+// KÖTÜ: Validation yok
 @POST
 public Response createUser(UserDto dto) {
   return Response.ok(userService.create(dto)).build();
 }
 
-// GOOD: Validated DTO
+// İYİ: Doğrulanmış DTO
 public record CreateUserDto(
     @NotBlank @Size(max = 100) String name,
     @NotBlank @Email String email,
@@ -190,7 +188,7 @@ public Response createUser(@Valid CreateUserDto dto) {
 }
 ```
 
-### Custom Validators
+### Özel Doğrulayıcılar
 
 ```java
 @Target({ElementType.FIELD, ElementType.PARAMETER})
@@ -210,35 +208,35 @@ public class UsernameValidator implements ConstraintValidator<ValidUsername, Str
   }
 }
 
-// Usage
+// Kullanım
 public record CreateUserDto(
     @ValidUsername String username,
     @NotBlank @Email String email
 ) {}
 ```
 
-## SQL Injection Prevention
+## SQL Injection Önleme
 
-### Panache Active Record (Safe by Default)
+### Panache Active Record (Varsayılan Olarak Güvenli)
 
 ```java
-// GOOD: Parameterized queries with Panache
+// İYİ: Panache ile parametreli sorgular
 List<User> users = User.list("email = ?1 and active = ?2", email, true);
 
 Optional<User> user = User.find("username", username).firstResultOptional();
 
-// GOOD: Named parameters
+// İYİ: İsimlendirilmiş parametreler
 List<User> users = User.list("email = :email and age > :minAge", 
     Parameters.with("email", email).and("minAge", 18));
 ```
 
-### Native Queries (Use Parameters)
+### Native Sorgular (Parametre Kullanın)
 
 ```java
-// BAD: String concatenation
+// KÖTÜ: String birleştirme
 @Query(value = "SELECT * FROM users WHERE name = '" + name + "'", nativeQuery = true)
 
-// GOOD: Parameterized native query
+// İYİ: Parametreli native sorgu
 @Entity
 public class User extends PanacheEntity {
   public static List<User> findByEmailNative(String email) {
@@ -250,7 +248,7 @@ public class User extends PanacheEntity {
 }
 ```
 
-## Password Hashing
+## Parola Hash'leme
 
 ```java
 @ApplicationScoped
@@ -265,7 +263,7 @@ public class PasswordService {
   }
 }
 
-// In service
+// Servis içinde
 @ApplicationScoped
 public class UserService {
   @Inject
@@ -290,7 +288,7 @@ public class UserService {
 }
 ```
 
-## CORS Configuration
+## CORS Yapılandırması
 
 ```properties
 # application.properties
@@ -303,12 +301,12 @@ quarkus.http.cors.access-control-max-age=24H
 quarkus.http.cors.access-control-allow-credentials=true
 ```
 
-## Secrets Management
+## Gizli Bilgi Yönetimi
 
 ```properties
-# application.properties - NO SECRETS HERE
+# application.properties - BURADA GİZLİ BİLGİ YOK
 
-# Use environment variables
+# Ortam değişkenlerini kullanın
 quarkus.datasource.username=${DB_USER}
 quarkus.datasource.password=${DB_PASSWORD}
 quarkus.oidc.credentials.secret=${OIDC_CLIENT_SECRET}
@@ -318,14 +316,14 @@ quarkus.vault.url=https://vault.example.com
 quarkus.vault.authentication.kubernetes.role=my-role
 ```
 
-### HashiCorp Vault Integration
+### HashiCorp Vault Entegrasyonu
 
 ```java
 @ApplicationScoped
 public class SecretService {
   
   @ConfigProperty(name = "api-key")
-  String apiKey; // Fetched from Vault
+  String apiKey; // Vault'tan alınır
 
   public String getSecret(String key) {
     return ConfigProvider.getConfig().getValue(key, String.class);
@@ -333,7 +331,7 @@ public class SecretService {
 }
 ```
 
-## Rate Limiting
+## Rate Limiting (Hız Sınırlama)
 
 ```java
 @ApplicationScoped
@@ -344,7 +342,7 @@ public class RateLimitFilter implements ContainerRequestFilter {
   public void filter(ContainerRequestContext requestContext) {
     String clientId = getClientIdentifier(requestContext);
     RateLimiter limiter = limiters.computeIfAbsent(clientId, 
-        k -> RateLimiter.create(100.0)); // 100 requests per second
+        k -> RateLimiter.create(100.0)); // Saniyede 100 istek
 
     if (!limiter.tryAcquire()) {
       requestContext.abortWith(
@@ -356,13 +354,13 @@ public class RateLimitFilter implements ContainerRequestFilter {
   }
 
   private String getClientIdentifier(ContainerRequestContext ctx) {
-    // Use IP, API key, or user ID
+    // IP, API anahtarı veya kullanıcı ID'si kullanın
     return ctx.getHeaderString("X-Forwarded-For");
   }
 }
 ```
 
-## Security Headers
+## Güvenlik Başlıkları
 
 ```java
 @Provider
@@ -372,10 +370,10 @@ public class SecurityHeadersFilter implements ContainerResponseFilter {
   public void filter(ContainerRequestContext request, ContainerResponseContext response) {
     MultivaluedMap<String, Object> headers = response.getHeaders();
     
-    // Prevent clickjacking
+    // Clickjacking'i önle
     headers.putSingle("X-Frame-Options", "DENY");
     
-    // XSS protection
+    // XSS koruması
     headers.putSingle("X-Content-Type-Options", "nosniff");
     headers.putSingle("X-XSS-Protection", "1; mode=block");
     
@@ -389,7 +387,7 @@ public class SecurityHeadersFilter implements ContainerResponseFilter {
 }
 ```
 
-## Audit Logging
+## Denetim Loglama
 
 ```java
 @ApplicationScoped
@@ -409,7 +407,7 @@ public class AuditService {
   }
 }
 
-// Usage in resource
+// Resource içinde kullanım
 @Path("/api/sensitive")
 public class SensitiveResource {
   @Inject
@@ -424,7 +422,7 @@ public class SensitiveResource {
 }
 ```
 
-## Dependency Security Scanning
+## Bağımlılık Güvenliği Taraması
 
 ```bash
 # Maven
@@ -437,19 +435,19 @@ mvn org.owasp:dependency-check-maven:check
 quarkus extension list --installable
 ```
 
-## Best Practices
+## En İyi Uygulamalar
 
-- Always use HTTPS in production
-- Enable JWT or OIDC for stateless authentication
-- Use `@RolesAllowed` for declarative authorization
-- Validate all input with Bean Validation
-- Hash passwords with BCrypt (never plaintext)
-- Store secrets in Vault or environment variables
-- Use parameterized queries to prevent SQL injection
-- Add security headers to all responses
-- Implement rate limiting for public endpoints
-- Audit sensitive operations
-- Keep dependencies updated and scan for CVEs
-- Use SecurityIdentity for programmatic checks
-- Set appropriate CORS policies
-- Test authentication and authorization paths
+- Production'da her zaman HTTPS kullanın
+- Stateless kimlik doğrulama için JWT veya OIDC etkinleştirin
+- Bildirimsel yetkilendirme için `@RolesAllowed` kullanın
+- Bean Validation ile tüm girişleri doğrulayın
+- Parolaları BCrypt ile hash'leyin (asla düz metin saklamayın)
+- Gizli bilgileri Vault veya ortam değişkenlerinde saklayın
+- SQL injection'ı önlemek için parametreli sorgular kullanın
+- Tüm yanıtlara güvenlik başlıkları ekleyin
+- Genel endpoint'lerde rate limiting uygulayın
+- Hassas işlemleri denetleyin
+- Bağımlılıkları güncel tutun ve CVE için tarayın
+- Programatik kontroller için SecurityIdentity kullanın
+- Uygun CORS politikaları belirleyin
+- Kimlik doğrulama ve yetkilendirme yollarını test edin

@@ -1,32 +1,29 @@
 ---
 name: quarkus-security
-description: Quarkus Security best practices for authentication, authorization, JWT/OIDC, RBAC, input validation, CSRF, secrets management, and dependency security.
+description: Quarkus安全最佳实践：认证、授权、JWT/OIDC、RBAC、输入验证、CSRF、密钥管理和依赖安全。
 origin: ECC
 ---
 
-> **Note / 注意**: 本文件尚未翻译为中文，目前为英文原版。欢迎提交翻译 PR。
+# Quarkus 安全审查
 
-# Quarkus Security Review
+使用认证、授权和输入验证保护Quarkus应用程序的最佳实践。
 
-Best practices for securing Quarkus applications with authentication, authorization, and input validation.
+## 何时激活
 
-## When to Activate
+- 添加认证（JWT、OIDC、Basic Auth）
+- 使用@RolesAllowed或SecurityIdentity实现授权
+- 验证用户输入（Bean Validation、自定义验证器）
+- 配置CORS或安全头
+- 管理密钥（Vault、环境变量、配置源）
+- 添加速率限制或暴力破解保护
+- 扫描依赖CVE
+- 使用MicroProfile JWT或SmallRye JWT
 
-- Adding authentication (JWT, OIDC, Basic Auth)
-- Implementing authorization with @RolesAllowed or SecurityIdentity
-- Validating user input (Bean Validation, custom validators)
-- Configuring CORS or security headers
-- Managing secrets (Vault, environment variables, config sources)
-- Adding rate limiting or brute-force protection
-- Scanning dependencies for CVEs
-- Working with MicroProfile JWT or SmallRye JWT
+## 认证
 
-## Authentication
-
-### JWT Authentication
+### JWT认证
 
 ```java
-// Resource protected with JWT
 @Path("/api/protected")
 @Authenticated
 public class ProtectedResource {
@@ -50,7 +47,7 @@ public class ProtectedResource {
 }
 ```
 
-Configuration (application.properties):
+配置（application.properties）:
 ```properties
 mp.jwt.verify.publickey.location=publicKey.pem
 mp.jwt.verify.issuer=https://auth.example.com
@@ -61,7 +58,7 @@ quarkus.oidc.client-id=backend-service
 quarkus.oidc.credentials.secret=${OIDC_SECRET}
 ```
 
-### Custom Authentication Filter
+### 自定义认证过滤器
 
 ```java
 @Provider
@@ -77,7 +74,6 @@ public class CustomAuthFilter implements ContainerRequestFilter {
     
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
       String token = authHeader.substring(7);
-      // Validate token and set SecurityIdentity
       if (!validateToken(token)) {
         requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
       }
@@ -85,15 +81,15 @@ public class CustomAuthFilter implements ContainerRequestFilter {
   }
 
   private boolean validateToken(String token) {
-    // Token validation logic
+    // 令牌验证逻辑
     return true;
   }
 }
 ```
 
-## Authorization
+## 授权
 
-### Role-Based Access Control
+### 基于角色的访问控制
 
 ```java
 @Path("/api/admin")
@@ -125,21 +121,17 @@ public class UserResource {
   @Path("/{id}")
   @RolesAllowed("USER")
   public Response getUser(@PathParam("id") Long id) {
-    // Check ownership
+    // 所有权检查
     if (!securityIdentity.hasRole("ADMIN") && 
         !isOwner(id, securityIdentity.getPrincipal().getName())) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     return Response.ok(userService.findById(id)).build();
   }
-
-  private boolean isOwner(Long userId, String username) {
-    return userService.isOwner(userId, username);
-  }
 }
 ```
 
-### Programmatic Security
+### 编程式安全
 
 ```java
 @ApplicationScoped
@@ -163,18 +155,18 @@ public class SecurityService {
 }
 ```
 
-## Input Validation
+## 输入验证
 
 ### Bean Validation
 
 ```java
-// BAD: No validation
+// BAD: 无验证
 @POST
 public Response createUser(UserDto dto) {
   return Response.ok(userService.create(dto)).build();
 }
 
-// GOOD: Validated DTO
+// GOOD: 验证DTO
 public record CreateUserDto(
     @NotBlank @Size(max = 100) String name,
     @NotBlank @Email String email,
@@ -190,55 +182,28 @@ public Response createUser(@Valid CreateUserDto dto) {
 }
 ```
 
-### Custom Validators
+## SQL注入防护
+
+### Panache Active Record（默认安全）
 
 ```java
-@Target({ElementType.FIELD, ElementType.PARAMETER})
-@Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = UsernameValidator.class)
-public @interface ValidUsername {
-  String message() default "Invalid username format";
-  Class<?>[] groups() default {};
-  Class<? extends Payload>[] payload() default {};
-}
-
-public class UsernameValidator implements ConstraintValidator<ValidUsername, String> {
-  @Override
-  public boolean isValid(String value, ConstraintValidatorContext context) {
-    if (value == null) return false;
-    return value.matches("^[a-zA-Z0-9_-]{3,20}$");
-  }
-}
-
-// Usage
-public record CreateUserDto(
-    @ValidUsername String username,
-    @NotBlank @Email String email
-) {}
-```
-
-## SQL Injection Prevention
-
-### Panache Active Record (Safe by Default)
-
-```java
-// GOOD: Parameterized queries with Panache
+// GOOD: Panache参数化查询
 List<User> users = User.list("email = ?1 and active = ?2", email, true);
 
 Optional<User> user = User.find("username", username).firstResultOptional();
 
-// GOOD: Named parameters
+// GOOD: 命名参数
 List<User> users = User.list("email = :email and age > :minAge", 
     Parameters.with("email", email).and("minAge", 18));
 ```
 
-### Native Queries (Use Parameters)
+### 原生查询（使用参数）
 
 ```java
-// BAD: String concatenation
+// BAD: 字符串拼接
 @Query(value = "SELECT * FROM users WHERE name = '" + name + "'", nativeQuery = true)
 
-// GOOD: Parameterized native query
+// GOOD: 参数化原生查询
 @Entity
 public class User extends PanacheEntity {
   public static List<User> findByEmailNative(String email) {
@@ -250,7 +215,7 @@ public class User extends PanacheEntity {
 }
 ```
 
-## Password Hashing
+## 密码哈希
 
 ```java
 @ApplicationScoped
@@ -264,33 +229,9 @@ public class PasswordService {
     return BcryptUtil.matches(plainPassword, hashedPassword);
   }
 }
-
-// In service
-@ApplicationScoped
-public class UserService {
-  @Inject
-  PasswordService passwordService;
-
-  @Transactional
-  public User register(CreateUserDto dto) {
-    String hashedPassword = passwordService.hash(dto.password());
-    User user = new User();
-    user.email = dto.email();
-    user.password = hashedPassword;
-    user.persist();
-    return user;
-  }
-
-  public boolean authenticate(String email, String password) {
-    return User.find("email", email)
-        .firstResultOptional()
-        .map(u -> passwordService.verify(password, u.password))
-        .orElse(false);
-  }
-}
 ```
 
-## CORS Configuration
+## CORS配置
 
 ```properties
 # application.properties
@@ -303,37 +244,22 @@ quarkus.http.cors.access-control-max-age=24H
 quarkus.http.cors.access-control-allow-credentials=true
 ```
 
-## Secrets Management
+## 密钥管理
 
 ```properties
-# application.properties - NO SECRETS HERE
+# application.properties — 此处不放密钥
 
-# Use environment variables
+# 使用环境变量
 quarkus.datasource.username=${DB_USER}
 quarkus.datasource.password=${DB_PASSWORD}
 quarkus.oidc.credentials.secret=${OIDC_CLIENT_SECRET}
 
-# Or use Vault
+# 或使用Vault
 quarkus.vault.url=https://vault.example.com
 quarkus.vault.authentication.kubernetes.role=my-role
 ```
 
-### HashiCorp Vault Integration
-
-```java
-@ApplicationScoped
-public class SecretService {
-  
-  @ConfigProperty(name = "api-key")
-  String apiKey; // Fetched from Vault
-
-  public String getSecret(String key) {
-    return ConfigProvider.getConfig().getValue(key, String.class);
-  }
-}
-```
-
-## Rate Limiting
+## 速率限制
 
 ```java
 @ApplicationScoped
@@ -344,7 +270,7 @@ public class RateLimitFilter implements ContainerRequestFilter {
   public void filter(ContainerRequestContext requestContext) {
     String clientId = getClientIdentifier(requestContext);
     RateLimiter limiter = limiters.computeIfAbsent(clientId, 
-        k -> RateLimiter.create(100.0)); // 100 requests per second
+        k -> RateLimiter.create(100.0)); // 每秒100个请求
 
     if (!limiter.tryAcquire()) {
       requestContext.abortWith(
@@ -354,15 +280,10 @@ public class RateLimitFilter implements ContainerRequestFilter {
       );
     }
   }
-
-  private String getClientIdentifier(ContainerRequestContext ctx) {
-    // Use IP, API key, or user ID
-    return ctx.getHeaderString("X-Forwarded-For");
-  }
 }
 ```
 
-## Security Headers
+## 安全头
 
 ```java
 @Provider
@@ -372,10 +293,10 @@ public class SecurityHeadersFilter implements ContainerResponseFilter {
   public void filter(ContainerRequestContext request, ContainerResponseContext response) {
     MultivaluedMap<String, Object> headers = response.getHeaders();
     
-    // Prevent clickjacking
+    // 防止点击劫持
     headers.putSingle("X-Frame-Options", "DENY");
     
-    // XSS protection
+    // XSS保护
     headers.putSingle("X-Content-Type-Options", "nosniff");
     headers.putSingle("X-XSS-Protection", "1; mode=block");
     
@@ -389,7 +310,7 @@ public class SecurityHeadersFilter implements ContainerResponseFilter {
 }
 ```
 
-## Audit Logging
+## 审计日志
 
 ```java
 @ApplicationScoped
@@ -408,23 +329,9 @@ public class AuditService {
         user, action, resource, Instant.now());
   }
 }
-
-// Usage in resource
-@Path("/api/sensitive")
-public class SensitiveResource {
-  @Inject
-  AuditService auditService;
-
-  @GET
-  @RolesAllowed("ADMIN")
-  public Response getData() {
-    auditService.logAccess("sensitive-data", "READ");
-    return Response.ok(data).build();
-  }
-}
 ```
 
-## Dependency Security Scanning
+## 依赖安全扫描
 
 ```bash
 # Maven
@@ -433,23 +340,23 @@ mvn org.owasp:dependency-check-maven:check
 # Gradle
 ./gradlew dependencyCheckAnalyze
 
-# Check Quarkus extensions
+# 检查Quarkus扩展
 quarkus extension list --installable
 ```
 
-## Best Practices
+## 最佳实践
 
-- Always use HTTPS in production
-- Enable JWT or OIDC for stateless authentication
-- Use `@RolesAllowed` for declarative authorization
-- Validate all input with Bean Validation
-- Hash passwords with BCrypt (never plaintext)
-- Store secrets in Vault or environment variables
-- Use parameterized queries to prevent SQL injection
-- Add security headers to all responses
-- Implement rate limiting for public endpoints
-- Audit sensitive operations
-- Keep dependencies updated and scan for CVEs
-- Use SecurityIdentity for programmatic checks
-- Set appropriate CORS policies
-- Test authentication and authorization paths
+- 生产环境始终使用HTTPS
+- 启用JWT或OIDC进行无状态认证
+- 使用`@RolesAllowed`进行声明式授权
+- 使用Bean Validation验证所有输入
+- 使用BCrypt哈希密码（禁止明文）
+- 将密钥存储在Vault或环境变量中
+- 使用参数化查询防止SQL注入
+- 为所有响应添加安全头
+- 为公共端点实现速率限制
+- 审计敏感操作
+- 保持依赖更新并扫描CVE
+- 使用SecurityIdentity进行编程式检查
+- 设置适当的CORS策略
+- 测试认证和授权路径

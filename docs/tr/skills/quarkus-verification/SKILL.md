@@ -4,22 +4,20 @@ description: "Verification loop for Quarkus projects: build, static analysis, te
 origin: ECC
 ---
 
-> **Not / Note**: Bu dosya henuz Turkceye cevrilmemistir, su anda Ingilizce orijinaldir. Ceviri PR'lari memnuniyetle karsilanir.
+# Quarkus Doğrulama Döngüsü
 
-# Quarkus Verification Loop
+PR'lardan önce, büyük değişikliklerden sonra ve deployment öncesi çalıştırın.
 
-Run before PRs, after major changes, and pre-deploy.
+## Ne Zaman Aktif Edilir
 
-## When to Activate
+- Quarkus servisi için pull request açmadan önce
+- Büyük refactoring veya bağımlılık yükseltmelerinden sonra
+- Staging veya production için deployment öncesi doğrulama
+- Tam build → lint → test → güvenlik taraması → native derleme pipeline'ı çalıştırma
+- Test kapsamının eşikleri karşıladığını doğrulama (%80+)
+- Native image uyumluluğunu test etme
 
-- Before opening a pull request for a Quarkus service
-- After major refactoring or dependency upgrades
-- Pre-deployment verification for staging or production
-- Running full build → lint → test → security scan → native compilation pipeline
-- Validating test coverage meets thresholds (80%+)
-- Testing native image compatibility
-
-## Phase 1: Build
+## Faz 1: Build
 
 ```bash
 # Maven
@@ -29,9 +27,9 @@ mvn clean verify -DskipTests
 ./gradlew clean assemble -x test
 ```
 
-If build fails, stop and fix compilation errors.
+Build başarısız olursa, durdurun ve derleme hatalarını düzeltin.
 
-## Phase 2: Static Analysis
+## Faz 2: Static Analiz
 
 ### Checkstyle, PMD, SpotBugs (Maven)
 
@@ -39,7 +37,7 @@ If build fails, stop and fix compilation errors.
 mvn checkstyle:check pmd:check spotbugs:check
 ```
 
-### SonarQube (if configured)
+### SonarQube (yapılandırılmışsa)
 
 ```bash
 mvn sonar:sonar \
@@ -48,33 +46,33 @@ mvn sonar:sonar \
   -Dsonar.login=${SONAR_TOKEN}
 ```
 
-### Common Issues to Address
+### Ele Alınacak Yaygın Sorunlar
 
-- Unused imports or variables
-- Complex methods (high cyclomatic complexity)
-- Potential null pointer dereferences
-- Security issues flagged by SpotBugs
+- Kullanılmayan import'lar veya değişkenler
+- Karmaşık metodlar (yüksek cyclomatic complexity)
+- Potansiyel null pointer dereference'ları
+- SpotBugs tarafından işaretlenen güvenlik sorunları
 
-## Phase 3: Tests + Coverage
+## Faz 3: Testler + Kapsam
 
 ```bash
-# Run all tests
+# Tüm testleri çalıştır
 mvn clean test
 
-# Generate coverage report
+# Kapsam raporu oluştur
 mvn jacoco:report
 
-# Enforce coverage threshold (80%)
+# Kapsam eşiğini zorla (%80)
 mvn jacoco:check
 
-# Or with Gradle
+# Veya Gradle ile
 ./gradlew test jacocoTestReport jacocoTestCoverageVerification
 ```
 
-### Test Categories
+### Test Kategorileri
 
-#### Unit Tests
-Test service logic with mocked dependencies:
+#### Unit Testler
+Mock'lanmış bağımlılıklarla servis mantığını test edin:
 
 ```java
 @ExtendWith(MockitoExtension.class)
@@ -99,8 +97,8 @@ class UserServiceTest {
 }
 ```
 
-#### Integration Tests
-Test with real database (Testcontainers):
+#### Entegrasyon Testleri
+Gerçek veritabanıyla (Testcontainers) test edin:
 
 ```java
 @QuarkusTest
@@ -126,8 +124,8 @@ class UserRepositoryIntegrationTest {
 }
 ```
 
-#### API Tests
-Test REST endpoints with REST Assured:
+#### API Testleri
+REST Assured ile REST endpoint'lerini test edin:
 
 ```java
 @QuarkusTest
@@ -160,34 +158,34 @@ class UserResourceTest {
 }
 ```
 
-### Coverage Report
+### Kapsam Raporu
 
-Check `target/site/jacoco/index.html` for detailed coverage:
-- Overall line coverage (target: 80%+)
-- Branch coverage (target: 70%+)
-- Identify uncovered critical paths
+Ayrıntılı kapsam için `target/site/jacoco/index.html` sayfasını kontrol edin:
+- Genel satır kapsamı (hedef: %80+)
+- Branch kapsamı (hedef: %70+)
+- Kapsanmamış kritik yolları belirleyin
 
-## Phase 4: Security Scanning
+## Faz 4: Güvenlik Taraması
 
-### Dependency Vulnerabilities (Maven)
+### Bağımlılık Güvenlik Açıkları (Maven)
 
 ```bash
 mvn org.owasp:dependency-check-maven:check
 ```
 
-Review `target/dependency-check-report.html` for CVEs.
+CVE'ler için `target/dependency-check-report.html` raporunu inceleyin.
 
-### Quarkus Security Audit
+### Quarkus Güvenlik Denetimi
 
 ```bash
-# Check vulnerable extensions
+# Güvenlik açığı olan extension'ları kontrol et
 mvn quarkus:audit
 
-# List all extensions
+# Tüm extension'ları listele
 mvn quarkus:list-extensions
 ```
 
-### OWASP ZAP (API Security Testing)
+### OWASP ZAP (API Güvenlik Testi)
 
 ```bash
 docker run -t owasp/zap2docker-stable zap-api-scan.py \
@@ -195,52 +193,52 @@ docker run -t owasp/zap2docker-stable zap-api-scan.py \
   -f openapi
 ```
 
-### Common Security Checks
+### Yaygın Güvenlik Kontrolleri
 
-- [ ] All secrets in environment variables (not in code)
-- [ ] Input validation on all endpoints
-- [ ] Authentication/authorization configured
-- [ ] CORS properly configured
-- [ ] Security headers set
-- [ ] Passwords hashed with BCrypt
-- [ ] SQL injection protection (parameterized queries)
-- [ ] Rate limiting on public endpoints
+- [ ] Tüm gizli bilgiler ortam değişkenlerinde (kodda değil)
+- [ ] Tüm endpoint'lerde girdi doğrulama
+- [ ] Kimlik doğrulama/yetkilendirme yapılandırılmış
+- [ ] CORS düzgün yapılandırılmış
+- [ ] Güvenlik başlıkları ayarlanmış
+- [ ] Parolalar BCrypt ile hash'lenmiş
+- [ ] SQL injection koruması (parametreli sorgular)
+- [ ] Genel endpoint'lerde rate limiting
 
-## Phase 5: Native Compilation
+## Faz 5: Native Derleme
 
-Test GraalVM native image compatibility:
+GraalVM native image uyumluluğunu test edin:
 
 ```bash
-# Build native executable
+# Native executable oluştur
 mvn package -Dnative
 
-# Or with container
+# Veya container ile
 mvn package -Dnative -Dquarkus.native.container-build=true
 
-# Test native executable
+# Native executable'ı test et
 ./target/*-runner
 
-# Run basic smoke tests
+# Temel smoke testleri çalıştır
 curl http://localhost:8080/q/health/live
 curl http://localhost:8080/q/health/ready
 ```
 
-### Native Image Troubleshooting
+### Native Image Sorun Giderme
 
-Common issues:
-- **Reflection**: Add reflection config for dynamic classes
-- **Resources**: Include resources with `quarkus.native.resources.includes`
-- **JNI**: Register JNI classes if using native libraries
+Yaygın sorunlar:
+- **Reflection**: Dinamik sınıflar için reflection yapılandırması ekleyin
+- **Resources**: `quarkus.native.resources.includes` ile kaynakları dahil edin
+- **JNI**: Native kütüphaneler kullanıyorsanız JNI sınıflarını kaydedin
 
-Example reflection config:
+Örnek reflection yapılandırması:
 ```java
 @RegisterForReflection(targets = {MyDynamicClass.class})
 public class ReflectionConfiguration {}
 ```
 
-## Phase 6: Performance Testing
+## Faz 6: Performans Testi
 
-### Load Testing with K6
+### K6 ile Yük Testi
 
 ```javascript
 // load-test.js
@@ -264,20 +262,20 @@ export default function () {
 }
 ```
 
-Run:
+Çalıştırın:
 ```bash
 k6 run load-test.js
 ```
 
-### Metrics to Monitor
+### İzlenecek Metrikler
 
-- Response time (p50, p95, p99)
-- Throughput (requests/sec)
-- Error rate
-- Memory usage
-- CPU usage
+- Yanıt süresi (p50, p95, p99)
+- Throughput (istek/saniye)
+- Hata oranı
+- Bellek kullanımı
+- CPU kullanımı
 
-## Phase 7: Health Checks
+## Faz 7: Sağlık Kontrolleri
 
 ```bash
 # Liveness
@@ -286,14 +284,14 @@ curl http://localhost:8080/q/health/live
 # Readiness
 curl http://localhost:8080/q/health/ready
 
-# All health checks
+# Tüm sağlık kontrolleri
 curl http://localhost:8080/q/health
 
-# Metrics (if enabled)
+# Metrikler (etkinleştirilmişse)
 curl http://localhost:8080/q/metrics
 ```
 
-Expected responses:
+Beklenen yanıtlar:
 ```json
 {
   "status": "UP",
@@ -306,24 +304,24 @@ Expected responses:
 }
 ```
 
-## Phase 8: Container Image Build
+## Faz 8: Container Image Build
 
 ```bash
-# Build container image
+# Container image oluştur
 mvn package -Dquarkus.container-image.build=true
 
-# Or with specific registry
+# Veya belirli registry ile
 mvn package \
   -Dquarkus.container-image.build=true \
   -Dquarkus.container-image.registry=docker.io \
   -Dquarkus.container-image.group=myorg \
   -Dquarkus.container-image.tag=1.0.0
 
-# Test container
+# Container'ı test et
 docker run -p 8080:8080 myorg/my-quarkus-app:1.0.0
 ```
 
-### Container Security Scan
+### Container Güvenlik Taraması
 
 ```bash
 # Trivy
@@ -333,103 +331,103 @@ trivy image myorg/my-quarkus-app:1.0.0
 grype myorg/my-quarkus-app:1.0.0
 ```
 
-## Phase 9: Configuration Validation
+## Faz 9: Yapılandırma Doğrulama
 
 ```bash
-# Check all configuration properties
+# Tüm yapılandırma özelliklerini kontrol et
 mvn quarkus:info
 
-# List all config sources
+# Tüm yapılandırma kaynaklarını listele
 curl http://localhost:8080/q/dev/io.quarkus.quarkus-vertx-http/config
 ```
 
-### Environment-Specific Checks
+### Ortama Özgü Kontroller
 
-- [ ] Database URLs configured per environment
-- [ ] Secrets externalized (Vault, env vars)
-- [ ] Logging levels appropriate
-- [ ] CORS origins set correctly
-- [ ] Rate limiting configured
-- [ ] Monitoring/tracing enabled
+- [ ] Veritabanı URL'leri ortam başına yapılandırılmış
+- [ ] Gizli bilgiler dışsallaştırılmış (Vault, ortam değişkenleri)
+- [ ] Loglama seviyeleri uygun
+- [ ] CORS origin'leri doğru ayarlanmış
+- [ ] Rate limiting yapılandırılmış
+- [ ] İzleme/tracing etkinleştirilmiş
 
-## Phase 10: Documentation Review
+## Faz 10: Dokümantasyon İncelemesi
 
-- [ ] OpenAPI/Swagger docs up to date (`/q/swagger-ui`)
-- [ ] README has setup instructions
-- [ ] API changes documented
-- [ ] Migration guide for breaking changes
-- [ ] Configuration properties documented
+- [ ] OpenAPI/Swagger dokümanları güncel (`/q/swagger-ui`)
+- [ ] README kurulum talimatlarını içeriyor
+- [ ] API değişiklikleri belgelenmiş
+- [ ] Breaking change'ler için migration rehberi
+- [ ] Yapılandırma özellikleri belgelenmiş
 
-Generate OpenAPI spec:
+OpenAPI spec oluşturun:
 ```bash
 curl http://localhost:8080/q/openapi -o openapi.json
 ```
 
-## Verification Checklist
+## Doğrulama Kontrol Listesi
 
-### Code Quality
-- [ ] Build passes without warnings
-- [ ] Static analysis clean (no high/medium issues)
-- [ ] Code follows team conventions
-- [ ] No commented-out code or TODOs in PR
+### Kod Kalitesi
+- [ ] Build uyarısız geçiyor
+- [ ] Static analiz temiz (yüksek/orta sorun yok)
+- [ ] Kod ekip kurallarını takip ediyor
+- [ ] PR'da yorum satırına alınmış kod veya TODO yok
 
-### Testing
-- [ ] All tests pass
-- [ ] Code coverage ≥ 80%
-- [ ] Integration tests with real database
-- [ ] Security tests pass
-- [ ] Performance within acceptable limits
+### Test
+- [ ] Tüm testler geçiyor
+- [ ] Kod kapsamı ≥ %80
+- [ ] Gerçek veritabanıyla entegrasyon testleri
+- [ ] Güvenlik testleri geçiyor
+- [ ] Performans kabul edilebilir sınırlar içinde
 
-### Security
-- [ ] No dependency vulnerabilities
-- [ ] Authentication/authorization tested
-- [ ] Input validation complete
-- [ ] Secrets not in source code
-- [ ] Security headers configured
+### Güvenlik
+- [ ] Bağımlılık güvenlik açığı yok
+- [ ] Kimlik doğrulama/yetkilendirme test edilmiş
+- [ ] Girdi doğrulama tamamlanmış
+- [ ] Gizli bilgiler kaynak kodda değil
+- [ ] Güvenlik başlıkları yapılandırılmış
 
 ### Deployment
-- [ ] Native compilation successful
-- [ ] Container image builds
-- [ ] Health checks respond correctly
-- [ ] Configuration valid for target environment
+- [ ] Native derleme başarılı
+- [ ] Container image oluşturuluyor
+- [ ] Sağlık kontrolleri doğru yanıt veriyor
+- [ ] Hedef ortam için yapılandırma geçerli
 
 ### Native Image
-- [ ] Native executable builds
-- [ ] Native tests pass
-- [ ] Startup time < 100ms
-- [ ] Memory footprint acceptable
+- [ ] Native executable oluşturuluyor
+- [ ] Native testler geçiyor
+- [ ] Başlangıç süresi < 100ms
+- [ ] Bellek ayak izi kabul edilebilir
 
-## Automated Verification Script
+## Otomatik Doğrulama Script'i
 
 ```bash
 #!/bin/bash
 set -e
 
-echo "=== Phase 1: Build ==="
+echo "=== Faz 1: Build ==="
 mvn clean verify -DskipTests
 
-echo "=== Phase 2: Static Analysis ==="
+echo "=== Faz 2: Static Analiz ==="
 mvn checkstyle:check pmd:check spotbugs:check
 
-echo "=== Phase 3: Tests + Coverage ==="
+echo "=== Faz 3: Testler + Kapsam ==="
 mvn test jacoco:report jacoco:check
 
-echo "=== Phase 4: Security Scan ==="
+echo "=== Faz 4: Güvenlik Taraması ==="
 mvn org.owasp:dependency-check-maven:check
 
-echo "=== Phase 5: Native Compilation ==="
+echo "=== Faz 5: Native Derleme ==="
 mvn package -Dnative -Dquarkus.native.container-build=true
 
-echo "=== All Phases Complete ==="
-echo "Review reports:"
-echo "  - Coverage: target/site/jacoco/index.html"
-echo "  - Security: target/dependency-check-report.html"
+echo "=== Tüm Fazlar Tamamlandı ==="
+echo "Raporları inceleyin:"
+echo "  - Kapsam: target/site/jacoco/index.html"
+echo "  - Güvenlik: target/dependency-check-report.html"
 echo "  - Native: target/*-runner"
 ```
 
-## CI/CD Integration
+## CI/CD Entegrasyonu
 
-### GitHub Actions Example
+### GitHub Actions Örneği
 
 ```yaml
 name: Verification
@@ -469,15 +467,15 @@ jobs:
           files: target/site/jacoco/jacoco.xml
 ```
 
-## Best Practices
+## En İyi Uygulamalar
 
-- Run verification loop before every PR
-- Automate in CI/CD pipeline
-- Fix issues immediately; don't accumulate debt
-- Keep coverage above 80%
-- Update dependencies regularly
-- Test native compilation periodically
-- Monitor performance trends
-- Document breaking changes
-- Review security scan results
-- Validate configuration for each environment
+- Her PR öncesi doğrulama döngüsünü çalıştırın
+- CI/CD pipeline'ında otomatize edin
+- Sorunları hemen düzeltin; borç biriktirmeyin
+- Kapsamı %80'in üzerinde tutun
+- Bağımlılıkları düzenli olarak güncelleyin
+- Native derlemeyi periyodik olarak test edin
+- Performans trendlerini izleyin
+- Breaking change'leri belgeleyin
+- Güvenlik tarama sonuçlarını inceleyin
+- Her ortam için yapılandırmayı doğrulayın

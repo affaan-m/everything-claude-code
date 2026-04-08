@@ -4,26 +4,24 @@ description: Quarkus 3.x LTS architecture patterns with Camel for messaging, RES
 origin: ECC
 ---
 
-> **Not / Note**: Bu dosya henuz Turkceye cevrilmemistir, su anda Ingilizce orijinaldir. Ceviri PR'lari memnuniyetle karsilanir.
+# Quarkus Geliştirme Desenleri
 
-# Quarkus Development Patterns
+Apache Camel ile bulut-native, event-driven servisler için Quarkus 3.x mimari ve API desenleri.
 
-Quarkus 3.x architecture and API patterns for cloud-native, event-driven services with Apache Camel.
+## Ne Zaman Aktif Edilir
 
-## When to Activate
+- JAX-RS veya RESTEasy Reactive ile REST API'leri oluşturma
+- Resource → service → repository katmanlarını yapılandırma
+- Apache Camel ve RabbitMQ ile event-driven desenler uygulama
+- Hibernate Panache, caching veya reaktif akışları yapılandırma
+- Validation, exception mapping veya sayfalama ekleme
+- Dev/staging/production ortamları için profiller kurma (YAML yapılandırma)
+- LogContext ve Logback/Logstash encoder ile özel loglama
+- Async işlemler için CompletableFuture ile çalışma
+- Koşullu akış işleme uygulama
+- GraalVM native derleme ile çalışma
 
-- Building REST APIs with JAX-RS or RESTEasy Reactive
-- Structuring resource → service → repository layers
-- Implementing event-driven patterns with Apache Camel and RabbitMQ
-- Configuring Hibernate Panache, caching, or reactive streams
-- Adding validation, exception mapping, or pagination
-- Setting up profiles for dev/staging/production environments (YAML config)
-- Custom logging with LogContext and Logback/Logstash encoder
-- Working with CompletableFuture for async operations
-- Implementing conditional flow processing
-- Working with GraalVM native compilation
-
-## Service Layer with Multiple Dependencies (Lombok)
+## Birden Fazla Bağımlılıklı Service Katmanı (Lombok)
 
 ```java
 @Slf4j
@@ -43,7 +41,7 @@ public class As2ProcessingService {
             
             String structureIdPartner = logContext.get(As2Constants.STRUCTURE_ID);
             
-            // Conditional flow logic
+            // Koşullu akış mantığı
             boolean isChorusFlow = Boolean.parseBoolean(logContext.get(As2Constants.CHORUS_FLOW));
             log.info("Is CHORUS_FLOW message: {}", isChorusFlow);
             
@@ -62,7 +60,7 @@ public class As2ProcessingService {
             
             log.info("Invoice validation completed. Message is valid");
             
-            // CompletableFuture async operation
+            // CompletableFuture async işlemi
             try(InputStream inputStream = Files.newInputStream(filePath)) {
                 CompletableFuture<StoredDocumentInfo> documentInfoCompletableFuture = 
                     fileStorageService.uploadOriginalFile(inputStream, 
@@ -85,7 +83,7 @@ public class As2ProcessingService {
                     documentInfo, originalFileName, structureIdPartner, 
                     flowProfile, invoiceValidationResult.getDocumentHash());
                 
-                // Async Camel publishing
+                // Async Camel yayınlama
                 businessRulesPublisher.publishAsync(payload);
                 this.eventService.createSuccessEvent(payload, "BUSINESS_RULES_MESSAGE_SENT");
             }
@@ -94,16 +92,16 @@ public class As2ProcessingService {
 }
 ```
 
-**Key Patterns:**
-- `@RequiredArgsConstructor` for constructor injection via Lombok
-- `@Slf4j` for Logback logging
-- Scoped LogContext with try-with-resources
-- Conditional flow logic based on runtime parameters
-- CompletableFuture with `.join()` for async operations
-- Event tracking for success/error scenarios
-- Async Camel message publishing
+**Temel Desenler:**
+- Constructor injection için Lombok üzerinden `@RequiredArgsConstructor`
+- Logback loglama için `@Slf4j`
+- try-with-resources ile kapsamlı LogContext
+- Runtime parametrelerine dayalı koşullu akış mantığı
+- Async işlemler için `.join()` ile CompletableFuture
+- Başarı/hata senaryoları için event takibi
+- Async Camel mesaj yayınlama
 
-## Custom Logging Context Pattern (Logback)
+## Özel Loglama Bağlamı Deseni (Logback)
 
 ```java
 @ApplicationScoped
@@ -112,14 +110,14 @@ public class ProcessingService {
     public void processDocument(Document doc) {
         LogContext logContext = CustomLog.getCurrentContext();
         try (SafeAutoCloseable ignored = CustomLog.startScope(logContext)) {
-            // Add context to all log statements
+            // Tüm log ifadelerine bağlam ekle
             logContext.put("documentId", doc.getId().toString());
             logContext.put("documentType", doc.getType());
             logContext.put("userId", SecurityContext.getUserId());
             
             log.info("Starting document processing");
             
-            // All logs within this scope inherit the context
+            // Bu kapsam içindeki tüm loglar bağlamı devralır
             processInternal(doc);
             
             log.info("Document processing completed");
@@ -131,7 +129,7 @@ public class ProcessingService {
 }
 ```
 
-**Logback Configuration (logback.xml):**
+**Logback Yapılandırması (logback.xml):**
 
 ```xml
 <configuration>
@@ -149,7 +147,7 @@ public class ProcessingService {
 </configuration>
 ```
 
-## Event Service Pattern
+## Event Service Deseni
 
 ```java
 @ApplicationScoped
@@ -181,13 +179,13 @@ public class EventService {
     }
     
     private String serializePayload(Object payload) {
-        // JSON serialization
+        // JSON serileştirme
         return objectMapper.writeValueAsString(payload);
     }
 }
 ```
 
-## Camel Message Publishing (RabbitMQ)
+## Camel Mesaj Yayınlama (RabbitMQ)
 
 ```java
 @ApplicationScoped
@@ -215,7 +213,7 @@ public class BusinessRulesPublisher {
 }
 ```
 
-**Camel Route Configuration:**
+**Camel Route Yapılandırması:**
 
 ```java
 @ApplicationScoped
@@ -242,7 +240,7 @@ public class BusinessRulesRoute extends RouteBuilder {
 }
 ```
 
-## Camel Direct Routes (In-Memory)
+## Camel Direct Route'ları (Bellek İçi)
 
 ```java
 @ApplicationScoped
@@ -250,13 +248,13 @@ public class DocumentProcessingRoute extends RouteBuilder {
     
     @Override
     public void configure() {
-        // Error handling
+        // Hata yönetimi
         onException(ValidationException.class)
             .handled(true)
             .to("direct:validation-error-handler")
             .log("Validation error: ${exception.message}");
         
-        // Main processing route
+        // Ana işleme route'u
         from("direct:process-document")
             .routeId("document-processing")
             .log("Processing document: ${header.documentId}")
@@ -278,7 +276,7 @@ public class DocumentProcessingRoute extends RouteBuilder {
 }
 ```
 
-## Camel File Processing
+## Camel Dosya İşleme
 
 ```java
 @ApplicationScoped
@@ -308,7 +306,7 @@ public class FileMonitoringRoute extends RouteBuilder {
 }
 ```
 
-## Camel Bean Invocation
+## Camel Bean Çağrısı
 
 ```java
 @ApplicationScoped
@@ -328,7 +326,7 @@ public class InvoiceRoute extends RouteBuilder {
 }
 ```
 
-## REST API Structure
+## REST API Yapısı
 
 ```java
 @Path("/api/documents")
@@ -367,7 +365,7 @@ public class DocumentResource {
 }
 ```
 
-## Repository Pattern (Panache Repository)
+## Repository Deseni (Panache Repository)
 
 ```java
 @ApplicationScoped
@@ -389,7 +387,7 @@ public class DocumentRepository implements PanacheRepository<Document> {
 }
 ```
 
-## Service Layer with Transactions
+## Transaction'lı Service Katmanı
 
 ```java
 @ApplicationScoped
@@ -425,7 +423,7 @@ public class DocumentService {
 }
 ```
 
-## DTOs and Validation
+## DTO'lar ve Validation
 
 ```java
 public record CreateDocumentRequest(
@@ -442,7 +440,7 @@ public record DocumentResponse(Long id, String referenceNumber, DocumentStatus s
 }
 ```
 
-## Exception Mapping
+## Exception Eşleme
 
 ```java
 @Provider
@@ -473,7 +471,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 }
 ```
 
-## CompletableFuture Async Operations
+## CompletableFuture Async İşlemleri
 
 ```java
 @ApplicationScoped
@@ -533,10 +531,10 @@ public class DocumentCacheService {
 }
 ```
 
-## Configuration as YAML
+## YAML Yapılandırması
 
 ```yaml
-# application.yml
+# application.yml (uygulama yapılandırması)
 "%dev":
   quarkus:
     datasource:
@@ -580,7 +578,7 @@ public class DocumentCacheService {
     username: ${RABBITMQ_USER}
     password: ${RABBITMQ_PASSWORD}
 
-# Camel configuration
+# Camel yapılandırması
 camel:
   rabbitmq:
     queue:
@@ -588,7 +586,7 @@ camel:
       invoice-processing: invoice-processing-queue
 ```
 
-## Health Checks
+## Sağlık Kontrolleri
 
 ```java
 @Readiness
@@ -626,7 +624,7 @@ public class CamelHealthCheck implements HealthCheck {
 }
 ```
 
-## Dependencies (Maven)
+## Bağımlılıklar (Maven)
 
 ```xml
 <properties>
@@ -657,7 +655,7 @@ public class CamelHealthCheck implements HealthCheck {
 </dependencyManagement>
 
 <dependencies>
-    <!-- Quarkus Core -->
+    <!-- Quarkus Çekirdek -->
     <dependency>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-arc</artifactId>
@@ -667,7 +665,7 @@ public class CamelHealthCheck implements HealthCheck {
         <artifactId>quarkus-config-yaml</artifactId>
     </dependency>
     
-    <!-- Camel Extensions -->
+    <!-- Camel Uzantıları -->
     <dependency>
         <groupId>org.apache.camel.quarkus</groupId>
         <artifactId>camel-quarkus-spring-rabbitmq</artifactId>
@@ -689,7 +687,7 @@ public class CamelHealthCheck implements HealthCheck {
         <scope>provided</scope>
     </dependency>
     
-    <!-- Logging -->
+    <!-- Loglama -->
     <dependency>
         <groupId>io.quarkiverse.logging.logback</groupId>
         <artifactId>quarkus-logging-logback</artifactId>
@@ -701,56 +699,56 @@ public class CamelHealthCheck implements HealthCheck {
 </dependencies>
 ```
 
-## Best Practices
+## En İyi Uygulamalar
 
-### Architecture
-- Use `@RequiredArgsConstructor` with Lombok for constructor injection
-- Keep service layer thin; delegate complex logic to specialized classes
-- Use Camel routes for message routing and integration patterns
-- Prefer Panache Repository pattern for data access
+### Mimari
+- Constructor injection için Lombok üzerinden `@RequiredArgsConstructor` kullanın
+- Service katmanını ince tutun; karmaşık mantığı uzmanlaşmış sınıflara devredin
+- Mesaj yönlendirme ve entegrasyon desenleri için Camel route'larını kullanın
+- Veri erişimi için Panache Repository desenini tercih edin
 
 ### Event-Driven
-- Always track operations with EventService (success/error events)
-- Use Camel `direct:` endpoints for in-memory routing
-- Use `spring-rabbitmq` component for RabbitMQ integration
-- Implement async publishing with `ProducerTemplate.asyncSendBody()`
+- EventService ile işlemleri her zaman takip edin (başarı/hata eventleri)
+- Bellek içi yönlendirme için Camel `direct:` endpoint'leri kullanın
+- RabbitMQ entegrasyonu için `spring-rabbitmq` bileşenini kullanın
+- `ProducerTemplate.asyncSendBody()` ile async yayınlama uygulayın
 
-### Logging
-- Use Logback with Logstash encoder for structured logging
-- Propagate LogContext through service calls with `SafeAutoCloseable`
-- Add contextual information to LogContext for request tracing
-- Use `@Slf4j` instead of manual logger instantiation
+### Loglama
+- Yapılandırılmış loglama için Logstash encoder ile Logback kullanın
+- LogContext'i `SafeAutoCloseable` ile servis çağrıları boyunca yayın
+- İstek takibi için LogContext'e bağlamsal bilgi ekleyin
+- Manuel logger oluşturma yerine `@Slf4j` kullanın
 
-### Async Operations
-- Use CompletableFuture for non-blocking I/O operations
-- Call `.join()` when you need to wait for completion
-- Handle exceptions from CompletableFuture properly
-- Pass LogContext to async operations for tracing
+### Async İşlemler
+- Bloklamayan I/O işlemleri için CompletableFuture kullanın
+- Tamamlanmayı beklemek gerektiğinde `.join()` çağırın
+- CompletableFuture'dan gelen exception'ları düzgün şekilde ele alın
+- Takip için async işlemlere LogContext geçirin
 
-### Configuration
-- Use YAML configuration (`quarkus-config-yaml`)
-- Profile-aware configuration for dev/test/prod environments
-- Externalize sensitive configuration to environment variables
-- Use `@ConfigProperty` for type-safe config injection
+### Yapılandırma
+- YAML yapılandırmasını kullanın (`quarkus-config-yaml`)
+- Dev/test/prod ortamları için profil-duyarlı yapılandırma
+- Hassas yapılandırmayı ortam değişkenlerine dışsallaştırın
+- Tip-güvenli yapılandırma injection için `@ConfigProperty` kullanın
 
 ### Validation
-- Validate at resource layer with `@Valid`
-- Use Bean Validation annotations on DTOs
-- Map exceptions to proper HTTP responses with `@Provider`
+- Resource katmanında `@Valid` ile doğrulayın
+- DTO'larda Bean Validation annotasyonları kullanın
+- Exception'ları `@Provider` ile uygun HTTP yanıtlarına eşleyin
 
-### Transactions
-- Use `@Transactional` on service methods that modify data
-- Keep transactions short and focused
-- Avoid calling async operations within transactions
+### Transaction'lar
+- Veri değiştiren service metodlarında `@Transactional` kullanın
+- Transaction'ları kısa ve odaklı tutun
+- Transaction'lar içinden async işlem çağırmaktan kaçının
 
-### Testing
-- Use `camel-quarkus-junit5` for route testing
-- Use AssertJ for assertions
-- Mock all external dependencies
-- Test conditional flow logic thoroughly
+### Test
+- Route testi için `camel-quarkus-junit5` kullanın
+- Assertion'lar için AssertJ kullanın
+- Tüm harici bağımlılıkları mock'layın
+- Koşullu akış mantığını kapsamlı biçimde test edin
 
-### Quarkus-Specific
-- Stay on latest LTS version (3.x)
-- Use Quarkus dev mode for hot reload
-- Add health checks for production readiness
-- Test native compilation compatibility periodically
+### Quarkus'a Özgü
+- En son LTS sürümünde kalın (3.x)
+- Hot reload için Quarkus dev modunu kullanın
+- Production hazırlığı için sağlık kontrolleri ekleyin
+- Native derleme uyumluluğunu periyodik olarak test edin

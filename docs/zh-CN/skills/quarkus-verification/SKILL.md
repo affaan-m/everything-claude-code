@@ -1,25 +1,23 @@
 ---
 name: quarkus-verification
-description: "Verification loop for Quarkus projects: build, static analysis, tests with coverage, security scans, native compilation, and diff review before release or PR."
+description: "Quarkus项目验证循环：构建、静态分析、带覆盖率的测试、安全扫描、原生编译以及发布或PR前的diff审查。"
 origin: ECC
 ---
 
-> **Note / 注意**: 本文件尚未翻译为中文，目前为英文原版。欢迎提交翻译 PR。
+# Quarkus 验证循环
 
-# Quarkus Verification Loop
+在PR前、重大变更后和部署前运行。
 
-Run before PRs, after major changes, and pre-deploy.
+## 何时激活
 
-## When to Activate
+- 为Quarkus服务打开PR前
+- 大规模重构或依赖升级后
+- 预发布或生产的部署前验证
+- 运行完整的构建 → lint → 测试 → 安全扫描 → 原生编译流水线
+- 验证测试覆盖率达到阈值（80%+）
+- 测试原生镜像兼容性
 
-- Before opening a pull request for a Quarkus service
-- After major refactoring or dependency upgrades
-- Pre-deployment verification for staging or production
-- Running full build → lint → test → security scan → native compilation pipeline
-- Validating test coverage meets thresholds (80%+)
-- Testing native image compatibility
-
-## Phase 1: Build
+## 阶段1: 构建
 
 ```bash
 # Maven
@@ -29,17 +27,17 @@ mvn clean verify -DskipTests
 ./gradlew clean assemble -x test
 ```
 
-If build fails, stop and fix compilation errors.
+构建失败时，停止并修复编译错误。
 
-## Phase 2: Static Analysis
+## 阶段2: 静态分析
 
-### Checkstyle, PMD, SpotBugs (Maven)
+### Checkstyle、PMD、SpotBugs（Maven）
 
 ```bash
 mvn checkstyle:check pmd:check spotbugs:check
 ```
 
-### SonarQube (if configured)
+### SonarQube（如已配置）
 
 ```bash
 mvn sonar:sonar \
@@ -48,33 +46,33 @@ mvn sonar:sonar \
   -Dsonar.login=${SONAR_TOKEN}
 ```
 
-### Common Issues to Address
+### 需要解决的常见问题
 
-- Unused imports or variables
-- Complex methods (high cyclomatic complexity)
-- Potential null pointer dereferences
-- Security issues flagged by SpotBugs
+- 未使用的导入或变量
+- 复杂方法（高圈复杂度）
+- 潜在的空指针解引用
+- SpotBugs标记的安全问题
 
-## Phase 3: Tests + Coverage
+## 阶段3: 测试 + 覆盖率
 
 ```bash
-# Run all tests
+# 运行所有测试
 mvn clean test
 
-# Generate coverage report
+# 生成覆盖率报告
 mvn jacoco:report
 
-# Enforce coverage threshold (80%)
+# 强制覆盖率阈值（80%）
 mvn jacoco:check
 
-# Or with Gradle
+# 或使用Gradle
 ./gradlew test jacocoTestReport jacocoTestCoverageVerification
 ```
 
-### Test Categories
+### 测试类别
 
-#### Unit Tests
-Test service logic with mocked dependencies:
+#### 单元测试
+使用模拟依赖测试服务逻辑:
 
 ```java
 @ExtendWith(MockitoExtension.class)
@@ -99,8 +97,8 @@ class UserServiceTest {
 }
 ```
 
-#### Integration Tests
-Test with real database (Testcontainers):
+#### 集成测试
+使用真实数据库（Testcontainers）测试:
 
 ```java
 @QuarkusTest
@@ -126,8 +124,8 @@ class UserRepositoryIntegrationTest {
 }
 ```
 
-#### API Tests
-Test REST endpoints with REST Assured:
+#### API测试
+使用REST Assured测试REST端点:
 
 ```java
 @QuarkusTest
@@ -160,324 +158,157 @@ class UserResourceTest {
 }
 ```
 
-### Coverage Report
+### 覆盖率报告
 
-Check `target/site/jacoco/index.html` for detailed coverage:
-- Overall line coverage (target: 80%+)
-- Branch coverage (target: 70%+)
-- Identify uncovered critical paths
+检查`target/site/jacoco/index.html`获取详细覆盖率:
+- 总体行覆盖率（目标: 80%+）
+- 分支覆盖率（目标: 70%+）
+- 识别未覆盖的关键路径
 
-## Phase 4: Security Scanning
+## 阶段4: 安全扫描
 
-### Dependency Vulnerabilities (Maven)
+### 依赖漏洞（Maven）
 
 ```bash
 mvn org.owasp:dependency-check-maven:check
 ```
 
-Review `target/dependency-check-report.html` for CVEs.
+查看`target/dependency-check-report.html`中的CVE。
 
-### Quarkus Security Audit
+### Quarkus安全审计
 
 ```bash
-# Check vulnerable extensions
+# 检查有漏洞的扩展
 mvn quarkus:audit
 
-# List all extensions
+# 列出所有扩展
 mvn quarkus:list-extensions
 ```
 
-### OWASP ZAP (API Security Testing)
+### 常见安全检查
+
+- [ ] 所有密钥在环境变量中（不在代码中）
+- [ ] 所有端点有输入验证
+- [ ] 认证/授权已配置
+- [ ] CORS正确配置
+- [ ] 安全头已设置
+- [ ] 密码使用BCrypt哈希
+- [ ] SQL注入保护（参数化查询）
+- [ ] 公共端点有速率限制
+
+## 阶段5: 原生编译
+
+测试GraalVM原生镜像兼容性:
 
 ```bash
-docker run -t owasp/zap2docker-stable zap-api-scan.py \
-  -t http://localhost:8080/q/openapi \
-  -f openapi
-```
-
-### Common Security Checks
-
-- [ ] All secrets in environment variables (not in code)
-- [ ] Input validation on all endpoints
-- [ ] Authentication/authorization configured
-- [ ] CORS properly configured
-- [ ] Security headers set
-- [ ] Passwords hashed with BCrypt
-- [ ] SQL injection protection (parameterized queries)
-- [ ] Rate limiting on public endpoints
-
-## Phase 5: Native Compilation
-
-Test GraalVM native image compatibility:
-
-```bash
-# Build native executable
+# 构建原生可执行文件
 mvn package -Dnative
 
-# Or with container
+# 或使用容器
 mvn package -Dnative -Dquarkus.native.container-build=true
 
-# Test native executable
+# 测试原生可执行文件
 ./target/*-runner
 
-# Run basic smoke tests
+# 运行基本冒烟测试
 curl http://localhost:8080/q/health/live
 curl http://localhost:8080/q/health/ready
 ```
 
-### Native Image Troubleshooting
+### 原生镜像故障排除
 
-Common issues:
-- **Reflection**: Add reflection config for dynamic classes
-- **Resources**: Include resources with `quarkus.native.resources.includes`
-- **JNI**: Register JNI classes if using native libraries
+常见问题:
+- **Reflection**: 为动态类添加反射配置
+- **Resources**: 使用`quarkus.native.resources.includes`包含资源
+- **JNI**: 使用原生库时注册JNI类
 
-Example reflection config:
+反射配置示例:
 ```java
 @RegisterForReflection(targets = {MyDynamicClass.class})
 public class ReflectionConfiguration {}
 ```
 
-## Phase 6: Performance Testing
-
-### Load Testing with K6
-
-```javascript
-// load-test.js
-import http from 'k6/http';
-import { check } from 'k6';
-
-export const options = {
-  stages: [
-    { duration: '30s', target: 50 },
-    { duration: '1m', target: 100 },
-    { duration: '30s', target: 0 },
-  ],
-};
-
-export default function () {
-  const res = http.get('http://localhost:8080/api/markets');
-  check(res, {
-    'status is 200': (r) => r.status === 200,
-    'response time < 200ms': (r) => r.timings.duration < 200,
-  });
-}
-```
-
-Run:
-```bash
-k6 run load-test.js
-```
-
-### Metrics to Monitor
-
-- Response time (p50, p95, p99)
-- Throughput (requests/sec)
-- Error rate
-- Memory usage
-- CPU usage
-
-## Phase 7: Health Checks
+## 阶段6: 健康检查
 
 ```bash
-# Liveness
+# 存活检查
 curl http://localhost:8080/q/health/live
 
-# Readiness
+# 就绪检查
 curl http://localhost:8080/q/health/ready
 
-# All health checks
+# 所有健康检查
 curl http://localhost:8080/q/health
 
-# Metrics (if enabled)
+# 指标（如启用）
 curl http://localhost:8080/q/metrics
 ```
 
-Expected responses:
-```json
-{
-  "status": "UP",
-  "checks": [
-    {
-      "name": "Database connection",
-      "status": "UP"
-    }
-  ]
-}
-```
+## 验证清单
 
-## Phase 8: Container Image Build
+### 代码质量
+- [ ] 构建无警告通过
+- [ ] 静态分析干净（无高/中问题）
+- [ ] 代码遵循团队规范
+- [ ] PR中无注释代码或TODO
 
-```bash
-# Build container image
-mvn package -Dquarkus.container-image.build=true
+### 测试
+- [ ] 所有测试通过
+- [ ] 代码覆盖率 ≥ 80%
+- [ ] 使用真实数据库的集成测试
+- [ ] 安全测试通过
+- [ ] 性能在可接受范围内
 
-# Or with specific registry
-mvn package \
-  -Dquarkus.container-image.build=true \
-  -Dquarkus.container-image.registry=docker.io \
-  -Dquarkus.container-image.group=myorg \
-  -Dquarkus.container-image.tag=1.0.0
+### 安全
+- [ ] 无依赖漏洞
+- [ ] 认证/授权已测试
+- [ ] 输入验证完成
+- [ ] 源代码中无密钥
+- [ ] 安全头已配置
 
-# Test container
-docker run -p 8080:8080 myorg/my-quarkus-app:1.0.0
-```
+### 部署
+- [ ] 原生编译成功
+- [ ] 容器镜像可构建
+- [ ] 健康检查正确响应
+- [ ] 目标环境配置有效
 
-### Container Security Scan
-
-```bash
-# Trivy
-trivy image myorg/my-quarkus-app:1.0.0
-
-# Grype
-grype myorg/my-quarkus-app:1.0.0
-```
-
-## Phase 9: Configuration Validation
-
-```bash
-# Check all configuration properties
-mvn quarkus:info
-
-# List all config sources
-curl http://localhost:8080/q/dev/io.quarkus.quarkus-vertx-http/config
-```
-
-### Environment-Specific Checks
-
-- [ ] Database URLs configured per environment
-- [ ] Secrets externalized (Vault, env vars)
-- [ ] Logging levels appropriate
-- [ ] CORS origins set correctly
-- [ ] Rate limiting configured
-- [ ] Monitoring/tracing enabled
-
-## Phase 10: Documentation Review
-
-- [ ] OpenAPI/Swagger docs up to date (`/q/swagger-ui`)
-- [ ] README has setup instructions
-- [ ] API changes documented
-- [ ] Migration guide for breaking changes
-- [ ] Configuration properties documented
-
-Generate OpenAPI spec:
-```bash
-curl http://localhost:8080/q/openapi -o openapi.json
-```
-
-## Verification Checklist
-
-### Code Quality
-- [ ] Build passes without warnings
-- [ ] Static analysis clean (no high/medium issues)
-- [ ] Code follows team conventions
-- [ ] No commented-out code or TODOs in PR
-
-### Testing
-- [ ] All tests pass
-- [ ] Code coverage ≥ 80%
-- [ ] Integration tests with real database
-- [ ] Security tests pass
-- [ ] Performance within acceptable limits
-
-### Security
-- [ ] No dependency vulnerabilities
-- [ ] Authentication/authorization tested
-- [ ] Input validation complete
-- [ ] Secrets not in source code
-- [ ] Security headers configured
-
-### Deployment
-- [ ] Native compilation successful
-- [ ] Container image builds
-- [ ] Health checks respond correctly
-- [ ] Configuration valid for target environment
-
-### Native Image
-- [ ] Native executable builds
-- [ ] Native tests pass
-- [ ] Startup time < 100ms
-- [ ] Memory footprint acceptable
-
-## Automated Verification Script
+## 自动化验证脚本
 
 ```bash
 #!/bin/bash
 set -e
 
-echo "=== Phase 1: Build ==="
+echo "=== 阶段1: 构建 ==="
 mvn clean verify -DskipTests
 
-echo "=== Phase 2: Static Analysis ==="
+echo "=== 阶段2: 静态分析 ==="
 mvn checkstyle:check pmd:check spotbugs:check
 
-echo "=== Phase 3: Tests + Coverage ==="
+echo "=== 阶段3: 测试 + 覆盖率 ==="
 mvn test jacoco:report jacoco:check
 
-echo "=== Phase 4: Security Scan ==="
+echo "=== 阶段4: 安全扫描 ==="
 mvn org.owasp:dependency-check-maven:check
 
-echo "=== Phase 5: Native Compilation ==="
+echo "=== 阶段5: 原生编译 ==="
 mvn package -Dnative -Dquarkus.native.container-build=true
 
-echo "=== All Phases Complete ==="
-echo "Review reports:"
-echo "  - Coverage: target/site/jacoco/index.html"
-echo "  - Security: target/dependency-check-report.html"
-echo "  - Native: target/*-runner"
+echo "=== 所有阶段完成 ==="
+echo "查看报告:"
+echo "  - 覆盖率: target/site/jacoco/index.html"
+echo "  - 安全: target/dependency-check-report.html"
+echo "  - 原生: target/*-runner"
 ```
 
-## CI/CD Integration
+## 最佳实践
 
-### GitHub Actions Example
-
-```yaml
-name: Verification
-
-on: [push, pull_request]
-
-jobs:
-  verify:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Set up JDK 21
-        uses: actions/setup-java@v3
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-      
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-      
-      - name: Build
-        run: mvn clean verify -DskipTests
-      
-      - name: Test with Coverage
-        run: mvn test jacoco:report jacoco:check
-      
-      - name: Security Scan
-        run: mvn org.owasp:dependency-check-maven:check
-      
-      - name: Upload Coverage
-        uses: codecov/codecov-action@v3
-        with:
-          files: target/site/jacoco/jacoco.xml
-```
-
-## Best Practices
-
-- Run verification loop before every PR
-- Automate in CI/CD pipeline
-- Fix issues immediately; don't accumulate debt
-- Keep coverage above 80%
-- Update dependencies regularly
-- Test native compilation periodically
-- Monitor performance trends
-- Document breaking changes
-- Review security scan results
-- Validate configuration for each environment
+- 每次PR前运行验证循环
+- 在CI/CD流水线中自动化
+- 立即修复问题，不积累技术债务
+- 保持覆盖率在80%以上
+- 定期更新依赖
+- 定期测试原生编译
+- 监控性能趋势
+- 记录破坏性变更
+- 审查安全扫描结果
+- 验证每个环境的配置

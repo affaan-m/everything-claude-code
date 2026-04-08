@@ -1,32 +1,29 @@
 ---
 name: quarkus-security
-description: Quarkus Security best practices for authentication, authorization, JWT/OIDC, RBAC, input validation, CSRF, secrets management, and dependency security.
+description: Quarkusセキュリティのベストプラクティス：認証、認可、JWT/OIDC、RBAC、入力バリデーション、CSRF、シークレット管理、依存関係セキュリティ。
 origin: ECC
 ---
 
-> **Note / 注意**: このファイルはまだ日本語に翻訳されていません。現在は英語の原文です。翻訳PRを歓迎します。
+# Quarkus セキュリティレビュー
 
-# Quarkus Security Review
+認証、認可、入力バリデーションによるQuarkusアプリケーションのセキュリティベストプラクティス。
 
-Best practices for securing Quarkus applications with authentication, authorization, and input validation.
+## いつアクティブにするか
 
-## When to Activate
+- 認証の追加（JWT、OIDC、Basic Auth）
+- @RolesAllowedまたはSecurityIdentityによる認可の実装
+- ユーザー入力のバリデーション（Bean Validation、カスタムバリデータ）
+- CORSまたはセキュリティヘッダーの構成
+- シークレット管理（Vault、環境変数、構成ソース）
+- レート制限またはブルートフォース保護の追加
+- 依存関係のCVEスキャン
+- MicroProfile JWTまたはSmallRye JWTの使用
 
-- Adding authentication (JWT, OIDC, Basic Auth)
-- Implementing authorization with @RolesAllowed or SecurityIdentity
-- Validating user input (Bean Validation, custom validators)
-- Configuring CORS or security headers
-- Managing secrets (Vault, environment variables, config sources)
-- Adding rate limiting or brute-force protection
-- Scanning dependencies for CVEs
-- Working with MicroProfile JWT or SmallRye JWT
+## 認証
 
-## Authentication
-
-### JWT Authentication
+### JWT認証
 
 ```java
-// Resource protected with JWT
 @Path("/api/protected")
 @Authenticated
 public class ProtectedResource {
@@ -50,7 +47,7 @@ public class ProtectedResource {
 }
 ```
 
-Configuration (application.properties):
+構成（application.properties）:
 ```properties
 mp.jwt.verify.publickey.location=publicKey.pem
 mp.jwt.verify.issuer=https://auth.example.com
@@ -61,7 +58,7 @@ quarkus.oidc.client-id=backend-service
 quarkus.oidc.credentials.secret=${OIDC_SECRET}
 ```
 
-### Custom Authentication Filter
+### カスタム認証フィルター
 
 ```java
 @Provider
@@ -77,7 +74,6 @@ public class CustomAuthFilter implements ContainerRequestFilter {
     
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
       String token = authHeader.substring(7);
-      // Validate token and set SecurityIdentity
       if (!validateToken(token)) {
         requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
       }
@@ -85,15 +81,15 @@ public class CustomAuthFilter implements ContainerRequestFilter {
   }
 
   private boolean validateToken(String token) {
-    // Token validation logic
+    // トークンバリデーションロジック
     return true;
   }
 }
 ```
 
-## Authorization
+## 認可
 
-### Role-Based Access Control
+### ロールベースアクセス制御
 
 ```java
 @Path("/api/admin")
@@ -125,7 +121,7 @@ public class UserResource {
   @Path("/{id}")
   @RolesAllowed("USER")
   public Response getUser(@PathParam("id") Long id) {
-    // Check ownership
+    // オーナーシップチェック
     if (!securityIdentity.hasRole("ADMIN") && 
         !isOwner(id, securityIdentity.getPrincipal().getName())) {
       return Response.status(Response.Status.FORBIDDEN).build();
@@ -139,7 +135,7 @@ public class UserResource {
 }
 ```
 
-### Programmatic Security
+### プログラマティックセキュリティ
 
 ```java
 @ApplicationScoped
@@ -163,18 +159,18 @@ public class SecurityService {
 }
 ```
 
-## Input Validation
+## 入力バリデーション
 
 ### Bean Validation
 
 ```java
-// BAD: No validation
+// BAD: バリデーションなし
 @POST
 public Response createUser(UserDto dto) {
   return Response.ok(userService.create(dto)).build();
 }
 
-// GOOD: Validated DTO
+// GOOD: バリデーション付きDTO
 public record CreateUserDto(
     @NotBlank @Size(max = 100) String name,
     @NotBlank @Email String email,
@@ -190,7 +186,7 @@ public Response createUser(@Valid CreateUserDto dto) {
 }
 ```
 
-### Custom Validators
+### カスタムバリデータ
 
 ```java
 @Target({ElementType.FIELD, ElementType.PARAMETER})
@@ -209,36 +205,30 @@ public class UsernameValidator implements ConstraintValidator<ValidUsername, Str
     return value.matches("^[a-zA-Z0-9_-]{3,20}$");
   }
 }
-
-// Usage
-public record CreateUserDto(
-    @ValidUsername String username,
-    @NotBlank @Email String email
-) {}
 ```
 
-## SQL Injection Prevention
+## SQLインジェクション防止
 
-### Panache Active Record (Safe by Default)
+### Panache Active Record（デフォルトで安全）
 
 ```java
-// GOOD: Parameterized queries with Panache
+// GOOD: Panacheによるパラメータ化クエリ
 List<User> users = User.list("email = ?1 and active = ?2", email, true);
 
 Optional<User> user = User.find("username", username).firstResultOptional();
 
-// GOOD: Named parameters
+// GOOD: 名前付きパラメータ
 List<User> users = User.list("email = :email and age > :minAge", 
     Parameters.with("email", email).and("minAge", 18));
 ```
 
-### Native Queries (Use Parameters)
+### ネイティブクエリ（パラメータを使用）
 
 ```java
-// BAD: String concatenation
+// BAD: 文字列連結
 @Query(value = "SELECT * FROM users WHERE name = '" + name + "'", nativeQuery = true)
 
-// GOOD: Parameterized native query
+// GOOD: パラメータ化ネイティブクエリ
 @Entity
 public class User extends PanacheEntity {
   public static List<User> findByEmailNative(String email) {
@@ -250,7 +240,7 @@ public class User extends PanacheEntity {
 }
 ```
 
-## Password Hashing
+## パスワードハッシュ
 
 ```java
 @ApplicationScoped
@@ -264,33 +254,9 @@ public class PasswordService {
     return BcryptUtil.matches(plainPassword, hashedPassword);
   }
 }
-
-// In service
-@ApplicationScoped
-public class UserService {
-  @Inject
-  PasswordService passwordService;
-
-  @Transactional
-  public User register(CreateUserDto dto) {
-    String hashedPassword = passwordService.hash(dto.password());
-    User user = new User();
-    user.email = dto.email();
-    user.password = hashedPassword;
-    user.persist();
-    return user;
-  }
-
-  public boolean authenticate(String email, String password) {
-    return User.find("email", email)
-        .firstResultOptional()
-        .map(u -> passwordService.verify(password, u.password))
-        .orElse(false);
-  }
-}
 ```
 
-## CORS Configuration
+## CORS構成
 
 ```properties
 # application.properties
@@ -303,37 +269,22 @@ quarkus.http.cors.access-control-max-age=24H
 quarkus.http.cors.access-control-allow-credentials=true
 ```
 
-## Secrets Management
+## シークレット管理
 
 ```properties
-# application.properties - NO SECRETS HERE
+# application.properties — ここにシークレットを置かない
 
-# Use environment variables
+# 環境変数を使用
 quarkus.datasource.username=${DB_USER}
 quarkus.datasource.password=${DB_PASSWORD}
 quarkus.oidc.credentials.secret=${OIDC_CLIENT_SECRET}
 
-# Or use Vault
+# またはVaultを使用
 quarkus.vault.url=https://vault.example.com
 quarkus.vault.authentication.kubernetes.role=my-role
 ```
 
-### HashiCorp Vault Integration
-
-```java
-@ApplicationScoped
-public class SecretService {
-  
-  @ConfigProperty(name = "api-key")
-  String apiKey; // Fetched from Vault
-
-  public String getSecret(String key) {
-    return ConfigProvider.getConfig().getValue(key, String.class);
-  }
-}
-```
-
-## Rate Limiting
+## レート制限
 
 ```java
 @ApplicationScoped
@@ -344,7 +295,7 @@ public class RateLimitFilter implements ContainerRequestFilter {
   public void filter(ContainerRequestContext requestContext) {
     String clientId = getClientIdentifier(requestContext);
     RateLimiter limiter = limiters.computeIfAbsent(clientId, 
-        k -> RateLimiter.create(100.0)); // 100 requests per second
+        k -> RateLimiter.create(100.0)); // 1秒あたり100リクエスト
 
     if (!limiter.tryAcquire()) {
       requestContext.abortWith(
@@ -356,13 +307,13 @@ public class RateLimitFilter implements ContainerRequestFilter {
   }
 
   private String getClientIdentifier(ContainerRequestContext ctx) {
-    // Use IP, API key, or user ID
+    // IP、APIキー、またはユーザーIDを使用
     return ctx.getHeaderString("X-Forwarded-For");
   }
 }
 ```
 
-## Security Headers
+## セキュリティヘッダー
 
 ```java
 @Provider
@@ -372,10 +323,10 @@ public class SecurityHeadersFilter implements ContainerResponseFilter {
   public void filter(ContainerRequestContext request, ContainerResponseContext response) {
     MultivaluedMap<String, Object> headers = response.getHeaders();
     
-    // Prevent clickjacking
+    // クリックジャッキング防止
     headers.putSingle("X-Frame-Options", "DENY");
     
-    // XSS protection
+    // XSS保護
     headers.putSingle("X-Content-Type-Options", "nosniff");
     headers.putSingle("X-XSS-Protection", "1; mode=block");
     
@@ -389,7 +340,7 @@ public class SecurityHeadersFilter implements ContainerResponseFilter {
 }
 ```
 
-## Audit Logging
+## 監査ロギング
 
 ```java
 @ApplicationScoped
@@ -408,23 +359,9 @@ public class AuditService {
         user, action, resource, Instant.now());
   }
 }
-
-// Usage in resource
-@Path("/api/sensitive")
-public class SensitiveResource {
-  @Inject
-  AuditService auditService;
-
-  @GET
-  @RolesAllowed("ADMIN")
-  public Response getData() {
-    auditService.logAccess("sensitive-data", "READ");
-    return Response.ok(data).build();
-  }
-}
 ```
 
-## Dependency Security Scanning
+## 依存関係セキュリティスキャン
 
 ```bash
 # Maven
@@ -433,23 +370,23 @@ mvn org.owasp:dependency-check-maven:check
 # Gradle
 ./gradlew dependencyCheckAnalyze
 
-# Check Quarkus extensions
+# Quarkusエクステンション確認
 quarkus extension list --installable
 ```
 
-## Best Practices
+## ベストプラクティス
 
-- Always use HTTPS in production
-- Enable JWT or OIDC for stateless authentication
-- Use `@RolesAllowed` for declarative authorization
-- Validate all input with Bean Validation
-- Hash passwords with BCrypt (never plaintext)
-- Store secrets in Vault or environment variables
-- Use parameterized queries to prevent SQL injection
-- Add security headers to all responses
-- Implement rate limiting for public endpoints
-- Audit sensitive operations
-- Keep dependencies updated and scan for CVEs
-- Use SecurityIdentity for programmatic checks
-- Set appropriate CORS policies
-- Test authentication and authorization paths
+- 本番環境では常にHTTPSを使用
+- ステートレス認証にJWTまたはOIDCを有効化
+- 宣言的認可に`@RolesAllowed`を使用
+- Bean Validationですべての入力をバリデーション
+- BCryptでパスワードをハッシュ（平文禁止）
+- シークレットはVaultまたは環境変数に保存
+- SQLインジェクション防止にパラメータ化クエリを使用
+- すべてのレスポンスにセキュリティヘッダーを追加
+- パブリックエンドポイントにレート制限を実装
+- 機密操作を監査
+- 依存関係を最新に保ちCVEをスキャン
+- プログラマティックチェックにSecurityIdentityを使用
+- 適切なCORSポリシーを設定
+- 認証・認可パスをテスト

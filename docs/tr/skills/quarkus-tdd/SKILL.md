@@ -4,33 +4,31 @@ description: Test-driven development for Quarkus 3.x LTS using JUnit 5, Mockito,
 origin: ECC
 ---
 
-> **Not / Note**: Bu dosya henuz Turkceye cevrilmemistir, su anda Ingilizce orijinaldir. Ceviri PR'lari memnuniyetle karsilanir.
+# Quarkus TDD İş Akışı
 
-# Quarkus TDD Workflow
+80%+ kapsam (unit + integration) ile Quarkus 3.x servisleri için TDD rehberi. Apache Camel ile event-driven mimariler için optimize edilmiştir.
 
-TDD guidance for Quarkus 3.x services with 80%+ coverage (unit + integration). Optimized for event-driven architectures with Apache Camel.
+## Ne Zaman Kullanılır
 
-## When to Use
+- Yeni özellikler veya REST endpoint'leri
+- Bug düzeltmeleri veya refactoring'ler
+- Veri erişim mantığı, güvenlik kuralları veya reaktif akışlar ekleme
+- Apache Camel route'larını ve event handler'larını test etme
+- RabbitMQ ile event-driven servisleri test etme
+- Koşullu akış mantığını test etme
+- CompletableFuture async işlemlerini doğrulama
+- LogContext yayılımını test etme
 
-- New features or REST endpoints
-- Bug fixes or refactors
-- Adding data access logic, security rules, or reactive streams
-- Testing Apache Camel routes and event handlers
-- Testing event-driven services with RabbitMQ
-- Testing conditional flow logic
-- Validating CompletableFuture async operations
-- Testing LogContext propagation
+## İş Akışı
 
-## Workflow
+1. Önce testleri yazın (başarısız olmalılar)
+2. Geçmek için minimal kod uygulayın
+3. Testleri yeşil tutarken refactor edin
+4. JaCoCo ile kapsamı zorlayın (%80+ hedef)
 
-1. Write tests first (they should fail)
-2. Implement minimal code to pass
-3. Refactor with tests green
-4. Enforce coverage with JaCoCo (80%+ target)
+## @Nested Organizasyonlu Unit Testler
 
-## Unit Tests with @Nested Organization
-
-Follow this structured approach for comprehensive, readable tests:
+Kapsamlı ve okunabilir testler için bu yapılandırılmış yaklaşımı izleyin:
 
 ```java
 @ExtendWith(MockitoExtension.class)
@@ -62,7 +60,7 @@ class As2ProcessingServiceTest {
 
   @BeforeEach
   void setUp() {
-    // ARRANGE - Common test data
+    // ARRANGE - Ortak test verisi
     testFilePath = Path.of("/tmp/test-invoice.xml");
     
     testLogContext = new LogContext();
@@ -81,11 +79,11 @@ class As2ProcessingServiceTest {
   }
 
   @Nested
-  @DisplayName("Tests for processFile")
+  @DisplayName("processFile için testler")
   class ProcessFile {
     
     @Test
-    @DisplayName("Should successfully process non-CHORUS file with all validations")
+    @DisplayName("CHORUS olmayan dosyayı tüm validasyonlarla başarıyla işlemeli")
     void givenNonChorusFile_whenProcessFile_thenAllValidationsApplied() throws Exception {
       // ARRANGE
       testLogContext.put(As2Constants.CHORUS_FLOW, "false");
@@ -125,7 +123,7 @@ class As2ProcessingServiceTest {
     }
 
     @Test
-    @DisplayName("Should bypass schematron validation for CHORUS_FLOW")
+    @DisplayName("CHORUS_FLOW için schematron validasyonu atlanmalı")
     void givenChorusFlow_whenProcessFile_thenSchematronBypassed() throws Exception {
       // ARRANGE
       testLogContext.put(As2Constants.CHORUS_FLOW, "true");
@@ -162,7 +160,7 @@ class As2ProcessingServiceTest {
     }
 
     @Test
-    @DisplayName("Should create error event when file upload fails")
+    @DisplayName("Dosya yükleme başarısız olduğunda hata eventi oluşturulmalı")
     void givenUploadFailure_whenProcessFile_thenErrorEventCreated() throws Exception {
       // ARRANGE
       testLogContext.put(As2Constants.CHORUS_FLOW, "false");
@@ -174,7 +172,7 @@ class As2ProcessingServiceTest {
       when(invoiceFlowValidator.computeFlowProfile(any(), any()))
           .thenReturn(FlowProfile.BASIC);
       
-      documentInfo.setPath(""); // Blank path triggers error
+      documentInfo.setPath(""); // Boş path hatayı tetikler
       when(fileStorageService.uploadOriginalFile(any(), anyLong(), any(), any()))
           .thenReturn(CompletableFuture.completedFuture(documentInfo));
       
@@ -196,7 +194,7 @@ class As2ProcessingServiceTest {
     }
 
     @Test
-    @DisplayName("Should handle CompletableFuture.join() failure")
+    @DisplayName("CompletableFuture.join() başarısızlığı ele alınmalı")
     void givenAsyncUploadFailure_whenProcessFile_thenExceptionThrown() throws Exception {
       // ARRANGE
       testLogContext.put(As2Constants.CHORUS_FLOW, "false");
@@ -221,7 +219,7 @@ class As2ProcessingServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw exception when file path is null")
+    @DisplayName("Dosya yolu null olduğunda exception fırlatılmalı")
     void givenNullFilePath_whenProcessFile_thenThrowsException() {
       // ARRANGE
       Path nullPath = null;
@@ -238,20 +236,20 @@ class As2ProcessingServiceTest {
 }
 ```
 
-### Key Testing Patterns
+### Temel Test Desenleri
 
-1. **@Nested Classes**: Group tests by method being tested
-2. **@DisplayName**: Provide readable test descriptions for test reports
-3. **Naming Convention**: `givenX_whenY_thenZ` for clarity
-4. **AAA Pattern**: Explicit `// ARRANGE`, `// ACT`, `// ASSERT` comments
-5. **@BeforeEach**: Setup common test data to reduce duplication
-6. **assertDoesNotThrow**: Test success scenarios without catching exceptions
-7. **assertThrows**: Test exception scenarios with message validation using AssertJ
-8. **Comprehensive Coverage**: Test happy paths, null inputs, edge cases, exceptions
-9. **Verify Interactions**: Use Mockito `verify()` to ensure methods are called correctly
-10. **Never Verify**: Use `never()` to ensure methods are NOT called in error scenarios
+1. **@Nested Sınıflar**: Testleri test edilen metoda göre gruplandırın
+2. **@DisplayName**: Test raporlarında okunabilir açıklamalar sağlayın
+3. **İsimlendirme Kuralı**: Netlik için `givenX_whenY_thenZ`
+4. **AAA Deseni**: Açık `// ARRANGE`, `// ACT`, `// ASSERT` yorumları
+5. **@BeforeEach**: Tekrarı azaltmak için ortak test verisi kurulumu
+6. **assertDoesNotThrow**: Exception yakalamadan başarı senaryolarını test edin
+7. **assertThrows**: AssertJ kullanarak mesaj doğrulamalı exception senaryolarını test edin
+8. **Kapsamlı Kapsam**: Mutlu yolları, null girdileri, edge case'leri, exception'ları test edin
+9. **Etkileşimleri Doğrulama**: Metodların doğru çağrıldığından emin olmak için Mockito `verify()` kullanın
+10. **Hiçbir Zaman Doğrulama**: Hata senaryolarında metodların ÇAĞRILMADIĞINI sağlamak için `never()` kullanın
 
-## Testing Camel Routes
+## Camel Route Testi
 
 ```java
 @QuarkusTest
@@ -271,25 +269,25 @@ class BusinessRulesRouteTest {
 
   @BeforeEach
   void setUp() {
-    // ARRANGE - Test data
+    // ARRANGE - Test verisi
     testPayload = new BusinessRulesPayload();
     testPayload.setDocumentId(1L);
     testPayload.setFlowProfile(FlowProfile.BASIC);
   }
 
   @Nested
-  @DisplayName("Tests for business-rules-publisher route")
+  @DisplayName("business-rules-publisher route için testler")
   class BusinessRulesPublisher {
 
     @Test
-    @DisplayName("Should successfully publish message to RabbitMQ")
+    @DisplayName("Mesajı başarıyla RabbitMQ'ya yayınlamalı")
     void givenValidPayload_whenPublish_thenMessageSentToQueue() throws Exception {
       // ARRANGE
       MockEndpoint mockRabbitMQ = camelContext.getEndpoint("mock:rabbitmq", MockEndpoint.class);
       mockRabbitMQ.expectedMessageCount(1);
       mockRabbitMQ.expectedBodiesReceived(testPayload);
       
-      // Replace real endpoint with mock for testing
+      // Test için gerçek endpoint'i mock ile değiştir
       camelContext.getRouteController().stopRoute("business-rules-publisher");
       AdviceWith.adviceWith(camelContext, "business-rules-publisher", advice -> {
         advice.replaceFromWith("direct:business-rules-publisher");
@@ -309,7 +307,7 @@ class BusinessRulesRouteTest {
     }
 
     @Test
-    @DisplayName("Should handle marshalling to JSON")
+    @DisplayName("JSON'a marshalling'i ele almalı")
     void givenPayload_whenPublish_thenMarshalledToJson() throws Exception {
       // ARRANGE
       MockEndpoint mockMarshal = new MockEndpoint("mock:marshal");
@@ -335,11 +333,11 @@ class BusinessRulesRouteTest {
   }
 
   @Nested
-  @DisplayName("Tests for document-processing route")
+  @DisplayName("document-processing route için testler")
   class DocumentProcessing {
 
     @Test
-    @DisplayName("Should route invoice to correct processor")
+    @DisplayName("Faturayı doğru işlemciye yönlendirmeli")
     void givenInvoiceType_whenProcess_thenRoutesToInvoiceProcessor() throws Exception {
       // ARRANGE
       MockEndpoint mockInvoice = camelContext.getEndpoint("mock:invoice", MockEndpoint.class);
@@ -360,7 +358,7 @@ class BusinessRulesRouteTest {
     }
 
     @Test
-    @DisplayName("Should handle validation errors gracefully")
+    @DisplayName("Validasyon hatalarını zarif şekilde ele almalı")
     void givenValidationError_whenProcess_thenRoutesToErrorHandler() throws Exception {
       // ARRANGE
       MockEndpoint mockError = camelContext.getEndpoint("mock:error", MockEndpoint.class);
@@ -373,7 +371,7 @@ class BusinessRulesRouteTest {
       });
       camelContext.getRouteController().startRoute("document-processing");
       
-      // Mock validator to throw exception
+      // Validator'ı exception fırlatacak şekilde mock'la
       when(eventService.validate(any())).thenThrow(new ValidationException("Invalid document"));
       
       // ACT
@@ -390,7 +388,7 @@ class BusinessRulesRouteTest {
 }
 ```
 
-## Testing Event Services
+## Event Service Testi
 
 ```java
 @ExtendWith(MockitoExtension.class)
@@ -416,11 +414,11 @@ class EventServiceTest {
   }
 
   @Nested
-  @DisplayName("Tests for createSuccessEvent")
+  @DisplayName("createSuccessEvent için testler")
   class CreateSuccessEvent {
     
     @Test
-    @DisplayName("Should create success event with correct attributes")
+    @DisplayName("Doğru niteliklerle başarı eventi oluşturulmalı")
     void givenValidPayload_whenCreateSuccessEvent_thenEventPersisted() throws Exception {
       // ARRANGE
       when(objectMapper.writeValueAsString(testPayload)).thenReturn("{\"documentId\":1}");
@@ -439,7 +437,7 @@ class EventServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw exception when payload is null")
+    @DisplayName("Payload null olduğunda exception fırlatılmalı")
     void givenNullPayload_whenCreateSuccessEvent_thenThrowsException() {
       // ARRANGE
       Object nullPayload = null;
@@ -456,11 +454,11 @@ class EventServiceTest {
   }
 
   @Nested
-  @DisplayName("Tests for createErrorEvent")
+  @DisplayName("createErrorEvent için testler")
   class CreateErrorEvent {
     
     @Test
-    @DisplayName("Should create error event with error message")
+    @DisplayName("Hata mesajıyla hata eventi oluşturulmalı")
     void givenError_whenCreateErrorEvent_thenEventPersistedWithMessage() throws Exception {
       // ARRANGE
       String errorMessage = "Processing failed";
@@ -480,7 +478,7 @@ class EventServiceTest {
     }
 
     @ParameterizedTest
-    @DisplayName("Should reject invalid error messages")
+    @DisplayName("Geçersiz hata mesajları reddedilmeli")
     @ValueSource(strings = {"", " "})
     void givenBlankErrorMessage_whenCreateErrorEvent_thenThrowsException(String blankMessage) {
       // ACT & ASSERT
@@ -495,7 +493,7 @@ class EventServiceTest {
 }
 ```
 
-## Testing CompletableFuture
+## CompletableFuture Testi
 
 ```java
 @ExtendWith(MockitoExtension.class)
@@ -523,11 +521,11 @@ class FileStorageServiceTest {
   }
 
   @Nested
-  @DisplayName("Tests for uploadOriginalFile")
+  @DisplayName("uploadOriginalFile için testler")
   class UploadOriginalFile {
     
     @Test
-    @DisplayName("Should successfully upload file and return document info")
+    @DisplayName("Dosyayı başarıyla yüklemeli ve belge bilgisi döndürmeli")
     void givenValidFile_whenUpload_thenReturnsDocumentInfo() throws Exception {
       // ARRANGE
       when(executorService.submit(any(Callable.class))).thenAnswer(invocation -> {
@@ -555,7 +553,7 @@ class FileStorageServiceTest {
     }
 
     @Test
-    @DisplayName("Should handle S3 upload failure")
+    @DisplayName("S3 yükleme başarısızlığını ele almalı")
     void givenS3Failure_whenUpload_thenCompletableFutureFails() {
       // ARRANGE
       when(executorService.submit(any(Callable.class))).thenAnswer(invocation -> {
@@ -575,7 +573,7 @@ class FileStorageServiceTest {
     }
 
     @Test
-    @DisplayName("Should propagate LogContext to async operation")
+    @DisplayName("LogContext'i async işleme yaymalı")
     void givenLogContext_whenUpload_thenContextPropagated() throws Exception {
       // ARRANGE
       AtomicReference<LogContext> capturedContext = new AtomicReference<>();
@@ -598,7 +596,7 @@ class FileStorageServiceTest {
 }
 ```
 
-## Resource Layer Tests (REST Assured)
+## Resource Katmanı Testleri (REST Assured)
 
 ```java
 @QuarkusTest
@@ -609,11 +607,11 @@ class DocumentResourceTest {
   DocumentService documentService;
 
   @Nested
-  @DisplayName("Tests for GET /api/documents")
+  @DisplayName("GET /api/documents için testler")
   class ListDocuments {
 
     @Test
-    @DisplayName("Should return list of documents")
+    @DisplayName("Belge listesini döndürmeli")
     void givenDocumentsExist_whenList_thenReturnsOk() {
       // ARRANGE
       List<Document> documents = List.of(createDocument(1L, "DOC-001"));
@@ -630,11 +628,11 @@ class DocumentResourceTest {
   }
 
   @Nested
-  @DisplayName("Tests for POST /api/documents")
+  @DisplayName("POST /api/documents için testler")
   class CreateDocument {
 
     @Test
-    @DisplayName("Should create document and return 201")
+    @DisplayName("Belge oluşturmalı ve 201 döndürmeli")
     void givenValidRequest_whenCreate_thenReturns201() {
       // ARRANGE
       Document document = createDocument(1L, "DOC-001");
@@ -659,7 +657,7 @@ class DocumentResourceTest {
     }
 
     @Test
-    @DisplayName("Should return 400 for invalid input")
+    @DisplayName("Geçersiz girdi için 400 döndürmeli")
     void givenInvalidRequest_whenCreate_thenReturns400() {
       // ACT & ASSERT
       given()
@@ -686,7 +684,7 @@ class DocumentResourceTest {
 }
 ```
 
-## Integration Tests with Real Database
+## Gerçek Veritabanıyla Entegrasyon Testleri
 
 ```java
 @QuarkusTest
@@ -696,9 +694,9 @@ class DocumentIntegrationTest {
 
   @Test
   @Transactional
-  @DisplayName("Should create and retrieve document via API")
+  @DisplayName("Belge oluşturulmalı ve API üzerinden alınabilmeli")
   void givenNewDocument_whenCreateAndRetrieve_thenSuccessful() {
-    // ACT - Create via API
+    // ACT - API üzerinden oluştur
     Long id = given()
         .contentType(ContentType.JSON)
         .body("""
@@ -714,7 +712,7 @@ class DocumentIntegrationTest {
         .statusCode(201)
         .extract().path("id");
 
-    // ASSERT - Retrieve via API
+    // ASSERT - API üzerinden al
     given()
         .when().get("/api/documents/" + id)
         .then()
@@ -724,9 +722,9 @@ class DocumentIntegrationTest {
 }
 ```
 
-## Coverage with JaCoCo
+## JaCoCo ile Kapsam
 
-### Maven Configuration (Complete)
+### Maven Yapılandırması (Tam)
 
 ```xml
 <plugin>
@@ -734,7 +732,7 @@ class DocumentIntegrationTest {
   <artifactId>jacoco-maven-plugin</artifactId>
   <version>0.8.13</version>
   <executions>
-    <!-- Prepare agent for test execution -->
+    <!-- Test yürütmesi için agent'ı hazırla -->
     <execution>
       <id>prepare-agent</id>
       <goals>
@@ -742,7 +740,7 @@ class DocumentIntegrationTest {
       </goals>
     </execution>
     
-    <!-- Generate coverage report -->
+    <!-- Kapsam raporu oluştur -->
     <execution>
       <id>report</id>
       <phase>verify</phase>
@@ -751,7 +749,7 @@ class DocumentIntegrationTest {
       </goals>
     </execution>
     
-    <!-- Enforce coverage thresholds -->
+    <!-- Kapsam eşiklerini zorla -->
     <execution>
       <id>check</id>
       <goals>
@@ -781,20 +779,20 @@ class DocumentIntegrationTest {
 </plugin>
 ```
 
-Run tests with coverage:
+Kapsam ile testleri çalıştırın:
 ```bash
 mvn clean test
 mvn jacoco:report
 mvn jacoco:check
 
-# Report at: target/site/jacoco/index.html
+# Rapor: target/site/jacoco/index.html
 ```
 
-## Test Dependencies
+## Test Bağımlılıkları
 
 ```xml
 <dependencies>
-    <!-- Quarkus Testing -->
+    <!-- Quarkus Test -->
     <dependency>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-junit5</artifactId>
@@ -813,7 +811,7 @@ mvn jacoco:check
         <scope>test</scope>
     </dependency>
     
-    <!-- AssertJ (preferred over JUnit assertions) -->
+    <!-- AssertJ (JUnit assertion'larına tercih edilir) -->
     <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
@@ -828,7 +826,7 @@ mvn jacoco:check
         <scope>test</scope>
     </dependency>
     
-    <!-- Camel Testing -->
+    <!-- Camel Test -->
     <dependency>
         <groupId>org.apache.camel.quarkus</groupId>
         <artifactId>camel-quarkus-junit5</artifactId>
@@ -837,74 +835,74 @@ mvn jacoco:check
 </dependencies>
 ```
 
-## Best Practices
+## En İyi Uygulamalar
 
-### Test Organization
-- Use `@Nested` classes to group tests by method being tested
-- Use `@DisplayName` for readable test descriptions visible in reports
-- Follow `givenX_whenY_thenZ` naming convention for test methods
-- Use `@BeforeEach` for common test data setup to reduce duplication
+### Test Organizasyonu
+- Testleri test edilen metoda göre gruplandırmak için `@Nested` sınıflar kullanın
+- Raporlarda görünür okunabilir açıklamalar için `@DisplayName` kullanın
+- Test metodları için `givenX_whenY_thenZ` isimlendirme kuralını izleyin
+- Tekrarı azaltmak için ortak test verisi kurulumunda `@BeforeEach` kullanın
 
-### Test Structure
-- Follow AAA pattern with explicit comments (`// ARRANGE`, `// ACT`, `// ASSERT`)
-- Use `assertDoesNotThrow` for success scenarios
-- Use `assertThrows` for exception scenarios with message validation
-- Verify exception messages match expected values using AssertJ `contains()` or `isEqualTo()`
+### Test Yapısı
+- Açık yorumlarla AAA desenini izleyin (`// ARRANGE`, `// ACT`, `// ASSERT`)
+- Başarı senaryoları için `assertDoesNotThrow` kullanın
+- Mesaj doğrulamalı exception senaryoları için `assertThrows` kullanın
+- AssertJ `contains()` veya `isEqualTo()` kullanarak exception mesajlarının beklenen değerlerle eşleştiğini doğrulayın
 
-### Test Coverage
-- Test happy paths for all public methods
-- Test null input handling
-- Test edge cases (empty collections, boundary values, negative IDs, blank strings)
-- Test exception scenarios comprehensively
-- Mock all external dependencies (repositories, services, Camel endpoints)
-- Aim for 80%+ line coverage, 70%+ branch coverage
+### Test Kapsamı
+- Tüm public metodlar için mutlu yolları test edin
+- Null girdi işlemeyi test edin
+- Edge case'leri test edin (boş koleksiyonlar, sınır değerleri, negatif ID'ler, boş string'ler)
+- Exception senaryolarını kapsamlı biçimde test edin
+- Tüm harici bağımlılıkları mock'layın (repository'ler, servisler, Camel endpoint'leri)
+- %80+ satır kapsamı, %70+ branch kapsamı hedefleyin
 
-### Assertions
-- **Always use AssertJ** (`assertThat`) instead of JUnit assertions
-- Use fluent AssertJ API for readability: `assertThat(list).hasSize(3).contains(item)`
-- For exceptions: `assertThatThrownBy(() -> ...).isInstanceOf(...).hasMessageContaining(...)`
-- For collections: `extracting()`, `filteredOn()`, `containsExactly()`
+### Assertion'lar
+- JUnit assertion'ları yerine **her zaman AssertJ** (`assertThat`) kullanın
+- Okunabilirlik için akıcı AssertJ API'si kullanın: `assertThat(list).hasSize(3).contains(item)`
+- Exception'lar için: `assertThatThrownBy(() -> ...).isInstanceOf(...).hasMessageContaining(...)`
+- Koleksiyonlar için: `extracting()`, `filteredOn()`, `containsExactly()`
 
-### Testing Integration
-- Use `@QuarkusTest` for integration tests
-- Use `@InjectMock` to mock dependencies in Quarkus tests
-- Prefer REST Assured for API testing
-- Use `@TestProfile` for test-specific configuration
+### Entegrasyon Testi
+- Entegrasyon testleri için `@QuarkusTest` kullanın
+- Quarkus testlerinde bağımlılıkları mock'lamak için `@InjectMock` kullanın
+- API testi için REST Assured'ı tercih edin
+- Test'e özel yapılandırma için `@TestProfile` kullanın
 
-### Event-Driven Testing
-- Test Camel routes with `AdviceWith` and `MockEndpoint`
-- Use `@CamelQuarkusTest` annotation (if using standalone Camel tests)
-- Verify message content, headers, and routing logic
-- Test error handling routes separately
-- Mock external systems (RabbitMQ, S3, databases) in unit tests
+### Event-Driven Test
+- `AdviceWith` ve `MockEndpoint` ile Camel route'larını test edin
+- `@CamelQuarkusTest` annotasyonu kullanın (bağımsız Camel testleri kullanıyorsanız)
+- Mesaj içeriğini, başlıklarını ve yönlendirme mantığını doğrulayın
+- Hata işleme route'larını ayrı ayrı test edin
+- Unit testlerde harici sistemleri (RabbitMQ, S3, veritabanları) mock'layın
 
-### Camel Route Testing
-- Use `MockEndpoint` for asserting message flow
-- Use `AdviceWith` to modify routes for testing (replace endpoints with mocks)
-- Test message transformation and marshalling
-- Test exception handling and dead letter queues
+### Camel Route Testi
+- Mesaj akışını doğrulamak için `MockEndpoint` kullanın
+- Test için route'ları değiştirmek üzere `AdviceWith` kullanın (endpoint'leri mock'larla değiştirin)
+- Mesaj dönüşümünü ve marshalling'i test edin
+- Exception işleme ve dead letter queue'ları test edin
 
-### Testing Async Operations
-- Test CompletableFuture success and failure scenarios
-- Use `.join()` in tests to wait for async completion
-- Test exception propagation from CompletableFuture
-- Verify LogContext propagation to async operations
+### Async İşlem Testi
+- CompletableFuture başarı ve başarısızlık senaryolarını test edin
+- Async tamamlanmayı beklemek için testlerde `.join()` kullanın
+- CompletableFuture'dan exception yayılımını test edin
+- LogContext yayılımını async işlemlere doğrulayın
 
-### Performance
-- Keep tests fast and isolated
-- Run tests in continuous mode: `mvn quarkus:test`
-- Use parameterized tests (`@ParameterizedTest`) for input variations
-- Build reusable test data builders or factory methods
+### Performans
+- Testleri hızlı ve izole tutun
+- Testleri sürekli modda çalıştırın: `mvn quarkus:test`
+- Girdi varyasyonları için parametreli testler (`@ParameterizedTest`) kullanın
+- Yeniden kullanılabilir test verisi builder'ları veya factory metodları oluşturun
 
-### Quarkus-Specific
-- Stay on latest LTS version (Quarkus 3.x)
-- Test native compilation compatibility periodically
-- Use Quarkus test profiles for different scenarios
-- Leverage Quarkus dev services for local testing
-- Use `@InjectMock` instead of `@MockBean` (Quarkus-specific)
+### Quarkus'a Özgü
+- En son LTS sürümünde kalın (Quarkus 3.x)
+- Native derleme uyumluluğunu periyodik olarak test edin
+- Farklı senaryolar için Quarkus test profillerini kullanın
+- Yerel test için Quarkus dev servislerinden yararlanın
+- `@MockBean` yerine `@InjectMock` kullanın (Quarkus'a özgü)
 
-### Verification Best Practices
-- Always verify interactions on mocked dependencies
-- Use `verify(mock, never())` to ensure methods are NOT called in error scenarios
-- Use `argThat()` for complex argument matching
-- Verify the order of calls when it matters: `InOrder` from Mockito
+### Doğrulama En İyi Uygulamaları
+- Mock'lanmış bağımlılıklardaki etkileşimleri her zaman doğrulayın
+- Hata senaryolarında metodların ÇAĞRILMADIĞINI sağlamak için `verify(mock, never())` kullanın
+- Karmaşık argüman eşleştirme için `argThat()` kullanın
+- Önem taşıdığında çağrı sırasını doğrulayın: Mockito'dan `InOrder`
