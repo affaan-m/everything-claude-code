@@ -74,7 +74,8 @@
         "agentic-patterns",
         "devops-infra",
         "supply-chain-domain",
-        "document-processing"
+        "document-processing",
+        "windows-desktop-e2e"
       ]
     }
   }
