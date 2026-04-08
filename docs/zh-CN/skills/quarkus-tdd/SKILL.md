@@ -181,6 +181,19 @@ class BusinessRulesRouteTest {
   @InjectMock
   EventService eventService;
 
+  @InjectMock
+  DocumentValidator documentValidator;
+
+  private BusinessRulesPayload testPayload;
+
+  @BeforeEach
+  void setUp() {
+    // ARRANGE - 测试数据
+    testPayload = new BusinessRulesPayload();
+    testPayload.setDocumentId(1L);
+    testPayload.setFlowProfile(FlowProfile.BASIC);
+  }
+
   @Test
   @DisplayName("Should successfully publish message to RabbitMQ")
   void givenValidPayload_whenPublish_thenMessageSentToQueue() throws Exception {
