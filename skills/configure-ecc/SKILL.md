@@ -87,7 +87,7 @@ There are 7 selectable category groups below. The detailed confirmation lists th
 ```
 Question: "Which skill categories do you want to install?"
 Options:
-  - "Framework & Language" — "Django, Laravel, Spring Boot, Go, Python, Java, Frontend, Backend patterns"
+  - "Framework & Language" — "Django, Laravel, Spring Boot, Quarkus, Go, Python, Java, Frontend, Backend patterns"
   - "Database" — "PostgreSQL, ClickHouse, JPA/Hibernate patterns"
   - "Workflow & Quality" — "TDD, verification, learning, security review, compaction"
   - "Research & APIs" — "Deep research, Exa search, Claude API patterns"
@@ -101,7 +101,7 @@ Options:
 
 For each selected category, print the full list of skills below and ask the user to confirm or deselect specific ones. If the list exceeds 4 items, print the list as text and use `AskUserQuestion` with an "Install all listed" option plus "Other" for the user to paste specific names.
 
-**Category: Framework & Language (21 skills)**
+**Category: Framework & Language (25 skills)**
 
 | Skill | Description |
 |-------|-------------|
@@ -122,6 +122,10 @@ For each selected category, print the full list of skills below and ask the user
 | `java-coding-standards` | Java coding standards for Spring Boot: naming, immutability, Optional, streams |
 | `python-patterns` | Pythonic idioms, PEP 8, type hints, best practices |
 | `python-testing` | Python testing with pytest, TDD, fixtures, mocking, parametrization |
+| `quarkus-patterns` | Quarkus architecture, Camel messaging, CDI services, Panache data access |
+| `quarkus-security` | Quarkus security: JWT/OIDC, RBAC, input validation, secrets management |
+| `quarkus-tdd` | Quarkus TDD with JUnit 5, Mockito, REST Assured, Camel testing |
+| `quarkus-verification` | Quarkus verification: build, static analysis, tests, native compilation |
 | `springboot-patterns` | Spring Boot architecture, REST API, layered services, caching, async |
 | `springboot-security` | Spring Security: authn/authz, validation, CSRF, secrets, rate limiting |
 | `springboot-tdd` | Spring Boot TDD with JUnit 5, Mockito, MockMvc, Testcontainers |
@@ -263,6 +267,7 @@ grep -rn "skills/" $TARGET/skills/
 Some skills reference others. Verify these dependencies:
 - `django-tdd` may reference `django-patterns`
 - `laravel-tdd` may reference `laravel-patterns`
+- `quarkus-tdd` may reference `quarkus-patterns`
 - `springboot-tdd` may reference `springboot-patterns`
 - `continuous-learning-v2` references `~/.claude/homunculus/` directory
 - `python-testing` may reference `python-patterns`

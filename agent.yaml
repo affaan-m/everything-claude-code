@@ -126,6 +126,10 @@ skills:
   - security-scan
   - skill-comply
   - skill-stocktake
+  - quarkus-patterns
+  - quarkus-security
+  - quarkus-tdd
+  - quarkus-verification
   - springboot-patterns
   - springboot-security
   - springboot-tdd
