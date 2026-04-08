@@ -357,9 +357,10 @@ mvn jacoco:check
 - 异常场景使用`assertThrows`并验证消息
 
 ### 断言
-- **始终使用AssertJ**（`assertThat`）代替JUnit断言
+- 值检查**优先使用AssertJ**（`assertThat`）而非JUnit断言
 - 使用流式AssertJ API提高可读性
-- 异常断言: `assertThatThrownBy(() -> ...).isInstanceOf(...).hasMessageContaining(...)`
+- 异常: 使用JUnit `assertThrows`捕获，再用AssertJ验证消息
+- 成功路径: 使用JUnit `assertDoesNotThrow`
 
 ### 事件驱动测试
 - 使用`AdviceWith`和`MockEndpoint`测试Camel路由

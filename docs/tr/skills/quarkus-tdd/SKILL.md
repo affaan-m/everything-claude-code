@@ -858,9 +858,10 @@ mvn jacoco:check
 - %80+ satır kapsamı, %70+ branch kapsamı hedefleyin
 
 ### Assertion'lar
-- JUnit assertion'ları yerine **her zaman AssertJ** (`assertThat`) kullanın
+- Değer kontrolleri için JUnit assertion'ları yerine **AssertJ'yi tercih edin** (`assertThat`)
 - Okunabilirlik için akıcı AssertJ API'si kullanın: `assertThat(list).hasSize(3).contains(item)`
-- Exception'lar için: `assertThatThrownBy(() -> ...).isInstanceOf(...).hasMessageContaining(...)`
+- Exception'lar için: JUnit `assertThrows` ile yakalayın, ardından AssertJ ile mesajı doğrulayın
+- Fırlatılmayan başarı yolları için: JUnit `assertDoesNotThrow` kullanın
 - Koleksiyonlar için: `extracting()`, `filteredOn()`, `containsExactly()`
 
 ### Entegrasyon Testi

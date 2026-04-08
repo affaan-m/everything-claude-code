@@ -357,9 +357,10 @@ mvn jacoco:check
 - メッセージバリデーション付き例外シナリオに`assertThrows`を使用
 
 ### アサーション
-- JUnitアサーションの代わりに**常にAssertJ**（`assertThat`）を使用
+- 値チェックにはJUnitアサーションより**AssertJを優先**（`assertThat`）
 - 読みやすさのためにAssertJのfluent APIを使用
-- 例外: `assertThatThrownBy(() -> ...).isInstanceOf(...).hasMessageContaining(...)`
+- 例外: JUnitの`assertThrows`でキャプチャし、AssertJでメッセージを検証
+- 成功パス: JUnitの`assertDoesNotThrow`を使用
 
 ### イベント駆動テスト
 - `AdviceWith`と`MockEndpoint`でCamelルートをテスト

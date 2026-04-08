@@ -861,9 +861,10 @@ mvn jacoco:check
 - Aim for 80%+ line coverage, 70%+ branch coverage
 
 ### Assertions
-- **Always use AssertJ** (`assertThat`) instead of JUnit assertions
+- **Prefer AssertJ** (`assertThat`) over JUnit assertions for value checks
 - Use fluent AssertJ API for readability: `assertThat(list).hasSize(3).contains(item)`
-- For exceptions: `assertThatThrownBy(() -> ...).isInstanceOf(...).hasMessageContaining(...)`
+- For exceptions: use JUnit `assertThrows` to capture, then AssertJ to validate the message
+- For non-throwing success paths: use JUnit `assertDoesNotThrow`
 - For collections: `extracting()`, `filteredOn()`, `containsExactly()`
 
 ### Testing Integration
