@@ -380,9 +380,10 @@ public class SecurityHeadersFilter implements ContainerResponseFilter {
     // HSTS
     headers.putSingle("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
     
-    // CSP
+    // CSP — script-src için 'unsafe-inline' kullanmayın, XSS korumasını etkisiz kılar;
+    // bunun yerine nonce veya hash kullanın
     headers.putSingle("Content-Security-Policy", 
-        "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'");
+        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'");
   }
 }
 ```

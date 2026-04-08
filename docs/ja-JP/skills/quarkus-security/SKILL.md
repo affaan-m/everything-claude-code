@@ -333,9 +333,10 @@ public class SecurityHeadersFilter implements ContainerResponseFilter {
     // HSTS
     headers.putSingle("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
     
-    // CSP
+    // CSP — script-srcに'unsafe-inline'を使用しないでください。XSS保護が無効になります。
+    // 代わりにnonceまたはhashを使用してください。
     headers.putSingle("Content-Security-Policy", 
-        "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'");
+        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'");
   }
 }
 ```

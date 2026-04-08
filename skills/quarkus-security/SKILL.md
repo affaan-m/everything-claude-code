@@ -380,9 +380,11 @@ public class SecurityHeadersFilter implements ContainerResponseFilter {
     // HSTS
     headers.putSingle("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
     
-    // CSP
+    // CSP — avoid 'unsafe-inline' for script-src as it negates XSS protection;
+    // use nonces or hashes instead. 'unsafe-inline' for style-src is acceptable
+    // when CSS frameworks require it, but prefer nonces where possible.
     headers.putSingle("Content-Security-Policy", 
-        "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'");
+        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'");
   }
 }
 ```
