@@ -4,6 +4,8 @@ description: Quarkus 3.x LTS architecture patterns with Camel for messaging, RES
 origin: ECC
 ---
 
+> **Note / 注意**: 本文件尚未翻译为中文，目前为英文原版。欢迎提交翻译 PR。
+
 # Quarkus Development Patterns
 
 Quarkus 3.x architecture and API patterns for cloud-native, event-driven services with Apache Camel.

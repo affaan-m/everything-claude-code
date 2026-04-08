@@ -4,6 +4,8 @@ description: Test-driven development for Quarkus 3.x LTS using JUnit 5, Mockito,
 origin: ECC
 ---
 
+> **Note / 注意**: このファイルはまだ日本語に翻訳されていません。現在は英語の原文です。翻訳PRを歓迎します。
+
 # Quarkus TDD Workflow
 
 TDD guidance for Quarkus 3.x services with 80%+ coverage (unit + integration). Optimized for event-driven architectures with Apache Camel.

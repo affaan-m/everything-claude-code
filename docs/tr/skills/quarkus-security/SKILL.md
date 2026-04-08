@@ -4,6 +4,8 @@ description: Quarkus Security best practices for authentication, authorization, 
 origin: ECC
 ---
 
+> **Not / Note**: Bu dosya henuz Turkceye cevrilmemistir, su anda Ingilizce orijinaldir. Ceviri PR'lari memnuniyetle karsilanir.
+
 # Quarkus Security Review
 
 Best practices for securing Quarkus applications with authentication, authorization, and input validation.

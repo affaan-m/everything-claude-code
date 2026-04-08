@@ -4,6 +4,8 @@ description: "Verification loop for Quarkus projects: build, static analysis, te
 origin: ECC
 ---
 
+> **Note / 注意**: 本文件尚未翻译为中文，目前为英文原版。欢迎提交翻译 PR。
+
 # Quarkus Verification Loop
 
 Run before PRs, after major changes, and pre-deploy.
