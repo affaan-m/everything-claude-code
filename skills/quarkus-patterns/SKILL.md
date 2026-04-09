@@ -151,7 +151,7 @@ public class ProcessingService {
 
 ## Event Service Pattern
 
-```java
+@Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
 public class EventService {
