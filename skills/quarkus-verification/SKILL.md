@@ -83,11 +83,8 @@ class UserServiceTest {
   @Test
   void createUser_validInput_returnsUser() {
     var dto = new CreateUserDto("Alice", "alice@example.com");
-    var expected = new User();
-    expected.id = 1L;
-    expected.name = dto.name();
-    
-    // No stubbing needed — PanacheRepository.persist() is void
+
+    // Panache persist() is void — use doNothing + verify
     doNothing().when(userRepository).persist(any(User.class));
 
     User result = userService.create(dto);
