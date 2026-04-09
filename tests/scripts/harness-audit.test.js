@@ -132,6 +132,147 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  // --- findPluginInstall lookup paths ---
+  //
+  // These tests fix a gap where consumer-plugin-install only passed when the
+  // plugin lived at the legacy flat path ~/.claude/plugins/<pluginDir>/. The
+  // lookup now also supports the authoritative installed_plugins.json manifest
+  // and the marketplace cache layout (cache/<marketplace>/<plugin>/<version>/)
+  // produced by `claude plugin install ecc@everything-claude-code` on v1.9.0+.
+
+  // Minimal consumer-project scaffold reused by the plugin-install tests. We
+  // only need it to satisfy enough consumer checks for the audit to run and
+  // surface the consumer-plugin-install check result.
+  function writeConsumerProject(projectRoot) {
+    fs.mkdirSync(path.join(projectRoot, '.claude'), { recursive: true });
+    fs.writeFileSync(path.join(projectRoot, 'AGENTS.md'), '# Project instructions\n');
+    fs.writeFileSync(path.join(projectRoot, '.gitignore'), '.env\n');
+    fs.writeFileSync(
+      path.join(projectRoot, '.claude', 'settings.json'),
+      JSON.stringify({ hooks: ['PreToolUse'] }, null, 2)
+    );
+    fs.writeFileSync(
+      path.join(projectRoot, 'package.json'),
+      JSON.stringify({ name: 'consumer-project' }, null, 2)
+    );
+  }
+
+  function findCheck(parsed, id) {
+    return parsed.checks.find((check) => check.id === id);
+  }
+
+  if (test('findPluginInstall passes when installed_plugins.json points to the install', () => {
+    const homeDir = createTempDir('harness-audit-home-');
+    const projectRoot = createTempDir('harness-audit-project-');
+    const installRoot = path.join(homeDir, '.claude', 'plugins', 'cache', 'everything-claude-code', 'ecc', '1.10.0');
+
+    try {
+      // Real plugin install on disk, with a non-flat layout.
+      fs.mkdirSync(path.join(installRoot, '.claude-plugin'), { recursive: true });
+      fs.writeFileSync(
+        path.join(installRoot, '.claude-plugin', 'plugin.json'),
+        JSON.stringify({ name: 'ecc', version: '1.10.0' }, null, 2)
+      );
+
+      // installed_plugins.json manifest that points at the install.
+      fs.writeFileSync(
+        path.join(homeDir, '.claude', 'plugins', 'installed_plugins.json'),
+        JSON.stringify(
+          {
+            plugins: {
+              'ecc@everything-claude-code': [
+                { version: '1.10.0', installPath: installRoot },
+              ],
+            },
+          },
+          null,
+          2
+        )
+      );
+
+      writeConsumerProject(projectRoot);
+      const parsed = JSON.parse(run(['repo', '--format', 'json'], { cwd: projectRoot, homeDir }));
+
+      const check = findCheck(parsed, 'consumer-plugin-install');
+      assert.ok(check, 'consumer-plugin-install check should exist');
+      assert.strictEqual(check.pass, true, 'consumer-plugin-install should pass when installed_plugins.json references the install');
+    } finally {
+      cleanup(homeDir);
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('findPluginInstall passes via the marketplace cache layout', () => {
+    const homeDir = createTempDir('harness-audit-home-');
+    const projectRoot = createTempDir('harness-audit-project-');
+
+    try {
+      // Marketplace install path without an installed_plugins.json manifest.
+      const installRoot = path.join(homeDir, '.claude', 'plugins', 'cache', 'everything-claude-code', 'ecc', '1.10.0');
+      fs.mkdirSync(path.join(installRoot, '.claude-plugin'), { recursive: true });
+      fs.writeFileSync(
+        path.join(installRoot, '.claude-plugin', 'plugin.json'),
+        JSON.stringify({ name: 'ecc', version: '1.10.0' }, null, 2)
+      );
+
+      writeConsumerProject(projectRoot);
+      const parsed = JSON.parse(run(['repo', '--format', 'json'], { cwd: projectRoot, homeDir }));
+
+      const check = findCheck(parsed, 'consumer-plugin-install');
+      assert.ok(check, 'consumer-plugin-install check should exist');
+      assert.strictEqual(check.pass, true, 'consumer-plugin-install should pass with cache/<marketplace>/<plugin>/<version>/ layout');
+    } finally {
+      cleanup(homeDir);
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('findPluginInstall prefers the newest version in the cache layout', () => {
+    const homeDir = createTempDir('harness-audit-home-');
+    const projectRoot = createTempDir('harness-audit-project-');
+
+    try {
+      const pluginRoot = path.join(homeDir, '.claude', 'plugins', 'cache', 'everything-claude-code', 'ecc');
+      // Only the newer version has a plugin.json — the older dir is empty and
+      // must not shadow it. This guards the version sort order in the lookup.
+      fs.mkdirSync(path.join(pluginRoot, '1.8.0'), { recursive: true });
+      fs.mkdirSync(path.join(pluginRoot, '1.10.0', '.claude-plugin'), { recursive: true });
+      fs.writeFileSync(
+        path.join(pluginRoot, '1.10.0', '.claude-plugin', 'plugin.json'),
+        JSON.stringify({ name: 'ecc', version: '1.10.0' }, null, 2)
+      );
+
+      writeConsumerProject(projectRoot);
+      const parsed = JSON.parse(run(['repo', '--format', 'json'], { cwd: projectRoot, homeDir }));
+
+      const check = findCheck(parsed, 'consumer-plugin-install');
+      assert.strictEqual(check.pass, true, 'consumer-plugin-install should still pass when an older sibling version has no plugin.json');
+    } finally {
+      cleanup(homeDir);
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('findPluginInstall fails cleanly when no install is present', () => {
+    const homeDir = createTempDir('harness-audit-home-');
+    const projectRoot = createTempDir('harness-audit-project-');
+
+    try {
+      // HOME has .claude/plugins but no plugin install anywhere.
+      fs.mkdirSync(path.join(homeDir, '.claude', 'plugins'), { recursive: true });
+
+      writeConsumerProject(projectRoot);
+      const parsed = JSON.parse(run(['repo', '--format', 'json'], { cwd: projectRoot, homeDir }));
+
+      const check = findCheck(parsed, 'consumer-plugin-install');
+      assert.ok(check, 'consumer-plugin-install check should exist');
+      assert.strictEqual(check.pass, false, 'consumer-plugin-install should fail when no install is reachable');
+    } finally {
+      cleanup(homeDir);
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
 }

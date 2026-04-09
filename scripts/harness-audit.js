@@ -187,25 +187,103 @@ function detectTargetMode(rootDir) {
 }
 
 function findPluginInstall(rootDir) {
-  const homeDir = process.env.HOME || '';
+  // Three-tier lookup to match how Claude Code actually lays out plugin installs
+  // across legacy and marketplace installs.
+  //
+  // 1) Authoritative source: installed_plugins.json (project or user scope).
+  //    Claude Code writes this manifest when a plugin is installed and it is
+  //    the most reliable way to locate the active install path.
+  // 2) Legacy flat layout: ~/.claude/plugins/<pluginDir>/plugin.json. This is
+  //    the layout that existed before the marketplace was introduced and is
+  //    still produced by some manual installs.
+  // 3) Marketplace cache layout: ~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/.
+  //    This is the layout produced by `claude plugin install ecc@everything-claude-code`
+  //    on v1.9.0+. Without this branch, consumer projects that installed ECC
+  //    via the marketplace always report consumer-plugin-install: pass=false.
+  const homeDir = process.env.HOME || require('os').homedir() || '';
+
+  const pluginKeyPatterns = [
+    /^ecc@/i,
+    /^everything-claude-code@/i,
+  ];
+
+  // 1) installed_plugins.json (project first, then user).
+  const installedPluginsPaths = [
+    path.join(rootDir, '.claude', 'plugins', 'installed_plugins.json'),
+    homeDir && path.join(homeDir, '.claude', 'plugins', 'installed_plugins.json'),
+  ].filter(Boolean);
+
+  for (const installedPath of installedPluginsPaths) {
+    if (!fs.existsSync(installedPath)) continue;
+    const manifest = safeParseJson(
+      safeRead(path.dirname(installedPath), path.basename(installedPath))
+    );
+    if (!manifest || !manifest.plugins) continue;
+    for (const key of Object.keys(manifest.plugins)) {
+      if (!pluginKeyPatterns.some((re) => re.test(key))) continue;
+      const entries = Array.isArray(manifest.plugins[key]) ? manifest.plugins[key] : [];
+      for (const entry of entries) {
+        if (!entry || !entry.installPath) continue;
+        const pluginJson = path.join(entry.installPath, '.claude-plugin', 'plugin.json');
+        if (fs.existsSync(pluginJson)) return pluginJson;
+        const fallback = path.join(entry.installPath, 'plugin.json');
+        if (fs.existsSync(fallback)) return fallback;
+      }
+    }
+  }
+
+  const candidateRoots = [
+    path.join(rootDir, '.claude', 'plugins'),
+    homeDir && path.join(homeDir, '.claude', 'plugins'),
+  ].filter(Boolean);
+
+  // 2) Legacy flat layout: ~/.claude/plugins/<pluginDir>/plugin.json
   const pluginDirs = [
     'ecc',
     'ecc@ecc',
     'everything-claude-code',
     'everything-claude-code@everything-claude-code',
   ];
-  const candidateRoots = [
-    path.join(rootDir, '.claude', 'plugins'),
-    homeDir && path.join(homeDir, '.claude', 'plugins'),
-  ].filter(Boolean);
-  const candidates = candidateRoots.flatMap((pluginsDir) =>
+  const flatCandidates = candidateRoots.flatMap((pluginsDir) =>
     pluginDirs.flatMap((pluginDir) => [
       path.join(pluginsDir, pluginDir, '.claude-plugin', 'plugin.json'),
       path.join(pluginsDir, pluginDir, 'plugin.json'),
     ])
   );
+  const flatHit = flatCandidates.find((candidate) => fs.existsSync(candidate));
+  if (flatHit) return flatHit;
 
-  return candidates.find(candidate => fs.existsSync(candidate)) || null;
+  // 3) Marketplace cache layout:
+  //    ~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/
+  const marketplaces = ['everything-claude-code', 'ecc'];
+  const pluginNames = ['ecc', 'everything-claude-code'];
+  for (const pluginsDir of candidateRoots) {
+    for (const marketplace of marketplaces) {
+      for (const pluginName of pluginNames) {
+        const pluginRoot = path.join(pluginsDir, 'cache', marketplace, pluginName);
+        if (!fs.existsSync(pluginRoot)) continue;
+        let versions = [];
+        try {
+          versions = fs
+            .readdirSync(pluginRoot, { withFileTypes: true })
+            .filter((d) => d.isDirectory())
+            .map((d) => d.name)
+            .sort()
+            .reverse();
+        } catch (_error) {
+          continue;
+        }
+        for (const version of versions) {
+          const pluginJson = path.join(pluginRoot, version, '.claude-plugin', 'plugin.json');
+          if (fs.existsSync(pluginJson)) return pluginJson;
+          const fallback = path.join(pluginRoot, version, 'plugin.json');
+          if (fs.existsSync(fallback)) return fallback;
+        }
+      }
+    }
+  }
+
+  return null;
 }
 
 function getRepoChecks(rootDir) {
