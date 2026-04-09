@@ -186,6 +186,27 @@ function detectTargetMode(rootDir) {
   return 'consumer';
 }
 
+// Plugin manifest keys that identify an ECC install across the current and
+// legacy marketplace names. Hoisted out of findPluginInstall so the tier
+// helpers below can share a single authoritative list.
+const ECC_PLUGIN_KEY_PATTERNS = [
+  /^ecc@/i,
+  /^everything-claude-code@/i,
+];
+
+// Legacy flat-layout plugin directory names, tried in priority order.
+const ECC_LEGACY_PLUGIN_DIRS = [
+  'ecc',
+  'ecc@ecc',
+  'everything-claude-code',
+  'everything-claude-code@everything-claude-code',
+];
+
+// Marketplace and plugin names used by `claude plugin install
+// ecc@everything-claude-code` on v1.9.0+.
+const ECC_MARKETPLACES = ['everything-claude-code', 'ecc'];
+const ECC_PLUGIN_NAMES = ['ecc', 'everything-claude-code'];
+
 // Descending numeric-component version comparator. Compares "1.10.0" and
 // "1.8.0" by their numeric components so 1.10.0 sorts before 1.8.0, unlike
 // the lexicographic default. Non-numeric tokens (e.g. "1.0.0-beta") compare
@@ -203,33 +224,28 @@ function compareVersionDesc(a, b) {
   return 0;
 }
 
-function findPluginInstall(rootDir) {
-  // Three-tier lookup to match how Claude Code actually lays out plugin installs
-  // across legacy and marketplace installs.
-  //
-  // 1) Authoritative source: installed_plugins.json (project or user scope).
-  //    Claude Code writes this manifest when a plugin is installed and it is
-  //    the most reliable way to locate the active install path.
-  // 2) Legacy flat layout: ~/.claude/plugins/<pluginDir>/plugin.json. This is
-  //    the layout that existed before the marketplace was introduced and is
-  //    still produced by some manual installs.
-  // 3) Marketplace cache layout: ~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/.
-  //    This is the layout produced by `claude plugin install ecc@everything-claude-code`
-  //    on v1.9.0+. Without this branch, consumer projects that installed ECC
-  //    via the marketplace always report consumer-plugin-install: pass=false.
-  const homeDir = process.env.HOME || require('os').homedir() || '';
+// Returns the first existing plugin.json under `installRoot`, checking both
+// `.claude-plugin/plugin.json` and a bare `plugin.json` fallback, or null if
+// neither exists. Centralising this avoids repeating the two-path check in
+// every tier helper below.
+function findPluginJsonUnder(installRoot) {
+  const pluginJson = path.join(installRoot, '.claude-plugin', 'plugin.json');
+  if (fs.existsSync(pluginJson)) return pluginJson;
+  const fallback = path.join(installRoot, 'plugin.json');
+  if (fs.existsSync(fallback)) return fallback;
+  return null;
+}
 
-  const pluginKeyPatterns = [
-    /^ecc@/i,
-    /^everything-claude-code@/i,
-  ];
-
-  // 1) installed_plugins.json (project first, then user).
-  const installedPluginsPaths = [
-    path.join(rootDir, '.claude', 'plugins', 'installed_plugins.json'),
-    homeDir && path.join(homeDir, '.claude', 'plugins', 'installed_plugins.json'),
-  ].filter(Boolean);
-
+// Tier 1 — authoritative: installed_plugins.json manifest (project scope
+// first, then user scope). Matches ECC plugin keys, validates that each
+// entry's installPath is a non-empty string, resolves relative paths against
+// the manifest's own directory, and returns the first plugin.json found.
+//
+// The type check is deliberate — `installed_plugins.json` is external data
+// that can be edited or corrupted by other tools. An unchecked installPath
+// (null, number, object, ...) would throw out of path.join and abort the
+// whole audit run.
+function findPluginInstallFromManifest(installedPluginsPaths) {
   for (const installedPath of installedPluginsPaths) {
     if (!fs.existsSync(installedPath)) continue;
     const manifest = safeParseJson(
@@ -237,46 +253,47 @@ function findPluginInstall(rootDir) {
     );
     if (!manifest || !manifest.plugins) continue;
     for (const key of Object.keys(manifest.plugins)) {
-      if (!pluginKeyPatterns.some((re) => re.test(key))) continue;
+      if (!ECC_PLUGIN_KEY_PATTERNS.some((re) => re.test(key))) continue;
       const entries = Array.isArray(manifest.plugins[key]) ? manifest.plugins[key] : [];
       for (const entry of entries) {
-        if (!entry || !entry.installPath) continue;
-        const pluginJson = path.join(entry.installPath, '.claude-plugin', 'plugin.json');
-        if (fs.existsSync(pluginJson)) return pluginJson;
-        const fallback = path.join(entry.installPath, 'plugin.json');
-        if (fs.existsSync(fallback)) return fallback;
+        if (!entry || typeof entry.installPath !== 'string' || !entry.installPath.trim()) {
+          continue;
+        }
+        // Anchor relative installPaths at the manifest's own directory so
+        // they behave the same regardless of the audit's current working
+        // directory.
+        const installRoot = path.isAbsolute(entry.installPath)
+          ? entry.installPath
+          : path.resolve(path.dirname(installedPath), entry.installPath);
+        const hit = findPluginJsonUnder(installRoot);
+        if (hit) return hit;
       }
     }
   }
+  return null;
+}
 
-  const candidateRoots = [
-    path.join(rootDir, '.claude', 'plugins'),
-    homeDir && path.join(homeDir, '.claude', 'plugins'),
-  ].filter(Boolean);
-
-  // 2) Legacy flat layout: ~/.claude/plugins/<pluginDir>/plugin.json
-  const pluginDirs = [
-    'ecc',
-    'ecc@ecc',
-    'everything-claude-code',
-    'everything-claude-code@everything-claude-code',
-  ];
-  const flatCandidates = candidateRoots.flatMap((pluginsDir) =>
-    pluginDirs.flatMap((pluginDir) => [
-      path.join(pluginsDir, pluginDir, '.claude-plugin', 'plugin.json'),
-      path.join(pluginsDir, pluginDir, 'plugin.json'),
-    ])
-  );
-  const flatHit = flatCandidates.find((candidate) => fs.existsSync(candidate));
-  if (flatHit) return flatHit;
-
-  // 3) Marketplace cache layout:
-  //    ~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/
-  const marketplaces = ['everything-claude-code', 'ecc'];
-  const pluginNames = ['ecc', 'everything-claude-code'];
+// Tier 2 — legacy flat layout: ~/.claude/plugins/<pluginDir>/plugin.json.
+// Preserved for manual/dev installs and backwards compatibility with
+// pre-marketplace install scripts.
+function findPluginInstallFlatLayout(candidateRoots) {
   for (const pluginsDir of candidateRoots) {
-    for (const marketplace of marketplaces) {
-      for (const pluginName of pluginNames) {
+    for (const pluginDir of ECC_LEGACY_PLUGIN_DIRS) {
+      const hit = findPluginJsonUnder(path.join(pluginsDir, pluginDir));
+      if (hit) return hit;
+    }
+  }
+  return null;
+}
+
+// Tier 3 — marketplace cache layout:
+// ~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/. Produced by
+// `claude plugin install ecc@everything-claude-code` on v1.9.0+. Picks the
+// newest install when multiple versions coexist on disk.
+function findPluginInstallMarketplaceCache(candidateRoots) {
+  for (const pluginsDir of candidateRoots) {
+    for (const marketplace of ECC_MARKETPLACES) {
+      for (const pluginName of ECC_PLUGIN_NAMES) {
         const pluginRoot = path.join(pluginsDir, 'cache', marketplace, pluginName);
         if (!fs.existsSync(pluginRoot)) continue;
         let versions = [];
@@ -286,20 +303,45 @@ function findPluginInstall(rootDir) {
             .filter((d) => d.isDirectory())
             .map((d) => d.name)
             .sort(compareVersionDesc);
-        } catch (_error) {
+        } catch (error) {
+          // Surface the failure rather than hiding a potentially actionable
+          // cause of a missed install (typically: permission denied on the
+          // user's ~/.claude/plugins/cache). We still continue so a single
+          // unreadable plugin root does not abort the whole audit.
+          console.error(
+            `harness-audit: cannot read plugin cache directory ${pluginRoot}: ${error.message}`
+          );
           continue;
         }
         for (const version of versions) {
-          const pluginJson = path.join(pluginRoot, version, '.claude-plugin', 'plugin.json');
-          if (fs.existsSync(pluginJson)) return pluginJson;
-          const fallback = path.join(pluginRoot, version, 'plugin.json');
-          if (fs.existsSync(fallback)) return fallback;
+          const hit = findPluginJsonUnder(path.join(pluginRoot, version));
+          if (hit) return hit;
         }
       }
     }
   }
-
   return null;
+}
+
+// Three-tier lookup to match how Claude Code actually lays out plugin
+// installs across legacy and marketplace installs. See the tier helpers
+// above for per-tier details and rationale.
+function findPluginInstall(rootDir) {
+  const homeDir = process.env.HOME || require('os').homedir() || '';
+  const installedPluginsPaths = [
+    path.join(rootDir, '.claude', 'plugins', 'installed_plugins.json'),
+    homeDir && path.join(homeDir, '.claude', 'plugins', 'installed_plugins.json'),
+  ].filter(Boolean);
+  const candidateRoots = [
+    path.join(rootDir, '.claude', 'plugins'),
+    homeDir && path.join(homeDir, '.claude', 'plugins'),
+  ].filter(Boolean);
+
+  return (
+    findPluginInstallFromManifest(installedPluginsPaths)
+    || findPluginInstallFlatLayout(candidateRoots)
+    || findPluginInstallMarketplaceCache(candidateRoots)
+  );
 }
 
 function getRepoChecks(rootDir) {

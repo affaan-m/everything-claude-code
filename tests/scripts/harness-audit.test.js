@@ -318,6 +318,143 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  // --- Tier 1 (installed_plugins.json) robustness ---
+  //
+  // These tests protect the manifest-driven lookup against malformed external
+  // data and relative-path installPaths, per the defensive-programming
+  // coding guideline ("Never trust external data").
+
+  if (test('findPluginInstall does not crash on malformed installPath types', () => {
+    const homeDir = createTempDir('harness-audit-home-');
+    const projectRoot = createTempDir('harness-audit-project-');
+    const installRoot = path.join(homeDir, '.claude', 'plugins', 'cache', 'everything-claude-code', 'ecc', '1.10.0');
+
+    try {
+      // A real, valid install alongside a manifest that contains several
+      // malformed entries. The lookup should skip the bad entries without
+      // throwing and fall back to the cache-layout tier or the valid entry.
+      fs.mkdirSync(path.join(installRoot, '.claude-plugin'), { recursive: true });
+      fs.writeFileSync(
+        path.join(installRoot, '.claude-plugin', 'plugin.json'),
+        JSON.stringify({ name: 'ecc', version: '1.10.0' }, null, 2)
+      );
+
+      fs.writeFileSync(
+        path.join(homeDir, '.claude', 'plugins', 'installed_plugins.json'),
+        JSON.stringify(
+          {
+            plugins: {
+              'ecc@everything-claude-code': [
+                // Malformed entries that previously would have thrown out of
+                // path.join when the function only checked for truthiness.
+                null,
+                { installPath: null },
+                { installPath: 42 },
+                { installPath: { nested: 'object' } },
+                { installPath: '   ' },
+                { installPath: '' },
+                // Finally, one valid absolute entry.
+                { installPath: installRoot },
+              ],
+            },
+          },
+          null,
+          2
+        )
+      );
+
+      // Direct call so we can assert no throw.
+      let found;
+      const originalHome = process.env.HOME;
+      process.env.HOME = homeDir;
+      try {
+        assert.doesNotThrow(() => {
+          found = findPluginInstall(projectRoot);
+        });
+      } finally {
+        if (originalHome === undefined) {
+          delete process.env.HOME;
+        } else {
+          process.env.HOME = originalHome;
+        }
+      }
+
+      assert.ok(found, 'lookup should still find the valid entry after skipping malformed ones');
+      assert.ok(
+        found.includes(`${path.sep}1.10.0${path.sep}`),
+        `lookup should return the valid 1.10.0 install, got: ${found}`
+      );
+    } finally {
+      cleanup(homeDir);
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('findPluginInstall resolves relative installPath against the manifest directory', () => {
+    const homeDir = createTempDir('harness-audit-home-');
+    const projectRoot = createTempDir('harness-audit-project-');
+
+    try {
+      // Place the install directory next to installed_plugins.json and
+      // reference it with a relative path. Before the fix, `path.join` would
+      // interpret "./ecc-local/1.10.0" as CWD-relative rather than
+      // manifest-relative, and the lookup would silently miss it.
+      const pluginsDir = path.join(homeDir, '.claude', 'plugins');
+      fs.mkdirSync(pluginsDir, { recursive: true });
+
+      const relativeInstallRoot = path.join(pluginsDir, 'ecc-local', '1.10.0');
+      fs.mkdirSync(path.join(relativeInstallRoot, '.claude-plugin'), { recursive: true });
+      fs.writeFileSync(
+        path.join(relativeInstallRoot, '.claude-plugin', 'plugin.json'),
+        JSON.stringify({ name: 'ecc', version: '1.10.0' }, null, 2)
+      );
+
+      fs.writeFileSync(
+        path.join(pluginsDir, 'installed_plugins.json'),
+        JSON.stringify(
+          {
+            plugins: {
+              'ecc@everything-claude-code': [
+                { installPath: path.join('ecc-local', '1.10.0') },
+              ],
+            },
+          },
+          null,
+          2
+        )
+      );
+
+      // Intentionally run from a CWD that cannot resolve the relative path
+      // correctly on its own — projectRoot has nothing named "ecc-local".
+      // If the lookup resolved against CWD, it would fail; resolving against
+      // the manifest's directory is the only way to succeed.
+      const originalHome = process.env.HOME;
+      const originalCwd = process.cwd();
+      process.env.HOME = homeDir;
+      process.chdir(projectRoot);
+      let found;
+      try {
+        found = findPluginInstall(projectRoot);
+      } finally {
+        process.chdir(originalCwd);
+        if (originalHome === undefined) {
+          delete process.env.HOME;
+        } else {
+          process.env.HOME = originalHome;
+        }
+      }
+
+      assert.ok(found, 'relative installPath should resolve against the manifest directory');
+      assert.ok(
+        found.includes(`ecc-local${path.sep}1.10.0`),
+        `lookup should land inside the manifest-relative install, got: ${found}`
+      );
+    } finally {
+      cleanup(homeDir);
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
 }
