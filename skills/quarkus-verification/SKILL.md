@@ -87,7 +87,8 @@ class UserServiceTest {
     expected.id = 1L;
     expected.name = dto.name();
     
-    when(userRepository.persist(any(User.class))).thenReturn(expected);
+    // No stubbing needed — PanacheRepository.persist() is void
+    doNothing().when(userRepository).persist(any(User.class));
 
     User result = userService.create(dto);
 
