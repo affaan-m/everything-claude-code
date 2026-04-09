@@ -333,14 +333,20 @@ public class SecretService {
 
 ## Rate Limiting (Hız Sınırlama)
 
+**Güvenlik Notu**: `X-Forwarded-For` doğrudan kullanmayın — istemciler bunu taklit edebilir.
+Servlet request'ten gerçek uzak adresi veya kimliği doğrulanmış bir kimlik (API anahtarı, JWT subject) kullanın.
+
 ```java
 @ApplicationScoped
 public class RateLimitFilter implements ContainerRequestFilter {
   private final Map<String, RateLimiter> limiters = new ConcurrentHashMap<>();
 
+  @Inject
+  HttpServletRequest servletRequest;
+
   @Override
   public void filter(ContainerRequestContext requestContext) {
-    String clientId = getClientIdentifier(requestContext);
+    String clientId = getClientIdentifier();
     RateLimiter limiter = limiters.computeIfAbsent(clientId, 
         k -> RateLimiter.create(100.0)); // Saniyede 100 istek
 
@@ -353,9 +359,10 @@ public class RateLimitFilter implements ContainerRequestFilter {
     }
   }
 
-  private String getClientIdentifier(ContainerRequestContext ctx) {
-    // IP, API anahtarı veya kullanıcı ID'si kullanın
-    return ctx.getHeaderString("X-Forwarded-For");
+  private String getClientIdentifier() {
+    // Konteyner tarafından sağlanan uzak adresi kullanın (X-Forwarded-For değil).
+    // Güvenilir proxy arkasındaysanız quarkus.http.proxy.proxy-address-forwarding=true ayarlayın.
+    return servletRequest.getRemoteAddr();
   }
 }
 ```

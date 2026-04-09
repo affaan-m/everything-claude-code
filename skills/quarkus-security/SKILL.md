@@ -333,14 +333,21 @@ public class SecretService {
 
 ## Rate Limiting
 
+**Security Note**: Never use `X-Forwarded-For` directly — clients can spoof it.
+Use the actual remote address from the servlet request, or an authenticated
+identity (API key, JWT subject) when available.
+
 ```java
 @ApplicationScoped
 public class RateLimitFilter implements ContainerRequestFilter {
   private final Map<String, RateLimiter> limiters = new ConcurrentHashMap<>();
 
+  @Inject
+  HttpServletRequest servletRequest;
+
   @Override
   public void filter(ContainerRequestContext requestContext) {
-    String clientId = getClientIdentifier(requestContext);
+    String clientId = getClientIdentifier();
     RateLimiter limiter = limiters.computeIfAbsent(clientId, 
         k -> RateLimiter.create(100.0)); // 100 requests per second
 
@@ -353,9 +360,11 @@ public class RateLimitFilter implements ContainerRequestFilter {
     }
   }
 
-  private String getClientIdentifier(ContainerRequestContext ctx) {
-    // Use IP, API key, or user ID
-    return ctx.getHeaderString("X-Forwarded-For");
+  private String getClientIdentifier() {
+    // Use the container-provided remote address (not X-Forwarded-For).
+    // If behind a trusted proxy, configure quarkus.http.proxy.proxy-address-forwarding=true
+    // so getRemoteAddr() returns the real client IP.
+    return servletRequest.getRemoteAddr();
   }
 }
 ```

@@ -286,14 +286,20 @@ quarkus.vault.authentication.kubernetes.role=my-role
 
 ## レート制限
 
+**セキュリティ注意**: `X-Forwarded-For`を直接使用しないでください — クライアントが偽装できます。
+サーブレットリクエストの実際のリモートアドレス、または認証済みIDを使用してください。
+
 ```java
 @ApplicationScoped
 public class RateLimitFilter implements ContainerRequestFilter {
   private final Map<String, RateLimiter> limiters = new ConcurrentHashMap<>();
 
+  @Inject
+  HttpServletRequest servletRequest;
+
   @Override
   public void filter(ContainerRequestContext requestContext) {
-    String clientId = getClientIdentifier(requestContext);
+    String clientId = getClientIdentifier();
     RateLimiter limiter = limiters.computeIfAbsent(clientId, 
         k -> RateLimiter.create(100.0)); // 1秒あたり100リクエスト
 
@@ -306,9 +312,10 @@ public class RateLimitFilter implements ContainerRequestFilter {
     }
   }
 
-  private String getClientIdentifier(ContainerRequestContext ctx) {
-    // IP、APIキー、またはユーザーIDを使用
-    return ctx.getHeaderString("X-Forwarded-For");
+  private String getClientIdentifier() {
+    // コンテナ提供のリモートアドレスを使用（X-Forwarded-Forではない）。
+    // 信頼できるプロキシの背後にある場合はquarkus.http.proxy.proxy-address-forwarding=trueを設定。
+    return servletRequest.getRemoteAddr();
   }
 }
 ```
