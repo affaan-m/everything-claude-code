@@ -418,7 +418,7 @@ public class DocumentService {
     return repo.findByIdOptional(id);
   }
 
-  public PaginatedList<Document> list(int page, int size) {
+  public List<Document> list(int page, int size) {
     return repo.findAll()
         .page(page, size)
         .list();
