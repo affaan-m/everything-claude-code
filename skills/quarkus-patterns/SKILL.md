@@ -343,7 +343,7 @@ public class DocumentResource {
   public Response list(
       @QueryParam("page") @DefaultValue("0") int page,
       @QueryParam("size") @DefaultValue("20") int size) {
-    PaginatedList<Document> documents = documentService.list(page, size);
+    List<Document> documents = documentService.list(page, size);
     return Response.ok(documents).build();
   }
 
@@ -477,11 +477,15 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 ## CompletableFuture Async Operations
 
 ```java
+@Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
 public class FileStorageService {
     private final S3Client s3Client;
     private final ExecutorService executorService;
+    
+    @ConfigProperty(name = "storage.bucket-name")
+    String bucketName;
     
     public CompletableFuture<StoredDocumentInfo> uploadOriginalFile(
             InputStream inputStream, 

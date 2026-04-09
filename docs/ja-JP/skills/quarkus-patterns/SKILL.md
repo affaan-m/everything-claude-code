@@ -340,7 +340,7 @@ public class DocumentResource {
   public Response list(
       @QueryParam("page") @DefaultValue("0") int page,
       @QueryParam("size") @DefaultValue("20") int size) {
-    PaginatedList<Document> documents = documentService.list(page, size);
+    List<Document> documents = documentService.list(page, size);
     return Response.ok(documents).build();
   }
 
@@ -415,7 +415,7 @@ public class DocumentService {
     return repo.findByIdOptional(id);
   }
 
-  public PaginatedList<Document> list(int page, int size) {
+  public List<Document> list(int page, int size) {
     return repo.findAll()
         .page(page, size)
         .list();
@@ -474,11 +474,14 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 ## CompletableFuture非同期操作
 
 ```java
+@Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
 public class FileStorageService {
     private final S3Client s3Client;
     private final ExecutorService executorService;
+    
+    @ConfigProperty(name = "storage.bucket-name") String bucketName;
     
     public CompletableFuture<StoredDocumentInfo> uploadOriginalFile(
             InputStream inputStream, 

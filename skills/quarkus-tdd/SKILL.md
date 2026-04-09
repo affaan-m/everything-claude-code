@@ -531,10 +531,10 @@ class FileStorageServiceTest {
     @DisplayName("Should successfully upload file and return document info")
     void givenValidFile_whenUpload_thenReturnsDocumentInfo() throws Exception {
       // ARRANGE
-      when(executorService.submit(any(Callable.class))).thenAnswer(invocation -> {
-        Callable<?> callable = invocation.getArgument(0);
-        return CompletableFuture.completedFuture(callable.call());
-      });
+      doAnswer(invocation -> {
+        ((Runnable) invocation.getArgument(0)).run();
+        return null;
+      }).when(executorService).execute(any(Runnable.class));
       
       when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
           .thenReturn(PutObjectResponse.builder().build());
@@ -558,10 +558,14 @@ class FileStorageServiceTest {
     @Test
     @DisplayName("Should handle S3 upload failure")
     void givenS3Failure_whenUpload_thenCompletableFutureFails() {
-      // ARRANGE
-      when(executorService.submit(any(Callable.class))).thenAnswer(invocation -> {
-        return CompletableFuture.failedFuture(new StorageException("S3 unavailable"));
-      });
+      // ARRANGE — run synchronously so exception propagates through the future
+      doAnswer(invocation -> {
+        ((Runnable) invocation.getArgument(0)).run();
+        return null;
+      }).when(executorService).execute(any(Runnable.class));
+      
+      when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+          .thenThrow(new StorageException("S3 unavailable"));
       
       // ACT
       CompletableFuture<StoredDocumentInfo> future = 
@@ -581,11 +585,11 @@ class FileStorageServiceTest {
       // ARRANGE
       AtomicReference<LogContext> capturedContext = new AtomicReference<>();
       
-      when(executorService.submit(any(Callable.class))).thenAnswer(invocation -> {
-        Callable<?> callable = invocation.getArgument(0);
+      doAnswer(invocation -> {
         capturedContext.set(CustomLog.getCurrentContext());
-        return CompletableFuture.completedFuture(callable.call());
-      });
+        ((Runnable) invocation.getArgument(0)).run();
+        return null;
+      }).when(executorService).execute(any(Runnable.class));
       
       // ACT
       fileStorageService.uploadOriginalFile(testInputStream, 1024L, 
