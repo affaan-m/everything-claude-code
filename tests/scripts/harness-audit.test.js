@@ -9,6 +9,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'harness-audit.js');
+const { findPluginInstall, compareVersionDesc } = require(SCRIPT);
 
 function createTempDir(prefix) {
   return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
@@ -227,29 +228,73 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (test('compareVersionDesc orders numeric version components correctly', () => {
+    // Lexicographic sort would put 1.8.0 before 1.10.0; the semver-aware
+    // comparator must put 1.10.0 first.
+    assert.ok(compareVersionDesc('1.10.0', '1.8.0') < 0, '1.10.0 should sort before 1.8.0');
+    assert.ok(compareVersionDesc('1.8.0', '1.10.0') > 0, '1.8.0 should sort after 1.10.0');
+    assert.strictEqual(compareVersionDesc('1.10.0', '1.10.0'), 0);
+
+    const ordered = ['1.8.0', '1.10.0', '1.9.0', '2.0.0'].sort(compareVersionDesc);
+    assert.deepStrictEqual(ordered, ['2.0.0', '1.10.0', '1.9.0', '1.8.0']);
+
+    // Non-numeric / missing components collapse to 0 at that position and the
+    // comparator must not throw.
+    assert.doesNotThrow(() => compareVersionDesc('1.0.0-beta', '1.0.0'));
+    assert.doesNotThrow(() => compareVersionDesc('1', '1.0.0'));
+  })) passed++; else failed++;
+
   if (test('findPluginInstall prefers the newest version in the cache layout', () => {
     const homeDir = createTempDir('harness-audit-home-');
-    const projectRoot = createTempDir('harness-audit-project-');
 
     try {
       const pluginRoot = path.join(homeDir, '.claude', 'plugins', 'cache', 'everything-claude-code', 'ecc');
-      // Only the newer version has a plugin.json — the older dir is empty and
-      // must not shadow it. This guards the version sort order in the lookup.
-      fs.mkdirSync(path.join(pluginRoot, '1.8.0'), { recursive: true });
+      // Put a valid plugin.json in BOTH versioned directories. This is the
+      // only setup that can actually detect a reversed or lexicographic sort
+      // order — if iteration picks the wrong directory, the returned path
+      // will contain "1.8.0" instead of "1.10.0".
+      fs.mkdirSync(path.join(pluginRoot, '1.8.0', '.claude-plugin'), { recursive: true });
+      fs.writeFileSync(
+        path.join(pluginRoot, '1.8.0', '.claude-plugin', 'plugin.json'),
+        JSON.stringify({ name: 'ecc', version: '1.8.0' }, null, 2)
+      );
       fs.mkdirSync(path.join(pluginRoot, '1.10.0', '.claude-plugin'), { recursive: true });
       fs.writeFileSync(
         path.join(pluginRoot, '1.10.0', '.claude-plugin', 'plugin.json'),
         JSON.stringify({ name: 'ecc', version: '1.10.0' }, null, 2)
       );
 
-      writeConsumerProject(projectRoot);
-      const parsed = JSON.parse(run(['repo', '--format', 'json'], { cwd: projectRoot, homeDir }));
+      // Call findPluginInstall directly so we can assert which path it
+      // returns. We point rootDir at a throwaway project directory that does
+      // NOT have its own .claude/plugins, so the lookup is forced to fall
+      // through to the user-scope HOME. process.env.HOME is temporarily
+      // redirected at the function call to make the lookup hermetic.
+      const projectRoot = createTempDir('harness-audit-project-');
+      const originalHome = process.env.HOME;
+      process.env.HOME = homeDir;
+      let found;
+      try {
+        found = findPluginInstall(projectRoot);
+      } finally {
+        if (originalHome === undefined) {
+          delete process.env.HOME;
+        } else {
+          process.env.HOME = originalHome;
+        }
+        cleanup(projectRoot);
+      }
 
-      const check = findCheck(parsed, 'consumer-plugin-install');
-      assert.strictEqual(check.pass, true, 'consumer-plugin-install should still pass when an older sibling version has no plugin.json');
+      assert.ok(found, 'findPluginInstall should return a path when either version is valid');
+      assert.ok(
+        found.includes(`${path.sep}1.10.0${path.sep}`),
+        `findPluginInstall should prefer 1.10.0 over 1.8.0, got: ${found}`
+      );
+      assert.ok(
+        !found.includes(`${path.sep}1.8.0${path.sep}`),
+        `findPluginInstall should not return the older 1.8.0 path, got: ${found}`
+      );
     } finally {
       cleanup(homeDir);
-      cleanup(projectRoot);
     }
   })) passed++; else failed++;
 

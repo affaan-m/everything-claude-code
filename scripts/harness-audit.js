@@ -186,6 +186,23 @@ function detectTargetMode(rootDir) {
   return 'consumer';
 }
 
+// Descending numeric-component version comparator. Compares "1.10.0" and
+// "1.8.0" by their numeric components so 1.10.0 sorts before 1.8.0, unlike
+// the lexicographic default. Non-numeric tokens (e.g. "1.0.0-beta") compare
+// as 0 for that position, which is good enough for picking the newest real
+// install directory without pulling in a semver dependency.
+function compareVersionDesc(a, b) {
+  const pa = String(a).split('.').map((n) => parseInt(n, 10) || 0);
+  const pb = String(b).split('.').map((n) => parseInt(n, 10) || 0);
+  const len = Math.max(pa.length, pb.length);
+  for (let i = 0; i < len; i += 1) {
+    const na = pa[i] || 0;
+    const nb = pb[i] || 0;
+    if (na !== nb) return nb - na;
+  }
+  return 0;
+}
+
 function findPluginInstall(rootDir) {
   // Three-tier lookup to match how Claude Code actually lays out plugin installs
   // across legacy and marketplace installs.
@@ -268,8 +285,7 @@ function findPluginInstall(rootDir) {
             .readdirSync(pluginRoot, { withFileTypes: true })
             .filter((d) => d.isDirectory())
             .map((d) => d.name)
-            .sort()
-            .reverse();
+            .sort(compareVersionDesc);
         } catch (_error) {
           continue;
         }
@@ -810,4 +826,6 @@ if (require.main === module) {
 module.exports = {
   buildReport,
   parseArgs,
+  findPluginInstall,
+  compareVersionDesc,
 };
