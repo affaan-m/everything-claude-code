@@ -185,8 +185,11 @@ public class EventService {
     }
     
     private String serializePayload(Object payload) {
-        // JSONシリアライゼーション
-        return objectMapper.writeValueAsString(payload);
+        try {
+            return objectMapper.writeValueAsString(payload);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Failed to serialize event payload", e);
+        }
     }
 }
 ```
