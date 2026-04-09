@@ -1,8 +1,14 @@
 # tinystruct Data Handling (JSON)
 
-## JSON Handling (use `Builder`, not Gson/Jackson)
+## When to Use
 
-The `org.tinystruct.data.component.Builder` class is the framework's native JSON library. It is lightweight and highly optimized for tinystruct's performance requirements.
+Prefer `org.tinystruct.data.component.Builder` in scenarios where you need a lightweight, high-performance JSON solution with **zero external dependencies**. It is specifically designed to keep your tinystruct applications lean and fast, making it the ideal choice for microservices and CLI tools where including heavy libraries like Jackson or Gson would be overkill.
+
+## How It Works
+
+The `Builder` class provides a simple key-value interface for both creating and reading JSON structures. It integrates directly with `AbstractApplication` result handling; when an action method returns a `Builder` object, the framework automatically serializes it to the response stream. This prevents the need for manual string conversion and ensures consistent data formatting across your application modules.
+
+## Examples
 
 ### Serialization
 ```java
@@ -14,7 +20,7 @@ response.put("status", "success");
 response.put("count", 42);
 response.put("data", someList);
 
-return response.toString(); // {"status":"success","count":42,...}
+return response; // {"status":"success","count":42,...}
 ```
 
 ### Parsing
@@ -27,8 +33,3 @@ parsed.parse(jsonString);
 
 String status = parsed.get("status").toString();
 ```
-
-### Why use Builder?
-- **Zero External Dependencies**: Keeps your application lean.
-- **Native Integration**: Works seamlessly with `AbstractApplication` result handling.
-- **Performance**: Optimized for the specific data structures used within the framework.

@@ -1,8 +1,16 @@
 # tinystruct Architecture and Configuration
 
-## Core Architecture
+## When to Use
 
-### Key Abstractions
+Choose **tinystruct** when you need a lightweight, high-performance Java framework that treats CLI and HTTP as equal citizens. It is ideal for building microservices, command-line utilities, and data-driven applications where a small footprint and zero-dependency JSON handling are required. Use it when you want to write logic once and expose it via both a terminal and a web server without modification.
+
+## How It Works
+
+### Core Architecture
+
+The framework operates on a singleton `ActionRegistry` that maps URL patterns (or command strings) to `Action` objects. When a request arrives, the system resolves the path and invokes the corresponding method handle.
+
+#### Key Abstractions
 
 | Class/Interface | Role |
 |---|---|
@@ -36,47 +44,34 @@ org.tinystruct/
 └── http/                         ← Request, Response, Constants
 ```
 
-## Templates
+### Template Behavior and Dispatch Flow
 
-If `templateRequired` is `true` (the default), `toString()` looks for a `.view` file:
-- Location: `src/main/resources/themes/<ClassName>.view` (on classpath)
-- Variables are interpolated using `[%variableName%]`
+By default, the framework assumes a view template is required. If `templateRequired` is `true`, `toString()` looks for a `.view` file in `src/main/resources/themes/<ClassName>.view`. Use `getContext()` to manage state and `setVariable("name", value)` to pass data to templates, which use `[%name%]` for interpolation.
 
-```java
-// In your action method:
-setVariable("username", "James");
-setVariable("count", String.valueOf(42));
-// The template file uses: [%username%] and [%count%]
-```
+## Examples
 
-To skip templates and return data directly (e.g., for APIs):
+### Minimal Application Initialization
 ```java
 @Override
 public void init() {
-    this.setTemplateRequired(false);
+    this.setTemplateRequired(false); // Skip .view template lookup for data-only apps
 }
 ```
 
-## Configuration (`application.properties`)
-
-Located at `src/main/resources/application.properties`:
-
-```properties
-# Database
-driver=org.h2.Driver
-database.url=jdbc:h2:~/mydb
-database.user=sa
-database.password=
-
-# Server
-default.home.page=hello        # default action for /?q= (root URL)
-server.port=8080
-
-# Locale
-default.language=en_US
+### Action Definition and CLI Invocation
+```java
+@Action("hello")
+public String hello() {
+    return "Hello, tinystruct!";
+}
+```
+**Execution via Dispatcher:**
+```bash
+bin/dispatcher hello
 ```
 
-Access config values in your application:
+### Configuration Access
+Located at `src/main/resources/application.properties`:
 ```java
 String port = this.getConfiguration("server.port");
 ```

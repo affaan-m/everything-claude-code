@@ -1,22 +1,17 @@
 # tinystruct @Action Routing Reference
 
-## @Action Annotation
+## When to Use
 
-```java
-@Action(
-    value = "path/subpath",          // required: URI segment or CLI command
-    description = "What it does",    // shown in --help output
-    mode = Mode.HTTP_POST,           // default: Mode.DEFAULT (both CLI + HTTP)
-    arguments = {                    // optional: parameter metadata for CLI help
-        @Argument(key = "--id", description = "The item ID")
-    },
-    options = {},                    // CLI option flags
-    example = "bin/dispatcher path/subpath --id 42"
-)
-public String myAction(int id) { ... }
-```
+Use the `@Action` annotation in your applications to define routes for both CLI commands and HTTP endpoints. It is appropriate whenever you need to map logic to a specific path, handle parameterized requests (e.g., retrieving a resource by ID), or restrict execution to specific HTTP methods (GET, POST, etc.) while maintaining a consistent command structure across environments.
+
+## How It Works
+
+The `ActionRegistry` parses `@Action` annotations to build a routing table. For parameterized methods, the framework automatically maps Java parameter types (int, String, etc.) to corresponding regex segments to generate an internal matching pattern. For instance, `getUser(int id)` generates a regex targeting digits, while `search(String query)` targets generic path segments.
+
+When a request is dispatched, the `ActionRegistry` automatically injects dependencies like `Request` and `Response` into the action method if they are specified as parameters, drawing them directly from the current request's `Context`. Execution is further filtered by the `Mode` value, allowing a single path to invoke different logic depending on whether the trigger was a terminal command or a specific type of HTTP request.
 
 ### Mode Values
+
 | Mode | When it triggers |
 |---|---|
 | `DEFAULT` | Both CLI and HTTP (GET, POST, etc.) |
@@ -27,9 +22,21 @@ public String myAction(int id) { ... }
 | `HTTP_DELETE` | HTTP DELETE only |
 | `HTTP_PATCH` | HTTP PATCH only |
 
-### Path Parameters
-tinystruct automatically builds a regex from the method signature:
+## Examples
 
+### Basic Action Declaration
+```java
+@Action(
+    value = "path/subpath",          // required: URI segment or CLI command
+    description = "What it does",    // shown in --help output
+    mode = Mode.HTTP_POST,           // default: Mode.DEFAULT (both CLI + HTTP)
+    options = {},                    // CLI option flags
+    example = "bin/dispatcher path/subpath/42"
+)
+public String myAction(int id) { ... }
+```
+
+### Parameterized Paths (Regex Generation)
 ```java
 @Action("user/{id}")
 public String getUser(int id) { ... }
@@ -38,16 +45,9 @@ public String getUser(int id) { ... }
 @Action("search")
 public String search(String query) { ... }
 // → pattern: ^/?search/([^/]+)$
-// → CLI: bin/dispatcher search/hello
-// → HTTP: /?q=search/hello
 ```
 
-Supported parameter types: `String`, `int/Integer`, `long/Long`, `float/Float`, `double/Double`, `boolean/Boolean`, `char/Character`, `short/Short`, `byte/Byte`, `Date` (parsed as `yyyy-MM-dd HH:mm:ss`).
-
-### Accessing Request/Response
-
-Include `Request` and/or `Response` as parameters — ActionRegistry automatically injects them from `Context`:
-
+### Request and Response Injection
 ```java
 @Action(value = "upload", mode = Mode.HTTP_POST)
 public String upload(Request<?, ?> req, Response<?, ?> res) throws ApplicationException {

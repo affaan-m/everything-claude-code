@@ -1,9 +1,18 @@
 # tinystruct Testing Patterns
 
-Use JUnit 5 for testing tinystruct applications. Since `ActionRegistry` is a singleton, ensure fresh state is maintained between tests.
+## When to Use
 
-## Unit Testing an Application
+Use the testing patterns described here when writing units tests for your tinystruct applications with **JUnit 5**. These patterns are essential for verifying that your `@Action` methods return the correct results and that your routing logic is properly registered within the singleton `ActionRegistry`.
 
+## How It Works
+
+Testing tinystruct applications requires a specific setup to ensure framework-level features like annotation processing and configuration management are active. By creating a new instance of your application and passing it a `Settings` object in the `setUp()` method, you trigger the `init()` lifecycle. This ensures all `@Action` methods are discovered and registered. 
+
+Because the `ActionRegistry` is a singleton, it is critical to maintain isolation between tests by properly initializing your application state before each test execution, preventing side effects from leaking across the test suite.
+
+## Examples
+
+### Unit Testing an Application
 ```java
 import org.junit.jupiter.api.*;
 import org.tinystruct.application.ActionRegistry;
@@ -37,9 +46,8 @@ class MyAppTest {
 }
 ```
 
-## Testing via ActionRegistry
-
-If you need to test the routing logic itself:
+### Testing via ActionRegistry
+If you need to test the routing logic itself, use the `ActionRegistry` singleton to verify path matching:
 
 ```java
 @Test
@@ -50,6 +58,4 @@ void testRouting() {
     Assertions.assertNotNull(action);
 }
 ```
-
-For more complex `ActionRegistry` unit tests, follow the pattern in:
-`src/test/java/org/tinystruct/application/ActionRegistryTest.java`
+Reference: `src/test/java/org/tinystruct/application/ActionRegistryTest.java`
