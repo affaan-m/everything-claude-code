@@ -199,20 +199,10 @@ public class EventService {
 ## Camel Message Publishing (RabbitMQ)
 
 ```java
+@Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
 public class BusinessRulesPublisher {
-    private final ProducerTemplate producerTemplate;
-    
-    @ConfigProperty(name = "camel.rabbitmq.queue.business-rules")
-    String businessRulesQueue;
-    
-    public void publishAsync(BusinessRulesPayload payload) {
-        producerTemplate.asyncSendBody(
-            "direct:business-rules-publisher", 
-            payload
-        );
-        log.info("Message published to business rules queue: {}", payload.getDocumentId());
     }
     
     public void publishSync(BusinessRulesPayload payload) {
