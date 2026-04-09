@@ -72,11 +72,15 @@ public class CustomAuthFilter implements ContainerRequestFilter {
   public void filter(ContainerRequestContext requestContext) {
     String authHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
     
-    if (authHeader != null && authHeader.startsWith("Bearer ")) {
-      String token = authHeader.substring(7);
-      if (!validateToken(token)) {
-        requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
-      }
+    // 头部缺失或格式错误时立即拒绝
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+      requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+      return;
+    }
+    
+    String token = authHeader.substring(7);
+    if (!validateToken(token)) {
+      requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
     }
   }
 
