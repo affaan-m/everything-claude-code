@@ -198,12 +198,11 @@ public class EventService {
 
 ## Camel Message Publishing (RabbitMQ)
 
-```java
 @Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
 public class BusinessRulesPublisher {
-    }
+    private final ProducerTemplate producerTemplate;
     
     public void publishSync(BusinessRulesPayload payload) {
         producerTemplate.sendBody(
@@ -212,7 +211,6 @@ public class BusinessRulesPublisher {
         );
     }
 }
-```
 
 **Camel Route Configuration:**
 
