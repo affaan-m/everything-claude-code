@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>~/.claude ディレクトリ構造</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0d1117;
+    color: #e6edf3;
+    height: 100vh;
+    overflow: hidden;
+    padding: 14px 18px 8px;
+    display: flex;
+    flex-direction: column;
+  }
+  h1 { font-size: 1.25rem; font-weight: 600; color: #58a6ff; margin-bottom: 3px; flex-shrink: 0; }
+  .subtitle { font-size: 0.76rem; color: #8b949e; margin-bottom: 12px; flex-shrink: 0; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; flex-shrink: 0; }
+  .tab {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid #30363d;
+    background: #161b22;
+    color: #8b949e;
+    cursor: pointer;
+    font-size: 0.79rem;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tab.active { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+  .tab:hover:not(.active) { border-color: #58a6ff; color: #58a6ff; }
+
+  .panel { display: none; flex: 1; flex-direction: column; min-height: 0; }
+  .panel.active { display: flex; }
+
+  /* ── Pan / Zoom viewport ── */
+  .viewport {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .viewport.panning { cursor: grabbing; }
+
+  .diagram-canvas {
+    position: absolute;
+    top: 0; left: 0;
+    transform-origin: 0 0;
+    padding: 20px;
+  }
+  .diagram-canvas .mermaid { min-width: unset !important; }
+
+  /* ── Zoom toolbar (overlay) ── */
+  .ztb {
+    position: absolute;
+    top: 10px; right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    z-index: 50;
+    background: rgba(13,17,23,0.90);
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 5px 8px;
+    backdrop-filter: blur(6px);
+  }
+  .ztb button {
+    background: #21262d;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    border-radius: 4px;
+    width: 26px; height: 26px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s, border-color 0.1s;
+  }
+  .ztb button:hover { background: #30363d; border-color: #58a6ff; color: #58a6ff; }
+  .ztb-pct {
+    font-size: 0.7rem;
+    color: #8b949e;
+    min-width: 38px;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+  }
+  .ztb-sep { width: 1px; height: 16px; background: #30363d; margin: 0 2px; }
+
+  .hint { font-size: 0.66rem; color: #484f58; text-align: right; margin-top: 5px; flex-shrink: 0; }
+
+  .legend {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin-top: 7px; font-size: 0.72rem; color: #8b949e; flex-shrink: 0;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<h1>~/.claude グローバル設定ディレクトリ構造</h1>
+<p class="subtitle">Claude Code の設定・フック・スキル・コマンド全体マップ（2026-04-09）</p>
+
+<div class="tabs">
+  <button class="tab active"  onclick="showPanel('overview',this)">全体概要</button>
+  <button class="tab" onclick="showPanel('hooks',this)">Hooks 詳細</button>
+  <button class="tab" onclick="showPanel('commands',this)">Commands 詳細</button>
+  <button class="tab" onclick="showPanel('rules',this)">Rules / Scripts</button>
+  <button class="tab" onclick="showPanel('skills',this)">Skills 一覧</button>
+  <button class="tab" onclick="showPanel('channels',this)">Channels / Agents</button>
+</div>
+
+<!-- ── OVERVIEW ── -->
+<div id="panel-overview" class="panel active">
+  <div class="viewport" id="vp-overview">
+    <div class="ztb" id="ztb-overview">
+      <span class="ztb-pct" id="pct-overview">100%</span>
+      <div class="ztb-sep"></div>
+      <button onclick="zpCall('overview','zoomBy',1.35)" title="ズームイン">＋</button>
+      <button onclick="zpCall('overview','zoomBy',0.74)" title="ズームアウト">－</button>
+      <div class="ztb-sep"></div>
+      <button onclick="zpCall('overview','fit')" title="画面にフィット">⊡</button>
+      <button onclick="zpCall('overview','reset')" title="リセット">↺</button>
+    </div>
+    <div class="diagram-canvas" id="dc-overview">
+      <div class="mermaid">
+graph TD
+    ROOT["📁 ~/.claude"]:::root
+
+    ROOT --> CORE["🧭 Core Group<br/><small>基本設定と入口</small>"]:::hub
+    ROOT --> AUTO["⚙️ Automation Group<br/><small>自動実行と運用ルール</small>"]:::hub
+    ROOT --> EXT["🧩 Extensions Group<br/><small>機能追加・定義群</small>"]:::hub
+    ROOT --> STORAGE["🗂 Data / State Group<br/><small>履歴・記録・接続</small>"]:::hub
+
+    CORE --> CLAUDE["📄 CLAUDE.md"]:::config
+    CORE --> SETTINGS["📄 settings.json"]:::config
+
+    AUTO --> HOOKS["📁 hooks/<br/><small>PreToolUse / PostToolUse<br/>PreCompact / Stop</small>"]:::hooks
+    AUTO --> RULES["📁 rules/<br/><small>詳細ルール参照</small>"]:::rules
+    AUTO --> SCRIPTS["📁 scripts/<br/><small>セッション管理・レビュー補助</small>"]:::scripts
+
+    EXT --> COMMANDS["📁 commands/<br/><small>スラッシュコマンド 30+</small>"]:::commands
+    EXT --> SKILLS["📁 skills/<br/><small>89 スキル</small>"]:::skills
+    EXT --> AGENTS["📁 agents/<br/><small>サブエージェント定義 13</small>"]:::agents
+    EXT --> PLUGINS["📁 plugins/<br/><small>claude-code-harness 等</small>"]:::plugins
+
+    STORAGE --> DATA["📁 projects/ + session-search/<br/><small>履歴・ChromaDB・永続メモリ</small>"]:::data
+    STORAGE --> CHANNELS["📁 channels/<br/><small>Discord / script-bridge</small>"]:::channels
+
+    H1ROOT["Hook Phases"]:::hookgroup
+    HOOKS --> H1ROOT
+    H1ROOT --> H1["🛡 PreToolUse<br/><small>read重複防止 / websearch制御</small>"]:::hookitem
+    H1ROOT --> H2["📊 PostToolUse<br/><small>compact提案 / feedback確認</small>"]:::hookitem
+    H1ROOT --> H3["🔔 Session Lifecycle<br/><small>SessionStart / PreCompact / Stop</small>"]:::hookitem
+
+    SKILLS --> SK1["🔄 Review / Fix<br/><small>ifr / rfl / iterative-fix</small>"]:::skillitem
+    SKILLS --> SK2["🤖 Research / Content<br/><small>ai-frontier / daily-digest / x-auto</small>"]:::skillitem
+    SKILLS --> SK3["🔧 Dev / Test / UI<br/><small>codex / clarify / qc</small>"]:::skillitem
+
+    RULES --> R1["critical-directives.md"]:::ruleitem
+    RULES --> R2["workflow.md"]:::ruleitem
+    RULES --> R3["grok-research.md"]:::ruleitem
+
+    classDef root fill:#1f6feb,stroke:#388bfd,color:#fff,font-weight:bold
+    classDef hub fill:#111827,stroke:#6e7681,color:#e6edf3,font-weight:700
+    classDef config fill:#2d1b69,stroke:#7c3aed,color:#c4b5fd
+    classDef hooks fill:#1a3a2a,stroke:#2ea043,color:#7ee787
+    classDef commands fill:#1a2e3a,stroke:#1f6feb,color:#79c0ff
+    classDef skills fill:#1a2a3a,stroke:#0ea5e9,color:#7dd3fc
+    classDef agents fill:#3a2a1a,stroke:#d97706,color:#fcd34d
+    classDef rules fill:#3a1a2a,stroke:#ec4899,color:#f9a8d4
+    classDef scripts fill:#2a3a1a,stroke:#84cc16,color:#bef264
+    classDef channels fill:#3a2a3a,stroke:#a855f7,color:#d8b4fe
+    classDef plugins fill:#1a3a3a,stroke:#06b6d4,color:#67e8f9
+    classDef data fill:#2a2a1a,stroke:#eab308,color:#fde68a
+    classDef hookgroup fill:#0f172a,stroke:#475569,color:#cbd5e1,font-weight:600
+    classDef hookitem fill:#0d2015,stroke:#2ea043,color:#7ee787
+    classDef skillitem fill:#0d1f2d,stroke:#0ea5e9,color:#7dd3fc
+    classDef ruleitem fill:#2d0d1a,stroke:#ec4899,color:#f9a8d4
+      </div>
+    </div>
+  </div>
+  <div class="hint">スクロール: ズーム ｜ ドラッグ: 移動 ｜ ダブルクリック: フィット</div>
+  <div class="legend">
+    <div class="legend-item"><div class="dot" style="background:#2ea043"></div>Hooks (自動実行)</div>
+    <div class="legend-item"><div class="dot" style="background:#1f6feb"></div>Commands (スラッシュ)</div>
+    <div class="legend-item"><div class="dot" style="background:#0ea5e9"></div>Skills (89個)</div>
+    <div class="legend-item"><div class="dot" style="background:#d97706"></div>Agents (13個)</div>
+    <div class="legend-item"><div class="dot" style="background:#ec4899"></div>Rules (詳細ルール)</div>
+    <div class="legend-item"><div class="dot" style="background:#7c3aed"></div>Config (設定ファイル)</div>
+  </div>
+</div>
+
+<!-- ── HOOKS DETAIL ── -->
+<div id="panel-hooks" class="panel">
+  <div class="viewport" id="vp-hooks">
+    <div class="ztb">
+      <span class="ztb-pct" id="pct-hooks">100%</span>
+      <div class="ztb-sep"></div>
+      <button onclick="zpCall('hooks','zoomBy',1.35)">＋</button>
+      <button onclick="zpCall('hooks','zoomBy',0.74)">－</button>
+      <div class="ztb-sep"></div>
+      <button onclick="zpCall('hooks','fit')" title="画面にフィット">⊡</button>
+      <button onclick="zpCall('hooks','reset')">↺</button>
+    </div>
+    <div class="diagram-canvas" id="dc-hooks">
+      <div class="mermaid">
+graph TD
+    SETTINGS["⚙️ settings.json<br/>フック登録"]:::config
+
+    SETTINGS --> PRE["PreToolUse"]:::groupnode
+    SETTINGS --> POST["PostToolUse"]:::groupnode
+    SETTINGS --> SESSION["SessionStart"]:::groupnode
+    SETTINGS --> COMPACT["PreCompact"]:::groupnode
+    SETTINGS --> STOP_H["Stop"]:::groupnode
+
+    PRE --> BASH_HOOK["Bash<br/>git-branch-prefetch.ps1<br/><small>ブランチ情報プリフェッチ</small>"]:::pre
+    PRE --> ALL_HOOK["*<br/>pretool_sync.ts<br/><small>Letta同期</small>"]:::pre
+    PRE --> EDIT_HOOK["Edit|Write|MultiEdit<br/>pre-tool-inject-findings.py<br/><small>レビュー指摘注入</small>"]:::pre
+    PRE --> WS_HOOK["WebSearch<br/>block-websearch.py<br/><small>Perplexity代替でブロック</small>"]:::pre
+    PRE --> READ_HOOK["Read<br/>image-read-sonnet.py<br/><small>画像→Sonnet委譲</small>"]:::pre
+    PRE --> DEDUP_HOOK["Read|Glob<br/>block-redundant-reads.py<br/><small>重複読み込み警告</small>"]:::pre
+
+    POST --> COMPACT_HOOK["*<br/>strategic-compact.py<br/><small>50ツールコール毎に/compact提案</small>"]:::post
+    POST --> FEEDBACK_HOOK["Edit|Write|MultiEdit|Bash<br/>feedback-resolution-checker.js<br/><small>フィードバック解決確認</small>"]:::post
+    POST --> LOGGER_HOOK["Edit|Write|MultiEdit<br/>user-correction-logger.js<br/><small>修正ログ記録</small>"]:::post
+    POST --> BOM_HOOK["Write|Edit<br/>BOMチェック<br/><small>UTF-8 BOM検証</small>"]:::post
+    POST --> DATE_HOOK["Write<br/>filename-date-check.py<br/><small>ファイル名日付確認</small>"]:::post
+    POST --> EDIT_COUNT["Edit|Write|MultiEdit<br/>post-tool-edit-counter.py<br/><small>編集カウント</small>"]:::post
+
+    SESSION --> SID["session-id-display.py<br/><small>セッションID表示</small>"]:::sess
+    SESSION --> RFEEDBACK["review-feedback-session-check.js<br/><small>未解決フィードバック通知</small>"]:::sess
+    SESSION --> LETTA_START["sync_letta_memory.ts<br/><small>Letta永続メモリ同期</small>"]:::sess
+    SESSION --> GUIDANCE["guidance-queue-check.py<br/><small>ガイダンスキュー確認</small>"]:::sess
+
+    COMPACT --> CAPTURE["pre-compact-capture.py<br/><small>CLAUDE.mdパスを保存</small>"]:::comp
+
+    STOP_H --> LETTA_STOP["send_messages_to_letta.ts<br/><small>会話をLettaへ送信</small>"]:::stop
+    STOP_H --> RALPH["stop-hook-ralph-impl.ps1<br/><small>Ralphループ管理</small>"]:::stop
+    STOP_H --> TITLE["session-title-writer-impl.ps1<br/><small>ターミナルタブ命名</small>"]:::stop
+    STOP_H --> ZUNDA["zundamon-task-complete.js<br/><small>ずんだもん音声通知</small>"]:::stop
+    STOP_H --> SESSION_END["session-end-learn.py<br/><small>セッション学習</small>"]:::stop
+
+    classDef config fill:#1f6feb,stroke:#388bfd,color:#fff
+    classDef groupnode fill:#21262d,stroke:#58a6ff,color:#79c0ff,font-weight:600
+    classDef pre fill:#1a2d1a,stroke:#2ea043,color:#7ee787
+    classDef post fill:#1a2a3a,stroke:#0ea5e9,color:#7dd3fc
+    classDef sess fill:#2d1a2d,stroke:#a855f7,color:#d8b4fe
+    classDef comp fill:#2d2a1a,stroke:#eab308,color:#fde68a
+    classDef stop fill:#2d1a1a,stroke:#f85149,color:#ffa198
+      </div>
+    </div>
+  </div>
+  <div class="hint">スクロール: ズーム ｜ ドラッグ: 移動 ｜ ダブルクリック: フィット</div>
+</div>
+
+<!-- ── COMMANDS DETAIL ── -->
+<div id="panel-commands" class="panel">
+  <div class="viewport" id="vp-commands">
+    <div class="ztb">
+      <span class="ztb-pct" id="pct-commands">100%</span>
+      <div class="ztb-sep"></div>
+      <button onclick="zpCall('commands','zoomBy',1.35)">＋</button>
+      <button onclick="zpCall('commands','zoomBy',0.74)">－</button>
+      <div class="ztb-sep"></div>
+      <button onclick="zpCall('commands','fit')">⊡</button>
+      <button onclick="zpCall('commands','reset')">↺</button>
+    </div>
+    <div class="diagram-canvas" id="dc-commands">
+      <div class="mermaid">
+graph TD
+    CMD["📁 ~/.claude/commands/<br/><small>スラッシュコマンド定義</small>"]:::root
+
+    CMD --> REVIEW_GRP["🔍 レビュー系"]:::group
+    CMD --> DEV_GRP["🔧 開発系"]:::group
+    CMD --> SESSION_GRP["📋 セッション系"]:::group
+    CMD --> SOLO_GRP["💰 ソロビジネス系"]:::group
+    CMD --> UTIL_GRP["⚙️ ユーティリティ系"]:::group
+
+    REVIEW_GRP --> brutal-review
+    REVIEW_GRP --> ifr["ifr<br/><small>Intent-First Review</small>"]
+    REVIEW_GRP --> iterative-fix
+    REVIEW_GRP --> pr-review
+    REVIEW_GRP --> qc["qc<br/><small>品質チェック</small>"]
+    REVIEW_GRP --> quality-check
+    REVIEW_GRP --> rfl["rfl<br/><small>Review Fix Loop</small>"]
+    REVIEW_GRP --> review-fix-loop
+    REVIEW_GRP --> rlrl
+
+    DEV_GRP --> codex["codex<br/><small>GPT-5.4委譲</small>"]
+    DEV_GRP --> commit["commit<br/><small>Conventional Commits</small>"]
+    DEV_GRP --> sdd["sdd<br/><small>仕様駆動開発</small>"]
+    DEV_GRP --> handoff
+    DEV_GRP --> ui-fix
+    DEV_GRP --> ui-review
+
+    SESSION_GRP --> session
+    SESSION_GRP --> session-search
+    SESSION_GRP --> session-tag
+    SESSION_GRP --> session-tag-search
+    SESSION_GRP --> ccresume
+    SESSION_GRP --> resume-plus
+
+    SOLO_GRP --> solo-build-in-public-tweet
+    SOLO_GRP --> solo-decide
+    SOLO_GRP --> solo-feature-ideas
+    SOLO_GRP --> solo-lp-review
+    SOLO_GRP --> solo-validate-idea
+    SOLO_GRP --> coconala-reply
+
+    UTIL_GRP --> switch-opus
+    UTIL_GRP --> switch-sonnet
+    UTIL_GRP --> switch-glm
+    UTIL_GRP --> obsidian
+    UTIL_GRP --> optimize
+    UTIL_GRP --> focus
+    UTIL_GRP --> poll-wait
+    UTIL_GRP --> remote
+    UTIL_GRP --> ralph-loop
+    UTIL_GRP --> cancel-ralph
+
+    classDef root fill:#1f6feb,stroke:#388bfd,color:#fff,font-weight:bold
+    classDef group fill:#161b22,stroke:#30363d,color:#8b949e,font-weight:600
+      </div>
+    </div>
+  </div>
+  <div class="hint">スクロール: ズーム ｜ ドラッグ: 移動 ｜ ダブルクリック: フィット</div>
+</div>
+
+<!-- ── RULES / SCRIPTS ── -->
+<div id="panel-rules" class="panel">
+  <div class="viewport" id="vp-rules">
+    <div class="ztb">
+      <span class="ztb-pct" id="pct-rules">100%</span>
+      <div class="ztb-sep"></div>
+      <button onclick="zpCall('rules','zoomBy',1.35)">＋</button>
+      <button onclick="zpCall('rules','zoomBy',0.74)">－</button>
+      <div class="ztb-sep"></div>
+      <button onclick="zpCall('rules','fit')">⊡</button>
+      <button onclick="zpCall('rules','reset')">↺</button>
+    </div>
+    <div class="diagram-canvas" id="dc-rules">
+      <div class="mermaid">
+graph TD
+    RULES_ROOT["📁 rules/<br/><small>詳細ルールファイル</small>"]:::rulesroot
+    SCRIPTS_ROOT["📁 scripts/<br/><small>実行スクリプト</small>"]:::scriptsroot
+
+    RULES_ROOT --> CR["critical-directives.md<br/><small>Data Integrity / UI修正<br/>Anti-Deception / Browser Automation</small>"]:::rule
+    RULES_ROOT --> WF["workflow.md<br/><small>プランモード / サブエージェント<br/>Self-Improvement Loop</small>"]:::rule
+    RULES_ROOT --> GR["grok-research.md<br/><small>外部情報取得優先順位<br/>Grok4 CiC → Perplexity → WebSearch</small>"]:::rule
+    RULES_ROOT --> AT["auto-triggers.md<br/><small>デプロイ / 復旧 / Coconala<br/>自動プロトコル発火条件</small>"]:::rule
+    RULES_ROOT --> SM["session-management.md<br/><small>フックシステム / セッションID<br/>復旧手順</small>"]:::rule
+    RULES_ROOT --> OB["obsidian.md<br/><small>Vault検索 / CiC操作<br/>ドキュメント管理</small>"]:::rule
+    RULES_ROOT --> SC["system-config.md<br/><small>GitHub CLI / Windows非表示実行<br/>Resilient Search</small>"]:::rule
+    RULES_ROOT --> MN["monetization.md<br/><small>EVALパイプライン / 差別化</small>"]:::rule
+    RULES_ROOT --> XA["x-auto-claudemd.md<br/><small>X.com自動投稿 / BashOutputポーリング</small>"]:::rule
+
+    SCRIPTS_ROOT --> RFB["review-feedback.py<br/><small>SQLite feedback DB CLI</small>"]:::script
+    SCRIPTS_ROOT --> MPR["merge_parallel_reviews.py<br/><small>並列レビュー結果マージ</small>"]:::script
+    SCRIPTS_ROOT --> SID["session-id-display.py<br/><small>SessionStart / PreCompact フック</small>"]:::script
+    SCRIPTS_ROOT --> GQ["guidance-queue-check.py<br/><small>ガイダンスキュー確認</small>"]:::script
+    SCRIPTS_ROOT --> CRB["context-recovery-backup.py<br/><small>コンテキスト復元バックアップ</small>"]:::script
+    SCRIPTS_ROOT --> SW["switch-to-*.ps1<br/><small>モデル切り替えスクリプト</small>"]:::script
+    SCRIPTS_ROOT --> SL["sync-rfl.py / statusline*.ps1<br/><small>同期・タイトル管理</small>"]:::script
+
+    classDef rulesroot fill:#3a0d1a,stroke:#ec4899,color:#f9a8d4,font-weight:bold
+    classDef scriptsroot fill:#0d2015,stroke:#2ea043,color:#7ee787,font-weight:bold
+    classDef rule fill:#2d0d1a,stroke:#ec4899,color:#f9a8d4
+    classDef script fill:#0d2015,stroke:#2ea043,color:#7ee787
+      </div>
+    </div>
+  </div>
+  <div class="hint">スクロール: ズーム ｜ ドラッグ: 移動 ｜ ダブルクリック: フィット</div>
+</div>
+
+<!-- ── SKILLS ── -->
+<div id="panel-skills" class="panel">
+  <div class="viewport" id="vp-skills">
+    <div class="ztb">
+      <span class="ztb-pct" id="pct-skills">100%</span>
+      <div class="ztb-sep"></div>
+      <button onclick="zpCall('skills','zoomBy',1.35)">＋</button>
+      <button onclick="zpCall('skills','zoomBy',0.74)">－</button>
+      <div class="ztb-sep"></div>
+      <button onclick="zpCall('skills','fit')">⊡</button>
+      <button onclick="zpCall('skills','reset')">↺</button>
+    </div>
+    <div class="diagram-canvas" id="dc-skills">
+      <div class="mermaid">
+graph TD
+    SK["📁 skills/<br/><small>89 スキル</small>"]:::root
+
+    SK --> CAT1["🔍 レビュー・品質"]:::cat
+    SK --> CAT2["🤖 AI情報収集"]:::cat
+    SK --> CAT3["💰 マネタイズ・ビジネス"]:::cat
+    SK --> CAT4["📱 コンテンツ・SNS"]:::cat
+    SK --> CAT5["🔧 開発・テスト"]:::cat
+    SK --> CAT6["🌐 ブラウザ・自動化"]:::cat
+    SK --> CAT7["📋 セッション・管理"]:::cat
+    SK --> CAT8["🎨 デザイン・UI"]:::cat
+
+    CAT1 --> s1["ifr / rfl / review-fix-loop<br/>brutal-review / go-robust<br/>iterative-fix / pr-review<br/>gpt5-reviewer"]
+    CAT2 --> s2["ai-frontier-intelligence<br/>ai-knowledge / daily-digest<br/>reddit-hn-ai-buzz<br/>ai-monetization-radar"]
+    CAT3 --> s3["monetization-grok-daily<br/>knowledge-grok-daily<br/>indie-monetization<br/>solo-decision-framework<br/>solo-founder-anti-patterns<br/>solopreneur-marketing-updater"]
+    CAT4 --> s4["generate-tweet / x-auto<br/>x-auto-ai-retweet / x-draft-saver<br/>zenn-article / note-auto-poster<br/>auto-tweet-pipeline"]
+    CAT5 --> s5["codex / clarify / qc<br/>tdd-guard / agent-test<br/>backend-test / e2e-auth-test<br/>smart-test / sdd"]
+    CAT6 --> s6["grok-query-cic<br/>browser-checkpoint<br/>genspark-thumbnail-generator<br/>grok-video-generator"]
+    CAT7 --> s7["session / session-search<br/>session-tag / handoff<br/>agent-memory / graphify<br/>obsidian-vault-search"]
+    CAT8 --> s8["frontend-design / ui-review<br/>design-review / design-sample<br/>solo-lp-review / solo-landing-page"]
+
+    classDef root fill:#1f6feb,stroke:#388bfd,color:#fff,font-weight:bold
+    classDef cat fill:#161b22,stroke:#30363d,color:#c9d1d9,font-weight:600
+      </div>
+    </div>
+  </div>
+  <div class="hint">スクロール: ズーム ｜ ドラッグ: 移動 ｜ ダブルクリック: フィット</div>
+</div>
+
+<!-- ── CHANNELS / AGENTS ── -->
+<div id="panel-channels" class="panel">
+  <div class="viewport" id="vp-channels">
+    <div class="ztb">
+      <span class="ztb-pct" id="pct-channels">100%</span>
+      <div class="ztb-sep"></div>
+      <button onclick="zpCall('channels','zoomBy',1.35)">＋</button>
+      <button onclick="zpCall('channels','zoomBy',0.74)">－</button>
+      <div class="ztb-sep"></div>
+      <button onclick="zpCall('channels','fit')">⊡</button>
+      <button onclick="zpCall('channels','reset')">↺</button>
+    </div>
+    <div class="diagram-canvas" id="dc-channels">
+      <div class="mermaid">
+graph TD
+    subgraph CHANNELS["📁 channels/ — 通信チャンネル"]
+      DISCORD["📁 discord/<br/><small>Discord Bot連携<br/>MCP経由でメッセージ送受信</small>"]
+      SB["📁 script-bridge/<br/><small>ローカルスクリプトからの<br/>リクエスト受付</small>"]
+      SBL["📁 script-bridge-lower/<br/>📁 script-bridge-upper/<br/><small>優先度別キュー</small>"]
+    end
+
+    subgraph AGENTS["📁 agents/ — サブエージェント定義 (13)"]
+      CODE_R["code-reviewer.md<br/><small>コードレビュー専門</small>"]
+      CODE_S["code-simplifier.md<br/><small>コード簡略化</small>"]
+      DEP["deployment-specialist.md<br/><small>Cloud Runデプロイ</small>"]
+      GH["github-integration-specialist.md<br/><small>GitHub Issue/PR管理</small>"]
+      UI_V["ui-verification-specialist.md<br/><small>UI視覚検証 + スクショ確認</small>"]
+      SCREEN["screen-verification-specialist.md<br/><small>画面確認 + CiC操作</small>"]
+      UX["ux-researcher.md<br/><small>UXリサーチ</small>"]
+      UI_D["ui-designer.md<br/><small>UIデザイン生成</small>"]
+      PR_T["pr-test-analyzer.md<br/><small>PRテスト分析</small>"]
+      SF["silent-failure-hunter.md<br/><small>サイレント失敗検出</small>"]
+    end
+
+    subgraph PLUGINS["📁 plugins/ — プラグイン"]
+      HARNESS["claude-code-harness/<br/><small>ハーネス本体<br/>review-loopスキル含む</small>"]
+      PR_TK["pr-review-toolkit/<br/><small>PR並列レビューツール</small>"]
+    end
+
+    classDef ch fill:#3a0d3a,stroke:#a855f7,color:#d8b4fe
+    classDef ag fill:#3a2a1a,stroke:#d97706,color:#fcd34d
+    classDef pl fill:#1a3a3a,stroke:#06b6d4,color:#67e8f9
+      </div>
+    </div>
+  </div>
+  <div class="hint">スクロール: ズーム ｜ ドラッグ: 移動 ｜ ダブルクリック: フィット</div>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    darkMode: true,
+    background: '#161b22',
+    primaryColor: '#1f6feb',
+    primaryTextColor: '#e6edf3',
+    primaryBorderColor: '#30363d',
+    lineColor: '#8b949e',
+    secondaryColor: '#2d1b69',
+    tertiaryColor: '#1a2e3a',
+    edgeLabelBackground: '#161b22',
+    clusterBkg: '#0d1117',
+    clusterBorder: '#30363d',
+    titleColor: '#79c0ff',
+  },
+  flowchart: {
+    htmlLabels: true,
+    curve: 'basis',
+    nodeSpacing: 14,
+    rankSpacing: 28,
+    padding: 10
+  }
+});
+
+// ── ZoomPan ──────────────────────────────────────────
+class ZoomPan {
+  constructor(id) {
+    this.id   = id;
+    this.vp   = document.getElementById('vp-' + id);
+    this.dc   = document.getElementById('dc-' + id);
+    this.pct  = document.getElementById('pct-' + id);
+    this.s    = 1; this.x = 0; this.y = 0;
+    this.drag = false;
+    this.ox   = 0; this.oy = 0;
+    this.sx   = 0; this.sy = 0;
+    this._bind();
+  }
+
+  _apply() {
+    this.dc.style.transform = `translate(${this.x}px,${this.y}px) scale(${this.s})`;
+    if (this.pct) this.pct.textContent = Math.round(this.s * 100) + '%';
+  }
+
+  zoomAt(f, px, py) {
+    const ns = Math.max(0.05, Math.min(20, this.s * f));
+    const r  = this.vp.getBoundingClientRect();
+    const cx = (px != null ? px : r.left + r.width  / 2) - r.left;
+    const cy = (py != null ? py : r.top  + r.height / 2) - r.top;
+    this.x = cx - (cx - this.x) * ns / this.s;
+    this.y = cy - (cy - this.y) * ns / this.s;
+    this.s = ns;
+    this._apply();
+  }
+
+  zoomBy(f) { this.zoomAt(f); }
+
+  fit() {
+    // Reset first so we can measure natural SVG size
+    this.s = 1; this.x = 0; this.y = 0; this._apply();
+    requestAnimationFrame(() => {
+      const svg = this.dc.querySelector('svg');
+      if (!svg) return;
+      const vw = this.vp.clientWidth  - 8;
+      const vh = this.vp.clientHeight - 8;
+      const sw = svg.scrollWidth  || svg.getBBox().width;
+      const sh = svg.scrollHeight || svg.getBBox().height;
+      if (!sw || !sh) return;
+      const ns = Math.min(vw / sw, vh / sh, 1.5);
+      this.s = ns;
+      this.x = (vw - sw * ns) / 2 + 4;
+      this.y = Math.max(4, (vh - sh * ns) / 2 + 4);
+      this._apply();
+    });
+  }
+
+  reset() { this.s = 1; this.x = 0; this.y = 0; this._apply(); }
+
+  _bind() {
+    // Mouse wheel zoom
+    this.vp.addEventListener('wheel', e => {
+      e.preventDefault();
+      this.zoomAt(e.deltaY < 0 ? 1.20 : 0.83, e.clientX, e.clientY);
+    }, { passive: false });
+
+    // Drag to pan (ignore clicks on toolbar)
+    this.vp.addEventListener('mousedown', e => {
+      if (e.button !== 0 || e.target.closest('.ztb')) return;
+      this.drag = true;
+      this.ox = e.clientX; this.oy = e.clientY;
+      this.sx = this.x;    this.sy = this.y;
+      this.vp.classList.add('panning');
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', e => {
+      if (!this.drag) return;
+      this.x = this.sx + (e.clientX - this.ox);
+      this.y = this.sy + (e.clientY - this.oy);
+      this._apply();
+    });
+    window.addEventListener('mouseup', () => {
+      if (!this.drag) return;
+      this.drag = false;
+      this.vp.classList.remove('panning');
+    });
+
+    // Double-click to fit
+    this.vp.addEventListener('dblclick', e => {
+      if (!e.target.closest('.ztb')) this.fit();
+    });
+  }
+}
+
+// ── Global registry ──────────────────────────────────
+const zp = {};
+const PANELS = ['overview','hooks','commands','rules','skills','channels'];
+
+function zpCall(id, method, arg) {
+  if (zp[id]) zp[id][method](arg);
+}
+
+// Init after Mermaid finishes rendering
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    PANELS.forEach(id => { zp[id] = new ZoomPan(id); });
+    // Auto-fit overview
+    setTimeout(() => { if (zp['overview']) zp['overview'].fit(); }, 80);
+  }, 600);
+});
+
+// Tab switching
+function showPanel(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+  // Lazy init + auto-fit when switching tabs
+  setTimeout(() => {
+    if (!zp[name]) zp[name] = new ZoomPan(name);
+    zp[name].fit();
+  }, 120);
+}
+</script>
+</body>
+</html>
