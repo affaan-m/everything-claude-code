@@ -622,8 +622,8 @@ public class CamelHealthCheck implements HealthCheck {
             <scope>import</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-bom</artifactId>
+            <groupId>io.quarkus.platform</groupId>
+            <artifactId>quarkus-camel-bom</artifactId>
             <version>${quarkus.platform.version}</version>
             <type>pom</type>
             <scope>import</scope>
