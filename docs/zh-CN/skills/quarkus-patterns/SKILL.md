@@ -154,8 +154,10 @@ public class ProcessingService {
 @RequiredArgsConstructor
 public class EventService {
     private final EventRepository eventRepository;
+    private final ObjectMapper objectMapper;
     
     public void createSuccessEvent(Object payload, String eventType) {
+        Objects.requireNonNull(payload, "Payload cannot be null");
         Event event = new Event();
         event.setType(eventType);
         event.setStatus(EventStatus.SUCCESS);
@@ -167,6 +169,10 @@ public class EventService {
     }
     
     public void createErrorEvent(Object payload, String eventType, String errorMessage) {
+        Objects.requireNonNull(payload, "Payload cannot be null");
+        if (errorMessage == null || errorMessage.isBlank()) {
+            throw new IllegalArgumentException("Error message cannot be blank");
+        }
         Event event = new Event();
         event.setType(eventType);
         event.setStatus(EventStatus.ERROR);
