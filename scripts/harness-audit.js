@@ -186,26 +186,162 @@ function detectTargetMode(rootDir) {
   return 'consumer';
 }
 
+// Plugin manifest keys that identify an ECC install across the current and
+// legacy marketplace names. Hoisted out of findPluginInstall so the tier
+// helpers below can share a single authoritative list.
+const ECC_PLUGIN_KEY_PATTERNS = [
+  /^ecc@/i,
+  /^everything-claude-code@/i,
+];
+
+// Legacy flat-layout plugin directory names, tried in priority order.
+const ECC_LEGACY_PLUGIN_DIRS = [
+  'ecc',
+  'ecc@ecc',
+  'everything-claude-code',
+  'everything-claude-code@everything-claude-code',
+];
+
+// Marketplace and plugin names used by `claude plugin install
+// ecc@everything-claude-code` on v1.9.0+.
+const ECC_MARKETPLACES = ['everything-claude-code', 'ecc'];
+const ECC_PLUGIN_NAMES = ['ecc', 'everything-claude-code'];
+
+// Descending numeric-component version comparator. Compares "1.10.0" and
+// "1.8.0" by their numeric components so 1.10.0 sorts before 1.8.0, unlike
+// the lexicographic default. Non-numeric tokens (e.g. "1.0.0-beta") compare
+// as 0 for that position, which is good enough for picking the newest real
+// install directory without pulling in a semver dependency.
+function compareVersionDesc(a, b) {
+  const pa = String(a).split('.').map((n) => parseInt(n, 10) || 0);
+  const pb = String(b).split('.').map((n) => parseInt(n, 10) || 0);
+  const len = Math.max(pa.length, pb.length);
+  for (let i = 0; i < len; i += 1) {
+    const na = pa[i] || 0;
+    const nb = pb[i] || 0;
+    if (na !== nb) return nb - na;
+  }
+  return 0;
+}
+
+// Returns the first existing plugin.json under `installRoot`, checking both
+// `.claude-plugin/plugin.json` and a bare `plugin.json` fallback, or null if
+// neither exists. Centralising this avoids repeating the two-path check in
+// every tier helper below.
+function findPluginJsonUnder(installRoot) {
+  const pluginJson = path.join(installRoot, '.claude-plugin', 'plugin.json');
+  if (fs.existsSync(pluginJson)) return pluginJson;
+  const fallback = path.join(installRoot, 'plugin.json');
+  if (fs.existsSync(fallback)) return fallback;
+  return null;
+}
+
+// Tier 1 — authoritative: installed_plugins.json manifest (project scope
+// first, then user scope). Matches ECC plugin keys, validates that each
+// entry's installPath is a non-empty string, resolves relative paths against
+// the manifest's own directory, and returns the first plugin.json found.
+//
+// The type check is deliberate — `installed_plugins.json` is external data
+// that can be edited or corrupted by other tools. An unchecked installPath
+// (null, number, object, ...) would throw out of path.join and abort the
+// whole audit run.
+function findPluginInstallFromManifest(installedPluginsPaths) {
+  for (const installedPath of installedPluginsPaths) {
+    if (!fs.existsSync(installedPath)) continue;
+    const manifest = safeParseJson(
+      safeRead(path.dirname(installedPath), path.basename(installedPath))
+    );
+    if (!manifest || !manifest.plugins) continue;
+    for (const key of Object.keys(manifest.plugins)) {
+      if (!ECC_PLUGIN_KEY_PATTERNS.some((re) => re.test(key))) continue;
+      const entries = Array.isArray(manifest.plugins[key]) ? manifest.plugins[key] : [];
+      for (const entry of entries) {
+        if (!entry || typeof entry.installPath !== 'string' || !entry.installPath.trim()) {
+          continue;
+        }
+        // Anchor relative installPaths at the manifest's own directory so
+        // they behave the same regardless of the audit's current working
+        // directory.
+        const installRoot = path.isAbsolute(entry.installPath)
+          ? entry.installPath
+          : path.resolve(path.dirname(installedPath), entry.installPath);
+        const hit = findPluginJsonUnder(installRoot);
+        if (hit) return hit;
+      }
+    }
+  }
+  return null;
+}
+
+// Tier 2 — legacy flat layout: ~/.claude/plugins/<pluginDir>/plugin.json.
+// Preserved for manual/dev installs and backwards compatibility with
+// pre-marketplace install scripts.
+function findPluginInstallFlatLayout(candidateRoots) {
+  for (const pluginsDir of candidateRoots) {
+    for (const pluginDir of ECC_LEGACY_PLUGIN_DIRS) {
+      const hit = findPluginJsonUnder(path.join(pluginsDir, pluginDir));
+      if (hit) return hit;
+    }
+  }
+  return null;
+}
+
+// Tier 3 — marketplace cache layout:
+// ~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/. Produced by
+// `claude plugin install ecc@everything-claude-code` on v1.9.0+. Picks the
+// newest install when multiple versions coexist on disk.
+function findPluginInstallMarketplaceCache(candidateRoots) {
+  for (const pluginsDir of candidateRoots) {
+    for (const marketplace of ECC_MARKETPLACES) {
+      for (const pluginName of ECC_PLUGIN_NAMES) {
+        const pluginRoot = path.join(pluginsDir, 'cache', marketplace, pluginName);
+        if (!fs.existsSync(pluginRoot)) continue;
+        let versions = [];
+        try {
+          versions = fs
+            .readdirSync(pluginRoot, { withFileTypes: true })
+            .filter((d) => d.isDirectory())
+            .map((d) => d.name)
+            .sort(compareVersionDesc);
+        } catch (error) {
+          // Surface the failure rather than hiding a potentially actionable
+          // cause of a missed install (typically: permission denied on the
+          // user's ~/.claude/plugins/cache). We still continue so a single
+          // unreadable plugin root does not abort the whole audit.
+          console.error(
+            `harness-audit: cannot read plugin cache directory ${pluginRoot}: ${error.message}`
+          );
+          continue;
+        }
+        for (const version of versions) {
+          const hit = findPluginJsonUnder(path.join(pluginRoot, version));
+          if (hit) return hit;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+// Three-tier lookup to match how Claude Code actually lays out plugin
+// installs across legacy and marketplace installs. See the tier helpers
+// above for per-tier details and rationale.
 function findPluginInstall(rootDir) {
-  const homeDir = process.env.HOME || '';
-  const pluginDirs = [
-    'ecc',
-    'ecc@ecc',
-    'everything-claude-code',
-    'everything-claude-code@everything-claude-code',
-  ];
+  const homeDir = process.env.HOME || require('os').homedir() || '';
+  const installedPluginsPaths = [
+    path.join(rootDir, '.claude', 'plugins', 'installed_plugins.json'),
+    homeDir && path.join(homeDir, '.claude', 'plugins', 'installed_plugins.json'),
+  ].filter(Boolean);
   const candidateRoots = [
     path.join(rootDir, '.claude', 'plugins'),
     homeDir && path.join(homeDir, '.claude', 'plugins'),
   ].filter(Boolean);
-  const candidates = candidateRoots.flatMap((pluginsDir) =>
-    pluginDirs.flatMap((pluginDir) => [
-      path.join(pluginsDir, pluginDir, '.claude-plugin', 'plugin.json'),
-      path.join(pluginsDir, pluginDir, 'plugin.json'),
-    ])
-  );
 
-  return candidates.find(candidate => fs.existsSync(candidate)) || null;
+  return (
+    findPluginInstallFromManifest(installedPluginsPaths)
+    || findPluginInstallFlatLayout(candidateRoots)
+    || findPluginInstallMarketplaceCache(candidateRoots)
+  );
 }
 
 function getRepoChecks(rootDir) {
@@ -732,4 +868,6 @@ if (require.main === module) {
 module.exports = {
   buildReport,
   parseArgs,
+  findPluginInstall,
+  compareVersionDesc,
 };
