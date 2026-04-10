@@ -129,8 +129,8 @@
     <div class="ztb" id="ztb-overview">
       <span class="ztb-pct" id="pct-overview">100%</span>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('overview','zoomBy',1.35)" title="ズームイン" aria-label="ズームイン">＋</button>
-      <button onclick="zpCall('overview','zoomBy',0.74)" title="ズームアウト" aria-label="ズームアウト">－</button>
+      <button onclick="zpCall('overview','zoomBy',CFG.zoomIn)" title="ズームイン" aria-label="ズームイン">＋</button>
+      <button onclick="zpCall('overview','zoomBy',CFG.zoomOut)" title="ズームアウト" aria-label="ズームアウト">－</button>
       <div class="ztb-sep"></div>
       <button onclick="zpCall('overview','fit')" title="画面にフィット" aria-label="画面にフィット">⊡</button>
       <button onclick="zpCall('overview','reset')" title="リセット" aria-label="リセット">↺</button>
@@ -210,8 +210,8 @@ graph TD
     <div class="ztb">
       <span class="ztb-pct" id="pct-hooks">100%</span>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('hooks','zoomBy',1.35)" title="ズームイン" aria-label="ズームイン">＋</button>
-      <button onclick="zpCall('hooks','zoomBy',0.74)" title="ズームアウト" aria-label="ズームアウト">－</button>
+      <button onclick="zpCall('hooks','zoomBy',CFG.zoomIn)" title="ズームイン" aria-label="ズームイン">＋</button>
+      <button onclick="zpCall('hooks','zoomBy',CFG.zoomOut)" title="ズームアウト" aria-label="ズームアウト">－</button>
       <div class="ztb-sep"></div>
       <button onclick="zpCall('hooks','fit')" title="画面にフィット" aria-label="画面にフィット">⊡</button>
       <button onclick="zpCall('hooks','reset')" title="リセット" aria-label="リセット">↺</button>
@@ -273,8 +273,8 @@ graph TD
     <div class="ztb">
       <span class="ztb-pct" id="pct-commands">100%</span>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('commands','zoomBy',1.35)" title="ズームイン" aria-label="ズームイン">＋</button>
-      <button onclick="zpCall('commands','zoomBy',0.74)" title="ズームアウト" aria-label="ズームアウト">－</button>
+      <button onclick="zpCall('commands','zoomBy',CFG.zoomIn)" title="ズームイン" aria-label="ズームイン">＋</button>
+      <button onclick="zpCall('commands','zoomBy',CFG.zoomOut)" title="ズームアウト" aria-label="ズームアウト">－</button>
       <div class="ztb-sep"></div>
       <button onclick="zpCall('commands','fit')" title="画面にフィット" aria-label="画面にフィット">⊡</button>
       <button onclick="zpCall('commands','reset')" title="リセット" aria-label="リセット">↺</button>
@@ -346,8 +346,8 @@ graph TD
     <div class="ztb">
       <span class="ztb-pct" id="pct-rules">100%</span>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('rules','zoomBy',1.35)" title="ズームイン" aria-label="ズームイン">＋</button>
-      <button onclick="zpCall('rules','zoomBy',0.74)" title="ズームアウト" aria-label="ズームアウト">－</button>
+      <button onclick="zpCall('rules','zoomBy',CFG.zoomIn)" title="ズームイン" aria-label="ズームイン">＋</button>
+      <button onclick="zpCall('rules','zoomBy',CFG.zoomOut)" title="ズームアウト" aria-label="ズームアウト">－</button>
       <div class="ztb-sep"></div>
       <button onclick="zpCall('rules','fit')" title="画面にフィット" aria-label="画面にフィット">⊡</button>
       <button onclick="zpCall('rules','reset')" title="リセット" aria-label="リセット">↺</button>
@@ -392,8 +392,8 @@ graph TD
     <div class="ztb">
       <span class="ztb-pct" id="pct-skills">100%</span>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('skills','zoomBy',1.35)" title="ズームイン" aria-label="ズームイン">＋</button>
-      <button onclick="zpCall('skills','zoomBy',0.74)" title="ズームアウト" aria-label="ズームアウト">－</button>
+      <button onclick="zpCall('skills','zoomBy',CFG.zoomIn)" title="ズームイン" aria-label="ズームイン">＋</button>
+      <button onclick="zpCall('skills','zoomBy',CFG.zoomOut)" title="ズームアウト" aria-label="ズームアウト">－</button>
       <div class="ztb-sep"></div>
       <button onclick="zpCall('skills','fit')" title="画面にフィット" aria-label="画面にフィット">⊡</button>
       <button onclick="zpCall('skills','reset')" title="リセット" aria-label="リセット">↺</button>
@@ -435,8 +435,8 @@ graph TD
     <div class="ztb">
       <span class="ztb-pct" id="pct-channels">100%</span>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('channels','zoomBy',1.35)" title="ズームイン" aria-label="ズームイン">＋</button>
-      <button onclick="zpCall('channels','zoomBy',0.74)" title="ズームアウト" aria-label="ズームアウト">－</button>
+      <button onclick="zpCall('channels','zoomBy',CFG.zoomIn)" title="ズームイン" aria-label="ズームイン">＋</button>
+      <button onclick="zpCall('channels','zoomBy',CFG.zoomOut)" title="ズームアウト" aria-label="ズームアウト">－</button>
       <div class="ztb-sep"></div>
       <button onclick="zpCall('channels','fit')" title="画面にフィット" aria-label="画面にフィット">⊡</button>
       <button onclick="zpCall('channels','reset')" title="リセット" aria-label="リセット">↺</button>
@@ -510,6 +510,22 @@ mermaid.initialize({
 });
 } // end mermaid guard
 
+// ── Config ───────────────────────────────────────────
+const CFG = {
+  zoomIn:       1.35,  // ボタンクリック時のズームイン倍率
+  zoomOut:      0.74,  // ボタンクリック時のズームアウト倍率
+  wheelIn:      1.20,  // マウスホイールズームイン倍率
+  wheelOut:     0.83,  // マウスホイールズームアウト倍率
+  scaleMin:     0.05,  // 最小ズーム倍率
+  scaleMax:     20,    // 最大ズーム倍率
+  fitMax:       1.5,   // fit時の最大倍率（等倍以上に拡大しすぎない）
+  fitPad:       8,     // fit時のビューポート余白(px)
+  fitOffset:    4,     // fit時の位置オフセット(px)
+  initRetryMs:  200,   // Mermaid描画待ちリトライ間隔(ms)
+  initMaxRetry: 15,    // Mermaid描画待ち最大リトライ回数
+  tabSwitchMs:  120,   // タブ切り替え後のfit遅延(ms)
+};
+
 // ── ZoomPan ──────────────────────────────────────────
 class ZoomPan {
   constructor(id) {
@@ -530,7 +546,7 @@ class ZoomPan {
   }
 
   zoomAt(f, px, py) {
-    const ns = Math.max(0.05, Math.min(20, this.s * f));
+    const ns = Math.max(CFG.scaleMin, Math.min(CFG.scaleMax, this.s * f));
     const r  = this.vp.getBoundingClientRect();
     const cx = (px != null ? px : r.left + r.width  / 2) - r.left;
     const cy = (py != null ? py : r.top  + r.height / 2) - r.top;
@@ -548,15 +564,15 @@ class ZoomPan {
     requestAnimationFrame(() => {
       const svg = this.dc.querySelector('svg');
       if (!svg) return;
-      const vw = this.vp.clientWidth  - 8;
-      const vh = this.vp.clientHeight - 8;
+      const vw = this.vp.clientWidth  - CFG.fitPad;
+      const vh = this.vp.clientHeight - CFG.fitPad;
       const sw = svg.scrollWidth  || svg.getBBox().width;
       const sh = svg.scrollHeight || svg.getBBox().height;
       if (!sw || !sh) return;
-      const ns = Math.min(vw / sw, vh / sh, 1.5);
+      const ns = Math.min(vw / sw, vh / sh, CFG.fitMax);
       this.s = ns;
-      this.x = (vw - sw * ns) / 2 + 4;
-      this.y = Math.max(4, (vh - sh * ns) / 2 + 4);
+      this.x = (vw - sw * ns) / 2 + CFG.fitOffset;
+      this.y = Math.max(CFG.fitOffset, (vh - sh * ns) / 2 + CFG.fitOffset);
       this._apply();
     });
   }
@@ -567,7 +583,7 @@ class ZoomPan {
     // Mouse wheel zoom
     this.vp.addEventListener('wheel', e => {
       e.preventDefault();
-      this.zoomAt(e.deltaY < 0 ? 1.20 : 0.83, e.clientX, e.clientY);
+      this.zoomAt(e.deltaY < 0 ? CFG.wheelIn : CFG.wheelOut, e.clientX, e.clientY);
     }, { passive: false });
 
     // Drag to pan (ignore clicks on toolbar)
@@ -613,8 +629,8 @@ function initAllPanels() {
   if (!svg) {
     // Mermaid未レンダリング: 200msごとにリトライ（最大15回 = 3秒）
     if (!initAllPanels._retries) initAllPanels._retries = 0;
-    if (++initAllPanels._retries <= 15) {
-      setTimeout(initAllPanels, 200);
+    if (++initAllPanels._retries <= CFG.initMaxRetry) {
+      setTimeout(initAllPanels, CFG.initRetryMs);
       return;
     }
   }
@@ -633,7 +649,7 @@ function showPanel(name, btn) {
   setTimeout(() => {
     if (!zp[name]) zp[name] = new ZoomPan(name);
     zp[name].fit();
-  }, 120);
+  }, CFG.tabSwitchMs);
 }
 </script>
 </body>
