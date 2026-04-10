@@ -333,6 +333,10 @@ everything-claude-code/
 |   |-- laravel-verification/       # Laravel 验证循环（新增）
 |   |-- python-patterns/            # Python 习惯用法与最佳实践（新增）
 |   |-- python-testing/             # 使用 pytest 的 Python 测试（新增）
+|   |-- quarkus-patterns/            # Java Quarkus 模式（新增）
+|   |-- quarkus-security/            # Quarkus 安全（新增）
+|   |-- quarkus-tdd/                 # Quarkus TDD（新增）
+|   |-- quarkus-verification/        # Quarkus 验证（新增）
 |   |-- springboot-patterns/        # Java Spring Boot 模式（新增）
 |   |-- springboot-security/        # Spring Boot 安全（新增）
 |   |-- springboot-tdd/             # Spring Boot TDD（新增）
@@ -657,7 +661,7 @@ cp -r everything-claude-code/.agents/skills/* ~/.claude/skills/
 cp -r everything-claude-code/skills/search-first ~/.claude/skills/
 
 # Optional: add niche/framework-specific skills only when needed
-# for s in django-patterns django-tdd laravel-patterns springboot-patterns; do
+# for s in django-patterns django-tdd laravel-patterns springboot-patterns quarkus-patterns; do
 # cp -r everything-claude-code/skills/$s ~/.claude/skills/
 # done
 ```
