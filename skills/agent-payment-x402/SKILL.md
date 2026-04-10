@@ -1,6 +1,6 @@
 ---
 name: agent-payment-x402
-description: Add x402 payment execution to AI agents — per-task budgets, spending controls, and non-custodial wallets via MCP tools. Use when agents need to pay for APIs, services, or other agents.
+description: Add x402 payment execution to AI agents — per-task budgets, spending controls, and non-custodial wallets via MCP tools. Supports Base (agentwallet-sdk) and X Layer (OKX Payments x402 SDK). Use when agents need to pay for APIs, services, or other agents.
 origin: community
 ---
 
@@ -11,6 +11,40 @@ Enable AI agents to make autonomous payments with built-in spending controls. Us
 ## When to Use
 
 Use when: your agent needs to pay for an API call, purchase a service, settle with another agent, enforce per-task spending limits, or manage a non-custodial wallet. Pairs naturally with cost-aware-llm-pipeline and security-review skills.
+
+## Decision Tree
+
+```
+Are you paying for a resource, or charging for one?
+│
+├─ BUYER (paying for 402-gated APIs)
+│  │
+│  ├─ Want TEE wallet (no local keys)?
+│  │  └─ Option B → OnchainOS CLI + okx-x402-payment skill
+│  │
+│  └─ Want local wallet with spending controls?
+│     └─ Option A → agentwallet-sdk (Base, multi-chain)
+│
+└─ SELLER (charging for your API)
+   │
+   ├─ TypeScript? → WebFetch typescript/SELLER.md (Express, Hono, Fastify, Next.js)
+   ├─ Go?         → WebFetch go/SELLER.md (Gin, Echo, net/http)
+   ├─ Rust?       → WebFetch rust/SELLER.md (Axum)
+   └─ Python/Java? → Not yet supported, check okx/payments for updates
+```
+
+## Supported Networks
+
+### agentwallet-sdk
+
+Base, Arbitrum, Optimism, Polygon, Ethereum, Avalanche, Unichain, Linea, Sonic, Worldchain, Base Sepolia (testnet), Solana.
+
+### OKX Payments x402 SDK
+
+
+| Network | Chain ID | Token |
+|---------|----------|-------|
+| X Layer | eip155:196 | USDT0 |
 
 ## How It Works
 
@@ -33,6 +67,8 @@ The payment layer exposes standard MCP tools that slot into any Claude Code or a
 
 > **Security note**: Always pin the package version. This tool manages private keys — unpinned `npx` installs introduce supply-chain risk.
 
+### Option A: agentwallet-sdk (Base)
+
 ```json
 {
   "mcpServers": {
@@ -54,6 +90,39 @@ The payment layer exposes standard MCP tools that slot into any Claude Code or a
 | `list_transactions` | Audit trail of all payments |
 
 > **Note**: Spending policy is set by the **orchestrator** before delegating to the agent — not by the agent itself. This prevents agents from escalating their own spending limits. Configure policy via `set_policy` in your orchestration layer or pre-task hook, never as an agent-callable tool.
+
+## Option B: OKX Payments x402 SDK (X Layer)
+
+### Buyer Integration
+
+To pay for x402-gated resources, use the [OnchainOS CLI](https://github.com/okx/onchainos-skills) with the `okx-x402-payment` skill. The CLI provides a TEE wallet where private keys never leave the server-side secure enclave — no local key management needed.
+
+Install the [OnchainOS CLI](https://github.com/okx/onchainos-skills#installation) and plugin:
+```bash
+# macOS/Linux
+curl -sSL https://raw.githubusercontent.com/okx/onchainos-skills/main/install.sh | sh
+
+# Windows
+irm https://raw.githubusercontent.com/okx/onchainos-skills/main/install.ps1 | iex
+
+# Add skills plugin
+npx skills add okx/onchainos-skills
+```
+
+### Seller Integration
+
+To build a seller (server that accepts x402 payments), fetch the complete reference doc for your language using WebFetch:
+
+- **TypeScript** (Express, Hono, Fastify, Next.js) — `@okxweb3/x402-express` etc.
+  `https://raw.githubusercontent.com/okx/payments/main/typescript/SELLER.md`
+- **Go** (Gin, Echo, net/http) — `github.com/okx/payments/go`
+  `https://raw.githubusercontent.com/okx/payments/main/go/SELLER.md`
+- **Rust** (Axum) — `github.com/okx/payments/rust`
+  `https://raw.githubusercontent.com/okx/payments/main/rust/SELLER.md`
+
+Supported seller languages: TypeScript, Go, Rust. Python and Java are not yet available — check [okx/payments](https://github.com/okx/payments) for updates.
+
+These docs are designed for AI agents — each contains complete setup patterns, framework-specific examples, decision trees, and common mistakes. Use them as the authoritative reference for generating seller code.
 
 ## Examples
 
@@ -173,6 +242,10 @@ main().catch((err) => {
 
 ## Production Reference
 
-- **npm**: [`agentwallet-sdk`](https://www.npmjs.com/package/agentwallet-sdk)
+- **npm**: `[agentwallet-sdk](https://www.npmjs.com/package/agentwallet-sdk)` — multi-chain MCP provider
+- **npm**: `[@okxweb3/x402-core](https://www.npmjs.com/package/@okxweb3/x402-core)`, `[@okxweb3/x402-evm](https://www.npmjs.com/package/@okxweb3/x402-evm)`, `[@okxweb3/x402-express](https://www.npmjs.com/package/@okxweb3/x402-express)`, `[@okxweb3/x402-hono](https://www.npmjs.com/package/@okxweb3/x402-hono)`, `[@okxweb3/x402-fastify](https://www.npmjs.com/package/@okxweb3/x402-fastify)`, `[@okxweb3/x402-next](https://www.npmjs.com/package/@okxweb3/x402-next)` — OKX Payments x402 TypeScript SDK
+- **GitHub**: `[okx/payments](https://github.com/okx/payments)` — OKX Payments x402 SDK (Go, Rust)
 - **Merged into NVIDIA NeMo Agent Toolkit**: [PR #17](https://github.com/NVIDIA/NeMo-Agent-Toolkit-Examples/pull/17) — x402 payment tool for NVIDIA's agent examples
 - **Protocol spec**: [x402.org](https://x402.org)
+- **OKX Payments x402 docs**: [web3.okx.com — x402 Introduction](https://web3.okx.com/zh-hans/onchainos/dev-docs/payments/x402-introduction)
+
