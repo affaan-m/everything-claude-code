@@ -240,6 +240,44 @@ Edit `config.json` to control the background observer:
 | `observer.run_interval_minutes` | `5` | How often the observer analyzes observations |
 | `observer.min_observations_to_analyze` | `20` | Minimum observations before analysis runs |
 
+### External Config (Recommended for Plugin Installs)
+
+When installed as a plugin, the `config.json` inside the plugin cache is overwritten on every plugin update. To persist your configuration, set the `CLV2_CONFIG` environment variable to point to a file outside the cache:
+
+```bash
+# Add to ~/.zshenv (or ~/.bashrc)
+export CLV2_CONFIG="$HOME/.claude/homunculus/config.json"
+```
+
+Then create the config file:
+
+```bash
+cat > ~/.claude/homunculus/config.json << 'EOF'
+{
+  "version": "2.1",
+  "observer": {
+    "enabled": true,
+    "run_interval_minutes": 5,
+    "min_observations_to_analyze": 20
+  }
+}
+EOF
+```
+
+Both `observe.sh` and `start-observer.sh` respect `CLV2_CONFIG`. When set, it takes precedence over the built-in `config.json`.
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `CLV2_CONFIG` | *(built-in config.json)* | Path to external config file |
+| `ECC_OBSERVER_MAX_TURNS` | `20` | Max tool-use turns for Haiku analysis |
+| `ECC_OBSERVER_TIMEOUT_SECONDS` | `120` | Watchdog timeout for analysis process |
+| `ECC_OBSERVER_MAX_ANALYSIS_LINES` | `500` | Max observation lines sent to Haiku |
+| `ECC_OBSERVER_SIGNAL_EVERY_N` | `20` | Signal observer every N observations |
+| `ECC_OBSERVER_ANALYSIS_COOLDOWN` | `60` | Minimum seconds between analyses |
+| `ECC_OBSERVER_IDLE_TIMEOUT_SECONDS` | `1800` | Idle timeout before observer exits |
+
 Other behavior (observation capture, instinct thresholds, project scoping, promotion criteria) is configured via code defaults in `instinct-cli.py` and `observe.sh`.
 
 ## File Structure
