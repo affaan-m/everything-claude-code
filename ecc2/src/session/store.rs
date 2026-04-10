@@ -16,8 +16,9 @@ use super::{
     default_project_label, default_task_group_label, normalize_group_label,
     ContextGraphCompactionStats, ContextGraphEntity, ContextGraphEntityDetail,
     ContextGraphObservation, ContextGraphRecallEntry, ContextGraphRelation, ContextGraphSyncStats,
-    ContextObservationPriority, DecisionLogEntry, FileActivityAction, FileActivityEntry, Session,
-    SessionAgentProfile, SessionMessage, SessionMetrics, SessionState, WorktreeInfo,
+    ContextObservationPriority, DecisionLogEntry, FileActivityAction, FileActivityEntry,
+    HarnessKind, Session, SessionAgentProfile, SessionHarnessInfo, SessionMessage, SessionMetrics,
+    SessionState, WorktreeInfo,
 };
 
 pub struct StateStore {
@@ -171,6 +172,8 @@ impl StateStore {
                 project TEXT NOT NULL DEFAULT '',
                 task_group TEXT NOT NULL DEFAULT '',
                 agent_type TEXT NOT NULL,
+                harness TEXT NOT NULL DEFAULT 'unknown',
+                detected_harnesses_json TEXT NOT NULL DEFAULT '[]',
                 working_dir TEXT NOT NULL DEFAULT '.',
                 state TEXT NOT NULL DEFAULT 'pending',
                 pid INTEGER,
@@ -399,6 +402,24 @@ impl StateStore {
                 .context("Failed to add task_group column to sessions table")?;
         }
 
+        if !self.has_column("sessions", "harness")? {
+            self.conn
+                .execute(
+                    "ALTER TABLE sessions ADD COLUMN harness TEXT NOT NULL DEFAULT 'unknown'",
+                    [],
+                )
+                .context("Failed to add harness column to sessions table")?;
+        }
+
+        if !self.has_column("sessions", "detected_harnesses_json")? {
+            self.conn
+                .execute(
+                    "ALTER TABLE sessions ADD COLUMN detected_harnesses_json TEXT NOT NULL DEFAULT '[]'",
+                    [],
+                )
+                .context("Failed to add detected_harnesses_json column to sessions table")?;
+        }
+
         if !self.has_column("sessions", "input_tokens")? {
             self.conn
                 .execute(
@@ -624,6 +645,8 @@ impl StateStore {
              WHERE hook_event_id IS NOT NULL;",
         )?;
 
+        self.backfill_session_harnesses()?;
+
         Ok(())
     }
 
@@ -637,16 +660,51 @@ impl StateStore {
         Ok(columns.iter().any(|existing| existing == column))
     }
 
+    fn backfill_session_harnesses(&self) -> Result<()> {
+        let mut stmt = self
+            .conn
+            .prepare("SELECT id, agent_type, working_dir FROM sessions")?;
+        let updates = stmt
+            .query_map([], |row| {
+                Ok((
+                    row.get::<_, String>(0)?,
+                    row.get::<_, String>(1)?,
+                    row.get::<_, String>(2)?,
+                ))
+            })?
+            .collect::<std::result::Result<Vec<_>, _>>()?;
+
+        for (session_id, agent_type, working_dir) in updates {
+            let harness = SessionHarnessInfo::detect(&agent_type, Path::new(&working_dir));
+            let detected_json =
+                serde_json::to_string(&harness.detected).context("serialize detected harnesses")?;
+            self.conn.execute(
+                "UPDATE sessions
+                 SET harness = ?2,
+                     detected_harnesses_json = ?3
+                 WHERE id = ?1",
+                rusqlite::params![session_id, harness.primary.to_string(), detected_json],
+            )?;
+        }
+
+        Ok(())
+    }
+
     pub fn insert_session(&self, session: &Session) -> Result<()> {
+        let harness = SessionHarnessInfo::detect(&session.agent_type, &session.working_dir);
+        let detected_json =
+            serde_json::to_string(&harness.detected).context("serialize detected harnesses")?;
         self.conn.execute(
-            "INSERT INTO sessions (id, task, project, task_group, agent_type, working_dir, state, pid, worktree_path, worktree_branch, worktree_base, created_at, updated_at, last_heartbeat_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)",
+            "INSERT INTO sessions (id, task, project, task_group, agent_type, harness, detected_harnesses_json, working_dir, state, pid, worktree_path, worktree_branch, worktree_base, created_at, updated_at, last_heartbeat_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)",
             rusqlite::params![
                 session.id,
                 session.task,
                 session.project,
                 session.task_group,
                 session.agent_type,
+                harness.primary.to_string(),
+                detected_json,
                 session.working_dir.to_string_lossy().to_string(),
                 session.state.to_string(),
                 session.pid.map(i64::from),
@@ -1551,6 +1609,55 @@ impl StateStore {
             .collect::<Result<Vec<_>, _>>()?;
 
         Ok(sessions)
+    }
+
+    pub fn list_session_harnesses(&self) -> Result<HashMap<String, SessionHarnessInfo>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, harness, detected_harnesses_json, agent_type, working_dir FROM sessions",
+        )?;
+
+        let harnesses = stmt
+            .query_map([], |row| {
+                let session_id: String = row.get(0)?;
+                let primary = HarnessKind::from_db_value(&row.get::<_, String>(1)?);
+                let detected = serde_json::from_str::<Vec<HarnessKind>>(&row.get::<_, String>(2)?)
+                    .unwrap_or_default();
+                let agent_type: String = row.get(3)?;
+                let working_dir = PathBuf::from(row.get::<_, String>(4)?);
+                let info = if primary == HarnessKind::Unknown && detected.is_empty() {
+                    SessionHarnessInfo::detect(&agent_type, &working_dir)
+                } else {
+                    SessionHarnessInfo { primary, detected }
+                };
+                Ok((session_id, info))
+            })?
+            .collect::<std::result::Result<HashMap<_, _>, _>>()?;
+
+        Ok(harnesses)
+    }
+
+    pub fn get_session_harness_info(&self, session_id: &str) -> Result<Option<SessionHarnessInfo>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT harness, detected_harnesses_json, agent_type, working_dir
+             FROM sessions
+             WHERE id = ?1",
+        )?;
+
+        stmt.query_row([session_id], |row| {
+            let primary = HarnessKind::from_db_value(&row.get::<_, String>(0)?);
+            let detected = serde_json::from_str::<Vec<HarnessKind>>(&row.get::<_, String>(1)?)
+                .unwrap_or_default();
+            let agent_type: String = row.get(2)?;
+            let working_dir = PathBuf::from(row.get::<_, String>(3)?);
+            let info = if primary == HarnessKind::Unknown && detected.is_empty() {
+                SessionHarnessInfo::detect(&agent_type, &working_dir)
+            } else {
+                SessionHarnessInfo { primary, detected }
+            };
+            Ok(info)
+        })
+        .optional()
+        .map_err(Into::into)
     }
 
     pub fn get_latest_session(&self) -> Result<Option<Session>> {
@@ -3800,9 +3907,80 @@ mod tests {
         assert!(column_names.iter().any(|column| column == "pid"));
         assert!(column_names.iter().any(|column| column == "input_tokens"));
         assert!(column_names.iter().any(|column| column == "output_tokens"));
+        assert!(column_names.iter().any(|column| column == "harness"));
+        assert!(column_names
+            .iter()
+            .any(|column| column == "detected_harnesses_json"));
         assert!(column_names
             .iter()
             .any(|column| column == "last_heartbeat_at"));
+        Ok(())
+    }
+
+    #[test]
+    fn open_backfills_session_harness_metadata_for_legacy_rows() -> Result<()> {
+        let tempdir = TestDir::new("store-harness-backfill")?;
+        let repo_root = tempdir.path().join("repo");
+        fs::create_dir_all(repo_root.join(".codex"))?;
+        let db_path = tempdir.path().join("state.db");
+
+        let conn = Connection::open(&db_path)?;
+        conn.execute_batch(
+            "
+            CREATE TABLE sessions (
+                id TEXT PRIMARY KEY,
+                task TEXT NOT NULL,
+                project TEXT NOT NULL DEFAULT '',
+                task_group TEXT NOT NULL DEFAULT '',
+                agent_type TEXT NOT NULL,
+                working_dir TEXT NOT NULL DEFAULT '.',
+                state TEXT NOT NULL DEFAULT 'pending',
+                pid INTEGER,
+                worktree_path TEXT,
+                worktree_branch TEXT,
+                worktree_base TEXT,
+                input_tokens INTEGER DEFAULT 0,
+                output_tokens INTEGER DEFAULT 0,
+                tokens_used INTEGER DEFAULT 0,
+                tool_calls INTEGER DEFAULT 0,
+                files_changed INTEGER DEFAULT 0,
+                duration_secs INTEGER DEFAULT 0,
+                cost_usd REAL DEFAULT 0.0,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                last_heartbeat_at TEXT NOT NULL
+            );
+            ",
+        )?;
+        let now = Utc::now().to_rfc3339();
+        conn.execute(
+            "INSERT INTO sessions (
+                id, task, project, task_group, agent_type, working_dir, state, pid,
+                worktree_path, worktree_branch, worktree_base, input_tokens, output_tokens,
+                tokens_used, tool_calls, files_changed, duration_secs, cost_usd, created_at,
+                updated_at, last_heartbeat_at
+            ) VALUES (
+                ?1, ?2, ?3, ?4, ?5, ?6, 'pending', NULL,
+                NULL, NULL, NULL, 0, 0, 0, 0, 0, 0, 0.0, ?7, ?7, ?7
+            )",
+            rusqlite::params![
+                "sess-legacy",
+                "Backfill harness metadata",
+                "ecc",
+                "legacy",
+                "claude",
+                repo_root.display().to_string(),
+                now,
+            ],
+        )?;
+        drop(conn);
+
+        let db = StateStore::open(&db_path)?;
+        let harness = db
+            .get_session_harness_info("sess-legacy")?
+            .expect("legacy row should be backfilled");
+        assert_eq!(harness.primary, HarnessKind::Claude);
+        assert_eq!(harness.detected, vec![HarnessKind::Codex]);
         Ok(())
     }
 

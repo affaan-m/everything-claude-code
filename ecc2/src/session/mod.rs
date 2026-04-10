@@ -13,6 +13,139 @@ use std::path::PathBuf;
 
 pub type SessionAgentProfile = crate::config::ResolvedAgentProfile;
 
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[serde(rename_all = "snake_case")]
+pub enum HarnessKind {
+    #[default]
+    Unknown,
+    Claude,
+    Codex,
+    OpenCode,
+    Gemini,
+    Cursor,
+    Kiro,
+    Trae,
+    Zed,
+    FactoryDroid,
+    Windsurf,
+}
+
+impl HarnessKind {
+    pub fn from_agent_type(agent_type: &str) -> Self {
+        match agent_type.trim().to_ascii_lowercase().as_str() {
+            "claude" | "claude-code" => Self::Claude,
+            "codex" => Self::Codex,
+            "opencode" => Self::OpenCode,
+            "gemini" | "gemini-cli" => Self::Gemini,
+            "cursor" => Self::Cursor,
+            "kiro" => Self::Kiro,
+            "trae" => Self::Trae,
+            "zed" => Self::Zed,
+            "factory-droid" | "factory_droid" | "factorydroid" => Self::FactoryDroid,
+            "windsurf" => Self::Windsurf,
+            _ => Self::Unknown,
+        }
+    }
+
+    pub fn from_db_value(value: &str) -> Self {
+        match value.trim().to_ascii_lowercase().as_str() {
+            "claude" => Self::Claude,
+            "codex" => Self::Codex,
+            "opencode" => Self::OpenCode,
+            "gemini" => Self::Gemini,
+            "cursor" => Self::Cursor,
+            "kiro" => Self::Kiro,
+            "trae" => Self::Trae,
+            "zed" => Self::Zed,
+            "factory_droid" => Self::FactoryDroid,
+            "windsurf" => Self::Windsurf,
+            _ => Self::Unknown,
+        }
+    }
+
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Unknown => "unknown",
+            Self::Claude => "claude",
+            Self::Codex => "codex",
+            Self::OpenCode => "opencode",
+            Self::Gemini => "gemini",
+            Self::Cursor => "cursor",
+            Self::Kiro => "kiro",
+            Self::Trae => "trae",
+            Self::Zed => "zed",
+            Self::FactoryDroid => "factory_droid",
+            Self::Windsurf => "windsurf",
+        }
+    }
+
+    fn project_markers(self) -> &'static [&'static str] {
+        match self {
+            Self::Claude => &[".claude"],
+            Self::Codex => &[".codex", ".codex-plugin"],
+            Self::OpenCode => &[".opencode"],
+            Self::Gemini => &[".gemini"],
+            Self::Cursor => &[".cursor"],
+            Self::Kiro => &[".kiro"],
+            Self::Trae => &[".trae"],
+            Self::Unknown | Self::Zed | Self::FactoryDroid | Self::Windsurf => &[],
+        }
+    }
+}
+
+impl fmt::Display for HarnessKind {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct SessionHarnessInfo {
+    pub primary: HarnessKind,
+    pub detected: Vec<HarnessKind>,
+}
+
+impl SessionHarnessInfo {
+    pub fn detect(agent_type: &str, working_dir: &Path) -> Self {
+        let detected = [
+            HarnessKind::Claude,
+            HarnessKind::Codex,
+            HarnessKind::OpenCode,
+            HarnessKind::Gemini,
+            HarnessKind::Cursor,
+            HarnessKind::Kiro,
+            HarnessKind::Trae,
+        ]
+        .into_iter()
+        .filter(|harness| {
+            harness
+                .project_markers()
+                .iter()
+                .any(|marker| working_dir.join(marker).exists())
+        })
+        .collect::<Vec<_>>();
+
+        let primary = match HarnessKind::from_agent_type(agent_type) {
+            HarnessKind::Unknown => detected.first().copied().unwrap_or(HarnessKind::Unknown),
+            harness => harness,
+        };
+
+        Self { primary, detected }
+    }
+
+    pub fn detected_summary(&self) -> String {
+        if self.detected.is_empty() {
+            "none detected".to_string()
+        } else {
+            self.detected
+                .iter()
+                .map(|harness| harness.to_string())
+                .collect::<Vec<_>>()
+                .join(", ")
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Session {
     pub id: String,
@@ -314,4 +447,62 @@ pub fn default_task_group_label(task: &str) -> String {
 pub struct SessionGrouping {
     pub project: Option<String>,
     pub task_group: Option<String>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    struct TestDir {
+        path: PathBuf,
+    }
+
+    impl TestDir {
+        fn new(label: &str) -> Result<Self, Box<dyn std::error::Error>> {
+            let path =
+                std::env::temp_dir().join(format!("ecc2-{}-{}", label, uuid::Uuid::new_v4()));
+            fs::create_dir_all(&path)?;
+            Ok(Self { path })
+        }
+
+        fn path(&self) -> &Path {
+            &self.path
+        }
+    }
+
+    impl Drop for TestDir {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.path);
+        }
+    }
+
+    #[test]
+    fn detect_session_harness_prefers_agent_type_and_collects_project_markers(
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let repo = TestDir::new("session-harness-detect")?;
+        fs::create_dir_all(repo.path().join(".codex"))?;
+        fs::create_dir_all(repo.path().join(".claude"))?;
+
+        let harness = SessionHarnessInfo::detect("claude", repo.path());
+        assert_eq!(harness.primary, HarnessKind::Claude);
+        assert_eq!(
+            harness.detected,
+            vec![HarnessKind::Claude, HarnessKind::Codex]
+        );
+        assert_eq!(harness.detected_summary(), "claude, codex");
+        Ok(())
+    }
+
+    #[test]
+    fn detect_session_harness_falls_back_to_project_markers_for_unknown_agent(
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let repo = TestDir::new("session-harness-markers")?;
+        fs::create_dir_all(repo.path().join(".gemini"))?;
+
+        let harness = SessionHarnessInfo::detect("custom-runner", repo.path());
+        assert_eq!(harness.primary, HarnessKind::Gemini);
+        assert_eq!(harness.detected, vec![HarnessKind::Gemini]);
+        Ok(())
+    }
 }

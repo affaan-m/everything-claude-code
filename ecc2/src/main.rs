@@ -1150,8 +1150,13 @@ async fn main() -> Result<()> {
         Some(Commands::Sessions) => {
             sync_runtime_session_metrics(&db, &cfg)?;
             let sessions = session::manager::list_sessions(&db)?;
+            let harnesses = db.list_session_harnesses().unwrap_or_default();
             for s in sessions {
-                println!("{} [{}] {}", s.id, s.state, s.task);
+                let harness = harnesses
+                    .get(&s.id)
+                    .map(|info| info.primary.to_string())
+                    .unwrap_or_else(|| "unknown".to_string());
+                println!("{} [{}] [{}] {}", s.id, s.state, harness, s.task);
             }
         }
         Some(Commands::Status { session_id }) => {

@@ -11,7 +11,7 @@ use super::runtime::capture_command_output;
 use super::store::StateStore;
 use super::{
     default_project_label, default_task_group_label, normalize_group_label, Session,
-    SessionAgentProfile, SessionGrouping, SessionMetrics, SessionState,
+    SessionAgentProfile, SessionGrouping, SessionHarnessInfo, SessionMetrics, SessionState,
 };
 use crate::comms::{self, MessageType};
 use crate::config::Config;
@@ -116,6 +116,11 @@ pub fn get_status(db: &StateStore, id: &str) -> Result<SessionStatus> {
     let session = resolve_session(db, id)?;
     let session_id = session.id.clone();
     Ok(SessionStatus {
+        harness: db
+            .get_session_harness_info(&session_id)?
+            .unwrap_or_else(|| {
+                SessionHarnessInfo::detect(&session.agent_type, &session.working_dir)
+            }),
         profile: db.get_session_profile(&session_id)?,
         session,
         parent_session: db.latest_task_handoff_source(&session_id)?,
@@ -2670,6 +2675,7 @@ async fn kill_process(pid: u32) -> Result<()> {
 }
 
 pub struct SessionStatus {
+    harness: SessionHarnessInfo,
     profile: Option<SessionAgentProfile>,
     session: Session,
     parent_session: Option<String>,
@@ -2962,6 +2968,8 @@ impl fmt::Display for SessionStatus {
         writeln!(f, "Session: {}", s.id)?;
         writeln!(f, "Task:    {}", s.task)?;
         writeln!(f, "Agent:   {}", s.agent_type)?;
+        writeln!(f, "Harness: {}", self.harness.primary)?;
+        writeln!(f, "Detected: {}", self.harness.detected_summary())?;
         writeln!(f, "State:   {}", s.state)?;
         if let Some(profile) = self.profile.as_ref() {
             writeln!(f, "Profile: {}", profile.profile_name)?;

@@ -24,7 +24,7 @@ use crate::session::output::{
 use crate::session::store::{DaemonActivity, FileActivityOverlap, StateStore};
 use crate::session::{
     ContextObservationPriority, DecisionLogEntry, FileActivityEntry, Session, SessionGrouping,
-    SessionMessage, SessionState,
+    SessionHarnessInfo, SessionMessage, SessionState,
 };
 use crate::worktree;
 
@@ -87,6 +87,7 @@ pub struct Dashboard {
     notifier: DesktopNotifier,
     webhook_notifier: WebhookNotifier,
     sessions: Vec<Session>,
+    session_harnesses: HashMap<String, SessionHarnessInfo>,
     session_output_cache: HashMap<String, Vec<OutputLine>>,
     unread_message_counts: HashMap<String, usize>,
     approval_queue_counts: HashMap<String, usize>,
@@ -497,6 +498,7 @@ impl Dashboard {
             let _ = db.sync_tool_activity_metrics(&cfg.tool_activity_metrics_path());
         }
         let sessions = db.list_sessions().unwrap_or_default();
+        let session_harnesses = db.list_session_harnesses().unwrap_or_default();
         let initial_session_states = sessions
             .iter()
             .map(|session| (session.id.clone(), session.state.clone()))
@@ -522,6 +524,7 @@ impl Dashboard {
             notifier,
             webhook_notifier,
             sessions,
+            session_harnesses,
             session_output_cache: HashMap::new(),
             unread_message_counts: HashMap::new(),
             approval_queue_counts: HashMap::new(),
@@ -4035,6 +4038,13 @@ impl Dashboard {
                 Vec::new()
             }
         };
+        self.session_harnesses = match self.db.list_session_harnesses() {
+            Ok(harnesses) => harnesses,
+            Err(error) => {
+                tracing::warn!("Failed to refresh session harnesses: {error}");
+                HashMap::new()
+            }
+        };
         self.unread_message_counts = match self.db.unread_message_counts() {
             Ok(counts) => counts,
             Err(error) => {
@@ -6330,6 +6340,14 @@ impl Dashboard {
                         }
                     }
                 }
+            }
+
+            if let Some(harness) = self.session_harnesses.get(&session.id) {
+                lines.push(format!(
+                    "Harness {} | Detected {}",
+                    harness.primary,
+                    harness.detected_summary()
+                ));
             }
 
             lines.push(format!(
@@ -12282,6 +12300,40 @@ diff --git a/src/lib.rs b/src/lib.rs
     }
 
     #[test]
+    fn selected_session_metrics_text_includes_harness_summary() -> Result<()> {
+        let tempdir = std::env::temp_dir().join(format!(
+            "ecc2-dashboard-harness-metrics-{}",
+            uuid::Uuid::new_v4()
+        ));
+        fs::create_dir_all(tempdir.join(".claude"))?;
+        fs::create_dir_all(tempdir.join(".codex"))?;
+
+        let now = Utc::now();
+        let session = Session {
+            id: "sess-harness".to_string(),
+            task: "Map harness metadata".to_string(),
+            project: "ecc".to_string(),
+            task_group: "compat".to_string(),
+            agent_type: "claude".to_string(),
+            working_dir: tempdir.clone(),
+            state: SessionState::Running,
+            pid: Some(4242),
+            worktree: None,
+            created_at: now - Duration::minutes(3),
+            updated_at: now - Duration::minutes(1),
+            last_heartbeat_at: now - Duration::minutes(1),
+            metrics: SessionMetrics::default(),
+        };
+
+        let dashboard = test_dashboard(vec![session], 0);
+        let metrics_text = dashboard.selected_session_metrics_text();
+        assert!(metrics_text.contains("Harness claude | Detected claude, codex"));
+
+        let _ = fs::remove_dir_all(tempdir);
+        Ok(())
+    }
+
+    #[test]
     fn new_session_task_uses_selected_session_context() {
         let dashboard = test_dashboard(
             vec![sample_session(
@@ -14429,6 +14481,15 @@ diff --git a/src/lib.rs b/src/lib.rs
             .iter()
             .map(|session| (session.id.clone(), session.state.clone()))
             .collect();
+        let session_harnesses = sessions
+            .iter()
+            .map(|session| {
+                (
+                    session.id.clone(),
+                    SessionHarnessInfo::detect(&session.agent_type, &session.working_dir),
+                )
+            })
+            .collect();
         let output_store = SessionOutputStore::default();
         let output_rx = output_store.subscribe();
         let mut session_table_state = TableState::default();
@@ -14445,6 +14506,7 @@ diff --git a/src/lib.rs b/src/lib.rs
             notifier,
             webhook_notifier,
             sessions,
+            session_harnesses,
             session_output_cache: HashMap::new(),
             unread_message_counts: HashMap::new(),
             approval_queue_counts: HashMap::new(),
