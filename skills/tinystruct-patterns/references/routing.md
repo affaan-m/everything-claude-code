@@ -31,7 +31,7 @@ When a request is dispatched, the `ActionRegistry` automatically injects depende
     description = "What it does",    // shown in --help output
     mode = Mode.HTTP_POST,           // default: Mode.DEFAULT (both CLI + HTTP)
     options = {},                    // CLI option flags
-    example = "bin/dispatcher path/subpath/42"
+    example = "curl -X POST http://localhost:8080/path/subpath/42"
 )
 public String myAction(int id) { ... }
 ```
