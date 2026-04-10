@@ -25,11 +25,18 @@ Qwen CLI automatically detects this `.qwen/` directory when running in a reposit
 ## Structure
 
 - `QWEN.md` - Main configuration file (this file)
-- `agents/` - Agent role definitions
-- `skills/` - Skill definitions
-- `rules/` - Coding standards and guidelines
-- `hooks/` - Event-based automations
-- `ecc-install-state.json` - Installation state tracking
+
+## Runtime Installation
+
+After running `./install.sh --target qwen`, the following structure is created in `~/.qwen/`:
+
+- `~/.qwen/agents/` - Agent role definitions
+- `~/.qwen/skills/` - Skill definitions
+- `~/.qwen/rules/` - Coding standards and guidelines
+- `~/.qwen/hooks/` - Event-based automations
+- `~/.qwen/commands/` - Legacy command shims
+- `~/.qwen/mcp-configs/` - MCP server configurations
+- `~/.qwen/ecc-install-state.json` - Installation state tracking
 
 ## Features
 

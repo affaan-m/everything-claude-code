@@ -93,6 +93,7 @@
         ".cursor",
         ".gemini",
         ".opencode",
+        ".qwen",
         "mcp-configs",
         "scripts/setup-package-manager.js"
       ],

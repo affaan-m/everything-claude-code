@@ -11,9 +11,9 @@ Everything Claude Code (ECC) has been successfully configured for Qwen CLI suppo
 #### New Files Created
 - ✅ `scripts/lib/install-targets/qwen-home.js` - Qwen CLI install adapter
 - ✅ `.qwen/QWEN.md` - Qwen CLI configuration file
-- ✅ `docs/QWEN-SETUP.md` - Comprehensive setup guide
-- ✅ `docs/QWEN-QUICK-START.md` - Quick reference guide
-- ✅ `docs/QWEN-README.md` - Implementation summary
+- ✅ `docs/qwen-setup.md` - Comprehensive setup guide
+- ✅ `docs/qwen-quick-start.md` - Quick reference guide
+- ✅ `docs/qwen-readme.md` - Implementation summary
 - ✅ `docs/qwen-setup-summary.md` - This summary document
 - ✅ `docs/qwen-quick-ref.md` - Quick reference card
 
@@ -241,19 +241,19 @@ Qwen CLI now has **feature parity with Claude Code** for the core ECC experience
 
 ## Documentation Created
 
-1. **docs/QWEN-SETUP.md** - Comprehensive setup guide
+1. **docs/qwen-setup.md** - Comprehensive setup guide
    - Installation instructions
    - Configuration examples
    - Troubleshooting tips
    - Manual installation steps
 
-2. **docs/QWEN-QUICK-START.md** - Quick reference guide
+2. **docs/qwen-quick-start.md** - Quick reference guide
    - Command reference
    - Workflow examples
    - Token optimization tips
    - Common patterns
 
-3. **docs/QWEN-README.md** - Implementation summary
+3. **docs/qwen-readme.md** - Implementation summary
    - What was done
    - Installation results
    - Architecture overview

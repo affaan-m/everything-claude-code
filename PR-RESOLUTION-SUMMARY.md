@@ -206,7 +206,7 @@ Failed:         0
 ### Merge State
 - **State:** OPEN ✅
 - **Mergeable:** MERGEABLE ✅
-- **Merge State Status:** Ready for review
+- **Merge State Status:** Automated checks in progress
 
 ### Automated Checks
 | Check | Status | Started |
