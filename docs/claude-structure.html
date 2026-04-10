@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>~/.claude ディレクトリ構造</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.3/dist/mermaid.min.js"
+        integrity="sha384-R63zfMfSwJF4xCR11wXii+QUsbiBIdiDzDbtxia72oGWfkT7WHJfmD/I/eeHPJyT"
+        crossorigin="anonymous"
+        onerror="window.__mermaidFailed=true"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -126,11 +129,11 @@
     <div class="ztb" id="ztb-overview">
       <span class="ztb-pct" id="pct-overview">100%</span>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('overview','zoomBy',1.35)" title="ズームイン">＋</button>
-      <button onclick="zpCall('overview','zoomBy',0.74)" title="ズームアウト">－</button>
+      <button onclick="zpCall('overview','zoomBy',1.35)" title="ズームイン" aria-label="ズームイン">＋</button>
+      <button onclick="zpCall('overview','zoomBy',0.74)" title="ズームアウト" aria-label="ズームアウト">－</button>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('overview','fit')" title="画面にフィット">⊡</button>
-      <button onclick="zpCall('overview','reset')" title="リセット">↺</button>
+      <button onclick="zpCall('overview','fit')" title="画面にフィット" aria-label="画面にフィット">⊡</button>
+      <button onclick="zpCall('overview','reset')" title="リセット" aria-label="リセット">↺</button>
     </div>
     <div class="diagram-canvas" id="dc-overview">
       <div class="mermaid">
@@ -151,7 +154,7 @@ graph TD
 
     EXT --> COMMANDS["📁 commands/<br/><small>スラッシュコマンド 30+</small>"]:::commands
     EXT --> SKILLS["📁 skills/<br/><small>89 スキル</small>"]:::skills
-    EXT --> AGENTS["📁 agents/<br/><small>サブエージェント定義 13</small>"]:::agents
+    EXT --> AGENTS["📁 agents/<br/><small>サブエージェント定義 10</small>"]:::agents
     EXT --> PLUGINS["📁 plugins/<br/><small>claude-code-harness 等</small>"]:::plugins
 
     STORAGE --> DATA["📁 projects/ + session-search/<br/><small>履歴・ChromaDB・永続メモリ</small>"]:::data
@@ -195,7 +198,7 @@ graph TD
     <div class="legend-item"><div class="dot" style="background:#2ea043"></div>Hooks (自動実行)</div>
     <div class="legend-item"><div class="dot" style="background:#1f6feb"></div>Commands (スラッシュ)</div>
     <div class="legend-item"><div class="dot" style="background:#0ea5e9"></div>Skills (89個)</div>
-    <div class="legend-item"><div class="dot" style="background:#d97706"></div>Agents (13個)</div>
+    <div class="legend-item"><div class="dot" style="background:#d97706"></div>Agents (10個)</div>
     <div class="legend-item"><div class="dot" style="background:#ec4899"></div>Rules (詳細ルール)</div>
     <div class="legend-item"><div class="dot" style="background:#7c3aed"></div>Config (設定ファイル)</div>
   </div>
@@ -207,11 +210,11 @@ graph TD
     <div class="ztb">
       <span class="ztb-pct" id="pct-hooks">100%</span>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('hooks','zoomBy',1.35)">＋</button>
-      <button onclick="zpCall('hooks','zoomBy',0.74)">－</button>
+      <button onclick="zpCall('hooks','zoomBy',1.35)" title="ズームイン" aria-label="ズームイン">＋</button>
+      <button onclick="zpCall('hooks','zoomBy',0.74)" title="ズームアウト" aria-label="ズームアウト">－</button>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('hooks','fit')" title="画面にフィット">⊡</button>
-      <button onclick="zpCall('hooks','reset')">↺</button>
+      <button onclick="zpCall('hooks','fit')" title="画面にフィット" aria-label="画面にフィット">⊡</button>
+      <button onclick="zpCall('hooks','reset')" title="リセット" aria-label="リセット">↺</button>
     </div>
     <div class="diagram-canvas" id="dc-hooks">
       <div class="mermaid">
@@ -270,11 +273,11 @@ graph TD
     <div class="ztb">
       <span class="ztb-pct" id="pct-commands">100%</span>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('commands','zoomBy',1.35)">＋</button>
-      <button onclick="zpCall('commands','zoomBy',0.74)">－</button>
+      <button onclick="zpCall('commands','zoomBy',1.35)" title="ズームイン" aria-label="ズームイン">＋</button>
+      <button onclick="zpCall('commands','zoomBy',0.74)" title="ズームアウト" aria-label="ズームアウト">－</button>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('commands','fit')">⊡</button>
-      <button onclick="zpCall('commands','reset')">↺</button>
+      <button onclick="zpCall('commands','fit')" title="画面にフィット" aria-label="画面にフィット">⊡</button>
+      <button onclick="zpCall('commands','reset')" title="リセット" aria-label="リセット">↺</button>
     </div>
     <div class="diagram-canvas" id="dc-commands">
       <div class="mermaid">
@@ -343,11 +346,11 @@ graph TD
     <div class="ztb">
       <span class="ztb-pct" id="pct-rules">100%</span>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('rules','zoomBy',1.35)">＋</button>
-      <button onclick="zpCall('rules','zoomBy',0.74)">－</button>
+      <button onclick="zpCall('rules','zoomBy',1.35)" title="ズームイン" aria-label="ズームイン">＋</button>
+      <button onclick="zpCall('rules','zoomBy',0.74)" title="ズームアウト" aria-label="ズームアウト">－</button>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('rules','fit')">⊡</button>
-      <button onclick="zpCall('rules','reset')">↺</button>
+      <button onclick="zpCall('rules','fit')" title="画面にフィット" aria-label="画面にフィット">⊡</button>
+      <button onclick="zpCall('rules','reset')" title="リセット" aria-label="リセット">↺</button>
     </div>
     <div class="diagram-canvas" id="dc-rules">
       <div class="mermaid">
@@ -389,11 +392,11 @@ graph TD
     <div class="ztb">
       <span class="ztb-pct" id="pct-skills">100%</span>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('skills','zoomBy',1.35)">＋</button>
-      <button onclick="zpCall('skills','zoomBy',0.74)">－</button>
+      <button onclick="zpCall('skills','zoomBy',1.35)" title="ズームイン" aria-label="ズームイン">＋</button>
+      <button onclick="zpCall('skills','zoomBy',0.74)" title="ズームアウト" aria-label="ズームアウト">－</button>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('skills','fit')">⊡</button>
-      <button onclick="zpCall('skills','reset')">↺</button>
+      <button onclick="zpCall('skills','fit')" title="画面にフィット" aria-label="画面にフィット">⊡</button>
+      <button onclick="zpCall('skills','reset')" title="リセット" aria-label="リセット">↺</button>
     </div>
     <div class="diagram-canvas" id="dc-skills">
       <div class="mermaid">
@@ -432,37 +435,37 @@ graph TD
     <div class="ztb">
       <span class="ztb-pct" id="pct-channels">100%</span>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('channels','zoomBy',1.35)">＋</button>
-      <button onclick="zpCall('channels','zoomBy',0.74)">－</button>
+      <button onclick="zpCall('channels','zoomBy',1.35)" title="ズームイン" aria-label="ズームイン">＋</button>
+      <button onclick="zpCall('channels','zoomBy',0.74)" title="ズームアウト" aria-label="ズームアウト">－</button>
       <div class="ztb-sep"></div>
-      <button onclick="zpCall('channels','fit')">⊡</button>
-      <button onclick="zpCall('channels','reset')">↺</button>
+      <button onclick="zpCall('channels','fit')" title="画面にフィット" aria-label="画面にフィット">⊡</button>
+      <button onclick="zpCall('channels','reset')" title="リセット" aria-label="リセット">↺</button>
     </div>
     <div class="diagram-canvas" id="dc-channels">
       <div class="mermaid">
 graph TD
     subgraph CHANNELS["📁 channels/ — 通信チャンネル"]
-      DISCORD["📁 discord/<br/><small>Discord Bot連携<br/>MCP経由でメッセージ送受信</small>"]
-      SB["📁 script-bridge/<br/><small>ローカルスクリプトからの<br/>リクエスト受付</small>"]
-      SBL["📁 script-bridge-lower/<br/>📁 script-bridge-upper/<br/><small>優先度別キュー</small>"]
+      DISCORD["📁 discord/<br/><small>Discord Bot連携<br/>MCP経由でメッセージ送受信</small>"]:::ch
+      SB["📁 script-bridge/<br/><small>ローカルスクリプトからの<br/>リクエスト受付</small>"]:::ch
+      SBL["📁 script-bridge-lower/<br/>📁 script-bridge-upper/<br/><small>優先度別キュー</small>"]:::ch
     end
 
-    subgraph AGENTS["📁 agents/ — サブエージェント定義 (13)"]
-      CODE_R["code-reviewer.md<br/><small>コードレビュー専門</small>"]
-      CODE_S["code-simplifier.md<br/><small>コード簡略化</small>"]
-      DEP["deployment-specialist.md<br/><small>Cloud Runデプロイ</small>"]
-      GH["github-integration-specialist.md<br/><small>GitHub Issue/PR管理</small>"]
-      UI_V["ui-verification-specialist.md<br/><small>UI視覚検証 + スクショ確認</small>"]
-      SCREEN["screen-verification-specialist.md<br/><small>画面確認 + CiC操作</small>"]
-      UX["ux-researcher.md<br/><small>UXリサーチ</small>"]
-      UI_D["ui-designer.md<br/><small>UIデザイン生成</small>"]
-      PR_T["pr-test-analyzer.md<br/><small>PRテスト分析</small>"]
-      SF["silent-failure-hunter.md<br/><small>サイレント失敗検出</small>"]
+    subgraph AGENTS["📁 agents/ — サブエージェント定義 (10)"]
+      CODE_R["code-reviewer.md<br/><small>コードレビュー専門</small>"]:::ag
+      CODE_S["code-simplifier.md<br/><small>コード簡略化</small>"]:::ag
+      DEP["deployment-specialist.md<br/><small>Cloud Runデプロイ</small>"]:::ag
+      GH["github-integration-specialist.md<br/><small>GitHub Issue/PR管理</small>"]:::ag
+      UI_V["ui-verification-specialist.md<br/><small>UI視覚検証 + スクショ確認</small>"]:::ag
+      SCREEN["screen-verification-specialist.md<br/><small>画面確認 + CiC操作</small>"]:::ag
+      UX["ux-researcher.md<br/><small>UXリサーチ</small>"]:::ag
+      UI_D["ui-designer.md<br/><small>UIデザイン生成</small>"]:::ag
+      PR_T["pr-test-analyzer.md<br/><small>PRテスト分析</small>"]:::ag
+      SF["silent-failure-hunter.md<br/><small>サイレント失敗検出</small>"]:::ag
     end
 
     subgraph PLUGINS["📁 plugins/ — プラグイン"]
-      HARNESS["claude-code-harness/<br/><small>ハーネス本体<br/>review-loopスキル含む</small>"]
-      PR_TK["pr-review-toolkit/<br/><small>PR並列レビューツール</small>"]
+      HARNESS["claude-code-harness/<br/><small>ハーネス本体<br/>review-loopスキル含む</small>"]:::pl
+      PR_TK["pr-review-toolkit/<br/><small>PR並列レビューツール</small>"]:::pl
     end
 
     classDef ch fill:#3a0d3a,stroke:#a855f7,color:#d8b4fe
@@ -475,6 +478,11 @@ graph TD
 </div>
 
 <script>
+if (window.__mermaidFailed || typeof mermaid === 'undefined') {
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.innerHTML = '<p style="color:#f85149;padding:2rem;font-family:sans-serif">Mermaid CDN の読み込みに失敗しました。ネットワーク接続を確認してリロードしてください。</p>';
+  });
+} else {
 mermaid.initialize({
   startOnLoad: true,
   theme: 'dark',
@@ -500,6 +508,7 @@ mermaid.initialize({
     padding: 10
   }
 });
+} // end mermaid guard
 
 // ── ZoomPan ──────────────────────────────────────────
 class ZoomPan {
@@ -597,22 +606,30 @@ function zpCall(id, method, arg) {
   if (zp[id]) zp[id][method](arg);
 }
 
-// Init after Mermaid finishes rendering
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    PANELS.forEach(id => { zp[id] = new ZoomPan(id); });
-    // Auto-fit overview
-    setTimeout(() => { if (zp['overview']) zp['overview'].fit(); }, 80);
-  }, 600);
-});
+// Init after Mermaid finishes rendering (SVG existence check with retry)
+function initAllPanels() {
+  if (window.__mermaidFailed || typeof mermaid === 'undefined') return;
+  const svg = document.querySelector('.mermaid svg');
+  if (!svg) {
+    // Mermaid未レンダリング: 200msごとにリトライ（最大15回 = 3秒）
+    if (!initAllPanels._retries) initAllPanels._retries = 0;
+    if (++initAllPanels._retries <= 15) {
+      setTimeout(initAllPanels, 200);
+      return;
+    }
+  }
+  PANELS.forEach(id => { if (!zp[id]) zp[id] = new ZoomPan(id); });
+  if (zp['overview']) zp['overview'].fit();
+}
+window.addEventListener('load', initAllPanels);
 
-// Tab switching
+// Tab switching (re-fit on panel change)
 function showPanel(name, btn) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
   btn.classList.add('active');
-  // Lazy init + auto-fit when switching tabs
+  // Re-fit after panel becomes visible (display:flex triggers reflow)
   setTimeout(() => {
     if (!zp[name]) zp[name] = new ZoomPan(name);
     zp[name].fit();
