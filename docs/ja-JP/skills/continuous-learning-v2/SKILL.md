@@ -205,6 +205,44 @@ touch ~/.claude/homunculus/observations.jsonl
 }
 ```
 
+### 外部設定ファイル（プラグインインストール推奨）
+
+プラグインとしてインストールした場合、プラグインキャッシュ内の `config.json` は更新のたびに上書きされます。`CLV2_CONFIG` 環境変数をキャッシュ外の設定ファイルに向けることで、カスタム設定を保持できます：
+
+```bash
+# ~/.zshenv（または ~/.bashrc）に追加
+export CLV2_CONFIG="$HOME/.claude/homunculus/config.json"
+```
+
+設定ファイルを作成します：
+
+```bash
+cat > ~/.claude/homunculus/config.json << 'EOF'
+{
+  "version": "2.1",
+  "observer": {
+    "enabled": true,
+    "run_interval_minutes": 5,
+    "min_observations_to_analyze": 20
+  }
+}
+EOF
+```
+
+`observe.sh` と `start-observer.sh` は `CLV2_CONFIG` をサポートします。設定すると、組み込みの `config.json` よりも優先されます。
+
+### 環境変数
+
+| 変数 | デフォルト | 説明 |
+|------|-----------|------|
+| `CLV2_CONFIG` | *（組み込み config.json）* | 外部設定ファイルのパス |
+| `ECC_OBSERVER_MAX_TURNS` | `20` | Haiku 分析の最大ツール呼び出し回数 |
+| `ECC_OBSERVER_TIMEOUT_SECONDS` | `120` | 分析プロセスのウォッチドッグタイムアウト |
+| `ECC_OBSERVER_MAX_ANALYSIS_LINES` | `500` | Haiku に送信する最大 observation 行数 |
+| `ECC_OBSERVER_SIGNAL_EVERY_N` | `20` | N 回の observation ごとに observer に通知 |
+| `ECC_OBSERVER_ANALYSIS_COOLDOWN` | `60` | 分析間の最小間隔（秒） |
+| `ECC_OBSERVER_IDLE_TIMEOUT_SECONDS` | `1800` | アイドルタイムアウト後に observer が自動終了 |
+
 ## ファイル構造
 
 ```
