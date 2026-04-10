@@ -178,13 +178,13 @@ const usersWithPosts = await db.query(`
 按严重程度组织发现的问题。对于每个问题：
 
 ```
-[CRITICAL] Hardcoded API key in source
-File: src/api/client.ts:42
-Issue: API key "sk-abc..." exposed in source code. This will be committed to git history.
-Fix: Move to environment variable and add to .gitignore/.env.example
+[严重] 源代码中存在硬编码的API密钥
+文件: src/api/client.ts:42
+问题: API密钥 "sk-abc..." 在源代码中暴露。这将提交到git历史记录中。
+修复: 移至环境变量并添加到 .gitignore/.env.example
 
-  const apiKey = "sk-abc123";           // BAD
-  const apiKey = process.env.API_KEY;   // GOOD
+  const apiKey = "sk-abc123";           // 错误做法
+  const apiKey = process.env.API_KEY;   // 正确做法
 ```
 
 ### 摘要格式
@@ -192,16 +192,16 @@ Fix: Move to environment variable and add to .gitignore/.env.example
 每次审查结束时使用：
 
 ```
-## Review Summary
+## 审查摘要
 
-| Severity | Count | Status |
+| 严重程度 | 数量 | 状态 |
 |----------|-------|--------|
-| CRITICAL | 0     | pass   |
-| HIGH     | 2     | warn   |
-| MEDIUM   | 3     | info   |
-| LOW      | 1     | note   |
+| CRITICAL | 0     | 通过   |
+| HIGH     | 2     | 警告   |
+| MEDIUM   | 3     | 信息   |
+| LOW      | 1     | 备注   |
 
-Verdict: WARNING — 2 HIGH issues should be resolved before merge.
+裁决：警告 — 2 个 HIGH 级别问题应在合并前解决。
 ```
 
 ## 批准标准

@@ -21,6 +21,7 @@ const {
   readFile,
   writeFile,
   runCommand,
+  stripAnsi,
   log
 } = require('../lib/utils');
 
@@ -58,8 +59,9 @@ function extractSessionSummary(transcriptPath) {
           : Array.isArray(rawContent)
             ? rawContent.map(c => (c && c.text) || '').join(' ')
             : '';
-        if (text.trim()) {
-          userMessages.push(text.trim().slice(0, 200));
+        const cleaned = stripAnsi(text).trim();
+        if (cleaned) {
+          userMessages.push(cleaned.slice(0, 200));
         }
       }
 

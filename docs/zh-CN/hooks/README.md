@@ -5,7 +5,7 @@
 ## 钩子如何工作
 
 ```
-User request → Claude picks a tool → PreToolUse hook runs → Tool executes → PostToolUse hook runs
+用户请求 → Claude 选择工具 → PreToolUse 钩子运行 → 工具执行 → PostToolUse 钩子运行
 ```
 
 * **PreToolUse** 钩子在工具执行前运行。它们可以**阻止**（退出码 2）或**警告**（stderr 输出但不阻止）。

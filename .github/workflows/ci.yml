@@ -179,6 +179,10 @@ jobs:
         run: node scripts/ci/validate-rules.js
         continue-on-error: false
 
+      - name: Validate catalog counts
+        run: node scripts/ci/catalog.js --text
+        continue-on-error: false
+
   security:
     name: Security Scan
     runs-on: ubuntu-latest

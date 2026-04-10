@@ -31,6 +31,21 @@ EOF
 }
 
 mkdir -p "$(dirname "$handoff_file")" "$(dirname "$status_file")"
+
+if [[ ! -r "$task_file" ]]; then
+  write_status "failed" "- Error: task file is missing or unreadable (\`$task_file\`)"
+  {
+    echo "# Handoff"
+    echo
+    echo "- Failed: $(timestamp)"
+    echo "- Branch: \`$(git rev-parse --abbrev-ref HEAD)\`"
+    echo "- Worktree: \`$(pwd)\`"
+    echo
+    echo "Task file is missing or unreadable: \`$task_file\`"
+  } > "$handoff_file"
+  exit 1
+fi
+
 write_status "running" "- Task file: \`$task_file\`"
 
 prompt_file="$(mktemp)"
@@ -51,11 +66,11 @@ Rules:
 - Report progress and final results in stdout only.
 - Do not write handoff or status files yourself; the launcher manages those artifacts.
 - If you change code or docs, keep the scope narrow and defensible.
-- In your final response, include these exact sections:
+- In your final response, include exactly these sections:
   1. Summary
-  2. Validation
-  3. Remaining Risks
-- You may include Files Changed if useful, but keep the three sections above exact.
+  2. Files Changed
+  3. Validation
+  4. Remaining Risks
 
 Task file: $task_file
 

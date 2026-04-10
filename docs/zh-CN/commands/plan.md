@@ -37,59 +37,59 @@ planner 代理将：
 ## 使用示例
 
 ```
-User: /plan I need to add real-time notifications when markets resolve
+User: /plan 我需要为市场结算时添加实时通知功能
 
 Agent (planner):
-# Implementation Plan: Real-Time Market Resolution Notifications
+# 实施计划：实时市场结算通知
 
-## Requirements Restatement
-- Send notifications to users when markets they're watching resolve
-- Support multiple notification channels (in-app, email, webhook)
-- Ensure notifications are delivered reliably
-- Include market outcome and user's position result
+## 需求重述
+- 当用户关注的市场结算时，向用户发送通知
+- 支持多种通知渠道（应用内、电子邮件、Webhook）
+- 确保通知可靠送达
+- 包含市场结果和用户持仓结果
 
-## Implementation Phases
+## 实施阶段
 
-### Phase 1: Database Schema
-- Add notifications table with columns: id, user_id, market_id, type, status, created_at
-- Add user_notification_preferences table for channel preferences
-- Create indexes on user_id and market_id for performance
+### 第一阶段：数据库架构
+- 添加 notifications 表，包含列：id, user_id, market_id, type, status, created_at
+- 添加 user_notification_preferences 表用于存储渠道偏好设置
+- 在 user_id 和 market_id 上创建索引以提升性能
 
-### Phase 2: Notification Service
-- Create notification service in lib/notifications.ts
-- Implement notification queue using BullMQ/Redis
-- Add retry logic for failed deliveries
-- Create notification templates
+### 第二阶段：通知服务
+- 在 lib/notifications.ts 中创建通知服务
+- 使用 BullMQ/Redis 实现通知队列
+- 为发送失败的情况添加重试逻辑
+- 创建通知模板
 
-### Phase 3: Integration Points
-- Hook into market resolution logic (when status changes to "resolved")
-- Query all users with positions in market
-- Enqueue notifications for each user
+### 第三阶段：集成点
+- 接入市场结算逻辑（当状态变为 "resolved" 时）
+- 查询在市场中有持仓的所有用户
+- 为每个用户将通知加入队列
 
-### Phase 4: Frontend Components
-- Create NotificationBell component in header
-- Add NotificationList modal
-- Implement real-time updates via Supabase subscriptions
-- Add notification preferences page
+### 第四阶段：前端组件
+- 在头部创建 NotificationBell 组件
+- 添加 NotificationList 模态框
+- 通过 Supabase 订阅实现实时更新
+- 添加通知偏好设置页面
 
-## Dependencies
-- Redis (for queue)
-- Email service (SendGrid/Resend)
-- Supabase real-time subscriptions
+## 依赖项
+- Redis（用于队列）
+- 电子邮件服务（SendGrid/Resend）
+- Supabase 实时订阅
 
-## Risks
-- HIGH: Email deliverability (SPF/DKIM required)
-- MEDIUM: Performance with 1000+ users per market
-- MEDIUM: Notification spam if markets resolve frequently
-- LOW: Real-time subscription overhead
+## 风险
+- 高：电子邮件送达率（需要配置 SPF/DKIM）
+- 中：市场用户超过 1000+ 时的性能问题
+- 中：市场频繁结算可能导致通知泛滥
+- 低：实时订阅开销
 
-## Estimated Complexity: MEDIUM
-- Backend: 4-6 hours
-- Frontend: 3-4 hours
-- Testing: 2-3 hours
-- Total: 9-13 hours
+## 预估复杂度：中
+- 后端：4-6 小时
+- 前端：3-4 小时
+- 测试：2-3 小时
+- 总计：9-13 小时
 
-**WAITING FOR CONFIRMATION**: Proceed with this plan? (yes/no/modify)
+**等待确认**：是否按此计划进行？（是/否/修改）
 ```
 
 ## 重要说明

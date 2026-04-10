@@ -92,7 +92,6 @@ def post_thread(oauth, tweets: list[str]) -> list[str]:
         if reply_to:
             payload["reply"] = {"in_reply_to_tweet_id": reply_to}
         resp = oauth.post("https://api.x.com/2/tweets", json=payload)
-        resp.raise_for_status()
         tweet_id = resp.json()["data"]["id"]
         ids.append(tweet_id)
         reply_to = tweet_id

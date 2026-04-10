@@ -66,31 +66,31 @@ func toGRPCError(err error) error {
 ```
 cmd/
   server/
-    main.go              # Entrypoint, Wire injection, graceful shutdown
+    main.go              # 入口点，Wire注入，优雅关闭
 internal/
-  domain/                # Business types and interfaces
-    user.go              # User entity and repository interface
-    errors.go            # Sentinel errors
-  service/               # Business logic
+  domain/                # 业务类型和接口
+    user.go              # 用户实体和仓库接口
+    errors.go            # 哨兵错误
+  service/               # 业务逻辑
     user_service.go
     user_service_test.go
-  repository/            # Data access (sqlc-generated + custom)
+  repository/            # 数据访问（sqlc生成 + 自定义）
     postgres/
       user_repo.go
-      user_repo_test.go  # Integration tests with testcontainers
-  handler/               # gRPC + REST handlers
+      user_repo_test.go  # 使用testcontainers的集成测试
+  handler/               # gRPC + REST处理程序
     grpc/
       user_handler.go
     rest/
       user_handler.go
-  config/                # Configuration loading
+  config/                # 配置加载
     config.go
-proto/                   # Protobuf definitions
+proto/                   # Protobuf定义
   user/v1/
     user.proto
-queries/                 # SQL queries for sqlc
+queries/                 # sqlc的SQL查询
   user.sql
-migrations/              # Database migrations
+migrations/              # 数据库迁移
   001_create_users.up.sql
   001_create_users.down.sql
 ```

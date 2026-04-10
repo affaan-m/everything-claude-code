@@ -28,10 +28,10 @@ paths:
 使用 **perltidy** 并采用以下设置：
 
 ```
--i=4    # 4-space indent
--l=100  # 100 char line length
--ce     # cuddled else
--bar    # opening brace always right
+-i=4    # 4 空格缩进
+-l=100  # 100 字符行宽
+-ce     # else 紧贴前括号
+-bar    # 左花括号始终在右侧
 ```
 
 ## 代码检查

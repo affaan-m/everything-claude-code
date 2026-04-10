@@ -69,12 +69,12 @@
 ## 步骤 7：显示摘要
 
 ```
-Documentation Update
+文档更新
 ──────────────────────────────
-Updated:  docs/CONTRIBUTING.md (scripts table)
-Updated:  docs/ENV.md (3 new variables)
-Flagged:  docs/DEPLOY.md (142 days stale)
-Skipped:  docs/API.md (no changes detected)
+已更新：docs/CONTRIBUTING.md（脚本表格）
+已更新：docs/ENV.md（新增3个变量）
+已标记：docs/DEPLOY.md（142天未更新）
+已跳过：docs/API.md（未检测到变更）
 ──────────────────────────────
 ```
 

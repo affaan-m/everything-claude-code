@@ -35,12 +35,12 @@ echo "$(date +%Y-%m-%d-%H:%M) | $CHECKPOINT_NAME | $(git rev-parse --short HEAD)
 3. 报告：
 
 ```
-CHECKPOINT COMPARISON: $NAME
+检查点对比：$NAME
 ============================
-Files changed: X
-Tests: +Y passed / -Z failed
-Coverage: +X% / -Y%
-Build: [PASS/FAIL]
+文件更改数：X
+测试结果：通过数 +Y / 失败数 -Z
+覆盖率：+X% / -Y%
+构建状态：[通过/失败]
 ```
 
 ## 列出检查点

@@ -93,7 +93,7 @@ mcp__ace-tool__enhance_prompt({
 
 ```
 mcp__ace-tool__search_context({
-  query: "<semantic query based on enhanced requirement>",
+  query: "<基于增强需求的语义查询>",
   project_root_path: "$PWD"
 })
 ```

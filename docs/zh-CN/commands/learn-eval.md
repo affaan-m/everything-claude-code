@@ -93,15 +93,15 @@ origin: auto-extracted
 ## 步骤 5 的输出格式
 
 ```
-### Checklist
-- [x] skills/ grep: no overlap (or: overlap found → details)
-- [x] MEMORY.md: no overlap (or: overlap found → details)
-- [x] Existing skill append: new file appropriate (or: should append to [X])
-- [x] Reusability: confirmed (or: one-off → Drop)
+### 检查清单
+- [x] skills/ grep: 无重叠 (或: 发现重叠 → 详情)
+- [x] MEMORY.md: 无重叠 (或: 发现重叠 → 详情)
+- [x] 现有技能追加: 新文件合适 (或: 应追加到 [X])
+- [x] 可复用性: 已确认 (或: 一次性 → 丢弃)
 
-### Verdict: Save / Improve then Save / Absorb into [X] / Drop
+### 裁决: 保存 / 改进后保存 / 吸收到 [X] / 丢弃
 
-**Rationale:** (1-2 sentences explaining the verdict)
+**理由:** (用 1-2 句话解释裁决)
 ```
 
 ## 设计原理

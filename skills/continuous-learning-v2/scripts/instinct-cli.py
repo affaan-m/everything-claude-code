@@ -12,6 +12,7 @@ Commands:
   evolve   - Cluster instincts into skills/commands/agents
   promote  - Promote project instincts to global scope
   projects - List all known projects and their instinct counts
+  prune    - Delete pending instincts older than 30 days (TTL)
 """
 
 import argparse
@@ -23,9 +24,15 @@ import sys
 import re
 import urllib.request
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 from typing import Optional
+
+try:
+    import fcntl
+    _HAS_FCNTL = True
+except ImportError:
+    _HAS_FCNTL = False  # Windows — skip file locking
 
 # ─────────────────────────────────────────────
 # Configuration
@@ -46,6 +53,11 @@ GLOBAL_OBSERVATIONS_FILE = HOMUNCULUS_DIR / "observations.jsonl"
 PROMOTE_CONFIDENCE_THRESHOLD = 0.8
 PROMOTE_MIN_PROJECTS = 2
 ALLOWED_INSTINCT_EXTENSIONS = (".yaml", ".yml", ".md")
+
+# Default TTL for pending instincts (days)
+PENDING_TTL_DAYS = 30
+# Warning threshold: show expiry warning when instinct expires within this many days
+PENDING_EXPIRY_WARNING_DAYS = 7
 
 # Ensure global directories exist (deferred to avoid side effects at import time)
 def _ensure_global_dirs():
@@ -99,6 +111,16 @@ def _validate_instinct_id(instinct_id: str) -> bool:
     return bool(re.match(r"^[A-Za-z0-9][A-Za-z0-9._-]*$", instinct_id))
 
 
+def _yaml_quote(value: str) -> str:
+    """Quote a string for safe YAML frontmatter serialization.
+
+    Uses double quotes and escapes embedded double-quote characters to
+    prevent malformed YAML when the value contains quotes.
+    """
+    escaped = value.replace('\\', '\\\\').replace('"', '\\"')
+    return f'"{escaped}"'
+
+
 # ─────────────────────────────────────────────
 # Project Detection (Python equivalent of detect-project.sh)
 # ─────────────────────────────────────────────
@@ -123,6 +145,10 @@ def detect_project() -> dict:
                 project_root = result.stdout.strip()
         except (subprocess.TimeoutExpired, FileNotFoundError):
             pass
+
+    # Normalize: strip trailing slashes to keep basename and hash stable
+    if project_root:
+        project_root = project_root.rstrip("/")
 
     # 3. No project — global fallback
     if not project_root:
@@ -184,27 +210,44 @@ def detect_project() -> dict:
 
 
 def _update_registry(pid: str, pname: str, proot: str, premote: str) -> None:
-    """Update the projects.json registry."""
-    try:
-        with open(REGISTRY_FILE, encoding="utf-8") as f:
-            registry = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        registry = {}
+    """Update the projects.json registry.
 
-    registry[pid] = {
-        "name": pname,
-        "root": proot,
-        "remote": premote,
-        "last_seen": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-    }
-
+    Uses file locking (where available) to prevent concurrent sessions from
+    overwriting each other's updates.
+    """
     REGISTRY_FILE.parent.mkdir(parents=True, exist_ok=True)
-    tmp_file = REGISTRY_FILE.parent / f".{REGISTRY_FILE.name}.tmp.{os.getpid()}"
-    with open(tmp_file, "w", encoding="utf-8") as f:
-        json.dump(registry, f, indent=2)
-        f.flush()
-        os.fsync(f.fileno())
-    os.replace(tmp_file, REGISTRY_FILE)
+    lock_path = REGISTRY_FILE.parent / f".{REGISTRY_FILE.name}.lock"
+    lock_fd = None
+
+    try:
+        # Acquire advisory lock to serialize read-modify-write
+        if _HAS_FCNTL:
+            lock_fd = open(lock_path, "w")
+            fcntl.flock(lock_fd, fcntl.LOCK_EX)
+
+        try:
+            with open(REGISTRY_FILE, encoding="utf-8") as f:
+                registry = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            registry = {}
+
+        registry[pid] = {
+            "name": pname,
+            "root": proot,
+            "remote": premote,
+            "last_seen": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        }
+
+        tmp_file = REGISTRY_FILE.parent / f".{REGISTRY_FILE.name}.tmp.{os.getpid()}"
+        with open(tmp_file, "w", encoding="utf-8") as f:
+            json.dump(registry, f, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_file, REGISTRY_FILE)
+    finally:
+        if lock_fd is not None:
+            fcntl.flock(lock_fd, fcntl.LOCK_UN)
+            lock_fd.close()
 
 
 def load_registry() -> dict:
@@ -221,7 +264,12 @@ def load_registry() -> dict:
 # ─────────────────────────────────────────────
 
 def parse_instinct_file(content: str) -> list[dict]:
-    """Parse YAML-like instinct file format."""
+    """Parse YAML-like instinct file format.
+
+    Each instinct is delimited by a pair of ``---`` markers (YAML frontmatter).
+    Note: ``---`` is always treated as a frontmatter boundary; instinct body
+    content must use ``***`` or ``___`` for horizontal rules to avoid ambiguity.
+    """
     instincts = []
     current = {}
     in_frontmatter = False
@@ -230,10 +278,10 @@ def parse_instinct_file(content: str) -> list[dict]:
     for line in content.split('\n'):
         if line.strip() == '---':
             if in_frontmatter:
-                # End of frontmatter - content comes next, don't append yet
+                # End of frontmatter - content comes next
                 in_frontmatter = False
             else:
-                # Start of frontmatter
+                # Start of new frontmatter block
                 in_frontmatter = True
                 if current:
                     current['content'] = '\n'.join(content_lines).strip()
@@ -245,9 +293,17 @@ def parse_instinct_file(content: str) -> list[dict]:
             if ':' in line:
                 key, value = line.split(':', 1)
                 key = key.strip()
-                value = value.strip().strip('"').strip("'")
+                value = value.strip()
+                # Unescape quoted YAML strings
+                if value.startswith('"') and value.endswith('"'):
+                    value = value[1:-1].replace('\\"', '"').replace('\\\\', '\\')
+                elif value.startswith("'") and value.endswith("'"):
+                    value = value[1:-1].replace("''", "'")
                 if key == 'confidence':
-                    current[key] = float(value)
+                    try:
+                        current[key] = float(value)
+                    except ValueError:
+                        current[key] = 0.5  # default on malformed confidence
                 else:
                     current[key] = value
         else:
@@ -348,42 +404,61 @@ def cmd_status(args) -> int:
         print(f"\nProject: {project['name']} ({project['id']})")
         print(f"  Project instincts:  {project['instincts_personal']}")
         print(f"  Global instincts:   {GLOBAL_PERSONAL_DIR}")
-        return 0
+    else:
+        # Split by scope
+        project_instincts = [i for i in instincts if i.get('_scope_label') == 'project']
+        global_instincts = [i for i in instincts if i.get('_scope_label') == 'global']
 
-    # Split by scope
-    project_instincts = [i for i in instincts if i.get('_scope_label') == 'project']
-    global_instincts = [i for i in instincts if i.get('_scope_label') == 'global']
+        # Print header
+        print(f"\n{'='*60}")
+        print(f"  INSTINCT STATUS - {len(instincts)} total")
+        print(f"{'='*60}\n")
 
-    # Print header
-    print(f"\n{'='*60}")
-    print(f"  INSTINCT STATUS - {len(instincts)} total")
-    print(f"{'='*60}\n")
-
-    print(f"  Project:  {project['name']} ({project['id']})")
-    print(f"  Project instincts: {len(project_instincts)}")
-    print(f"  Global instincts:  {len(global_instincts)}")
-    print()
-
-    # Print project-scoped instincts
-    if project_instincts:
-        print(f"## PROJECT-SCOPED ({project['name']})")
+        print(f"  Project:  {project['name']} ({project['id']})")
+        print(f"  Project instincts: {len(project_instincts)}")
+        print(f"  Global instincts:  {len(global_instincts)}")
         print()
-        _print_instincts_by_domain(project_instincts)
 
-    # Print global instincts
-    if global_instincts:
-        print(f"## GLOBAL (apply to all projects)")
-        print()
-        _print_instincts_by_domain(global_instincts)
+        # Print project-scoped instincts
+        if project_instincts:
+            print(f"## PROJECT-SCOPED ({project['name']})")
+            print()
+            _print_instincts_by_domain(project_instincts)
 
-    # Observations stats
-    obs_file = project.get("observations_file")
-    if obs_file and Path(obs_file).exists():
-        with open(obs_file, encoding="utf-8") as f:
-            obs_count = sum(1 for _ in f)
-        print(f"-" * 60)
-        print(f"  Observations: {obs_count} events logged")
-        print(f"  File: {obs_file}")
+        # Print global instincts
+        if global_instincts:
+            print("## GLOBAL (apply to all projects)")
+            print()
+            _print_instincts_by_domain(global_instincts)
+
+        # Observations stats
+        obs_file = project.get("observations_file")
+        if obs_file and Path(obs_file).exists():
+            with open(obs_file, encoding="utf-8") as f:
+                obs_count = sum(1 for _ in f)
+            print(f"-" * 60)
+            print(f"  Observations: {obs_count} events logged")
+            print(f"  File: {obs_file}")
+
+    # Pending instinct stats
+    pending = _collect_pending_instincts()
+    if pending:
+        print(f"\n{'-'*60}")
+        print(f"  Pending instincts: {len(pending)} awaiting review")
+
+        if len(pending) >= 5:
+            print(f"\n  \u26a0 {len(pending)} pending instincts awaiting review."
+                  f" Unreviewed instincts auto-delete after {PENDING_TTL_DAYS} days.")
+
+        # Show instincts expiring within PENDING_EXPIRY_WARNING_DAYS
+        expiry_threshold = PENDING_TTL_DAYS - PENDING_EXPIRY_WARNING_DAYS
+        expiring_soon = [p for p in pending
+                         if p["age_days"] >= expiry_threshold and p["age_days"] < PENDING_TTL_DAYS]
+        if expiring_soon:
+            print(f"\n  Expiring within {PENDING_EXPIRY_WARNING_DAYS} days:")
+            for item in expiring_soon:
+                days_left = max(0, PENDING_TTL_DAYS - item["age_days"])
+                print(f"    - {item['name']} ({days_left}d remaining)")
 
     print(f"\n{'='*60}\n")
     return 0
@@ -450,6 +525,9 @@ def cmd_import(args) -> int:
         except ValueError as e:
             print(f"Invalid path: {e}", file=sys.stderr)
             return 1
+        if not path.is_file():
+            print(f"Error: '{path}' is not a regular file.", file=sys.stderr)
+            return 1
         content = path.read_text(encoding="utf-8")
 
     # Parse instincts
@@ -464,16 +542,29 @@ def cmd_import(args) -> int:
         print(f"Target project: {project['name']} ({project['id']})")
     print()
 
-    # Load existing instincts for dedup
-    existing = load_all_instincts(project)
+    # Load existing instincts for dedup, scoped to the target to avoid
+    # cross-scope shadowing (project instincts hiding global ones or vice versa)
+    if target_scope == "global":
+        existing = _load_instincts_from_dir(GLOBAL_PERSONAL_DIR, "personal", "global")
+        existing += _load_instincts_from_dir(GLOBAL_INHERITED_DIR, "inherited", "global")
+    else:
+        existing = load_project_only_instincts(project)
     existing_ids = {i.get('id') for i in existing}
 
-    # Categorize
+    # Deduplicate within the import source: keep highest confidence per ID
+    best_by_id = {}
+    for inst in new_instincts:
+        inst_id = inst.get('id')
+        if inst_id not in best_by_id or inst.get('confidence', 0.5) > best_by_id[inst_id].get('confidence', 0.5):
+            best_by_id[inst_id] = inst
+    deduped_instincts = list(best_by_id.values())
+
+    # Categorize against existing instincts on disk
     to_add = []
     duplicates = []
     to_update = []
 
-    for inst in new_instincts:
+    for inst in deduped_instincts:
         inst_id = inst.get('id')
         if inst_id in existing_ids:
             existing_inst = next((e for e in existing if e.get('id') == inst_id), None)
@@ -531,7 +622,24 @@ def cmd_import(args) -> int:
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Write
+    # Collect stale files for instincts being updated (deleted after new file is written).
+    # Allow deletion from any subdirectory (personal/ or inherited/) within the
+    # target scope to prevent the same ID existing in both places. Guard against
+    # cross-scope deletion by restricting to the scope's instincts root.
+    if target_scope == "global":
+        scope_root = GLOBAL_INSTINCTS_DIR.resolve()
+    else:
+        scope_root = (project["project_dir"] / "instincts").resolve() if project["id"] != "global" else GLOBAL_INSTINCTS_DIR.resolve()
+    stale_paths = []
+    for inst in to_update:
+        inst_id = inst.get('id')
+        stale = next((e for e in existing if e.get('id') == inst_id), None)
+        if stale and stale.get('_source_file'):
+            stale_path = Path(stale['_source_file']).resolve()
+            if stale_path.exists() and str(stale_path).startswith(str(scope_root) + os.sep):
+                stale_paths.append(stale_path)
+
+    # Write new file first (safe: if this fails, stale files are preserved)
     timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
     source_name = Path(source).stem if not source.startswith('http') else 'web-import'
     output_file = output_dir / f"{source_name}-{timestamp}.yaml"
@@ -545,12 +653,12 @@ def cmd_import(args) -> int:
     for inst in all_to_write:
         output_content += "---\n"
         output_content += f"id: {inst.get('id')}\n"
-        output_content += f"trigger: \"{inst.get('trigger', 'unknown')}\"\n"
+        output_content += f"trigger: {_yaml_quote(inst.get('trigger', 'unknown'))}\n"
         output_content += f"confidence: {inst.get('confidence', 0.5)}\n"
         output_content += f"domain: {inst.get('domain', 'general')}\n"
-        output_content += f"source: inherited\n"
+        output_content += "source: inherited\n"
         output_content += f"scope: {target_scope}\n"
-        output_content += f"imported_from: \"{source}\"\n"
+        output_content += f"imported_from: {_yaml_quote(source)}\n"
         if target_scope == "project":
             output_content += f"project_id: {project['id']}\n"
             output_content += f"project_name: {project['name']}\n"
@@ -559,7 +667,14 @@ def cmd_import(args) -> int:
         output_content += "---\n\n"
         output_content += inst.get('content', '') + "\n\n"
 
-    output_file.write_text(output_content)
+    output_file.write_text(output_content, encoding="utf-8")
+
+    # Remove stale files only after the new file has been written successfully
+    for stale_path in stale_paths:
+        try:
+            stale_path.unlink()
+        except OSError:
+            pass  # best-effort removal
 
     print(f"\nImport complete!")
     print(f"   Scope: {target_scope}")
@@ -618,7 +733,7 @@ def cmd_export(args) -> int:
             if inst.get(key):
                 value = inst[key]
                 if key == 'trigger':
-                    output += f'{key}: "{value}"\n'
+                    output += f'{key}: {_yaml_quote(value)}\n'
                 else:
                     output += f"{key}: {value}\n"
         output += "---\n\n"
@@ -631,7 +746,11 @@ def cmd_export(args) -> int:
         except ValueError as e:
             print(f"Invalid output path: {e}", file=sys.stderr)
             return 1
-        out_path.write_text(output)
+        if out_path.is_dir():
+            print(f"Error: '{out_path}' is a directory, not a file.", file=sys.stderr)
+            return 1
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(output, encoding="utf-8")
         print(f"Exported {len(instincts)} instincts to {out_path}")
     else:
         print(output)
@@ -772,13 +891,17 @@ def _find_cross_project_instincts() -> dict:
         personal_dir = project_dir / "instincts" / "personal"
         inherited_dir = project_dir / "instincts" / "inherited"
 
+        # Track instinct IDs already seen for this project to avoid counting
+        # the same instinct twice within one project (e.g. in both personal/ and inherited/)
+        seen_in_project = set()
         for d, stype in [(personal_dir, "personal"), (inherited_dir, "inherited")]:
             for inst in _load_instincts_from_dir(d, stype, "project"):
                 iid = inst.get('id')
-                if iid:
+                if iid and iid not in seen_in_project:
+                    seen_in_project.add(iid)
                     cross_project[iid].append((pid, pinfo.get('name', pid), inst))
 
-    # Filter to only those appearing in 2+ projects
+    # Filter to only those appearing in 2+ unique projects
     return {iid: entries for iid, entries in cross_project.items() if len(entries) >= 2}
 
 
@@ -824,13 +947,13 @@ def cmd_promote(args) -> int:
 
     if args.instinct_id:
         # Promote a specific instinct
-        return _promote_specific(project, args.instinct_id, args.force)
+        return _promote_specific(project, args.instinct_id, args.force, args.dry_run)
     else:
         # Auto-detect promotion candidates
         return _promote_auto(project, args.force, args.dry_run)
 
 
-def _promote_specific(project: dict, instinct_id: str, force: bool) -> int:
+def _promote_specific(project: dict, instinct_id: str, force: bool, dry_run: bool = False) -> int:
     """Promote a specific instinct by ID from current project to global."""
     if not _validate_instinct_id(instinct_id):
         print(f"Invalid instinct ID: '{instinct_id}'.", file=sys.stderr)
@@ -855,6 +978,10 @@ def _promote_specific(project: dict, instinct_id: str, force: bool) -> int:
     print(f"  Confidence: {target.get('confidence', 0.5):.0%}")
     print(f"  Domain: {target.get('domain', 'general')}")
 
+    if dry_run:
+        print("\n[DRY RUN] No changes made.")
+        return 0
+
     if not force:
         response = input(f"\nPromote to global? [y/N] ")
         if response.lower() != 'y':
@@ -865,7 +992,7 @@ def _promote_specific(project: dict, instinct_id: str, force: bool) -> int:
     output_file = GLOBAL_PERSONAL_DIR / f"{instinct_id}.yaml"
     output_content = "---\n"
     output_content += f"id: {target.get('id')}\n"
-    output_content += f"trigger: \"{target.get('trigger', 'unknown')}\"\n"
+    output_content += f"trigger: {_yaml_quote(target.get('trigger', 'unknown'))}\n"
     output_content += f"confidence: {target.get('confidence', 0.5)}\n"
     output_content += f"domain: {target.get('domain', 'general')}\n"
     output_content += f"source: {target.get('source', 'promoted')}\n"
@@ -875,7 +1002,7 @@ def _promote_specific(project: dict, instinct_id: str, force: bool) -> int:
     output_content += "---\n\n"
     output_content += target.get('content', '') + "\n"
 
-    output_file.write_text(output_content)
+    output_file.write_text(output_content, encoding="utf-8")
     print(f"\nPromoted '{instinct_id}' to global scope.")
     print(f"  Saved to: {output_file}")
     return 0
@@ -938,7 +1065,7 @@ def _promote_auto(project: dict, force: bool, dry_run: bool) -> int:
         output_file = GLOBAL_PERSONAL_DIR / f"{cand['id']}.yaml"
         output_content = "---\n"
         output_content += f"id: {inst.get('id')}\n"
-        output_content += f"trigger: \"{inst.get('trigger', 'unknown')}\"\n"
+        output_content += f"trigger: {_yaml_quote(inst.get('trigger', 'unknown'))}\n"
         output_content += f"confidence: {cand['avg_confidence']}\n"
         output_content += f"domain: {inst.get('domain', 'general')}\n"
         output_content += f"source: auto-promoted\n"
@@ -948,7 +1075,7 @@ def _promote_auto(project: dict, force: bool, dry_run: bool) -> int:
         output_content += "---\n\n"
         output_content += inst.get('content', '') + "\n"
 
-        output_file.write_text(output_content)
+        output_file.write_text(output_content, encoding="utf-8")
         promoted += 1
 
     print(f"\nPromoted {promoted} instincts to global scope.")
@@ -1037,7 +1164,7 @@ def _generate_evolved(skill_candidates: list, workflow_instincts: list, agent_ca
             action = action_match.group(1).strip() if action_match else inst.get('id', 'unnamed')
             content += f"- {action}\n"
 
-        (skill_dir / "SKILL.md").write_text(content)
+        (skill_dir / "SKILL.md").write_text(content, encoding="utf-8")
         generated.append(str(skill_dir / "SKILL.md"))
 
     # Generate commands from workflow instincts
@@ -1054,7 +1181,7 @@ def _generate_evolved(skill_candidates: list, workflow_instincts: list, agent_ca
         content += f"Confidence: {inst.get('confidence', 0.5):.0%}\n\n"
         content += inst.get('content', '')
 
-        cmd_file.write_text(content)
+        cmd_file.write_text(content, encoding="utf-8")
         generated.append(str(cmd_file))
 
     # Generate agents from complex clusters
@@ -1077,10 +1204,152 @@ def _generate_evolved(skill_candidates: list, workflow_instincts: list, agent_ca
         for iid in instinct_ids:
             content += f"- {iid}\n"
 
-        agent_file.write_text(content)
+        agent_file.write_text(content, encoding="utf-8")
         generated.append(str(agent_file))
 
     return generated
+
+
+# ─────────────────────────────────────────────
+# Pending Instinct Helpers
+# ─────────────────────────────────────────────
+
+def _collect_pending_dirs() -> list[Path]:
+    """Return all pending instinct directories (global + per-project)."""
+    dirs = []
+    global_pending = GLOBAL_INSTINCTS_DIR / "pending"
+    if global_pending.is_dir():
+        dirs.append(global_pending)
+    if PROJECTS_DIR.is_dir():
+        for project_dir in sorted(PROJECTS_DIR.iterdir()):
+            if project_dir.is_dir():
+                pending = project_dir / "instincts" / "pending"
+                if pending.is_dir():
+                    dirs.append(pending)
+    return dirs
+
+
+def _parse_created_date(file_path: Path) -> Optional[datetime]:
+    """Parse the 'created' date from YAML frontmatter of an instinct file.
+
+    Falls back to file mtime if no 'created' field is found.
+    """
+    try:
+        content = file_path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return None
+
+    in_frontmatter = False
+    for line in content.split('\n'):
+        stripped = line.strip()
+        if stripped == '---':
+            if in_frontmatter:
+                break  # end of frontmatter without finding created
+            in_frontmatter = True
+            continue
+        if in_frontmatter and ':' in line:
+            key, value = line.split(':', 1)
+            if key.strip() == 'created':
+                date_str = value.strip().strip('"').strip("'")
+                for fmt in (
+                    "%Y-%m-%dT%H:%M:%S%z",
+                    "%Y-%m-%dT%H:%M:%SZ",
+                    "%Y-%m-%dT%H:%M:%S",
+                    "%Y-%m-%d",
+                ):
+                    try:
+                        dt = datetime.strptime(date_str, fmt)
+                        if dt.tzinfo is None:
+                            dt = dt.replace(tzinfo=timezone.utc)
+                        return dt
+                    except ValueError:
+                        continue
+
+    # Fallback: file modification time
+    try:
+        mtime = file_path.stat().st_mtime
+        return datetime.fromtimestamp(mtime, tz=timezone.utc)
+    except OSError:
+        return None
+
+
+def _collect_pending_instincts() -> list[dict]:
+    """Scan all pending directories and return info about each pending instinct.
+
+    Each dict contains: path, created, age_days, name, parent_dir.
+    """
+    now = datetime.now(timezone.utc)
+    results = []
+    for pending_dir in _collect_pending_dirs():
+        files = [
+            f for f in sorted(pending_dir.iterdir())
+            if f.is_file() and f.suffix.lower() in ALLOWED_INSTINCT_EXTENSIONS
+        ]
+        for file_path in files:
+            created = _parse_created_date(file_path)
+            if created is None:
+                print(f"Warning: could not parse age for pending instinct: {file_path.name}", file=sys.stderr)
+                continue
+            age = now - created
+            results.append({
+                "path": file_path,
+                "created": created,
+                "age_days": age.days,
+                "name": file_path.stem,
+                "parent_dir": str(pending_dir),
+            })
+    return results
+
+
+# ─────────────────────────────────────────────
+# Prune Command
+# ─────────────────────────────────────────────
+
+def cmd_prune(args) -> int:
+    """Delete pending instincts older than the TTL threshold."""
+    max_age = args.max_age
+    dry_run = args.dry_run
+    quiet = args.quiet
+
+    pending = _collect_pending_instincts()
+
+    expired = [p for p in pending if p["age_days"] >= max_age]
+    remaining = [p for p in pending if p["age_days"] < max_age]
+
+    if dry_run:
+        if not quiet:
+            if expired:
+                print(f"\n[DRY RUN] Would prune {len(expired)} pending instinct(s) older than {max_age} days:\n")
+                for item in expired:
+                    print(f"  - {item['name']} (age: {item['age_days']}d) — {item['path']}")
+            else:
+                print(f"No pending instincts older than {max_age} days.")
+            print(f"\nSummary: {len(expired)} would be pruned, {len(remaining)} remaining")
+        return 0
+
+    pruned = 0
+    pruned_items = []
+    for item in expired:
+        try:
+            item["path"].unlink()
+            pruned += 1
+            pruned_items.append(item)
+        except OSError as e:
+            if not quiet:
+                print(f"Warning: Failed to delete {item['path']}: {e}", file=sys.stderr)
+
+    if not quiet:
+        if pruned > 0:
+            print(f"\nPruned {pruned} pending instinct(s) older than {max_age} days.")
+            for item in pruned_items:
+                print(f"  - {item['name']} (age: {item['age_days']}d)")
+        else:
+            print(f"No pending instincts older than {max_age} days.")
+        failed = len(expired) - pruned
+        remaining_total = len(remaining) + failed
+        print(f"\nSummary: {pruned} pruned, {remaining_total} remaining")
+
+    return 0
 
 
 # ─────────────────────────────────────────────
@@ -1125,6 +1394,13 @@ def main() -> int:
     # Projects (new in v2.1)
     projects_parser = subparsers.add_parser('projects', help='List known projects and instinct counts')
 
+    # Prune (pending instinct TTL)
+    prune_parser = subparsers.add_parser('prune', help='Delete pending instincts older than TTL')
+    prune_parser.add_argument('--max-age', type=int, default=PENDING_TTL_DAYS,
+                              help=f'Max age in days before pruning (default: {PENDING_TTL_DAYS})')
+    prune_parser.add_argument('--dry-run', action='store_true', help='Preview without deleting')
+    prune_parser.add_argument('--quiet', action='store_true', help='Suppress output (for automated use)')
+
     args = parser.parse_args()
 
     if args.command == 'status':
@@ -1139,6 +1415,8 @@ def main() -> int:
         return cmd_promote(args)
     elif args.command == 'projects':
         return cmd_projects(args)
+    elif args.command == 'prune':
+        return cmd_prune(args)
     else:
         parser.print_help()
         return 1

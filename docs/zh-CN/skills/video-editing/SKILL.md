@@ -24,12 +24,12 @@ origin: ECC
 ## 处理流程
 
 ```
-Screen Studio / raw footage
+Screen Studio / 原始素材
   → Claude / Codex
   → FFmpeg
   → Remotion
   → ElevenLabs / fal.ai
-  → Descript or CapCut
+  → Descript 或 CapCut
 ```
 
 每个层级都有特定的工作。不要跳过层级。不要试图让一个工具完成所有事情。
@@ -55,9 +55,9 @@ Screen Studio / raw footage
 * **搭建FFmpeg和Remotion代码**：生成命令和合成
 
 ```
-Example prompt:
-"Here's the transcript of a 4-hour recording. Identify the 8 strongest segments
-for a 24-minute vlog. Give me FFmpeg cut commands for each segment."
+示例提示词：
+"这是一份4小时录音的文字记录。找出最适合制作24分钟vlog的8个精彩片段。
+为每个片段提供FFmpeg剪辑命令。"
 ```
 
 此层级关乎结构，而非最终的创意品味。
@@ -208,7 +208,7 @@ with open("voiceover.mp3", "wb") as f:
 
 ```
 generate(app_id: "fal-ai/nano-banana-pro", input_data: {
-  "prompt": "professional thumbnail for tech vlog, dark background, code on screen",
+  "prompt": "专业科技视频缩略图，深色背景，屏幕上显示代码",
   "image_size": "landscape_16_9"
 })
 ```
@@ -286,8 +286,7 @@ ffmpeg -i input.mp4 -af silencedetect=noise=-30dB:d=2 -f null - 2>&1 | grep sile
 使用Claude分析转录稿 + 场景时间戳：
 
 ```
-"Given this transcript with timestamps and these scene change points,
-identify the 5 most engaging 30-second clips for social media."
+"根据这份带时间戳的转录稿和这些场景转换点，找出最适合社交媒体发布的5段30秒最吸引人的剪辑片段。"
 ```
 
 ## 每个工具最擅长什么

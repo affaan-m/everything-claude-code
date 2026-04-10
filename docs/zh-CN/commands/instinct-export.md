@@ -15,9 +15,9 @@ command: /instinct-export
 ## 用法
 
 ```
-/instinct-export                           # Export all personal instincts
-/instinct-export --domain testing          # Export only testing instincts
-/instinct-export --min-confidence 0.7      # Only export high-confidence instincts
+/instinct-export                           # 导出所有个人本能
+/instinct-export --domain testing          # 仅导出测试相关本能
+/instinct-export --min-confidence 0.7      # 仅导出高置信度本能
 /instinct-export --output team-instincts.yaml
 /instinct-export --scope project --output project-instincts.yaml
 ```

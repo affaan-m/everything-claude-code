@@ -6,7 +6,7 @@
 
 ```
 rules/
-├── common/          # Language-agnostic principles (always install)
+├── common/          # 语言无关原则（始终安装）
 │   ├── coding-style.md
 │   ├── git-workflow.md
 │   ├── testing.md
@@ -15,11 +15,11 @@ rules/
 │   ├── hooks.md
 │   ├── agents.md
 │   └── security.md
-├── typescript/      # TypeScript/JavaScript specific
-├── python/          # Python specific
-├── golang/          # Go specific
-├── swift/           # Swift specific
-└── php/             # PHP specific
+├── typescript/      # TypeScript/JavaScript 特定
+├── python/          # Python 特定
+├── golang/          # Go 特定
+├── swift/           # Swift 特定
+└── php/             # PHP 特定
 ```
 
 * **common/** 包含通用原则 —— 没有语言特定的代码示例。

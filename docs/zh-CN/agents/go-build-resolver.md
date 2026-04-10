@@ -33,12 +33,12 @@ go mod tidy -v
 ## 解决工作流
 
 ```text
-1. go build ./...     -> Parse error message
-2. Read affected file -> Understand context
-3. Apply minimal fix  -> Only what's needed
-4. go build ./...     -> Verify fix
-5. go vet ./...       -> Check for warnings
-6. go test ./...      -> Ensure nothing broke
+1. go build ./...     -> 解析错误信息
+2. 读取受影响文件 -> 理解上下文
+3. 应用最小化修复 -> 仅修复必要部分
+4. go build ./...     -> 验证修复
+5. go vet ./...       -> 检查警告
+6. go test ./...      -> 确保未破坏原有功能
 ```
 
 ## 常见修复模式
@@ -84,10 +84,10 @@ go clean -modcache && go mod download  # Fix checksum issues
 ## 输出格式
 
 ```text
-[FIXED] internal/handler/user.go:42
-Error: undefined: UserService
-Fix: Added import "project/internal/service"
-Remaining errors: 3
+[已修复] internal/handler/user.go:42
+错误：未定义：UserService
+修复：添加了导入 "project/internal/service"
+剩余错误：3
 ```
 
 最终：`Build Status: SUCCESS/FAILED | Errors Fixed: N | Files Modified: list`

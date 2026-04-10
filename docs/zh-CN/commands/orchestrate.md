@@ -1,3 +1,7 @@
+---
+description: 针对多智能体工作流程的顺序和tmux/worktree编排指南。
+---
+
 # 编排命令
 
 用于复杂任务的顺序代理工作流。
@@ -13,7 +17,7 @@
 完整功能实现工作流：
 
 ```
-planner -> tdd-guide -> code-reviewer -> security-reviewer
+规划者 -> 测试驱动开发指南 -> 代码审查员 -> 安全审查员
 ```
 
 ### bugfix
@@ -29,7 +33,7 @@ planner -> tdd-guide -> code-reviewer
 安全重构工作流：
 
 ```
-architect -> code-reviewer -> tdd-guide
+架构师 -> 代码审查员 -> 测试驱动开发指南
 ```
 
 ### security
@@ -108,38 +112,38 @@ security-reviewer -> code-reviewer -> architect
 ## 最终报告格式
 
 ```
-ORCHESTRATION REPORT
+编排报告
 ====================
-Workflow: feature
-Task: Add user authentication
-Agents: planner -> tdd-guide -> code-reviewer -> security-reviewer
+工作流：功能
+任务：添加用户认证
+智能体：规划者 -> TDD指南 -> 代码审查员 -> 安全审查员
 
-SUMMARY
+概要
 -------
-[One paragraph summary]
+[一段总结]
 
-AGENT OUTPUTS
+智能体输出
 -------------
-Planner: [summary]
-TDD Guide: [summary]
-Code Reviewer: [summary]
-Security Reviewer: [summary]
+规划者：[总结]
+TDD指南：[总结]
+代码审查员：[总结]
+安全审查员：[总结]
 
-FILES CHANGED
+已更改文件
 -------------
-[List all files modified]
+[列出所有修改的文件]
 
-TEST RESULTS
+测试结果
 ------------
-[Test pass/fail summary]
+[测试通过/失败总结]
 
-SECURITY STATUS
+安全状态
 ---------------
-[Security findings]
+[安全发现]
 
-RECOMMENDATION
+建议
 --------------
-[SHIP / NEEDS WORK / BLOCKED]
+[可发布 / 需要改进 / 已阻止]
 ```
 
 ## 并行执行
@@ -226,7 +230,7 @@ $ARGUMENTS:
 ## 自定义工作流示例
 
 ```
-/orchestrate custom "architect,tdd-guide,code-reviewer" "Redesign caching layer"
+/orchestrate 自定义 "architect,tdd-guide,code-reviewer" "重新设计缓存层"
 ```
 
 ## 提示

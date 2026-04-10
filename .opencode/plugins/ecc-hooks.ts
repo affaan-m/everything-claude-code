@@ -77,7 +77,7 @@ export const ECCHooksPlugin = async ({
       editedFiles.add(event.path)
 
       // Auto-format JS/TS files
-      if (hookEnabled("post:edit:format", ["standard", "strict"]) && event.path.match(/\.(ts|tsx|js|jsx)$/)) {
+      if (hookEnabled("post:edit:format", ["strict"]) && event.path.match(/\.(ts|tsx|js|jsx)$/)) {
         try {
           await $`prettier --write ${event.path} 2>/dev/null`
           log("info", `[ECC] Formatted: ${event.path}`)
@@ -116,7 +116,7 @@ export const ECCHooksPlugin = async ({
     ) => {
       // Check if a TypeScript file was edited
       if (
-        hookEnabled("post:edit:typecheck", ["standard", "strict"]) &&
+        hookEnabled("post:edit:typecheck", ["strict"]) &&
         input.tool === "edit" &&
         input.args?.filePath?.match(/\.tsx?$/)
       ) {

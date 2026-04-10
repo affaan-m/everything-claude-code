@@ -33,15 +33,6 @@ resolve_python_cmd() {
     return 0
   fi
 
-  # FIX: Windows Git Bash — probe Python install paths directly because
-  # `command -v python` can hit the Microsoft Store alias instead.
-  for win_py in /c/Users/"$USER"/AppData/Local/Programs/Python/Python3*/python; do
-    if [ -x "$win_py" ]; then
-      printf '%s\n' "$win_py"
-      return 0
-    fi
-  done
-
   if command -v python3 >/dev/null 2>&1; then
     printf '%s\n' python3
     return 0
@@ -83,62 +74,54 @@ if [ -n "$STDIN_CWD" ] && [ -d "$STDIN_CWD" ]; then
 fi
 
 # ─────────────────────────────────────────────
-# Configuration
+# Lightweight config and automated session guards
 # ─────────────────────────────────────────────
+#
+# IMPORTANT: keep these guards above detect-project.sh.
+# Sourcing detect-project.sh creates project-scoped directories and updates
+# projects.json, so automated sessions must return before that point.
 
 CONFIG_DIR="${HOME}/.claude/homunculus"
-MAX_FILE_SIZE_MB=10
 
-# Skip if disabled globally
+# Skip if disabled (check both default and CLV2_CONFIG-derived locations)
 if [ -f "$CONFIG_DIR/disabled" ]; then
   exit 0
 fi
+if [ -n "${CLV2_CONFIG:-}" ] && [ -f "$(dirname "$CLV2_CONFIG")/disabled" ]; then
+  exit 0
+fi
 
-# ─────────────────────────────────────────────
-# Automated session guards
-# Prevents observe.sh from firing on non-human sessions to avoid:
+# Prevent observe.sh from firing on non-human sessions to avoid:
 #   - ECC observing its own Haiku observer sessions (self-loop)
-#   - ECC observing other tools' automated sessions (e.g. claude-mem)
-#   - All-night Haiku usage with no human activity
-# Run these before project detection so skipped sessions cannot mutate
-# project-scoped observer state.
-# ─────────────────────────────────────────────
+#   - ECC observing other tools' automated sessions
+#   - automated sessions creating project-scoped homunculus metadata
 
-# Env-var checks first (cheapest — no subprocess spawning):
-
-# Layer 1: CLAUDE_CODE_ENTRYPOINT — set by Claude Code itself to indicate how
-# it was invoked. Only interactive terminal sessions should continue; treat any
-# explicit non-cli entrypoint as automated so future entrypoint types fail closed
-# without requiring updates here.
+# Layer 1: entrypoint. Only interactive terminal sessions should continue.
+# sdk-ts: Agent SDK sessions can be human-interactive (e.g. via Happy).
+# Non-interactive SDK automation is still filtered by Layers 2-5 below
+# (ECC_HOOK_PROFILE=minimal, ECC_SKIP_OBSERVE=1, agent_id, path exclusions).
 case "${CLAUDE_CODE_ENTRYPOINT:-cli}" in
-  cli) ;;
+  cli|sdk-ts) ;;
   *) exit 0 ;;
 esac
 
-# Layer 2: Respect ECC_HOOK_PROFILE=minimal — suppresses non-essential hooks
+# Layer 2: minimal hook profile suppresses non-essential hooks.
 [ "${ECC_HOOK_PROFILE:-standard}" = "minimal" ] && exit 0
 
-# Layer 3: Cooperative skip env var — tools like claude-mem can set this
-# (export ECC_SKIP_OBSERVE=1) before spawning their automated sessions
+# Layer 3: cooperative skip env var for automated sessions.
 [ "${ECC_SKIP_OBSERVE:-0}" = "1" ] && exit 0
 
-# Layer 4: Skip subagent sessions — agent_id is only present when a hook fires
-# inside a subagent (automated by definition, never a human interactive session).
-# Placed after env-var checks to avoid a Python subprocess on sessions that
-# already exit via Layers 1-3.
+# Layer 4: subagent sessions are automated by definition.
 _ECC_AGENT_ID=$(echo "$INPUT_JSON" | "$PYTHON_CMD" -c "import json,sys; print(json.load(sys.stdin).get('agent_id',''))" 2>/dev/null || true)
 [ -n "$_ECC_AGENT_ID" ] && exit 0
 
-# Layer 5: CWD path exclusions — skip known observer-session directories.
-# Add custom paths via ECC_OBSERVE_SKIP_PATHS (comma-separated substrings).
-# Whitespace is trimmed from each pattern; empty patterns are skipped to
-# prevent an empty-string glob from matching every path.
+# Layer 5: known observer-session path exclusions.
 _ECC_SKIP_PATHS="${ECC_OBSERVE_SKIP_PATHS:-observer-sessions,.claude-mem}"
 if [ -n "$STDIN_CWD" ]; then
   IFS=',' read -ra _ECC_SKIP_ARRAY <<< "$_ECC_SKIP_PATHS"
   for _pattern in "${_ECC_SKIP_ARRAY[@]}"; do
-    _pattern="${_pattern#"${_pattern%%[![:space:]]*}"}"   # trim leading whitespace
-    _pattern="${_pattern%"${_pattern##*[![:space:]]}"}"   # trim trailing whitespace
+    _pattern="${_pattern#"${_pattern%%[![:space:]]*}"}"
+    _pattern="${_pattern%"${_pattern##*[![:space:]]}"}"
     [ -z "$_pattern" ] && continue
     case "$STDIN_CWD" in *"$_pattern"*) exit 0 ;; esac
   done
@@ -156,20 +139,12 @@ SKILL_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "${SKILL_ROOT}/scripts/detect-project.sh"
 PYTHON_CMD="${CLV2_PYTHON_CMD:-$PYTHON_CMD}"
 
+# ─────────────────────────────────────────────
+# Configuration
+# ─────────────────────────────────────────────
+
 OBSERVATIONS_FILE="${PROJECT_DIR}/observations.jsonl"
-
-SENTINEL_FILE="${CLV2_OBSERVER_SENTINEL_FILE:-${PROJECT_ROOT:-$PROJECT_DIR}/.observer.lock}"
-
-write_guard_sentinel() {
-  printf '%s\n' 'observer paused: confirmation or permission prompt detected; rerun start-observer.sh --reset after reviewing observer.log' > "$SENTINEL_FILE"
-}
-
-# Skip if a previous run already aborted due to confirmation/permission prompt.
-# This is the circuit-breaker — stops retrying after a non-interactive failure.
-if [ -f "$SENTINEL_FILE" ]; then
-  echo "[observe] Skipping: previous run aborted due to confirmation/permission prompt. Remove ${SENTINEL_FILE} to re-enable." >&2
-  exit 0
-fi
+MAX_FILE_SIZE_MB=10
 
 # Auto-purge observation files older than 30 days (runs once per session)
 PURGE_MARKER="${PROJECT_DIR}/.last-purge"
@@ -263,57 +238,175 @@ if [ -f "$OBSERVATIONS_FILE" ]; then
   fi
 fi
 
-# Detect confirmation/permission prompts in observer output and fail closed.
-# A non-interactive background observer must never ask for user confirmation.
-if echo "$PARSED" | grep -E -i -q "$CLV2_OBSERVER_PROMPT_PATTERN"; then
-  echo "[observe] OBSERVER_ABORT: Confirmation or permission prompt detected in observer output. This observer run is non-actionable." >&2
-  echo "[observe] Writing sentinel to suppress retries: ${SENTINEL_FILE}" >&2
-  write_guard_sentinel
-  exit 2
-fi
-
 # Build and write observation (now includes project context)
+# Scrub common secret patterns from tool I/O before persisting
 timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
 export PROJECT_ID_ENV="$PROJECT_ID"
 export PROJECT_NAME_ENV="$PROJECT_NAME"
 export TIMESTAMP="$timestamp"
+
 echo "$PARSED" | "$PYTHON_CMD" -c '
 import json, sys, os, re
+
 parsed = json.load(sys.stdin)
 observation = {
-  "timestamp": os.environ["TIMESTAMP"],
-  "event": parsed["event"],
-  "tool": parsed["tool"],
-  "session": parsed["session"],
-  "project_id": os.environ.get("PROJECT_ID_ENV", "global"),
-  "project_name": os.environ.get("PROJECT_NAME_ENV", "global")
+    "timestamp": os.environ["TIMESTAMP"],
+    "event": parsed["event"],
+    "tool": parsed["tool"],
+    "session": parsed["session"],
+    "project_id": os.environ.get("PROJECT_ID_ENV", "global"),
+    "project_name": os.environ.get("PROJECT_NAME_ENV", "global")
 }
+
 # Scrub secrets: match common key=value, key: value, and key"value patterns
+# Includes optional auth scheme (e.g., "Bearer", "Basic") before token
 _SECRET_RE = re.compile(
-  r"(?i)(api[_-]?key|token|secret|password|authorization|credentials?|auth)"
-  r"""(["'"'"'\s:=]+)"""
-  r"([A-Za-z]+\s+)?"
-  r"([A-Za-z0-9_\-/.+=]{8,})"
+    r"(?i)(api[_-]?key|token|secret|password|authorization|credentials?|auth)"
+    r"""(["'"'"'\s:=]+)"""
+    r"([A-Za-z]+\s+)?"
+    r"([A-Za-z0-9_\-/.+=]{8,})"
 )
+
 def scrub(val):
-  if val is None:
-    return None
-  return _SECRET_RE.sub(lambda m: m.group(1) + m.group(2) + (m.group(3) or "") + "[REDACTED]", str(val))
+    if val is None:
+        return None
+    return _SECRET_RE.sub(lambda m: m.group(1) + m.group(2) + (m.group(3) or "") + "[REDACTED]", str(val))
+
 if parsed["input"]:
-  observation["input"] = scrub(parsed["input"])
+    observation["input"] = scrub(parsed["input"])
 if parsed["output"] is not None:
-  observation["output"] = scrub(parsed["output"])
+    observation["output"] = scrub(parsed["output"])
+
 print(json.dumps(observation))
 ' >> "$OBSERVATIONS_FILE"
 
-# Signal observer if running (check both project-scoped and global observer)
-for pid_file in "${PROJECT_DIR}/.observer.pid" "${CONFIG_DIR}/.observer.pid"; do
+# Lazy-start observer if enabled but not running (first-time setup)
+# Use flock for atomic check-then-act to prevent race conditions
+# Fallback for macOS (no flock): use lockfile or skip
+LAZY_START_LOCK="${PROJECT_DIR}/.observer-start.lock"
+_CHECK_OBSERVER_RUNNING() {
+  local pid_file="$1"
   if [ -f "$pid_file" ]; then
-    observer_pid=$(cat "$pid_file")
-    if kill -0 "$observer_pid" 2>/dev/null; then
-      kill -USR1 "$observer_pid" 2>/dev/null || true
+    local pid
+    pid=$(cat "$pid_file" 2>/dev/null)
+    # Validate PID is a positive integer (>1) to prevent signaling invalid targets
+    case "$pid" in
+      ''|*[!0-9]*|0|1)
+        rm -f "$pid_file" 2>/dev/null || true
+        return 1
+        ;;
+    esac
+    if kill -0 "$pid" 2>/dev/null; then
+      return 0  # Process is alive
+    fi
+    # Stale PID file - remove it
+    rm -f "$pid_file" 2>/dev/null || true
+  fi
+  return 1  # No PID file or process dead
+}
+
+if [ -f "${CONFIG_DIR}/disabled" ]; then
+  OBSERVER_ENABLED=false
+else
+  OBSERVER_ENABLED=false
+  CONFIG_FILE="${SKILL_ROOT}/config.json"
+  # Allow CLV2_CONFIG override
+  if [ -n "${CLV2_CONFIG:-}" ]; then
+    CONFIG_FILE="$CLV2_CONFIG"
+  fi
+  # Use effective config path for both existence check and reading
+  EFFECTIVE_CONFIG="$CONFIG_FILE"
+  if [ -f "$EFFECTIVE_CONFIG" ] && [ -n "$PYTHON_CMD" ]; then
+    _enabled=$(CLV2_CONFIG_PATH="$EFFECTIVE_CONFIG" "$PYTHON_CMD" -c "
+import json, os
+with open(os.environ['CLV2_CONFIG_PATH']) as f:
+    cfg = json.load(f)
+print(str(cfg.get('observer', {}).get('enabled', False)).lower())
+" 2>/dev/null || echo "false")
+    if [ "$_enabled" = "true" ]; then
+      OBSERVER_ENABLED=true
     fi
   fi
-done
+fi
+
+# Check both project-scoped AND global PID files (with stale PID recovery)
+if [ "$OBSERVER_ENABLED" = "true" ]; then
+  # Clean up stale PID files first
+  _CHECK_OBSERVER_RUNNING "${PROJECT_DIR}/.observer.pid" || true
+  _CHECK_OBSERVER_RUNNING "${CONFIG_DIR}/.observer.pid" || true
+
+  # Check if observer is now running after cleanup
+  if [ ! -f "${PROJECT_DIR}/.observer.pid" ] && [ ! -f "${CONFIG_DIR}/.observer.pid" ]; then
+    # Use flock if available (Linux), fallback for macOS
+    if command -v flock >/dev/null 2>&1; then
+      (
+        flock -n 9 || exit 0
+        # Double-check PID files after acquiring lock
+        _CHECK_OBSERVER_RUNNING "${PROJECT_DIR}/.observer.pid" || true
+        _CHECK_OBSERVER_RUNNING "${CONFIG_DIR}/.observer.pid" || true
+        if [ ! -f "${PROJECT_DIR}/.observer.pid" ] && [ ! -f "${CONFIG_DIR}/.observer.pid" ]; then
+          nohup "${SKILL_ROOT}/agents/start-observer.sh" start >/dev/null 2>&1 &
+        fi
+      ) 9>"$LAZY_START_LOCK"
+    else
+      # macOS fallback: use lockfile if available, otherwise skip
+      if command -v lockfile >/dev/null 2>&1; then
+        # Use subshell to isolate exit and add trap for cleanup
+        (
+          trap 'rm -f "$LAZY_START_LOCK" 2>/dev/null || true' EXIT
+          lockfile -r 1 -l 30 "$LAZY_START_LOCK" 2>/dev/null || exit 0
+          _CHECK_OBSERVER_RUNNING "${PROJECT_DIR}/.observer.pid" || true
+          _CHECK_OBSERVER_RUNNING "${CONFIG_DIR}/.observer.pid" || true
+          if [ ! -f "${PROJECT_DIR}/.observer.pid" ] && [ ! -f "${CONFIG_DIR}/.observer.pid" ]; then
+            nohup "${SKILL_ROOT}/agents/start-observer.sh" start >/dev/null 2>&1 &
+          fi
+          rm -f "$LAZY_START_LOCK" 2>/dev/null || true
+        )
+      fi
+    fi
+  fi
+fi
+
+# Throttle SIGUSR1: only signal observer every N observations (#521)
+# This prevents rapid signaling when tool calls fire every second,
+# which caused runaway parallel Claude analysis processes.
+SIGNAL_EVERY_N="${ECC_OBSERVER_SIGNAL_EVERY_N:-20}"
+SIGNAL_COUNTER_FILE="${PROJECT_DIR}/.observer-signal-counter"
+
+should_signal=0
+if [ -f "$SIGNAL_COUNTER_FILE" ]; then
+  counter=$(cat "$SIGNAL_COUNTER_FILE" 2>/dev/null || echo 0)
+  counter=$((counter + 1))
+  if [ "$counter" -ge "$SIGNAL_EVERY_N" ]; then
+    should_signal=1
+    counter=0
+  fi
+  echo "$counter" > "$SIGNAL_COUNTER_FILE"
+else
+  echo "1" > "$SIGNAL_COUNTER_FILE"
+fi
+
+# Signal observer if running and throttle allows (check both project-scoped and global observer, deduplicate)
+if [ "$should_signal" -eq 1 ]; then
+  signaled_pids=" "
+  for pid_file in "${PROJECT_DIR}/.observer.pid" "${CONFIG_DIR}/.observer.pid"; do
+    if [ -f "$pid_file" ]; then
+      observer_pid=$(cat "$pid_file" 2>/dev/null || true)
+      # Validate PID is a positive integer (>1)
+      case "$observer_pid" in
+        ''|*[!0-9]*|0|1) rm -f "$pid_file" 2>/dev/null || true; continue ;;
+      esac
+      # Deduplicate: skip if already signaled this pass
+      case "$signaled_pids" in
+        *" $observer_pid "*) continue ;;
+      esac
+      if kill -0 "$observer_pid" 2>/dev/null; then
+        kill -USR1 "$observer_pid" 2>/dev/null || true
+        signaled_pids="${signaled_pids}${observer_pid} "
+      fi
+    fi
+  done
+fi
 
 exit 0

@@ -15,6 +15,7 @@ const {
   findFiles,
   ensureDir,
   readFile,
+  stripAnsi,
   log,
   output
 } = require('../lib/utils');
@@ -39,7 +40,7 @@ async function main() {
     log(`[SessionStart] Latest: ${latest.path}`);
 
     // Read and inject the latest session content into Claude's context
-    const content = readFile(latest.path);
+    const content = stripAnsi(readFile(latest.path));
     if (content && !content.includes('[Session context goes here]')) {
       // Only inject if the session has actual content (not the blank template)
       output(`Previous session summary:\n${content}`);

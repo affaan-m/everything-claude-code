@@ -4,13 +4,14 @@
 
 ## 目录
 
-* [我们正在寻找的内容](#我们寻找什么)
+* [我们寻找的内容](#我们寻找什么)
 * [快速开始](#快速开始)
 * [贡献技能](#贡献技能)
 * [贡献智能体](#贡献智能体)
 * [贡献钩子](#贡献钩子)
 * [贡献命令](#贡献命令)
-* [跨平台与翻译](#跨平台与翻译)
+* [MCP 和文档（例如 Context7）](#mcp-和文档例如-context7)
+* [跨工具链和翻译](#跨平台与翻译)
 * [拉取请求流程](#拉取请求流程)
 
 ***
@@ -189,10 +190,10 @@ model: sonnet
 
 | 字段 | 描述 | 选项 |
 |-------|-------------|---------|
-| `name` | 小写，用连字符连接 | `code-reviewer` |
-| `description` | 用于决定何时调用 | 要具体！ |
-| `tools` | 仅包含必要的内容 | `Read, Write, Edit, Bash, Grep, Glob, WebFetch, Task` |
-| `model` | 复杂度级别 | `haiku` (简单), `sonnet` (编码), `opus` (复杂) |
+| `name` | 小写，连字符连接 | `code-reviewer` |
+| `description` | 用于决定何时调用 | 请具体说明！ |
+| `tools` | 仅包含必需内容 | `Read, Write, Edit, Bash, Grep, Glob, WebFetch, Task`，或当智能体使用 MCP 时的 MCP 工具名称（例如 `mcp__context7__resolve-library-id`, `mcp__context7__query-docs`） |
+| `model` | 复杂度级别 | `haiku`（简单），`sonnet`（编码），`opus`（复杂） |
 
 ### 智能体示例
 
@@ -350,6 +351,17 @@ description: 在 /help 中显示的简要描述
 
 ***
 
+## MCP 和文档（例如 Context7）
+
+技能和智能体可以使用 **MCP（模型上下文协议）** 工具来获取最新数据，而不仅仅是依赖训练数据。这对于文档尤其有用。
+
+* **Context7** 是一个暴露 `resolve-library-id` 和 `query-docs` 的 MCP 服务器。当用户询问库、框架或 API 时，请使用它，以便答案能反映最新的文档和代码示例。
+* 在贡献依赖于实时文档的**技能**时（例如设置、API 使用），请描述如何使用相关的 MCP 工具（例如，解析库 ID，然后查询文档），并指向 `documentation-lookup` 技能或 Context7 作为参考模式。
+* 在贡献能回答文档/API 问题的**智能体**时，请在智能体的工具中包含 Context7 MCP 工具名称（例如 `mcp__context7__resolve-library-id`, `mcp__context7__query-docs`），并记录解析 → 查询的工作流程。
+* **mcp-configs/mcp-servers.json** 包含一个 Context7 条目；用户在其工具链（例如 Claude Code, Cursor）中启用它，以使用文档查找技能（位于 `skills/documentation-lookup/`）和 `/docs` 命令。
+
+***
+
 ## 跨平台与翻译
 
 ### 技能子集 (Codex 和 Cursor)
@@ -378,11 +390,11 @@ ECC 为其他平台提供了技能子集：
 ### 1. PR 标题格式
 
 ```
-feat(skills): add rust-patterns skill
-feat(agents): add api-designer agent
-feat(hooks): add auto-format hook
-fix(skills): update React patterns
-docs: improve contributing guide
+feat(skills): 新增 Rust 模式技能
+feat(agents): 新增 API 设计器代理
+feat(hooks): 新增自动格式化钩子
+fix(skills): 更新 React 模式
+docs: 完善贡献指南
 ```
 
 ### 2. PR 描述

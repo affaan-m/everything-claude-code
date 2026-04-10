@@ -29,8 +29,8 @@ python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py evolve [
 ## 使用方法
 
 ```
-/evolve                    # Analyze all instincts and suggest evolutions
-/evolve --generate         # Also generate files under evolved/{skills,commands,agents}
+/evolve                    # 分析所有本能并建议进化方向
+/evolve --generate         # 同时在 evolved/{skills,commands,agents} 目录下生成文件
 ```
 
 ## 演化规则
@@ -102,29 +102,29 @@ python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py evolve [
 
 ```
 ============================================================
-  EVOLVE ANALYSIS - 12 instincts
-  Project: my-app (a1b2c3d4e5f6)
-  Project-scoped: 8 | Global: 4
+  演进分析 - 12 种直觉
+  项目：my-app (a1b2c3d4e5f6)
+  项目范围：8 | 全局：4
 ============================================================
 
-High confidence instincts (>=80%): 5
+高置信度直觉 (>=80%)：5
 
-## SKILL CANDIDATES
-1. Cluster: "adding tests"
-   Instincts: 3
-   Avg confidence: 82%
-   Domains: testing
-   Scopes: project
+## 技能候选
+1. 聚类："adding tests"
+   直觉：3
+   平均置信度：82%
+   领域：testing
+   范围：project
 
-## COMMAND CANDIDATES (2)
+## 命令候选 (2)
   /adding-tests
-    From: test-first-workflow [project]
-    Confidence: 84%
+    来源：test-first-workflow [project]
+    置信度：84%
 
-## AGENT CANDIDATES (1)
+## 代理候选 (1)
   adding-tests-agent
-    Covers 3 instincts
-    Avg confidence: 82%
+    涵盖 3 种直觉
+    平均置信度：82%
 ```
 
 ## 标志

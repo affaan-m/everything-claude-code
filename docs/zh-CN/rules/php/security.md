@@ -32,3 +32,7 @@ paths:
 * 使用 `password_hash()` / `password_verify()` 存储密码。
 * 在身份验证和权限变更后重新生成会话标识符。
 * 对状态变更的 Web 请求强制实施 CSRF 保护。
+
+## 参考
+
+有关 Laravel 特定安全指南，请参阅技能：`laravel-security`。

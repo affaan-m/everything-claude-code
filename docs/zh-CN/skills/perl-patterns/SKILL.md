@@ -372,19 +372,19 @@ for my $child (path('src')->children(qr/\.pl$/)) {
 MyApp/
 ├── lib/
 │   └── MyApp/
-│       ├── App.pm           # Main module
-│       ├── Config.pm        # Configuration
-│       ├── DB.pm            # Database layer
-│       └── Util.pm          # Utilities
+│       ├── App.pm           # 主模块
+│       ├── Config.pm        # 配置
+│       ├── DB.pm            # 数据库层
+│       └── Util.pm          # 工具集
 ├── bin/
-│   └── myapp                # Entry-point script
+│   └── myapp                # 入口脚本
 ├── t/
-│   ├── 00-load.t            # Compilation tests
-│   ├── unit/                # Unit tests
-│   └── integration/         # Integration tests
-├── cpanfile                 # Dependencies
-├── Makefile.PL              # Build system
-└── .perlcriticrc            # Linting config
+│   ├── 00-load.t            # 编译测试
+│   ├── unit/                # 单元测试
+│   └── integration/         # 集成测试
+├── cpanfile                 # 依赖项
+├── Makefile.PL              # 构建系统
+└── .perlcriticrc            # 代码检查配置
 ```
 
 ### 导出器模式
@@ -407,12 +407,12 @@ sub trim($str) { $str =~ s/^\s+|\s+$//gr }
 ### perltidy 配置 (.perltidyrc)
 
 ```text
--i=4        # 4-space indent
--l=100      # 100-char line length
--ci=4       # continuation indent
--ce         # cuddled else
--bar        # opening brace on same line
--nolq       # don't outdent long quoted strings
+-i=4        # 4 空格缩进
+-l=100      # 100 字符行宽
+-ci=4       # 续行缩进
+-ce         # else 与右花括号同行
+-bar        # 左花括号与语句同行
+-nolq       # 不对长引用字符串进行反向缩进
 ```
 
 ### perlcritic 配置 (.perlcriticrc)

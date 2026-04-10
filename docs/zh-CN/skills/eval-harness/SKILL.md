@@ -208,7 +208,7 @@ npm test -- --testPathPattern="existing"
 ### 实施后
 
 ```
-/eval report feature-name
+/eval 报告 功能名称
 ```
 
 生成完整的评估报告
@@ -220,9 +220,9 @@ npm test -- --testPathPattern="existing"
 ```
 .claude/
   evals/
-    feature-xyz.md      # Eval definition
-    feature-xyz.log     # Eval run history
-    baseline.json       # Regression baselines
+    feature-xyz.md      # Eval定义
+    feature-xyz.log     # Eval运行历史
+    baseline.json       # 回归基线
 ```
 
 ## 最佳实践

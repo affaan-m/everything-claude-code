@@ -11,7 +11,7 @@ paths:
 
 ## Framework
 
-Use **PHPUnit** as the default test framework. **Pest** is also acceptable when the project already uses it.
+Use **PHPUnit** as the default test framework. If **Pest** is configured in the project, prefer Pest for new tests and avoid mixing frameworks.
 
 ## Coverage
 
@@ -29,6 +29,11 @@ Prefer **pcov** or **Xdebug** in CI, and keep coverage thresholds in CI rather t
 - Use factory/builders for fixtures instead of large hand-written arrays.
 - Keep HTTP/controller tests focused on transport and validation; move business rules into service-level tests.
 
+## Inertia
+
+If the project uses Inertia.js, prefer `assertInertia` with `AssertableInertia` to verify component names and props instead of raw JSON assertions.
+
 ## Reference
 
 See skill: `tdd-workflow` for the repo-wide RED -> GREEN -> REFACTOR loop.
+See skill: `laravel-tdd` for Laravel-specific testing patterns (PHPUnit and Pest).

@@ -24,17 +24,17 @@ origin: ECC
 逐步替换实例——在发布过程中，新旧版本同时运行。
 
 ```
-Instance 1: v1 → v2  (update first)
-Instance 2: v1        (still running v1)
-Instance 3: v1        (still running v1)
+实例 1: v1 → v2  (首次更新)
+实例 2: v1        (仍在运行 v1)
+实例 3: v1        (仍在运行 v1)
 
-Instance 1: v2
-Instance 2: v1 → v2  (update second)
-Instance 3: v1
+实例 1: v2
+实例 2: v1 → v2  (第二次更新)
+实例 3: v1
 
-Instance 1: v2
-Instance 2: v2
-Instance 3: v1 → v2  (update last)
+实例 1: v2
+实例 2: v2
+实例 3: v1 → v2  (最后更新)
 ```
 
 **优点：** 零停机时间，渐进式发布
@@ -46,12 +46,12 @@ Instance 3: v1 → v2  (update last)
 运行两个相同的环境。原子化地切换流量。
 
 ```
-Blue  (v1) ← traffic
-Green (v2)   idle, running new version
+Blue  (v1) ← 流量
+Green (v2)   空闲，运行新版本
 
-# After verification:
-Blue  (v1)   idle (becomes standby)
-Green (v2) ← traffic
+# 验证后：
+Blue  (v1)   空闲（转为备用状态）
+Green (v2) ← 流量
 ```
 
 **优点：** 即时回滚（切换回蓝色环境），切换干净利落
@@ -63,15 +63,15 @@ Green (v2) ← traffic
 首先将一小部分流量路由到新版本。
 
 ```
-v1: 95% of traffic
-v2:  5% of traffic  (canary)
+v1：95% 的流量
+v2：5% 的流量（金丝雀）
 
-# If metrics look good:
-v1: 50% of traffic
-v2: 50% of traffic
+# 如果指标表现良好：
+v1：50% 的流量
+v2：50% 的流量
 
-# Final:
-v2: 100% of traffic
+# 最终：
+v2：100% 的流量
 ```
 
 **优点：** 在全量发布前，通过真实流量发现问题
@@ -168,21 +168,21 @@ CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers
 ### Docker 最佳实践
 
 ```
-# GOOD practices
-- Use specific version tags (node:22-alpine, not node:latest)
-- Multi-stage builds to minimize image size
-- Run as non-root user
-- Copy dependency files first (layer caching)
-- Use .dockerignore to exclude node_modules, .git, tests
-- Add HEALTHCHECK instruction
-- Set resource limits in docker-compose or k8s
+# 良好实践
+- 使用特定版本标签（node:22-alpine，而非 node:latest）
+- 采用多阶段构建以最小化镜像体积
+- 以非 root 用户身份运行
+- 优先复制依赖文件（利用分层缓存）
+- 使用 .dockerignore 排除 node_modules、.git、tests 等文件
+- 添加 HEALTHCHECK 指令
+- 在 docker-compose 或 k8s 中设置资源限制
 
-# BAD practices
-- Running as root
-- Using :latest tags
-- Copying entire repo in one COPY layer
-- Installing dev dependencies in production image
-- Storing secrets in image (use env vars or secrets manager)
+# 不良实践
+- 以 root 身份运行
+- 使用 :latest 标签
+- 在单个 COPY 层中复制整个仓库
+- 在生产镜像中安装开发依赖
+- 在镜像中存储密钥（应使用环境变量或密钥管理器）
 ```
 
 ## CI/CD 流水线
@@ -254,11 +254,11 @@ jobs:
 ### 流水线阶段
 
 ```
-PR opened:
-  lint → typecheck → unit tests → integration tests → preview deploy
+PR 已开启：
+  lint → typecheck → 单元测试 → 集成测试 → 预览部署
 
-Merged to main:
-  lint → typecheck → unit tests → integration tests → build image → deploy staging → smoke tests → deploy production
+合并到 main：
+  lint → typecheck → 单元测试 → 集成测试 → 构建镜像 → 部署到 staging → 冒烟测试 → 部署到 production
 ```
 
 ## 健康检查

@@ -51,13 +51,13 @@
 显示前后对比：
 
 ```
-Coverage Report
+覆盖率报告
 ──────────────────────────────
-File                   Before  After
+文件                   变更前  变更后
 src/services/auth.ts   45%     88%
 src/utils/validation.ts 32%    82%
 ──────────────────────────────
-Overall:               67%     84%  ✅
+总计：               67%     84%  ✅
 ```
 
 ## 重点关注领域

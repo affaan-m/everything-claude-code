@@ -372,5 +372,3 @@ Reference documentation is in the `reference/` directory adjacent to this SKILL.
 
 Reference material for this skill is vendored locally under `skills/videodb/reference/`.
 Use the local copies above instead of following external repository links at runtime.
-
-**Maintained By:** [VideoDB](https://www.videodb.io/)

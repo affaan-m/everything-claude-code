@@ -17,16 +17,6 @@ function stripCodeTicks(value) {
   return trimmed;
 }
 
-function normalizeSessionName(value, fallback = 'session') {
-  const normalized = String(value || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-
-  return normalized || fallback;
-}
-
 function parseSection(content, heading) {
   if (typeof content !== 'string' || content.length === 0) {
     return '';
@@ -106,31 +96,11 @@ function parseWorkerTask(content) {
   };
 }
 
-function parseFirstSection(content, headings) {
-  for (const heading of headings) {
-    const section = parseSection(content, heading);
-    if (section) {
-      return section;
-    }
-  }
-
-  return '';
-}
-
 function parseWorkerHandoff(content) {
   return {
-    summary: parseBullets(parseFirstSection(content, ['Summary'])),
-    validation: parseBullets(parseFirstSection(content, [
-      'Validation',
-      'Tests / Verification',
-      'Tests',
-      'Verification'
-    ])),
-    remainingRisks: parseBullets(parseFirstSection(content, [
-      'Remaining Risks',
-      'Follow-ups',
-      'Follow Ups'
-    ]))
+    summary: parseBullets(parseSection(content, 'Summary')),
+    validation: parseBullets(parseSection(content, 'Validation')),
+    remainingRisks: parseBullets(parseSection(content, 'Remaining Risks'))
   };
 }
 
@@ -184,7 +154,8 @@ function loadWorkerSnapshots(coordinationDir) {
   });
 }
 
-function listTmuxPanes(sessionName) {
+function listTmuxPanes(sessionName, options = {}) {
+  const { spawnSyncImpl = spawnSync } = options;
   const format = [
     '#{pane_id}',
     '#{window_index}',
@@ -197,12 +168,15 @@ function listTmuxPanes(sessionName) {
     '#{pane_pid}'
   ].join('\t');
 
-  const result = spawnSync('tmux', ['list-panes', '-t', sessionName, '-F', format], {
+  const result = spawnSyncImpl('tmux', ['list-panes', '-t', sessionName, '-F', format], {
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe']
   });
 
   if (result.error) {
+    if (result.error.code === 'ENOENT') {
+      return [];
+    }
     throw result.error;
   }
 
@@ -270,66 +244,28 @@ function buildSessionSnapshot({ sessionName, coordinationDir, panes }) {
   };
 }
 
-function readPlanConfig(absoluteTarget) {
-  let config;
-
-  try {
-    config = JSON.parse(fs.readFileSync(absoluteTarget, 'utf8'));
-  } catch (_error) {
-    throw new Error(`Invalid orchestration plan JSON: ${absoluteTarget}`);
-  }
-
-  if (!config || Array.isArray(config) || typeof config !== 'object') {
-    throw new Error(`Invalid orchestration plan: expected a JSON object (${absoluteTarget})`);
-  }
-
-  return config;
-}
-
-function readPlanString(config, key, absoluteTarget) {
-  const value = config[key];
-
-  if (value === undefined) {
-    return undefined;
-  }
-
-  if (typeof value !== 'string') {
-    throw new Error(`Invalid orchestration plan: ${key} must be a string when provided (${absoluteTarget})`);
-  }
-
-  const normalized = value.trim();
-  return normalized.length > 0 ? normalized : undefined;
-}
-
 function resolveSnapshotTarget(targetPath, cwd = process.cwd()) {
   const absoluteTarget = path.resolve(cwd, targetPath);
 
   if (fs.existsSync(absoluteTarget) && fs.statSync(absoluteTarget).isFile()) {
-    const config = readPlanConfig(absoluteTarget);
-    const repoRoot = path.resolve(readPlanString(config, 'repoRoot', absoluteTarget) || cwd);
-    const sessionName = normalizeSessionName(
-      readPlanString(config, 'sessionName', absoluteTarget) || path.basename(repoRoot),
-      'session'
-    );
+    const config = JSON.parse(fs.readFileSync(absoluteTarget, 'utf8'));
+    const repoRoot = path.resolve(config.repoRoot || cwd);
     const coordinationRoot = path.resolve(
-      readPlanString(config, 'coordinationRoot', absoluteTarget) || path.join(repoRoot, '.orchestration')
+      config.coordinationRoot || path.join(repoRoot, '.orchestration')
     );
 
     return {
-      sessionName,
-      coordinationDir: path.join(coordinationRoot, sessionName),
+      sessionName: config.sessionName,
+      coordinationDir: path.join(coordinationRoot, config.sessionName),
       repoRoot,
       targetType: 'plan'
     };
   }
 
-  const repoRoot = path.resolve(cwd);
-  const sessionName = normalizeSessionName(targetPath, path.basename(repoRoot));
-
   return {
-    sessionName,
-    coordinationDir: path.join(repoRoot, '.orchestration', sessionName),
-    repoRoot,
+    sessionName: targetPath,
+    coordinationDir: path.join(cwd, '.claude', 'orchestration', targetPath),
+    repoRoot: cwd,
     targetType: 'session'
   };
 }

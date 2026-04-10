@@ -120,10 +120,10 @@ fun `delete item emits updated list without deleted item`() = runTest { }
 
 ```
 src/
-├── commonTest/kotlin/     # Shared tests (ViewModel, UseCase, Repository)
-├── androidUnitTest/kotlin/ # Android unit tests (JUnit)
-├── androidInstrumentedTest/kotlin/  # Instrumented tests (Room, UI)
-└── iosTest/kotlin/        # iOS-specific tests
+├── commonTest/kotlin/     # 共享测试（ViewModel、UseCase、Repository）
+├── androidUnitTest/kotlin/ # Android 单元测试（JUnit）
+├── androidInstrumentedTest/kotlin/  # 仪器化测试（Room、UI）
+└── iosTest/kotlin/        # iOS 专用测试
 ```
 
 最低测试覆盖率：每个功能都需要覆盖 ViewModel + UseCase。

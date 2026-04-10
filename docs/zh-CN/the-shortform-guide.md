@@ -369,36 +369,36 @@ mgrep@Mixedbread-Grep                  # 更好的搜索
 
 ```
 affoon:~ ctx:65% Opus 4.5 19:52
-▌▌ plan mode on (shift+tab to cycle)
+▌▌ 计划模式开启（按 shift+tab 循环切换）
 ```
 
 ### 规则结构
 
 ```
 ~/.claude/rules/
-  security.md      # Mandatory security checks
-  coding-style.md  # Immutability, file size limits
-  testing.md       # TDD, 80% coverage
-  git-workflow.md  # Conventional commits
-  agents.md        # Subagent delegation rules
-  patterns.md      # API response formats
-  performance.md   # Model selection (Haiku vs Sonnet vs Opus)
-  hooks.md         # Hook documentation
+  security.md      # 强制安全检查
+  coding-style.md  # 不可变性，文件大小限制
+  testing.md       # TDD，80%覆盖率
+  git-workflow.md  # 约定式提交
+  agents.md        # 子代理委托规则
+  patterns.md      # API响应格式
+  performance.md   # 模型选择（Haiku vs Sonnet vs Opus）
+  hooks.md         # 钩子文档
 ```
 
 ### 子代理
 
 ```
 ~/.claude/agents/
-  planner.md           # Break down features
-  architect.md         # System design
-  tdd-guide.md         # Write tests first
-  code-reviewer.md     # Quality review
-  security-reviewer.md # Vulnerability scan
+  planner.md           # 功能拆分
+  architect.md         # 系统设计
+  tdd-guide.md         # 测试先行指南
+  code-reviewer.md     # 代码审查
+  security-reviewer.md # 漏洞扫描
   build-error-resolver.md
-  e2e-runner.md        # Playwright tests
-  refactor-cleaner.md  # Dead code removal
-  doc-updater.md       # Keep docs synced
+  e2e-runner.md        # Playwright 测试
+  refactor-cleaner.md  # 死代码清理
+  doc-updater.md       # 文档同步
 ```
 
 ***

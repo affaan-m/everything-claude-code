@@ -36,16 +36,16 @@
 生成一份简洁的验证报告：
 
 ```
-VERIFICATION: [PASS/FAIL]
+验证： [通过/失败]
 
-Build:    [OK/FAIL]
-Types:    [OK/X errors]
-Lint:     [OK/X issues]
-Tests:    [X/Y passed, Z% coverage]
-Secrets:  [OK/X found]
-Logs:     [OK/X console.logs]
+构建：    [成功/失败]
+类型：    [成功/X 错误]
+代码检查： [成功/X 问题]
+测试：    [X/Y 通过，Z% 覆盖率]
+密钥检查： [成功/X 发现]
+日志：     [成功/X console.logs]
 
-Ready for PR: [YES/NO]
+准备提交 PR： [是/否]
 ```
 
 如果存在任何关键问题，列出它们并提供修复建议。

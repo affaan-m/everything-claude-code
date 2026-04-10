@@ -34,21 +34,21 @@
 
 ```
 project/
-├── ecosystem.config.cjs              # PM2 config
-├── {backend}/start.cjs               # Python wrapper (if applicable)
+├── ecosystem.config.cjs              # PM2 配置文件
+├── {backend}/start.cjs               # Python 包装器（如适用）
 └── .claude/
     ├── commands/
-    │   ├── pm2-all.md                # Start all + monit
-    │   ├── pm2-all-stop.md           # Stop all
-    │   ├── pm2-all-restart.md        # Restart all
-    │   ├── pm2-{port}.md             # Start single + logs
-    │   ├── pm2-{port}-stop.md        # Stop single
-    │   ├── pm2-{port}-restart.md     # Restart single
-    │   ├── pm2-logs.md               # View all logs
-    │   └── pm2-status.md             # View status
+    │   ├── pm2-all.md                # 启动所有 + 监控
+    │   ├── pm2-all-stop.md           # 停止所有
+    │   ├── pm2-all-restart.md        # 重启所有
+    │   ├── pm2-{port}.md             # 启动单个 + 日志
+    │   ├── pm2-{port}-stop.md        # 停止单个
+    │   ├── pm2-{port}-restart.md     # 重启单个
+    │   ├── pm2-logs.md               # 查看所有日志
+    │   └── pm2-status.md             # 查看状态
     └── scripts/
-        ├── pm2-logs-{port}.ps1       # Single service logs
-        └── pm2-monit.ps1             # PM2 monitor
+        ├── pm2-logs-{port}.ps1       # 单个服务日志
+        └── pm2-monit.ps1             # PM2 监控器
 ```
 
 ***
@@ -255,29 +255,29 @@ pm2 resurrect                    # Restore saved list
 所有文件生成后，输出：
 
 ```
-## PM2 Init Complete
+## PM2 初始化完成
 
-**Services:**
+**服务列表：**
 
-| Port | Name | Type |
+| 端口 | 名称 | 类型 |
 |------|------|------|
 | {port} | {name} | {type} |
 
-**Claude Commands:** /pm2-all, /pm2-all-stop, /pm2-{port}, /pm2-{port}-stop, /pm2-logs, /pm2-status
+**Claude 指令：** /pm2-all, /pm2-all-stop, /pm2-{port}, /pm2-{port}-stop, /pm2-logs, /pm2-status
 
-**Terminal Commands:**
-## First time (with config file)
+**终端命令：**
+## 首次运行（使用配置文件）
 pm2 start ecosystem.config.cjs && pm2 save
 
-## After first time (simplified)
-pm2 start all          # Start all
-pm2 stop all           # Stop all
-pm2 restart all        # Restart all
-pm2 start {name}       # Start single
-pm2 stop {name}        # Stop single
-pm2 logs               # View logs
-pm2 monit              # Monitor panel
-pm2 resurrect          # Restore saved processes
+## 首次之后（简化命令）
+pm2 start all          # 启动全部
+pm2 stop all           # 停止全部
+pm2 restart all        # 重启全部
+pm2 start {name}       # 启动单个
+pm2 stop {name}        # 停止单个
+pm2 logs               # 查看日志
+pm2 monit              # 监控面板
+pm2 resurrect          # 恢复已保存进程
 
-**Tip:** Run `pm2 save` after first start to enable simplified commands.
+**提示：** 首次启动后运行 `pm2 save` 以启用简化命令。
 ```

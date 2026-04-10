@@ -23,9 +23,9 @@ origin: ECC
 ```
 Application
   └── viewModelScope (ViewModel)
-        └── coroutineScope { } (structured child)
-              ├── async { } (concurrent task)
-              └── async { } (concurrent task)
+        └── coroutineScope { } (结构化子作用域)
+              ├── async { } (并发任务)
+              └── async { } (并发任务)
 ```
 
 始终使用结构化并发——绝不使用 `GlobalScope`：

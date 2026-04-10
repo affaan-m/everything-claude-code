@@ -1,3 +1,7 @@
+---
+description: Sequential and tmux/worktree orchestration guidance for multi-agent workflows.
+---
+
 # Orchestrate Command
 
 Sequential agent workflow for complex tasks.

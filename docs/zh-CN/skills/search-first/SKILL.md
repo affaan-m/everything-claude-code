@@ -21,29 +21,29 @@ origin: ECC
 
 ```
 ┌─────────────────────────────────────────────┐
-│  1. NEED ANALYSIS                           │
-│     Define what functionality is needed      │
-│     Identify language/framework constraints  │
+│  1. 需求分析                               │
+│     确定所需功能                          │
+│     识别语言/框架限制                     │
 ├─────────────────────────────────────────────┤
-│  2. PARALLEL SEARCH (researcher agent)      │
+│  2. 并行搜索（研究员代理）                │
 │     ┌──────────┐ ┌──────────┐ ┌──────────┐  │
 │     │  npm /   │ │  MCP /   │ │  GitHub / │  │
-│     │  PyPI    │ │  Skills  │ │  Web      │  │
+│     │  PyPI    │ │  技能    │ │  网络     │  │
 │     └──────────┘ └──────────┘ └──────────┘  │
 ├─────────────────────────────────────────────┤
-│  3. EVALUATE                                │
-│     Score candidates (functionality, maint, │
-│     community, docs, license, deps)         │
+│  3. 评估                                   │
+│     对候选方案进行评分（功能、维护、      │
+│     社区、文档、许可证、依赖）            │
 ├─────────────────────────────────────────────┤
-│  4. DECIDE                                  │
+│  4. 决策                                   │
 │     ┌─────────┐  ┌──────────┐  ┌─────────┐  │
-│     │  Adopt  │  │  Extend  │  │  Build   │  │
-│     │ as-is   │  │  /Wrap   │  │  Custom  │  │
+│     │  采用   │  │  扩展    │  │  构建   │  │
+│     │ 原样    │  │  /包装   │  │  定制   │  │
 │     └─────────┘  └──────────┘  └─────────┘  │
 ├─────────────────────────────────────────────┤
-│  5. IMPLEMENT                               │
-│     Install package / Configure MCP /       │
-│     Write minimal custom code               │
+│  5. 实施                                   │
+│     安装包 / 配置 MCP /                    │
+│     编写最小化自定义代码                   │
 └─────────────────────────────────────────────┘
 ```
 
@@ -73,13 +73,13 @@ origin: ECC
 对于非平凡的功能，启动研究员代理：
 
 ```
-Task(subagent_type="general-purpose", prompt="
-  Research existing tools for: [DESCRIPTION]
-  Language/framework: [LANG]
-  Constraints: [ANY]
+任务（子代理类型="通用型"，提示="
+  研究现有工具用于：[描述]
+  语言/框架：[语言]
+  约束：[任何]
 
-  Search: npm/PyPI, MCP servers, Claude Code skills, GitHub
-  Return: Structured comparison with recommendation
+  搜索：npm/PyPI、MCP 服务器、Claude Code 技能、GitHub
+  返回：结构化对比与推荐
 ")
 ```
 
@@ -140,31 +140,31 @@ Task(subagent_type="general-purpose", prompt="
 ### 示例 1：“添加死链检查”
 
 ```
-Need: Check markdown files for broken links
-Search: npm "markdown dead link checker"
-Found: textlint-rule-no-dead-link (score: 9/10)
-Action: ADOPT — npm install textlint-rule-no-dead-link
-Result: Zero custom code, battle-tested solution
+需求：检查 Markdown 文件中的失效链接
+搜索：npm "markdown dead link checker"
+发现：textlint-rule-no-dead-link（评分：9/10）
+行动：采纳 — npm install textlint-rule-no-dead-link
+结果：无需自定义代码，经过实战检验的解决方案
 ```
 
 ### 示例 2：“添加 HTTP 客户端包装器”
 
 ```
-Need: Resilient HTTP client with retries and timeout handling
-Search: npm "http client retry", PyPI "httpx retry"
-Found: got (Node) with retry plugin, httpx (Python) with built-in retry
-Action: ADOPT — use got/httpx directly with retry config
-Result: Zero custom code, production-proven libraries
+需求：具备重试和超时处理能力的弹性 HTTP 客户端
+搜索：npm "http client retry"、PyPI "httpx retry"
+发现：got（Node）带重试插件、httpx（Python）带内置重试功能
+行动：采用——直接使用 got/httpx 并配置重试
+结果：零定制代码，生产验证的库
 ```
 
 ### 示例 3：“添加配置文件 linter”
 
 ```
-Need: Validate project config files against a schema
-Search: npm "config linter schema", "json schema validator cli"
-Found: ajv-cli (score: 8/10)
-Action: ADOPT + EXTEND — install ajv-cli, write project-specific schema
-Result: 1 package + 1 schema file, no custom validation logic
+需求：根据模式验证项目配置文件
+搜索：npm "config linter schema"、"json schema validator cli"
+发现：ajv-cli（评分：8/10）
+操作：采用 + 扩展 —— 安装 ajv-cli，编写项目特定的模式
+结果：1 个包 + 1 个模式文件，无需自定义验证逻辑
 ```
 
 ## 反模式

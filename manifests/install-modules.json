@@ -1,0 +1,497 @@
+{
+  "version": 1,
+  "modules": [
+    {
+      "id": "rules-core",
+      "kind": "rules",
+      "description": "Shared and language rules for supported harness targets.",
+      "paths": [
+        "rules"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity"
+      ],
+      "dependencies": [],
+      "defaultInstall": true,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
+      "id": "agents-core",
+      "kind": "agents",
+      "description": "Agent definitions and project-level agent guidance.",
+      "paths": [
+        ".agents",
+        "agents",
+        "AGENTS.md"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [],
+      "defaultInstall": true,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
+      "id": "commands-core",
+      "kind": "commands",
+      "description": "Core slash-command library and command docs.",
+      "paths": [
+        "commands"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "opencode"
+      ],
+      "dependencies": [],
+      "defaultInstall": true,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "hooks-runtime",
+      "kind": "hooks",
+      "description": "Runtime hook configs and hook script helpers.",
+      "paths": [
+        "hooks",
+        "scripts/hooks"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "opencode"
+      ],
+      "dependencies": [],
+      "defaultInstall": true,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "platform-configs",
+      "kind": "platform",
+      "description": "Baseline platform configs, package-manager setup, and MCP catalog.",
+      "paths": [
+        ".claude-plugin",
+        ".codex",
+        ".cursor",
+        ".opencode",
+        "mcp-configs",
+        "scripts/setup-package-manager.js"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [],
+      "defaultInstall": true,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
+      "id": "framework-language",
+      "kind": "skills",
+      "description": "Core framework, language, and application-engineering skills.",
+      "paths": [
+        "skills/android-clean-architecture",
+        "skills/api-design",
+        "skills/backend-patterns",
+        "skills/coding-standards",
+        "skills/compose-multiplatform-patterns",
+        "skills/cpp-coding-standards",
+        "skills/cpp-testing",
+        "skills/django-patterns",
+        "skills/django-tdd",
+        "skills/django-verification",
+        "skills/frontend-patterns",
+        "skills/frontend-slides",
+        "skills/golang-patterns",
+        "skills/golang-testing",
+        "skills/java-coding-standards",
+        "skills/kotlin-coroutines-flows",
+        "skills/kotlin-exposed-patterns",
+        "skills/kotlin-ktor-patterns",
+        "skills/kotlin-patterns",
+        "skills/kotlin-testing",
+        "skills/laravel-patterns",
+        "skills/laravel-tdd",
+        "skills/laravel-verification",
+        "skills/mcp-server-patterns",
+        "skills/perl-patterns",
+        "skills/perl-testing",
+        "skills/python-patterns",
+        "skills/python-testing",
+        "skills/rust-patterns",
+        "skills/rust-testing",
+        "skills/springboot-patterns",
+        "skills/springboot-tdd",
+        "skills/springboot-verification"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "rules-core",
+        "agents-core",
+        "commands-core",
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "database",
+      "kind": "skills",
+      "description": "Database and persistence-focused skills.",
+      "paths": [
+        "skills/clickhouse-io",
+        "skills/database-migrations",
+        "skills/jpa-patterns",
+        "skills/postgres-patterns"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "workflow-quality",
+      "kind": "skills",
+      "description": "Evaluation, TDD, verification, learning, and compaction skills.",
+      "paths": [
+        "skills/ai-regression-testing",
+        "skills/configure-ecc",
+        "skills/continuous-learning",
+        "skills/continuous-learning-v2",
+        "skills/e2e-testing",
+        "skills/eval-harness",
+        "skills/iterative-retrieval",
+        "skills/plankton-code-quality",
+        "skills/project-guidelines-example",
+        "skills/skill-stocktake",
+        "skills/strategic-compact",
+        "skills/tdd-workflow",
+        "skills/verification-loop"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": true,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "security",
+      "kind": "skills",
+      "description": "Security review and security-focused framework guidance.",
+      "paths": [
+        "skills/django-security",
+        "skills/laravel-security",
+        "skills/perl-security",
+        "skills/security-review",
+        "skills/security-scan",
+        "skills/springboot-security",
+        "the-security-guide.md"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "workflow-quality"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "research-apis",
+      "kind": "skills",
+      "description": "Research and API integration skills for deep investigations and model integrations.",
+      "paths": [
+        "skills/claude-api",
+        "skills/deep-research",
+        "skills/exa-search"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "business-content",
+      "kind": "skills",
+      "description": "Business, writing, market, and investor communication skills.",
+      "paths": [
+        "skills/article-writing",
+        "skills/content-engine",
+        "skills/investor-materials",
+        "skills/investor-outreach",
+        "skills/market-research"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "heavy",
+      "stability": "stable"
+    },
+    {
+      "id": "social-distribution",
+      "kind": "skills",
+      "description": "Social publishing and distribution skills.",
+      "paths": [
+        "skills/crosspost",
+        "skills/x-api"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "business-content"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "media-generation",
+      "kind": "skills",
+      "description": "Media generation and AI-assisted editing skills.",
+      "paths": [
+        "skills/fal-ai-media",
+        "skills/video-editing",
+        "skills/videodb"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "heavy",
+      "stability": "beta"
+    },
+    {
+      "id": "orchestration",
+      "kind": "orchestration",
+      "description": "Worktree/tmux orchestration runtime and workflow docs.",
+      "paths": [
+        "commands/multi-workflow.md",
+        "commands/orchestrate.md",
+        "commands/sessions.md",
+        "scripts/lib/orchestration-session.js",
+        "scripts/lib/tmux-worktree-orchestrator.js",
+        "scripts/orchestrate-codex-worker.sh",
+        "scripts/orchestrate-worktrees.js",
+        "scripts/orchestration-status.js",
+        "skills/dmux-workflows"
+      ],
+      "targets": [
+        "claude",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "commands-core",
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "beta"
+    },
+    {
+      "id": "swift-apple",
+      "kind": "skills",
+      "description": "Swift, SwiftUI, and Apple platform skills including concurrency, persistence, and design patterns.",
+      "paths": [
+        "skills/foundation-models-on-device",
+        "skills/liquid-glass-design",
+        "skills/swift-actor-persistence",
+        "skills/swift-concurrency-6-2",
+        "skills/swift-protocol-di-testing",
+        "skills/swiftui-patterns"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "agentic-patterns",
+      "kind": "skills",
+      "description": "Agentic engineering, autonomous loops, agent harness construction, and LLM pipeline optimization skills.",
+      "paths": [
+        "skills/agent-harness-construction",
+        "skills/agentic-engineering",
+        "skills/ai-first-engineering",
+        "skills/autonomous-loops",
+        "skills/blueprint",
+        "skills/claude-devfleet",
+        "skills/content-hash-cache-pattern",
+        "skills/continuous-agent-loop",
+        "skills/cost-aware-llm-pipeline",
+        "skills/data-scraper-agent",
+        "skills/enterprise-agent-ops",
+        "skills/nanoclaw-repl",
+        "skills/prompt-optimizer",
+        "skills/ralphinho-rfc-pipeline",
+        "skills/regex-vs-llm-structured-text",
+        "skills/search-first",
+        "skills/team-builder"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "devops-infra",
+      "kind": "skills",
+      "description": "Deployment workflows, Docker patterns, and infrastructure skills.",
+      "paths": [
+        "skills/deployment-patterns",
+        "skills/docker-patterns"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "supply-chain-domain",
+      "kind": "skills",
+      "description": "Supply chain, logistics, procurement, and manufacturing domain skills.",
+      "paths": [
+        "skills/carrier-relationship-management",
+        "skills/customs-trade-compliance",
+        "skills/energy-procurement",
+        "skills/inventory-demand-planning",
+        "skills/logistics-exception-management",
+        "skills/production-scheduling",
+        "skills/quality-nonconformance",
+        "skills/returns-reverse-logistics"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "heavy",
+      "stability": "stable"
+    },
+    {
+      "id": "document-processing",
+      "kind": "skills",
+      "description": "Document processing, conversion, and translation skills.",
+      "paths": [
+        "skills/nutrient-document-processing",
+        "skills/visa-doc-translate"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    }
+  ]
+}

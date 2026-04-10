@@ -44,12 +44,12 @@ npx jsdoc2md src/**/*.ts                # Extract JSDoc
 
 ```
 docs/CODEMAPS/
-├── INDEX.md          # Overview of all areas
-├── frontend.md       # Frontend structure
-├── backend.md        # Backend/API structure
-├── database.md       # Database schema
-├── integrations.md   # External services
-└── workers.md        # Background jobs
+├── INDEX.md          # 所有区域概览
+├── frontend.md       # 前端结构
+├── backend.md        # 后端/API 结构
+├── database.md       # 数据库模式
+├── integrations.md   # 外部服务
+└── workers.md        # 后台任务
 ```
 
 ### 4. 代码映射格式

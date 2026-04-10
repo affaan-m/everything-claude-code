@@ -29,18 +29,18 @@ npm run claw
 ## REPL 命令
 
 ```text
-/help                          Show help
-/clear                         Clear current session history
-/history                       Print full conversation history
-/sessions                      List saved sessions
-/model [name]                  Show/set model
-/load <skill-name>             Hot-load a skill into context
-/branch <session-name>         Branch current session
-/search <query>                Search query across sessions
-/compact                       Compact old turns, keep recent context
-/export <md|json|txt> [path]   Export session
-/metrics                       Show session metrics
-exit                           Quit
+/help                          显示帮助信息
+/clear                         清除当前会话历史
+/history                       打印完整对话历史
+/sessions                      列出已保存的会话
+/model [name]                  显示/设置模型
+/load <skill-name>             热加载技能到上下文
+/branch <session-name>         分支当前会话
+/search <query>                跨会话搜索查询
+/compact                       压缩旧轮次，保留近期上下文
+/export <md|json|txt> [path]   导出会话
+/metrics                       显示会话指标
+exit                           退出
 ```
 
 ## 说明

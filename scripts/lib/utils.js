@@ -465,6 +465,24 @@ function countInFile(filePath, pattern) {
 }
 
 /**
+ * Strip all ANSI escape sequences from a string.
+ *
+ * Handles:
+ * - CSI sequences: \x1b[ … <letter>  (colors, cursor movement, erase, etc.)
+ * - OSC sequences: \x1b] … BEL/ST    (window titles, hyperlinks)
+ * - Charset selection: \x1b(B
+ * - Bare ESC + single letter: \x1b <letter>  (e.g. \x1bM for reverse index)
+ *
+ * @param {string} str - Input string possibly containing ANSI codes
+ * @returns {string} Cleaned string with all escape sequences removed
+ */
+function stripAnsi(str) {
+  if (typeof str !== 'string') return '';
+  // eslint-disable-next-line no-control-regex
+  return str.replace(/\x1b(?:\[[0-9;?]*[A-Za-z]|\][^\x07\x1b]*(?:\x07|\x1b\\)|\([A-Z]|[A-Z])/g, '');
+}
+
+/**
  * Search for pattern in file and return matching lines with line numbers
  */
 function grepFile(filePath, pattern) {
@@ -529,6 +547,9 @@ module.exports = {
   replaceInFile,
   countInFile,
   grepFile,
+
+  // String sanitisation
+  stripAnsi,
 
   // Hook I/O
   readStdinJson,

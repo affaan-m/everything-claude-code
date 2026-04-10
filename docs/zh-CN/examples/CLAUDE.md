@@ -43,11 +43,11 @@
 
 ```
 src/
-|-- app/              # Next.js app router
-|-- components/       # Reusable UI components
-|-- hooks/            # Custom React hooks
-|-- lib/              # Utility libraries
-|-- types/            # TypeScript definitions
+|-- app/              # Next.js 应用路由
+|-- components/       # 可复用的 UI 组件
+|-- hooks/            # 自定义 React 钩子
+|-- lib/              # 工具库
+|-- types/            # TypeScript 定义
 ```
 
 ## 关键模式

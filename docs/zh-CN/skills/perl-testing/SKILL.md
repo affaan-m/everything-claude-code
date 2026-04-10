@@ -229,19 +229,19 @@ done_testing;
 
 ```text
 t/
-├── 00-load.t              # Verify modules compile
-├── 01-basic.t             # Core functionality
+├── 00-load.t              # 验证模块编译
+├── 01-basic.t             # 核心功能
 ├── unit/
-│   ├── config.t           # Unit tests by module
+│   ├── config.t           # 按模块划分的单元测试
 │   ├── user.t
 │   └── util.t
 ├── integration/
 │   ├── database.t
 │   └── api.t
 ├── lib/
-│   └── TestHelper.pm      # Shared test utilities
+│   └── TestHelper.pm      # 共享测试工具
 └── fixtures/
-    ├── config.json        # Test data files
+    ├── config.json        # 测试数据文件
     └── users.csv
 ```
 

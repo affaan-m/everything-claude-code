@@ -30,4 +30,5 @@ paths:
 
 ## 参考
 
-关于端点约定和响应格式的指导，请参见技能：`api-design`。
+参见技能：`api-design` 了解端点约定和响应格式指导。
+参见技能：`laravel-patterns` 了解 Laravel 特定架构指导。

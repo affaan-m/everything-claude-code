@@ -1,6 +1,6 @@
 # Command → Agent / Skill Map
 
-This document lists each slash command and the primary agent(s) or skills it invokes. Use it to discover which commands use which agents and to keep refactoring consistent.
+This document lists each slash command and the primary agent(s) or skills it invokes, plus notable direct-invoke agents. Use it to discover which commands use which agents and to keep refactoring consistent.
 
 | Command | Primary agent(s) | Notes |
 |---------|------------------|--------|
@@ -45,6 +45,12 @@ This document lists each slash command and the primary agent(s) or skills it inv
 | `/claw` | — | NanoClaw CLI (scripts/claw.js) |
 | `/pm2` | — | PM2 service lifecycle |
 | `/security-scan` | security-reviewer (skill) | AgentShield via security-scan skill |
+
+## Direct-Use Agents
+
+| Direct agent | Purpose | Scope | Notes |
+|--------------|---------|-------|-------|
+| `typescript-reviewer` | TypeScript/JavaScript code review | TypeScript/JavaScript projects | Invoke the agent directly when a review needs TS/JS-specific findings and there is no dedicated slash command yet. |
 
 ## Skills referenced by commands
 

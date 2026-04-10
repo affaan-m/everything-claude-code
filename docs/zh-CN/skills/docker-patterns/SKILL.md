@@ -156,9 +156,9 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 同一 Compose 网络中的服务可通过服务名解析：
 
 ```
-# From "app" container:
-postgres://postgres:postgres@db:5432/app_dev    # "db" resolves to the db container
-redis://redis:6379/0                             # "redis" resolves to the redis container
+# 从 "app" 容器：
+postgres://postgres:postgres@db:5432/app_dev    # "db" 解析到 db 容器
+redis://redis:6379/0                             # "redis" 解析到 redis 容器
 ```
 
 ### 自定义网络
@@ -345,21 +345,21 @@ docker network inspect <project>_default
 ## 反模式
 
 ```
-# BAD: Using docker compose in production without orchestration
-# Use Kubernetes, ECS, or Docker Swarm for production multi-container workloads
+# 错误做法：在生产环境中使用 docker compose 而不进行编排
+# 生产环境多容器工作负载应使用 Kubernetes、ECS 或 Docker Swarm
 
-# BAD: Storing data in containers without volumes
-# Containers are ephemeral -- all data lost on restart without volumes
+# 错误做法：在容器内存储数据而不使用卷
+# 容器是临时性的——不使用卷时，重启会导致所有数据丢失
 
-# BAD: Running as root
-# Always create and use a non-root user
+# 错误做法：以 root 用户身份运行
+# 始终创建并使用非 root 用户
 
-# BAD: Using :latest tag
-# Pin to specific versions for reproducible builds
+# 错误做法：使用 :latest 标签
+# 固定到特定版本以实现可复现的构建
 
-# BAD: One giant container with all services
-# Separate concerns: one process per container
+# 错误做法：将所有服务放入一个巨型容器
+# 关注点分离：每个容器运行一个进程
 
-# BAD: Putting secrets in docker-compose.yml
-# Use .env files (gitignored) or Docker secrets
+# 错误做法：将密钥放入 docker-compose.yml
+# 使用 .env 文件（在 git 中忽略）或 Docker secrets
 ```

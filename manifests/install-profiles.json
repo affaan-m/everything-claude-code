@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "profiles": {
+    "core": {
+      "description": "Minimal harness baseline with commands, hooks, platform configs, and quality workflow support.",
+      "modules": [
+        "rules-core",
+        "agents-core",
+        "commands-core",
+        "hooks-runtime",
+        "platform-configs",
+        "workflow-quality"
+      ]
+    },
+    "developer": {
+      "description": "Default engineering profile for most ECC users working across app codebases.",
+      "modules": [
+        "rules-core",
+        "agents-core",
+        "commands-core",
+        "hooks-runtime",
+        "platform-configs",
+        "workflow-quality",
+        "framework-language",
+        "database",
+        "orchestration"
+      ]
+    },
+    "security": {
+      "description": "Security-heavy setup with baseline runtime support and security-specific guidance.",
+      "modules": [
+        "rules-core",
+        "agents-core",
+        "commands-core",
+        "hooks-runtime",
+        "platform-configs",
+        "workflow-quality",
+        "security"
+      ]
+    },
+    "research": {
+      "description": "Research and content-oriented setup for investigation, synthesis, and publishing workflows.",
+      "modules": [
+        "rules-core",
+        "agents-core",
+        "commands-core",
+        "hooks-runtime",
+        "platform-configs",
+        "workflow-quality",
+        "research-apis",
+        "business-content",
+        "social-distribution"
+      ]
+    },
+    "full": {
+      "description": "Complete ECC install with all currently classified modules.",
+      "modules": [
+        "rules-core",
+        "agents-core",
+        "commands-core",
+        "hooks-runtime",
+        "platform-configs",
+        "framework-language",
+        "database",
+        "workflow-quality",
+        "security",
+        "research-apis",
+        "business-content",
+        "social-distribution",
+        "media-generation",
+        "orchestration",
+        "swift-apple",
+        "agentic-patterns",
+        "devops-infra",
+        "supply-chain-domain",
+        "document-processing"
+      ]
+    }
+  }
+}

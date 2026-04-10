@@ -79,10 +79,10 @@ pytest --cov=app --cov-report=term-missing # Test coverage
 ## 审查输出格式
 
 ```text
-[SEVERITY] Issue title
-File: path/to/file.py:42
-Issue: Description
-Fix: What to change
+[严重性] 问题标题
+文件：path/to/file.py:42
+问题：描述
+修复：修改内容
 ```
 
 ## 批准标准

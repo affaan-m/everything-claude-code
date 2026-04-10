@@ -47,6 +47,7 @@ The project is organized into several core components:
 - Cross-platform: Windows, macOS, Linux support via Node.js scripts
 - Agent format: Markdown with YAML frontmatter (name, description, tools, model)
 - Skill format: Markdown with clear sections for when to use, how it works, examples
+- Skill placement: Curated in skills/; generated/imported under ~/.claude/skills/. See docs/SKILL-PLACEMENT-POLICY.md
 - Hook format: JSON with matcher conditions and command/notification hooks
 
 ## Contributing

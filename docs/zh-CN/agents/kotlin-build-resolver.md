@@ -31,11 +31,11 @@ model: sonnet
 ## 解决工作流
 
 ```text
-1. ./gradlew build        -> Parse error message
-2. Read affected file     -> Understand context
-3. Apply minimal fix      -> Only what's needed
-4. ./gradlew build        -> Verify fix
-5. ./gradlew test         -> Ensure nothing broke
+1. ./gradlew build        -> 解析错误信息
+2. 读取受影响的文件      -> 理解上下文
+3. 应用最小修复          -> 仅解决必要问题
+4. ./gradlew build        -> 验证修复
+5. ./gradlew test         -> 确保无新增问题
 ```
 
 ## 常见修复模式
@@ -108,10 +108,10 @@ kotlin {
 ## 输出格式
 
 ```text
-[FIXED] src/main/kotlin/com/example/service/UserService.kt:42
-Error: Unresolved reference: UserRepository
-Fix: Added import com.example.repository.UserRepository
-Remaining errors: 2
+[已修复] src/main/kotlin/com/example/service/UserService.kt:42
+错误：未解析的引用：UserRepository
+修复：已添加导入 com.example.repository.UserRepository
+剩余错误：2
 ```
 
 最终：`Build Status: SUCCESS/FAILED | Errors Fixed: N | Files Modified: list`

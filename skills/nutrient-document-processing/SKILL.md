@@ -6,6 +6,8 @@ origin: ECC
 
 # Nutrient Document Processing
 
+> **Note:** This skill integrates with the Nutrient commercial API. Review their terms before use.
+
 Process documents with the [Nutrient DWS Processor API](https://www.nutrient.io/api/). Convert formats, extract text and tables, OCR scanned documents, redact PII, add watermarks, digitally sign, and fill PDF forms.
 
 ## Setup

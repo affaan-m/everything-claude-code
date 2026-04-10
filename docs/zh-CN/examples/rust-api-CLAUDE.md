@@ -92,36 +92,36 @@ impl IntoResponse for AppError {
 
 ```
 src/
-  main.rs              # Entrypoint, server setup, graceful shutdown
-  lib.rs               # Re-exports for integration tests
-  config.rs            # Environment config with envy or figment
-  router.rs            # Axum router with all routes
+  main.rs              # 入口点、服务器设置、优雅关闭
+  lib.rs               # 用于集成测试的重新导出
+  config.rs            # 使用 envy 或 figment 的环境配置
+  router.rs            # 包含所有路由的 Axum 路由器
   middleware/
-    auth.rs            # JWT extraction and validation
-    logging.rs         # Request/response tracing
+    auth.rs            # JWT 提取与验证
+    logging.rs         # 请求/响应追踪
   handlers/
-    mod.rs             # Route handlers (thin — delegate to services)
+    mod.rs             # 路由处理器（精简版——委托给服务层）
     users.rs
     orders.rs
   services/
-    mod.rs             # Business logic
+    mod.rs             # 业务逻辑
     users.rs
     orders.rs
   repositories/
-    mod.rs             # Database access (SQLx queries)
+    mod.rs             # 数据库访问（SQLx 查询）
     users.rs
     orders.rs
   domain/
-    mod.rs             # Domain types, error enums
+    mod.rs             # 领域类型、错误枚举
     user.rs
     order.rs
 migrations/
   001_create_users.sql
   002_create_orders.sql
 tests/
-  common/mod.rs        # Shared test helpers, test server setup
-  api_users.rs         # Integration tests for user endpoints
-  api_orders.rs        # Integration tests for order endpoints
+  common/mod.rs        # 共享测试辅助工具、测试服务器设置
+  api_users.rs         # 用户端点的集成测试
+  api_orders.rs        # 订单端点的集成测试
 ```
 
 ## 关键模式

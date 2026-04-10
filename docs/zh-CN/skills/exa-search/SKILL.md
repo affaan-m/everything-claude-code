@@ -24,17 +24,14 @@ origin: ECC
 ```json
 "exa-web-search": {
   "command": "npx",
-  "args": [
-    "-y",
-    "exa-mcp-server",
-    "tools=web_search_exa,web_search_advanced_exa,get_code_context_exa,crawling_exa,company_research_exa,people_search_exa,deep_researcher_start,deep_researcher_check"
-  ],
+  "args": ["-y", "exa-mcp-server"],
   "env": { "EXA_API_KEY": "YOUR_EXA_API_KEY_HERE" }
 }
 ```
 
 在 [exa.ai](https://exa.ai) 获取 API 密钥。
-如果省略 `tools=...` 参数，可能只会启用较小的默认工具集。
+此仓库当前的 Exa 设置记录了此处公开的工具接口：`web_search_exa` 和 `get_code_context_exa`。
+如果你的 Exa 服务器公开了其他工具，请在文档或提示中依赖它们之前，先核实其确切名称。
 
 ## 核心工具
 
@@ -43,39 +40,18 @@ origin: ECC
 用于当前信息、新闻或事实的通用网页搜索。
 
 ```
-web_search_exa(query: "latest AI developments 2026", numResults: 5)
+web_search_exa(query: "2026年最新人工智能发展", numResults: 5)
 ```
 
 **参数：**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |-------|------|---------|-------|
-| `query` | string | 必需 | 搜索查询 |
-| `numResults` | number | 8 | 结果数量 |
-
-### web\_search\_advanced\_exa
-
-具有域名和日期约束的过滤搜索。
-
-```
-web_search_advanced_exa(
-  query: "React Server Components best practices",
-  numResults: 5,
-  includeDomains: ["github.com", "react.dev"],
-  startPublishedDate: "2025-01-01"
-)
-```
-
-**参数：**
-
-| 参数 | 类型 | 默认值 | 说明 |
-|-------|------|---------|-------|
-| `query` | string | 必需 | 搜索查询 |
-| `numResults` | number | 8 | 结果数量 |
-| `includeDomains` | string\[] | 无 | 限制在特定域名 |
-| `excludeDomains` | string\[] | 无 | 排除特定域名 |
-| `startPublishedDate` | string | 无 | ISO 日期过滤器（开始） |
-| `endPublishedDate` | string | 无 | ISO 日期过滤器（结束） |
+| `query` | 字符串 | 必填 | 搜索查询 |
+| `numResults` | 数字 | 8 | 结果数量 |
+| `type` | 字符串 | `auto` | 搜索模式 |
+| `livecrawl` | 字符串 | `fallback` | 需要时优先使用实时爬取 |
+| `category` | 字符串 | 无 | 可选焦点，例如 `company` 或 `research paper` |
 
 ### get\_code\_context\_exa
 
@@ -92,93 +68,40 @@ get_code_context_exa(query: "Python asyncio patterns", tokensNum: 3000)
 | `query` | string | 必需 | 代码或 API 搜索查询 |
 | `tokensNum` | number | 5000 | 内容令牌数（1000-50000） |
 
-### company\_research\_exa
-
-用于商业情报和新闻的公司研究。
-
-```
-company_research_exa(companyName: "Anthropic", numResults: 5)
-```
-
-**参数：**
-
-| 参数 | 类型 | 默认值 | 说明 |
-|-------|------|---------|-------|
-| `companyName` | string | 必需 | 公司名称 |
-| `numResults` | number | 5 | 结果数量 |
-
-### people\_search\_exa
-
-查找专业资料和个人简介。
-
-```
-people_search_exa(query: "AI safety researchers at Anthropic", numResults: 5)
-```
-
-### crawling\_exa
-
-从 URL 提取完整页面内容。
-
-```
-crawling_exa(url: "https://example.com/article", tokensNum: 5000)
-```
-
-**参数：**
-
-| 参数 | 类型 | 默认值 | 说明 |
-|-------|------|---------|-------|
-| `url` | string | 必需 | 要提取的 URL |
-| `tokensNum` | number | 5000 | 内容令牌数 |
-
-### deep\_researcher\_start / deep\_researcher\_check
-
-启动一个异步运行的 AI 研究代理。
-
-```
-# Start research
-deep_researcher_start(query: "comprehensive analysis of AI code editors in 2026")
-
-# Check status (returns results when complete)
-deep_researcher_check(researchId: "<id from start>")
-```
-
 ## 使用模式
 
 ### 快速查找
 
 ```
-web_search_exa(query: "Node.js 22 new features", numResults: 3)
+web_search_exa(query: "Node.js 22 新功能", numResults: 3)
 ```
 
 ### 代码研究
 
 ```
-get_code_context_exa(query: "Rust error handling patterns Result type", tokensNum: 3000)
+get_code_context_exa(query: "Rust错误处理模式Result类型", tokensNum: 3000)
 ```
 
-### 公司尽职调查
+### 公司或人物研究
 
 ```
-company_research_exa(companyName: "Vercel", numResults: 5)
-web_search_advanced_exa(query: "Vercel funding valuation 2026", numResults: 3)
+web_search_exa(query: "Vercel 2026年融资估值", numResults: 3, category: "company")
+web_search_exa(query: "site:linkedin.com/in Anthropic AI安全研究员", numResults: 5)
 ```
 
 ### 技术深度研究
 
 ```
-# Start async research
-deep_researcher_start(query: "WebAssembly component model status and adoption")
-# ... do other work ...
-deep_researcher_check(researchId: "<id>")
+web_search_exa(query: "WebAssembly 组件模型状态与采用情况", numResults: 5)
+get_code_context_exa(query: "WebAssembly 组件模型示例", tokensNum: 4000)
 ```
 
 ## 提示
 
-* 使用 `web_search_exa` 进行广泛查询，使用 `web_search_advanced_exa` 获取过滤结果
-* 较低的 `tokensNum`（1000-2000）用于聚焦的代码片段，较高的（5000+）用于全面的上下文
-* 结合 `company_research_exa` 和 `web_search_advanced_exa` 进行彻底的公司分析
-* 使用 `crawling_exa` 从搜索结果中的特定 URL 获取完整内容
-* `deep_researcher_start` 最适合受益于 AI 综合的全面主题
+* 使用 `web_search_exa` 获取最新信息、公司查询和广泛发现
+* 使用 `site:`、引号内的短语和 `intitle:` 等搜索运算符来缩小结果范围
+* 对于聚焦的代码片段，使用较低的 `tokensNum` (1000-2000)；对于全面的上下文，使用较高的值 (5000+)
+* 当你需要 API 用法或代码示例而非通用网页时，使用 `get_code_context_exa`
 
 ## 相关技能
 

@@ -1,6 +1,6 @@
 # Harness Audit Command
 
-Audit the current repository's agent harness setup and return a prioritized scorecard.
+Run a deterministic repository harness audit and return a prioritized scorecard.
 
 ## Usage
 
@@ -9,9 +9,19 @@ Audit the current repository's agent harness setup and return a prioritized scor
 - `scope` (optional): `repo` (default), `hooks`, `skills`, `commands`, `agents`
 - `--format`: output style (`text` default, `json` for automation)
 
-## What to Evaluate
+## Deterministic Engine
 
-Score each category from `0` to `10`:
+Always run:
+
+```bash
+node scripts/harness-audit.js <scope> --format <text|json>
+```
+
+This script is the source of truth for scoring and checks. Do not invent additional dimensions or ad-hoc points.
+
+Rubric version: `2026-03-16`.
+
+The script computes 7 fixed categories (`0-10` normalized each):
 
 1. Tool Coverage
 2. Context Efficiency
@@ -21,34 +31,37 @@ Score each category from `0` to `10`:
 6. Security Guardrails
 7. Cost Efficiency
 
+Scores are derived from explicit file/rule checks and are reproducible for the same commit.
+
 ## Output Contract
 
 Return:
 
-1. `overall_score` out of 70
+1. `overall_score` out of `max_score` (70 for `repo`; smaller for scoped audits)
 2. Category scores and concrete findings
-3. Top 3 actions with exact file paths
-4. Suggested ECC skills to apply next
+3. Failed checks with exact file paths
+4. Top 3 actions from the deterministic output (`top_actions`)
+5. Suggested ECC skills to apply next
 
 ## Checklist
 
-- Inspect `hooks/hooks.json`, `scripts/hooks/`, and hook tests.
-- Inspect `skills/`, command coverage, and agent coverage.
-- Verify cross-harness parity for `.cursor/`, `.opencode/`, `.codex/`.
-- Flag broken or stale references.
+- Use script output directly; do not rescore manually.
+- If `--format json` is requested, return the script JSON unchanged.
+- If text is requested, summarize failing checks and top actions.
+- Include exact file paths from `checks[]` and `top_actions[]`.
 
 ## Example Result
 
 ```text
-Harness Audit (repo): 52/70
-- Quality Gates: 9/10
-- Eval Coverage: 6/10
-- Cost Efficiency: 4/10
+Harness Audit (repo): 66/70
+- Tool Coverage: 10/10 (10/10 pts)
+- Context Efficiency: 9/10 (9/10 pts)
+- Quality Gates: 10/10 (10/10 pts)
 
 Top 3 Actions:
-1) Add cost tracking hook in scripts/hooks/cost-tracker.js
-2) Add pass@k docs and templates in skills/eval-harness/SKILL.md
-3) Add command parity for /harness-audit in .opencode/commands/
+1) [Security Guardrails] Add prompt/tool preflight security guards in hooks/hooks.json. (hooks/hooks.json)
+2) [Tool Coverage] Sync commands/harness-audit.md and .opencode/commands/harness-audit.md. (.opencode/commands/harness-audit.md)
+3) [Eval Coverage] Increase automated test coverage across scripts/hooks/lib. (tests/)
 ```
 
 ## Arguments

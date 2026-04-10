@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 /**
- * Validate skill directories have SKILL.md with required structure
+ * Validate curated skill directories (skills/ in repo).
+ * Scope: curated only. Learned/imported/evolved roots are out of scope.
+ * If skills/ does not exist, exit 0 (no curated skills to validate).
  */
 
 const fs = require('fs');
@@ -10,7 +12,7 @@ const SKILLS_DIR = path.join(__dirname, '../../skills');
 
 function validateSkills() {
   if (!fs.existsSync(SKILLS_DIR)) {
-    console.log('No skills directory found, skipping validation');
+    console.log('No curated skills directory (skills/), skipping');
     process.exit(0);
   }
 

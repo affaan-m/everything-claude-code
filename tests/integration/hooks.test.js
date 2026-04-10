@@ -171,6 +171,16 @@ function cleanupTestDir(testDir) {
   fs.rmSync(testDir, { recursive: true, force: true });
 }
 
+function getHookCommandByDescription(hooks, lifecycle, descriptionText) {
+  const hookGroup = hooks.hooks[lifecycle]?.find(
+    entry => entry.description && entry.description.includes(descriptionText)
+  );
+
+  assert.ok(hookGroup, `Expected ${lifecycle} hook matching "${descriptionText}"`);
+  assert.ok(hookGroup.hooks?.[0]?.command, `Expected ${lifecycle} hook command for "${descriptionText}"`);
+  return hookGroup.hooks[0].command;
+}
+
 // Test suite
 async function runTests() {
   console.log('\n=== Hook Integration Tests ===\n');
@@ -253,7 +263,11 @@ async function runTests() {
 
   if (await asyncTest('dev server hook transforms command to tmux session', async () => {
     // Test the auto-tmux dev hook — transforms dev commands to run in tmux
-    const hookCommand = hooks.hooks.PreToolUse[0].hooks[0].command;
+    const hookCommand = getHookCommandByDescription(
+      hooks,
+      'PreToolUse',
+      'Auto-start dev servers in tmux'
+    );
     const result = await runHookCommand(hookCommand, {
       tool_input: { command: 'npm run dev' }
     });
@@ -280,7 +294,11 @@ async function runTests() {
 
   if (await asyncTest('dev server hook transforms yarn dev to tmux session', async () => {
     // The auto-tmux dev hook transforms dev commands (yarn dev, npm run dev, etc.)
-    const hookCommand = hooks.hooks.PreToolUse[0].hooks[0].command;
+    const hookCommand = getHookCommandByDescription(
+      hooks,
+      'PreToolUse',
+      'Auto-start dev servers in tmux'
+    );
     const result = await runHookCommand(hookCommand, {
       tool_input: { command: 'yarn dev' }
     });
@@ -292,6 +310,50 @@ async function runTests() {
       const parsed = JSON.parse(output);
       assert.ok(parsed.tool_input, 'Should output valid JSON with tool_input');
       assert.ok(parsed.tool_input.command, 'Should have a command in output');
+    }
+  })) passed++; else failed++;
+
+  if (await asyncTest('MCP health hook blocks unhealthy MCP tool calls through hooks.json', async () => {
+    const hookCommand = getHookCommandByDescription(
+      hooks,
+      'PreToolUse',
+      'Check MCP server health before MCP tool execution'
+    );
+
+    const testDir = createTestDir();
+    const configPath = path.join(testDir, 'claude.json');
+    const statePath = path.join(testDir, 'mcp-health.json');
+    const serverScript = path.join(testDir, 'broken-mcp.js');
+
+    try {
+      fs.writeFileSync(serverScript, 'process.exit(1);\n');
+      fs.writeFileSync(
+        configPath,
+        JSON.stringify({
+          mcpServers: {
+            broken: {
+              command: process.execPath,
+              args: [serverScript]
+            }
+          }
+        })
+      );
+
+      const result = await runHookCommand(
+        hookCommand,
+        { tool_name: 'mcp__broken__search', tool_input: {} },
+        {
+          CLAUDE_HOOK_EVENT_NAME: 'PreToolUse',
+          ECC_MCP_CONFIG_PATH: configPath,
+          ECC_MCP_HEALTH_STATE_PATH: statePath,
+          ECC_MCP_HEALTH_TIMEOUT_MS: '100'
+        }
+      );
+
+      assert.strictEqual(result.code, 2, 'Expected unhealthy MCP preflight to block');
+      assert.ok(result.stderr.includes('broken is unavailable'), `Expected health warning, got: ${result.stderr}`);
+    } finally {
+      cleanupTestDir(testDir);
     }
   })) passed++; else failed++;
 
@@ -673,6 +735,7 @@ async function runTests() {
 
           const isInline = hook.command.startsWith('node -e');
           const isFilePath = hook.command.startsWith('node "');
+          const isNpx = hook.command.startsWith('npx ');
           const isShellWrapper =
             hook.command.startsWith('bash "') ||
             hook.command.startsWith('sh "') ||
@@ -681,8 +744,8 @@ async function runTests() {
           const isShellScriptPath = hook.command.endsWith('.sh');
 
           assert.ok(
-            isInline || isFilePath || isShellWrapper || isShellScriptPath,
-            `Hook command in ${hookType} should be node -e, node script, or shell wrapper/script, got: ${hook.command.substring(0, 80)}`
+            isInline || isFilePath || isNpx || isShellWrapper || isShellScriptPath,
+            `Hook command in ${hookType} should be node -e, node script, npx, or shell wrapper/script, got: ${hook.command.substring(0, 80)}`
           );
         }
       }

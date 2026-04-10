@@ -1,0 +1,7 @@
+interface:
+  display_name: "Documentation Lookup"
+  short_description: "Fetch up-to-date library docs via Context7 MCP"
+  brand_color: "#6366F1"
+  default_prompt: "Look up docs for a library or API"
+policy:
+  allow_implicit_invocation: true
