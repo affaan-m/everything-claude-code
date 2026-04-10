@@ -29,8 +29,6 @@ class MyAppTest {
         app.setConfiguration(config);
         app.init(); // triggers @Action annotation processing
     }
-
-    @Test
     void testHello() throws Exception {
         // Direct invocation via the application object
         Object result = app.invoke("hello");
