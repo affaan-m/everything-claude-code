@@ -239,6 +239,44 @@ Arka plan gözlemcisini kontrol etmek için `config.json` dosyasını düzenleyi
 | `observer.run_interval_minutes` | `5` | Gözlemcinin gözlemleri ne sıklıkla analiz ettiği |
 | `observer.min_observations_to_analyze` | `20` | Analiz çalışmadan önce minimum gözlem |
 
+### Harici Yapılandırma (Plugin Kurulumları İçin Önerilir)
+
+Plugin olarak kurulduğunda, plugin önbelleğindeki `config.json` her güncellemede üzerine yazılır. `CLV2_CONFIG` ortam değişkenini önbellek dışındaki bir dosyaya yönlendirerek özel ayarlarınızı koruyabilirsiniz:
+
+```bash
+# ~/.zshenv (veya ~/.bashrc) dosyasına ekleyin
+export CLV2_CONFIG="$HOME/.claude/homunculus/config.json"
+```
+
+Yapılandırma dosyasını oluşturun:
+
+```bash
+cat > ~/.claude/homunculus/config.json << 'EOF'
+{
+  "version": "2.1",
+  "observer": {
+    "enabled": true,
+    "run_interval_minutes": 5,
+    "min_observations_to_analyze": 20
+  }
+}
+EOF
+```
+
+`observe.sh` ve `start-observer.sh` `CLV2_CONFIG`'i destekler. Ayarlandığında, yerleşik `config.json`'dan önceliklidir.
+
+### Ortam Değişkenleri
+
+| Değişken | Varsayılan | Açıklama |
+|----------|-----------|----------|
+| `CLV2_CONFIG` | *(yerleşik config.json)* | Harici yapılandırma dosyası yolu |
+| `ECC_OBSERVER_MAX_TURNS` | `20` | Haiku analizi için maksimum araç çağrısı |
+| `ECC_OBSERVER_TIMEOUT_SECONDS` | `120` | Analiz süreci için watchdog zaman aşımı |
+| `ECC_OBSERVER_MAX_ANALYSIS_LINES` | `500` | Haiku'ya gönderilen maksimum observation satırı |
+| `ECC_OBSERVER_SIGNAL_EVERY_N` | `20` | Her N observation'da observer'a sinyal gönder |
+| `ECC_OBSERVER_ANALYSIS_COOLDOWN` | `60` | Analizler arası minimum süre (saniye) |
+| `ECC_OBSERVER_IDLE_TIMEOUT_SECONDS` | `1800` | Boşta kalma zaman aşımı sonrası observer otomatik çıkış |
+
 Diğer davranışlar (gözlem yakalama, instinct eşikleri, proje kapsamı, yükseltme kriterleri) `instinct-cli.py` ve `observe.sh` içindeki kod varsayılanları aracılığıyla yapılandırılır.
 
 ## Dosya Yapısı

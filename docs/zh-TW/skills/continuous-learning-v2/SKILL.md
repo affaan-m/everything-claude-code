@@ -178,6 +178,44 @@ touch ~/.claude/homunculus/observations.jsonl
 }
 ```
 
+### 外部設定檔（建議 Plugin 安裝使用）
+
+以 Plugin 安裝時，plugin cache 中的 `config.json` 會在每次更新時被覆蓋。設定 `CLV2_CONFIG` 環境變數指向 cache 外的設定檔，即可保留自訂設定：
+
+```bash
+# 加入 ~/.zshenv（或 ~/.bashrc）
+export CLV2_CONFIG="$HOME/.claude/homunculus/config.json"
+```
+
+建立設定檔：
+
+```bash
+cat > ~/.claude/homunculus/config.json << 'EOF'
+{
+  "version": "2.1",
+  "observer": {
+    "enabled": true,
+    "run_interval_minutes": 5,
+    "min_observations_to_analyze": 20
+  }
+}
+EOF
+```
+
+`observe.sh` 和 `start-observer.sh` 都支援 `CLV2_CONFIG`，設定後優先於內建的 `config.json`。
+
+### 環境變數
+
+| 變數 | 預設值 | 說明 |
+|------|--------|------|
+| `CLV2_CONFIG` | *（內建 config.json）* | 外部設定檔路徑 |
+| `ECC_OBSERVER_MAX_TURNS` | `20` | Haiku 分析的最大工具呼叫次數 |
+| `ECC_OBSERVER_TIMEOUT_SECONDS` | `120` | 分析程序的 watchdog 超時 |
+| `ECC_OBSERVER_MAX_ANALYSIS_LINES` | `500` | 傳送給 Haiku 的最大 observation 行數 |
+| `ECC_OBSERVER_SIGNAL_EVERY_N` | `20` | 每 N 次 observation 才通知 observer |
+| `ECC_OBSERVER_ANALYSIS_COOLDOWN` | `60` | 兩次分析之間的最小間隔（秒） |
+| `ECC_OBSERVER_IDLE_TIMEOUT_SECONDS` | `1800` | 閒置超時後 observer 自動退出 |
+
 ## 檔案結構
 
 ```

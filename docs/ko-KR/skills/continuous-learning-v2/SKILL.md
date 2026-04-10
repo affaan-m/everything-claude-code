@@ -239,6 +239,44 @@ mkdir -p ~/.claude/homunculus/{instincts/{personal,inherited},evolved/{agents,sk
 | `observer.run_interval_minutes` | `5` | 관찰자가 관찰 결과를 분석하는 빈도 |
 | `observer.min_observations_to_analyze` | `20` | 분석 실행 전 최소 관찰 횟수 |
 
+### 외부 설정 (플러그인 설치 시 권장)
+
+플러그인으로 설치한 경우, 플러그인 캐시 내의 `config.json`은 업데이트마다 덮어쓰기됩니다. `CLV2_CONFIG` 환경 변수를 캐시 외부의 설정 파일로 지정하면 사용자 정의 설정을 유지할 수 있습니다:
+
+```bash
+# ~/.zshenv (또는 ~/.bashrc)에 추가
+export CLV2_CONFIG="$HOME/.claude/homunculus/config.json"
+```
+
+설정 파일을 생성합니다:
+
+```bash
+cat > ~/.claude/homunculus/config.json << 'EOF'
+{
+  "version": "2.1",
+  "observer": {
+    "enabled": true,
+    "run_interval_minutes": 5,
+    "min_observations_to_analyze": 20
+  }
+}
+EOF
+```
+
+`observe.sh`와 `start-observer.sh` 모두 `CLV2_CONFIG`를 지원합니다. 설정 시 내장 `config.json`보다 우선합니다.
+
+### 환경 변수
+
+| 변수 | 기본값 | 설명 |
+|------|--------|------|
+| `CLV2_CONFIG` | *(내장 config.json)* | 외부 설정 파일 경로 |
+| `ECC_OBSERVER_MAX_TURNS` | `20` | Haiku 분석의 최대 도구 호출 횟수 |
+| `ECC_OBSERVER_TIMEOUT_SECONDS` | `120` | 분석 프로세스의 워치독 타임아웃 |
+| `ECC_OBSERVER_MAX_ANALYSIS_LINES` | `500` | Haiku에 전송할 최대 observation 행 수 |
+| `ECC_OBSERVER_SIGNAL_EVERY_N` | `20` | N회 observation마다 observer에 알림 |
+| `ECC_OBSERVER_ANALYSIS_COOLDOWN` | `60` | 분석 간 최소 간격 (초) |
+| `ECC_OBSERVER_IDLE_TIMEOUT_SECONDS` | `1800` | 유휴 타임아웃 후 observer 자동 종료 |
+
 기타 동작 (관찰 캡처, 본능 임계값, 프로젝트 범위, 승격 기준)은 `instinct-cli.py`와 `observe.sh`의 코드 기본값으로 구성됩니다.
 
 ## 파일 구조

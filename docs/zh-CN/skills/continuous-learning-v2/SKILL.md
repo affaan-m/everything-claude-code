@@ -242,6 +242,44 @@ mkdir -p ~/.claude/homunculus/{instincts/{personal,inherited},evolved/{agents,sk
 | `observer.run_interval_minutes` | `5` | 观察器分析观察结果的频率 |
 | `observer.min_observations_to_analyze` | `20` | 运行分析所需的最小观察次数 |
 
+### 外部配置（推荐 Plugin 安装使用）
+
+以 Plugin 安装时，plugin cache 中的 `config.json` 会在每次更新时被覆盖。设置 `CLV2_CONFIG` 环境变量指向 cache 外的配置文件，即可保留自定义设置：
+
+```bash
+# 添加到 ~/.zshenv（或 ~/.bashrc）
+export CLV2_CONFIG="$HOME/.claude/homunculus/config.json"
+```
+
+创建配置文件：
+
+```bash
+cat > ~/.claude/homunculus/config.json << 'EOF'
+{
+  "version": "2.1",
+  "observer": {
+    "enabled": true,
+    "run_interval_minutes": 5,
+    "min_observations_to_analyze": 20
+  }
+}
+EOF
+```
+
+`observe.sh` 和 `start-observer.sh` 都支持 `CLV2_CONFIG`，设置后优先于内置的 `config.json`。
+
+### 环境变量
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `CLV2_CONFIG` | *（内置 config.json）* | 外部配置文件路径 |
+| `ECC_OBSERVER_MAX_TURNS` | `20` | Haiku 分析的最大工具调用次数 |
+| `ECC_OBSERVER_TIMEOUT_SECONDS` | `120` | 分析进程的 watchdog 超时 |
+| `ECC_OBSERVER_MAX_ANALYSIS_LINES` | `500` | 发送给 Haiku 的最大 observation 行数 |
+| `ECC_OBSERVER_SIGNAL_EVERY_N` | `20` | 每 N 次 observation 才通知 observer |
+| `ECC_OBSERVER_ANALYSIS_COOLDOWN` | `60` | 两次分析之间的最小间隔（秒） |
+| `ECC_OBSERVER_IDLE_TIMEOUT_SECONDS` | `1800` | 空闲超时后 observer 自动退出 |
+
 其他行为 (观察捕获、本能阈值、项目作用域、提升标准) 通过 `instinct-cli.py` 和 `observe.sh` 中的代码默认值进行配置。
 
 ## 文件结构
