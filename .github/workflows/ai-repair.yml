@@ -1,0 +1,112 @@
+# ==========================================================================
+# AI Pipeline Repair — GitHub Actions Workflow
+# ==========================================================================
+# Triggers automatically when the CI workflow fails.
+# Analyzes the failure, fixes the code, and opens a PR.
+#
+# Required secrets:
+#   - ANTHROPIC_API_KEY: Anthropic Claude API key
+# Notes:
+#   - GITHUB_TOKEN is auto-provided by GitHub Actions.
+# ===========================================================================
+
+name: AI Pipeline Repair
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Failed CI workflow run ID to repair"
+        required: true
+        type: string
+      owner:
+        description: "Repository owner override (optional)"
+        required: false
+        type: string
+      repo:
+        description: "Repository name override (optional)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: ai-repair-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    name: Auto-Repair Failed Pipeline
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: >-
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure' && !startsWith(github.event.workflow_run.head_branch, 'ai/fix')) ||
+      github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Resolve run context
+        id: context
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            echo "run_id=${{ github.event.workflow_run.id }}" >> "$GITHUB_OUTPUT"
+            echo "repo_owner=${{ github.repository_owner }}" >> "$GITHUB_OUTPUT"
+            echo "repo_name=${{ github.event.repository.name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_id=${{ inputs.run_id }}" >> "$GITHUB_OUTPUT"
+            echo "repo_owner=${{ inputs.owner || github.repository_owner }}" >> "$GITHUB_OUTPUT"
+            echo "repo_name=${{ inputs.repo || github.event.repository.name }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - name: Install repair agent
+        run: |
+          pip install -r projects/ai-pipeline-repair/requirements.txt
+          npm ci --ignore-scripts || true
+
+      - name: Run AI Repair Agent
+        id: repair
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ steps.context.outputs.repo_owner }}
+          REPO_NAME: ${{ steps.context.outputs.repo_name }}
+          REPAIR_PROVIDER: github
+          REPAIR_LOG_LEVEL: INFO
+        run: |
+          cd projects/ai-pipeline-repair
+          python -m src.main repair \
+            "${{ steps.context.outputs.run_id }}" \
+            --owner "$REPO_OWNER" \
+            --repo "$REPO_NAME" \
+            | tee /tmp/repair-result.json
+
+      - name: Upload repair result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repair-result-${{ steps.context.outputs.run_id }}
+          path: /tmp/repair-result.json
+          retention-days: 30

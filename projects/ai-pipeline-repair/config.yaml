@@ -1,0 +1,72 @@
+# AI Pipeline Repair Agent — Configuration
+# ==========================================
+# Override any value via environment variables prefixed with REPAIR_
+# e.g., REPAIR_PROVIDER=gitlab, REPAIR_AI_MODEL=gpt-4o
+
+# Git provider: github | gitlab | bitbucket
+provider: github
+
+# Provider-specific settings
+providers:
+  github:
+    api_url: https://api.github.com
+    # GITHUB_TOKEN env var required
+  gitlab:
+    api_url: https://gitlab.com/api/v4
+    # GITLAB_TOKEN env var required
+  bitbucket:
+    api_url: https://api.bitbucket.org/2.0
+    # BITBUCKET_TOKEN env var required
+
+# AI engine: claude | openai
+ai:
+  engine: claude
+  model: claude-sonnet-4-20250514
+  max_tokens: 8192
+  temperature: 0.0
+
+# Repository context (auto-detected in CI, set manually for local testing)
+repository:
+  owner: ""
+  name: ""
+  default_branch: main
+
+# Repair behavior
+repair:
+  max_attempts: 3
+  branch_prefix: "ai/fix"
+  commit_prefix: "fix(ai-repair):"
+  pr_label: "ai-repair"
+  max_diff_lines: 500          # refuse to open PR if diff is too large
+  re_run_ci_after_fix: true
+  auto_merge: false            # NEVER auto-merge by default
+
+# Failure handlers (enable/disable specific handlers)
+handlers:
+  lint:
+    enabled: true
+    commands:
+      - "npx eslint --fix ."
+      - "npx prettier --write ."
+  test:
+    enabled: true
+    rerun_command: "npm test"
+  coverage:
+    enabled: true
+    threshold: 80
+  validation:
+    enabled: true
+
+# Logging
+logging:
+  level: INFO
+  format: json   # json | text
+
+# Notifications (optional)
+notifications:
+  slack:
+    enabled: false
+    webhook_url: ""    # SLACK_WEBHOOK_URL env var
+  teams:
+    enabled: false
+    webhook_url: ""    # TEAMS_WEBHOOK_URL env var
