@@ -244,7 +244,7 @@ mcp-configs/               →         ~/.qwen/mcp-configs/
 1. **Read the guides**:
    - [Shorthand Guide](https://x.com/affaanmustafa/status/2012378465664745795) (start here)
    - [Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352)
-   - [Security Guide](the-security-guide.md)
+   - [Security Guide](https://github.com/affaan-m/everything-claude-code/blob/main/the-security-guide.md)
 
 2. **Configure Qwen CLI settings**:
    ```json
@@ -335,6 +335,6 @@ MIT - Same as the main ECC repository
 
 ---
 
-**Created**: April 11, 2026
+**Created**: April 10, 2026
 **ECC Version**: v1.10.0
-**Qwen CLI Support**: Alpha
+**Qwen CLI Support**: Production Ready

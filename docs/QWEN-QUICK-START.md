@@ -197,14 +197,14 @@ git pull
 
 ## Additional Resources
 
-- **[Qwen Setup Guide](docs/QWEN-SETUP.md)** - Detailed setup instructions
+- **[Qwen Setup Guide](QWEN-SETUP.md)** - Detailed setup instructions
 - **[Shorthand Guide](https://x.com/affaanmustafa/status/2012378465664745795)** - Quick start (read first)
 - **[Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352)** - Advanced usage
 - **[Security Guide](the-security-guide.md)** - Security best practices
-- **[Token Optimization](docs/token-optimization.md)** - Cost reduction tips
+- **[Token Optimization](token-optimization.md)** - Cost reduction tips
 
 ## Support
 
 - **GitHub Issues**: https://github.com/affaan-m/everything-claude-code/issues
-- **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Contributing**: See [CONTRIBUTING.md](../CONTRIBUTING.md)
 - **Sponsor**: https://github.com/sponsors/affaan-m

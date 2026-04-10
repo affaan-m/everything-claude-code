@@ -55,7 +55,7 @@ When you run `./install.sh --target qwen`, ECC installs:
 | Agents | `~/.qwen/agents/` | Specialized subagent definitions |
 | Skills | `~/.qwen/skills/` | Workflow definitions |
 | Hooks | `~/.qwen/hooks/` | Event-based automations |
-| MCP Configs | `~/.qwen/mcp.json` | MCP server configurations |
+| MCP Configs | `~/.qwen/mcp-configs/` | MCP server configurations |
 
 ## Available Languages
 
@@ -186,11 +186,11 @@ If some components are missing:
 
 ## Contributing
 
-Found issues or want to improve Qwen CLI support? See [CONTRIBUTING.md](CONTRIBUTING.md).
+Found issues or want to improve Qwen CLI support? See [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Additional Resources
 
 - [Shorthand Guide](https://x.com/affaanmustafa/status/2012378465664745795)
 - [Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352)
-- [Security Guide](./the-security-guide.md)
-- [Token Optimization](docs/token-optimization.md)
+- [Security Guide](the-security-guide.md)
+- [Token Optimization](token-optimization.md)

@@ -1,6 +1,11 @@
 # Qwen CLI Configuration
 
-This directory contains Qwen CLI-specific configuration and agent definitions.
+This directory contains Qwen CLI-specific configuration and agent definitions for the ECC repository.
+
+## Important Distinction
+
+- **Repository `.qwen/`**: This directory contains configuration templates and documentation for the ECC project
+- **Runtime `~/.qwen/`**: Your home directory's `.qwen/` folder where ECC installs rules, skills, agents, and hooks after running `./install.sh --target qwen`
 
 ## Setup
 

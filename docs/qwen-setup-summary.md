@@ -14,7 +14,8 @@ Everything Claude Code (ECC) has been successfully configured for Qwen CLI suppo
 - ✅ `docs/QWEN-SETUP.md` - Comprehensive setup guide
 - ✅ `docs/QWEN-QUICK-START.md` - Quick reference guide
 - ✅ `docs/QWEN-README.md` - Implementation summary
-- ✅ `scripts/add-qwen-target.js` - Utility script for adding qwen target
+- ✅ `docs/qwen-setup-summary.md` - This summary document
+- ✅ `docs/qwen-quick-ref.md` - Quick reference card
 
 #### Files Modified
 - ✅ `scripts/lib/install-targets/registry.js` - Added qwen adapter to registry
@@ -326,8 +327,10 @@ npm install
 # Verify rules exist
 ls -la ~/.qwen/rules/
 
-# Check Qwen CLI configuration
-cat ~/.qwen/settings.json
+# Check Qwen CLI configuration (safely - avoid dumping secrets)
+python3 -c "import json; data=json.load(open('$HOME/.qwen/settings.json')); print('Top-level keys:', list(data.keys()))"
+# Or validate JSON syntax without printing values:
+python3 -m json.tool ~/.qwen/settings.json > /dev/null && echo "Valid JSON"
 ```
 
 **Issue**: Skills not available
@@ -371,7 +374,7 @@ ls ~/.qwen/hooks/
 
 ---
 
-**Setup Date**: April 11, 2026
+**Setup Date**: April 10, 2026
 **ECC Version**: v1.10.0
 **Qwen CLI Support**: ✅ Production Ready
 **Test Status**: ✅ All 1783 tests passing
