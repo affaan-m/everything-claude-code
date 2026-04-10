@@ -1,0 +1,86 @@
+# ==========================================================================
+# AI Pipeline Repair — GitHub Actions Workflow
+# ==========================================================================
+# Triggers automatically when any workflow run fails.
+# Analyzes the failure, fixes the code, and opens a PR.
+#
+# Required secrets:
+#   - ANTHROPIC_API_KEY: Anthropic Claude API key
+#   - GITHUB_TOKEN: auto-provided (needs write permissions for PRs)
+# ==========================================================================
+
+name: AI Pipeline Repair
+
+on:
+  workflow_run:
+    workflows: ["CI"]   # <-- Change this to match your CI workflow name
+    types: [completed]
+
+# Only run when the triggering workflow failed
+# workflow_run fires for all completions; we filter in the job condition.
+
+permissions:
+  contents: write      # push fix branches
+  pull-requests: write # create PRs
+  actions: read        # read workflow logs
+
+concurrency:
+  group: ai-repair-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    name: Auto-Repair Failed Pipeline
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: >-
+      github.event.workflow_run.conclusion == 'failure' &&
+      !startsWith(github.event.workflow_run.head_branch, 'ai/fix')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Setup Node.js (for lint fixes)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - name: Install repair agent
+        run: |
+          pip install -r projects/ai-pipeline-repair/requirements.txt
+          npm ci --ignore-scripts || true   # install project lint tools if available
+
+      - name: Run AI Repair Agent
+        id: repair
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          REPAIR_PROVIDER: github
+          REPAIR_LOG_LEVEL: INFO
+        run: |
+          cd projects/ai-pipeline-repair
+          python -m src.main repair \
+            "${{ github.event.workflow_run.id }}" \
+            --owner "$REPO_OWNER" \
+            --repo "$REPO_NAME" \
+            | tee /tmp/repair-result.json
+
+      - name: Upload repair result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repair-result-${{ github.event.workflow_run.id }}
+          path: /tmp/repair-result.json
+          retention-days: 30

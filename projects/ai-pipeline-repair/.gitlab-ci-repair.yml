@@ -1,0 +1,53 @@
+# ==========================================================================
+# AI Pipeline Repair — GitLab CI Template
+# ==========================================================================
+# Include this in your .gitlab-ci.yml to enable automatic pipeline repair.
+#
+# Usage in .gitlab-ci.yml:
+#   include:
+#     - local: 'projects/ai-pipeline-repair/.gitlab-ci-repair.yml'
+#
+# Required CI/CD Variables (Settings > CI/CD > Variables):
+#   - ANTHROPIC_API_KEY: Anthropic Claude API key
+#   - GITLAB_TOKEN: Personal access token with api scope
+# ==========================================================================
+
+ai-repair:
+  stage: .post                  # runs after all stages
+  image: python:3.12-slim
+  when: on_failure              # only triggers on pipeline failure
+  allow_failure: true           # don't block the pipeline
+  timeout: 15 minutes
+
+  variables:
+    REPAIR_PROVIDER: gitlab
+    REPAIR_LOG_LEVEL: INFO
+    REPO_OWNER: $CI_PROJECT_NAMESPACE
+    REPO_NAME: $CI_PROJECT_NAME
+
+  before_script:
+    - pip install --quiet -r projects/ai-pipeline-repair/requirements.txt
+    - apt-get update -qq && apt-get install -qq -y git nodejs npm > /dev/null 2>&1 || true
+    - npm ci --ignore-scripts 2>/dev/null || true
+
+  script:
+    - |
+      cd projects/ai-pipeline-repair
+      python -m src.main repair \
+        "$CI_PIPELINE_ID" \
+        --owner "$REPO_OWNER" \
+        --repo "$REPO_NAME" \
+        --provider gitlab
+
+  artifacts:
+    paths:
+      - repair-result.json
+    when: always
+    expire_in: 30 days
+
+  rules:
+    # Don't run on AI-created fix branches (prevent loops)
+    - if: '$CI_COMMIT_BRANCH =~ /^ai\/fix/'
+      when: never
+    # Run on all other failed pipelines
+    - when: on_failure
