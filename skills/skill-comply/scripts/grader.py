@@ -33,7 +33,9 @@ def _check_temporal_order(
 ) -> str | None:
     """Check before_step/after_step constraints. Returns failure reason or None."""
     if step.detector.after_step is not None:
-        after_events = resolved.get(step.detector.after_step, [])
+        after_events = resolved.get(step.detector.after_step)
+        if after_events is None:
+            after_events = classified.get(step.detector.after_step, [])
         if not after_events:
             return f"after_step '{step.detector.after_step}' not yet detected"
         latest_after = max(e.timestamp for e in after_events)
