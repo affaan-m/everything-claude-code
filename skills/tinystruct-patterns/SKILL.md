@@ -67,7 +67,10 @@ public boolean doLogin() {
 public Builder getData() throws ApplicationException {
     Builder builder = new Builder();
     builder.put("status", "success");
-    builder.put("data", new Builder().put("id", 1).put("name", "James"));
+    Builder nested = new Builder();
+    nested.put("id", 1);
+    nested.put("name", "James");
+    builder.put("data", nested);
     return builder;
 }
 ```
