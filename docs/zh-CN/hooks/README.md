@@ -20,10 +20,11 @@
 
 | 钩子 | 匹配器 | 行为 | 退出码 |
 |------|---------|----------|-----------|
-| **开发服务器拦截器** | `Bash` | 在 tmux 外阻止 `npm run dev` 等命令 — 确保日志可访问 | 2 (拦截) |
-| **Tmux 提醒器** | `Bash` | 对长时间运行命令（npm test、cargo build、docker）建议使用 tmux | 0 (警告) |
-| **Git 推送提醒器** | `Bash` | 在 `git push` 前提醒检查变更 | 0 (警告) |
-| **文档文件警告器** | `Write` | 对非标准 `.md`/`.txt` 文件发出警告（允许 README、CLAUDE、CONTRIBUTING、CHANGELOG、LICENSE、SKILL、docs/、skills/）；跨平台路径处理 | 0 (警告) |
+| **开发服务器拦截器** | `Bash` | 在 tmux 外阻止 `npm run dev` 等命令 — 确保日志可访问 | 2 (阻止) |
+| **Tmux 提醒器** | `Bash` | 建议对长时间运行的命令（npm test、cargo build、docker）使用 tmux | 0 (警告) |
+| **Git 推送提醒器** | `Bash` | 提醒在 `git push` 前检查更改 | 0 (警告) |
+| **提交前质量检查** | `Bash` | 在 `git commit` 前运行质量检查：对暂存文件进行代码检查，当通过 `-m/--message` 提供时验证提交消息格式，检测 console.log/debugger/敏感信息 | 2 (阻止关键问题) / 0 (警告) |
+| **文档文件警告器** | `Write` | 警告非标准的 `.md`/`.txt` 文件（允许 README、CLAUDE、CONTRIBUTING、CHANGELOG、LICENSE、SKILL、docs/、skills/）；跨平台路径处理 | 0 (警告) |
 | **策略性压缩提醒器** | `Edit\|Write` | 建议在逻辑间隔（约每 50 次工具调用）手动执行 `/compact` | 0 (警告) |
 
 ### PostToolUse 钩子
@@ -31,11 +32,12 @@
 | 钩子 | 匹配器 | 功能 |
 |------|---------|-------------|
 | **PR 记录器** | `Bash` | 在 `gh pr create` 后记录 PR URL 和审查命令 |
-| **构建分析** | `Bash` | 构建命令后的后台分析（异步，非阻塞） |
-| **质量门** | `Edit\|Write\|MultiEdit` | 在编辑后运行快速质量检查 |
-| **Prettier 格式化** | `Edit` | 编辑后使用 Prettier 自动格式化 JS/TS 文件 |
-| **TypeScript 检查** | `Edit` | 在编辑 `.ts`/`.tsx` 文件后运行 `tsc --noEmit` |
-| **console.log 警告** | `Edit` | 警告编辑的文件中存在 `console.log` 语句 |
+| **构建分析器** | `Bash` | 构建命令后的后台分析（异步，非阻塞） |
+| **质量门** | `Edit\|Write\|MultiEdit` | 编辑后运行快速质量检查 |
+| **设计质量检查器** | `Edit\|Write\|MultiEdit` | 当前端编辑趋向于通用模板式 UI 时发出警告 |
+| **Prettier 格式化器** | `Edit` | 编辑后使用 Prettier 自动格式化 JS/TS 文件 |
+| **TypeScript 检查器** | `Edit` | 编辑 `.ts`/`.tsx` 文件后运行 `tsc --noEmit` |
+| **console.log 警告器** | `Edit` | 对编辑文件中的 `console.log` 语句发出警告 |
 
 ### 生命周期钩子
 
@@ -43,11 +45,12 @@
 |------|-------|-------------|
 | **会话开始** | `SessionStart` | 加载先前上下文并检测包管理器 |
 | **预压缩** | `PreCompact` | 在上下文压缩前保存状态 |
-| **Console.log 审计** | `Stop` | 每次响应后检查所有修改的文件是否有 `console.log` |
-| **会话摘要** | `Stop` | 当转录路径可用时持久化会话状态 |
-| **模式提取** | `Stop` | 评估会话以提取可抽取的模式（持续学习） |
-| **成本追踪器** | `Stop` | 发出轻量级的运行成本遥测标记 |
-| **会话结束标记** | `SessionEnd` | 生命周期标记和清理日志 |
+| **Console.log 审计器** | `Stop` | 每次响应后检查所有修改文件中的 `console.log` |
+| **会话摘要器** | `Stop` | 当转录路径可用时持久化会话状态 |
+| **模式提取器** | `Stop` | 评估会话以提取可复用模式（持续学习） |
+| **成本跟踪器** | `Stop` | 发出轻量级的运行成本遥测标记 |
+| **桌面通知器** | `Stop` | 发送包含任务摘要的 macOS 桌面通知（标准+） |
+| **会话结束标记器** | `SessionEnd` | 生命周期标记和清理日志 |
 
 ## 自定义钩子
 

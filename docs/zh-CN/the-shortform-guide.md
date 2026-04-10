@@ -12,24 +12,24 @@
 
 ## 技能和命令
 
-技能就像规则，受限于特定的范围和流程。当你需要执行特定工作流时，它们是提示词的简写。
+技能是主要的工作流界面。它们就像是作用域内的工作流包：可复用的提示、结构、支持文件，以及当你需要特定执行模式时的代码地图。
 
-在使用 Opus 4.5 长时间编码后，你想清理死代码和松散的 .md 文件吗？运行 `/refactor-clean`。需要测试吗？`/tdd`、`/e2e`、`/test-coverage`。技能也可以包含代码地图——一种让 Claude 快速浏览你的代码库而无需消耗上下文进行探索的方式。
+经过长时间使用 Opus 4.5 进行编码后，你想清理掉死代码和松散的 .md 文件吗？运行 `/refactor-clean`。需要测试？`/tdd`、`/e2e`、`/test-coverage`。这些斜杠命令条目很方便，但真正持久的单元是底层的技能。技能还可以包含代码地图——一种让 Claude 快速浏览你的代码库而无需在探索上消耗上下文的方式。
 
 ![显示链式命令的终端](../../assets/images/shortform/02-chaining-commands.jpeg)
 *将命令链接在一起*
 
-命令是通过斜杠命令执行的技能。它们有重叠但存储方式不同：
+ECC 仍然附带一个 `commands/` 层，但最好将其视为迁移期间的遗留斜杠命令兼容性。持久的逻辑应该存在于技能中。
 
-* **技能**: `~/.claude/skills/` - 更广泛的工作流定义
-* **命令**: `~/.claude/commands/` - 快速可执行的提示词
+* **技能**：`~/.claude/skills/` - 规范的工作流定义
+* **命令**：`~/.claude/commands/` - 当你仍然需要它们时的遗留斜杠命令适配层
 
 ```bash
 # Example skill structure
 ~/.claude/skills/
   pmx-guidelines.md      # Project-specific patterns
   coding-standards.md    # Language best practices
-  tdd-workflow/          # Multi-file skill with README.md
+  tdd-workflow/          # Multi-file skill with SKILL.md
   security-review/       # Checklist-based skill
 ```
 
@@ -149,7 +149,7 @@ MCP 将 Claude 直接连接到外部服务。它不是 API 的替代品——而
 # Check enabled MCPs
 /mcp
 
-# Disable unused ones in ~/.claude.json under projects.disabledMcpServers
+# Disable unused ones in ~/.claude/settings.json or in the current repo's .mcp.json
 ```
 
 ***

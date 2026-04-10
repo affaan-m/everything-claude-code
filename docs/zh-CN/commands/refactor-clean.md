@@ -64,15 +64,15 @@
 报告结果：
 
 ```
-无用代码清理
+Dead Code Cleanup
 ──────────────────────────────
-已删除：   12 个未使用函数
-           3 个未使用文件
-           5 个未使用依赖项
-已跳过：   2 个项目（测试失败）
-已节省：   ~450 行代码被移除
+Deleted:   12 unused functions
+           3 unused files
+           5 unused dependencies
+Skipped:   2 items (tests failed)
+Saved:     ~450 lines removed
 ──────────────────────────────
-所有测试通过 PASS:
+All tests passing PASS:
 ```
 
 ## 规则

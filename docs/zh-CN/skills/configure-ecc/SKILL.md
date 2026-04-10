@@ -19,8 +19,8 @@ origin: ECC
 
 此技能必须在激活前对 Claude Code 可访问。有两种引导方式：
 
-1. **通过插件**: `/plugin install ecc@ecc` — 插件会自动加载此技能
-2. **手动**: 仅将此技能复制到 `~/.claude/skills/configure-ecc/SKILL.md`，然后通过说 "configure ecc" 激活
+1. **通过插件**：`/plugin install ecc@ecc` — 插件会自动加载此技能
+2. **手动**：仅将此技能复制到 `~/.claude/skills/configure-ecc/SKILL.md`，然后通过说“configure ecc”来激活
 
 ***
 
@@ -143,14 +143,14 @@ mkdir -p $TARGET/skills $TARGET/rules
 
 | 技能 | 描述 |
 |-------|-------------|
-| `continuous-learning` | 从会话中自动提取可重用模式作为习得技能 |
-| `continuous-learning-v2` | 基于本能的学习，带有置信度评分，演变为技能/命令/代理 |
-| `eval-harness` | 用于评估驱动开发 (EDD) 的正式评估框架 |
-| `iterative-retrieval` | 用于子代理上下文问题的渐进式上下文优化 |
-| `security-review` | 安全检查清单：身份验证、输入、密钥、API、支付功能 |
+| `continuous-learning` | 从会话中自动提取可复用模式作为习得技能 |
+| `continuous-learning-v2` | 基于直觉的学习，带有置信度评分，可演化为技能、代理及可选的遗留命令适配层 |
+| `eval-harness` | 用于评估驱动开发（EDD）的正式评估框架 |
+| `iterative-retrieval` | 针对子代理上下文问题的渐进式上下文精炼 |
+| `security-review` | 安全检查清单：认证、输入、密钥、API、支付功能 |
 | `strategic-compact` | 在逻辑间隔处建议手动上下文压缩 |
-| `tdd-workflow` | 强制要求 TDD，覆盖率 80% 以上：单元测试、集成测试、端到端测试 |
-| `verification-loop` | 验证和质量循环模式 |
+| `tdd-workflow` | 强制实施测试驱动开发（TDD），覆盖率80%以上：单元测试、集成测试、端到端测试 |
+| `verification-loop` | 验证与质量循环模式 |
 
 **类别：业务与内容（5 项技能）**
 

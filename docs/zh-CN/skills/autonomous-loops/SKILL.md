@@ -237,9 +237,7 @@ PROMPT 1（协调器）              PROMPT 2（子代理）
 
 ### 安装
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/AnandChowdhary/continuous-claude/HEAD/install.sh | bash
-```
+> **警告：** 在审查代码后从其仓库安装 continuous-claude。不要直接将外部脚本通过管道传输到 bash。
 
 ### 用法
 

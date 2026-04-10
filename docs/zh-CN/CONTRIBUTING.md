@@ -4,14 +4,15 @@
 
 ## 目录
 
-* [我们寻找的内容](#我们寻找什么)
+* [我们寻找什么](#我们寻找什么)
 * [快速开始](#快速开始)
 * [贡献技能](#贡献技能)
+* [技能适配政策](#技能适配政策)
 * [贡献智能体](#贡献智能体)
 * [贡献钩子](#贡献钩子)
 * [贡献命令](#贡献命令)
-* [MCP 和文档（例如 Context7）](#mcp-和文档例如-context7)
-* [跨工具链和翻译](#跨平台与翻译)
+* [MCP 与文档（例如 Context7）](#mcp-和文档例如-context7)
+* [跨工具链与翻译](#跨平台与翻译)
 * [拉取请求流程](#拉取请求流程)
 
 ***
@@ -81,6 +82,14 @@ git add . && git commit -m "feat: add my-skill" && git push -u origin feat/my-co
 
 技能是 Claude Code 根据上下文加载的知识模块。
 
+> **综合指南：** 关于创建有效技能的详细指导，请参阅[技能开发指南](../SKILL-DEVELOPMENT-GUIDE.md)。它涵盖：
+>
+> * 技能架构与分类
+> * 编写有效内容及示例
+> * 最佳实践与常见模式
+> * 测试与验证
+> * 完整示例库
+
 ### 目录结构
 
 ```
@@ -91,10 +100,10 @@ skills/
 
 ### SKILL.md 模板
 
-````markdown
+```markdown
 ---
 name: your-skill-name
-description: Brief description shown in skill list
+description: Brief description shown in skill list and used for auto-activation
 origin: ECC
 ---
 
@@ -102,35 +111,82 @@ origin: ECC
 
 简要概述此技能涵盖的内容。
 
+## 何时激活
+
+描述Claude应使用此技能的场景。这对自动激活至关重要。
+
 ## 核心概念
 
 解释关键模式和指导原则。
 
 ## 代码示例
 
-```typescript
+\`\`\`typescript
 // 包含实用、经过测试的示例
 function example() {
-  // 注释良好的代码
+  // 注释详尽的代码
 }
-````
+\`\`\`
+
+## 反模式
+
+通过示例展示不应采取的做法。
+
+## 最佳实践
+
+- 可操作的指导原则
+- 应做与不应做的事项
+- 需避免的常见陷阱
+
+## 相关技能
+
+链接到互补技能（例如，`related-skill-1`、`related-skill-2`）。
+```
+
+### 技能类别
+
+| 类别 | 目的 | 示例 |
+|----------|---------|----------|
+| **语言标准** | 惯用语、约定、最佳实践 | `python-patterns`, `golang-patterns` |
+| **框架模式** | 框架特定指导 | `django-patterns`, `nextjs-patterns` |
+| **工作流程** | 分步流程 | `tdd-workflow`, `refactoring-workflow` |
+| **领域知识** | 专业领域 | `security-review`, `api-design` |
+| **工具集成** | 工具/库使用 | `docker-patterns`, `supabase-patterns` |
+| **模板** | 项目特定技能模板 | `docs/examples/project-guidelines-template.md` |
+
+### 技能适配政策
+
+如果你正在从其他仓库、插件、工具链或个人提示包移植一个想法，请在开启 PR 前阅读[技能适配政策](../skill-adaptation-policy.md)。
+
+简短版本：
+
+* 复制底层想法，而非外部产品标识
+* 当 ECC 实质性改变或扩展范围时，重命名技能
+* 优先使用 ECC 原生规则、技能、脚本和 MCP，而非新的默认第三方依赖
+* 不要发布其主要价值是告诉用户安装未经审查的包的技能
 
 ### 技能清单
 
-* \[ ] 专注于一个领域/技术
-* \[ ] 包含实用的代码示例
-* \[ ] 少于 500 行
+* \[ ] 专注于一个领域/技术（不过于宽泛）
+* \[ ] 包含"何时激活"部分以实现自动激活
+* \[ ] 包含实用、可复制粘贴的代码示例
+* \[ ] 展示反模式（不应做什么）
+* \[ ] 少于 500 行（最多 800 行）
 * \[ ] 使用清晰的章节标题
 * \[ ] 已通过 Claude Code 测试
+* \[ ] 链接到相关技能
+* \[ ] 无敏感数据（API 密钥、令牌、路径）
 
 ### 技能示例
 
-| 技能 | 目的 |
-|-------|---------|
-| `coding-standards/` | TypeScript/JavaScript 模式 |
-| `frontend-patterns/` | React 和 Next.js 最佳实践 |
-| `backend-patterns/` | API 和数据库模式 |
-| `security-review/` | 安全检查清单 |
+| 技能 | 类别 | 目的 |
+|-------|----------|---------|
+| `coding-standards/` | 语言标准 | TypeScript/JavaScript 模式 |
+| `frontend-patterns/` | 框架模式 | React 和 Next.js 最佳实践 |
+| `backend-patterns/` | 框架模式 | API 和数据库模式 |
+| `security-review/` | 领域知识 | 安全检查清单 |
+| `tdd-workflow/` | 工作流程 | 测试驱动开发流程 |
+| `docs/examples/project-guidelines-template.md` | 模板 | 项目特定技能模板 |
 
 ***
 
@@ -158,9 +214,9 @@ model: sonnet
 
 ## 你的角色
 
-- 主要职责
-- 次要职责
-- 你不做的事情（界限）
+-   主要职责
+-   次要职责
+-   你不做的事情（界限）
 
 ## 工作流程
 
@@ -322,17 +378,17 @@ description: 在 /help 中显示的简要描述
 
 ## 用法
 
-```
+\`\`\`
 
 /your-command [args]
-```
+\`\`\`
 
 
 ## 工作流程
 
-1. 第一步
-2. 第二步
-3. 最后一步
+1.  第一步
+2.  第二步
+3.  最后一步
 
 ## 输出
 

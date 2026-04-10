@@ -1,5 +1,39 @@
 # 更新日志
 
+## 1.10.0 - 2026-04-05
+
+### 亮点
+
+* 经过数周的开源增长和积压合并后，公开发布界面已与实时仓库同步。
+* 操作员工作流通道扩展，新增语音、图排序、计费、工作区和外联技能。
+* 媒体生成通道扩展，新增 Manim 和 Remotion-first 启动工具。
+* ECC 2.0 alpha 控制平面二进制文件现已可从 `ecc2/` 本地构建，并公开了首个可用的 CLI/TUI 界面。
+
+### 发布界面
+
+* 将插件、市场、Codex、OpenCode 和智能体元数据更新至 `1.10.0`。
+* 同步了已发布数量至实时开源界面：38 个智能体，156 项技能，72 条命令。
+* 更新了面向安装的顶层文档和市场描述，以匹配当前仓库状态。
+
+### 新增工作流通道
+
+* `brand-voice` — 源自规范源的写作风格系统。
+* `social-graph-ranker` — 加权暖引荐图排序原语。
+* `connections-optimizer` — 基于图排序的网络修剪/添加工作流。
+* `customer-billing-ops`, `google-workspace-ops`, `project-flow-ops`, `workspace-surface-audit`。
+* `manim-video`, `remotion-video-creation`, `nestjs-patterns`。
+
+### ECC 2.0 Alpha
+
+* `cargo build --manifest-path ecc2/Cargo.toml` 通过了仓库基线测试。
+* `ecc-tui` 当前公开了 `dashboard`, `start`, `sessions`, `status`, `stop`, `resume` 和 `daemon`。
+* 该 alpha 版本真实可用，可用于本地实验，但更广泛的控制平面路线图仍未完成，不应被视为正式发布版本。
+
+### 备注
+
+* Claude 插件仍受限于平台级规则分发约束；选择性安装 / 开源路径仍是最可靠的完整安装方式。
+* 本次发布是一次仓库界面修正和生态系统同步，并非声称完整的 ECC 2.0 路线图已完成。
+
 ## 1.9.0 - 2026-03-20
 
 ### 亮点

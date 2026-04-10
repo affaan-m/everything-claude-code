@@ -29,3 +29,31 @@
 ## 代理支持
 
 * **tdd-guide** - 主动用于新功能，强制执行测试优先
+
+## 测试结构（AAA 模式）
+
+测试应优先采用 Arrange-Act-Assert 结构：
+
+```typescript
+test('calculates similarity correctly', () => {
+  // Arrange
+  const vector1 = [1, 0, 0]
+  const vector2 = [0, 1, 0]
+
+  // Act
+  const similarity = calculateCosineSimilarity(vector1, vector2)
+
+  // Assert
+  expect(similarity).toBe(0)
+})
+```
+
+### 测试命名
+
+使用描述性名称，说明被测试的行为：
+
+```typescript
+test('returns empty array when no markets match query', () => {})
+test('throws error when API key is missing', () => {})
+test('falls back to substring search when Redis is unavailable', () => {})
+```

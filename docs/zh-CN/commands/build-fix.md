@@ -6,15 +6,15 @@
 
 识别项目的构建工具并运行构建：
 
-| 指示器 | 构建命令 |
+| 指标 | 构建命令 |
 |-----------|---------------|
-| `package.json` 包含 `build` 脚本 | `npm run build` 或 `pnpm build` |
+| `package.json` 与 `build` 脚本 | `npm run build` 或 `pnpm build` |
 | `tsconfig.json`（仅限 TypeScript） | `npx tsc --noEmit` |
 | `Cargo.toml` | `cargo build 2>&1` |
 | `pom.xml` | `mvn compile` |
 | `build.gradle` | `./gradlew compileJava` |
 | `go.mod` | `go build ./...` |
-| `pyproject.toml` | `python -m py_compile` 或 `mypy .` |
+| `pyproject.toml` | `python -m compileall -q .` 或 `mypy .` |
 
 ## 步骤 2：解析并分组错误
 

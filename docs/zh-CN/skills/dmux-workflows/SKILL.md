@@ -23,7 +23,7 @@ dmux 是一个基于 tmux 的编排工具，用于管理 AI 代理窗格：
 * 按 `m` 将窗格输出合并回主会话
 * 支持：Claude Code、Codex、OpenCode、Cline、Gemini、Qwen
 
-**安装：** `npm install -g dmux` 或参见 [github.com/standardagents/dmux](https://github.com/standardagents/dmux)
+**安装：** 在审查软件包后，从其仓库安装 dmux。参见 [github.com/standardagents/dmux](https://github.com/standardagents/dmux)
 
 ## 快速开始
 

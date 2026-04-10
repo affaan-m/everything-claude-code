@@ -73,12 +73,9 @@ Bash 上的 PreToolUse 钩子会阻止遗留包管理器：
 
 ### 快速开始
 
-```bash
-# Clone Plankton into your project (or a shared location)
-# Note: Plankton is by @alxfazio
-git clone https://github.com/alexfazio/plankton.git
-cd plankton
+> **注意：** Plankton 需要从其代码仓库手动安装。安装前请先审查代码。
 
+```bash
 # Install core dependencies
 brew install jaq ruff uv
 
