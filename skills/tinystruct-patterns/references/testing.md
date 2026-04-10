@@ -25,10 +25,10 @@ class MyAppTest {
     @BeforeEach
     void setUp() {
         app = new MyApp();
-        // Set a minimal configuration to trigger init() and annotation processing
+        app = new MyApp();
         Settings config = new Settings();
         app.setConfiguration(config);
-    }
+        app.init(); // triggers @Action annotation processing
 
     @Test
     void testHello() throws Exception {
