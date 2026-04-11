@@ -242,6 +242,41 @@ Edit `config.json` to control the background observer:
 
 Other behavior (observation capture, instinct thresholds, project scoping, promotion criteria) is configured via code defaults in `instinct-cli.py` and `observe.sh`.
 
+## Observer Environment Variables
+
+The observer supports environment overrides so you can tune feature flags and persist settings outside of the plugin cache (`~/.claude/plugins/cache/…/skills/continuous-learning-v2/config.json`), which is typically rebuilt on each update.
+
+1. **Persist your custom observer config.** The hook looks for `CLV2_CONFIG` before falling back to the shipped `config.json`.
+
+   ```bash
+   export CLV2_CONFIG="$HOME/.claude/ecc-config.json"
+   cat <<'JSON' > "$CLV2_CONFIG"
+   {
+     "observer": {
+       "enabled": true,
+       "run_interval_minutes": 2,
+       "min_observations_to_analyze": 40
+     }
+   }
+   JSON
+   ```
+
+   With `CLV2_CONFIG` pointing at a home directory file, plugin updates no longer overwrite your observer preferences. `observe.sh` uses the effective config to gate whether the background observer launches.
+
+2. **Tuned environment variables.** The observer loop and hook expose runtime knobs for analysis cadence, timeouts, and signal throttling:
+
+| Variable | Default | Notes |
+|----------|---------|-------|
+| `CLV2_CONFIG` | `~/…/skills/continuous-learning-v2/config.json` | Path to the JSON config that controls `observer.enabled`. When set, the hook reads this file instead of the plugin cache, preserving overrides across updates. |
+| `ECC_OBSERVER_MAX_TURNS` | `10` | Maximum number of observation batches the loop processes before sleeping (`observer-loop.sh`). |
+| `ECC_OBSERVER_TIMEOUT_SECONDS` | `120` | Timeout for a single analysis cycle (`observer-loop.sh`). |
+| `ECC_OBSERVER_MAX_ANALYSIS_LINES` | `500` | How many observation lines are sampled for each analysis (tail of the log). |
+| `ECC_OBSERVER_SIGNAL_EVERY_N` | `20` | How often the hook signals the observer via `SIGUSR1` — throttles repeated signals during busy sessions. |
+| `ECC_OBSERVER_ANALYSIS_COOLDOWN` | `60` | Minimum seconds between consecutive analytics cycles when observations keep coming. |
+| `ECC_OBSERVER_IDLE_TIMEOUT_SECONDS` | `1800` | How long the observer stays alive without new sessions before exiting to save resources. |
+
+Combine these overrides with your hook configuration when deploying the skill to new hosts or via containers. For example, set `ECC_OBSERVER_IDLE_TIMEOUT_SECONDS=600` to stop background work quickly between training sessions.
+
 ## File Structure
 
 ```
