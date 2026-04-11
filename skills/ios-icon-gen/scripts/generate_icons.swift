@@ -214,10 +214,20 @@ while i < args.count {
         continue
     case "--color":
         colorHex = requireOptionValue(args, at: i + 1, flag: "--color")
+        let stripped = colorHex.hasPrefix("#") ? String(colorHex.dropFirst()) : colorHex
+        guard stripped.count == 6, UInt64(stripped, radix: 16) != nil else {
+            fputs("ERROR: --color must be a 6-digit hex code (e.g. 007AFF)\n", stderr)
+            exit(1)
+        }
         i += 2
         continue
     case "--weight":
         weightName = requireOptionValue(args, at: i + 1, flag: "--weight")
+        let validWeights = ["ultralight", "thin", "light", "regular", "medium", "semibold", "bold", "heavy", "black"]
+        guard validWeights.contains(weightName.lowercased()) else {
+            fputs("ERROR: --weight must be one of: \(validWeights.joined(separator: ", "))\n", stderr)
+            exit(1)
+        }
         i += 2
         continue
     case "--output":

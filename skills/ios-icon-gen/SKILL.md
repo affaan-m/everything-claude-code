@@ -8,7 +8,7 @@ origin: community
 
 Generate PNG icon imagesets for Xcode asset catalogs from two sources.
 
-## When to Use
+## When to Activate
 
 - Generating icon assets for an iOS/macOS Xcode project
 - Searching for icons across open source collections
@@ -16,7 +16,7 @@ Generate PNG icon imagesets for Xcode asset catalogs from two sources.
 - Replacing placeholder icons with production-quality assets
 - Matching existing icon styles in an Xcode project
 
-## How It Works
+## Core Principles
 
 ### 1. Two Sources, One Output Format
 Both sources produce identical Xcode-compatible imagesets. Choose based on need:
