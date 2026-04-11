@@ -99,6 +99,8 @@ To pay for x402-gated resources, use the [OnchainOS CLI](https://github.com/okx/
 For installation instructions, fetch the official guide using WebFetch:
 `https://raw.githubusercontent.com/okx/onchainos-skills/main/README.md#installation`
 
+> **Note**: These external URLs point to `main` and may change over time. This is intentional — installation and SDK docs should stay in sync with the latest release. Do not cache or pin these references.
+
 #### Seller Integration
 
 To build a seller (server that accepts x402 payments), fetch the complete reference doc for your language using WebFetch:
