@@ -727,28 +727,27 @@ function runTests() {
   console.log('\nsetPreferredPackageManager (success):');
 
   if (test('successfully saves preferred package manager', () => {
-    // This writes to ~/.claude/package-manager.json — read original to restore
-    const utils = require('../../scripts/lib/utils');
-    const configPath = path.join(utils.getClaudeDir(), 'package-manager.json');
-    const original = utils.readFile(configPath);
+    // Use isolated temp HOME to avoid sandbox EROFS on ~/.claude
+    const isoHome = path.join(os.tmpdir(), `pm-save-test-${Date.now()}`);
+    const isoClaudeDir = path.join(isoHome, '.claude');
+    fs.mkdirSync(isoClaudeDir, { recursive: true });
+    const origHome = process.env.HOME;
+    const origUserProfile = process.env.USERPROFILE;
     try {
+      process.env.HOME = isoHome;
+      process.env.USERPROFILE = isoHome;
+      // Re-require to pick up new HOME (utils caches nothing)
       const config = pm.setPreferredPackageManager('bun');
       assert.strictEqual(config.packageManager, 'bun');
       assert.ok(config.setAt, 'Should have setAt timestamp');
       // Verify it was persisted
+      const configPath = path.join(isoClaudeDir, 'package-manager.json');
       const saved = JSON.parse(fs.readFileSync(configPath, 'utf8'));
       assert.strictEqual(saved.packageManager, 'bun');
     } finally {
-      // Restore original config
-      if (original) {
-        fs.writeFileSync(configPath, original, 'utf8');
-      } else {
-        try {
-          fs.unlinkSync(configPath);
-        } catch (_err) {
-          // ignore
-        }
-      }
+      process.env.HOME = origHome;
+      process.env.USERPROFILE = origUserProfile;
+      fs.rmSync(isoHome, { recursive: true, force: true });
     }
   })) passed++;
   else failed++;
