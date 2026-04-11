@@ -72,10 +72,10 @@ AI: Welcome to everything-claude-code!
 This project provides 80+ skills, commands, and agents to supercharge your development workflow.
 
 **Quick Start:**
-- **New to the project? Ask me about "setup"
-- **Looking for specific features? Ask about "skills"
-- **Want workflow recommendations? Ask about "workflows"
-- **Just ask me anything!
+- **New to the project?** Ask me about "setup"
+- **Looking for specific features?** Ask about "skills"
+- **Want workflow recommendations?** Ask about "workflows"
+- **Just ask me anything!**
 
 What would you like to explore?
 ```
@@ -97,8 +97,8 @@ AI: The project has 80+ skills organized by category:
 - `backend-patterns` - Backend architecture patterns
 
 **Tooling:**
-- `using-git-worktrees` - Advanced git workflows
-- `systematic-debugging` - Debug methodology
+- `git-workflow` - Advanced git workflows
+- `agent-introspection-debugging` - Debug methodology
 - `verification-loop` - Continuous verification
 
 Which category interests you? Or ask about a specific skill!
@@ -212,14 +212,14 @@ Good: Read current project state, give contextual advice
 When explaining features, reference related tools:
 ```
 "The tdd-workflow skill works great with /verify command 
-and pairs well with systematic-debugging skill."
+and pairs well with agent-introspection-debugging skill."
 ```
 
 ### Contextual Suggestions
 Based on user's project, suggest relevant features:
 ```
 Detected: TypeScript + React project
-Suggested: typescript-patterns, react-patterns, e2e-testing skills
+Suggested: frontend-patterns, backend-patterns, e2e-testing skills
 ```
 
 ## Success Metrics
@@ -263,7 +263,7 @@ const beginnerPath = [
   'setup',
   'tdd-workflow',
   'code-review',
-  'git-worktrees'
+  'git-workflow'
 ];
 // Guide users through learning journey
 ```
