@@ -180,6 +180,8 @@ Get up and running in under 2 minutes:
 
 > WARNING: **Important:** Claude Code plugins cannot distribute `rules` automatically. Install them manually:
 
+> If your local Claude setup was wiped or reset, that does not mean you need to repurchase ECC. Start with `ecc list-installed`, then run `ecc doctor` and `ecc repair` before reinstalling anything. That usually restores ECC-managed files without rebuilding your setup. If the problem is account or marketplace access for ECC Tools, handle billing/account recovery separately.
+
 ```bash
 # Clone the repo first
 git clone https://github.com/affaan-m/everything-claude-code.git

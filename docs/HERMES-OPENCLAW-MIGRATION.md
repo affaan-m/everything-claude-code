@@ -183,6 +183,21 @@ It is mostly:
 - clarifying public docs
 - continuing the ECC 2.0 operator/control-plane buildout
 
+ECC 2.0 now ships a bounded migration audit entrypoint:
+
+- `ecc migrate audit --source ~/.hermes`
+- `ecc migrate plan --source ~/.hermes --output migration-plan.md`
+- `ecc migrate scaffold --source ~/.hermes --output-dir migration-artifacts`
+- `ecc migrate import-skills --source ~/.hermes --output-dir migration-artifacts/skills`
+- `ecc migrate import-tools --source ~/.hermes --output-dir migration-artifacts/tools`
+- `ecc migrate import-plugins --source ~/.hermes --output-dir migration-artifacts/plugins`
+- `ecc migrate import-schedules --source ~/.hermes --dry-run`
+- `ecc migrate import-remote --source ~/.hermes --dry-run`
+- `ecc migrate import-env --source ~/.hermes --dry-run`
+- `ecc migrate import-memory --source ~/.hermes`
+
+Use that first to inventory the legacy workspace and map detected surfaces onto the current ECC2 scheduler, remote dispatch, memory graph, templates, and manual-translation lanes.
+
 ## What Still Belongs In Backlog
 
 The remaining large migration themes are already tracked:

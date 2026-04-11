@@ -265,6 +265,18 @@
         "hooks": [
           {
             "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags.js\" \"post:session-activity-tracker\" \"scripts/hooks/session-activity-tracker.js\" \"standard,strict\"",
+            "timeout": 10
+          }
+        ],
+        "description": "Track per-session tool calls and file activity for ECC2 metrics",
+        "id": "post:session-activity-tracker"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-with-flags-shell.sh\" \"post:observe\" \"skills/continuous-learning-v2/hooks/observe.sh\" \"standard,strict\"",
             "async": true,
             "timeout": 10

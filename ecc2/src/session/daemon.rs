@@ -22,11 +22,17 @@ pub async fn run(db: StateStore, cfg: Config) -> Result<()> {
     resume_crashed_sessions(&db)?;
 
     let heartbeat_interval = Duration::from_secs(cfg.heartbeat_interval_secs);
-    let timeout = Duration::from_secs(cfg.session_timeout_secs);
-
     loop {
-        if let Err(e) = check_sessions(&db, timeout) {
+        if let Err(e) = check_sessions(&db, &cfg) {
             tracing::error!("Session check failed: {e}");
+        }
+
+        if let Err(e) = maybe_run_due_schedules(&db, &cfg).await {
+            tracing::error!("Scheduled task dispatch pass failed: {e}");
+        }
+
+        if let Err(e) = maybe_run_remote_dispatch(&db, &cfg).await {
+            tracing::error!("Remote dispatch pass failed: {e}");
         }
 
         if let Err(e) = coordinate_backlog_cycle(&db, &cfg).await {
@@ -37,8 +43,12 @@ pub async fn run(db: StateStore, cfg: Config) -> Result<()> {
             tracing::error!("Worktree auto-merge pass failed: {e}");
         }
 
-        if let Err(e) = maybe_auto_prune_inactive_worktrees(&db).await {
+        if let Err(e) = maybe_auto_prune_inactive_worktrees(&db, &cfg).await {
             tracing::error!("Worktree auto-prune pass failed: {e}");
+        }
+
+        if let Err(e) = manager::activate_pending_worktree_sessions(&db, &cfg).await {
+            tracing::error!("Queued worktree activation pass failed: {e}");
         }
 
         time::sleep(heartbeat_interval).await;
@@ -82,26 +92,36 @@ where
     Ok(failed_sessions)
 }
 
-fn check_sessions(db: &StateStore, timeout: Duration) -> Result<()> {
-    let sessions = db.list_sessions()?;
-
-    for session in sessions {
-        if session.state != SessionState::Running {
-            continue;
-        }
-
-        let elapsed = chrono::Utc::now()
-            .signed_duration_since(session.updated_at)
-            .to_std()
-            .unwrap_or(Duration::ZERO);
-
-        if elapsed > timeout {
-            tracing::warn!("Session {} timed out after {:?}", session.id, elapsed);
-            db.update_state_and_pid(&session.id, &SessionState::Failed, None)?;
-        }
-    }
-
+fn check_sessions(db: &StateStore, cfg: &Config) -> Result<()> {
+    let _ = manager::enforce_session_heartbeats(db, cfg)?;
     Ok(())
+}
+
+async fn maybe_run_due_schedules(db: &StateStore, cfg: &Config) -> Result<usize> {
+    let outcomes = manager::run_due_schedules(db, cfg, cfg.max_parallel_sessions).await?;
+    if !outcomes.is_empty() {
+        tracing::info!("Dispatched {} scheduled task(s)", outcomes.len());
+    }
+    Ok(outcomes.len())
+}
+
+async fn maybe_run_remote_dispatch(db: &StateStore, cfg: &Config) -> Result<usize> {
+    let outcomes =
+        manager::run_remote_dispatch_requests(db, cfg, cfg.max_parallel_sessions).await?;
+    let routed = outcomes
+        .iter()
+        .filter(|outcome| {
+            matches!(
+                outcome.action,
+                manager::RemoteDispatchAction::SpawnedTopLevel
+                    | manager::RemoteDispatchAction::Assigned(_)
+            )
+        })
+        .count();
+    if routed > 0 {
+        tracing::info!("Dispatched {} remote request(s)", routed);
+    }
+    Ok(routed)
 }
 
 async fn maybe_auto_dispatch(db: &StateStore, cfg: &Config) -> Result<usize> {
@@ -408,9 +428,9 @@ where
     Ok(merged)
 }
 
-async fn maybe_auto_prune_inactive_worktrees(db: &StateStore) -> Result<usize> {
+async fn maybe_auto_prune_inactive_worktrees(db: &StateStore, cfg: &Config) -> Result<usize> {
     maybe_auto_prune_inactive_worktrees_with_recorder(
-        || manager::prune_inactive_worktrees(db),
+        || manager::prune_inactive_worktrees(db, cfg),
         |pruned, active| db.record_daemon_auto_prune_pass(pruned, active),
     )
     .await
@@ -436,6 +456,7 @@ where
     let outcome = prune().await?;
     let pruned = outcome.cleaned_session_ids.len();
     let active = outcome.active_with_worktree_ids.len();
+    let retained = outcome.retained_session_ids.len();
     record(pruned, active)?;
 
     if pruned > 0 {
@@ -443,6 +464,9 @@ where
     }
     if active > 0 {
         tracing::info!("Skipped {active} active worktree(s) during auto-prune");
+    }
+    if retained > 0 {
+        tracing::info!("Deferred {retained} inactive worktree(s) within retention");
     }
 
     Ok(pruned)
@@ -491,6 +515,8 @@ mod tests {
         Session {
             id: id.to_string(),
             task: "Recover crashed worker".to_string(),
+            project: "workspace".to_string(),
+            task_group: "general".to_string(),
             agent_type: "claude".to_string(),
             working_dir: PathBuf::from("/tmp"),
             state,
@@ -498,6 +524,7 @@ mod tests {
             worktree: None,
             created_at: now,
             updated_at: now,
+            last_heartbeat_at: now,
             metrics: SessionMetrics::default(),
         }
     }
@@ -1210,9 +1237,11 @@ mod tests {
                 invoked_flag.store(true, std::sync::atomic::Ordering::SeqCst);
                 Ok(manager::WorktreeBulkMergeOutcome {
                     merged: Vec::new(),
+                    rebased: Vec::new(),
                     active_with_worktree_ids: Vec::new(),
                     conflicted_session_ids: Vec::new(),
                     dirty_worktree_ids: Vec::new(),
+                    blocked_by_queue_session_ids: Vec::new(),
                     failures: Vec::new(),
                 })
             }
@@ -1247,9 +1276,16 @@ mod tests {
                         cleaned_worktree: true,
                     },
                 ],
+                rebased: vec![manager::WorktreeRebaseOutcome {
+                    session_id: "worker-r".to_string(),
+                    branch: "ecc/worker-r".to_string(),
+                    base_branch: "main".to_string(),
+                    already_up_to_date: false,
+                }],
                 active_with_worktree_ids: vec!["worker-c".to_string()],
                 conflicted_session_ids: vec!["worker-d".to_string()],
                 dirty_worktree_ids: vec!["worker-e".to_string()],
+                blocked_by_queue_session_ids: vec!["worker-f".to_string()],
                 failures: Vec::new(),
             })
         })
@@ -1269,6 +1305,7 @@ mod tests {
                 Ok(manager::WorktreePruneOutcome {
                     cleaned_session_ids: vec!["stopped-a".to_string(), "stopped-b".to_string()],
                     active_with_worktree_ids: vec!["running-a".to_string()],
+                    retained_session_ids: vec!["retained-a".to_string()],
                 })
             },
             move |pruned, active| {
