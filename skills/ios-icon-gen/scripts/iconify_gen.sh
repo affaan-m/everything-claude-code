@@ -15,12 +15,22 @@
 set -euo pipefail
 
 API_BASE="https://api.iconify.design"
+readonly CURL_OPTS=(--fail --silent --show-error --connect-timeout 10 --max-time 30)
 
 # Defaults
 SIZE=68
 COLOR="8E8E93"
 OUTPUT="/tmp/icons"
 LIMIT=20
+
+require_value() {
+    local flag="$1"
+    local value="${2-}"
+    if [[ -z "$value" || "$value" == --* ]]; then
+        echo "ERROR: ${flag} requires a value" >&2
+        exit 1
+    fi
+}
 
 usage() {
     cat <<'EOF'
@@ -60,19 +70,21 @@ search_icons() {
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --prefix) prefix="$2"; shift 2 ;;
-            --limit) LIMIT="$2"; shift 2 ;;
+            --prefix) require_value --prefix "${2-}"; prefix="$2"; shift 2 ;;
+            --limit) require_value --limit "${2-}"; LIMIT="$2"; shift 2 ;;
             *) shift ;;
         esac
     done
 
-    local url="${API_BASE}/search?query=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${query}'))")&limit=${LIMIT}"
+    local encoded_query
+    encoded_query="$(python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.argv[1]))" "$query")"
+    local url="${API_BASE}/search?query=${encoded_query}&limit=${LIMIT}"
     if [[ -n "$prefix" ]]; then
         url="${url}&prefix=${prefix}"
     fi
 
     local response
-    response=$(curl -sf "$url") || { echo "ERROR: Search request failed"; exit 1; }
+    response=$(curl "${CURL_OPTS[@]}" "$url") || { echo "ERROR: Search request failed"; exit 1; }
 
     local total
     total=$(echo "$response" | python3 -c "import sys,json; print(json.load(sys.stdin).get('total',0))")
@@ -93,7 +105,9 @@ for icon in data.get('icons', []):
 list_collections() {
     echo "Popular Iconify collections:"
     echo ""
-    curl -sf "${API_BASE}/collections" | python3 -c "
+    local resp
+    resp=$(curl "${CURL_OPTS[@]}" "${API_BASE}/collections") || { echo "ERROR: Failed to fetch collections list"; exit 1; }
+    echo "$resp" | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
 popular = ['mdi','lucide','tabler','ph','ri','carbon','solar','heroicons','bi','octicon','ion','fe','charm','ci','iconoir','basil','uil','mingcute','flowbite','mynaui']
@@ -115,13 +129,13 @@ preview_icon() {
     local url="${API_BASE}/${collection}/${name}.svg?width=136&height=136&color=%23${COLOR}"
     local outfile="/tmp/iconify_preview_${collection}_${name}.svg"
 
-    curl -sf "$url" -o "$outfile" || { echo "ERROR: Icon '${icon_id}' not found"; exit 1; }
+    curl "${CURL_OPTS[@]}" "$url" -o "$outfile" || { echo "ERROR: Icon '${icon_id}' not found"; exit 1; }
     echo "Preview SVG: ${outfile}"
     echo "URL: ${url}"
 
     # Also convert to PNG for visual check
     local pngfile="/tmp/iconify_preview_${collection}_${name}.png"
-    sips -s format png "$outfile" --out "$pngfile" >/dev/null 2>&1
+    sips -s format png "$outfile" --out "$pngfile" >/dev/null 2>&1 || echo "WARNING: sips conversion failed; PNG may be incorrect"
     echo "Preview PNG: ${pngfile}"
 }
 
@@ -132,9 +146,9 @@ generate_icon() {
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --size) SIZE="$2"; shift 2 ;;
-            --color) COLOR="$2"; shift 2 ;;
-            --output) OUTPUT="$2"; shift 2 ;;
+            --size) require_value --size "${2-}"; SIZE="$2"; shift 2 ;;
+            --color) require_value --color "${2-}"; COLOR="$2"; shift 2 ;;
+            --output) require_value --output "${2-}"; OUTPUT="$2"; shift 2 ;;
             *) shift ;;
         esac
     done
@@ -159,8 +173,8 @@ generate_icon() {
         local svg_file="${imageset_dir}/${asset_name}${suffix}.svg"
         local png_file="${imageset_dir}/${asset_name}${suffix}.png"
 
-        curl -sf "$svg_url" -o "$svg_file" || { echo "ERROR: Failed to download icon '${icon_id}'"; exit 1; }
-        sips -s format png "$svg_file" --out "$png_file" >/dev/null 2>&1
+        curl "${CURL_OPTS[@]}" "$svg_url" -o "$svg_file" || { echo "ERROR: Failed to download icon '${icon_id}'"; exit 1; }
+        sips -s format png "$svg_file" --out "$png_file" >/dev/null 2>&1 || echo "WARNING: sips conversion may have failed for ${svg_file}"
         rm "$svg_file"
 
         echo "  ${asset_name}${suffix}.png (${px}x${px})"

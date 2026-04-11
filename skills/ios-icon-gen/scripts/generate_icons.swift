@@ -44,9 +44,31 @@ func parseWeight(_ name: String) -> NSFont.Weight {
 
 // MARK: - Generation
 
-func generateIcon(_ spec: IconSpec, outputDir: String) {
+enum IconError: Error, CustomStringConvertible {
+    case directoryCreation(String)
+    case symbolNotFound(String)
+    case configurationFailed(String)
+    case pngCreation(String)
+    case fileWrite(String)
+
+    var description: String {
+        switch self {
+        case .directoryCreation(let msg): return msg
+        case .symbolNotFound(let msg): return msg
+        case .configurationFailed(let msg): return msg
+        case .pngCreation(let msg): return msg
+        case .fileWrite(let msg): return msg
+        }
+    }
+}
+
+func generateIcon(_ spec: IconSpec, outputDir: String) throws {
     let dir = "\(outputDir)/\(spec.assetName).imageset"
-    try! FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+    do {
+        try FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+    } catch {
+        throw IconError.directoryCreation("Could not create output directory '\(dir)': \(error.localizedDescription)")
+    }
 
     let scales: [(suffix: String, multiplier: CGFloat)] = [("", 1), ("@2x", 2), ("@3x", 3)]
 
@@ -61,11 +83,12 @@ func generateIcon(_ spec: IconSpec, outputDir: String) {
         )
 
         guard let symbol = NSImage(systemSymbolName: spec.symbolName, accessibilityDescription: nil) else {
-            print("ERROR: SF Symbol '\(spec.symbolName)' not found. Run 'SF Symbols' app to browse available names.")
-            return
+            throw IconError.symbolNotFound("SF Symbol '\(spec.symbolName)' not found. Run 'SF Symbols' app to browse available names.")
         }
 
-        let configured = symbol.withSymbolConfiguration(config)!
+        guard let configured = symbol.withSymbolConfiguration(config) else {
+            throw IconError.configurationFailed("Could not apply symbol configuration to '\(spec.symbolName)'")
+        }
 
         let image = NSImage(size: imageSize, flipped: false) { rect in
             let symSize = configured.size
@@ -87,12 +110,15 @@ func generateIcon(_ spec: IconSpec, outputDir: String) {
         guard let tiffData = image.tiffRepresentation,
               let bitmap = NSBitmapImageRep(data: tiffData),
               let pngData = bitmap.representation(using: .png, properties: [:]) else {
-            print("ERROR: Failed to create PNG for \(spec.assetName)\(scale.suffix)")
-            return
+            throw IconError.pngCreation("Failed to create PNG for \(spec.assetName)\(scale.suffix)")
         }
 
         let fileName = "\(spec.assetName)\(scale.suffix).png"
-        try! pngData.write(to: URL(fileURLWithPath: "\(dir)/\(fileName)"))
+        do {
+            try pngData.write(to: URL(fileURLWithPath: "\(dir)/\(fileName)"))
+        } catch {
+            throw IconError.fileWrite("Failed to write \(fileName): \(error.localizedDescription)")
+        }
         print("  \(fileName) (\(Int(pixelSize))x\(Int(pixelSize)))")
     }
 
@@ -122,7 +148,24 @@ func generateIcon(_ spec: IconSpec, outputDir: String) {
       }
     }
     """
-    try! json.write(toFile: "\(dir)/Contents.json", atomically: true, encoding: .utf8)
+    do {
+        try json.write(toFile: "\(dir)/Contents.json", atomically: true, encoding: .utf8)
+    } catch {
+        throw IconError.fileWrite("Failed to write Contents.json: \(error.localizedDescription)")
+    }
+}
+
+func requireOptionValue(_ args: [String], at index: Int, flag: String) -> String {
+    guard index < args.count else {
+        fputs("ERROR: Missing value for \(flag)\n", stderr)
+        exit(1)
+    }
+    let value = args[index]
+    if value.hasPrefix("--") {
+        fputs("ERROR: Missing value for \(flag)\n", stderr)
+        exit(1)
+    }
+    return value
 }
 
 // MARK: - CLI
@@ -161,15 +204,28 @@ var i = 3
 while i < args.count {
     switch args[i] {
     case "--size":
-        i += 1; baseSize = CGFloat(Double(args[i]) ?? 68)
+        let raw = requireOptionValue(args, at: i + 1, flag: "--size")
+        guard let size = Double(raw), size > 0 else {
+            fputs("ERROR: --size must be a positive number\n", stderr)
+            exit(1)
+        }
+        baseSize = CGFloat(size)
+        i += 2
+        continue
     case "--color":
-        i += 1; colorHex = args[i]
+        colorHex = requireOptionValue(args, at: i + 1, flag: "--color")
+        i += 2
+        continue
     case "--weight":
-        i += 1; weightName = args[i]
+        weightName = requireOptionValue(args, at: i + 1, flag: "--weight")
+        i += 2
+        continue
     case "--output":
-        i += 1; outputDir = args[i]
+        outputDir = requireOptionValue(args, at: i + 1, flag: "--output")
+        i += 2
+        continue
     default:
-        break
+        fputs("WARNING: Unknown option \(args[i])\n", stderr)
     }
     i += 1
 }
@@ -183,5 +239,10 @@ let spec = IconSpec(
 )
 
 print("Generating \(assetName) from SF Symbol '\(symbolName)':")
-generateIcon(spec, outputDir: outputDir)
-print("Output: \(outputDir)/\(assetName).imageset/")
+do {
+    try generateIcon(spec, outputDir: outputDir)
+    print("Output: \(outputDir)/\(assetName).imageset/")
+} catch {
+    fputs("ERROR: \(error)\n", stderr)
+    exit(1)
+}
