@@ -46,7 +46,7 @@ source: "session-observation"
 - **原子性** — 一個觸發器，一個動作
 - **信心加權** — 0.3 = 試探性，0.9 = 近乎確定
 - **領域標記** — code-style、testing、git、debugging、workflow 等
-- **證據支持** — 追蹤建立它的觀察
+- **證據支援** — 追蹤建立它的觀察
 
 ## 運作方式
 
@@ -249,7 +249,7 @@ v2 完全相容 v1：
 ## 相關
 
 - [Skill Creator](https://skill-creator.app) - 從倉庫歷史產生本能
-- Homunculus - 啟發 v2 架構的社區專案（原子觀察、信心評分、本能演化管線）
+- Homunculus - 啟發 v2 架構的社群專案（原子觀察、信心評分、本能演化管線）
 - [Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) - 持續學習章節
 
 ---

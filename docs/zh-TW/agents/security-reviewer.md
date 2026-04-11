@@ -103,7 +103,7 @@ b) 審查高風險區域
    - 是否設定安全性標頭？
    - 生產環境是否停用除錯模式？
 
-7. 跨站腳本（XSS）
+7. 跨站指令碼（XSS）
    - 輸出是否跳脫/清理？
    - 是否設定 Content-Security-Policy？
    - 框架是否預設跳脫？
@@ -166,7 +166,7 @@ const dns = require('dns')
 dns.lookup(userInput, callback)
 ```
 
-### 4. 跨站腳本 XSS（高）
+### 4. 跨站指令碼 XSS（高）
 
 ```javascript
 // FAIL: 高：XSS 弱點

@@ -17,7 +17,7 @@ description: Universal coding standards, best practices, and patterns for TypeSc
 
 ### 2. KISS（保持簡單）
 - 使用最簡單的解決方案
-- 避免過度工程
+- 避免過度設計
 - 不做過早優化
 - 易於理解 > 聰明的程式碼
 
