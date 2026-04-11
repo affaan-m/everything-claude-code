@@ -60,6 +60,7 @@ skills:
   - docker-patterns
   - documentation-lookup
   - e2e-testing
+  - ecc-guide
   - energy-procurement
   - enterprise-agent-ops
   - eval-harness
@@ -157,6 +158,7 @@ commands:
   - devfleet
   - docs
   - e2e
+  - ecc-guide
   - eval
   - evolve
   - feature-dev
