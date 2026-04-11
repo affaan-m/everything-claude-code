@@ -19,9 +19,9 @@
 
 ---
 
-**來自 Anthropic 黑客松冠軍的完整 Claude Code 設定集合。**
+**來自 Anthropic 駭客松冠軍的完整 Claude Code 設定集合。**
 
-經過 10 個月以上密集日常使用、打造真實產品所淬煉出的生產就緒代理程式、技能、鉤子、指令、規則和 MCP 設定。
+經過 10 個月以上密集日常使用、打造真實產品所淬煉出的生產就緒代理程式、技能、掛鉤、指令、規則和 MCP 設定。
 
 ---
 
@@ -51,10 +51,10 @@
 | 主題 | 學習內容 |
 |------|----------|
 | 權杖最佳化 | 模型選擇、系統提示精簡、背景程序 |
-| 記憶持久化 | 自動跨工作階段儲存/載入上下文的鉤子 |
+| 記憶持久化 | 自動跨工作階段儲存/載入上下文的掛鉤 |
 | 持續學習 | 從工作階段自動擷取模式並轉化為可重用技能 |
 | 驗證迴圈 | 檢查點 vs 持續評估、評分器類型、pass@k 指標 |
-| 平行處理 | Git worktrees、串聯方法、何時擴展實例 |
+| 平行處理 | Git worktrees、串聯方法、何時擴充實體 |
 | 子代理程式協調 | 上下文問題、漸進式檢索模式 |
 
 ---
@@ -104,7 +104,7 @@ cp -r everything-claude-code/rules/* ~/.claude/rules/
 
 ## 跨平台支援
 
-此外掛程式現已完整支援 **Windows、macOS 和 Linux**。所有鉤子和腳本已使用 Node.js 重寫以獲得最佳相容性。
+此外掛程式現已完整支援 **Windows、macOS 和 Linux**。所有掛鉤和指令碼已使用 Node.js 重寫以獲得最佳相容性。
 
 ### 套件管理器偵測
 
@@ -199,15 +199,15 @@ everything-claude-code/
 |   |-- performance.md      # 模型選擇、上下文管理
 |
 |-- hooks/            # 基於觸發器的自動化
-|   |-- hooks.json                # 所有鉤子設定（PreToolUse、PostToolUse、Stop 等）
-|   |-- memory-persistence/       # 工作階段生命週期鉤子（完整指南）
+|   |-- hooks.json                # 所有掛鉤設定（PreToolUse、PostToolUse、Stop 等）
+|   |-- memory-persistence/       # 工作階段生命週期掛鉤（完整指南）
 |   |-- strategic-compact/        # 壓縮建議（完整指南）
 |
-|-- scripts/          # 跨平台 Node.js 腳本（新增）
+|-- scripts/          # 跨平台 Node.js 指令碼（新增）
 |   |-- lib/                     # 共用工具
 |   |   |-- utils.js             # 跨平台檔案/路徑/系統工具
 |   |   |-- package-manager.js   # 套件管理器偵測與選擇
-|   |-- hooks/                   # 鉤子實作
+|   |-- hooks/                   # 掛鉤實作
 |   |   |-- session-start.js     # 工作階段開始時載入上下文
 |   |   |-- session-end.js       # 工作階段結束時儲存狀態
 |   |   |-- pre-compact.js       # 壓縮前狀態儲存
@@ -217,7 +217,7 @@ everything-claude-code/
 |
 |-- tests/            # 測試套件（新增）
 |   |-- lib/                     # 函式庫測試
-|   |-- hooks/                   # 鉤子測試
+|   |-- hooks/                   # 掛鉤測試
 |   |-- run-all.js               # 執行所有測試
 |
 |-- contexts/         # 動態系統提示注入上下文（完整指南）
@@ -291,7 +291,7 @@ everything-claude-code/
 }
 ```
 
-這會讓您立即存取所有指令、代理程式、技能和鉤子。
+這會讓您立即存取所有指令、代理程式、技能和掛鉤。
 
 ---
 
@@ -316,9 +316,9 @@ cp everything-claude-code/commands/*.md ~/.claude/commands/
 cp -r everything-claude-code/skills/* ~/.claude/skills/
 ```
 
-#### 將鉤子新增到 settings.json
+#### 將掛鉤新增到 settings.json
 
-將 `hooks/hooks.json` 中的鉤子複製到您的 `~/.claude/settings.json`。
+將 `hooks/hooks.json` 中的掛鉤複製到您的 `~/.claude/settings.json`。
 
 #### 設定 MCP
 
@@ -347,7 +347,7 @@ You are a senior code reviewer...
 
 ### 技能（Skills）
 
-技能是由指令或代理程式調用的工作流程定義：
+技能是由指令或代理程式呼叫的工作流程定義：
 
 ```markdown
 # TDD Workflow
@@ -359,9 +359,9 @@ You are a senior code reviewer...
 5. Verify 80%+ coverage
 ```
 
-### 鉤子（Hooks）
+### 掛鉤（Hooks）
 
-鉤子在工具事件時觸發。範例 - 警告 console.log：
+掛鉤在工具事件時觸發。範例 - 警告 console.log：
 
 ```json
 {
@@ -408,7 +408,7 @@ node tests/hooks/hooks.test.js
 
 本儲存庫旨在成為社群資源。如果您有：
 - 實用的代理程式或技能
-- 巧妙的鉤子
+- 巧妙的掛鉤
 - 更好的 MCP 設定
 - 改進的規則
 
@@ -426,7 +426,7 @@ node tests/hooks/hooks.test.js
 
 ## 背景
 
-我從實驗性推出就開始使用 Claude Code。2025 年 9 月與 [@DRodriguezFX](https://x.com/DRodriguezFX) 一起使用 Claude Code 打造 [zenith.chat](https://zenith.chat)，贏得了 Anthropic x Forum Ventures 黑客松。
+我從實驗性推出就開始使用 Claude Code。2025 年 9 月與 [@DRodriguezFX](https://x.com/DRodriguezFX) 一起使用 Claude Code 打造 [zenith.chat](https://zenith.chat)，贏得了 Anthropic x Forum Ventures 駭客松。
 
 這些設定已在多個生產應用程式中經過實戰測試。
 
@@ -451,7 +451,7 @@ node tests/hooks/hooks.test.js
 1. 從您認同的部分開始
 2. 根據您的技術堆疊修改
 3. 移除不需要的部分
-4. 添加您自己的模式
+4. 加入您自己的模式
 
 ---
 
@@ -467,7 +467,7 @@ node tests/hooks/hooks.test.js
 - **完整指南（進階）：** [Everything Claude Code 完整指南](https://x.com/affaanmustafa/status/2014040193557471352)
 - **追蹤：** [@affaanmustafa](https://x.com/affaanmustafa)
 - **zenith.chat：** [zenith.chat](https://zenith.chat)
-- **技能目錄：** awesome-agent-skills（社區維護的智能體技能目錄）
+- **技能目錄：** awesome-agent-skills（社群維護的智慧體技能目錄）
 
 ---
 

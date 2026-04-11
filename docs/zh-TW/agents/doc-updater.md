@@ -27,7 +27,7 @@ model: opus
 
 ### 分析指令
 ```bash
-# 分析 TypeScript 專案結構（使用 ts-morph 函式庫執行自訂腳本）
+# 分析 TypeScript 專案結構（使用 ts-morph 函式庫執行自訂指令碼）
 npx tsx scripts/codemaps/generate.ts
 
 # 產生相依性圖表

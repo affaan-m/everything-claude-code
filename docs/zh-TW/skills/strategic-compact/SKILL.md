@@ -21,7 +21,7 @@ description: Suggests manual context compaction at logical intervals to preserve
 
 ## 運作方式
 
-`suggest-compact.sh` 腳本在 PreToolUse（Edit/Write）執行並：
+`suggest-compact.sh` 指令碼在 PreToolUse（Edit/Write）執行並：
 
 1. **追蹤工具呼叫** - 計算工作階段中的工具呼叫次數
 2. **門檻偵測** - 在可設定門檻建議（預設：50 次呼叫）
