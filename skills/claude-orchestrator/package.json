@@ -1,0 +1,32 @@
+{
+  "name": "@ecc/claude-orchestrator",
+  "version": "1.0.0",
+  "description": "Claude orchestrator agent for task lifecycle management, context optimization, and tool coordination",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "example": "ts-node example.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "ts-node": "^10.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "claude",
+    "anthropic",
+    "orchestrator",
+    "ai",
+    "automation",
+    "tool-coordination"
+  ]
+}
