@@ -67,7 +67,7 @@ Harness Audit (repo): 66/70
 
 Top 3 Actions:
 1) [Security Guardrails] Add prompt/tool preflight security guards in hooks/hooks.json. (hooks/hooks.json)
-2) [Tool Coverage] Sync commands/harness-audit.md and .opencode/commands/harness-audit.md. (.opencode/commands/harness-audit.md)
+2) [Tool Coverage] Review commands/harness-audit.md for gaps. (commands/harness-audit.md)
 3) [Eval Coverage] Increase automated test coverage across scripts/hooks/lib. (tests/)
 ```
 

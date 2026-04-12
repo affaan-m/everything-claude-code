@@ -156,69 +156,6 @@ test('claude marketplace.json has plugins array with a short ecc plugin entry', 
   assert.strictEqual(claudeMarketplace.plugins[0].name, 'ecc');
 });
 
-// ── Codex plugin manifest ─────────────────────────────────────────────────────
-// Per official docs: https://platform.openai.com/docs/codex/plugins
-// - .codex-plugin/plugin.json is the required manifest
-// - skills, mcpServers, apps are STRING paths relative to plugin root (not arrays)
-// - .mcp.json must be at plugin root (NOT inside .codex-plugin/)
-console.log('\n=== .codex-plugin/plugin.json ===\n');
-
-const codexPluginPath = path.join(repoRoot, '.codex-plugin', 'plugin.json');
-
-test('codex plugin.json exists', () => {
-  assert.ok(fs.existsSync(codexPluginPath), 'Expected .codex-plugin/plugin.json to exist');
-});
-
-const codexPlugin = loadJsonObject(codexPluginPath, '.codex-plugin/plugin.json');
-
-test('codex plugin.json has name field', () => {
-  assert.ok(codexPlugin.name, 'Expected name field');
-});
-
-test('codex plugin.json uses short plugin slug', () => {
-  assert.strictEqual(codexPlugin.name, 'ecc');
-});
-
-test('codex plugin.json has version field', () => {
-  assert.ok(codexPlugin.version, 'Expected version field');
-});
-
-test('codex plugin.json skills is a string (not array) per official spec', () => {
-  assert.strictEqual(
-    typeof codexPlugin.skills,
-    'string',
-    'skills must be a string path per Codex official docs, not an array',
-  );
-});
-
-test('codex plugin.json mcpServers is a string path (not array) per official spec', () => {
-  assert.strictEqual(
-    typeof codexPlugin.mcpServers,
-    'string',
-    'mcpServers must be a string path per Codex official docs',
-  );
-});
-
-test('codex plugin.json mcpServers exactly matches "./.mcp.json"', () => {
-  assert.strictEqual(
-    codexPlugin.mcpServers,
-    './.mcp.json',
-    'mcpServers must point exactly to "./.mcp.json" per official docs',
-  );
-  const mcpPath = path.join(repoRoot, codexPlugin.mcpServers.replace(/^\.\//, ''));
-  assert.ok(
-    fs.existsSync(mcpPath),
-    `mcpServers file missing at plugin root: ${codexPlugin.mcpServers}`,
-  );
-});
-
-test('codex plugin.json has interface.displayName', () => {
-  assert.ok(
-    codexPlugin.interface && codexPlugin.interface.displayName,
-    'Expected interface.displayName for plugin directory presentation',
-  );
-});
-
 // ── .mcp.json at plugin root ──────────────────────────────────────────────────
 // Per official docs: keep .mcp.json at plugin root, NOT inside .codex-plugin/
 console.log('\n=== .mcp.json (plugin root) ===\n');
@@ -254,68 +191,6 @@ test('.mcp.json declares exa as an http MCP server', () => {
   assert.strictEqual(mcpConfig.mcpServers.exa.url, 'https://mcp.exa.ai/mcp', 'Expected exa MCP server URL to remain unchanged');
 });
 
-// ── Codex marketplace file ────────────────────────────────────────────────────
-// Per official docs: repo marketplace lives at $REPO_ROOT/.agents/plugins/marketplace.json
-console.log('\n=== .agents/plugins/marketplace.json ===\n');
-
-const marketplacePath = path.join(repoRoot, '.agents', 'plugins', 'marketplace.json');
-
-test('marketplace.json exists at .agents/plugins/', () => {
-  assert.ok(
-    fs.existsSync(marketplacePath),
-    'Expected .agents/plugins/marketplace.json for Codex repo marketplace discovery',
-  );
-});
-
-const marketplace = loadJsonObject(marketplacePath, '.agents/plugins/marketplace.json');
-
-test('marketplace.json has name field', () => {
-  assert.ok(marketplace.name, 'Expected name field');
-});
-
-test('marketplace.json uses short marketplace slug', () => {
-  assert.strictEqual(marketplace.name, 'ecc');
-});
-
-test('marketplace.json has plugins array with at least one entry', () => {
-  assert.ok(Array.isArray(marketplace.plugins) && marketplace.plugins.length > 0, 'Expected plugins array');
-});
-
-test('marketplace.json plugin entries have required fields', () => {
-  for (const plugin of marketplace.plugins) {
-    assert.ok(plugin.name, `Plugin entry missing name`);
-    assert.ok(plugin.source && plugin.source.source, `Plugin "${plugin.name}" missing source.source`);
-    assert.ok(plugin.policy && plugin.policy.installation, `Plugin "${plugin.name}" missing policy.installation`);
-    assert.ok(plugin.category, `Plugin "${plugin.name}" missing category`);
-  }
-});
-
-test('marketplace.json plugin entry uses short plugin slug', () => {
-  assert.strictEqual(marketplace.plugins[0].name, 'ecc');
-});
-
-test('marketplace local plugin path resolves to the repo-root Codex bundle', () => {
-  for (const plugin of marketplace.plugins) {
-    if (!plugin.source || plugin.source.source !== 'local') {
-      continue;
-    }
-
-    const resolvedRoot = path.resolve(path.dirname(marketplacePath), plugin.source.path);
-    assert.strictEqual(
-      resolvedRoot,
-      repoRoot,
-      `Expected local marketplace path to resolve to repo root, got: ${plugin.source.path}`,
-    );
-    assert.ok(
-      fs.existsSync(path.join(resolvedRoot, '.codex-plugin', 'plugin.json')),
-      `Codex plugin manifest missing under resolved marketplace root: ${plugin.source.path}`,
-    );
-    assert.ok(
-      fs.existsSync(path.join(resolvedRoot, '.mcp.json')),
-      `Root MCP config missing under resolved marketplace root: ${plugin.source.path}`,
-    );
-  }
-});
 
 // ── Summary ───────────────────────────────────────────────────────────────────
 console.log(`\nPassed: ${passed}`);

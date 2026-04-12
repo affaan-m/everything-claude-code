@@ -70,40 +70,9 @@ Launch an Agent (subagent_type: `code-reviewer`, model: `opus`) with the full ru
 - "You are an independent quality reviewer. You have NOT seen any other review. Your job is to find problems, not to approve."
 - Return the structured JSON verdict above
 
-#### Reviewer B: External Model (Claude fallback only if no external CLI installed)
+#### Reviewer B: Second Claude Agent (context-isolated)
 
-First, detect which CLIs are available:
-```bash
-command -v codex >/dev/null 2>&1 && echo "codex" || true
-command -v gemini >/dev/null 2>&1 && echo "gemini" || true
-```
-
-Build the reviewer prompt (identical rubric + instructions as Reviewer A) and write it to a unique temp file:
-```bash
-PROMPT_FILE=$(mktemp /tmp/santa-reviewer-b-XXXXXX.txt)
-cat > "$PROMPT_FILE" << 'EOF'
-... full rubric + file contents + reviewer instructions ...
-EOF
-```
-
-Use the first available CLI:
-
-**Codex CLI** (if installed)
-```bash
-codex exec --sandbox read-only -m gpt-5.4 -C "$(pwd)" - < "$PROMPT_FILE"
-rm -f "$PROMPT_FILE"
-```
-
-**Gemini CLI** (if installed and codex is not)
-```bash
-gemini -p "$(cat "$PROMPT_FILE")" -m gemini-2.5-pro
-rm -f "$PROMPT_FILE"
-```
-
-**Claude Agent fallback** (only if neither `codex` nor `gemini` is installed)
-Launch a second Claude Agent (subagent_type: `code-reviewer`, model: `opus`). Log a warning that both reviewers share the same model family — true model diversity was not achieved but context isolation is still enforced.
-
-In all cases, the reviewer must return the same structured JSON verdict as Reviewer A.
+Launch a second Agent (subagent_type: `code-reviewer`, model: `opus`) with the same rubric and file contents as Reviewer A, but in a fresh context so it has NOT seen Reviewer A's verdict. Return the same structured JSON verdict.
 
 ### Step 4: Verdict Gate
 

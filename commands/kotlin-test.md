@@ -304,7 +304,6 @@ open build/reports/kover/html/index.html
 
 - `/kotlin-build` - Fix build errors
 - `/kotlin-review` - Review code after implementation
-- `/verify` - Run full verification loop
 
 ## Related
 
