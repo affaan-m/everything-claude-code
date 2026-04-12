@@ -1,13 +1,12 @@
 {
   "name": "ecc",
-  "version": "1.10.0",
+  "version": "0.1.0",
   "description": "Claude Code plugin — agents, skills, commands, rules, hooks",
   "author": {
-    "name": "Affaan Mustafa",
-    "url": "https://x.com/affaanmustafa"
+    "name": "phisignet"
   },
   "homepage": "https://ecc.tools",
-  "repository": "https://github.com/affaan-m/everything-claude-code",
+  "repository": "https://github.com/phisignet/everything-claude-code",
   "license": "MIT",
   "keywords": [
     "claude-code",
