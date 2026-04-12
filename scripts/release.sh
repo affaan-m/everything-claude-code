@@ -44,8 +44,8 @@ if [[ "$CURRENT_BRANCH" != "main" ]]; then
   exit 1
 fi
 
-# Check working tree is clean
-if ! git diff --quiet || ! git diff --cached --quiet; then
+# Check working tree is clean, including untracked files
+if [[ -n "$(git status --porcelain --untracked-files=all)" ]]; then
   echo "Error: Working tree is not clean. Commit or stash changes first."
   exit 1
 fi
@@ -192,6 +192,10 @@ update_version "$CODEX_PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$
 update_version "$OPENCODE_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_package_lock_version "$OPENCODE_PACKAGE_LOCK_JSON"
 update_readme_version_row
+
+# Verify the bumped release surface is still internally consistent before
+# writing a release commit, tag, or push.
+node tests/plugin-manifest.test.js
 
 # Stage, commit, tag, and push
 git add "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$README_FILE"
