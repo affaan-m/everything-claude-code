@@ -141,7 +141,7 @@ git merge feat/billing
 ECC now includes a helper for external tmux-pane orchestration with separate git worktrees:
 
 ```bash
-node scripts/orchestrate-worktrees.js plan.json --execute
+node skills/dmux-workflows/orchestrate-worktrees.js plan.json --execute
 ```
 
 Example `plan.json`:
@@ -172,7 +172,7 @@ Use `seedPaths` when workers need access to dirty or untracked local files that 
 {
   "sessionName": "workflow-e2e",
   "seedPaths": [
-    "scripts/orchestrate-worktrees.js",
+    "skills/dmux-workflows/orchestrate-worktrees.js",
     "scripts/lib/tmux-worktree-orchestrator.js",
     ".claude/plan/workflow-e2e-test.json"
   ],

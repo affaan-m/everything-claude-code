@@ -165,13 +165,13 @@ The default four criteria, each scored 1-10:
 
 ```bash
 # Basic usage
-./scripts/gan-harness.sh "Build a music streaming dashboard"
+./skills/gan-style-harness/gan-harness.sh "Build a music streaming dashboard"
 
 # With options
 GAN_MAX_ITERATIONS=10 \
 GAN_PASS_THRESHOLD=7.5 \
 GAN_EVAL_CRITERIA="functionality,performance,security" \
-./scripts/gan-harness.sh "Build a REST API for task management"
+./skills/gan-style-harness/gan-harness.sh "Build a REST API for task management"
 ```
 
 ### Via Claude Code (Manual)
