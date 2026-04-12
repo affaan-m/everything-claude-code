@@ -126,6 +126,30 @@
         ],
         "description": "Check MCP server health before MCP tool execution and block unhealthy MCP calls",
         "id": "pre:mcp-health-check"
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/gateguard-fact-force.js\"",
+            "timeout": 5
+          }
+        ],
+        "description": "Fact-forcing gate: block first Edit/Write per file and demand investigation (importers, data schemas, user instruction) before allowing",
+        "id": "pre:edit-write:gateguard-fact-force"
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/gateguard-fact-force.js\"",
+            "timeout": 5
+          }
+        ],
+        "description": "Fact-forcing gate: block destructive Bash commands and demand rollback plan; quote user instruction on first Bash per session",
+        "id": "pre:bash:gateguard-fact-force"
       }
     ],
     "PreCompact": [
