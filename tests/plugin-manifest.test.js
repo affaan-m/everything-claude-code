@@ -21,6 +21,7 @@ const path = require('path');
 const repoRoot = path.resolve(__dirname, '..');
 const repoRootWithSep = `${repoRoot}${path.sep}`;
 const packageJsonPath = path.join(repoRoot, 'package.json');
+const packageLockPath = path.join(repoRoot, 'package-lock.json');
 const opencodePackageJsonPath = path.join(repoRoot, '.opencode', 'package.json');
 
 let passed = 0;
@@ -67,10 +68,17 @@ function assertSafeRepoRelativePath(relativePath, label) {
 }
 
 const rootPackage = loadJsonObject(packageJsonPath, 'package.json');
+const packageLock = loadJsonObject(packageLockPath, 'package-lock.json');
 const expectedVersion = rootPackage.version;
 
 test('package.json has version field', () => {
   assert.ok(expectedVersion, 'Expected package.json version field');
+});
+
+test('package-lock.json root version matches package.json', () => {
+  assert.strictEqual(packageLock.version, expectedVersion);
+  assert.ok(packageLock.packages && packageLock.packages[''], 'Expected package-lock root package entry');
+  assert.strictEqual(packageLock.packages[''].version, expectedVersion);
 });
 
 // ── Claude plugin manifest ────────────────────────────────────────────────────

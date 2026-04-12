@@ -6,6 +6,7 @@ set -euo pipefail
 
 VERSION="${1:-}"
 ROOT_PACKAGE_JSON="package.json"
+PACKAGE_LOCK_JSON="package-lock.json"
 PLUGIN_JSON=".claude-plugin/plugin.json"
 MARKETPLACE_JSON=".claude-plugin/marketplace.json"
 CODEX_PLUGIN_JSON=".codex-plugin/plugin.json"
@@ -45,7 +46,7 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
 fi
 
 # Verify versioned manifests exist
-for FILE in "$ROOT_PACKAGE_JSON" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$README_FILE"; do
+for FILE in "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$README_FILE"; do
   if [[ ! -f "$FILE" ]]; then
     echo "Error: $FILE not found"
     exit 1
@@ -77,6 +78,24 @@ update_version() {
   fi
 }
 
+update_package_lock_version() {
+  node -e '
+    const fs = require("fs");
+    const file = process.argv[1];
+    const version = process.argv[2];
+    const lock = JSON.parse(fs.readFileSync(file, "utf8"));
+    if (!lock || typeof lock !== "object") {
+      console.error(`Error: ${file} does not contain a JSON object`);
+      process.exit(1);
+    }
+    lock.version = version;
+    if (lock.packages && lock.packages[""] && typeof lock.packages[""] === "object") {
+      lock.packages[""].version = version;
+    }
+    fs.writeFileSync(file, `${JSON.stringify(lock, null, 2)}\n`);
+  ' "$PACKAGE_LOCK_JSON" "$VERSION"
+}
+
 update_readme_version_row() {
   node -e '
     const fs = require("fs");
@@ -97,6 +116,7 @@ update_readme_version_row() {
 
 # Update all shipped package/plugin manifests
 update_version "$ROOT_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
+update_package_lock_version
 update_version "$PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_version "$MARKETPLACE_JSON" "0,/\"version\": *\"[^\"]*\"/s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_version "$CODEX_PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
@@ -104,7 +124,7 @@ update_version "$OPENCODE_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\":
 update_readme_version_row
 
 # Stage, commit, tag, and push
-git add "$ROOT_PACKAGE_JSON" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$README_FILE"
+git add "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$README_FILE"
 git commit -m "chore: bump plugin version to $VERSION"
 git tag "v$VERSION"
 git push origin main "v$VERSION"
