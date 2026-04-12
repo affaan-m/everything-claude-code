@@ -1,46 +1,36 @@
 {
   "name": "ecc",
-  "owner": {  
+  "owner": {
     "name": "phisignet",
     "email": "132890251+phisignet@users.noreply.github.com"
   },
   "metadata": {
-    "description": "Simplified EverythingClaudeCode"
+    "description": "EverythingClaudeCode — modular Claude Code plugins split by concern (core, language, use-case)"
   },
   "plugins": [
-    {
-      "name": "ecc",
-      "source": "./",
-      "description": "Simplified EverythingClaudeCode",
-      "version": "0.1.0",
-      "author": {
-        "name": "phisignet",
-        "email": "132890251+phisignet@users.noreply.github.com"
-      },
-      "repository": "https://github.com/phisignet/everything-claude-code",
-      "license": "MIT",
-      "keywords": [
-        "agents",
-        "skills",
-        "hooks",
-        "commands",
-        "tdd",
-        "code-review",
-        "security",
-        "best-practices"
-      ],
-      "category": "workflow",
-      "tags": [
-        "agents",
-        "skills",
-        "hooks",
-        "commands",
-        "tdd",
-        "code-review",
-        "security",
-        "best-practices"
-      ],
-      "strict": false
-    }
+    { "name": "ecc-core", "source": "./plugins/ecc-core", "description": "Core: hooks, shared scripts, generic agents/commands/skills, common rules", "version": "0.1.0", "category": "workflow", "tags": ["core", "hooks", "agents", "skills", "commands"], "strict": false },
+    { "name": "ecc-lang-cpp", "source": "./plugins/ecc-lang-cpp", "description": "C++ agents, commands, skills and rules", "version": "0.1.0", "category": "language", "tags": ["cpp", "language"], "strict": false },
+    { "name": "ecc-lang-csharp", "source": "./plugins/ecc-lang-csharp", "description": "C#/.NET agents, skills and rules", "version": "0.1.0", "category": "language", "tags": ["csharp", "dotnet", "language"], "strict": false },
+    { "name": "ecc-lang-dart", "source": "./plugins/ecc-lang-dart", "description": "Dart/Flutter agents, commands, skills and rules", "version": "0.1.0", "category": "language", "tags": ["dart", "flutter", "language"], "strict": false },
+    { "name": "ecc-lang-go", "source": "./plugins/ecc-lang-go", "description": "Go agents, commands, skills and rules", "version": "0.1.0", "category": "language", "tags": ["go", "golang", "language"], "strict": false },
+    { "name": "ecc-lang-java", "source": "./plugins/ecc-lang-java", "description": "Java/Spring Boot agents, commands, skills and rules", "version": "0.1.0", "category": "language", "tags": ["java", "spring-boot", "language"], "strict": false },
+    { "name": "ecc-lang-kotlin", "source": "./plugins/ecc-lang-kotlin", "description": "Kotlin/Android agents, commands, skills and rules", "version": "0.1.0", "category": "language", "tags": ["kotlin", "android", "language"], "strict": false },
+    { "name": "ecc-lang-perl", "source": "./plugins/ecc-lang-perl", "description": "Perl skills and rules", "version": "0.1.0", "category": "language", "tags": ["perl", "language"], "strict": false },
+    { "name": "ecc-lang-php", "source": "./plugins/ecc-lang-php", "description": "PHP/Laravel skills, rules and MCP", "version": "0.1.0", "category": "language", "tags": ["php", "laravel", "language"], "strict": false },
+    { "name": "ecc-lang-python", "source": "./plugins/ecc-lang-python", "description": "Python/Django/PyTorch agents, commands, skills and rules", "version": "0.1.0", "category": "language", "tags": ["python", "django", "pytorch", "language"], "strict": false },
+    { "name": "ecc-lang-rust", "source": "./plugins/ecc-lang-rust", "description": "Rust agents, commands, skills and rules", "version": "0.1.0", "category": "language", "tags": ["rust", "language"], "strict": false },
+    { "name": "ecc-lang-swift", "source": "./plugins/ecc-lang-swift", "description": "Swift/SwiftUI skills and rules", "version": "0.1.0", "category": "language", "tags": ["swift", "swiftui", "language"], "strict": false },
+    { "name": "ecc-lang-typescript", "source": "./plugins/ecc-lang-typescript", "description": "TypeScript/Node agents, skills and rules", "version": "0.1.0", "category": "language", "tags": ["typescript", "node", "language"], "strict": false },
+    { "name": "ecc-lang-web", "source": "./plugins/ecc-lang-web", "description": "Frontend/web design skills and rules", "version": "0.1.0", "category": "language", "tags": ["frontend", "web", "design"], "strict": false },
+    { "name": "ecc-healthcare", "source": "./plugins/ecc-healthcare", "description": "Healthcare (EMR/CDSS/HIPAA) agents and skills", "version": "0.1.0", "category": "domain", "tags": ["healthcare", "emr", "cdss", "hipaa"], "strict": false },
+    { "name": "ecc-security", "source": "./plugins/ecc-security", "description": "Security review, scanning, and domain-specific security skills", "version": "0.1.0", "category": "domain", "tags": ["security", "scan", "review"], "strict": false },
+    { "name": "ecc-seo-content", "source": "./plugins/ecc-seo-content", "description": "SEO, content, and brand skills and agent", "version": "0.1.0", "category": "domain", "tags": ["seo", "content", "brand"], "strict": false },
+    { "name": "ecc-gan-harness", "source": "./plugins/ecc-gan-harness", "description": "GAN-style harness agents, skills, and commands", "version": "0.1.0", "category": "workflow", "tags": ["gan", "harness", "agent-ops"], "strict": false },
+    { "name": "ecc-opensource", "source": "./plugins/ecc-opensource", "description": "Open-source forking, sanitizing, and packaging agents and skill", "version": "0.1.0", "category": "workflow", "tags": ["opensource", "fork", "sanitize"], "strict": false },
+    { "name": "ecc-media", "source": "./plugins/ecc-media", "description": "Video, image, and document media generation skills", "version": "0.1.0", "category": "domain", "tags": ["media", "video", "image"], "strict": false },
+    { "name": "ecc-ops", "source": "./plugins/ecc-ops", "description": "Operations, messaging, notifications, and project-flow skills", "version": "0.1.0", "category": "domain", "tags": ["ops", "jira", "notifications"], "strict": false },
+    { "name": "ecc-business", "source": "./plugins/ecc-business", "description": "Business, finance, logistics and product skills", "version": "0.1.0", "category": "domain", "tags": ["business", "finance", "logistics"], "strict": false },
+    { "name": "ecc-prp", "source": "./plugins/ecc-prp", "description": "Product requirements/PR pipeline commands", "version": "0.1.0", "category": "workflow", "tags": ["prp", "product", "workflow"], "strict": false },
+    { "name": "ecc-api-builders", "source": "./plugins/ecc-api-builders", "description": "API connector, scraping, and data-source skills", "version": "0.1.0", "category": "domain", "tags": ["api", "scraping", "data"], "strict": false }
   ]
 }

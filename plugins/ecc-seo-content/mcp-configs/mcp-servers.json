@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "browserbase": {
+      "command": "npx",
+      "args": ["-y", "@browserbasehq/mcp-server-browserbase"],
+      "env": {
+        "BROWSERBASE_API_KEY": "YOUR_BROWSERBASE_KEY_HERE"
+      },
+      "description": "Cloud browser sessions via Browserbase"
+    },
+    "browser-use": {
+      "type": "http",
+      "url": "https://api.browser-use.com/mcp",
+      "headers": {
+        "x-browser-use-api-key": "YOUR_BROWSER_USE_KEY_HERE"
+      },
+      "description": "AI browser agent for web tasks"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "ecc-media",
+  "version": "0.1.0",
+  "description": "Video, image, and document media generation skills for ECC",
+  "author": { "name": "phisignet" },
+  "repository": "https://github.com/phisignet/everything-claude-code",
+  "license": "MIT"
+}

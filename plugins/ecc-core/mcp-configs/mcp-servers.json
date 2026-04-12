@@ -1,0 +1,118 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "description": "Live documentation lookup — use with /docs command and documentation-lookup skill (resolve-library-id, query-docs)."
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp", "--browser", "chrome"],
+      "description": "Browser automation and testing via Playwright"
+    },
+    "devfleet": {
+      "type": "http",
+      "url": "http://localhost:18801/mcp",
+      "description": "Multi-agent orchestration — dispatch parallel Claude Code agents in isolated worktrees. Repo: https://github.com/LEC-AI/claude-devfleet"
+    },
+    "evalview": {
+      "command": "python3",
+      "args": ["-m", "evalview", "mcp", "serve"],
+      "env": {
+        "OPENAI_API_KEY": "YOUR_OPENAI_API_KEY_HERE"
+      },
+      "description": "AI agent regression testing — snapshot behavior, detect regressions in tool calls and output quality."
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "description": "Persistent memory across sessions"
+    },
+    "omega-memory": {
+      "command": "uvx",
+      "args": ["omega-memory", "serve"],
+      "description": "Persistent agent memory with semantic search, multi-agent coordination, and knowledge graphs"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "description": "Chain-of-thought reasoning"
+    },
+    "token-optimizer": {
+      "command": "npx",
+      "args": ["-y", "token-optimizer-mcp"],
+      "description": "Token optimization for 95%+ context reduction via content deduplication and compression"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/projects"],
+      "description": "Filesystem operations (set your path)"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_PAT_HERE"
+      },
+      "description": "GitHub operations - PRs, issues, repos"
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "env": {
+        "FIRECRAWL_API_KEY": "YOUR_FIRECRAWL_KEY_HERE"
+      },
+      "description": "Web scraping and crawling"
+    },
+    "supabase": {
+      "command": "npx",
+      "args": ["-y", "@supabase/mcp-server-supabase@latest", "--project-ref=YOUR_PROJECT_REF"],
+      "description": "Supabase database operations"
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com",
+      "description": "Vercel deployments and projects"
+    },
+    "railway": {
+      "command": "npx",
+      "args": ["-y", "@railway/mcp-server"],
+      "description": "Railway deployments"
+    },
+    "cloudflare-docs": {
+      "type": "http",
+      "url": "https://docs.mcp.cloudflare.com/mcp",
+      "description": "Cloudflare documentation search"
+    },
+    "cloudflare-workers-builds": {
+      "type": "http",
+      "url": "https://builds.mcp.cloudflare.com/mcp",
+      "description": "Cloudflare Workers builds"
+    },
+    "cloudflare-workers-bindings": {
+      "type": "http",
+      "url": "https://bindings.mcp.cloudflare.com/mcp",
+      "description": "Cloudflare Workers bindings"
+    },
+    "cloudflare-observability": {
+      "type": "http",
+      "url": "https://observability.mcp.cloudflare.com/mcp",
+      "description": "Cloudflare observability/logs"
+    },
+    "confluence": {
+      "command": "npx",
+      "args": ["-y", "confluence-mcp-server"],
+      "env": {
+        "CONFLUENCE_BASE_URL": "YOUR_CONFLUENCE_URL_HERE",
+        "CONFLUENCE_EMAIL": "YOUR_EMAIL_HERE",
+        "CONFLUENCE_API_TOKEN": "YOUR_CONFLUENCE_TOKEN_HERE"
+      },
+      "description": "Confluence Cloud integration"
+    },
+    "magic": {
+      "command": "npx",
+      "args": ["-y", "@magicuidesign/mcp@latest"],
+      "description": "Magic UI components"
+    }
+  }
+}

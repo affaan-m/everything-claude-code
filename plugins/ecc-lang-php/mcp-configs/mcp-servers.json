@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "laraplugins": {
+      "type": "http",
+      "url": "https://laraplugins.io/mcp/plugins",
+      "description": "Laravel plugin discovery — search packages by keyword, health score, Laravel/PHP version compatibility. Use with laravel-plugin-discovery skill."
+    }
+  }
+}

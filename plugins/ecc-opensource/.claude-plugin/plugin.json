@@ -1,0 +1,8 @@
+{
+  "name": "ecc-opensource",
+  "version": "0.1.0",
+  "description": "Open-source forking, sanitizing, and packaging agents and skill for ECC",
+  "author": { "name": "phisignet" },
+  "repository": "https://github.com/phisignet/everything-claude-code",
+  "license": "MIT"
+}
