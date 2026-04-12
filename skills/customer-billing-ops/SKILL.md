@@ -1,9 +1,9 @@
 ---
 name: customer-billing-ops
 description: Operate customer billing workflows such as subscriptions, refunds, churn triage, billing-portal recovery, and plan analysis using connected billing tools like Stripe. Use when the user needs to help a customer, inspect subscription state, or manage revenue-impacting billing operations.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Customer Billing Ops
 
 Use this skill for real customer operations, not generic payment API design.

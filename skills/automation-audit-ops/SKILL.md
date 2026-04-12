@@ -1,9 +1,9 @@
 ---
 name: automation-audit-ops
 description: Evidence-first automation inventory and overlap audit workflow for ECC. Use when the user wants to know which jobs, hooks, connectors, MCP servers, or wrappers are live, broken, redundant, or missing before fixing anything.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Automation Audit Ops
 
 Use this when the user asks what automations are live, which jobs are broken, where overlap exists, or what tooling and connectors are actually doing useful work right now.

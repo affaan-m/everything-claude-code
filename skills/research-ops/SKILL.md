@@ -1,9 +1,9 @@
 ---
 name: research-ops
 description: Evidence-first current-state research workflow for ECC. Use when the user wants fresh facts, comparisons, enrichment, or a recommendation built from current public evidence and any supplied local context.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Research Ops
 
 Use this when the user asks to research something current, compare options, enrich people or companies, or turn repeated lookups into a monitored workflow.

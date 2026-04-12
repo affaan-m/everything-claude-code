@@ -1,8 +1,9 @@
+---
+description: Multi-model collaborative planning workflow with Codex and Gemini for comprehensive implementation plans
+---
 # Plan - Multi-Model Collaborative Planning
 
 Multi-model collaborative planning - Context retrieval + Dual-model analysis → Generate step-by-step implementation plan.
-
-$ARGUMENTS
 
 ---
 

@@ -29,8 +29,6 @@ Metrics shared monthly can include:
 - GitHub App install trend
 - Release cadence and reliability milestones
 
-For exact command snippets and a repeatable pull process, see [`docs/business/metrics-and-sponsorship.md`](docs/business/metrics-and-sponsorship.md).
-
 ## Expectations and Scope
 
 - Sponsorship supports maintenance and acceleration; it does not transfer project ownership.

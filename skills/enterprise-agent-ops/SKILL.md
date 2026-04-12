@@ -1,9 +1,9 @@
 ---
 name: enterprise-agent-ops
 description: Operate long-lived agent workloads with observability, security boundaries, and lifecycle management.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Enterprise Agent Ops
 
 Use this skill for cloud-hosted or continuously running agent systems that need operational controls beyond single CLI sessions.

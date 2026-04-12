@@ -1,7 +1,6 @@
 ---
 name: instinct-status
 description: Show learned instincts (project + global) with confidence
-command: true
 ---
 
 # Instinct Status Command

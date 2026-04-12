@@ -1,9 +1,9 @@
 ---
 name: laravel-security
 description: Laravel security best practices for authn/authz, validation, CSRF, mass assignment, file uploads, secrets, rate limiting, and secure deployment.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Laravel Security Best Practices
 
 Comprehensive security guidance for Laravel applications to protect against common vulnerabilities.

@@ -1,9 +1,9 @@
 ---
 name: nestjs-patterns
 description: NestJS architecture patterns for modules, controllers, providers, DTO validation, guards, interceptors, config, and production-grade TypeScript backends.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # NestJS Development Patterns
 
 Production-grade NestJS patterns for modular TypeScript backends.

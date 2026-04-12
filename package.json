@@ -120,6 +120,7 @@
   },
   "dependencies": {
     "@iarna/toml": "^2.2.5",
+    "@open-gitagent/gitagent": "^0.2.0",
     "ajv": "^8.18.0",
     "sql.js": "^1.14.1"
   },

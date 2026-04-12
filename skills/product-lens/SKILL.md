@@ -1,9 +1,9 @@
 ---
 name: product-lens
 description: Use this skill to validate the "why" before building, run product diagnostics, and pressure-test product direction before the request becomes an implementation contract.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Product Lens — Think Before You Build
 
 This lane owns product diagnosis, not implementation-ready specification writing.

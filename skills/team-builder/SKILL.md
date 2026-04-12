@@ -1,9 +1,9 @@
 ---
 name: team-builder
 description: Interactive agent picker for composing and dispatching parallel teams
-origin: community
+metadata:
+  origin: community
 ---
-
 # Team Builder
 
 Interactive menu for browsing and composing agent teams on demand. Works with flat or domain-subdirectory agent collections.

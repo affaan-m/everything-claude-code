@@ -1,9 +1,9 @@
 ---
 name: laravel-tdd
 description: Test-driven development for Laravel with PHPUnit and Pest, factories, database testing, fakes, and coverage targets.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Laravel TDD Workflow
 
 Test-driven development for Laravel applications using PHPUnit and Pest with 80%+ coverage (unit + feature).

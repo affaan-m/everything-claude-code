@@ -1,9 +1,9 @@
 ---
 name: bun-runtime
 description: Bun as runtime, package manager, bundler, and test runner. When to choose Bun vs Node, migration notes, and Vercel support.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Bun Runtime
 
 Bun is a fast all-in-one JavaScript runtime and toolkit: runtime, package manager, bundler, and test runner.

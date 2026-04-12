@@ -1,9 +1,9 @@
 ---
 name: csharp-testing
 description: C# and .NET testing patterns with xUnit, FluentAssertions, mocking, integration tests, and test organization best practices.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # C# Testing Patterns
 
 Comprehensive testing patterns for .NET applications using xUnit, FluentAssertions, and modern testing practices.

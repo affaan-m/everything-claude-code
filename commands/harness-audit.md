@@ -1,3 +1,8 @@
+---
+description: Run a deterministic repository harness audit and return a prioritized scorecard.
+argument-hint: [scope] [--format text|json] [--root path]
+---
+
 # Harness Audit Command
 
 Run a deterministic repository harness audit and return a prioritized scorecard.
@@ -71,3 +76,4 @@ Top 3 Actions:
 $ARGUMENTS:
 - `repo|hooks|skills|commands|agents` (optional scope)
 - `--format text|json` (optional output format)
+- `--root path` (optional path to audit instead of current directory)

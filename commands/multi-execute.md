@@ -1,8 +1,10 @@
+---
+description: Multi-model collaborative execution workflow with Claude as code sovereign, leveraging Codex and Gemini for prototyping and audit
+---
+
 # Execute - Multi-Model Collaborative Execution
 
 Multi-model collaborative execution - Get prototype from plan → Claude refactors and implements → Multi-model audit and delivery.
-
-$ARGUMENTS
 
 ---
 
