@@ -22,6 +22,9 @@ const repoRoot = path.resolve(__dirname, '..');
 const repoRootWithSep = `${repoRoot}${path.sep}`;
 const packageJsonPath = path.join(repoRoot, 'package.json');
 const packageLockPath = path.join(repoRoot, 'package-lock.json');
+const rootAgentsPath = path.join(repoRoot, 'AGENTS.md');
+const agentYamlPath = path.join(repoRoot, 'agent.yaml');
+const versionFilePath = path.join(repoRoot, 'VERSION');
 const opencodePackageJsonPath = path.join(repoRoot, '.opencode', 'package.json');
 const opencodePackageLockPath = path.join(repoRoot, '.opencode', 'package-lock.json');
 
@@ -81,6 +84,26 @@ test('package-lock.json root version matches package.json', () => {
   assert.strictEqual(packageLock.version, expectedVersion);
   assert.ok(packageLock.packages && packageLock.packages[''], 'Expected package-lock root package entry');
   assert.strictEqual(packageLock.packages[''].version, expectedVersion);
+});
+
+test('AGENTS.md version line matches package.json', () => {
+  const agentsSource = fs.readFileSync(rootAgentsPath, 'utf8');
+  const match = agentsSource.match(/^\*\*Version:\*\* ([0-9][0-9.]*)$/m);
+  assert.ok(match, 'Expected AGENTS.md to declare a top-level version line');
+  assert.strictEqual(match[1], expectedVersion);
+});
+
+test('agent.yaml version matches package.json', () => {
+  const agentYamlSource = fs.readFileSync(agentYamlPath, 'utf8');
+  const match = agentYamlSource.match(/^version:\s*([0-9][0-9.]*)$/m);
+  assert.ok(match, 'Expected agent.yaml to declare a top-level version field');
+  assert.strictEqual(match[1], expectedVersion);
+});
+
+test('VERSION file matches package.json', () => {
+  const versionFile = fs.readFileSync(versionFilePath, 'utf8').trim();
+  assert.ok(versionFile, 'Expected VERSION file to be non-empty');
+  assert.strictEqual(versionFile, expectedVersion);
 });
 
 // ── Claude plugin manifest ────────────────────────────────────────────────────

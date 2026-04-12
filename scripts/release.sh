@@ -7,6 +7,9 @@ set -euo pipefail
 VERSION="${1:-}"
 ROOT_PACKAGE_JSON="package.json"
 PACKAGE_LOCK_JSON="package-lock.json"
+ROOT_AGENTS_MD="AGENTS.md"
+AGENT_YAML="agent.yaml"
+VERSION_FILE="VERSION"
 PLUGIN_JSON=".claude-plugin/plugin.json"
 MARKETPLACE_JSON=".claude-plugin/marketplace.json"
 CODEX_PLUGIN_JSON=".codex-plugin/plugin.json"
@@ -47,7 +50,7 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
 fi
 
 # Verify versioned manifests exist
-for FILE in "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$README_FILE"; do
+for FILE in "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$README_FILE"; do
   if [[ ! -f "$FILE" ]]; then
     echo "Error: $FILE not found"
     exit 1
@@ -115,9 +118,52 @@ update_readme_version_row() {
   ' "$README_FILE" "$VERSION"
 }
 
+update_agents_version() {
+  node -e '
+    const fs = require("fs");
+    const file = process.argv[1];
+    const version = process.argv[2];
+    const current = fs.readFileSync(file, "utf8");
+    const updated = current.replace(
+      /^\*\*Version:\*\* [0-9][0-9.]*$/m,
+      `**Version:** ${version}`
+    );
+    if (updated === current) {
+      console.error(`Error: could not update AGENTS version line in ${file}`);
+      process.exit(1);
+    }
+    fs.writeFileSync(file, updated);
+  ' "$ROOT_AGENTS_MD" "$VERSION"
+}
+
+update_agent_yaml_version() {
+  node -e '
+    const fs = require("fs");
+    const file = process.argv[1];
+    const version = process.argv[2];
+    const current = fs.readFileSync(file, "utf8");
+    const updated = current.replace(
+      /^version:\s*[0-9][0-9.]*$/m,
+      `version: ${version}`
+    );
+    if (updated === current) {
+      console.error(`Error: could not update agent.yaml version line in ${file}`);
+      process.exit(1);
+    }
+    fs.writeFileSync(file, updated);
+  ' "$AGENT_YAML" "$VERSION"
+}
+
+update_version_file() {
+  printf '%s\n' "$VERSION" > "$VERSION_FILE"
+}
+
 # Update all shipped package/plugin manifests
 update_version "$ROOT_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_package_lock_version "$PACKAGE_LOCK_JSON"
+update_agents_version
+update_agent_yaml_version
+update_version_file
 update_version "$PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_version "$MARKETPLACE_JSON" "0,/\"version\": *\"[^\"]*\"/s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_version "$CODEX_PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
@@ -126,7 +172,7 @@ update_package_lock_version "$OPENCODE_PACKAGE_LOCK_JSON"
 update_readme_version_row
 
 # Stage, commit, tag, and push
-git add "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$README_FILE"
+git add "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$README_FILE"
 git commit -m "chore: bump plugin version to $VERSION"
 git tag "v$VERSION"
 git push origin main "v$VERSION"
