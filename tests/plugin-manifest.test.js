@@ -20,6 +20,8 @@ const path = require('path');
 
 const repoRoot = path.resolve(__dirname, '..');
 const repoRootWithSep = `${repoRoot}${path.sep}`;
+const packageJsonPath = path.join(repoRoot, 'package.json');
+const opencodePackageJsonPath = path.join(repoRoot, '.opencode', 'package.json');
 
 let passed = 0;
 let failed = 0;
@@ -64,6 +66,13 @@ function assertSafeRepoRelativePath(relativePath, label) {
   );
 }
 
+const rootPackage = loadJsonObject(packageJsonPath, 'package.json');
+const expectedVersion = rootPackage.version;
+
+test('package.json has version field', () => {
+  assert.ok(expectedVersion, 'Expected package.json version field');
+});
+
 // ── Claude plugin manifest ────────────────────────────────────────────────────
 console.log('\n=== .claude-plugin/plugin.json ===\n');
 
@@ -78,6 +87,10 @@ const claudePlugin = loadJsonObject(claudePluginPath, '.claude-plugin/plugin.jso
 
 test('claude plugin.json has version field', () => {
   assert.ok(claudePlugin.version, 'Expected version field');
+});
+
+test('claude plugin.json version matches package.json', () => {
+  assert.strictEqual(claudePlugin.version, expectedVersion);
 });
 
 test('claude plugin.json uses short plugin slug', () => {
@@ -156,6 +169,10 @@ test('claude marketplace.json has plugins array with a short ecc plugin entry', 
   assert.strictEqual(claudeMarketplace.plugins[0].name, 'ecc');
 });
 
+test('claude marketplace.json plugin version matches package.json', () => {
+  assert.strictEqual(claudeMarketplace.plugins[0].version, expectedVersion);
+});
+
 // ── Codex plugin manifest ─────────────────────────────────────────────────────
 // Per official docs: https://platform.openai.com/docs/codex/plugins
 // - .codex-plugin/plugin.json is the required manifest
@@ -181,6 +198,10 @@ test('codex plugin.json uses short plugin slug', () => {
 
 test('codex plugin.json has version field', () => {
   assert.ok(codexPlugin.version, 'Expected version field');
+});
+
+test('codex plugin.json version matches package.json', () => {
+  assert.strictEqual(codexPlugin.version, expectedVersion);
 });
 
 test('codex plugin.json skills is a string (not array) per official spec', () => {
@@ -268,6 +289,7 @@ test('marketplace.json exists at .agents/plugins/', () => {
 });
 
 const marketplace = loadJsonObject(marketplacePath, '.agents/plugins/marketplace.json');
+const opencodePackage = loadJsonObject(opencodePackageJsonPath, '.opencode/package.json');
 
 test('marketplace.json has name field', () => {
   assert.ok(marketplace.name, 'Expected name field');
@@ -315,6 +337,17 @@ test('marketplace local plugin path resolves to the repo-root Codex bundle', () 
       `Root MCP config missing under resolved marketplace root: ${plugin.source.path}`,
     );
   }
+});
+
+test('.opencode/package.json version matches package.json', () => {
+  assert.strictEqual(opencodePackage.version, expectedVersion);
+});
+
+test('README version row matches package.json', () => {
+  const readme = fs.readFileSync(path.join(repoRoot, 'README.md'), 'utf8');
+  const match = readme.match(/^\| \*\*Version\*\* \| Plugin \| Plugin \| Reference config \| ([0-9][0-9.]*) \|$/m);
+  assert.ok(match, 'Expected README version summary row');
+  assert.strictEqual(match[1], expectedVersion);
 });
 
 // ── Summary ───────────────────────────────────────────────────────────────────
