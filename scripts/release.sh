@@ -20,6 +20,7 @@ OPENCODE_PACKAGE_JSON=".opencode/package.json"
 OPENCODE_PACKAGE_LOCK_JSON=".opencode/package-lock.json"
 README_FILE="README.md"
 ZH_CN_README_FILE="docs/zh-CN/README.md"
+SELECTIVE_INSTALL_ARCHITECTURE_DOC="docs/SELECTIVE-INSTALL-ARCHITECTURE.md"
 
 # Function to show usage
 usage() {
@@ -54,7 +55,7 @@ if [[ -n "$(git status --porcelain --untracked-files=all)" ]]; then
 fi
 
 # Verify versioned manifests exist
-for FILE in "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$TR_AGENTS_MD" "$ZH_CN_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$README_FILE" "$ZH_CN_README_FILE"; do
+for FILE in "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$TR_AGENTS_MD" "$ZH_CN_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$README_FILE" "$ZH_CN_README_FILE" "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"; do
   if [[ ! -f "$FILE" ]]; then
     echo "Error: $FILE not found"
     exit 1
@@ -123,6 +124,25 @@ update_readme_version_row() {
     }
     fs.writeFileSync(file, updated);
   ' "$file" "$VERSION" "$label"
+}
+
+update_selective_install_repo_version() {
+  local file="$1"
+  node -e '
+    const fs = require("fs");
+    const file = process.argv[1];
+    const version = process.argv[2];
+    const current = fs.readFileSync(file, "utf8");
+    const updated = current.replace(
+      /("repoVersion":\s*")[0-9][0-9.]*(")/,
+      `$1${version}$2`
+    );
+    if (updated === current) {
+      console.error(`Error: could not update repoVersion example in ${file}`);
+      process.exit(1);
+    }
+    fs.writeFileSync(file, updated);
+  ' "$file" "$VERSION"
 }
 
 update_agents_version() {
@@ -204,13 +224,14 @@ update_version "$OPENCODE_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\":
 update_package_lock_version "$OPENCODE_PACKAGE_LOCK_JSON"
 update_readme_version_row "$README_FILE" "Version"
 update_readme_version_row "$ZH_CN_README_FILE" "版本"
+update_selective_install_repo_version "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"
 
 # Verify the bumped release surface is still internally consistent before
 # writing a release commit, tag, or push.
 node tests/plugin-manifest.test.js
 
 # Stage, commit, tag, and push
-git add "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$TR_AGENTS_MD" "$ZH_CN_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$README_FILE" "$ZH_CN_README_FILE"
+git add "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$TR_AGENTS_MD" "$ZH_CN_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$README_FILE" "$ZH_CN_README_FILE" "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"
 git commit -m "chore: bump plugin version to $VERSION"
 git tag "v$VERSION"
 git push origin main "v$VERSION"

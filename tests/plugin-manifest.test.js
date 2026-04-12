@@ -28,6 +28,7 @@ const zhCnAgentsPath = path.join(repoRoot, 'docs', 'zh-CN', 'AGENTS.md');
 const agentYamlPath = path.join(repoRoot, 'agent.yaml');
 const versionFilePath = path.join(repoRoot, 'VERSION');
 const zhCnReadmePath = path.join(repoRoot, 'docs', 'zh-CN', 'README.md');
+const selectiveInstallArchitecturePath = path.join(repoRoot, 'docs', 'SELECTIVE-INSTALL-ARCHITECTURE.md');
 const opencodePackageJsonPath = path.join(repoRoot, '.opencode', 'package.json');
 const opencodePackageLockPath = path.join(repoRoot, '.opencode', 'package-lock.json');
 
@@ -121,6 +122,13 @@ test('VERSION file matches package.json', () => {
   const versionFile = fs.readFileSync(versionFilePath, 'utf8').trim();
   assert.ok(versionFile, 'Expected VERSION file to be non-empty');
   assert.strictEqual(versionFile, expectedVersion);
+});
+
+test('docs/SELECTIVE-INSTALL-ARCHITECTURE.md repoVersion example matches package.json', () => {
+  const source = fs.readFileSync(selectiveInstallArchitecturePath, 'utf8');
+  const match = source.match(/"repoVersion":\s*"([0-9][0-9.]*)"/);
+  assert.ok(match, 'Expected docs/SELECTIVE-INSTALL-ARCHITECTURE.md to declare a repoVersion example');
+  assert.strictEqual(match[1], expectedVersion);
 });
 
 // ── Claude plugin manifest ────────────────────────────────────────────────────
