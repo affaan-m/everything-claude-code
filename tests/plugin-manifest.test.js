@@ -23,8 +23,11 @@ const repoRootWithSep = `${repoRoot}${path.sep}`;
 const packageJsonPath = path.join(repoRoot, 'package.json');
 const packageLockPath = path.join(repoRoot, 'package-lock.json');
 const rootAgentsPath = path.join(repoRoot, 'AGENTS.md');
+const trAgentsPath = path.join(repoRoot, 'docs', 'tr', 'AGENTS.md');
+const zhCnAgentsPath = path.join(repoRoot, 'docs', 'zh-CN', 'AGENTS.md');
 const agentYamlPath = path.join(repoRoot, 'agent.yaml');
 const versionFilePath = path.join(repoRoot, 'VERSION');
+const zhCnReadmePath = path.join(repoRoot, 'docs', 'zh-CN', 'README.md');
 const opencodePackageJsonPath = path.join(repoRoot, '.opencode', 'package.json');
 const opencodePackageLockPath = path.join(repoRoot, '.opencode', 'package-lock.json');
 
@@ -90,6 +93,20 @@ test('AGENTS.md version line matches package.json', () => {
   const agentsSource = fs.readFileSync(rootAgentsPath, 'utf8');
   const match = agentsSource.match(/^\*\*Version:\*\* ([0-9][0-9.]*)$/m);
   assert.ok(match, 'Expected AGENTS.md to declare a top-level version line');
+  assert.strictEqual(match[1], expectedVersion);
+});
+
+test('docs/tr/AGENTS.md version line matches package.json', () => {
+  const agentsSource = fs.readFileSync(trAgentsPath, 'utf8');
+  const match = agentsSource.match(/^\*\*Sürüm:\*\* ([0-9][0-9.]*)$/m);
+  assert.ok(match, 'Expected docs/tr/AGENTS.md to declare a top-level version line');
+  assert.strictEqual(match[1], expectedVersion);
+});
+
+test('docs/zh-CN/AGENTS.md version line matches package.json', () => {
+  const agentsSource = fs.readFileSync(zhCnAgentsPath, 'utf8');
+  const match = agentsSource.match(/^\*\*版本:\*\* ([0-9][0-9.]*)$/m);
+  assert.ok(match, 'Expected docs/zh-CN/AGENTS.md to declare a top-level version line');
   assert.strictEqual(match[1], expectedVersion);
 });
 
@@ -391,6 +408,13 @@ test('README version row matches package.json', () => {
   const readme = fs.readFileSync(path.join(repoRoot, 'README.md'), 'utf8');
   const match = readme.match(/^\| \*\*Version\*\* \| Plugin \| Plugin \| Reference config \| ([0-9][0-9.]*) \|$/m);
   assert.ok(match, 'Expected README version summary row');
+  assert.strictEqual(match[1], expectedVersion);
+});
+
+test('docs/zh-CN/README.md version row matches package.json', () => {
+  const readme = fs.readFileSync(zhCnReadmePath, 'utf8');
+  const match = readme.match(/^\| \*\*版本\*\* \| 插件 \| 插件 \| 参考配置 \| ([0-9][0-9.]*) \|$/m);
+  assert.ok(match, 'Expected docs/zh-CN/README.md version summary row');
   assert.strictEqual(match[1], expectedVersion);
 });
 
