@@ -1,0 +1,8 @@
+{
+  "name": "ecc-api-builders",
+  "version": "0.1.0",
+  "description": "API connector, scraping, and data-source skills for ECC",
+  "author": { "name": "phisignet" },
+  "repository": "https://github.com/phisignet/everything-claude-code",
+  "license": "MIT"
+}

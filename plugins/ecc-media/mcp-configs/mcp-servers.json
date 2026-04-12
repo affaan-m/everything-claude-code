@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "fal-ai": {
+      "command": "npx",
+      "args": ["-y", "fal-ai-mcp-server"],
+      "env": {
+        "FAL_KEY": "YOUR_FAL_KEY_HERE"
+      },
+      "description": "AI image/video/audio generation via fal.ai models"
+    }
+  }
+}

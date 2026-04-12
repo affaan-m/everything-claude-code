@@ -1,0 +1,8 @@
+{
+  "name": "ecc-lang-php",
+  "version": "0.1.0",
+  "description": "PHP/Laravel skills, rules and MCP for ECC",
+  "author": { "name": "phisignet" },
+  "repository": "https://github.com/phisignet/everything-claude-code",
+  "license": "MIT"
+}

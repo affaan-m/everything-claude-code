@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "exa-web-search": {
+      "command": "npx",
+      "args": ["-y", "exa-mcp-server"],
+      "env": {
+        "EXA_API_KEY": "YOUR_EXA_API_KEY_HERE"
+      },
+      "description": "Web search, research, and data ingestion via Exa API"
+    },
+    "clickhouse": {
+      "type": "http",
+      "url": "https://mcp.clickhouse.cloud/mcp",
+      "description": "ClickHouse analytics queries"
+    }
+  }
+}

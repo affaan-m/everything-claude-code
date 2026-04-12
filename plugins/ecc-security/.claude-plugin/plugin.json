@@ -1,0 +1,8 @@
+{
+  "name": "ecc-security",
+  "version": "0.1.0",
+  "description": "Security review, scanning, and domain-specific security skills for ECC",
+  "author": { "name": "phisignet" },
+  "repository": "https://github.com/phisignet/everything-claude-code",
+  "license": "MIT"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "ecc-lang-go",
+  "version": "0.1.0",
+  "description": "Go agents, commands, skills and rules for ECC",
+  "author": { "name": "phisignet" },
+  "repository": "https://github.com/phisignet/everything-claude-code",
+  "license": "MIT"
+}

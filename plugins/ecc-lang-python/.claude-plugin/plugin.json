@@ -1,0 +1,8 @@
+{
+  "name": "ecc-lang-python",
+  "version": "0.1.0",
+  "description": "Python/Django/PyTorch agents, commands, skills and rules for ECC",
+  "author": { "name": "phisignet" },
+  "repository": "https://github.com/phisignet/everything-claude-code",
+  "license": "MIT"
+}

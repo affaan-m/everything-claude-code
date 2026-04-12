@@ -1,0 +1,8 @@
+{
+  "name": "ecc-core",
+  "version": "0.1.0",
+  "description": "ECC core plugin — hooks, shared scripts, generic agents/commands/skills, common rules",
+  "author": { "name": "phisignet" },
+  "repository": "https://github.com/phisignet/everything-claude-code",
+  "license": "MIT"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "ecc-seo-content",
+  "version": "0.1.0",
+  "description": "SEO, content, and brand skills and agent for ECC",
+  "author": { "name": "phisignet" },
+  "repository": "https://github.com/phisignet/everything-claude-code",
+  "license": "MIT"
+}

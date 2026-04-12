@@ -1,0 +1,8 @@
+{
+  "name": "ecc-prp",
+  "version": "0.1.0",
+  "description": "Product requirements/PR pipeline commands for ECC",
+  "author": { "name": "phisignet" },
+  "repository": "https://github.com/phisignet/everything-claude-code",
+  "license": "MIT"
+}
