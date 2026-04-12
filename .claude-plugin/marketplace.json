@@ -1,24 +1,23 @@
 {
   "name": "ecc",
-  "owner": {
-    "name": "Affaan Mustafa",
-    "email": "me@affaanmustafa.com"
+  "owner": {  
+    "name": "phisignet",
+    "email": "132890251+phisignet@users.noreply.github.com"
   },
   "metadata": {
-    "description": "Battle-tested Claude Code configurations from an Anthropic hackathon winner"
+    "description": "Simplified EverythingClaudeCode"
   },
   "plugins": [
     {
       "name": "ecc",
       "source": "./",
-      "description": "The most comprehensive Claude Code plugin — 38 agents, 156 skills, 72 legacy command shims, selective install profiles, and production-ready hooks for TDD, security scanning, code review, and continuous learning",
-      "version": "1.10.0",
+      "description": "Simplified EverythingClaudeCode",
+      "version": "0.1.0",
       "author": {
-        "name": "Affaan Mustafa",
-        "email": "me@affaanmustafa.com"
+        "name": "phisignet",
+        "email": "132890251+phisignet@users.noreply.github.com"
       },
-      "homepage": "https://ecc.tools",
-      "repository": "https://github.com/affaan-m/everything-claude-code",
+      "repository": "https://github.com/phisignet/everything-claude-code",
       "license": "MIT",
       "keywords": [
         "agents",
