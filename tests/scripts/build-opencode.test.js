@@ -88,6 +88,10 @@ function main() {
         "npm pack should include .opencode/package.json"
       )
       assert.ok(
+        packagedPaths.has(".opencode/package-lock.json"),
+        "npm pack should include .opencode/package-lock.json"
+      )
+      assert.ok(
         packagedPaths.has("agent.yaml"),
         "npm pack should include agent.yaml"
       )

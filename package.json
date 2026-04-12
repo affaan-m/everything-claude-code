@@ -50,6 +50,7 @@
     ".opencode/index.ts",
     ".opencode/opencode.json",
     ".opencode/package.json",
+    ".opencode/package-lock.json",
     ".opencode/tsconfig.json",
     ".opencode/MIGRATION.md",
     ".opencode/README.md",
