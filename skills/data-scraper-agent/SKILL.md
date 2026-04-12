@@ -1,9 +1,9 @@
 ---
 name: data-scraper-agent
 description: Build a fully automated AI-powered data collection agent for any public source — job boards, prices, news, GitHub, sports, anything. Scrapes on a schedule, enriches data with a free LLM (Gemini Flash), stores results in Notion/Sheets/Supabase, and learns from user feedback. Runs 100% free on GitHub Actions. Use when the user wants to monitor, collect, or track any public data automatically.
-origin: community
+metadata:
+  origin: community
 ---
-
 # Data Scraper Agent
 
 Build a production-ready, AI-powered data collection agent for any public data source.

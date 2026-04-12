@@ -1,9 +1,9 @@
 ---
 name: frontend-design
 description: Create distinctive, production-grade frontend interfaces with high design quality. Use when the user asks to build web components, pages, or applications and the visual direction matters as much as the code quality.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Frontend Design
 
 Use this when the task is not just "make it work" but "make it look designed."

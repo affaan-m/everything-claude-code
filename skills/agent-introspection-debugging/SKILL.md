@@ -1,9 +1,9 @@
 ---
 name: agent-introspection-debugging
 description: Structured self-debugging workflow for AI agent failures using capture, diagnosis, contained recovery, and introspection reports.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Agent Introspection Debugging
 
 Use this skill when an agent run is failing repeatedly, consuming tokens without progress, looping on the same tools, or drifting away from the intended task.

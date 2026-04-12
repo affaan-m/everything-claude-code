@@ -1,3 +1,8 @@
+---
+description: Orchestrate GAN-style generator-evaluator build loop
+argument-hint: [brief] [--max-iterations N] [--pass-threshold N] [--skip-planner] [--eval-mode MODE]
+---
+
 Parse the following from $ARGUMENTS:
 1. `brief` — the user's one-line description of what to build
 2. `--max-iterations N` — (optional, default 15) maximum generator-evaluator cycles

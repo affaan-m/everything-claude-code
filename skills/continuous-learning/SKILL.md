@@ -1,9 +1,9 @@
 ---
 name: continuous-learning
 description: Automatically extract reusable patterns from Claude Code sessions and save them as learned skills for future use.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Continuous Learning Skill
 
 Automatically evaluates Claude Code sessions on end to extract reusable patterns that can be saved as learned skills.
@@ -119,5 +119,3 @@ Homunculus v2 takes a more sophisticated approach:
 3. **Confidence decay** - Instincts lose confidence if contradicted
 4. **Domain tagging** - code-style, testing, git, debugging, etc.
 5. **Evolution path** - Cluster related instincts into skills/commands
-
-See: `docs/continuous-learning-v2-spec.md` for full spec.

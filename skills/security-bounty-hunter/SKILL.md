@@ -1,10 +1,10 @@
 ---
 name: security-bounty-hunter
 description: Hunt for exploitable, bounty-worthy security issues in repositories. Focuses on remotely reachable vulnerabilities that qualify for real reports instead of noisy local-only findings.
-origin: ECC direct-port adaptation
-version: "1.0.0"
+metadata:
+  origin: ECC direct-port adaptation
+  version: 1.0.0
 ---
-
 # Security Bounty Hunter
 
 Use this when the goal is practical vulnerability discovery for responsible disclosure or bounty submission, not a broad best-practices review.

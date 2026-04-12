@@ -1,9 +1,9 @@
 ---
 name: nextjs-turbopack
 description: Next.js 16+ and Turbopack — incremental bundling, FS caching, dev speed, and when to use Turbopack vs webpack.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Next.js and Turbopack
 
 Next.js 16+ uses Turbopack by default for local development: an incremental bundler written in Rust that significantly speeds up dev startup and hot updates.

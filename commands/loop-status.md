@@ -1,3 +1,8 @@
+---
+description: Inspect active loop state, progress, and failure signals
+argument-hint: [--watch]
+---
+
 # Loop Status Command
 
 Inspect active loop state, progress, and failure signals.

@@ -1,3 +1,8 @@
+---
+description: Start a managed autonomous loop pattern with safety defaults
+argument-hint: [pattern] [--mode safe|fast]
+---
+
 # Loop Start Command
 
 Start a managed autonomous loop pattern with safety defaults.

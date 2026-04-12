@@ -1,9 +1,9 @@
 ---
 name: workspace-surface-audit
 description: Audit the active repo, MCP servers, plugins, connectors, env surfaces, and harness setup, then recommend the highest-value ECC-native skills, hooks, agents, and operator workflows. Use when the user wants help setting up Claude Code or understanding what capabilities are actually available in their environment.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Workspace Surface Audit
 
 Read-only audit skill for answering the question "what can this workspace and machine actually do right now, and what should we add or enable next?"

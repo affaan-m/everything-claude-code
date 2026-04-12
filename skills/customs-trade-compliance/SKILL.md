@@ -1,23 +1,15 @@
 ---
 name: customs-trade-compliance
-description: >
-  Codified expertise for customs documentation, tariff classification, duty
-  optimization, restricted party screening, and regulatory compliance across
-  multiple jurisdictions. Informed by trade compliance specialists with 15+
-  years experience. Includes HS classification logic, Incoterms application,
-  FTA utilization, and penalty mitigation. Use when handling customs clearance,
-  tariff classification, trade compliance, import/export documentation, or
-  duty optimization.
+description: |
+  Codified expertise for customs documentation, tariff classification, duty optimization, restricted party screening, and regulatory compliance across multiple jurisdictions. Informed by trade compliance specialists with 15+ years experience. Includes HS classification logic, Incoterms application, FTA utilization, and penalty mitigation. Use when handling customs clearance, tariff classification, trade compliance, import/export documentation, or duty optimization.
 license: Apache-2.0
-version: 1.0.0
-homepage: https://github.com/affaan-m/everything-claude-code
-origin: ECC
 metadata:
   author: evos
-  clawdbot:
-    emoji: ""
+  clawdbot: '[object Object]'
+  version: 1.0.0
+  homepage: https://github.com/affaan-m/everything-claude-code
+  origin: ECC
 ---
-
 # Customs & Trade Compliance
 
 ## Role and Context

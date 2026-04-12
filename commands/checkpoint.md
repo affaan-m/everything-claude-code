@@ -1,3 +1,7 @@
+---
+description: Create or verify a checkpoint in your workflow.
+---
+
 # Checkpoint Command
 
 Create or verify a checkpoint in your workflow.
@@ -10,7 +14,7 @@ Create or verify a checkpoint in your workflow.
 
 When creating a checkpoint:
 
-1. Run `/verify quick` to ensure current state is clean
+1. Ensure the working tree is clean (no uncommitted changes)
 2. Create a git stash or commit with checkpoint name
 3. Log checkpoint to `.claude/checkpoints.log`:
 

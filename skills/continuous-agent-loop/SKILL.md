@@ -1,9 +1,9 @@
 ---
 name: continuous-agent-loop
 description: Patterns for continuous autonomous agent loops with quality gates, evals, and recovery controls.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Continuous Agent Loop
 
 This is the v1.8+ canonical loop skill name. It supersedes `autonomous-loops` while keeping compatibility for one release.

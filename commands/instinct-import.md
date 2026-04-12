@@ -1,7 +1,6 @@
 ---
 name: instinct-import
 description: Import instincts from file or URL into project/global scope
-command: true
 ---
 
 # Instinct Import Command

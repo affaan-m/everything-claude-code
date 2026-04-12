@@ -1,7 +1,0 @@
-interface:
-  display_name: "Deep Research"
-  short_description: "Multi-source deep research with firecrawl and exa MCPs"
-  brand_color: "#6366F1"
-  default_prompt: "Research the given topic using firecrawl and exa, produce a cited report"
-policy:
-  allow_implicit_invocation: true

@@ -1,9 +1,9 @@
 ---
 name: finance-billing-ops
 description: Evidence-first revenue, pricing, refunds, team-billing, and billing-model truth workflow for ECC. Use when the user wants a sales snapshot, pricing comparison, duplicate-charge diagnosis, or code-backed billing reality instead of generic payments advice.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Finance Billing Ops
 
 Use this when the user wants to understand money, pricing, refunds, team-seat logic, or whether the product actually behaves the way the website and sales copy imply.

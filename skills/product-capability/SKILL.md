@@ -1,9 +1,9 @@
 ---
 name: product-capability
 description: Translate PRD intent, roadmap asks, or product discussions into an implementation-ready capability plan that exposes constraints, invariants, interfaces, and unresolved decisions before multi-service work starts. Use when the user needs an ECC-native PRD-to-SRS lane instead of vague planning prose.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Product Capability
 
 This skill turns product intent into explicit engineering constraints.

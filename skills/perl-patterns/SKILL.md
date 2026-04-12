@@ -1,9 +1,9 @@
 ---
 name: perl-patterns
 description: Modern Perl 5.36+ idioms, best practices, and conventions for building robust, maintainable Perl applications.
-origin: ECC
+metadata:
+  origin: ECC
 ---
-
 # Modern Perl Development Patterns
 
 Idiomatic Perl 5.36+ patterns and best practices for building robust, maintainable applications.
