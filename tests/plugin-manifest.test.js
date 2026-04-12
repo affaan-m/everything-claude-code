@@ -25,6 +25,9 @@ const packageLockPath = path.join(repoRoot, 'package-lock.json');
 const rootAgentsPath = path.join(repoRoot, 'AGENTS.md');
 const trAgentsPath = path.join(repoRoot, 'docs', 'tr', 'AGENTS.md');
 const zhCnAgentsPath = path.join(repoRoot, 'docs', 'zh-CN', 'AGENTS.md');
+const ptBrReadmePath = path.join(repoRoot, 'docs', 'pt-BR', 'README.md');
+const trReadmePath = path.join(repoRoot, 'docs', 'tr', 'README.md');
+const rootZhCnReadmePath = path.join(repoRoot, 'README.zh-CN.md');
 const agentYamlPath = path.join(repoRoot, 'agent.yaml');
 const versionFilePath = path.join(repoRoot, 'VERSION');
 const zhCnReadmePath = path.join(repoRoot, 'docs', 'zh-CN', 'README.md');
@@ -129,6 +132,30 @@ test('docs/SELECTIVE-INSTALL-ARCHITECTURE.md repoVersion example matches package
   const match = source.match(/"repoVersion":\s*"([0-9][0-9.]*)"/);
   assert.ok(match, 'Expected docs/SELECTIVE-INSTALL-ARCHITECTURE.md to declare a repoVersion example');
   assert.strictEqual(match[1], expectedVersion);
+});
+
+test('docs/pt-BR/README.md latest release heading matches package.json', () => {
+  const source = fs.readFileSync(ptBrReadmePath, 'utf8');
+  assert.ok(
+    source.includes(`### v${expectedVersion} `),
+    'Expected docs/pt-BR/README.md to advertise the current release heading',
+  );
+});
+
+test('docs/tr/README.md latest release heading matches package.json', () => {
+  const source = fs.readFileSync(trReadmePath, 'utf8');
+  assert.ok(
+    source.includes(`### v${expectedVersion} `),
+    'Expected docs/tr/README.md to advertise the current release heading',
+  );
+});
+
+test('README.zh-CN.md latest release heading matches package.json', () => {
+  const source = fs.readFileSync(rootZhCnReadmePath, 'utf8');
+  assert.ok(
+    source.includes(`### v${expectedVersion} `),
+    'Expected README.zh-CN.md to advertise the current release heading',
+  );
 });
 
 // ── Claude plugin manifest ────────────────────────────────────────────────────
