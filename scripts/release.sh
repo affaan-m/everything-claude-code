@@ -70,13 +70,6 @@ if [[ -z "$OLD_VERSION" ]]; then
 fi
 echo "Bumping version: $OLD_VERSION -> $VERSION"
 
-# Build and verify the packaged OpenCode payload before mutating any manifest
-# versions or creating a tag. This keeps a broken npm artifact from being
-# released via the manual script path.
-echo "Verifying OpenCode build and npm pack payload..."
-node scripts/build-opencode.js
-node tests/scripts/build-opencode.test.js
-
 update_version() {
   local file="$1"
   local pattern="$2"
@@ -228,6 +221,9 @@ update_selective_install_repo_version "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"
 
 # Verify the bumped release surface is still internally consistent before
 # writing a release commit, tag, or push.
+echo "Verifying OpenCode build and npm pack payload..."
+node scripts/build-opencode.js
+node tests/scripts/build-opencode.test.js
 node tests/plugin-manifest.test.js
 
 # Stage, commit, tag, and push
