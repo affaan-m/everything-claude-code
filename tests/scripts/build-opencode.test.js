@@ -67,6 +67,18 @@ function main() {
         packagedPaths.has(".opencode/dist/tools/index.js"),
         "npm pack should include compiled OpenCode tool output"
       )
+      assert.ok(
+        packagedPaths.has(".claude-plugin/marketplace.json"),
+        "npm pack should include .claude-plugin/marketplace.json"
+      )
+      assert.ok(
+        packagedPaths.has("agent.yaml"),
+        "npm pack should include agent.yaml"
+      )
+      assert.ok(
+        packagedPaths.has("VERSION"),
+        "npm pack should include VERSION"
+      )
     }],
   ]
 
