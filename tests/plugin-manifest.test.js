@@ -23,6 +23,7 @@ const repoRootWithSep = `${repoRoot}${path.sep}`;
 const packageJsonPath = path.join(repoRoot, 'package.json');
 const packageLockPath = path.join(repoRoot, 'package-lock.json');
 const opencodePackageJsonPath = path.join(repoRoot, '.opencode', 'package.json');
+const opencodePackageLockPath = path.join(repoRoot, '.opencode', 'package-lock.json');
 
 let passed = 0;
 let failed = 0;
@@ -69,6 +70,7 @@ function assertSafeRepoRelativePath(relativePath, label) {
 
 const rootPackage = loadJsonObject(packageJsonPath, 'package.json');
 const packageLock = loadJsonObject(packageLockPath, 'package-lock.json');
+const opencodePackageLock = loadJsonObject(opencodePackageLockPath, '.opencode/package-lock.json');
 const expectedVersion = rootPackage.version;
 
 test('package.json has version field', () => {
@@ -349,6 +351,12 @@ test('marketplace local plugin path resolves to the repo-root Codex bundle', () 
 
 test('.opencode/package.json version matches package.json', () => {
   assert.strictEqual(opencodePackage.version, expectedVersion);
+});
+
+test('.opencode/package-lock.json root version matches package.json', () => {
+  assert.strictEqual(opencodePackageLock.version, expectedVersion);
+  assert.ok(opencodePackageLock.packages && opencodePackageLock.packages[''], 'Expected .opencode/package-lock root package entry');
+  assert.strictEqual(opencodePackageLock.packages[''].version, expectedVersion);
 });
 
 test('README version row matches package.json', () => {

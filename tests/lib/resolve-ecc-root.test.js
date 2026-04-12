@@ -13,6 +13,9 @@ const assert = require('assert');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const CURRENT_PACKAGE_VERSION = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', '..', 'package.json'), 'utf8')
+).version;
 
 const { resolveEccRoot, INLINE_RESOLVE } = require('../../scripts/lib/resolve-ecc-root');
 
@@ -181,7 +184,7 @@ function runTests() {
     const homeDir = createTempDir();
     try {
       const expected = setupLegacyPluginInstall(homeDir, ['marketplace', 'ecc']);
-      setupPluginCache(homeDir, 'ecc', 'affaan-m', '1.10.0');
+      setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected);
     } finally {
@@ -193,7 +196,7 @@ function runTests() {
   if (test('discovers plugin root from cache directory', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupPluginCache(homeDir, 'ecc', 'affaan-m', '1.10.0');
+      const expected = setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected);
     } finally {
@@ -205,7 +208,7 @@ function runTests() {
     const homeDir = createTempDir();
     try {
       const claudeDir = setupStandardInstall(homeDir);
-      setupPluginCache(homeDir, 'ecc', 'affaan-m', '1.10.0');
+      setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, claudeDir,
         'Standard install should take precedence over plugin cache');
@@ -218,7 +221,7 @@ function runTests() {
     const homeDir = createTempDir();
     try {
       setupPluginCache(homeDir, 'everything-claude-code', 'legacy-org', '1.7.0');
-      const expected = setupPluginCache(homeDir, 'ecc', 'affaan-m', '1.10.0');
+      const expected = setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       // Should find one of them (either is valid)
       assert.ok(
@@ -311,7 +314,7 @@ function runTests() {
   if (test('INLINE_RESOLVE discovers plugin cache when env var is unset', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupPluginCache(homeDir, 'ecc', 'affaan-m', '1.10.0');
+      const expected = setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const { execFileSync } = require('child_process');
       const result = execFileSync('node', [
         '-e', `console.log(${INLINE_RESOLVE})`,
