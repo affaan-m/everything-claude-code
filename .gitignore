@@ -103,7 +103,7 @@ assets/images/security/badrudi-exploit.mp4
 .profile
 .gitconfig
 .ripgreprc
-.gitmodules
 
-# Plugin state
+# Plugin/worktree state
 .omc/
+.dev/
