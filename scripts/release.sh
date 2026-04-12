@@ -12,6 +12,7 @@ AGENT_YAML="agent.yaml"
 VERSION_FILE="VERSION"
 PLUGIN_JSON=".claude-plugin/plugin.json"
 MARKETPLACE_JSON=".claude-plugin/marketplace.json"
+CODEX_MARKETPLACE_JSON=".agents/plugins/marketplace.json"
 CODEX_PLUGIN_JSON=".codex-plugin/plugin.json"
 OPENCODE_PACKAGE_JSON=".opencode/package.json"
 OPENCODE_PACKAGE_LOCK_JSON=".opencode/package-lock.json"
@@ -50,7 +51,7 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
 fi
 
 # Verify versioned manifests exist
-for FILE in "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$README_FILE"; do
+for FILE in "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$README_FILE"; do
   if [[ ! -f "$FILE" ]]; then
     echo "Error: $FILE not found"
     exit 1
@@ -158,6 +159,26 @@ update_version_file() {
   printf '%s\n' "$VERSION" > "$VERSION_FILE"
 }
 
+update_codex_marketplace_version() {
+  node -e '
+    const fs = require("fs");
+    const file = process.argv[1];
+    const version = process.argv[2];
+    const marketplace = JSON.parse(fs.readFileSync(file, "utf8"));
+    if (!marketplace || typeof marketplace !== "object" || !Array.isArray(marketplace.plugins)) {
+      console.error(`Error: ${file} does not contain a marketplace plugins array`);
+      process.exit(1);
+    }
+    const plugin = marketplace.plugins.find(entry => entry && entry.name === "ecc");
+    if (!plugin || typeof plugin !== "object") {
+      console.error(`Error: could not find ecc plugin entry in ${file}`);
+      process.exit(1);
+    }
+    plugin.version = version;
+    fs.writeFileSync(file, `${JSON.stringify(marketplace, null, 2)}\n`);
+  ' "$CODEX_MARKETPLACE_JSON" "$VERSION"
+}
+
 # Update all shipped package/plugin manifests
 update_version "$ROOT_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_package_lock_version "$PACKAGE_LOCK_JSON"
@@ -166,13 +187,14 @@ update_agent_yaml_version
 update_version_file
 update_version "$PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_version "$MARKETPLACE_JSON" "0,/\"version\": *\"[^\"]*\"/s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
+update_codex_marketplace_version
 update_version "$CODEX_PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_version "$OPENCODE_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_package_lock_version "$OPENCODE_PACKAGE_LOCK_JSON"
 update_readme_version_row
 
 # Stage, commit, tag, and push
-git add "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$README_FILE"
+git add "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$README_FILE"
 git commit -m "chore: bump plugin version to $VERSION"
 git tag "v$VERSION"
 git push origin main "v$VERSION"

@@ -339,6 +339,7 @@ test('marketplace.json has plugins array with at least one entry', () => {
 test('marketplace.json plugin entries have required fields', () => {
   for (const plugin of marketplace.plugins) {
     assert.ok(plugin.name, `Plugin entry missing name`);
+    assert.ok(plugin.version, `Plugin "${plugin.name}" missing version`);
     assert.ok(plugin.source && plugin.source.source, `Plugin "${plugin.name}" missing source.source`);
     assert.ok(plugin.policy && plugin.policy.installation, `Plugin "${plugin.name}" missing policy.installation`);
     assert.ok(plugin.category, `Plugin "${plugin.name}" missing category`);
@@ -347,6 +348,10 @@ test('marketplace.json plugin entries have required fields', () => {
 
 test('marketplace.json plugin entry uses short plugin slug', () => {
   assert.strictEqual(marketplace.plugins[0].name, 'ecc');
+});
+
+test('marketplace.json plugin version matches package.json', () => {
+  assert.strictEqual(marketplace.plugins[0].version, expectedVersion);
 });
 
 test('marketplace local plugin path resolves to the repo-root Codex bundle', () => {
