@@ -1,5 +1,4 @@
 {
-  "$schema": "../schemas/project-stack-mappings.schema.json",
   "version": 1,
   "description": "Maps project indicator files to ECC skills, rules, hooks, and default commands. Used by /project-init to auto-configure projects.",
   "stacks": [
@@ -57,7 +56,7 @@
       "id": "react",
       "name": "React",
       "indicators": [
-        { "file": "package.json", "contains": "react" }
+        { "file": "package.json", "contains": "\"react\":" }
       ],
       "rules": ["common", "typescript", "web"],
       "skills": [
@@ -82,7 +81,7 @@
       "name": "Next.js",
       "indicators": [
         { "file": "next.config.*" },
-        { "file": "package.json", "contains": "next" }
+        { "file": "package.json", "contains": "\"next\":" }
       ],
       "rules": ["common", "typescript", "web"],
       "skills": [
@@ -100,7 +99,7 @@
         "dev": ["npm run dev", "npx next dev"]
       },
       "permissions": {
-        "allow": ["npx next *", "npx eslint", "npx prettier", "npm test", "npm run *"],
+        "allow": ["npx next *", "npx eslint", "npx prettier", "npm test", "npm run *", "npx jest", "npx vitest"],
         "deny": ["npm publish"]
       }
     },
@@ -205,7 +204,7 @@
       },
       "permissions": {
         "allow": ["./mvnw *", "./gradlew *", "mvn *", "gradle *", "java *"],
-        "deny": ["./mvnw deploy", "./gradlew publish"]
+        "deny": ["./mvnw deploy", "./gradlew publish", "mvn deploy", "gradle publish"]
       }
     },
     {
@@ -235,7 +234,7 @@
       },
       "permissions": {
         "allow": ["./mvnw *", "./gradlew *", "mvn *", "gradle *", "java *"],
-        "deny": ["./mvnw deploy"]
+        "deny": ["./mvnw deploy", "./gradlew publish", "mvn deploy", "gradle publish"]
       }
     },
     {
@@ -416,7 +415,7 @@
         "build": ["cmake --build build", "make"],
         "test": ["ctest --test-dir build", "make test"],
         "lint": ["clang-tidy -p build"],
-        "format": ["clang-format -i"]
+        "format": ["find . -name '*.cpp' -o -name '*.h' -o -name '*.c' -o -name '*.hpp' | xargs clang-format -i"]
       },
       "permissions": {
         "allow": ["cmake *", "make *", "ctest *", "clang-tidy *", "clang-format *", "gcc *", "g++ *"],

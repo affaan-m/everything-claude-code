@@ -75,8 +75,8 @@ If the user says "adjust", show the full list of available stacks from the mappi
 
 Follow the same installation process as the `configure-ecc` skill:
 
-1. Clone ECC to `/tmp/everything-claude-code` if not already present
-2. Set `ECC_ROOT=/tmp/everything-claude-code`
+1. Clone ECC to a temporary directory (`$TMPDIR/everything-claude-code`, using the system temp directory) if not already present
+2. Set `ECC_ROOT=$TMPDIR/everything-claude-code`
 3. Determine install target — default to project-level (`.claude/`), ask the user if they prefer user-level (`~/.claude/`)
 
 **Install rules** (de-duplicated union of all matched stacks):
@@ -171,10 +171,11 @@ De-duplicate entries. Sort alphabetically within each list.
 
 ### Step 7: Clean Up and Report
 
-Remove the cloned ECC repo:
+Remove the cloned ECC repo only if this command created it (i.e., it was not pre-existing before Step 4). Track this with a flag set during the clone step. If the directory existed before we started, leave it in place.
 
 ```bash
-rm -rf /tmp/everything-claude-code
+# Only if we cloned it ourselves
+rm -rf "$ECC_ROOT"
 ```
 
 Print a summary:
@@ -222,7 +223,7 @@ Would you like to:
 Install skills for all detected frameworks. The skills are additive and do not conflict.
 
 **Monorepo with multiple stacks:**
-All detected stacks are included. The merged configuration covers the full repo. Suggest the user review and trim if some stacks only apply to subdirectories.
+Detection only scans root-level indicator files, so it may not discover stacks that live exclusively in workspace packages or subdirectories. All root-detected stacks are included and the merged configuration covers the top level. Suggest the user review the results and run `project-init` separately inside subdirectories that have their own distinct stack (e.g., `packages/api/` or `apps/web/`).
 
 **Project uses a package manager other than npm:**
 Detect the package manager from lock files (yarn.lock, pnpm-lock.yaml, bun.lockb) and substitute the correct runner in generated commands (yarn, pnpm, bun).
