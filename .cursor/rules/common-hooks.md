@@ -2,21 +2,27 @@
 description: "Hooks system: types, auto-accept permissions, TodoWrite best practices"
 alwaysApply: true
 ---
-# Hooks System
+# Hooks System (Cursor)
 
-## Hook Types
+ECC registers hooks in **`.cursor/hooks.json`**. Implementations live under **`.cursor/hooks/`** and reuse shared logic via **`adapter.js`** and **`scripts/hooks/`** where applicable.
 
-- **PreToolUse**: Before tool execution (validation, parameter modification)
-- **PostToolUse**: After tool execution (auto-format, checks)
-- **Stop**: When session ends (final verification)
+## Hook events (examples)
 
-## Auto-Accept Permissions
+- **sessionStart** / **sessionEnd** — restore or persist session context
+- **beforeShellExecution** / **afterShellExecution** — shell safety, logging, git flow guardrails
+- **afterFileEdit** — auto-format, type checks, edit-time warnings
+- **beforeSubmitPrompt** — secret patterns in prompts
+- **beforeReadFile** / **beforeTabFileRead** — sensitive path warnings
+- **beforeMCPExecution** / **afterMCPExecution** — MCP audit logging
+
+See **`.cursor/hooks.json`** for the authoritative list wired for this project.
+
+## Auto-run and permissions
 
 Use with caution:
-- Enable for trusted, well-defined plans
-- Disable for exploratory work
-- Never use dangerously-skip-permissions flag
-- Configure `allowedTools` in `~/.claude.json` instead
+- Enable auto-run only for trusted, well-defined plans
+- Prefer stricter approval for exploratory work
+- Use **Cursor Settings** (Chat / Agent approval, sandbox, and tool permissions) instead of Claude Code’s `~/.claude.json` `allowedTools`
 
 ## TodoWrite Best Practices
 

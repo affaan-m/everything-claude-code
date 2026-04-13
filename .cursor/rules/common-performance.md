@@ -38,11 +38,10 @@ Lower context sensitivity tasks:
 
 Extended thinking is enabled by default, reserving up to 31,999 tokens for internal reasoning.
 
-Control extended thinking via:
-- **Toggle**: Option+T (macOS) / Alt+T (Windows/Linux)
-- **Config**: Set `alwaysThinkingEnabled` in `~/.claude/settings.json`
-- **Budget cap**: `export MAX_THINKING_TOKENS=10000`
-- **Verbose mode**: Ctrl+O to see thinking output
+Control reasoning / extended thinking (names vary by Cursor version):
+- **UI**: Use the Chat / Agent controls and **Cursor Settings** for model and reasoning options (there is no `~/.claude/settings.json` in Cursor)
+- **Budget cap** (when supported by your model backend): e.g. `export MAX_THINKING_TOKENS=10000`
+- **Verbose / trace**: use whatever your Cursor build exposes for chain-of-thought or debug output
 
 For complex tasks requiring deep reasoning:
 1. Ensure extended thinking is enabled (on by default)

@@ -6,7 +6,7 @@ alwaysApply: true
 
 ## Available Agents
 
-Located in `~/.claude/agents/`:
+Project agent definitions live in **`.cursor/agents/`** (one markdown file per agent). The high-level orchestration list and tables are in the repo-root **`AGENTS.md`** (Cursor reads this natively).
 
 | Agent | Purpose | When to Use |
 |-------|---------|-------------|

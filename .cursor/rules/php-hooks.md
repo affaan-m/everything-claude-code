@@ -7,9 +7,9 @@ alwaysApply: false
 
 > This file extends the common hooks rule with PHP specific content.
 
-## PostToolUse Hooks
+## After-edit behavior
 
-Configure in `~/.claude/settings.json`:
+Align tooling with the **`afterFileEdit`** hook in **`.cursor/hooks.json`** (extend **`.cursor/hooks/after-file-edit.js`** or add PHP-specific hooks if needed):
 
 - **Pint / PHP-CS-Fixer**: Auto-format edited `.php` files.
 - **PHPStan / Psalm**: Run static analysis after PHP edits in typed codebases.
