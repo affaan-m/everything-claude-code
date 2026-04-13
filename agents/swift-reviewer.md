@@ -33,7 +33,8 @@ When invoked:
 - **Silenced errors**: Empty `catch {}` blocks or `try?` discarding meaningful errors
 - **Missing error context**: Rethrowing without wrapping in a domain-specific error
 - **`fatalError()` for recoverable conditions**: Use `throw` for errors that callers can handle
-- **`precondition`/`assert` in library code**: These crash in release — use `throw` for public API boundaries
+- **`assert` for required invariants**: `assert` is stripped in release builds (debug-only) — use `precondition` when the check must hold in release, or `throw` for public API boundaries
+- **`precondition` / `fatalError` in library code**: `precondition` crashes in both debug and release; `fatalError` crashes unconditionally in all builds — use `throw` for recoverable errors at public API boundaries
 
 ### HIGH — Concurrency
 
@@ -89,10 +90,10 @@ When invoked:
 
 ```bash
 swift build
-swiftlint lint --quiet 2>/dev/null || echo "swiftlint not installed"
+if command -v swiftlint >/dev/null 2>&1; then swiftlint lint --quiet; else echo "[info] swiftlint not installed — skipping lint (install via 'brew install swiftlint')"; fi
 swift test
 swift package resolve
-if command -v swift-format >/dev/null; then swift-format lint -r . 2>&1 | head -30; else echo "swift-format not installed"; fi
+if command -v swift-format >/dev/null 2>&1; then swift-format lint -r . 2>&1 | head -30; else echo "[info] swift-format not installed — skipping format check"; fi
 ```
 
 ## Approval Criteria

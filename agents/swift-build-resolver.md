@@ -23,7 +23,7 @@ Run these in order:
 
 ```bash
 swift build 2>&1
-swiftlint lint --quiet 2>&1 || echo "swiftlint not installed"
+if command -v swiftlint >/dev/null 2>&1; then swiftlint lint --quiet 2>&1; else echo "[info] swiftlint not installed — skipping lint"; fi
 swift package resolve 2>&1
 swift package show-dependencies 2>&1
 swift test 2>&1
@@ -33,7 +33,8 @@ For Xcode projects:
 
 ```bash
 xcodebuild -list 2>&1
-xcodebuild -scheme <Scheme> -destination 'platform=iOS Simulator,name=iPhone 16' build 2>&1 | tail -50
+xcrun simctl list devices available 2>&1 | head -20   # find an available simulator
+xcodebuild -scheme <Scheme> -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -50
 xcodebuild -showBuildSettings 2>&1 | grep -E 'SWIFT_VERSION|CODE_SIGN|PRODUCT_BUNDLE_IDENTIFIER'
 ```
 
@@ -44,7 +45,7 @@ xcodebuild -showBuildSettings 2>&1 | grep -E 'SWIFT_VERSION|CODE_SIGN|PRODUCT_BU
 2. Read affected file    -> Understand type and protocol context
 3. Apply minimal fix     -> Only what's needed
 4. swift build           -> Verify fix
-5. swiftlint lint        -> Check for warnings
+5. swiftlint lint        -> Check for warnings (if swiftlint is installed)
 6. swift test            -> Ensure nothing broke
 ```
 

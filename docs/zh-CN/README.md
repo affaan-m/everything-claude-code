@@ -270,7 +270,7 @@ everything-claude-code/
 |   |-- plugin.json         # 插件元数据和组件路径
 |   |-- marketplace.json    # 用于 /plugin marketplace add 的市场目录
 |
-|-- agents/           # 28 个用于委托任务的专用子代理
+|-- agents/           # 49 个用于委托任务的专用子代理
 |   |-- planner.md           # 功能实现规划
 |   |-- architect.md         # 系统设计决策
 |   |-- tdd-guide.md         # 测试驱动开发
