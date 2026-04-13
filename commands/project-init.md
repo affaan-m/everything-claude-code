@@ -82,14 +82,22 @@ ECC_TMPDIR="${TMPDIR:-/tmp}"
 ECC_ROOT="$ECC_TMPDIR/everything-claude-code"
 ```
 
-2. If the clone already exists, refresh it; otherwise clone fresh:
+2. If the clone already exists, verify the remote URL matches the expected ECC repo before trusting it. If the remote doesn't match, delete and re-clone to prevent supply chain attacks via tampered remotes:
 
 ```bash
+ECC_REPO_URL="https://github.com/affaan-m/everything-claude-code.git"
+
 if [ -d "$ECC_ROOT/.git" ]; then
-  git -C "$ECC_ROOT" pull --ff-only || (rm -rf "$ECC_ROOT" && git clone <ECC_REPO_URL> "$ECC_ROOT")
+  REMOTE_URL=$(git -C "$ECC_ROOT" remote get-url origin 2>/dev/null)
+  if [ "$REMOTE_URL" = "$ECC_REPO_URL" ]; then
+    git -C "$ECC_ROOT" pull --ff-only || (rm -rf "$ECC_ROOT" && git clone "$ECC_REPO_URL" "$ECC_ROOT")
+  else
+    rm -rf "$ECC_ROOT"
+    git clone "$ECC_REPO_URL" "$ECC_ROOT"
+  fi
 else
   rm -rf "$ECC_ROOT"
-  git clone <ECC_REPO_URL> "$ECC_ROOT"
+  git clone "$ECC_REPO_URL" "$ECC_ROOT"
 fi
 ```
 
