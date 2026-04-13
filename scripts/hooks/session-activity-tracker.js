@@ -359,44 +359,65 @@ function gitRepoRoot(cwd) {
   return runGit(['rev-parse', '--show-toplevel'], cwd);
 }
 
-function repoRelativePath(repoRoot, filePath) {
+function candidateGitPaths(repoRoot, filePath) {
+  const resolvedRepoRoot = path.resolve(repoRoot);
   const absolute = path.isAbsolute(filePath)
     ? path.resolve(filePath)
     : path.resolve(process.cwd(), filePath);
-  const relative = path.relative(repoRoot, absolute);
+  const relative = path.relative(resolvedRepoRoot, absolute);
+
   if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) {
-    return null;
+    return [];
   }
-  return relative.split(path.sep).join('/');
+
+  const candidates = [];
+  const pushCandidate = value => {
+    const candidate = String(value || '').trim();
+    if (!candidate || candidates.includes(candidate)) {
+      return;
+    }
+    candidates.push(candidate);
+  };
+
+  pushCandidate(relative);
+  pushCandidate(relative.split(path.sep).join('/'));
+  pushCandidate(absolute);
+  pushCandidate(absolute.split(path.sep).join('/'));
+
+  return candidates;
 }
 
-function patchPreviewFromGitDiff(repoRoot, repoRelative) {
-  const patch = runGit(
-    ['diff', '--no-ext-diff', '--no-color', '--unified=1', '--', repoRelative],
-    repoRoot
+function patchPreviewFromGitDiff(repoRoot, pathCandidates) {
+  for (const candidate of pathCandidates) {
+    const patch = runGit(
+      ['diff', '--no-ext-diff', '--no-color', '--unified=1', '--', candidate],
+      repoRoot
+    );
+    if (!patch) {
+      continue;
+    }
+
+    const relevant = patch
+      .split(/\r?\n/)
+      .filter(line =>
+        line.startsWith('@@')
+          || (line.startsWith('+') && !line.startsWith('+++'))
+          || (line.startsWith('-') && !line.startsWith('---'))
+      )
+      .slice(0, 6);
+
+    if (relevant.length > 0) {
+      return relevant.join('\n');
+    }
+  }
+
+  return undefined;
+}
+
+function trackedInGit(repoRoot, pathCandidates) {
+  return pathCandidates.some(candidate =>
+    runGit(['ls-files', '--error-unmatch', '--', candidate], repoRoot) !== null
   );
-  if (!patch) {
-    return undefined;
-  }
-
-  const relevant = patch
-    .split(/\r?\n/)
-    .filter(line =>
-      line.startsWith('@@')
-        || (line.startsWith('+') && !line.startsWith('+++'))
-        || (line.startsWith('-') && !line.startsWith('---'))
-    )
-    .slice(0, 6);
-
-  if (relevant.length === 0) {
-    return undefined;
-  }
-
-  return relevant.join('\n');
-}
-
-function trackedInGit(repoRoot, repoRelative) {
-  return runGit(['ls-files', '--error-unmatch', '--', repoRelative], repoRoot) !== null;
 }
 
 function enrichFileEventFromWorkingTree(toolName, event) {
@@ -409,14 +430,14 @@ function enrichFileEventFromWorkingTree(toolName, event) {
     return event;
   }
 
-  const repoRelative = repoRelativePath(repoRoot, event.path);
-  if (!repoRelative) {
+  const pathCandidates = candidateGitPaths(repoRoot, event.path);
+  if (pathCandidates.length === 0) {
     return event;
   }
 
   const tool = String(toolName || '').trim().toLowerCase();
-  const tracked = trackedInGit(repoRoot, repoRelative);
-  const patchPreview = patchPreviewFromGitDiff(repoRoot, repoRelative) || event.patch_preview;
+  const tracked = trackedInGit(repoRoot, pathCandidates);
+  const patchPreview = patchPreviewFromGitDiff(repoRoot, pathCandidates) || event.patch_preview;
   const diffPreview = buildDiffPreviewFromPatchPreview(patchPreview) || event.diff_preview;
 
   if (tool.includes('write')) {
