@@ -86,7 +86,7 @@ def load_skills(project_path: str) -> List[Dict]:
                         with open(skill_file, 'r', encoding='utf-8') as f:
                             content = f.read()
                             
-                        # Try to extract description from YAML frontmatter first
+import re
                         import re
                         match = re.search(r'^---\s*\n.*?description:\s*(.+?)\s*\n', content, re.MULTILINE | re.DOTALL)
                         if match:
