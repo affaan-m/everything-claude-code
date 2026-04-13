@@ -30,6 +30,7 @@
     "./agents/cpp-build-resolver.md",
     "./agents/cpp-reviewer.md",
     "./agents/csharp-reviewer.md",
+    "./agents/fsharp-reviewer.md",
     "./agents/dart-build-resolver.md",
     "./agents/database-reviewer.md",
     "./agents/doc-updater.md",

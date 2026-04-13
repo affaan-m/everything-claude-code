@@ -61,6 +61,11 @@ const LANGUAGE_RULES = [
     extensions: ['.cs', '.csproj', '.sln']
   },
   {
+    type: 'fsharp',
+    markers: [],
+    extensions: ['.fs', '.fsx', '.fsproj']
+  },
+  {
     type: 'swift',
     markers: ['Package.swift'],
     extensions: ['.swift']
