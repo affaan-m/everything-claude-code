@@ -415,7 +415,7 @@
         "build": ["cmake --build build", "make"],
         "test": ["ctest --test-dir build", "make test"],
         "lint": ["clang-tidy -p build"],
-        "format": ["find . -name '*.cpp' -o -name '*.h' -o -name '*.c' -o -name '*.hpp' | xargs clang-format -i"]
+        "format": ["clang-format -i **/*.cpp **/*.h **/*.c **/*.hpp"]
       },
       "permissions": {
         "allow": ["cmake *", "make *", "ctest *", "clang-tidy *", "clang-format *", "gcc *", "g++ *"],

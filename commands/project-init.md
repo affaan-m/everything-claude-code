@@ -75,9 +75,26 @@ If the user says "adjust", show the full list of available stacks from the mappi
 
 Follow the same installation process as the `configure-ecc` skill:
 
-1. Clone ECC to a temporary directory (`$TMPDIR/everything-claude-code`, using the system temp directory) if not already present
-2. Set `ECC_ROOT=$TMPDIR/everything-claude-code`
-3. Determine install target — default to project-level (`.claude/`), ask the user if they prefer user-level (`~/.claude/`)
+1. Set a safe temp base directory and clone target:
+
+```bash
+ECC_TMPDIR="${TMPDIR:-/tmp}"
+ECC_ROOT="$ECC_TMPDIR/everything-claude-code"
+```
+
+2. If the clone already exists, refresh it; otherwise clone fresh:
+
+```bash
+if [ -d "$ECC_ROOT/.git" ]; then
+  git -C "$ECC_ROOT" pull --ff-only || (rm -rf "$ECC_ROOT" && git clone <ECC_REPO_URL> "$ECC_ROOT")
+else
+  rm -rf "$ECC_ROOT"
+  git clone <ECC_REPO_URL> "$ECC_ROOT"
+fi
+```
+
+3. Set `ECC_ROOT` as the working reference for all copy operations
+4. Determine install target — default to project-level (`.claude/`), ask the user if they prefer user-level (`~/.claude/`)
 
 **Install rules** (de-duplicated union of all matched stacks):
 
@@ -172,6 +189,8 @@ De-duplicate entries. Sort alphabetically within each list.
 ### Step 7: Clean Up and Report
 
 Remove the cloned ECC repo only if this command created it (i.e., it was not pre-existing before Step 4). Track this with a flag set during the clone step. If the directory existed before we started, leave it in place.
+
+**Note:** Cleanup only deletes the specific `everything-claude-code` subdirectory, never `$ECC_TMPDIR` itself.
 
 ```bash
 # Only if we cloned it ourselves
