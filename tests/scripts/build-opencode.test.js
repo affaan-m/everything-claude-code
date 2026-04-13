@@ -26,12 +26,11 @@ function main() {
   let failed = 0
 
   const repoRoot = path.join(__dirname, "..", "..")
-const packageJson = JSON.parse(
-  fs.readFileSync(path.join(repoRoot, "package.json"), "utf8")
-)
-const buildScript = path.join(repoRoot, "scripts", "build-opencode.js")
-const distEntry = path.join(repoRoot, ".opencode", "dist", "index.js")
-const npmExecutable = process.platform === "win32" ? "npm.cmd" : "npm"
+  const packageJson = JSON.parse(
+    fs.readFileSync(path.join(repoRoot, "package.json"), "utf8")
+  )
+  const buildScript = path.join(repoRoot, "scripts", "build-opencode.js")
+  const distEntry = path.join(repoRoot, ".opencode", "dist", "index.js")
   const tests = [
     ["package.json exposes the OpenCode build and prepack hooks", () => {
       assert.strictEqual(packageJson.scripts["build:opencode"], "node scripts/build-opencode.js")
@@ -47,11 +46,12 @@ const npmExecutable = process.platform === "win32" ? "npm.cmd" : "npm"
       assert.ok(fs.existsSync(distEntry), ".opencode/dist/index.js should exist after build")
     }],
     ["npm pack includes the compiled OpenCode dist payload", () => {
-      const result = spawnSync(npmExecutable, ["pack", "--dry-run", "--json"], {
+      const result = spawnSync("npm", ["pack", "--dry-run", "--json"], {
         cwd: repoRoot,
         encoding: "utf8",
+        shell: process.platform === "win32",
       })
-      assert.strictEqual(result.status, 0, result.stderr)
+      assert.strictEqual(result.status, 0, result.error?.message || result.stderr)
 
       const packOutput = JSON.parse(result.stdout)
       const packagedPaths = new Set(packOutput[0]?.files?.map((file) => file.path) ?? [])
