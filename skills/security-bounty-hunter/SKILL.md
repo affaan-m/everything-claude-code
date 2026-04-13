@@ -8,7 +8,7 @@ origin: community
 
 Systematic vulnerability scanning for bug bounty submissions. Focuses exclusively on network-exploitable findings that platforms actually accept and pay for.
 
-## When to Activate
+## When to Use
 
 - Scanning a GitHub repository for security vulnerabilities
 - Preparing a bug bounty submission for Huntr, HackerOne, or Bugcrowd
@@ -37,7 +37,7 @@ Bug bounty platforms reject local-only findings. Every vulnerability must be tri
 
 | Category | Why Rejected |
 |----------|-------------|
-| **Pickle/torch.load deserialization** | Requires local file access, marked informative |
+| **Pickle/torch.load deserialization** | Only bounty-worthy if attacker controls the data via HTTP request; local file access is informative |
 | **ReDoS** | Low severity, rarely paid |
 | **Missing rate limiting** | Informational only |
 | **Self-XSS** | Requires victim to paste code |
@@ -45,19 +45,19 @@ Bug bounty platforms reject local-only findings. Every vulnerability must be tri
 | **Missing security headers** | Informational |
 | **Denial of service via resource exhaustion** | Usually informational |
 
-## Scanning Workflow
+## How It Works
 
 ### Step 1: Identify Attack Surface
 
 ```bash
 # Find all route handlers and endpoints
-grep -rn "@app\.\(get\|post\|put\|delete\|patch\)" --include="*.py"
-grep -rn "router\.\(get\|post\|put\|delete\|patch\)" --include="*.ts" --include="*.js"
-grep -rn "app\.\(get\|post\|put\|delete\|patch\)" --include="*.js"
+grep -rn "@app\.\(get\|post\|put\|delete\|patch\)" --include="*.py" .
+grep -rn "router\.\(get\|post\|put\|delete\|patch\)" --include="*.ts" --include="*.js" .
+grep -rn "app\.\(get\|post\|put\|delete\|patch\)" --include="*.js" .
 
 # Find input handling
-grep -rn "request\.\(args\|form\|json\|data\|files\|headers\)" --include="*.py"
-grep -rn "req\.\(body\|params\|query\|headers\)" --include="*.ts" --include="*.js"
+grep -rn "request\.\(args\|form\|json\|data\|files\|headers\)" --include="*.py" .
+grep -rn "req\.\(body\|params\|query\|headers\)" --include="*.ts" --include="*.js" .
 ```
 
 ### Step 2: Trace User Input to Dangerous Sinks
@@ -134,7 +134,12 @@ import requests
 target = "https://vulnerable-app.com/api/users"
 payload = {"id": "1' OR '1'='1' --"}
 response = requests.get(target, params=payload)
-print(f"Returned {len(response.json())} records (expected 1)")
+print(f"Status: {response.status_code}")
+try:
+    data = response.json()
+    print(f"Returned {len(data)} records (expected 1)")
+except Exception:
+    print(f"Body: {response.text[:500]}")
 ```
 
 ## Report Template
@@ -234,9 +239,22 @@ Always check existing reports on the platform before submitting. Search the repo
 - P3 (medium): stored XSS, IDOR
 - P4 (low): rarely paid
 
+## Examples
+
+```
+User: "Scan this Flask app for vulnerabilities"
+→ Skill identifies routes, traces user input to sinks, finds SSRF in /api/proxy endpoint, generates PoC and submission-ready report.
+
+User: "Is this eval() call exploitable?"
+→ Skill traces input source — if from HTTP request with no sanitization, confirms RCE and builds PoC. If from config file, marks out-of-scope.
+
+User: "Write a bounty report for this SQLi"
+→ Skill generates report using the template: summary, affected component, description, steps to reproduce, PoC script, impact, and suggested fix.
+```
+
 ## Related Skills
 
 - `security-review` -- general security checklist
 - `security-scan` -- automated scanning patterns
 - `django-security` -- Django-specific security
-- `springboot-security` -- Spring Boot security
+- `spring-boot-expert` -- Spring Boot security
