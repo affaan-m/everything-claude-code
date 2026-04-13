@@ -82,7 +82,7 @@ project/
 │
 ├── deploy/                   # 部署設定
 ├── docs/                     # 文件
-└── scripts/                  # 工具腳本
+└── scripts/                  # 工具指令碼
 ```
 
 ---

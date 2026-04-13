@@ -23,19 +23,19 @@
 
 ### 指令（Commands）
 
-調用實用工作流程的斜線指令：
+呼叫實用工作流程的斜線指令：
 - 部署指令
 - 測試指令
 - 文件指令
 - 程式碼生成指令
 
-### 鉤子（Hooks）
+### 掛鉤（Hooks）
 
 實用的自動化：
-- Lint/格式化鉤子
+- Lint/格式化掛鉤
 - 安全檢查
-- 驗證鉤子
-- 通知鉤子
+- 驗證掛鉤
+- 通知掛鉤
 
 ### 規則（Rules）
 
@@ -77,7 +77,7 @@ git checkout -b add-python-reviewer
 - `skills/` 用於技能（可以是單一 .md 或目錄）
 - `commands/` 用於斜線指令
 - `rules/` 用於規則檔案
-- `hooks/` 用於鉤子設定
+- `hooks/` 用於掛鉤設定
 - `mcp-configs/` 用於 MCP 伺服器設定
 
 ### 4. 遵循格式
@@ -125,7 +125,7 @@ description: Brief description of command
 Detailed instructions...
 ```
 
-**鉤子**應包含描述：
+**掛鉤**應包含描述：
 
 ```json
 {
