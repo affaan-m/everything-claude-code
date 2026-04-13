@@ -161,7 +161,7 @@
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # Install plugin
-/plugin install ecc@ecc
+/plugin install everything-claude-code
 ```
 
 ### 步骤 2：安装规则（必需）
@@ -206,7 +206,7 @@ npx ecc-install typescript
 # /plan "Add user authentication"
 
 # Check available commands
-/plugin list ecc@ecc
+/plugin list everything-claude-code@everything-claude-code
 ```
 
 **搞定！** 你现在可以使用 47 个智能体、181 项技能和 79 个命令了。
@@ -585,7 +585,7 @@ Claude Code v2.1+ **会自动加载** 任何已安装插件中的 `hooks/hooks.j
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # Install the plugin
-/plugin install ecc@ecc
+/plugin install everything-claude-code
 ```
 
 或者直接添加到您的 `~/.claude/settings.json`：
@@ -601,7 +601,7 @@ Claude Code v2.1+ **会自动加载** 任何已安装插件中的 `hooks/hooks.j
     }
   },
   "enabledPlugins": {
-    "ecc@ecc": true
+    "everything-claude-code@everything-claude-code": true
   }
 }
 ```
@@ -793,7 +793,7 @@ rules/
 <summary><b>如何检查已安装的代理/命令？</b></summary>
 
 ```bash
-/plugin list ecc@ecc
+/plugin list everything-claude-code@everything-claude-code
 ```
 
 这会显示插件中所有可用的代理、命令和技能。
