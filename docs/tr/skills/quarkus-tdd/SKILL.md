@@ -442,8 +442,8 @@ class EventServiceTest {
       Object nullPayload = null;
       
       // ACT & ASSERT
-      IllegalArgumentException exception = assertThrows(
-          IllegalArgumentException.class,
+      NullPointerException exception = assertThrows(
+          NullPointerException.class,
           () -> eventService.createSuccessEvent(nullPayload, "EVENT_TYPE")
       );
       
