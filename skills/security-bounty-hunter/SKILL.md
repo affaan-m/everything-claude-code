@@ -37,7 +37,7 @@ Bug bounty platforms reject local-only findings. Every vulnerability must be tri
 
 | Category | Why Rejected |
 |----------|-------------|
-| **Pickle/torch.load deserialization** | Only bounty-worthy if attacker controls the data via HTTP request; local file access is informative |
+| **Pickle/torch.load deserialization (local-only)** | Rejected when the data source is a local file; see In-Scope RCE for cases where attacker controls the serialized data via HTTP |
 | **ReDoS** | Low severity, rarely paid |
 | **Missing rate limiting** | Informational only |
 | **Self-XSS** | Requires victim to paste code |
@@ -257,4 +257,4 @@ User: "Write a bounty report for this SQLi"
 - `security-review` -- general security checklist
 - `security-scan` -- automated scanning patterns
 - `django-security` -- Django-specific security
-- `spring-boot-expert` -- Spring Boot security
+- `springboot-security` -- Spring Boot security
