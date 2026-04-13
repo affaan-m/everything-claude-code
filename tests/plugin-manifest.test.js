@@ -95,28 +95,28 @@ test('package-lock.json root version matches package.json', () => {
 
 test('AGENTS.md version line matches package.json', () => {
   const agentsSource = fs.readFileSync(rootAgentsPath, 'utf8');
-  const match = agentsSource.match(/^\*\*Version:\*\* ([0-9][0-9.]*)$/m);
+  const match = agentsSource.match(/^\*\*Version:\*\* ([0-9]+\.[0-9]+\.[0-9]+)$/m);
   assert.ok(match, 'Expected AGENTS.md to declare a top-level version line');
   assert.strictEqual(match[1], expectedVersion);
 });
 
 test('docs/tr/AGENTS.md version line matches package.json', () => {
   const agentsSource = fs.readFileSync(trAgentsPath, 'utf8');
-  const match = agentsSource.match(/^\*\*Sürüm:\*\* ([0-9][0-9.]*)$/m);
+  const match = agentsSource.match(/^\*\*Sürüm:\*\* ([0-9]+\.[0-9]+\.[0-9]+)$/m);
   assert.ok(match, 'Expected docs/tr/AGENTS.md to declare a top-level version line');
   assert.strictEqual(match[1], expectedVersion);
 });
 
 test('docs/zh-CN/AGENTS.md version line matches package.json', () => {
   const agentsSource = fs.readFileSync(zhCnAgentsPath, 'utf8');
-  const match = agentsSource.match(/^\*\*版本:\*\* ([0-9][0-9.]*)$/m);
+  const match = agentsSource.match(/^\*\*版本:\*\* ([0-9]+\.[0-9]+\.[0-9]+)$/m);
   assert.ok(match, 'Expected docs/zh-CN/AGENTS.md to declare a top-level version line');
   assert.strictEqual(match[1], expectedVersion);
 });
 
 test('agent.yaml version matches package.json', () => {
   const agentYamlSource = fs.readFileSync(agentYamlPath, 'utf8');
-  const match = agentYamlSource.match(/^version:\s*([0-9][0-9.]*)$/m);
+  const match = agentYamlSource.match(/^version:\s*([0-9]+\.[0-9]+\.[0-9]+)$/m);
   assert.ok(match, 'Expected agent.yaml to declare a top-level version field');
   assert.strictEqual(match[1], expectedVersion);
 });
@@ -129,7 +129,7 @@ test('VERSION file matches package.json', () => {
 
 test('docs/SELECTIVE-INSTALL-ARCHITECTURE.md repoVersion example matches package.json', () => {
   const source = fs.readFileSync(selectiveInstallArchitecturePath, 'utf8');
-  const match = source.match(/"repoVersion":\s*"([0-9][0-9.]*)"/);
+  const match = source.match(/"repoVersion":\s*"([0-9]+\.[0-9]+\.[0-9]+)"/);
   assert.ok(match, 'Expected docs/SELECTIVE-INSTALL-ARCHITECTURE.md to declare a repoVersion example');
   assert.strictEqual(match[1], expectedVersion);
 });

@@ -91,9 +91,15 @@ update_package_lock_version() {
       process.exit(1);
     }
     lock.version = version;
-    if (lock.packages && lock.packages[""] && typeof lock.packages[""] === "object") {
-      lock.packages[""].version = version;
+    if (!lock.packages || typeof lock.packages !== "object" || Array.isArray(lock.packages)) {
+      console.error(`Error: ${file} is missing lock.packages`);
+      process.exit(1);
     }
+    if (!lock.packages[""] || typeof lock.packages[""] !== "object" || Array.isArray(lock.packages[""])) {
+      console.error(`Error: ${file} is missing lock.packages[\"\"]`);
+      process.exit(1);
+    }
+    lock.packages[""].version = version;
     fs.writeFileSync(file, `${JSON.stringify(lock, null, 2)}\n`);
   ' "$1" "$VERSION"
 }
@@ -101,22 +107,32 @@ update_package_lock_version() {
 update_readme_version_row() {
   local file="$1"
   local label="$2"
+  local first_col="$3"
+  local second_col="$4"
+  local third_col="$5"
   node -e '
     const fs = require("fs");
     const file = process.argv[1];
     const version = process.argv[2];
     const label = process.argv[3];
+    const firstCol = process.argv[4];
+    const secondCol = process.argv[5];
+    const thirdCol = process.argv[6];
+    const escape = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const current = fs.readFileSync(file, "utf8");
     const updated = current.replace(
-      new RegExp(`^\\| \\*\\*${label}\\*\\* \\| Plugin \\| Plugin \\| Reference config \\| [0-9][0-9.]* \\|$`, "m"),
-      `| **${label}** | Plugin | Plugin | Reference config | ${version} |`
+      new RegExp(
+        `^\\| \\*\\*${escape(label)}\\*\\* \\| ${escape(firstCol)} \\| ${escape(secondCol)} \\| ${escape(thirdCol)} \\| [0-9]+\\.[0-9]+\\.[0-9]+ \\|$`,
+        "m"
+      ),
+      `| **${label}** | ${firstCol} | ${secondCol} | ${thirdCol} | ${version} |`
     );
     if (updated === current) {
       console.error(`Error: could not update README version row in ${file}`);
       process.exit(1);
     }
     fs.writeFileSync(file, updated);
-  ' "$file" "$VERSION" "$label"
+  ' "$file" "$VERSION" "$label" "$first_col" "$second_col" "$third_col"
 }
 
 update_selective_install_repo_version() {
@@ -215,8 +231,8 @@ update_codex_marketplace_version
 update_version "$CODEX_PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_version "$OPENCODE_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_package_lock_version "$OPENCODE_PACKAGE_LOCK_JSON"
-update_readme_version_row "$README_FILE" "Version"
-update_readme_version_row "$ZH_CN_README_FILE" "版本"
+update_readme_version_row "$README_FILE" "Version" "Plugin" "Plugin" "Reference config"
+update_readme_version_row "$ZH_CN_README_FILE" "版本" "插件" "插件" "参考配置"
 update_selective_install_repo_version "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"
 
 # Verify the bumped release surface is still internally consistent before

@@ -35,7 +35,7 @@ function runTests() {
   })) passed++; else failed++;
 
   if (test('release script reruns release metadata sync validation before commit/tag', () => {
-    const syncCheckIndex = source.indexOf('node tests/plugin-manifest.test.js');
+    const syncCheckIndex = source.lastIndexOf('node tests/plugin-manifest.test.js');
     const commitIndex = source.indexOf('git commit -m "chore: bump plugin version to $VERSION"');
 
     assert.ok(syncCheckIndex >= 0, 'release.sh should run plugin-manifest.test.js');
