@@ -8,6 +8,7 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
 import os
 import json
+import re
 from typing import Dict, List, Optional
 
 # ============================================================================
@@ -85,9 +86,8 @@ def load_skills(project_path: str) -> List[Dict]:
                     try:
                         with open(skill_file, 'r', encoding='utf-8') as f:
                             content = f.read()
-                            
+                        
                         # Try to extract description from YAML frontmatter first
-                        import re
                         match = re.search(r'^---\s*\n.*?description:\s*(.+?)\s*\n', content, re.MULTILINE | re.DOTALL)
                         if match:
                             description = match.group(1).strip()[:100]
