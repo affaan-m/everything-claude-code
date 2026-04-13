@@ -194,6 +194,7 @@ commands:
   - orchestrate
   - plan
   - pm2
+  - project-init
   - projects
   - promote
   - prompt-optimize
