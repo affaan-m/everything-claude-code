@@ -34,6 +34,7 @@ const zhCnReadmePath = path.join(repoRoot, 'docs', 'zh-CN', 'README.md');
 const selectiveInstallArchitecturePath = path.join(repoRoot, 'docs', 'SELECTIVE-INSTALL-ARCHITECTURE.md');
 const opencodePackageJsonPath = path.join(repoRoot, '.opencode', 'package.json');
 const opencodePackageLockPath = path.join(repoRoot, '.opencode', 'package-lock.json');
+const opencodeHooksPluginPath = path.join(repoRoot, '.opencode', 'plugins', 'ecc-hooks.ts');
 
 let passed = 0;
 let failed = 0;
@@ -131,6 +132,13 @@ test('docs/SELECTIVE-INSTALL-ARCHITECTURE.md repoVersion example matches package
   const source = fs.readFileSync(selectiveInstallArchitecturePath, 'utf8');
   const match = source.match(/"repoVersion":\s*"([0-9]+\.[0-9]+\.[0-9]+)"/);
   assert.ok(match, 'Expected docs/SELECTIVE-INSTALL-ARCHITECTURE.md to declare a repoVersion example');
+  assert.strictEqual(match[1], expectedVersion);
+});
+
+test('.opencode/plugins/ecc-hooks.ts active plugin banner matches package.json', () => {
+  const source = fs.readFileSync(opencodeHooksPluginPath, 'utf8');
+  const match = source.match(/## Active Plugin: Everything Claude Code v([0-9]+\.[0-9]+\.[0-9]+)/);
+  assert.ok(match, 'Expected .opencode/plugins/ecc-hooks.ts to declare an active plugin banner');
   assert.strictEqual(match[1], expectedVersion);
 });
 
