@@ -101,8 +101,9 @@ def load_skills(project_path: str) -> List[Dict]:
                                 elif line.strip() and not line.startswith('---'):
                                     description = line.strip()[:100]
                                     break
-                    except:
-                        pass
+                    except OSError as e:
+                        # Log but don't fail - some skill files may be inaccessible
+                        print(f"Warning: Could not read {skill_file}: {e}")
                 
                 # Determine category
                 category = "General"
@@ -175,8 +176,8 @@ def load_commands(project_path: str) -> List[Dict]:
                             if line.startswith('# '):
                                 description = line[2:].strip()
                                 break
-                except:
-                    pass
+                except OSError as e:
+                    print(f"Warning: Could not read {item}: {e}")
                 
                 commands.append({
                     'name': cmd_name,
