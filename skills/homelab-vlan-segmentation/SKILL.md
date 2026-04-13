@@ -8,7 +8,7 @@ origin: ECC
 
 How to split a home network into isolated VLANs so IoT devices, guests, and your main PCs can't talk to each other. The most impactful security upgrade for a home network.
 
-## When to Use
+## When to Activate
 
 - Setting up VLANs on a home network for the first time
 - Isolating IoT devices (smart bulbs, cameras, TVs) from trusted devices
@@ -167,13 +167,19 @@ Services → DHCP Server → Select your VLAN interface
 # Rules are processed top-to-bottom, first match wins
 
 # On the IoT interface (VLAN 20):
-  Rule 1: Block IoT → RFC1918 (all private IP ranges)
+  Rule 1: Allow IoT → Pi-hole DNS  ← MUST come before the RFC1918 block
+    Protocol: UDP/TCP
+    Source: IoT net
+    Destination: 192.168.30.2 port 53
+    Action: Allow
+
+  Rule 2: Block IoT → RFC1918 (all private IP ranges)
     Protocol: any
     Source: IoT net
     Destination: RFC1918  (192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12)
     Action: Block
 
-  Rule 2: Allow IoT → internet
+  Rule 3: Allow IoT → internet
     Protocol: any
     Source: IoT net
     Destination: any
@@ -185,8 +191,8 @@ Services → DHCP Server → Select your VLAN interface
     Destination: any
     Action: Allow
 
-# IoT devices that need to reach specific local services (e.g. Home Assistant):
-  Rule before the Block rule:
+# Additional exceptions for IoT devices that need specific local services:
+  Insert before the RFC1918 block rule:
     Protocol: TCP
     Source: IoT net
     Destination: 192.168.30.x port 8123  ← Home Assistant
@@ -249,8 +255,8 @@ add chain=forward src-address=192.168.20.0/24 dst-address=192.168.10.0/24 action
 ## Switch Trunk vs Access Ports
 
 ```
-# Trunk port: carries multiple VLANs (tagged) — connects switch-to-switch, switch-to-router
-# Access port: carries one VLAN (untagged) — connects to end devices (PC, camera, AP)
+# Trunk port: carries multiple VLANs (tagged) — connects switch-to-switch, switch-to-router, switch-to-AP
+# Access port: carries one VLAN (untagged) — connects to end devices (PC, camera, NAS)
 
 # A managed switch port connected to your router should be a trunk:
   Allowed VLANs: 10, 20, 30, 40, 99
@@ -259,8 +265,9 @@ add chain=forward src-address=192.168.20.0/24 dst-address=192.168.10.0/24 action
   VLAN: 10 (trusted)
   No tagging — the PC doesn't know or care about VLANs
 
-# A port connecting to an AP should be a trunk:
+# A port connecting to an AP must be a trunk:
   The AP tags traffic from each SSID with the right VLAN ID
+  Allowed VLANs: 10, 20, 40  (whichever SSIDs the AP serves)
   SSID "Trusted" → VLAN 10 tag
   SSID "IoT" → VLAN 20 tag
 ```
@@ -287,7 +294,8 @@ add chain=forward src-address=192.168.20.0/24 dst-address=192.168.10.0/24 action
 ## Best Practices
 
 - Start with 4 VLANs: Trusted, IoT, Servers, Guest — add more as needed
-- Put Pi-hole in Servers VLAN and add a firewall rule allowing DNS (port 53) from all other VLANs
+- Put Pi-hole in the Servers VLAN (192.168.30.x)
+- Add a firewall rule allowing DNS (port 53) from all VLANs to the Pi-hole IP — before any RFC1918 block rule
 - Test firewall rules: from IoT VLAN, try to ping a trusted device — should fail
 - Use a management VLAN for switch/AP web UIs and restrict access to Trusted VLAN only
 - Document your VLAN design in a simple table (VLAN ID, name, subnet, purpose)

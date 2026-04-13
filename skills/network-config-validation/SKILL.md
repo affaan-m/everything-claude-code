@@ -218,14 +218,15 @@ def pre_flight_check(config_lines: list[str]) -> dict:
 
     return {
         "dangerous_commands": dangerous,
-        "syntax_valid": validation["valid"],
+        "syntax_valid": validation["valid"],        # informational only — whitelist is not exhaustive
         "invalid_commands": validation["invalid_commands"],
         "security_issues": security,
         "missing_best_practices": best_prac,
         "subnet_overlaps": overlaps,
         "duplicate_ips": dup_ips,
-        "overall": "PASS" if not dangerous and validation["valid"]
-                             and not security and not overlaps and not dup_ips
+        # syntax_valid is excluded from overall — the whitelist doesn't cover all valid IOS commands
+        "overall": "PASS" if not dangerous and not security
+                             and not overlaps and not dup_ips
                    else "FAIL",
     }
 ```
