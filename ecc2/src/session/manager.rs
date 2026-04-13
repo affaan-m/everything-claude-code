@@ -4,6 +4,7 @@ use cron::Schedule as CronSchedule;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fmt;
+use std::fs::OpenOptions;
 use std::path::{Path, PathBuf};
 use std::process::Stdio;
 use std::str::FromStr;
@@ -2983,6 +2984,26 @@ async fn spawn_session_runner_for_program(
     working_dir: &Path,
     current_exe: &Path,
 ) -> Result<()> {
+    let stderr_log_path = background_runner_stderr_log_path(working_dir, session_id);
+    if let Some(parent) = stderr_log_path.parent() {
+        std::fs::create_dir_all(parent).with_context(|| {
+            format!(
+                "Failed to create ECC runner log directory {}",
+                parent.display()
+            )
+        })?;
+    }
+    let stderr_log = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&stderr_log_path)
+        .with_context(|| {
+            format!(
+                "Failed to open ECC runner stderr log {}",
+                stderr_log_path.display()
+            )
+        })?;
+
     let mut command = Command::new(current_exe);
     command
         .arg("run-session")
@@ -2996,7 +3017,7 @@ async fn spawn_session_runner_for_program(
         .arg(working_dir)
         .stdin(Stdio::null())
         .stdout(Stdio::null())
-        .stderr(Stdio::null());
+        .stderr(Stdio::from(stderr_log));
     configure_background_runner_command(&mut command);
 
     let child = command
@@ -3007,6 +3028,21 @@ async fn spawn_session_runner_for_program(
         .id()
         .ok_or_else(|| anyhow::anyhow!("ECC runner did not expose a process id"))?;
     Ok(())
+}
+
+fn background_runner_stderr_log_path(working_dir: &Path, session_id: &str) -> PathBuf {
+    working_dir
+        .join(".claude")
+        .join("ecc2")
+        .join("logs")
+        .join(format!("{session_id}.runner-stderr.log"))
+}
+
+#[cfg(windows)]
+fn detached_creation_flags() -> u32 {
+    const DETACHED_PROCESS: u32 = 0x0000_0008;
+    const CREATE_NEW_PROCESS_GROUP: u32 = 0x0000_0200;
+    DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP
 }
 
 fn configure_background_runner_command(command: &mut Command) {
@@ -3030,11 +3066,7 @@ fn configure_background_runner_command(command: &mut Command) {
     {
         use std::os::windows::process::CommandExt;
 
-        const DETACHED_PROCESS: u32 = 0x0000_0008;
-        const CREATE_NEW_PROCESS_GROUP: u32 = 0x0000_0200;
-        command
-            .as_std_mut()
-            .creation_flags(DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP);
+        command.as_std_mut().creation_flags(detached_creation_flags());
     }
 }
 
@@ -5135,6 +5167,22 @@ mod tests {
         let _ = child.kill().await;
         let _ = child.wait().await;
         Ok(())
+    }
+
+    #[test]
+    fn background_runner_stderr_log_path_is_session_scoped() {
+        let path =
+            background_runner_stderr_log_path(Path::new("/tmp/ecc-repo"), "session-123");
+        assert_eq!(
+            path,
+            PathBuf::from("/tmp/ecc-repo/.claude/ecc2/logs/session-123.runner-stderr.log")
+        );
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn detached_creation_flags_include_detach_and_process_group() {
+        assert_eq!(detached_creation_flags(), 0x0000_0008 | 0x0000_0200);
     }
 
     fn write_package_manager_project_files(
