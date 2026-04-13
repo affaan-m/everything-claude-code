@@ -52,12 +52,14 @@ module.exports = createInstallTargetAdapter({
           pathIndex,
         }));
     }).sort((left, right) => {
+      // Prefer repo `.cursor/` (platform-native rules and hooks) over flattened `rules/`
+      // so Cursor-specific copy wins on filename collisions (e.g. common-agents.mdc).
       const getPriority = value => {
-        if (value === 'rules') {
+        if (value === '.cursor') {
           return 0;
         }
 
-        if (value === '.cursor') {
+        if (value === 'rules') {
           return 1;
         }
 
