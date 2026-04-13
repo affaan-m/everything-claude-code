@@ -90,6 +90,7 @@
         ".gemini",
         ".opencode",
         "mcp-configs",
+        "scripts/auto-update.js",
         "scripts/setup-package-manager.js"
       ],
       "targets": [

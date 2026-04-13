@@ -68,6 +68,7 @@ function main() {
       assert.match(result.stdout, /catalog/);
       assert.match(result.stdout, /list-installed/);
       assert.match(result.stdout, /doctor/);
+      assert.match(result.stdout, /auto-update/);
     }],
     ['delegates explicit install command', () => {
       const result = runCli(['install', '--dry-run', '--json', 'typescript']);
@@ -112,6 +113,17 @@ function main() {
       const payload = parseJson(result.stdout);
       assert.deepStrictEqual(payload.records, []);
     }],
+    ['delegates auto-update command', () => {
+      const homeDir = createTempDir('ecc-cli-home-');
+      const projectRoot = createTempDir('ecc-cli-project-');
+      const result = runCli(['auto-update', '--dry-run', '--json'], {
+        cwd: projectRoot,
+        env: { HOME: homeDir },
+      });
+      assert.strictEqual(result.status, 0, result.stderr);
+      const payload = parseJson(result.stdout);
+      assert.deepStrictEqual(payload.results, []);
+    }],
     ['delegates session-inspect command', () => {
       const homeDir = createTempDir('ecc-cli-home-');
       const sessionsDir = path.join(homeDir, '.claude', 'sessions');
@@ -134,6 +146,11 @@ function main() {
       const result = runCli(['help', 'repair']);
       assert.strictEqual(result.status, 0, result.stderr);
       assert.match(result.stdout, /Usage: node scripts\/repair\.js/);
+    }],
+    ['supports help for the auto-update subcommand', () => {
+      const result = runCli(['help', 'auto-update']);
+      assert.strictEqual(result.status, 0, result.stderr);
+      assert.match(result.stdout, /Usage: node scripts\/auto-update\.js/);
     }],
     ['supports help for the catalog subcommand', () => {
       const result = runCli(['help', 'catalog']);
