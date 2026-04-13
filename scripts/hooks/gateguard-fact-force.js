@@ -27,9 +27,13 @@ const fs = require('fs');
 const path = require('path');
 
 // Session state — scoped per session to avoid cross-session races.
-// Uses CLAUDE_SESSION_ID (set by Claude Code) or falls back to PID-based isolation.
+// Prefer Claude-provided session IDs, but fall back to a stable per-project key
+// so API/proxy setups without CLAUDE_SESSION_ID do not re-trigger the gate on
+// every Bash invocation in the same workspace.
 const STATE_DIR = process.env.GATEGUARD_STATE_DIR || path.join(process.env.HOME || process.env.USERPROFILE || '/tmp', '.gateguard');
-const SESSION_ID = process.env.CLAUDE_SESSION_ID || process.env.ECC_SESSION_ID || `pid-${process.ppid || process.pid}`;
+const STABLE_FALLBACK_SCOPE = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+const STABLE_FALLBACK_ID = 'cwd-' + crypto.createHash('sha1').update(STABLE_FALLBACK_SCOPE).digest('hex').slice(0, 12);
+const SESSION_ID = process.env.CLAUDE_SESSION_ID || process.env.ECC_SESSION_ID || STABLE_FALLBACK_ID;
 const STATE_FILE = path.join(STATE_DIR, `state-${SESSION_ID.replace(/[^a-zA-Z0-9_-]/g, '_')}.json`);
 
 // State expires after 30 minutes of inactivity

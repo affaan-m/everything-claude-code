@@ -109,6 +109,39 @@ function runBashHook(input, env = {}) {
   };
 }
 
+function runBashHookWithoutSession(input, env = {}) {
+  const rawInput = typeof input === 'string' ? input : JSON.stringify(input);
+  const hookEnv = {
+    ...process.env,
+    ECC_HOOK_PROFILE: 'standard',
+    GATEGUARD_STATE_DIR: stateDir,
+    CLAUDE_PROJECT_DIR: '/tmp/ecc-gateguard-fallback-project',
+    ...env
+  };
+
+  delete hookEnv.CLAUDE_SESSION_ID;
+  delete hookEnv.ECC_SESSION_ID;
+
+  const result = spawnSync('node', [
+    runner,
+    'pre:bash:gateguard-fact-force',
+    'scripts/hooks/gateguard-fact-force.js',
+    'standard,strict'
+  ], {
+    input: rawInput,
+    encoding: 'utf8',
+    env: hookEnv,
+    timeout: 15000,
+    stdio: ['pipe', 'pipe', 'pipe']
+  });
+
+  return {
+    code: Number.isInteger(result.status) ? result.status : 1,
+    stdout: result.stdout || '',
+    stderr: result.stderr || ''
+  };
+}
+
 function parseOutput(stdout) {
   try {
     return JSON.parse(stdout);
@@ -417,6 +450,32 @@ function runTests() {
     const persisted = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
     assert.ok(persisted.checked.includes('__bash_session__'), 'pruned state should retain __bash_session__');
     assert.ok(persisted.checked.length <= 500, 'pruned state should still honor the checked-entry cap');
+  })) passed++; else failed++;
+
+  // --- Test 14: stable fallback works without session env vars ---
+  clearState();
+  if (test('denies first routine Bash and allows second without session env vars', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'echo "hello"' }
+    };
+
+    const result1 = runBashHookWithoutSession(input);
+    assert.strictEqual(result1.code, 0, 'first fallback call exit code should be 0');
+    const output1 = parseOutput(result1.stdout);
+    assert.ok(output1, 'first fallback call should produce JSON output');
+    assert.strictEqual(output1.hookSpecificOutput.permissionDecision, 'deny');
+
+    const result2 = runBashHookWithoutSession(input);
+    assert.strictEqual(result2.code, 0, 'second fallback call exit code should be 0');
+    const output2 = parseOutput(result2.stdout);
+    assert.ok(output2, 'second fallback call should produce valid JSON output');
+    if (output2.hookSpecificOutput) {
+      assert.notStrictEqual(output2.hookSpecificOutput.permissionDecision, 'deny',
+        'should not deny second routine bash when using stable fallback');
+    } else {
+      assert.strictEqual(output2.tool_name, 'Bash', 'pass-through should preserve input');
+    }
   })) passed++; else failed++;
 
   // Cleanup only the temp directory created by this test file.
