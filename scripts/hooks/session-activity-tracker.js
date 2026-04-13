@@ -359,17 +359,10 @@ function gitRepoRoot(cwd) {
   return runGit(['rev-parse', '--show-toplevel'], cwd);
 }
 
+const MAX_RELEVANT_PATCH_LINES = 6;
+
 function candidateGitPaths(repoRoot, filePath) {
   const resolvedRepoRoot = path.resolve(repoRoot);
-  const absolute = path.isAbsolute(filePath)
-    ? path.resolve(filePath)
-    : path.resolve(process.cwd(), filePath);
-  const relative = path.relative(resolvedRepoRoot, absolute);
-
-  if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) {
-    return [];
-  }
-
   const candidates = [];
   const pushCandidate = value => {
     const candidate = String(value || '').trim();
@@ -379,10 +372,24 @@ function candidateGitPaths(repoRoot, filePath) {
     candidates.push(candidate);
   };
 
-  pushCandidate(relative);
-  pushCandidate(relative.split(path.sep).join('/'));
-  pushCandidate(absolute);
-  pushCandidate(absolute.split(path.sep).join('/'));
+  const absoluteCandidates = path.isAbsolute(filePath)
+    ? [path.resolve(filePath)]
+    : [
+        path.resolve(resolvedRepoRoot, filePath),
+        path.resolve(process.cwd(), filePath),
+      ];
+
+  for (const absolute of absoluteCandidates) {
+    const relative = path.relative(resolvedRepoRoot, absolute);
+    if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) {
+      continue;
+    }
+
+    pushCandidate(relative);
+    pushCandidate(relative.split(path.sep).join('/'));
+    pushCandidate(absolute);
+    pushCandidate(absolute.split(path.sep).join('/'));
+  }
 
   return candidates;
 }
@@ -404,7 +411,7 @@ function patchPreviewFromGitDiff(repoRoot, pathCandidates) {
           || (line.startsWith('+') && !line.startsWith('+++'))
           || (line.startsWith('-') && !line.startsWith('---'))
       )
-      .slice(0, 6);
+      .slice(0, MAX_RELEVANT_PATCH_LINES);
 
     if (relevant.length > 0) {
       return relevant.join('\n');
