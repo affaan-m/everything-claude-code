@@ -160,7 +160,7 @@ def find_duplicate_ips(config: str) -> list[str]:
 BEST_PRACTICE_CHECKS = [
     (r"ntp server",           "NTP — required for accurate log timestamps"),
     (r"logging \S+",          "remote syslog — required for audit trail"),
-    (r"snmp-server community", "SNMP — required for monitoring"),
+    (r"snmp-server group",    "SNMPv3 — use v3 with auth+priv instead of v2c community strings"),
     (r"service timestamps",   "timestamps in log messages"),
     (r"banner (motd|login)",  "login banner — legal requirement in many orgs"),
     (r"ip ssh version 2",     "SSH v2 (v1 has known vulnerabilities)"),
@@ -182,7 +182,7 @@ SECURITY_CHECKS = [
     (re.compile(r"snmp-server community public", re.I),
      "SNMP community 'public' — change to something non-default"),
     # Open VTY lines with no access-class allow anyone to SSH in
-    (re.compile(r"line vty.*\n(?:(?!access-class).)*\n", re.I | re.DOTALL),
+    (re.compile(r"line vty.*\n(?:(?!access-class).)*\n", re.I),
      "VTY lines without access-class — restrict SSH access by source IP"),
     # SSH v1 has known vulnerabilities
     (re.compile(r"ip ssh version 1", re.I),
@@ -243,7 +243,7 @@ def pre_flight_check(config_lines: list[str]) -> dict:
 # A reload will lose all running-config changes
 
 # BAD: Using 'enable password' instead of 'enable secret'
-# 'enable password' uses weak reversible encryption; 'enable secret' uses MD5
+# 'enable password' uses weak reversible encryption; 'enable secret' uses a stronger hash
 
 # BAD: Leaving SNMP community 'public' in production
 # Default SNMP communities are scanned constantly by internet bots

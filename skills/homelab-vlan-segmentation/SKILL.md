@@ -163,29 +163,54 @@ Services → DHCP Server → Select your VLAN interface
 ## MikroTik Configuration
 
 ```
-# Create VLANs on the bridge
+# Step 1: Create a bridge with VLAN filtering enabled
+/interface bridge
+add name=bridge vlan-filtering=yes
+
+# Step 2: Add physical ports to the bridge
+# Trunk port to router/uplink (tagged for all VLANs)
+/interface bridge port
+add bridge=bridge interface=ether1 frame-types=admit-only-vlan-tagged
+
+# Access port for trusted devices (untagged VLAN 10)
+/interface bridge port
+add bridge=bridge interface=ether2 pvid=10 frame-types=admit-only-untagged-and-priority-tagged
+
+# Access port for IoT devices (untagged VLAN 20)
+/interface bridge port
+add bridge=bridge interface=ether3 pvid=20 frame-types=admit-only-untagged-and-priority-tagged
+
+# Step 3: Define which VLANs are allowed on which ports
+/interface bridge vlan
+add bridge=bridge tagged=ether1 untagged=ether2 vlan-ids=10
+add bridge=bridge tagged=ether1 untagged=ether3 vlan-ids=20
+
+# Step 4: Create VLAN interfaces on the bridge (gateway IPs)
 /interface vlan
 add interface=bridge name=vlan10 vlan-id=10
 add interface=bridge name=vlan20 vlan-id=20
 
-# Assign IPs to VLAN interfaces (these become the gateway IPs)
+# Step 5: Assign gateway IPs
 /ip address
 add interface=vlan10 address=192.168.10.1/24
 add interface=vlan20 address=192.168.20.1/24
 
-# DHCP pools
+# Step 6: DHCP pools and servers
 /ip pool
 add name=pool-trusted ranges=192.168.10.100-192.168.10.254
 add name=pool-iot ranges=192.168.20.100-192.168.20.254
 
-# DHCP servers
 /ip dhcp-server
 add interface=vlan10 address-pool=pool-trusted name=dhcp-trusted
 add interface=vlan20 address-pool=pool-iot name=dhcp-iot
 
-# Firewall: block IoT from trusted
+/ip dhcp-server network
+add address=192.168.10.0/24 gateway=192.168.10.1
+add address=192.168.20.0/24 gateway=192.168.20.1
+
+# Step 7: Firewall — block IoT from reaching trusted VLAN
 /ip firewall filter
-add chain=forward src-address=192.168.20.0/24 dst-address=192.168.10.0/24 action=drop
+add chain=forward src-address=192.168.20.0/24 dst-address=192.168.10.0/24 action=drop comment="Block IoT → Trusted"
 ```
 
 ## Switch Trunk vs Access Ports

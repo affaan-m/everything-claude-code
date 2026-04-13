@@ -47,8 +47,10 @@ static ip_address=192.168.3.2/24
 static routers=192.168.3.1
 static domain_name_servers=192.168.3.1
 
-# One-line installer
+# One-line installer (review the script before piping to bash in sensitive environments)
 curl -sSL https://install.pi-hole.net | bash
+# Alternatively, inspect first: curl -sSL https://install.pi-hole.net -o install.sh && less install.sh && bash install.sh
+# Or use the Docker method below for a fully auditable deployment
 
 # Follow the interactive installer:
 #   1. Select your network interface (eth0 for wired — recommended)
@@ -74,7 +76,7 @@ services:
       - "80:80/tcp"          # Web admin
     environment:
       TZ: "America/New_York"
-      WEBPASSWORD: "changeme"
+      WEBPASSWORD: "${PIHOLE_WEBPASSWORD}"   # set a strong password here
       PIHOLE_DNS_: "1.1.1.1;1.0.0.1"   # Upstream resolvers
       DNSMASQ_LISTENING: "all"
     volumes:
@@ -172,6 +174,8 @@ sudo systemctl enable cloudflared
 ## Local DNS Records
 
 Make your services reachable by name (e.g. `nas.home.lan`, `grafana.home.lan`).
+
+> **Domain name note:** `.home.lan` is widely used in homelabs and works fine in practice. The IETF-reserved suffix for local use is `.home.arpa` (RFC 8375) — use that if you want to follow the standard. Avoid `.local` for Pi-hole DNS records as it conflicts with mDNS/Bonjour.
 
 ```
 # Pi-hole admin → Local DNS → DNS Records

@@ -48,7 +48,7 @@ line vty 0 4
   ip ssh version 2    ← correct
 ```
 
-**SNMP Security (HIGH)**
+**SNMP Security (CRITICAL/HIGH)**
 ```
 # CRITICAL: Default SNMP communities
   snmp-server community public RO    ← 'public' is scanned constantly
@@ -63,7 +63,7 @@ line vty 0 4
 ```
 # HIGH: enable password instead of enable secret
   enable password cisco123    ← weak reversible encryption
-  enable secret cisco123      ← MD5 hashed — correct
+  enable secret cisco123      ← hashed — correct
 
 # HIGH: Passwords in plaintext in config
   username admin password cisco   ← plaintext

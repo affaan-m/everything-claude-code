@@ -93,7 +93,7 @@ interface GigabitEthernet0/0
   duplex full
   speed 1000
 
-# OR leave both ends as auto-negotiate (preferred for Ethernet)
+# OR leave both ends as auto-negotiate (acceptable when both sides support it)
 interface GigabitEthernet0/0
   duplex auto
   speed auto
@@ -173,8 +173,9 @@ ERRORS_RE = re.compile(
 )
 
 def parse_interface_health(raw: str) -> list[dict[str, Any]]:
+    matches = list(INTF_DETAIL_RE.finditer(raw))
     results = []
-    for m in INTF_DETAIL_RE.finditer(raw):
+    for i, m in enumerate(matches):
         name = m.group("interface")
         entry: dict[str, Any] = {
             "interface": name,
@@ -185,8 +186,10 @@ def parse_interface_health(raw: str) -> list[dict[str, Any]]:
             "input_errors": 0,
             "crc_errors": 0,
         }
-        # Extract speed/duplex from next 1000 chars
-        chunk = raw[m.start():m.start() + 1000]
+        # Slice from this interface header to the start of the next one (or end of string)
+        # This avoids reading counters from a neighbouring interface block
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(raw)
+        chunk = raw[m.start():end]
         sd = SPEED_DUPLEX_RE.search(chunk)
         if sd:
             entry["duplex"] = sd.group("duplex")
@@ -234,7 +237,7 @@ clear counters GigabitEthernet0/0   # loses historical data
 - Always check both ends of a link — errors are received, not transmitted
 - Baseline counter values with `show interfaces` before a change window; compare after
 - Use `show interfaces | include error|reset|drop` for a quick system-wide health check
-- Explicitly set `duplex full` and `speed 1000` (or appropriate value) on all uplinks — never rely on auto-negotiation for critical links
+- Explicitly set `duplex full` and `speed 1000` (or appropriate value) on uplinks where you control both ends — on uplinks to ISP or third-party equipment, leave both sides as auto-negotiate
 - Configure SNMP polling on `ifInErrors` and `ifOutDiscards` OIDs for automated alerting
 - Use `no keepalive` when connecting IOS to devices that don't support keepalives (some firewalls, servers)
 

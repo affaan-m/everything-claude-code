@@ -83,7 +83,7 @@ nslookup <failing-domain>
 ```
 show ip access-lists <acl-name>
 # Look for: unexpected hit counts on deny entries
-# Test: temporarily remove ACL from interface to confirm it's the blocker
+# Confirm by adding a temporary explicit permit with log keyword — never remove ACLs in production to test
 ```
 
 ### Step 3: Isolate and Confirm
