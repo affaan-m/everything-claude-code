@@ -3,6 +3,7 @@
  */
 
 const assert = require('assert');
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
@@ -13,7 +14,12 @@ const tmpRoot = process.env.TMPDIR || process.env.TEMP || process.env.TMP || '/t
 const stateDir = externalStateDir || fs.mkdtempSync(path.join(tmpRoot, 'gateguard-test-'));
 // Use a fixed session ID so test process and spawned hook process share the same state file
 const TEST_SESSION_ID = 'gateguard-test-session';
-const stateFile = path.join(stateDir, `state-${TEST_SESSION_ID}.json`);
+
+function sessionStateFile(sessionId) {
+  return path.join(stateDir, `state-${sessionId.replace(/[^a-zA-Z0-9_-]/g, '_')}.json`);
+}
+
+const stateFile = sessionStateFile(TEST_SESSION_ID);
 
 function test(name, fn) {
   try {
@@ -27,13 +33,14 @@ function test(name, fn) {
   }
 }
 
-function clearState() {
+function clearState(sessionId = TEST_SESSION_ID) {
   try {
-    if (fs.existsSync(stateFile)) {
-      fs.unlinkSync(stateFile);
+    const target = sessionStateFile(sessionId);
+    if (fs.existsSync(target)) {
+      fs.unlinkSync(target);
     }
   } catch (err) {
-    console.error(`  [clearState] failed to remove ${stateFile}: ${err.message}`);
+    console.error(`  [clearState] failed to remove ${sessionStateFile(sessionId)}: ${err.message}`);
   }
 }
 
@@ -140,6 +147,28 @@ function runBashHookWithoutSession(input, env = {}) {
     stdout: result.stdout || '',
     stderr: result.stderr || ''
   };
+}
+
+function hashSessionKey(prefix, value) {
+  return prefix + crypto.createHash('sha1').update(value).digest('hex').slice(0, 16);
+}
+
+function fallbackSessionId(env = {}) {
+  if (env.CLAUDE_SESSION_ID) return env.CLAUDE_SESSION_ID;
+  if (env.ECC_SESSION_ID) return env.ECC_SESSION_ID;
+  if (env.CLAUDE_TRANSCRIPT_PATH) {
+    return hashSessionKey('transcript-', env.CLAUDE_TRANSCRIPT_PATH);
+  }
+
+  const scope = env.CLAUDE_PROJECT_DIR || process.cwd();
+  const parentFingerprint = [
+    String(process.pid),
+    env.CLAUDE_CODE_ENTRYPOINT || '',
+    env.TMUX_PANE || env.TMUX || '',
+    env.TERM_SESSION_ID || ''
+  ].join('|');
+
+  return hashSessionKey('fallback-', `${scope}::${parentFingerprint}`);
 }
 
 function parseOutput(stdout) {
@@ -453,20 +482,23 @@ function runTests() {
   })) passed++; else failed++;
 
   // --- Test 14: stable fallback works without session env vars ---
-  clearState();
+  const fallbackEnv = {
+    CLAUDE_PROJECT_DIR: '/tmp/ecc-gateguard-fallback-project'
+  };
+  clearState(fallbackSessionId(fallbackEnv));
   if (test('denies first routine Bash and allows second without session env vars', () => {
     const input = {
       tool_name: 'Bash',
       tool_input: { command: 'echo "hello"' }
     };
 
-    const result1 = runBashHookWithoutSession(input);
+    const result1 = runBashHookWithoutSession(input, fallbackEnv);
     assert.strictEqual(result1.code, 0, 'first fallback call exit code should be 0');
     const output1 = parseOutput(result1.stdout);
     assert.ok(output1, 'first fallback call should produce JSON output');
     assert.strictEqual(output1.hookSpecificOutput.permissionDecision, 'deny');
 
-    const result2 = runBashHookWithoutSession(input);
+    const result2 = runBashHookWithoutSession(input, fallbackEnv);
     assert.strictEqual(result2.code, 0, 'second fallback call exit code should be 0');
     const output2 = parseOutput(result2.stdout);
     assert.ok(output2, 'second fallback call should produce valid JSON output');
@@ -476,6 +508,43 @@ function runTests() {
     } else {
       assert.strictEqual(output2.tool_name, 'Bash', 'pass-through should preserve input');
     }
+  })) passed++; else failed++;
+
+  // --- Test 15: fallback isolates different CLI fingerprints in one project ---
+  const cliAEnv = {
+    CLAUDE_PROJECT_DIR: '/tmp/ecc-gateguard-shared-project',
+    TMUX_PANE: '%101'
+  };
+  const cliBEnv = {
+    CLAUDE_PROJECT_DIR: '/tmp/ecc-gateguard-shared-project',
+    TMUX_PANE: '%202'
+  };
+  clearState(fallbackSessionId(cliAEnv));
+  clearState(fallbackSessionId(cliBEnv));
+  if (test('does not share fallback state across CLI fingerprints in the same project', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'echo "hello"' }
+    };
+
+    const cliAFirst = runBashHookWithoutSession(input, cliAEnv);
+    const cliAFirstOutput = parseOutput(cliAFirst.stdout);
+    assert.ok(cliAFirstOutput, 'CLI A first call should produce JSON output');
+    assert.strictEqual(cliAFirstOutput.hookSpecificOutput.permissionDecision, 'deny');
+
+    const cliASecond = runBashHookWithoutSession(input, cliAEnv);
+    const cliASecondOutput = parseOutput(cliASecond.stdout);
+    assert.ok(cliASecondOutput, 'CLI A second call should produce valid JSON output');
+    if (cliASecondOutput.hookSpecificOutput) {
+      assert.notStrictEqual(cliASecondOutput.hookSpecificOutput.permissionDecision, 'deny',
+        'CLI A second call should pass once its fallback state is set');
+    }
+
+    const cliBFirst = runBashHookWithoutSession(input, cliBEnv);
+    const cliBFirstOutput = parseOutput(cliBFirst.stdout);
+    assert.ok(cliBFirstOutput, 'CLI B first call should produce JSON output');
+    assert.strictEqual(cliBFirstOutput.hookSpecificOutput.permissionDecision, 'deny',
+      'CLI B should not inherit CLI A fallback state');
   })) passed++; else failed++;
 
   // Cleanup only the temp directory created by this test file.

@@ -27,13 +27,36 @@ const fs = require('fs');
 const path = require('path');
 
 // Session state — scoped per session to avoid cross-session races.
-// Prefer Claude-provided session IDs, but fall back to a stable per-project key
-// so API/proxy setups without CLAUDE_SESSION_ID do not re-trigger the gate on
-// every Bash invocation in the same workspace.
+// Prefer Claude-provided session IDs. When they are unavailable (for example in
+// API/proxy setups), derive a stable fallback from the transcript path or from
+// the project scope plus a parent-process fingerprint. This avoids both
+// per-invocation PID churn and cross-CLI state leakage in the same project.
 const STATE_DIR = process.env.GATEGUARD_STATE_DIR || path.join(process.env.HOME || process.env.USERPROFILE || '/tmp', '.gateguard');
-const STABLE_FALLBACK_SCOPE = process.env.CLAUDE_PROJECT_DIR || process.cwd();
-const STABLE_FALLBACK_ID = 'cwd-' + crypto.createHash('sha1').update(STABLE_FALLBACK_SCOPE).digest('hex').slice(0, 12);
-const SESSION_ID = process.env.CLAUDE_SESSION_ID || process.env.ECC_SESSION_ID || STABLE_FALLBACK_ID;
+
+function hashSessionKey(prefix, value) {
+  return prefix + crypto.createHash('sha1').update(value).digest('hex').slice(0, 16);
+}
+
+function resolveSessionId() {
+  if (process.env.CLAUDE_SESSION_ID) return process.env.CLAUDE_SESSION_ID;
+  if (process.env.ECC_SESSION_ID) return process.env.ECC_SESSION_ID;
+
+  if (process.env.CLAUDE_TRANSCRIPT_PATH) {
+    return hashSessionKey('transcript-', process.env.CLAUDE_TRANSCRIPT_PATH);
+  }
+
+  const scope = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+  const parentFingerprint = [
+    String(process.ppid || process.pid),
+    process.env.CLAUDE_CODE_ENTRYPOINT || '',
+    process.env.TMUX_PANE || process.env.TMUX || '',
+    process.env.TERM_SESSION_ID || ''
+  ].join('|');
+
+  return hashSessionKey('fallback-', `${scope}::${parentFingerprint}`);
+}
+
+const SESSION_ID = resolveSessionId();
 const STATE_FILE = path.join(STATE_DIR, `state-${SESSION_ID.replace(/[^a-zA-Z0-9_-]/g, '_')}.json`);
 
 // State expires after 30 minutes of inactivity
