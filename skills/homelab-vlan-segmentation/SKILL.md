@@ -8,7 +8,7 @@ origin: ECC
 
 How to split a home network into isolated VLANs so IoT devices, guests, and your main PCs can't talk to each other. The most impactful security upgrade for a home network.
 
-## When to Activate
+## When to Use
 
 - Setting up VLANs on a home network for the first time
 - Isolating IoT devices (smart bulbs, cameras, TVs) from trusted devices
@@ -17,7 +17,7 @@ How to split a home network into isolated VLANs so IoT devices, guests, and your
 - Configuring trunk ports, access ports, and SSID-to-VLAN mapping
 - Troubleshooting inter-VLAN routing or firewall rule issues on pfSense/OPNsense/UniFi
 
-## What VLANs Do
+## How It Works
 
 ```
 Without VLANs — flat network:
@@ -44,6 +44,39 @@ VLAN  Name        Subnet              Gateway         Purpose
 30    servers     192.168.30.0/24     192.168.30.1    NAS, Pi, self-hosted
 40    guest       192.168.40.0/24     192.168.40.1    Visitor Wi-Fi
 99    management  192.168.99.0/24     192.168.99.1    Network gear web UIs
+```
+
+## Examples
+
+**Typical homelab with UniFi AP and managed switch:**
+
+```
+Scenario: 3-bedroom house, UniFi Dream Machine + UniFi 8-port switch + 2 APs
+
+VLAN 10 — Trusted    192.168.10.0/24   MacBook, iPhones, iPad
+VLAN 20 — IoT        192.168.20.0/24   Nest thermostat, Philips Hue, Ring doorbell, smart TVs
+VLAN 30 — Servers    192.168.30.0/24   Synology NAS (192.168.30.10), Pi-hole (192.168.30.2)
+VLAN 40 — Guest      192.168.40.0/24   Visitor Wi-Fi — internet only
+
+SSID → VLAN mapping:
+  "Home"      → VLAN 10 (WPA2, strong password, trusted devices only)
+  "IoT"       → VLAN 20 (WPA2, separate password, printed on router for setup)
+  "Guest"     → VLAN 40 (WPA2, simple password you can share freely)
+
+Switch port behavior:
+  Port 1  → trunk to router (tagged VLANs 10,20,30,40,99)
+  Port 2  → trunk to AP (tagged VLANs 10,20,40)
+  Port 3  → access VLAN 30 (NAS — untagged, no VLAN awareness needed)
+  Port 4  → access VLAN 30 (Pi-hole — untagged)
+  Port 5–8 → access VLAN 10 (wired workstations)
+
+Firewall rules applied:
+  IoT → Trusted: BLOCK (smart TV cannot reach MacBook or NAS)
+  IoT → Servers: BLOCK except 192.168.30.2:53 (Pi-hole DNS allowed)
+  IoT → Internet: ALLOW
+  Guest → Local networks: BLOCK
+  Guest → Internet: ALLOW
+  Trusted → everywhere: ALLOW
 ```
 
 ## UniFi Configuration
