@@ -121,7 +121,10 @@ function runTests() {
       ],
     };
 
-    assert.strictEqual(deriveRepoRootFromState(state), path.join('/tmp', 'ecc'));
+    assert.strictEqual(
+      deriveRepoRootFromState(state),
+      path.resolve(path.join('/tmp', 'ecc'))
+    );
   })) passed += 1; else failed += 1;
 
   if (test('deriveRepoRootFromState fails when source metadata is unavailable', () => {
