@@ -85,14 +85,21 @@ def load_skills(project_path: str) -> List[Dict]:
                     try:
                         with open(skill_file, 'r', encoding='utf-8') as f:
                             content = f.read()
-                            # Extract description from first lines
+                            
+                        # Try to extract description from YAML frontmatter first
+                        import re
+                        match = re.search(r'^---\s*\n.*?description:\s*(.+?)\s*\n', content, re.MULTILINE | re.DOTALL)
+                        if match:
+                            description = match.group(1).strip()[:100]
+                        else:
+                            # Extract from first meaningful line (heading or content)
                             lines = content.split('\n')
                             for line in lines:
-                                if line.strip() and not line.startswith('#'):
-                                    description = line.strip()[:100]
-                                    break
                                 if line.startswith('# '):
                                     description = line[2:].strip()[:100]
+                                    break
+                                elif line.strip() and not line.startswith('---'):
+                                    description = line.strip()[:100]
                                     break
                     except:
                         pass
@@ -500,7 +507,7 @@ Use the /{agent['name']} command or invoke via agent delegation."""
         self.skill_tree.heading('#0', text='#')
         self.skill_tree.heading('name', text='Skill Name')
         self.skill_tree.heading('category', text='Category')
-        self.skill_tree.heading('description', text='Description')
+        self.skill_tree.heading('description', text='What It Does')
         
         self.skill_tree.column('#0', width=40)
         self.skill_tree.column('name', width=180)
@@ -517,7 +524,7 @@ Use the /{agent['name']} command or invoke via agent delegation."""
         details_frame = ttk.Frame(paned)
         paned.add(details_frame, weight=1)
         
-        ttk.Label(details_frame, text="Description", font=('Arial', 11, 'bold')).pack(anchor=tk.W, pady=5)
+        ttk.Label(details_frame, text="What It Does", font=('Arial', 11, 'bold')).pack(anchor=tk.W, pady=5)
         
         self.skill_details = scrolledtext.ScrolledText(details_frame, wrap=tk.WORD, height=15)
         self.skill_details.pack(fill=tk.BOTH, expand=True)
@@ -572,7 +579,7 @@ Use the /{agent['name']} command or invoke via agent delegation."""
 
 Category: {skill['category']}
 
-Description: {skill['description']}
+What It Does: {skill['description']}
 
 Path: {skill['path']}
 
@@ -607,7 +614,7 @@ Usage: This skill is automatically activated when working with related technolog
         self.command_tree = ttk.Treeview(list_frame, columns=columns, show='tree headings')
         self.command_tree.heading('#0', text='#')
         self.command_tree.heading('name', text='Command')
-        self.command_tree.heading('description', text='Description')
+        self.command_tree.heading('description', text='What It Does')
         
         self.command_tree.column('#0', width=40)
         self.command_tree.column('name', width=150)
