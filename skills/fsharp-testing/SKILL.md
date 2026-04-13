@@ -255,6 +255,11 @@ tests/
 | Ignoring `CancellationToken` | Always pass and verify cancellation |
 | Skipping property-based tests | Use FsCheck for any function with clear invariants |
 
+## Related Skills
+
+- `dotnet-patterns` — Idiomatic .NET patterns, dependency injection, and architecture
+- `csharp-testing` — C# testing patterns (shared infrastructure like WebApplicationFactory and Testcontainers applies to F# too)
+
 ## Running Tests
 
 ```bash
