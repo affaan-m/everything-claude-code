@@ -8,7 +8,7 @@ origin: ECC
 
 Build tool and dev server patterns for Vite 8+ projects. Covers configuration, environment variables, proxy setup, library mode, dependency pre-bundling, and common production pitfalls.
 
-## When to Activate
+## When to Use
 
 - Configuring `vite.config.ts` or `vite.config.js`
 - Setting up environment variables or `.env` files
@@ -19,9 +19,19 @@ Build tool and dev server patterns for Vite 8+ projects. Covers configuration, e
 - Debugging HMR, dev server, or build errors
 - Choosing or ordering Vite plugins
 
-## Config Structure
+## How It Works
 
-### Basic Config
+- **Dev mode** serves source files as native ESM — no bundling. Transforms happen on-demand per module request, which is why cold starts are fast and HMR is precise.
+- **Build mode** uses Rolldown (v7+) or Rollup (v5–v6) to bundle the app for production with tree-shaking, code-splitting, and Oxc-based minification.
+- **Dependency pre-bundling** converts CJS/UMD deps to ESM once via esbuild and caches the result under `node_modules/.vite`, so subsequent starts skip the work.
+- **Plugins** share a unified interface across dev and build — the same plugin object works for both the dev server's on-demand transforms and the production pipeline.
+- **Environment variables** are statically inlined at build time. `VITE_`-prefixed vars become public constants in the bundle; everything unprefixed is invisible to client code.
+
+## Examples
+
+### Config Structure
+
+#### Basic Config
 
 ```typescript
 // vite.config.ts
@@ -36,24 +46,27 @@ export default defineConfig({
 })
 ```
 
-### Conditional Config
+#### Conditional Config
 
 ```typescript
 // vite.config.ts
+import { defineConfig, loadEnv } from 'vite'
+import react from '@vitejs/plugin-react'
+
 export default defineConfig(({ command, mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
+  const env = loadEnv(mode, process.cwd())   // VITE_ prefixed only (safe)
 
   return {
     plugins: [react()],
-    define: {
-      __APP_VERSION__: JSON.stringify(env.npm_package_version),
-    },
     server: command === 'serve' ? { port: 3000 } : undefined,
+    define: {
+      __API_URL__: JSON.stringify(env.VITE_API_URL),
+    },
   }
 })
 ```
 
-### Key Config Options
+#### Key Config Options
 
 | Key | Default | Description |
 |-----|---------|-------------|
@@ -64,9 +77,9 @@ export default defineConfig(({ command, mode }) => {
 | `build.minify` | `'oxc'` | Minifier (`'oxc'`, `'terser'`, or `false`) |
 | `build.sourcemap` | `false` | `true`, `'inline'`, or `'hidden'` |
 
-## Plugins
+### Plugins
 
-### Essential Plugins
+#### Essential Plugins
 
 Most plugin needs are covered by a handful of well-maintained packages. Reach for these before writing your own.
 
@@ -84,7 +97,7 @@ Most plugin needs are covered by a handful of well-maintained packages. Reach fo
 
 **Critical callout:** `vite build` transpiles but does NOT type-check. Type errors silently ship to production unless you add `vite-plugin-checker` or run `tsc --noEmit` in CI.
 
-### Authoring Custom Plugins
+#### Authoring Custom Plugins
 
 Authoring is rare — most needs are covered by existing plugins. When you do need one, start inline in `vite.config.ts` and only extract if reused.
 
@@ -109,7 +122,7 @@ function myPlugin(): Plugin {
 
 For full plugin API, see [vite.dev/guide/api-plugin](https://vite.dev/guide/api-plugin). Use `vite-plugin-inspect` during development to debug the transform pipeline.
 
-## HMR API
+### HMR API
 
 Framework plugins (`@vitejs/plugin-react`, `@vitejs/plugin-vue`, etc.) handle HMR automatically. Reach for `import.meta.hot` directly only when building custom state stores, dev tools, or framework-agnostic utilities that need to persist state across updates.
 
@@ -129,11 +142,11 @@ if (import.meta.hot) {
 
 All `import.meta.hot` code is tree-shaken out of production builds — no guard removal needed.
 
-## Environment Variables
+### Environment Variables
 
 Vite loads `.env`, `.env.local`, `.env.[mode]`, and `.env.[mode].local` in that order (later overrides earlier); `*.local` files are gitignored and meant for local secrets.
 
-### Client-Side Access
+#### Client-Side Access
 
 Only `VITE_`-prefixed vars are exposed to client code:
 
@@ -146,7 +159,7 @@ import.meta.env.PROD            // boolean
 import.meta.env.SSR             // boolean
 ```
 
-### Using Env in Config
+#### Using Env in Config
 
 ```typescript
 // vite.config.ts
@@ -162,15 +175,15 @@ export default defineConfig(({ mode }) => {
 })
 ```
 
-## Security
+### Security
 
-### `VITE_` Prefix is NOT a Security Boundary
+#### `VITE_` Prefix is NOT a Security Boundary
 
 Any variable prefixed with `VITE_` is **statically inlined into the client bundle at build time**. Minification, base64 encoding, and disabling source maps do NOT hide it. A determined attacker can extract any `VITE_` var from the shipped JavaScript.
 
 **Rule:** Only public values (API URLs, feature flags, public keys) go in `VITE_` vars. Secrets (API tokens, database URLs, private keys) MUST live server-side behind an API or serverless function.
 
-### The `loadEnv('')` Trap
+#### The `loadEnv('')` Trap
 
 ```typescript
 // BAD: passing '' as the third arg loads ALL env vars — including server secrets —
@@ -181,7 +194,7 @@ const env = loadEnv(mode, process.cwd(), '')
 const env = loadEnv(mode, process.cwd(), ['VITE_', 'APP_'])
 ```
 
-### Source Maps in Production
+#### Source Maps in Production
 
 Production source maps leak your original source code. Disable them unless you upload to an error tracker (Sentry, Bugsnag) and delete locally afterward:
 
@@ -191,13 +204,13 @@ build: {
 }
 ```
 
-### `.gitignore` Checklist
+#### `.gitignore` Checklist
 
 - `.env.local`, `.env.*.local` — local secret overrides
 - `dist/` — build output
 - `node_modules/.vite` — pre-bundle cache (stale entries cause phantom errors)
 
-## Server Proxy
+### Server Proxy
 
 ```typescript
 // vite.config.ts — server.proxy
@@ -216,9 +229,9 @@ server: {
 
 For WebSocket proxying, add `ws: true` to the route config.
 
-## Build Optimization
+### Build Optimization
 
-### Manual Chunks
+#### Manual Chunks
 
 ```typescript
 // vite.config.ts — build.rolldownOptions
@@ -243,9 +256,9 @@ manualChunks(id) {
 }
 ```
 
-## Performance
+### Performance
 
-### Avoid Barrel Files
+#### Avoid Barrel Files
 
 Barrel files (`index.ts` re-exporting everything from a directory) force Vite to load every re-exported file even when you import a single symbol. This is the #1 dev-server slowdown flagged by the official docs.
 
@@ -257,7 +270,7 @@ import { slash } from '@/utils'
 import { slash } from '@/utils/slash'
 ```
 
-### Be Explicit with Import Extensions
+#### Be Explicit with Import Extensions
 
 Each implicit extension forces up to 6 filesystem checks via `resolve.extensions`. In large codebases, this adds up.
 
@@ -271,7 +284,7 @@ import Component from './Component.tsx'
 
 Narrow `tsconfig.json` `allowImportingTsExtensions` + `resolve.extensions` to only the extensions you actually use.
 
-### Warm Up Hot-Path Routes
+#### Warm-Up Hot-Path Routes
 
 `server.warmup.clientFiles` pre-transforms known hot entries before the browser requests them — eliminating the cold-load request waterfall on large apps.
 
@@ -284,11 +297,11 @@ server: {
 }
 ```
 
-### Profiling Slow Dev Servers
+#### Profiling Slow Dev Servers
 
 When `vite dev` feels slow, start with `vite --profile`, interact with the app, then press `p+enter` to save a `.cpuprofile`. Load it in [Speedscope](https://www.speedscope.app) to find which plugins are eating time — usually `buildStart`, `config`, or `configResolved` hooks in community plugins.
 
-## Library Mode
+### Library Mode
 
 When publishing an npm package, use `build.lib`. Two footguns matter more than config detail:
 
@@ -309,7 +322,7 @@ build: {
 }
 ```
 
-## SSR Externals
+### SSR Externals
 
 Bare `createServer({ middlewareMode: true })` setups are framework-author territory. Most apps should use Nuxt, Remix, SvelteKit, Astro, or TanStack Start instead. What you *will* tweak as a framework user is the externals config when deps break in SSR:
 
@@ -322,7 +335,7 @@ ssr: {
 }
 ```
 
-## Dependency Pre-Bundling
+### Dependency Pre-Bundling
 
 Vite pre-bundles dependencies to convert CJS/UMD to ESM and reduce request count.
 
@@ -339,20 +352,20 @@ optimizeDeps: {
 }
 ```
 
-## Common Pitfalls
+### Common Pitfalls
 
-### Dev Does Not Match Build
+#### Dev Does Not Match Build
 
 Dev uses esbuild/Rolldown for transforms; build uses Rolldown for bundling. CJS libraries can behave differently between the two. Always verify with `vite build && vite preview` before deploying.
 
-### Stale Chunks After Deployment
+#### Stale Chunks After Deployment
 
 New builds produce new chunk hashes. Users with active sessions request old filenames that no longer exist. Vite has no built-in solution. Mitigations:
 
 - Keep old `dist/assets/` files live for a deployment window
 - Catch dynamic import errors in your router and force a page reload
 
-### Docker and Containers
+#### Docker and Containers
 
 Vite binds to `localhost` by default, which is unreachable from outside a container:
 
@@ -364,7 +377,7 @@ server: {
 }
 ```
 
-### Monorepo File Access
+#### Monorepo File Access
 
 Vite restricts file serving to the project root. Packages outside root are blocked:
 
@@ -377,7 +390,7 @@ server: {
 }
 ```
 
-## Anti-Patterns
+### Anti-Patterns
 
 ```typescript
 // BAD: Setting envPrefix to '' exposes ALL env vars (including secrets) to the client
