@@ -35,13 +35,9 @@ PYTHON_CMD="${CLV2_PYTHON_CMD:-}"
 # Configuration
 # ─────────────────────────────────────────────
 
-if [ -n "${CLV2_HOMUNCULUS_DIR:-}" ]; then
-  CONFIG_DIR="$CLV2_HOMUNCULUS_DIR"
-elif [ -n "${XDG_DATA_HOME:-}" ]; then
-  CONFIG_DIR="${XDG_DATA_HOME}/ecc-homunculus"
-else
-  CONFIG_DIR="${HOME}/.local/share/ecc-homunculus"
-fi
+# shellcheck disable=SC1091
+. "${SKILL_ROOT}/scripts/lib/homunculus-dir.sh"
+CONFIG_DIR="$(_ecc_resolve_homunculus_dir)"
 if [ -n "${CLV2_CONFIG:-}" ]; then
   CONFIG_FILE="$CLV2_CONFIG"
 elif [ -f "${CONFIG_DIR}/config.json" ]; then

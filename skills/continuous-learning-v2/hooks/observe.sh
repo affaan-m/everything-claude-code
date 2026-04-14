@@ -83,13 +83,9 @@ fi
 # Sourcing detect-project.sh creates project-scoped directories and updates
 # projects.json, so automated sessions must return before that point.
 
-if [ -n "${CLV2_HOMUNCULUS_DIR:-}" ]; then
-  CONFIG_DIR="$CLV2_HOMUNCULUS_DIR"
-elif [ -n "${XDG_DATA_HOME:-}" ]; then
-  CONFIG_DIR="${XDG_DATA_HOME}/ecc-homunculus"
-else
-  CONFIG_DIR="${HOME}/.local/share/ecc-homunculus"
-fi
+# shellcheck disable=SC1091
+. "$(dirname "$0")/../scripts/lib/homunculus-dir.sh"
+CONFIG_DIR="$(_ecc_resolve_homunculus_dir)"
 
 # Skip if disabled (check both default and CLV2_CONFIG-derived locations)
 if [ -f "$CONFIG_DIR/disabled" ]; then

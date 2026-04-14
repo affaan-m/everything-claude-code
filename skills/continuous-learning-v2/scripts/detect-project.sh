@@ -19,13 +19,9 @@
 #   3. git repo root path (fallback, machine-specific)
 #   4. "global" (no project context detected)
 
-if [ -n "${CLV2_HOMUNCULUS_DIR:-}" ]; then
-  _CLV2_HOMUNCULUS_DIR="$CLV2_HOMUNCULUS_DIR"
-elif [ -n "${XDG_DATA_HOME:-}" ]; then
-  _CLV2_HOMUNCULUS_DIR="${XDG_DATA_HOME}/ecc-homunculus"
-else
-  _CLV2_HOMUNCULUS_DIR="${HOME}/.local/share/ecc-homunculus"
-fi
+# shellcheck disable=SC1091
+. "$(dirname "${BASH_SOURCE[0]}")/lib/homunculus-dir.sh"
+_CLV2_HOMUNCULUS_DIR="$(_ecc_resolve_homunculus_dir)"
 _CLV2_PROJECTS_DIR="${_CLV2_HOMUNCULUS_DIR}/projects"
 _CLV2_REGISTRY_FILE="${_CLV2_HOMUNCULUS_DIR}/projects.json"
 

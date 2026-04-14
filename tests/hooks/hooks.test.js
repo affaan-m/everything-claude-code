@@ -5398,6 +5398,48 @@ Some random content without the expected ### Context to Load section
     passed++;
   else failed++;
 
+  if (SKIP_BASH) {
+    console.log('  ⊘ detect-project.sh falls back to default when CLV2_HOMUNCULUS_DIR is relative (skipped on Windows)');
+    passed++;
+  } else if (
+    test('detect-project.sh falls back to default when CLV2_HOMUNCULUS_DIR is relative', () => {
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'clv2-'));
+      const scriptPath = path.join(__dirname, '..', '..', 'skills', 'continuous-learning-v2', 'scripts', 'detect-project.sh');
+      const env = { ...process.env, HOME: tmp, CLV2_HOMUNCULUS_DIR: 'relative/path' };
+      delete env.XDG_DATA_HOME;
+      const out = execFileSync(
+        'bash',
+        ['-c', `source "${scriptPath}" 2>/dev/null; echo "$_CLV2_HOMUNCULUS_DIR"`],
+        { env, encoding: 'utf8' }
+      );
+      assert.strictEqual(out.trim(), path.join(tmp, '.local', 'share', 'ecc-homunculus'), 'relative CLV2_HOMUNCULUS_DIR must fall through to the default so observer data never lands under cwd');
+      fs.rmSync(tmp, { recursive: true, force: true });
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (SKIP_BASH) {
+    console.log('  ⊘ detect-project.sh falls back to default when XDG_DATA_HOME is relative (skipped on Windows)');
+    passed++;
+  } else if (
+    test('detect-project.sh falls back to default when XDG_DATA_HOME is relative', () => {
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'clv2-'));
+      const scriptPath = path.join(__dirname, '..', '..', 'skills', 'continuous-learning-v2', 'scripts', 'detect-project.sh');
+      const env = { ...process.env, HOME: tmp, XDG_DATA_HOME: 'not/absolute' };
+      delete env.CLV2_HOMUNCULUS_DIR;
+      const out = execFileSync(
+        'bash',
+        ['-c', `source "${scriptPath}" 2>/dev/null; echo "$_CLV2_HOMUNCULUS_DIR"`],
+        { env, encoding: 'utf8' }
+      );
+      assert.strictEqual(out.trim(), path.join(tmp, '.local', 'share', 'ecc-homunculus'), 'relative XDG_DATA_HOME must fall through to the default per XDG Base Directory spec');
+      fs.rmSync(tmp, { recursive: true, force: true });
+    })
+  )
+    passed++;
+  else failed++;
+
   if (
     test('instinct-cli.py honors CLV2_HOMUNCULUS_DIR then XDG_DATA_HOME then default', () => {
       const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'clv2-'));

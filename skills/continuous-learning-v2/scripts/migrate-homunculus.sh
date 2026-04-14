@@ -11,12 +11,13 @@ set -euo pipefail
 
 OLD="${HOME}/.claude/homunculus"
 
-if [ -n "${CLV2_HOMUNCULUS_DIR:-}" ]; then
-  NEW="$CLV2_HOMUNCULUS_DIR"
-elif [ -n "${XDG_DATA_HOME:-}" ]; then
-  NEW="${XDG_DATA_HOME}/ecc-homunculus"
-else
-  NEW="${HOME}/.local/share/ecc-homunculus"
+# shellcheck disable=SC1091
+. "$(dirname "$0")/lib/homunculus-dir.sh"
+NEW="$(_ecc_resolve_homunculus_dir)"
+
+if [ "$NEW" = "$OLD" ]; then
+  echo "Resolved destination equals source ($OLD); nothing to migrate."
+  exit 0
 fi
 
 if [ ! -d "$OLD" ]; then
@@ -24,10 +25,18 @@ if [ ! -d "$OLD" ]; then
   exit 0
 fi
 
-if command -v pgrep >/dev/null 2>&1 && pgrep -f "${HOME}.*observer-loop\.sh" >/dev/null 2>&1; then
-  echo "Refusing to migrate: observer-loop.sh is running." >&2
-  echo "Exit all Claude Code sessions, then re-run." >&2
-  exit 1
+if command -v pgrep >/dev/null 2>&1; then
+  # Anchor to $HOME so the check only trips on observers this user spawned
+  # via a standard ~/.claude install. Broader patterns produce false positives
+  # in shared test environments; non-standard install paths are a documented
+  # trade-off — see PR #1431 discussion.
+  if pgrep -f "${HOME}.*observer-loop\.sh" >/dev/null 2>&1; then
+    echo "Refusing to migrate: observer-loop.sh is running." >&2
+    echo "Exit all Claude Code sessions, then re-run." >&2
+    exit 1
+  fi
+else
+  echo "Warning: pgrep not available; skipping running-observer check." >&2
 fi
 
 mkdir -p "$(dirname "$NEW")"
