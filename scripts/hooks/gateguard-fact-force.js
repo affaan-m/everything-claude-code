@@ -40,7 +40,7 @@ function hashSessionKey(prefix, value) {
 
 function sessionIdForStateFile(sessionId) {
   const raw = String(sessionId || '');
-  const sanitized = sanitizeSessionId(raw);
+  const sanitized = sanitizeSessionId(raw) || '';
   if (sanitized.length > 0 && sanitized.length <= 64) {
     return sanitized;
   }

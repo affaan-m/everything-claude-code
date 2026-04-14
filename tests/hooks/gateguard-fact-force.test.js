@@ -13,6 +13,8 @@ const runner = path.join(__dirname, '..', '..', 'scripts', 'hooks', 'run-with-fl
 const externalStateDir = process.env.GATEGUARD_STATE_DIR;
 const tmpRoot = process.env.TMPDIR || process.env.TEMP || process.env.TMP || '/tmp';
 const stateDir = externalStateDir || fs.mkdtempSync(path.join(tmpRoot, 'gateguard-test-'));
+const FALLBACK_PROJECT_DIR = '/tmp/ecc-gateguard-fallback-project';
+const SHARED_PROJECT_DIR = '/tmp/ecc-gateguard-shared-project';
 // Use a fixed session ID so test process and spawned hook process share the same state file
 const TEST_SESSION_ID = 'gateguard-test-session';
 
@@ -74,17 +76,7 @@ function runBashHook(input, env = {}) {
 
 function runBashHookWithoutSession(input, env = {}) {
   const rawInput = typeof input === 'string' ? input : JSON.stringify(input);
-  const hookEnv = {
-    ...process.env,
-    ECC_HOOK_PROFILE: 'standard',
-    GATEGUARD_STATE_DIR: stateDir,
-    CLAUDE_PROJECT_DIR: '/tmp/ecc-gateguard-fallback-project',
-    ...env
-  };
-
-  delete hookEnv.CLAUDE_SESSION_ID;
-  delete hookEnv.ECC_SESSION_ID;
-  delete hookEnv.CLAUDE_TRANSCRIPT_PATH;
+  const hookEnv = buildFallbackHookEnv(env);
 
   const result = spawnSync('node', [
     runner,
@@ -112,11 +104,30 @@ function hashSessionKey(prefix, value) {
 
 function sessionIdForStateFile(sessionId) {
   const raw = String(sessionId || '');
-  const sanitized = sanitizeSessionId(raw);
+  const sanitized = sanitizeSessionId(raw) || '';
   if (sanitized.length > 0 && sanitized.length <= 64) {
     return sanitized;
   }
   return hashSessionKey('sid-', raw || 'empty-session');
+}
+
+function buildFallbackHookEnv(env = {}) {
+  const merged = {
+    ...process.env,
+    ECC_HOOK_PROFILE: 'standard',
+    GATEGUARD_STATE_DIR: stateDir,
+    CLAUDE_PROJECT_DIR: FALLBACK_PROJECT_DIR,
+    ...env
+  };
+
+  const {
+    CLAUDE_SESSION_ID: _claudeSessionId,
+    ECC_SESSION_ID: _eccSessionId,
+    CLAUDE_TRANSCRIPT_PATH: _claudeTranscriptPath,
+    ...hookEnv
+  } = merged;
+
+  return hookEnv;
 }
 
 function sessionStateFile(sessionId) {
@@ -522,9 +533,9 @@ function runTests() {
 
   // --- Test 14: stable fallback works without session env vars ---
   const fallbackEnv = {
-    CLAUDE_PROJECT_DIR: '/tmp/ecc-gateguard-fallback-project'
+    CLAUDE_PROJECT_DIR: FALLBACK_PROJECT_DIR
   };
-  clearState(fallbackSessionId(fallbackEnv));
+  clearState(fallbackSessionId(buildFallbackHookEnv(fallbackEnv)));
   if (test('denies first routine Bash and allows second without session env vars', () => {
     const input = {
       tool_name: 'Bash',
@@ -551,15 +562,15 @@ function runTests() {
 
   // --- Test 15: fallback isolates different CLI fingerprints in one project ---
   const cliAEnv = {
-    CLAUDE_PROJECT_DIR: '/tmp/ecc-gateguard-shared-project',
+    CLAUDE_PROJECT_DIR: SHARED_PROJECT_DIR,
     TMUX_PANE: '%101'
   };
   const cliBEnv = {
-    CLAUDE_PROJECT_DIR: '/tmp/ecc-gateguard-shared-project',
+    CLAUDE_PROJECT_DIR: SHARED_PROJECT_DIR,
     TMUX_PANE: '%202'
   };
-  clearState(fallbackSessionId(cliAEnv));
-  clearState(fallbackSessionId(cliBEnv));
+  clearState(fallbackSessionId(buildFallbackHookEnv(cliAEnv)));
+  clearState(fallbackSessionId(buildFallbackHookEnv(cliBEnv)));
   if (test('does not share fallback state across CLI fingerprints in the same project', () => {
     const input = {
       tool_name: 'Bash',
