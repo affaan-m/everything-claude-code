@@ -170,7 +170,7 @@
       "type": "http",
       "url": "https://xquik.com/mcp",
       "headers": {
-        "Authorization": "Bearer YOUR_XQUIK_API_KEY"
+        "Authorization": "Bearer YOUR_XQUIK_API_KEY_HERE"
       },
       "description": "X/Twitter data platform — 2 tools covering 122 endpoints: search, lookup, extract, post, monitor, draws, webhooks, trends. Use with xquik skill."
     }

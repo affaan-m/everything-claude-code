@@ -367,7 +367,8 @@
       "description": "Social publishing and distribution skills.",
       "paths": [
         "skills/crosspost",
-        "skills/x-api"
+        "skills/x-api",
+        "skills/xquik"
       ],
       "targets": [
         "claude",

@@ -8,7 +8,7 @@ origin: ECC
 
 X/Twitter data and automation via Xquik's remote MCP server. Two tools cover 122 API endpoints: search, lookup, extraction, writing, monitoring, giveaway draws, webhooks, and trends.
 
-## When to Activate
+## When to Use
 
 - User wants to search tweets, look up profiles, or extract X/Twitter data
 - User wants to post, delete, like, retweet, or follow programmatically
@@ -27,7 +27,7 @@ Add to `~/.claude.json` mcpServers:
   "type": "http",
   "url": "https://xquik.com/mcp",
   "headers": {
-    "Authorization": "Bearer YOUR_XQUIK_API_KEY"
+    "Authorization": "Bearer YOUR_XQUIK_API_KEY_HERE"
   }
 }
 ```
@@ -59,7 +59,7 @@ Executes any Xquik API endpoint. Consumes credits for data-fetching operations.
 
 ---
 
-## Workflow
+## How It Works
 
 ### Step 1 — Discover
 
@@ -171,7 +171,7 @@ xquik({
 "headers": { "Authorization": "Bearer xq_abc123live" }
 ```
 
-Use an environment variable reference or a secrets manager instead. The `~/.claude.json` config is user-local and not committed to version control, so it is an acceptable place to store the key during development.
+Use an environment variable reference or a secrets manager. Never commit API keys to version control. The `~/.claude.json` config is user-local and gitignored — store keys there, but treat them with the same care as any credential.
 
 **Do not poll when webhooks are available.**
 
