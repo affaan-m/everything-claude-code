@@ -37,7 +37,7 @@ const STATE_DIR = process.env.GATEGUARD_STATE_DIR || path.join(process.env.HOME 
 function hashSessionKey(prefix, value) {
   return prefix + crypto.createHash('sha1').update(String(value)).digest('hex').slice(0, 16);
 }
-}
+
 
 function sessionIdForStateFile(sessionId) {
   const raw = String(sessionId || '');
