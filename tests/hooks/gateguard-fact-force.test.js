@@ -7,6 +7,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const { sanitizeSessionId } = require('../../scripts/lib/utils');
 
 const runner = path.join(__dirname, '..', '..', 'scripts', 'hooks', 'run-with-flags.js');
 const externalStateDir = process.env.GATEGUARD_STATE_DIR;
@@ -14,51 +15,6 @@ const tmpRoot = process.env.TMPDIR || process.env.TEMP || process.env.TMP || '/t
 const stateDir = externalStateDir || fs.mkdtempSync(path.join(tmpRoot, 'gateguard-test-'));
 // Use a fixed session ID so test process and spawned hook process share the same state file
 const TEST_SESSION_ID = 'gateguard-test-session';
-
-function sessionStateFile(sessionId) {
-  return path.join(stateDir, `state-${sessionId.replace(/[^a-zA-Z0-9_-]/g, '_')}.json`);
-}
-
-const stateFile = sessionStateFile(TEST_SESSION_ID);
-
-function test(name, fn) {
-  try {
-    fn();
-    console.log(`  ✓ ${name}`);
-    return true;
-  } catch (error) {
-    console.log(`  ✗ ${name}`);
-    console.log(`    Error: ${error.message}`);
-    return false;
-  }
-}
-
-function clearState(sessionId = TEST_SESSION_ID) {
-  try {
-    const target = sessionStateFile(sessionId);
-    if (fs.existsSync(target)) {
-      fs.unlinkSync(target);
-    }
-  } catch (err) {
-    console.error(`  [clearState] failed to remove ${sessionStateFile(sessionId)}: ${err.message}`);
-  }
-}
-
-function writeExpiredState() {
-  try {
-    fs.mkdirSync(stateDir, { recursive: true });
-    const expired = {
-      checked: ['some_file.js', '__bash_session__'],
-      last_active: Date.now() - (31 * 60 * 1000) // 31 minutes ago
-    };
-    fs.writeFileSync(stateFile, JSON.stringify(expired), 'utf8');
-  } catch (_) { /* ignore */ }
-}
-
-function writeState(state) {
-  fs.mkdirSync(stateDir, { recursive: true });
-  fs.writeFileSync(stateFile, JSON.stringify(state), 'utf8');
-}
 
 function runHook(input, env = {}) {
   const rawInput = typeof input === 'string' ? input : JSON.stringify(input);
@@ -128,6 +84,7 @@ function runBashHookWithoutSession(input, env = {}) {
 
   delete hookEnv.CLAUDE_SESSION_ID;
   delete hookEnv.ECC_SESSION_ID;
+  delete hookEnv.CLAUDE_TRANSCRIPT_PATH;
 
   const result = spawnSync('node', [
     runner,
@@ -153,6 +110,60 @@ function hashSessionKey(prefix, value) {
   return prefix + crypto.createHash('sha1').update(value).digest('hex').slice(0, 16);
 }
 
+function sessionIdForStateFile(sessionId) {
+  const raw = String(sessionId || '');
+  const sanitized = sanitizeSessionId(raw);
+  if (sanitized.length > 0 && sanitized.length <= 64) {
+    return sanitized;
+  }
+  return hashSessionKey('sid-', raw || 'empty-session');
+}
+
+function sessionStateFile(sessionId) {
+  return path.join(stateDir, `state-${sessionIdForStateFile(sessionId)}.json`);
+}
+
+const stateFile = sessionStateFile(TEST_SESSION_ID);
+
+function test(name, fn) {
+  try {
+    fn();
+    console.log(`  ✓ ${name}`);
+    return true;
+  } catch (error) {
+    console.log(`  ✗ ${name}`);
+    console.log(`    Error: ${error.message}`);
+    return false;
+  }
+}
+
+function clearState(sessionId = TEST_SESSION_ID) {
+  try {
+    const target = sessionStateFile(sessionId);
+    if (fs.existsSync(target)) {
+      fs.unlinkSync(target);
+    }
+  } catch (err) {
+    console.error(`  [clearState] failed to remove ${sessionStateFile(sessionId)}: ${err.message}`);
+  }
+}
+
+function writeExpiredState() {
+  try {
+    fs.mkdirSync(stateDir, { recursive: true });
+    const expired = {
+      checked: ['some_file.js', '__bash_session__'],
+      last_active: Date.now() - (31 * 60 * 1000) // 31 minutes ago
+    };
+    fs.writeFileSync(stateFile, JSON.stringify(expired), 'utf8');
+  } catch (_) { /* ignore */ }
+}
+
+function writeState(state) {
+  fs.mkdirSync(stateDir, { recursive: true });
+  fs.writeFileSync(stateFile, JSON.stringify(state), 'utf8');
+}
+
 function fallbackSessionId(env = {}) {
   if (env.CLAUDE_SESSION_ID) return env.CLAUDE_SESSION_ID;
   if (env.ECC_SESSION_ID) return env.ECC_SESSION_ID;
@@ -169,6 +180,34 @@ function fallbackSessionId(env = {}) {
   ].join('|');
 
   return hashSessionKey('fallback-', `${scope}::${parentFingerprint}`);
+}
+
+function runHookWithSessionId(input, sessionId, env = {}) {
+  const rawInput = typeof input === 'string' ? input : JSON.stringify(input);
+  const result = spawnSync('node', [
+    runner,
+    'pre:bash:gateguard-fact-force',
+    'scripts/hooks/gateguard-fact-force.js',
+    'standard,strict'
+  ], {
+    input: rawInput,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      ECC_HOOK_PROFILE: 'standard',
+      GATEGUARD_STATE_DIR: stateDir,
+      CLAUDE_SESSION_ID: sessionId,
+      ...env
+    },
+    timeout: 15000,
+    stdio: ['pipe', 'pipe', 'pipe']
+  });
+
+  return {
+    code: Number.isInteger(result.status) ? result.status : 1,
+    stdout: result.stdout || '',
+    stderr: result.stderr || ''
+  };
 }
 
 function parseOutput(stdout) {
@@ -545,6 +584,35 @@ function runTests() {
     assert.ok(cliBFirstOutput, 'CLI B first call should produce JSON output');
     assert.strictEqual(cliBFirstOutput.hookSpecificOutput.permissionDecision, 'deny',
       'CLI B should not inherit CLI A fallback state');
+  })) passed++; else failed++;
+
+  // --- Test 16: long session IDs are reduced to a filesystem-safe state key ---
+  const longSessionId = 'session-' + 'x'.repeat(400);
+  clearState(sessionIdForStateFile(longSessionId));
+  if (test('allows retries when CLAUDE_SESSION_ID is extremely long', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'echo "hello"' }
+    };
+
+    const result1 = runHookWithSessionId(input, longSessionId);
+    assert.strictEqual(result1.code, 0, 'first long-session call exit code should be 0');
+    const output1 = parseOutput(result1.stdout);
+    assert.ok(output1, 'first long-session call should produce JSON output');
+    assert.strictEqual(output1.hookSpecificOutput.permissionDecision, 'deny');
+
+    const result2 = runHookWithSessionId(input, longSessionId);
+    assert.strictEqual(result2.code, 0, 'second long-session call exit code should be 0');
+    const output2 = parseOutput(result2.stdout);
+    assert.ok(output2, 'second long-session call should produce valid JSON output');
+    if (output2.hookSpecificOutput) {
+      assert.notStrictEqual(output2.hookSpecificOutput.permissionDecision, 'deny',
+        'long session IDs should still map to a stable state file');
+    }
+
+    const persisted = sessionStateFile(sessionIdForStateFile(longSessionId));
+    assert.ok(fs.existsSync(persisted), 'sanitized long-session state file should be created');
+    assert.ok(path.basename(persisted).length < 255, 'state filename should stay below common filesystem limits');
   })) passed++; else failed++;
 
   // Cleanup only the temp directory created by this test file.

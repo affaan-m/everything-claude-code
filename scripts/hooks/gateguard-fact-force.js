@@ -25,6 +25,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const { sanitizeSessionId } = require('../lib/utils');
 
 // Session state — scoped per session to avoid cross-session races.
 // Prefer Claude-provided session IDs. When they are unavailable (for example in
@@ -35,6 +36,15 @@ const STATE_DIR = process.env.GATEGUARD_STATE_DIR || path.join(process.env.HOME 
 
 function hashSessionKey(prefix, value) {
   return prefix + crypto.createHash('sha1').update(value).digest('hex').slice(0, 16);
+}
+
+function sessionIdForStateFile(sessionId) {
+  const raw = String(sessionId || '');
+  const sanitized = sanitizeSessionId(raw);
+  if (sanitized.length > 0 && sanitized.length <= 64) {
+    return sanitized;
+  }
+  return hashSessionKey('sid-', raw || 'empty-session');
 }
 
 function resolveSessionId() {
@@ -57,7 +67,7 @@ function resolveSessionId() {
 }
 
 const SESSION_ID = resolveSessionId();
-const STATE_FILE = path.join(STATE_DIR, `state-${SESSION_ID.replace(/[^a-zA-Z0-9_-]/g, '_')}.json`);
+const STATE_FILE = path.join(STATE_DIR, `state-${sessionIdForStateFile(SESSION_ID)}.json`);
 
 // State expires after 30 minutes of inactivity
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
