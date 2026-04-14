@@ -221,9 +221,12 @@ PROMPT
   # A bare `wait "$claude_pid"` returns 128+signum (e.g. 158 on SIGUSR1) as soon
   # as the trap fires, while the child is still running, causing a bogus
   # "Claude analysis failed" log and premature observations-file archival.
-  # Resume waiting until the child actually exits.
+  # Resume waiting until the child actually exits. The outer loop uses
+  # `while :` (not `while kill -0`) so `wait` always runs at least once —
+  # otherwise a fast non-zero exit before the first `kill -0` check would
+  # leave exit_code=0 and mask the failure.
   exit_code=0
-  while kill -0 "$claude_pid" 2>/dev/null; do
+  while :; do
     wait "$claude_pid"
     exit_code=$?
     if [ "$exit_code" -gt 128 ] && kill -0 "$claude_pid" 2>/dev/null; then

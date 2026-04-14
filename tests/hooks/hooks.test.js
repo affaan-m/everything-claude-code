@@ -2446,7 +2446,8 @@ async function runTests() {
       const observerLoopSource = fs.readFileSync(path.join(__dirname, '..', '..', 'skills', 'continuous-learning-v2', 'agents', 'observer-loop.sh'), 'utf8');
 
       assert.ok(!/\n\s*wait "\$claude_pid"\n\s*exit_code=\$\?\n\s*kill "\$watchdog_pid"/.test(observerLoopSource), 'observer-loop should not use a bare `wait "$claude_pid"` followed by exit_code capture, because SIGUSR1 from observe.sh returns 128+signum while the child is still alive');
-      assert.ok(/while kill -0 "\$claude_pid"[\s\S]*wait "\$claude_pid"[\s\S]*exit_code=\$\?/.test(observerLoopSource), 'observer-loop should resume waiting on the claude child via a `while kill -0` loop so trap-induced wakeups do not trigger false failures');
+      assert.ok(/while\s*:\s*;\s*do[\s\S]*?wait "\$claude_pid"[\s\S]*?exit_code=\$\?[\s\S]*?if \[ "\$exit_code" -gt 128 \] && kill -0 "\$claude_pid"/.test(observerLoopSource), 'observer-loop must run `wait "$claude_pid"` unconditionally inside a `while :;` loop so fast non-zero exits are not masked when the child has already terminated before kill -0 is evaluated');
+      assert.ok(!/while kill -0 "\$claude_pid"\s*2>\/dev\/null;\s*do\s*\n\s*wait "\$claude_pid"/.test(observerLoopSource), 'observer-loop must not guard the outer wait loop with `while kill -0`: if the child exits quickly before the guard runs, wait is skipped and a non-zero exit_code is lost');
     })
   )
     passed++;
