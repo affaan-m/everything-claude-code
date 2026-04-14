@@ -95,10 +95,12 @@ function markChecked(key) {
 }
 
 function isChecked(key) {
+  // Read-only fast path: the hook fires on every tool invocation, so any
+  // disk write here shows up as measurable latency. markChecked() already
+  // persists last_active whenever state actually changes, which keeps the
+  // 30-minute inactivity timer fresh for any active editing session.
   const state = loadState();
-  const found = state.checked.includes(key);
-  saveState(state);
-  return found;
+  return state.checked.includes(key);
 }
 
 // Prune stale session files older than 1 hour

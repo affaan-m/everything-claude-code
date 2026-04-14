@@ -363,17 +363,16 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  // --- Test 12: reads refresh active session state ---
+  // --- Test 12: reads of already-checked files do not rewrite state (perf) ---
   clearState();
-  if (test('touches last_active on read so active sessions do not age out', () => {
-    const staleButActive = Date.now() - (29 * 60 * 1000);
+  if (test('does not rewrite state file when reading already-checked entries', () => {
+    const seededActive = Date.now() - (5 * 60 * 1000);
     writeState({
       checked: ['/src/keep-alive.js'],
-      last_active: staleButActive
+      last_active: seededActive
     });
 
-    const before = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
-    assert.strictEqual(before.last_active, staleButActive, 'seed state should use the expected timestamp');
+    const mtimeBefore = fs.statSync(stateFile).mtimeMs;
 
     const result = runHook({
       tool_name: 'Edit',
@@ -386,8 +385,13 @@ function runTests() {
         'already-checked file should still be allowed');
     }
 
+    const mtimeAfter = fs.statSync(stateFile).mtimeMs;
+    assert.strictEqual(mtimeAfter, mtimeBefore,
+      'cached-read fast path must not rewrite the state file');
+
     const after = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
-    assert.ok(after.last_active > staleButActive, 'successful reads should refresh last_active');
+    assert.strictEqual(after.last_active, seededActive,
+      'cached-read fast path must not touch last_active');
   })) passed++; else failed++;
 
   // --- Test 13: pruning preserves routine bash gate marker ---
