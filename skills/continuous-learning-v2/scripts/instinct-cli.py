@@ -41,10 +41,21 @@ except ImportError:
 def _resolve_homunculus_dir() -> Path:
     override = os.environ.get("CLV2_HOMUNCULUS_DIR")
     if override:
-        return Path(override)
+        expanded = Path(override).expanduser()
+        if not expanded.is_absolute():
+            raise ValueError(
+                f"CLV2_HOMUNCULUS_DIR must be an absolute path, got {override!r}"
+            )
+        return expanded
     xdg = os.environ.get("XDG_DATA_HOME")
     if xdg:
-        return Path(xdg) / "ecc-homunculus"
+        xdg_path = Path(xdg).expanduser()
+        if xdg_path.is_absolute():
+            return xdg_path / "ecc-homunculus"
+        print(
+            f"[ecc] XDG_DATA_HOME={xdg!r} is not absolute; ignoring",
+            file=sys.stderr,
+        )
     return Path.home() / ".local" / "share" / "ecc-homunculus"
 
 

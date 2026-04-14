@@ -5475,6 +5475,50 @@ Some random content without the expected ### Context to Load section
     passed++;
   else failed++;
 
+  if (
+    test('instinct-cli.py rejects relative CLV2_HOMUNCULUS_DIR with ValueError', () => {
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'clv2-'));
+      const cli = path.join(__dirname, '..', '..', 'skills', 'continuous-learning-v2', 'scripts', 'instinct-cli.py');
+      const probe = [
+        'import importlib.util,os',
+        "spec=importlib.util.spec_from_file_location('m',os.environ['CLI'])",
+        'm=importlib.util.module_from_spec(spec)',
+        'spec.loader.exec_module(m)',
+      ].join(';');
+      const env = { ...process.env, HOME: tmp, CLI: cli, CLV2_HOMUNCULUS_DIR: 'relative/bad' };
+      delete env.XDG_DATA_HOME;
+      const result = spawnSync('python3', ['-c', probe], { env, encoding: 'utf8' });
+      assert.notStrictEqual(result.status, 0, 'module load must fail when CLV2_HOMUNCULUS_DIR is relative');
+      assert.match(result.stderr, /CLV2_HOMUNCULUS_DIR must be an absolute path/, 'error should name the offending env var');
+      fs.rmSync(tmp, { recursive: true, force: true });
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    test('instinct-cli.py ignores relative XDG_DATA_HOME and falls back to default', () => {
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'clv2-'));
+      const cli = path.join(__dirname, '..', '..', 'skills', 'continuous-learning-v2', 'scripts', 'instinct-cli.py');
+      const probe = [
+        'import importlib.util,os',
+        "spec=importlib.util.spec_from_file_location('m',os.environ['CLI'])",
+        'm=importlib.util.module_from_spec(spec)',
+        'spec.loader.exec_module(m)',
+        'print(m.HOMUNCULUS_DIR)',
+      ].join(';');
+      const env = { ...process.env, HOME: tmp, CLI: cli, XDG_DATA_HOME: 'not/absolute' };
+      delete env.CLV2_HOMUNCULUS_DIR;
+      const result = spawnSync('python3', ['-c', probe], { env, encoding: 'utf8' });
+      assert.strictEqual(result.status, 0, 'module should load when XDG_DATA_HOME is relative (warn + fall back)');
+      assert.strictEqual(result.stdout.trim(), path.join(tmp, '.local', 'share', 'ecc-homunculus'));
+      assert.match(result.stderr, /XDG_DATA_HOME=.*is not absolute/, 'stderr should explain the fallback');
+      fs.rmSync(tmp, { recursive: true, force: true });
+    })
+  )
+    passed++;
+  else failed++;
+
   if (SKIP_BASH) {
     console.log('  ⊘ migrate-homunculus.sh moves old to new (skipped on Windows)');
     passed++;
