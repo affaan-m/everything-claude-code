@@ -42,11 +42,12 @@ def _resolve_homunculus_dir() -> Path:
     override = os.environ.get("CLV2_HOMUNCULUS_DIR")
     if override:
         expanded = Path(override).expanduser()
-        if not expanded.is_absolute():
-            raise ValueError(
-                f"CLV2_HOMUNCULUS_DIR must be an absolute path, got {override!r}"
-            )
-        return expanded
+        if expanded.is_absolute():
+            return expanded
+        print(
+            f"[ecc] CLV2_HOMUNCULUS_DIR={override!r} is not absolute; ignoring",
+            file=sys.stderr,
+        )
     xdg = os.environ.get("XDG_DATA_HOME")
     if xdg:
         xdg_path = Path(xdg).expanduser()
