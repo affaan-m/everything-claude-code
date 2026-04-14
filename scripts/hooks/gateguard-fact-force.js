@@ -35,6 +35,11 @@ const STATE_FILE = path.join(STATE_DIR, `state-${SESSION_ID.replace(/[^a-zA-Z0-9
 // State expires after 30 minutes of inactivity
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
 
+// Throttle keep-alive writes on the read path: at most one write per 60s.
+// Protects the hot path (fires on every tool call) while still refreshing
+// last_active often enough that long single-file sessions don't expire.
+const READ_HEARTBEAT_MS = 60 * 1000;
+
 // Maximum checked entries to prevent unbounded growth
 const MAX_CHECKED_ENTRIES = 500;
 const MAX_SESSION_KEYS = 50;
@@ -95,12 +100,16 @@ function markChecked(key) {
 }
 
 function isChecked(key) {
-  // Read-only fast path: the hook fires on every tool invocation, so any
-  // disk write here shows up as measurable latency. markChecked() already
-  // persists last_active whenever state actually changes, which keeps the
-  // 30-minute inactivity timer fresh for any active editing session.
+  // Read path fires on every tool invocation, so default to no disk write.
+  // We only heartbeat last_active at most once per READ_HEARTBEAT_MS so that
+  // long single-file sessions don't hit the inactivity timeout, while still
+  // keeping ~99% of invocations fully read-only.
   const state = loadState();
-  return state.checked.includes(key);
+  const found = state.checked.includes(key);
+  if (found && Date.now() - (state.last_active || 0) > READ_HEARTBEAT_MS) {
+    saveState(state);
+  }
+  return found;
 }
 
 // Prune stale session files older than 1 hour

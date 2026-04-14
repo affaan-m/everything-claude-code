@@ -363,10 +363,11 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  // --- Test 12: reads of already-checked files do not rewrite state (perf) ---
+  // --- Test 12a: cached reads inside the heartbeat window stay read-only ---
   clearState();
-  if (test('does not rewrite state file when reading already-checked entries', () => {
-    const seededActive = Date.now() - (5 * 60 * 1000);
+  if (test('does not rewrite state file on cached read within heartbeat window', () => {
+    // Seeded 10s ago — well inside the 60s heartbeat window.
+    const seededActive = Date.now() - (10 * 1000);
     writeState({
       checked: ['/src/keep-alive.js'],
       last_active: seededActive
@@ -387,11 +388,40 @@ function runTests() {
 
     const mtimeAfter = fs.statSync(stateFile).mtimeMs;
     assert.strictEqual(mtimeAfter, mtimeBefore,
-      'cached-read fast path must not rewrite the state file');
+      'cached-read inside heartbeat window must not rewrite the state file');
 
     const after = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
     assert.strictEqual(after.last_active, seededActive,
-      'cached-read fast path must not touch last_active');
+      'cached-read inside heartbeat window must not touch last_active');
+  })) passed++; else failed++;
+
+  // --- Test 12b: cached reads past the heartbeat window refresh last_active ---
+  clearState();
+  if (test('refreshes last_active on cached read once heartbeat window elapses', () => {
+    // Seeded 5 minutes ago — well past the 60s heartbeat window, but still
+    // inside the 30-minute session timeout so the entry should survive.
+    const seededActive = Date.now() - (5 * 60 * 1000);
+    writeState({
+      checked: ['/src/long-session.js'],
+      last_active: seededActive
+    });
+
+    const result = runHook({
+      tool_name: 'Edit',
+      tool_input: { file_path: '/src/long-session.js', old_string: 'a', new_string: 'b' }
+    });
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'should produce valid JSON output');
+    if (output.hookSpecificOutput) {
+      assert.notStrictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
+        'already-checked file should still be allowed after heartbeat');
+    }
+
+    const after = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
+    assert.ok(after.last_active > seededActive,
+      'cached-read past the heartbeat window should refresh last_active');
+    assert.ok(after.checked.includes('/src/long-session.js'),
+      'checked entries should be preserved across the heartbeat write');
   })) passed++; else failed++;
 
   // --- Test 13: pruning preserves routine bash gate marker ---
