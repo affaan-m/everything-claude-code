@@ -82,17 +82,26 @@ export class RateLimiter {
    * Get current rate limit status
    */
   getStatus(identifier: string = 'default'): any {
-    const result = this.checkRateLimit(identifier);
     const requests = this.requests.get(identifier) || [];
+    const now = Date.now();
+    const windowMs = 60000;
+    const recentRequests = requests.filter(time => now - time < windowMs);
+    const remaining = this.config.rateLimitRPM - recentRequests.length;
+    const canMakeRequest = remaining > 0;
+    const oldestRequest = canMakeRequest ? undefined : Math.min(...recentRequests);
+    const nextAvailableIn = oldestRequest
+      ? Math.ceil((oldestRequest + windowMs - now) / 1000)
+      : 0;
 
     return {
       currentUsage: requests.length,
       limit: this.config.rateLimitRPM,
-      windowMs: 60000,
-      requestsInWindow: requests.filter(time => Date.now() - time < 60000).length,
-      canMakeRequest: result.allowed,
-      nextAvailableIn: result.retryAfter || 0
+      windowMs,
+      requestsInWindow: recentRequests.length,
+      canMakeRequest,
+      nextAvailableIn
     };
+  }
   }
 
   /**
