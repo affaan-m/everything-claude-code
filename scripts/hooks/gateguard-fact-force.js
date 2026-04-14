@@ -9,7 +9,8 @@
  * The act of investigation creates awareness that self-evaluation never did.
  *
  * Gates:
- *   - Edit/Write: quote instruction first, list importers, detect conflicts (instruction wins), verify data schemas
+ *   - Edit: quote instruction, list importers, list affected public API, detect conflicts (instruction wins), verify data schemas
+ *   - Write: quote instruction, name call sites, check duplicates, detect conflicts (instruction wins), verify data schemas
  *   - Bash (destructive): list targets, rollback plan, quote instruction
  *   - Bash (routine): quote current instruction (once per session)
  *
@@ -135,8 +136,9 @@ function editGateMsg(filePath) {
     '',
     '1. Quote the user\'s current instruction verbatim (to confirm the change is in scope)',
     '2. List ALL files that import/require this file (use Grep)',
-    '3. If the existing code\'s patterns conflict with the user\'s instruction, state the conflict explicitly. When in conflict, the user\'s instruction takes priority.',
-    '4. If this file reads/writes data files, check one real record and verify field names, structure, and date format match your implementation (use redacted or synthetic values, not raw production data)',
+    '3. List the public functions/classes affected by this change',
+    '4. If the existing code\'s patterns conflict with the user\'s instruction, state the conflict explicitly. When in conflict, the user\'s instruction takes priority.',
+    '5. If this file reads/writes data files, check one real record and verify field names, structure, and date format match your implementation (use redacted or synthetic values, not raw production data)',
     '',
     'Present the facts, then retry the same operation.'
   ].join('\n');
