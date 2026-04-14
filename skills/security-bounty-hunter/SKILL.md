@@ -8,7 +8,7 @@ origin: community
 
 Systematic vulnerability scanning for bug bounty submissions. Focuses exclusively on network-exploitable findings that platforms actually accept and pay for.
 
-## When to Use
+## When to Activate
 
 - Scanning a GitHub repository for security vulnerabilities
 - Preparing a bug bounty submission for Huntr, HackerOne, or Bugcrowd
@@ -37,7 +37,7 @@ Bug bounty platforms reject local-only findings. Every vulnerability must be tri
 
 | Category | Why Rejected |
 |----------|-------------|
-| **Pickle/torch.load deserialization (local-only)** | Rejected when the data source is a local file; see In-Scope RCE for cases where attacker controls the serialized data via HTTP |
+| **Generic pickle/torch deserialization WITHOUT sandbox bypass** | Rejected when the data source is a local file with no attacker control; if attacker supplies serialized data over HTTP, report under In-Scope RCE instead |
 | **ReDoS** | Low severity, rarely paid |
 | **Missing rate limiting** | Informational only |
 | **Self-XSS** | Requires victim to paste code |
