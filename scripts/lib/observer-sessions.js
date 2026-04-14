@@ -5,7 +5,13 @@ const { spawnSync } = require('child_process');
 const { getClaudeDir, ensureDir, sanitizeSessionId } = require('./utils');
 
 function getHomunculusDir() {
-  return path.join(getClaudeDir(), 'homunculus');
+  if (process.env.CLV2_HOMUNCULUS_DIR) {
+    return process.env.CLV2_HOMUNCULUS_DIR;
+  }
+  if (process.env.XDG_DATA_HOME) {
+    return path.join(process.env.XDG_DATA_HOME, 'ecc-homunculus');
+  }
+  return path.join(require('os').homedir(), '.local', 'share', 'ecc-homunculus');
 }
 
 function getProjectsDir() {
@@ -163,6 +169,7 @@ function stopObserverForContext(context) {
 }
 
 module.exports = {
+  getHomunculusDir,
   resolveProjectContext,
   getObserverActivityFile,
   getObserverPidFile,

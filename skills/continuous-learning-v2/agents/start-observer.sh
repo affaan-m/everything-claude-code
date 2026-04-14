@@ -35,7 +35,13 @@ PYTHON_CMD="${CLV2_PYTHON_CMD:-}"
 # Configuration
 # ─────────────────────────────────────────────
 
-CONFIG_DIR="${HOME}/.claude/homunculus"
+if [ -n "${CLV2_HOMUNCULUS_DIR:-}" ]; then
+  CONFIG_DIR="$CLV2_HOMUNCULUS_DIR"
+elif [ -n "${XDG_DATA_HOME:-}" ]; then
+  CONFIG_DIR="${XDG_DATA_HOME}/ecc-homunculus"
+else
+  CONFIG_DIR="${HOME}/.local/share/ecc-homunculus"
+fi
 if [ -n "${CLV2_CONFIG:-}" ]; then
   CONFIG_FILE="$CLV2_CONFIG"
 else

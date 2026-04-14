@@ -342,7 +342,7 @@ async function runTests() {
       );
 
       assert.strictEqual(result.code, 0, 'SessionStart should exit 0');
-      const homunculusDir = path.join(testDir, '.claude', 'homunculus');
+      const homunculusDir = path.join(testDir, '.local', 'share', 'ecc-homunculus');
       const projectsDir = path.join(homunculusDir, 'projects');
       const projectEntries = fs.existsSync(projectsDir) ? fs.readdirSync(projectsDir) : [];
       assert.ok(projectEntries.length > 0, 'SessionStart should create a homunculus project directory');
@@ -361,7 +361,7 @@ async function runTests() {
 
     try {
       const projectId = crypto.createHash('sha256').update(projectDir).digest('hex').slice(0, 12);
-      const homunculusDir = path.join(testDir, '.claude', 'homunculus');
+      const homunculusDir = path.join(testDir, '.local', 'share', 'ecc-homunculus');
       const projectInstinctDir = path.join(homunculusDir, 'projects', projectId, 'instincts', 'personal');
       const globalInstinctDir = path.join(homunculusDir, 'instincts', 'inherited');
 
@@ -435,7 +435,7 @@ async function runTests() {
         }
       );
 
-      const homunculusDir = path.join(testDir, '.claude', 'homunculus');
+      const homunculusDir = path.join(testDir, '.local', 'share', 'ecc-homunculus');
       const projectsDir = path.join(homunculusDir, 'projects');
       const projectEntries = fs.existsSync(projectsDir) ? fs.readdirSync(projectsDir) : [];
       assert.ok(projectEntries.length > 0, 'Expected SessionStart to create a homunculus project directory');

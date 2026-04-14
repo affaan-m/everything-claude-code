@@ -38,7 +38,17 @@ except ImportError:
 # Configuration
 # ─────────────────────────────────────────────
 
-HOMUNCULUS_DIR = Path.home() / ".claude" / "homunculus"
+def _resolve_homunculus_dir() -> Path:
+    override = os.environ.get("CLV2_HOMUNCULUS_DIR")
+    if override:
+        return Path(override)
+    xdg = os.environ.get("XDG_DATA_HOME")
+    if xdg:
+        return Path(xdg) / "ecc-homunculus"
+    return Path.home() / ".local" / "share" / "ecc-homunculus"
+
+
+HOMUNCULUS_DIR = _resolve_homunculus_dir()
 PROJECTS_DIR = HOMUNCULUS_DIR / "projects"
 REGISTRY_FILE = HOMUNCULUS_DIR / "projects.json"
 
