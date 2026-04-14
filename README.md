@@ -84,6 +84,7 @@ This repo is the raw code only. The guides explain everything.
 
 ### v1.10.0 — Surface Refresh, Operator Workflows, and ECC 2.0 Alpha (Apr 2026)
 
+- **Dashboard GUI** — New Tkinter-based desktop application (`ecc_dashboard.py` or `npm run dashboard`) with dark/light theme toggle, font customization, and project logo in header and taskbar.
 - **Public surface synced to the live repo** — metadata, catalog counts, plugin manifests, and install-facing docs now match the actual OSS surface: 38 agents, 156 skills, and 72 legacy command shims.
 - **Operator and outbound workflow expansion** — `brand-voice`, `social-graph-ranker`, `connections-optimizer`, `customer-billing-ops`, `ecc-tools-cost-audit`, `google-workspace-ops`, `project-flow-ops`, and `workspace-surface-audit` round out the operator lane.
 - **Media and launch tooling** — `manim-video`, `remotion-video-creation`, and upgraded social publishing surfaces make technical explainers and launch content part of the same system.
@@ -179,7 +180,7 @@ Get up and running in under 2 minutes:
 ### Step 2: Install Rules (Required)
 
 > WARNING: **Important:** Claude Code plugins cannot distribute `rules` automatically. Install them manually:
-
+>
 > If your local Claude setup was wiped or reset, that does not mean you need to repurchase ECC. Start with `ecc list-installed`, then run `ecc doctor` and `ecc repair` before reinstalling anything. That usually restores ECC-managed files without rebuilding your setup. If the problem is account or marketplace access for ECC Tools, handle billing/account recovery separately.
 
 ```bash
@@ -239,6 +240,23 @@ For manual install instructions see the README in the `rules/` folder. When copy
 ```
 
 **That's it!** You now have access to 47 agents, 181 skills, and 79 legacy command shims.
+
+### Dashboard GUI
+
+Launch the desktop dashboard to visually explore ECC components:
+
+```bash
+npm run dashboard
+# or
+python3 ./ecc_dashboard.py
+```
+
+**Features:**
+- Tabbed interface: Agents, Skills, Commands, Rules, Settings
+- Dark/Light theme toggle
+- Font customization (family & size)
+- Project logo in header and taskbar
+- Search and filter across all components
 
 ### Multi-model commands require additional setup
 
@@ -500,6 +518,12 @@ everything-claude-code/
 |-- mcp-configs/      # MCP server configurations
 |   |-- mcp-servers.json    # GitHub, Supabase, Vercel, Railway, etc.
 |
+|-- ecc_dashboard.py  # Desktop GUI dashboard (Tkinter)
+|
+|-- assets/           # Assets for dashboard
+|   |-- images/
+|       |-- ecc-logo.png
+|
 |-- marketplace.json  # Self-hosted marketplace config (for /plugin marketplace add)
 ```
 
@@ -703,9 +727,27 @@ mkdir -p ~/.claude/commands
 cp everything-claude-code/commands/*.md ~/.claude/commands/
 ```
 
-#### Add hooks to settings.json
+#### Install hooks
 
-Copy the hooks from `hooks/hooks.json` to your `~/.claude/settings.json`.
+Do not copy the raw repo `hooks/hooks.json` into `~/.claude/settings.json` or `~/.claude/hooks/hooks.json`. That file is plugin/repo-oriented and still contains `${CLAUDE_PLUGIN_ROOT}` placeholders, so raw copying is not a supported manual install path.
+
+Use the installer to install only the Claude hook runtime so command paths are rewritten correctly:
+
+```bash
+# macOS / Linux
+bash ./install.sh --target claude --modules hooks-runtime
+```
+
+```powershell
+# Windows PowerShell
+pwsh -File .\install.ps1 --target claude --modules hooks-runtime
+```
+
+That writes resolved hooks to `~/.claude/hooks/hooks.json` and leaves any existing `~/.claude/settings.json` untouched.
+
+If you installed ECC via `/plugin install`, do not copy those hooks into `settings.json`. Claude Code v2.1+ already auto-loads plugin `hooks/hooks.json`, and duplicating them in `settings.json` causes duplicate execution and `${CLAUDE_PLUGIN_ROOT}` resolution failures.
+
+Windows note: the Claude config directory is `%USERPROFILE%\\.claude`, not `~/claude`.
 
 #### Configure MCPs
 

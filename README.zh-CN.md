@@ -78,6 +78,17 @@
 
 ---
 
+## 最新动态
+
+### v1.10.0 — 表面同步、运营工作流与 ECC 2.0 Alpha（2026年4月）
+
+- **公共表面已与真实仓库同步** —— 元数据、目录数量、插件清单以及安装文档现在都与实际开源表面保持一致。
+- **运营与外向型工作流扩展** —— `brand-voice`、`social-graph-ranker`、`customer-billing-ops`、`google-workspace-ops` 等运营型 skill 已纳入同一系统。
+- **媒体与发布工具补齐** —— `manim-video`、`remotion-video-creation` 以及社媒发布能力让技术讲解和发布流程直接在同一仓库内完成。
+- **框架与产品表面继续扩展** —— `nestjs-patterns`、更完整的 Codex/OpenCode 安装表面，以及跨 harness 打包改进，让仓库不再局限于 Claude Code。
+- **ECC 2.0 alpha 已进入仓库** —— `ecc2/` 下的 Rust 控制层现已可在本地构建，并提供 `dashboard`、`start`、`sessions`、`status`、`stop`、`resume` 与 `daemon` 命令。
+- **生态加固持续推进** —— AgentShield、ECC Tools 成本控制、计费门户工作与网站刷新仍围绕核心插件持续交付。
+
 ## 快速开始
 
 在 2 分钟内快速上手：
@@ -615,7 +626,9 @@ cp everything-claude-code/commands/*.md ~/.claude/commands/
 ```
 
 #### 将钩子配置添加到 settings.json
-将 `hooks/hooks.json` 中的钩子配置复制到你的 `~/.claude/settings.json` 文件中。
+仅适用于手动安装：如果你没有通过 Claude 插件方式安装 ECC，可以将 `hooks/hooks.json` 中的钩子配置复制到你的 `~/.claude/settings.json` 文件中。
+
+如果你是通过 `/plugin install` 安装 ECC，请不要再把这些钩子复制到 `settings.json`。Claude Code v2.1+ 会自动加载插件中的 `hooks/hooks.json`，重复注册会导致重复执行以及 `${CLAUDE_PLUGIN_ROOT}` 无法解析。
 
 #### 配置 MCP 服务
 从 `mcp-configs/mcp-servers.json` 中复制需要的 MCP 服务定义，粘贴到官方 Claude Code 配置文件 `~/.claude/settings.json` 中；

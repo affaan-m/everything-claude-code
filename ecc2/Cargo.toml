@@ -7,6 +7,10 @@ license = "MIT"
 authors = ["Affaan Mustafa <me@affaanmustafa.com>"]
 repository = "https://github.com/affaan-m/everything-claude-code"
 
+[features]
+default = ["vendored-openssl"]
+vendored-openssl = ["git2/vendored-openssl"]
+
 [dependencies]
 # TUI
 ratatui = { version = "0.30", features = ["crossterm_0_28"] }
@@ -19,7 +23,7 @@ tokio = { version = "1", features = ["full"] }
 rusqlite = { version = "0.32", features = ["bundled"] }
 
 # Git integration
-git2 = "0.20"
+git2 = { version = "0.20", features = ["ssh"] }
 
 # Serialization
 serde = { version = "1", features = ["derive"] }

@@ -181,7 +181,13 @@ function createNamespacedFlatRuleOperations(adapter, moduleId, sourceRelativePat
   return operations;
 }
 
-function createFlatRuleOperations({ moduleId, repoRoot, sourceRelativePath, destinationDir }) {
+function createFlatRuleOperations({
+  moduleId,
+  repoRoot,
+  sourceRelativePath,
+  destinationDir,
+  destinationNameTransform,
+}) {
   const normalizedSourcePath = normalizeRelativePath(sourceRelativePath);
   const sourceRoot = path.join(repoRoot || '', normalizedSourcePath);
 
@@ -201,19 +207,33 @@ function createFlatRuleOperations({ moduleId, repoRoot, sourceRelativePath, dest
     if (entry.isDirectory()) {
       const relativeFiles = listRelativeFiles(entryPath);
       for (const relativeFile of relativeFiles) {
-        const flattenedFileName = `${namespace}-${normalizeRelativePath(relativeFile).replace(/\//g, '-')}`;
+        const defaultFileName = `${namespace}-${normalizeRelativePath(relativeFile).replace(/\//g, '-')}`;
+        const sourceRelativeFile = path.join(normalizedSourcePath, namespace, relativeFile);
+        const flattenedFileName = typeof destinationNameTransform === 'function'
+          ? destinationNameTransform(defaultFileName, sourceRelativeFile)
+          : defaultFileName;
+        if (!flattenedFileName) {
+          continue;
+        }
         operations.push(createManagedOperation({
           moduleId,
-          sourceRelativePath: path.join(normalizedSourcePath, namespace, relativeFile),
+          sourceRelativePath: sourceRelativeFile,
           destinationPath: path.join(destinationDir, flattenedFileName),
           strategy: 'flatten-copy',
         }));
       }
     } else if (entry.isFile()) {
+      const sourceRelativeFile = path.join(normalizedSourcePath, entry.name);
+      const destinationFileName = typeof destinationNameTransform === 'function'
+        ? destinationNameTransform(entry.name, sourceRelativeFile)
+        : entry.name;
+      if (!destinationFileName) {
+        continue;
+      }
       operations.push(createManagedOperation({
         moduleId,
-        sourceRelativePath: path.join(normalizedSourcePath, entry.name),
-        destinationPath: path.join(destinationDir, entry.name),
+        sourceRelativePath: sourceRelativeFile,
+        destinationPath: path.join(destinationDir, destinationFileName),
         strategy: 'flatten-copy',
       }));
     }

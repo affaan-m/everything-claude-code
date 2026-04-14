@@ -318,7 +318,9 @@ cp -r everything-claude-code/skills/* ~/.claude/skills/
 
 #### 將鉤子新增到 settings.json
 
-將 `hooks/hooks.json` 中的鉤子複製到您的 `~/.claude/settings.json`。
+僅在手動安裝時，才將 `hooks/hooks.json` 中的鉤子複製到您的 `~/.claude/settings.json`。
+
+如果您是透過 `/plugin install` 安裝 ECC，請不要再把這些鉤子複製到 `settings.json`。Claude Code v2.1+ 會自動載入外掛中的 `hooks/hooks.json`，重複註冊會導致重複執行以及 `${CLAUDE_PLUGIN_ROOT}` 無法解析。
 
 #### 設定 MCP
 
