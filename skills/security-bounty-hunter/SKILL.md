@@ -186,13 +186,20 @@ the dangerous sink, and what an attacker can achieve]
 
 ## Anti-Patterns
 
-### WRONG: Reporting local-only findings
+### WRONG: Reporting local-only deserialization
 
 ```python
-# Pickle/torch.load deserialization from LOCAL files is out-of-scope
-# But if attacker controls the serialized data via HTTP, it IS a valid RCE bounty
-torch.load(model_path)          # NOT a bounty -- local file, no attacker control
+# Local file deserialization is out-of-scope -- no attacker control
+torch.load(model_path)          # NOT a bounty -- local file
+pickle.loads(open("model.pkl", "rb").read())  # NOT a bounty -- local file
+```
+
+### RIGHT: Reporting attacker-controlled deserialization
+
+```python
+# Attacker controls the serialized data via HTTP -- valid RCE bounty
 pickle.loads(request.data)      # IS a bounty -- attacker-controlled bytes over HTTP
+torch.load(uploaded_file)       # IS a bounty -- attacker uploaded the file
 ```
 
 ### WRONG: Reporting without verifying the code path
