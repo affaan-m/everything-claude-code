@@ -591,7 +591,7 @@ function runTests() {
     assert.ok(persisted.checked.length <= 500, 'pruned state should still honor the checked-entry cap');
   })) passed++; else failed++;
 
-    // --- Test 14: fallback-only input still reuses state across retries ---
+  // --- Test 14: fallback-only input still reuses state across retries ---
   const fallbackOnlyEnv = {
     CLAUDE_PROJECT_DIR: '/tmp/fallback-only-project'
   };
@@ -624,7 +624,7 @@ function runTests() {
   // --- Test 15: fallback shares state for the same project scope ---
   // Actually it should be isolated when 2 cli sessions are running at the same scope,
   // but if there is no env and input to provide session information, the ppid and pid will be totally different
-  // and cause every call to be considered as a new one, blocking tool calling repeatly.
+  // and cause every call to be considered as a new one, blocking tool calling repeatedly.
   const cliAEnv = {
     CLAUDE_PROJECT_DIR: SHARED_PROJECT_DIR
   };
