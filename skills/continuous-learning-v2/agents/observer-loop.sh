@@ -203,7 +203,11 @@ PROMPT
   # Pass prompt via -p flag instead of stdin redirect for Windows compatibility (#842).
   # prompt_content is already loaded in-memory so this no longer depends on the
   # mktemp absolute path continuing to resolve after cwd changes (#1296).
+  # --permission-mode acceptEdits: the observer runs unattended, so user-level
+  # permission prompts and `defaultMode: plan` in ~/.claude/settings.json would
+  # deny every Write and leave `instincts/personal/` empty.
   ECC_SKIP_OBSERVE=1 ECC_HOOK_PROFILE=minimal claude --model haiku --max-turns "$max_turns" --print \
+    --permission-mode acceptEdits \
     --allowedTools "Read,Write" \
     -p "$prompt_content" >> "$LOG_FILE" 2>&1 &
   claude_pid=$!
@@ -217,8 +221,20 @@ PROMPT
   ) &
   watchdog_pid=$!
 
-  wait "$claude_pid"
-  exit_code=$?
+  # observe.sh sends SIGUSR1 to the observer while an analysis is in flight.
+  # A bare `wait "$claude_pid"` returns 128+signum (e.g. 158 on SIGUSR1) as soon
+  # as the trap fires, while the child is still running, causing a bogus
+  # "Claude analysis failed" log and premature observations-file archival.
+  # Resume waiting until the child actually exits.
+  exit_code=0
+  while kill -0 "$claude_pid" 2>/dev/null; do
+    wait "$claude_pid"
+    exit_code=$?
+    if [ "$exit_code" -gt 128 ] && kill -0 "$claude_pid" 2>/dev/null; then
+      continue
+    fi
+    break
+  done
   kill "$watchdog_pid" 2>/dev/null || true
   rm -f "$analysis_file"
 

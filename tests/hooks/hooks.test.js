@@ -2441,6 +2441,27 @@ async function runTests() {
     passed++;
   else failed++;
 
+  if (
+    test('observer-loop runs the haiku analysis with --permission-mode acceptEdits', () => {
+      const observerLoopSource = fs.readFileSync(path.join(__dirname, '..', '..', 'skills', 'continuous-learning-v2', 'agents', 'observer-loop.sh'), 'utf8');
+
+      assert.ok(observerLoopSource.includes('--permission-mode acceptEdits'), 'observer-loop should spawn claude with --permission-mode acceptEdits so user settings.json plan-mode/Write allow-lists do not block instinct writes');
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    test('observer-loop resumes wait when a trapped signal interrupts the claude child', () => {
+      const observerLoopSource = fs.readFileSync(path.join(__dirname, '..', '..', 'skills', 'continuous-learning-v2', 'agents', 'observer-loop.sh'), 'utf8');
+
+      assert.ok(!/\n\s*wait "\$claude_pid"\n\s*exit_code=\$\?\n\s*kill "\$watchdog_pid"/.test(observerLoopSource), 'observer-loop should not use a bare `wait "$claude_pid"` followed by exit_code capture, because SIGUSR1 from observe.sh returns 128+signum while the child is still alive');
+      assert.ok(/while kill -0 "\$claude_pid"[\s\S]*wait "\$claude_pid"[\s\S]*exit_code=\$\?/.test(observerLoopSource), 'observer-loop should resume waiting on the claude child via a `while kill -0` loop so trap-induced wakeups do not trigger false failures');
+    })
+  )
+    passed++;
+  else failed++;
+
   if (SKIP_BASH) {
     console.log('  ⊘ detect-project exports the resolved Python command (skipped on Windows)');
     passed++;
