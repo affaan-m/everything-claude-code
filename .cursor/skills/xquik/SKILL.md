@@ -4,6 +4,8 @@ description: X/Twitter data access via Xquik's remote MCP server — search twee
 origin: ECC
 ---
 
+> Mirror of skills/xquik/SKILL.md. Update the canonical file first, then sync this copy.
+
 # Xquik
 
 X/Twitter data and automation via Xquik's remote MCP server. Two tools cover 122 API endpoints: search, lookup, extraction, writing, monitoring, giveaway draws, webhooks, and trends.
