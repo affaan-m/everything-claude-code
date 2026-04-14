@@ -1,7 +1,0 @@
-interface:
-  display_name: "Video Editing"
-  short_description: "AI-assisted video editing for real footage"
-  brand_color: "#EF4444"
-  default_prompt: "Edit video using AI-assisted pipeline: organize, cut, compose, generate assets, polish"
-policy:
-  allow_implicit_invocation: true
