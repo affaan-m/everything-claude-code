@@ -68,15 +68,9 @@ function resolveSessionId(data = {}) {
     return hashSessionKey('transcript-', transcriptPath);
   }
 
+  // this may not happen in real usage. If it does, we at least get a stable fallback per project directory fingerprint, instead of per-invocation random IDs.
   const scope = data.cwd || process.env.CLAUDE_PROJECT_DIR || process.cwd();
-  const parentFingerprint = [
-    String(process.ppid || process.pid),
-    process.env.CLAUDE_CODE_ENTRYPOINT || '',
-    process.env.TMUX_PANE || process.env.TMUX || '',
-    process.env.TERM_SESSION_ID || ''
-  ].join('|');
-
-  return hashSessionKey('fallback-', `${scope}::${parentFingerprint}`);
+  return hashSessionKey('fallback-', scope);
 }
 
 function resolveStateFile(data = {}) {

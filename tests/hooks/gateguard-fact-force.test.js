@@ -183,14 +183,7 @@ function fallbackSessionId(env = {}) {
   }
 
   const scope = env.CLAUDE_PROJECT_DIR || process.cwd();
-  const parentFingerprint = [
-    String(process.pid),
-    env.CLAUDE_CODE_ENTRYPOINT || '',
-    env.TMUX_PANE || env.TMUX || '',
-    env.TERM_SESSION_ID || ''
-  ].join('|');
-
-  return hashSessionKey('fallback-', `${scope}::${parentFingerprint}`);
+  return hashSessionKey('fallback-', scope);
 }
 
 function runHookWithSessionId(input, sessionId, env = {}) {
@@ -240,6 +233,41 @@ function runBashHookWithInputSession(input, metadata = {}, env = {}) {
       ...process.env,
       ECC_HOOK_PROFILE: 'standard',
       GATEGUARD_STATE_DIR: stateDir,
+      ...env
+    },
+    timeout: 15000,
+    stdio: ['pipe', 'pipe', 'pipe']
+  });
+
+  return {
+    code: Number.isInteger(result.status) ? result.status : 1,
+    stdout: result.stdout || '',
+    stderr: result.stderr || ''
+  };
+}
+
+function runBashHookWithFallbackOnly(input, metadata = {}, env = {}) {
+  const rawInput = typeof input === 'string'
+    ? input
+    : JSON.stringify({
+      ...metadata,
+      ...input
+    });
+  const result = spawnSync('node', [
+    runner,
+    'pre:bash:gateguard-fact-force',
+    'scripts/hooks/gateguard-fact-force.js',
+    'standard,strict'
+  ], {
+    input: rawInput,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      ECC_HOOK_PROFILE: 'standard',
+      GATEGUARD_STATE_DIR: stateDir,
+      CLAUDE_SESSION_ID: '',
+      ECC_SESSION_ID: '',
+      CLAUDE_TRANSCRIPT_PATH: '',
       ...env
     },
     timeout: 15000,
@@ -563,52 +591,55 @@ function runTests() {
     assert.ok(persisted.checked.length <= 500, 'pruned state should still honor the checked-entry cap');
   })) passed++; else failed++;
 
-  // --- Test 14: stable fallback works without session env vars ---
-  const fallbackEnv = {
-    CLAUDE_PROJECT_DIR: FALLBACK_PROJECT_DIR
+    // --- Test 14: fallback-only input still reuses state across retries ---
+  const fallbackOnlyEnv = {
+    CLAUDE_PROJECT_DIR: '/tmp/fallback-only-project'
   };
-  clearState(fallbackSessionId(buildFallbackHookEnv(fallbackEnv)));
-  if (test('denies first routine Bash and allows second without session env vars', () => {
+  clearState(fallbackSessionId(fallbackOnlyEnv));
+  if (test('reuses state when neither input nor env provides session metadata', () => {
     const input = {
       tool_name: 'Bash',
-      tool_input: { command: 'echo "hello"' }
+      tool_input: { command: 'echo "hello"' },
+      cwd: '/tmp/fallback-only-project'
     };
 
-    const result1 = runBashHookWithoutSession(input, fallbackEnv);
-    assert.strictEqual(result1.code, 0, 'first fallback call exit code should be 0');
+    const result1 = runBashHookWithFallbackOnly(input, {}, fallbackOnlyEnv);
+    assert.strictEqual(result1.code, 0, 'first fallback-only call exit code should be 0');
     const output1 = parseOutput(result1.stdout);
-    assert.ok(output1, 'first fallback call should produce JSON output');
+    assert.ok(output1, 'first fallback-only call should produce JSON output');
     assert.strictEqual(output1.hookSpecificOutput.permissionDecision, 'deny');
 
-    const result2 = runBashHookWithoutSession(input, fallbackEnv);
-    assert.strictEqual(result2.code, 0, 'second fallback call exit code should be 0');
+    const result2 = runBashHookWithFallbackOnly(input, {}, fallbackOnlyEnv);
+    assert.strictEqual(result2.code, 0, 'second fallback-only call exit code should be 0');
     const output2 = parseOutput(result2.stdout);
-    assert.ok(output2, 'second fallback call should produce valid JSON output');
+    assert.ok(output2, 'second fallback-only call should produce valid JSON output');
     if (output2.hookSpecificOutput) {
       assert.notStrictEqual(output2.hookSpecificOutput.permissionDecision, 'deny',
-        'should not deny second routine bash when using stable fallback');
+        'fallback-only session resolution should map retries to the same state file');
     } else {
       assert.strictEqual(output2.tool_name, 'Bash', 'pass-through should preserve input');
     }
   })) passed++; else failed++;
 
-  // --- Test 15: fallback isolates different CLI fingerprints in one project ---
+  // --- Test 15: fallback shares state for the same project scope ---
+  // Actually it should be isolated when 2 cli sessions are running at the same scope,
+  // but if there is no env and input to provide session information, the ppid and pid will be totally different
+  // and cause every call to be considered as a new one, blocking tool calling repeatly.
   const cliAEnv = {
-    CLAUDE_PROJECT_DIR: SHARED_PROJECT_DIR,
-    TMUX_PANE: '%101'
+    CLAUDE_PROJECT_DIR: SHARED_PROJECT_DIR
   };
   const cliBEnv = {
-    CLAUDE_PROJECT_DIR: SHARED_PROJECT_DIR,
-    TMUX_PANE: '%202'
+    CLAUDE_PROJECT_DIR: SHARED_PROJECT_DIR
   };
   clearState(fallbackSessionId(buildFallbackHookEnv(cliAEnv)));
   clearState(fallbackSessionId(buildFallbackHookEnv(cliBEnv)));
-  if (test('does not share fallback state across CLI fingerprints in the same project', () => {
+  if (test('shares fallback state across CLI fingerprints in the same project', () => {
     const input = {
       tool_name: 'Bash',
       tool_input: { command: 'echo "hello"' }
     };
 
+    //CLI A seeds the shared project-scope fallback state
     const cliAFirst = runBashHookWithoutSession(input, cliAEnv);
     const cliAFirstOutput = parseOutput(cliAFirst.stdout);
     assert.ok(cliAFirstOutput, 'CLI A first call should produce JSON output');
@@ -622,11 +653,16 @@ function runTests() {
         'CLI A second call should pass once its fallback state is set');
     }
 
+    //CLI B should reuse the same project-scope fallback state
     const cliBFirst = runBashHookWithoutSession(input, cliBEnv);
     const cliBFirstOutput = parseOutput(cliBFirst.stdout);
-    assert.ok(cliBFirstOutput, 'CLI B first call should produce JSON output');
-    assert.strictEqual(cliBFirstOutput.hookSpecificOutput.permissionDecision, 'deny',
-      'CLI B should not inherit CLI A fallback state');
+    assert.ok(cliBFirstOutput, 'CLI B first call should produce valid JSON output');
+    if (cliBFirstOutput.hookSpecificOutput) {
+      assert.notStrictEqual(cliBFirstOutput.hookSpecificOutput.permissionDecision, 'deny',
+        'CLI B should inherit the shared project-scope fallback state');
+    } else {
+      assert.strictEqual(cliBFirstOutput.tool_name, 'Bash', 'pass-through should preserve input');
+    }
   })) passed++; else failed++;
 
   // --- Test 16: long session IDs are reduced to a filesystem-safe state key ---
@@ -658,7 +694,7 @@ function runTests() {
     assert.ok(path.basename(persisted).length < 255, 'state filename should stay below common filesystem limits');
   })) passed++; else failed++;
 
-  // --- Test 17: hook input session metadata drives state reuse when env lacks it ---
+  // --- Test 17: hook input session metadata ---
   const inputSessionId = 'input-session-123';
   clearState(sessionIdForStateFile(inputSessionId));
   if (test('reuses state when session_id is only present in hook input', () => {
