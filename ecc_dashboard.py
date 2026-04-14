@@ -94,7 +94,7 @@ def load_skills(project_path: str) -> List[Dict]:
                                 if line.startswith('# '):
                                     description = line[2:].strip()[:100]
                                     break
-                    except:
+                    except Exception:
                         pass
                 
                 # Determine category
@@ -168,7 +168,7 @@ def load_commands(project_path: str) -> List[Dict]:
                             if line.startswith('# '):
                                 description = line[2:].strip()
                                 break
-                except:
+                except Exception:
                     pass
                 
                 commands.append({
@@ -262,7 +262,7 @@ class ECCDashboard(tk.Tk):
         try:
             self.icon_image = tk.PhotoImage(file='assets/images/ecc-logo.png')
             self.iconphoto(True, self.icon_image)
-        except:
+        except Exception:
             pass
         
         self.minsize(800, 600)
@@ -326,7 +326,7 @@ class ECCDashboard(tk.Tk):
             self.logo_image = tk.PhotoImage(file='assets/images/ecc-logo.png')
             self.logo_image = self.logo_image.subsample(2, 2)
             ttk.Label(header_frame, image=self.logo_image).pack(side=tk.LEFT, padx=(0, 10))
-        except:
+        except Exception:
             pass
         
         self.title_label = ttk.Label(header_frame, text="ECC Dashboard", font=('Open Sans', 18, 'bold'))
@@ -880,21 +880,21 @@ Project: github.com/affaan-m/everything-claude-code"""
         def update_widget_colors(widget):
             try:
                 widget.configure(background=bg_color)
-            except:
+            except Exception:
                 pass
             for child in widget.winfo_children():
                 try:
                     child.configure(background=bg_color)
-                except:
+                except Exception:
                     pass
                 try:
                     update_widget_colors(child)
-                except:
+                except Exception:
                     pass
-        
+
         try:
             update_widget_colors(self)
-        except:
+        except Exception:
             pass
         
         self.update()
