@@ -270,8 +270,8 @@ class ECCDashboard(tk.Tk):
         try:
             self.icon_image = tk.PhotoImage(file='assets/images/ecc-logo.png')
             self.iconphoto(True, self.icon_image)
-        except:
-            pass
+        except tk.TclError:
+            pass  # Icon file missing/corrupted - non-critical
         
         self.minsize(800, 600)
         
@@ -799,12 +799,26 @@ Project: github.com/affaan-m/everything-claude-code"""
         """Open terminal at project path"""
         import subprocess
         path = self.path_entry.get()
+        
+        # Validate path exists and is a directory
+        if not os.path.isdir(path):
+            messagebox.showerror("Error", "Invalid directory path")
+            return
+        
         if os.name == 'nt':  # Windows
             subprocess.Popen(['cmd', '/c', 'start', 'cmd', '/k', f'cd /d "{path}"'])
         elif os.uname().sysname == 'Darwin':  # macOS
             subprocess.Popen(['open', '-a', 'Terminal', path])
         else:  # Linux
-            subprocess.Popen(['x-terminal-emulator', '-e', f'cd {path}'])
+            # Use --working-directory if supported, otherwise validate shell command
+            try:
+                subprocess.Popen(['x-terminal-emulator', '--working-directory', path])
+            except FileNotFoundError:
+                # Fallback: use bash with -c and validate no metacharacters
+                if any(c in path for c in ';|&$`'):
+                    messagebox.showerror("Error", "Invalid characters in path")
+                    return
+                subprocess.Popen(['x-terminal-emulator', '-e', f'cd "{path}"'])
     
     def open_readme(self):
         """Open README in default browser/reader"""
