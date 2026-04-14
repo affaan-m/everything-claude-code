@@ -221,6 +221,38 @@ function runHookWithSessionId(input, sessionId, env = {}) {
   };
 }
 
+function runBashHookWithInputSession(input, metadata = {}, env = {}) {
+  const rawInput = typeof input === 'string'
+    ? input
+    : JSON.stringify({
+      ...metadata,
+      ...input
+    });
+  const result = spawnSync('node', [
+    runner,
+    'pre:bash:gateguard-fact-force',
+    'scripts/hooks/gateguard-fact-force.js',
+    'standard,strict'
+  ], {
+    input: rawInput,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      ECC_HOOK_PROFILE: 'standard',
+      GATEGUARD_STATE_DIR: stateDir,
+      ...env
+    },
+    timeout: 15000,
+    stdio: ['pipe', 'pipe', 'pipe']
+  });
+
+  return {
+    code: Number.isInteger(result.status) ? result.status : 1,
+    stdout: result.stdout || '',
+    stderr: result.stderr || ''
+  };
+}
+
 function parseOutput(stdout) {
   try {
     return JSON.parse(stdout);
@@ -624,6 +656,44 @@ function runTests() {
     const persisted = sessionStateFile(sessionIdForStateFile(longSessionId));
     assert.ok(fs.existsSync(persisted), 'sanitized long-session state file should be created');
     assert.ok(path.basename(persisted).length < 255, 'state filename should stay below common filesystem limits');
+  })) passed++; else failed++;
+
+  // --- Test 17: hook input session metadata drives state reuse when env lacks it ---
+  const inputSessionId = 'input-session-123';
+  clearState(sessionIdForStateFile(inputSessionId));
+  if (test('reuses state when session_id is only present in hook input', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'echo "hello"' }
+    };
+    const metadata = {
+      session_id: inputSessionId,
+      transcript_path: '/tmp/transcripts/input-session-123.jsonl',
+      cwd: '/tmp/input-session-project'
+    };
+
+    const result1 = runBashHookWithInputSession(input, metadata, {
+      CLAUDE_SESSION_ID: '',
+      ECC_SESSION_ID: '',
+      CLAUDE_TRANSCRIPT_PATH: ''
+    });
+    assert.strictEqual(result1.code, 0, 'first hook-input session call exit code should be 0');
+    const output1 = parseOutput(result1.stdout);
+    assert.ok(output1, 'first hook-input session call should produce JSON output');
+    assert.strictEqual(output1.hookSpecificOutput.permissionDecision, 'deny');
+
+    const result2 = runBashHookWithInputSession(input, metadata, {
+      CLAUDE_SESSION_ID: '',
+      ECC_SESSION_ID: '',
+      CLAUDE_TRANSCRIPT_PATH: ''
+    });
+    assert.strictEqual(result2.code, 0, 'second hook-input session call exit code should be 0');
+    const output2 = parseOutput(result2.stdout);
+    assert.ok(output2, 'second hook-input session call should produce valid JSON output');
+    if (output2.hookSpecificOutput) {
+      assert.notStrictEqual(output2.hookSpecificOutput.permissionDecision, 'deny',
+        'hook input session metadata should map to the same state file on retry');
+    }
   })) passed++; else failed++;
 
   // Cleanup only the temp directory created by this test file.
