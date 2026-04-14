@@ -35,7 +35,8 @@ const { sanitizeSessionId } = require('../lib/utils');
 const STATE_DIR = process.env.GATEGUARD_STATE_DIR || path.join(process.env.HOME || process.env.USERPROFILE || '/tmp', '.gateguard');
 
 function hashSessionKey(prefix, value) {
-  return prefix + crypto.createHash('sha1').update(value).digest('hex').slice(0, 16);
+  return prefix + crypto.createHash('sha1').update(String(value)).digest('hex').slice(0, 16);
+}
 }
 
 function sessionIdForStateFile(sessionId) {
