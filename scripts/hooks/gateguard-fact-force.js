@@ -47,9 +47,19 @@ function sessionIdForStateFile(sessionId) {
   return hashSessionKey('sid-', raw || 'empty-session');
 }
 
+function firstMeaningfulSessionId(...candidates) {
+  for (const candidate of candidates) {
+    if (sanitizeSessionId(candidate)) return candidate;
+  }
+  return null;
+}
+
 function resolveSessionId() {
-  if (process.env.CLAUDE_SESSION_ID) return process.env.CLAUDE_SESSION_ID;
-  if (process.env.ECC_SESSION_ID) return process.env.ECC_SESSION_ID;
+  const explicitSessionId = firstMeaningfulSessionId(
+    process.env.CLAUDE_SESSION_ID,
+    process.env.ECC_SESSION_ID
+  );
+  if (explicitSessionId) return explicitSessionId;
 
   if (process.env.CLAUDE_TRANSCRIPT_PATH) {
     return hashSessionKey('transcript-', process.env.CLAUDE_TRANSCRIPT_PATH);
