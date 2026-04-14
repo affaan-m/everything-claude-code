@@ -174,7 +174,7 @@ function runTests() {
     assert.ok(output, 'should produce JSON output');
     assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny');
     assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('creating'));
-    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('call this new file'));
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('instruction'));
   })) passed++; else failed++;
 
   // --- Test 4: denies destructive Bash, allows retry ---
