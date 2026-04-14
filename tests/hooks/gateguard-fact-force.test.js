@@ -138,6 +138,8 @@ function runTests() {
     assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('Fact-Forcing Gate'));
     assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('import/require'));
     assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('/src/app.js'));
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('conflict'), 'should include conflict detection step');
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('instruction takes priority'), 'should include instruction-priority directive');
   })) passed++; else failed++;
 
   // --- Test 2: allows second Edit on same file ---
@@ -175,6 +177,9 @@ function runTests() {
     assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny');
     assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('creating'));
     assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('instruction'));
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('call this new file'), 'should require caller identification');
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('conflict'), 'should include conflict detection step');
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('instruction takes priority'), 'should include instruction-priority directive');
   })) passed++; else failed++;
 
   // --- Test 4: denies destructive Bash, allows retry ---

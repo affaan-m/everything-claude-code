@@ -150,9 +150,10 @@ function writeGateMsg(filePath) {
     `Before creating ${safe}, present these facts:`,
     '',
     '1. Quote the user\'s current instruction verbatim',
-    '2. Confirm no existing file serves the same purpose (use Glob)',
-    '3. If the existing code\'s patterns conflict with the user\'s instruction, state the conflict explicitly. When in conflict, the user\'s instruction takes priority.',
-    '4. If this file reads/writes data files, check one real record and verify field names, structure, and date format match your implementation (use redacted or synthetic values, not raw production data)',
+    '2. Name the file(s) and line(s) that will call this new file',
+    '3. Confirm no existing file serves the same purpose (use Glob)',
+    '4. If the existing code\'s patterns conflict with the user\'s instruction, state the conflict explicitly. When in conflict, the user\'s instruction takes priority.',
+    '5. If this file reads/writes data files, check one real record and verify field names, structure, and date format match your implementation (use redacted or synthetic values, not raw production data)',
     '',
     'Present the facts, then retry the same operation.'
   ].join('\n');
