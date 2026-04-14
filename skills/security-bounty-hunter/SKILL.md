@@ -189,10 +189,10 @@ the dangerous sink, and what an attacker can achieve]
 ### WRONG: Reporting local-only findings
 
 ```python
-# DO NOT report pickle deserialization as a bounty
-# Platforms mark this "informative" -- requires local file access
-torch.load(model_path)  # Not a bounty
-pickle.loads(data)       # Only a bounty if data comes from HTTP request
+# Pickle/torch.load deserialization from LOCAL files is out-of-scope
+# But if attacker controls the serialized data via HTTP, it IS a valid RCE bounty
+torch.load(model_path)          # NOT a bounty -- local file, no attacker control
+pickle.loads(request.data)      # IS a bounty -- attacker-controlled bytes over HTTP
 ```
 
 ### WRONG: Reporting without verifying the code path
