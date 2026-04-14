@@ -132,7 +132,7 @@ The system automatically detects your current project:
 3. **`git rev-parse --show-toplevel`** -- fallback using repo path (machine-specific)
 4. **Global fallback** -- if no project is detected, instincts go to global scope
 
-Each project gets a 12-character hash ID (e.g., `a1b2c3d4e5f6`). A registry file at `~/.claude/homunculus/projects.json` maps IDs to human-readable names.
+Each project gets a 12-character hash ID (e.g., `a1b2c3d4e5f6`). A registry file at `${XDG_DATA_HOME:-$HOME/.local/share}/ecc-homunculus/projects.json` maps IDs to human-readable names.
 
 ## Quick Start
 
@@ -191,8 +191,8 @@ Add to your `~/.claude/settings.json`.
 The system creates directories automatically on first use, but you can also create them manually:
 
 ```bash
-# Global directories
-mkdir -p ~/.claude/homunculus/{instincts/{personal,inherited},evolved/{agents,skills,commands},projects}
+# Global directories (default path; set CLV2_HOMUNCULUS_DIR to override)
+mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/ecc-homunculus"/{instincts/{personal,inherited},evolved/{agents,skills,commands},projects}
 
 # Project directories are auto-created when the hook first runs in a git repo
 ```
@@ -242,10 +242,38 @@ Edit `config.json` to control the background observer:
 
 Other behavior (observation capture, instinct thresholds, project scoping, promotion criteria) is configured via code defaults in `instinct-cli.py` and `observe.sh`.
 
-## File Structure
+## Data Location
+
+Observer state (config, observations, instincts, registry) lives in:
 
 ```
-~/.claude/homunculus/
+${CLV2_HOMUNCULUS_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/ecc-homunculus}
+```
+
+Resolution order:
+
+1. `CLV2_HOMUNCULUS_DIR` if set (absolute path override).
+2. `$XDG_DATA_HOME/ecc-homunculus` if `XDG_DATA_HOME` is set.
+3. `$HOME/.local/share/ecc-homunculus` otherwise.
+
+The data directory used to live at `~/.claude/homunculus/`. It moved out because Claude Code has a hardcoded sensitive-path guard on `~/.claude/**` that blocks `Write` in `--print` mode (including the Haiku observer subprocess), so instincts could not be written back.
+
+### Migrating from `~/.claude/homunculus`
+
+Run once, after exiting all Claude Code sessions:
+
+```bash
+bash skills/continuous-learning-v2/scripts/migrate-homunculus.sh
+```
+
+The script is idempotent, refuses to run while a local observer-loop.sh is active, and refuses to overwrite a destination that already has content. If `CLV2_CONFIG` in `~/.claude/settings.json` still points into the old path, the script prints an advisory -- it does not edit `settings.json`.
+
+## File Structure
+
+Resolved at runtime: `${CLV2_HOMUNCULUS_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/ecc-homunculus}`.
+
+```
+<homunculus-dir>/
 +-- identity.json           # Your profile, technical level
 +-- projects.json           # Registry: project hash -> name/path/remote
 +-- observations.jsonl      # Global observations (fallback)
@@ -341,7 +369,7 @@ Hooks fire **100% of the time**, deterministically. This means:
 ## Backward Compatibility
 
 v2.1 is fully compatible with v2.0 and v1:
-- Existing global instincts in `~/.claude/homunculus/instincts/` still work as global instincts
+- Existing global instincts in `~/.claude/homunculus/instincts/` still work as global instincts (run `scripts/migrate-homunculus.sh` once to move them to the new default; see "Data Location")
 - Existing `~/.claude/skills/learned/` skills from v1 still work
 - Stop hook still runs (but now also feeds into v2)
 - Gradual migration: run both in parallel
