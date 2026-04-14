@@ -1,0 +1,11 @@
+{
+  "name": "everything-claude-code",
+  "private": true,
+  "description": "ECC marketplace — modular Claude Code plugins split by concern",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node tests/run-all.js"
+  }
+}
