@@ -89,13 +89,38 @@ async function main() {
 
   if (hookModule && typeof hookModule.run === 'function') {
     try {
-      const output = hookModule.run(raw);
-      if (output !== null && output !== undefined) process.stdout.write(output);
+      // run() expects a parsed hook-input object (e.g. input.tool_input.file_path),
+      // not the raw JSON string. Parsing here aligns the require-mode behavior
+      // with the stdin-fallback path used by spawnSync hooks.
+      const input = raw.trim() ? JSON.parse(raw) : {};
+      const output = hookModule.run(input);
+
+      // Documented object-shaped return: { exitCode, stderr?, stdout? }
+      // Required so hooks like pre:config-protection can BLOCK with exit 2.
+      if (output && typeof output === 'object' && !Buffer.isBuffer(output)) {
+        if (output.stderr) {
+          const msg = output.stderr;
+          process.stderr.write(msg.endsWith('\n') ? msg : msg + '\n');
+        }
+        process.stdout.write(typeof output.stdout === 'string' ? output.stdout : raw);
+        const code = Number.isInteger(output.exitCode) ? output.exitCode : 0;
+        process.exit(code);
+      }
+
+      // Legacy string/Buffer return: write directly, exit 0
+      if (typeof output === 'string' || Buffer.isBuffer(output)) {
+        process.stdout.write(output);
+        process.exit(0);
+      }
+
+      // null/undefined/other: pass-through raw, non-blocking exit
+      process.stdout.write(raw);
+      process.exit(0);
     } catch (runErr) {
       process.stderr.write(`[Hook] run() error for ${hookId}: ${runErr.message}\n`);
       process.stdout.write(raw);
+      process.exit(0);
     }
-    process.exit(0);
   }
 
   // Legacy path: spawn a child Node process for hooks without run() export
