@@ -1889,6 +1889,33 @@ async function runTests() {
   else failed++;
 
   if (
+    test('hooks.json consolidates Bash hooks into one pre and one post dispatcher', () => {
+      const hooksPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
+      const hooks = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
+
+      const preBash = hooks.hooks.PreToolUse.filter(entry => entry.matcher === 'Bash');
+      const postBash = hooks.hooks.PostToolUse.filter(entry => entry.matcher === 'Bash');
+
+      assert.strictEqual(preBash.length, 1, 'Should have exactly one PreToolUse Bash dispatcher');
+      assert.strictEqual(postBash.length, 1, 'Should have exactly one PostToolUse Bash dispatcher');
+      assert.strictEqual(preBash[0].id, 'pre:bash:dispatcher');
+      assert.strictEqual(postBash[0].id, 'post:bash:dispatcher');
+
+      const preCommand = Array.isArray(preBash[0].hooks[0].command)
+        ? preBash[0].hooks[0].command.join(' ')
+        : preBash[0].hooks[0].command;
+      const postCommand = Array.isArray(postBash[0].hooks[0].command)
+        ? postBash[0].hooks[0].command.join(' ')
+        : postBash[0].hooks[0].command;
+
+      assert.ok(preCommand.includes('pre-bash-dispatcher.js'), 'PreToolUse Bash hook should use the pre dispatcher');
+      assert.ok(postCommand.includes('post-bash-dispatcher.js'), 'PostToolUse Bash hook should use the post dispatcher');
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
     test('SessionEnd marker hook is async and cleanup-safe', () => {
       const hooksPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
       const hooks = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));

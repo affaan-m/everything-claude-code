@@ -30,19 +30,11 @@ const { spawnSync } = require('child_process');
 
 const MAX_STDIN = 1024 * 1024; // 1MB limit
 let data = '';
-process.stdin.setEncoding('utf8');
 
-process.stdin.on('data', chunk => {
-  if (data.length < MAX_STDIN) {
-    const remaining = MAX_STDIN - data.length;
-    data += chunk.substring(0, remaining);
-  }
-});
-
-process.stdin.on('end', () => {
+function run(rawInput) {
   let input;
   try {
-    input = JSON.parse(data);
+    input = typeof rawInput === 'string' ? JSON.parse(rawInput) : rawInput;
     const cmd = input.tool_input?.command || '';
 
     // Detect dev server commands: npm run dev, pnpm dev, yarn dev, bun run dev
@@ -79,10 +71,27 @@ process.stdin.on('end', () => {
         // else: tmux not found, pass through original command unchanged
       }
     }
-    process.stdout.write(JSON.stringify(input));
+
+    return JSON.stringify(input);
   } catch {
     // Invalid input — pass through original data unchanged
-    process.stdout.write(data);
+    return typeof rawInput === 'string' ? rawInput : JSON.stringify(rawInput);
   }
-  process.exit(0);
-});
+}
+
+if (require.main === module) {
+  process.stdin.setEncoding('utf8');
+  process.stdin.on('data', chunk => {
+    if (data.length < MAX_STDIN) {
+      const remaining = MAX_STDIN - data.length;
+      data += chunk.substring(0, remaining);
+    }
+  });
+
+  process.stdin.on('end', () => {
+    process.stdout.write(run(data));
+    process.exit(0);
+  });
+}
+
+module.exports = { run };

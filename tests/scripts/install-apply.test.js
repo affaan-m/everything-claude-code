@@ -361,23 +361,27 @@ function runTests() {
       const claudeRoot = path.join(homeDir, '.claude');
       const installedHooks = readJson(path.join(claudeRoot, 'hooks', 'hooks.json'));
 
-      const installedAutoTmuxEntry = installedHooks.hooks.PreToolUse.find(entry => entry.id === 'pre:bash:auto-tmux-dev');
-      assert.ok(installedAutoTmuxEntry, 'hooks/hooks.json should include the auto tmux hook');
-      assert.ok(Array.isArray(installedAutoTmuxEntry.hooks[0].command), 'hooks/hooks.json should install argv-form commands for cross-platform safety');
+      const installedBashDispatcherEntry = installedHooks.hooks.PreToolUse.find(entry => entry.id === 'pre:bash:dispatcher');
+      assert.ok(installedBashDispatcherEntry, 'hooks/hooks.json should include the consolidated Bash dispatcher hook');
+      assert.ok(Array.isArray(installedBashDispatcherEntry.hooks[0].command), 'hooks/hooks.json should install argv-form commands for cross-platform safety');
       assert.ok(
-        installedAutoTmuxEntry.hooks[0].command[0] === 'node' && installedAutoTmuxEntry.hooks[0].command[1] === '-e',
+        installedBashDispatcherEntry.hooks[0].command[0] === 'node' && installedBashDispatcherEntry.hooks[0].command[1] === '-e',
         'hooks/hooks.json should use the inline node bootstrap contract'
       );
       assert.ok(
-        installedAutoTmuxEntry.hooks[0].command.some(part => String(part).includes('plugin-hook-bootstrap.js')),
+        installedBashDispatcherEntry.hooks[0].command.some(part => String(part).includes('plugin-hook-bootstrap.js')),
         'hooks/hooks.json should route plugin-managed hooks through the shared bootstrap'
       );
       assert.ok(
-        installedAutoTmuxEntry.hooks[0].command.some(part => String(part).includes('CLAUDE_PLUGIN_ROOT')),
+        installedBashDispatcherEntry.hooks[0].command.some(part => String(part).includes('CLAUDE_PLUGIN_ROOT')),
         'hooks/hooks.json should still consult CLAUDE_PLUGIN_ROOT for runtime resolution'
       );
       assert.ok(
-        !installedAutoTmuxEntry.hooks[0].command.some(part => String(part).includes('${CLAUDE_PLUGIN_ROOT}')),
+        installedBashDispatcherEntry.hooks[0].command.some(part => String(part).includes('pre-bash-dispatcher.js')),
+        'hooks/hooks.json should point the Bash preflight contract at the consolidated dispatcher'
+      );
+      assert.ok(
+        !installedBashDispatcherEntry.hooks[0].command.some(part => String(part).includes('${CLAUDE_PLUGIN_ROOT}')),
         'hooks/hooks.json should not retain raw CLAUDE_PLUGIN_ROOT shell placeholders after install'
       );
     } finally {
