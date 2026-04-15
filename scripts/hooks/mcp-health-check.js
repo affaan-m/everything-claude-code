@@ -315,12 +315,19 @@ function probeCommandServer(serverName, config) {
       resolve(result);
     }
 
+    // On Windows, commands like 'npx' are actually 'npx.cmd' batch files that
+    // require shell expansion to resolve. However, absolute paths (e.g.
+    // 'C:\Program Files\nodejs\node.exe') must NOT use shell mode because
+    // cmd.exe misparses paths containing spaces. Only enable shell for
+    // non-absolute commands that need PATH resolution.
+    const needsShell = process.platform === 'win32' && !path.isAbsolute(command);
     let child;
     try {
       child = spawn(command, args, {
         env: mergedEnv,
         cwd: process.cwd(),
-        stdio: ['pipe', 'ignore', 'pipe']
+        stdio: ['pipe', 'ignore', 'pipe'],
+        shell: needsShell
       });
     } catch (error) {
       finish({
