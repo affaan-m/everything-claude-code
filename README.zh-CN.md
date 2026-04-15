@@ -162,7 +162,7 @@ npx ecc-install typescript
 /plugin list ecc@ecc
 ```
 
-**完成！** 你现在可以使用 47 个代理、181 个技能和 79 个命令。
+**完成！** 你现在可以使用 49 个代理、181 个技能和 79 个命令。
 
 ### multi-* 命令需要额外配置
 
@@ -237,7 +237,7 @@ everything-claude-code/
 |   |-- plugin.json         # 插件元数据与组件路径
 |   |-- marketplace.json    # 用于 /plugin marketplace add 的自托管应用商店目录
 |
-|-- agents/           # 36 个专用子智能体，用于任务委派
+|-- agents/           # 49 个专用子智能体，用于任务委派
 |   |-- planner.md           # 功能实现规划
 |   |-- architect.md         # 系统架构设计决策
 |   |-- tdd-guide.md         # 测试驱动开发
