@@ -102,7 +102,7 @@
 /plugin marketplace add affaan-m/everything-claude-code
 
 # 安装插件
-/plugin install ecc@ecc
+/plugin install everything-claude-code
 ```
 
 ### 第二步：安装规则（必需）
@@ -159,7 +159,7 @@ npx ecc-install typescript
 # /plan "添加用户认证"
 
 # 查看可用命令
-/plugin list ecc@ecc
+/plugin list everything-claude-code@everything-claude-code
 ```
 
 **完成！** 你现在可以使用 47 个代理、181 个技能和 79 个命令。
@@ -546,7 +546,7 @@ Claude Code v2.1+ 会**按照约定自动加载**已安装插件中的 `hooks/ho
 /plugin marketplace add affaan-m/everything-claude-code
 
 # 安装插件
-/plugin install ecc@ecc
+/plugin install everything-claude-code
 ```
 
 或直接添加到你的 `~/.claude/settings.json`：
@@ -562,7 +562,7 @@ Claude Code v2.1+ 会**按照约定自动加载**已安装插件中的 `hooks/ho
     }
   },
   "enabledPlugins": {
-    "ecc@ecc": true
+    "everything-claude-code@everything-claude-code": true
   }
 }
 ```

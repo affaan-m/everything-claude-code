@@ -125,7 +125,7 @@ Bu repository yalnızca ham kodu içerir. Rehberler her şeyi açıklıyor.
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # Plugin'i kur
-/plugin install ecc@ecc
+/plugin install everything-claude-code
 ```
 
 ### Adım 2: Rule'ları Kurun (Gerekli)
@@ -170,7 +170,7 @@ Manuel kurulum talimatları için `rules/` klasöründeki README'ye bakın.
 # /plan "Kullanıcı kimlik doğrulaması ekle"
 
 # Mevcut command'ları kontrol edin
-/plugin list ecc@ecc
+/plugin list everything-claude-code@everything-claude-code
 ```
 
 **Bu kadar!** Artık 28 agent, 116 skill ve 59 command'a erişiminiz var.
@@ -352,7 +352,7 @@ Nereden başlayacağınızdan emin değil misiniz? Bu hızlı referansı kullan�
 <summary><b>Hangi agent/command'ların kurulu olduğunu nasıl kontrol ederim?</b></summary>
 
 ```bash
-/plugin list ecc@ecc
+/plugin list everything-claude-code@everything-claude-code
 ```
 
 Bu, plugin'den mevcut tüm agent'ları, command'ları ve skill'leri gösterir.
