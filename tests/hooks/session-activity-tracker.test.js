@@ -366,7 +366,7 @@ function runTests() {
     const input = {
       tool_name: 'Bash',
       tool_input: {
-        command: 'curl --token abc123 -H "Authorization: Bearer topsecret" https://example.com',
+        command: 'curl --token TEST_TOKEN_PLACEHOLDER -H "Authorization: Bearer TEST_BEARER_PLACEHOLDER" https://example.com',
       },
       tool_output: { output: 'done' },
     };
@@ -382,11 +382,11 @@ function runTests() {
     const row = JSON.parse(fs.readFileSync(metricsFile, 'utf8').trim());
     assert.strictEqual(row.session_id, 'ecc-session-1');
     assert.ok(row.input_summary.includes('<REDACTED>'));
-    assert.ok(!row.input_summary.includes('abc123'));
-    assert.ok(!row.input_summary.includes('topsecret'));
+    assert.ok(!row.input_summary.includes('TEST_TOKEN_PLACEHOLDER'));
+    assert.ok(!row.input_summary.includes('TEST_BEARER_PLACEHOLDER'));
     assert.ok(row.input_params_json.includes('<REDACTED>'));
-    assert.ok(!row.input_params_json.includes('abc123'));
-    assert.ok(!row.input_params_json.includes('topsecret'));
+    assert.ok(!row.input_params_json.includes('TEST_TOKEN_PLACEHOLDER'));
+    assert.ok(!row.input_params_json.includes('TEST_BEARER_PLACEHOLDER'));
 
     fs.rmSync(tmpHome, { recursive: true, force: true });
   }) ? passed++ : failed++);
