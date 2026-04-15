@@ -363,8 +363,8 @@ v2.1 与 v2.0 和 v1 完全兼容：
 
 ## 相关链接
 
-* [技能创建器](https://skill-creator.app) - 从仓库历史生成本能
-* Homunculus - 启发了 v2 基于本能的架构的社区项目（原子观察、置信度评分、本能进化管道）
+* [ECC-Tools GitHub 应用](https://github.com/apps/ecc-tools) - 从仓库历史生成本能
+* Homunculus - 启发 v2 本能架构的社区项目（原子观察、置信度评分、本能进化流程）
 * [长篇指南](https://x.com/affaanmustafa/status/2014040193557471352) - 持续学习部分
 
 ***

@@ -44,33 +44,33 @@ python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py import <
 ## 导入过程
 
 ```
- 从 team-instincts.yaml 导入本能
+ Importing instincts from: team-instincts.yaml
 ================================================
 
-发现 12 个待导入的本能。
+Found 12 instincts to import.
 
-正在分析冲突...
+Analyzing conflicts...
 
-## 新本能 (8)
-这些将被添加：
-  ✓ use-zod-validation (置信度: 0.7)
-  ✓ prefer-named-exports (置信度: 0.65)
-  ✓ test-async-functions (置信度: 0.8)
+## New Instincts (8)
+These will be added:
+  ✓ use-zod-validation (confidence: 0.7)
+  ✓ prefer-named-exports (confidence: 0.65)
+  ✓ test-async-functions (confidence: 0.8)
   ...
 
-## 重复本能 (3)
-已存在类似本能：
+## Duplicate Instincts (3)
+Already have similar instincts:
   WARNING: prefer-functional-style
-     本地: 0.8 置信度, 12 次观察
-     导入: 0.7 置信度
-     → 保留本地 (置信度更高)
+     Local: 0.8 confidence, 12 observations
+     Import: 0.7 confidence
+     → Keep local (higher confidence)
 
   WARNING: test-first-workflow
-     本地: 0.75 置信度
-     导入: 0.9 置信度
-     → 更新为导入 (置信度更高)
+     Local: 0.75 confidence
+     Import: 0.9 confidence
+     → Update to import (higher confidence)
 
-导入 8 个新的，更新 1 个？
+Import 8 new, update 1?
 ```
 
 ## 合并行为
@@ -107,9 +107,9 @@ project_name: "my-project"
 ```
 PASS: 导入完成！
 
-新增：8 项本能
-更新：1 项本能
-跳过：3 项本能（已存在同等或更高置信度的版本）
+新增：8 个本能
+更新：1 个本能
+跳过：3 个本能（已存在同等或更高置信度的版本）
 
 新本能已保存至：~/.claude/homunculus/instincts/inherited/
 

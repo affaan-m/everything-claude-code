@@ -131,23 +131,24 @@ return fmt.Errorf("get user %s: %w", userID, err)
 * 高：1
 * 中：0
 
-建议：FAIL: 在严重问题修复前阻止合并
+建议：失败：在关键问题解决前阻止合并
 
 ```
+
 ## 批准标准
 
 | 状态 | 条件 |
 |--------|-----------|
 | PASS: 批准 | 无 CRITICAL 或 HIGH 级别问题 |
-| WARNING: 警告 | 仅有 MEDIUM 级别问题 (谨慎合并) |
+| WARNING: 警告 | 仅存在 MEDIUM 级别问题（谨慎合并） |
 | FAIL: 阻止 | 发现 CRITICAL 或 HIGH 级别问题 |
 
 ## 与其他命令的集成
 
-- 首先使用 `/go-test` 确保测试通过
+- 首先使用 `/go-test` 以确保测试通过
 - 如果出现构建错误，请使用 `/go-build`
 - 提交前使用 `/go-review`
-- 对于非 Go 语言特定问题，请使用 `/code-review`
+- 对于非 Go 特定问题，请使用 `/code-review`
 
 ## 相关
 

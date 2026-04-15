@@ -4,22 +4,23 @@
 
 ## 使用方式
 
-`/harness-audit [scope] [--format text|json]`
+`/harness-audit [scope] [--format text|json] [--root path]`
 
-* `scope` (可选): `repo` (默认), `hooks`, `skills`, `commands`, `agents`
-* `--format`: 输出样式 (`text` 默认, `json` 用于自动化)
+* `scope`（可选）：`repo`（默认）、`hooks`、`skills`、`commands`、`agents`
+* `--format`：输出样式（默认为 `text`，`json` 用于自动化）
+* `--root`：审计特定路径而非当前工作目录
 
 ## 确定性引擎
 
 始终运行：
 
 ```bash
-node scripts/harness-audit.js <scope> --format <text|json>
+node scripts/harness-audit.js <scope> --format <text|json> [--root <path>]
 ```
 
 此脚本是评分和检查的单一事实来源。不要发明额外的维度或临时添加评分点。
 
-评分标准版本：`2026-03-16`。
+评分标准版本：`2026-03-30`。
 
 该脚本计算 7 个固定类别（每个类别标准化为 `0-10`）：
 
@@ -31,7 +32,8 @@ node scripts/harness-audit.js <scope> --format <text|json>
 6. 安全护栏
 7. 成本效率
 
-分数源自显式的文件/规则检查，并且对于同一提交是可复现的。
+分数源自显式的文件/规则检查，对于同一提交是可重现的。
+脚本默认审计当前工作目录，并自动检测目标是 ECC 仓库本身还是使用 ECC 的消费者项目。
 
 ## 输出约定
 

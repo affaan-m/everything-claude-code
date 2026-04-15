@@ -22,14 +22,14 @@ origin: ECC
 
 ### 1. 密钥管理
 
-#### FAIL: 绝对不要这样做
+#### 失败：切勿这样做
 
 ```typescript
 const apiKey = "sk-proj-xxxxx"  // Hardcoded secret
 const dbPassword = "password123" // In source code
 ```
 
-#### PASS: 始终这样做
+#### 通过：务必这样做
 
 ```typescript
 const apiKey = process.env.OPENAI_API_KEY
@@ -114,7 +114,7 @@ function validateFileUpload(file: File) {
 
 ### 3. SQL 注入防护
 
-#### FAIL: 绝对不要拼接 SQL
+#### 失败：切勿拼接 SQL
 
 ```typescript
 // DANGEROUS - SQL Injection vulnerability
@@ -122,7 +122,7 @@ const query = `SELECT * FROM users WHERE email = '${userEmail}'`
 await db.query(query)
 ```
 
-#### PASS: 始终使用参数化查询
+#### 通过：务必使用参数化查询
 
 ```typescript
 // Safe - parameterized query

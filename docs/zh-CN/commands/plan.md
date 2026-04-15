@@ -110,6 +110,8 @@ Agent (planner):
 * 如果出现构建错误，请使用 `/build-fix`
 * 使用 `/code-review` 来审查已完成的实现
 
+> **需要更深入的规划？** 使用 `/prp-plan` 进行集成 PRD、代码库分析和模式提取的产物生成规划。使用 `/prp-implement` 通过严格的验证循环来执行这些计划。
+
 ## 相关代理
 
 此命令调用由 ECC 提供的 `planner` 代理。

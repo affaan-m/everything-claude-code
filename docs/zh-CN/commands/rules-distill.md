@@ -1,11 +1,20 @@
 ---
-description: "扫描技能以提取跨领域原则并将其提炼为规则"
+description: 用于 rules-distill 技能的旧版斜杠入口垫片。建议直接使用该技能。
 ---
 
-# /rules-distill — 从技能中提炼原则为规则
+# 规则提炼（旧版适配层）
 
-扫描已安装的技能，提取跨领域原则，并将其提炼为规则。
+仅当您仍调用 `/rules-distill` 时使用此文件。当前维护的工作流程位于 `skills/rules-distill/SKILL.md`。
 
-## 流程
+## 规范用法
 
-遵循 `rules-distill` 技能中定义的完整工作流程。
+* 优先直接使用 `rules-distill` 技能。
+* 仅将此文件保留为兼容性入口点。
+
+## 参数
+
+`$ARGUMENTS`
+
+## 委托处理
+
+应用 `rules-distill` 技能，并遵循其清单、交叉阅读和裁决工作流程，而非在此处重复该逻辑。

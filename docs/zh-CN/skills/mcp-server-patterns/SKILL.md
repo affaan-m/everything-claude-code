@@ -8,6 +8,8 @@ origin: ECC
 
 模型上下文协议（MCP）允许 AI 助手调用工具、读取资源和使用来自服务器的提示。在构建或维护 MCP 服务器时使用此技能。SDK API 会演进；请查阅 Context7（查询文档 "MCP"）或官方 MCP 文档以获取当前的方法名称和签名。
 
+关于何时应将能力设计为规则、技能、MCP 或普通 CLI/API 工作流的更广泛路由决策，请参阅 [docs/capability-surface-selection.md](../../../capability-surface-selection.md)。
+
 ## 何时使用
 
 在以下情况时使用：实现新的 MCP 服务器、添加工具或资源、选择 stdio 与 HTTP、升级 SDK，或调试 MCP 注册和传输问题。

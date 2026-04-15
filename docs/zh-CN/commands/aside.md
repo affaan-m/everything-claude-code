@@ -79,9 +79,9 @@ What would you like to know? (ask your question and I'll answer without losing t
 在恢复之前清楚地标记出来：
 
 ```
-ASIDE: [answer]
+旁注：[答案]
 
-WARNING: Note: This answer suggests [issue] with the current approach. Want to address this before continuing, or proceed as planned?
+警告：注意：此答案指出了当前方法存在的[问题]。您希望在继续之前解决此问题，还是按计划进行？
 ```
 
 等待用户的决定后再恢复。
@@ -126,9 +126,9 @@ That's the short version. Want a deeper explanation after we finish [current tas
 记下所需的更改，但不要在旁述期间进行更改：
 
 ```
-ASIDE: [answer]
+旁注：[答案]
 
- Worth fixing: [what should be changed]. I'll flag this after the current task unless you want to address it now.
+值得修复：[应更改的内容]。除非您想现在处理，否则我将在当前任务后标记此问题。
 ```
 
 **问题含糊不清或过于笼统：**
@@ -151,15 +151,14 @@ network errors — 4xx errors are treated as final and not retried.
 ```
 
 ```
-User: /aside is the approach we're taking thread-safe?
+User: /aside 我们采用的方法是否是线程安全的？
 
-ASIDE: is the current approach thread-safe?
+ASIDE: 当前的方法是否是线程安全的？
 
-No — the shared cache object in src/cache/store.ts:34 is mutated without locking.
-Under concurrent requests this is a race condition. It's low risk in a single-process
-Node.js server but would be a real problem with worker threads or clustering.
+不是 — src/cache/store.ts:34 中的共享缓存对象在没有锁定的情况下被修改。
+在并发请求下，这是一个竞态条件。在单进程 Node.js 服务器中风险较低，但在使用工作线程或集群时，这将是一个真正的问题。
 
-WARNING: Note: This could affect the feature we're building. Want to address this now or continue and fix it in a follow-up?
+WARNING: 注意：这可能会影响我们正在构建的功能。是现在解决这个问题，还是继续并在后续修复？
 ```
 
 ***

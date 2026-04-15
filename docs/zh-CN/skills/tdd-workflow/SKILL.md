@@ -52,6 +52,20 @@ origin: ECC
 * 浏览器自动化
 * UI交互
 
+### 4. Git 检查点
+
+* 如果仓库使用 Git，在每个 TDD 阶段后创建一个检查点提交
+* 在工作流完成前，不要压缩或重写这些检查点提交
+* 每个检查点提交信息必须描述阶段和捕获的确切证据
+* 仅统计在当前活动分支上为当前任务创建的提交
+* 不要将来自其他分支、早期无关工作或遥远分支历史的提交视为有效的检查点证据
+* 在将检查点视为满足条件之前，请验证该提交可从活动分支上的当前 `HEAD` 到达，并且属于当前任务序列
+* 首选的紧凑工作流是：
+  * 一个提交用于添加失败的测试并验证 RED 状态
+  * 一个提交用于应用最小修复并验证 GREEN 状态
+  * 一个可选的提交用于完成重构
+* 如果测试提交明确对应 RED 状态且修复提交明确对应 GREEN 状态，则不需要单独的仅证据提交
+
 ## TDD 工作流步骤
 
 ### 步骤 1: 编写用户旅程
@@ -95,6 +109,31 @@ npm test
 # Tests should fail - we haven't implemented yet
 ```
 
+此步骤是强制性的，是所有生产变更的 RED 关卡。
+
+在修改业务逻辑或其他生产代码之前，您必须通过以下路径之一验证有效的 RED 状态：
+
+* 运行时 RED：
+  * 相关测试目标编译成功
+  * 新的或更改的测试实际被执行
+  * 结果是 RED
+* 编译时 RED：
+  * 新测试新实例化、引用或执行了有缺陷的代码路径
+  * 编译失败本身就是预期的 RED 信号
+* 在任何一种情况下，失败都是由预期的业务逻辑缺陷、未定义行为或缺失实现引起的
+* 失败不是仅由无关的语法错误、损坏的测试设置、缺失的依赖项或不相关的回归引起的
+
+仅编写但未编译和执行的测试不计为 RED。
+
+在确认此 RED 状态之前，请勿编辑生产代码。
+
+如果仓库使用 Git，请在此阶段验证后立即创建检查点提交。
+推荐的提交信息格式：
+
+* `test: add reproducer for <feature or bug>`
+* 如果重现器已编译并执行，并且因预期原因失败，此提交也可作为 RED 验证检查点
+* 在继续之前，请验证此检查点提交位于当前活动分支上
+
 ### 步骤 4: 实现代码
 
 编写最少的代码以使测试通过：
@@ -106,12 +145,25 @@ export async function searchMarkets(query: string) {
 }
 ```
 
+如果仓库使用 Git，请现在暂存最小修复，但将检查点提交推迟到步骤 5 中验证 GREEN 状态后再进行。
+
 ### 步骤 5: 再次运行测试
 
 ```bash
 npm test
 # Tests should now pass
 ```
+
+修复后重新运行相同的相关测试目标，并确认先前失败的测试现在为 GREEN。
+
+只有在获得有效的 GREEN 结果后，您才能继续进行重构。
+
+如果仓库使用 Git，请在验证 GREEN 状态后立即创建检查点提交。
+推荐的提交信息格式：
+
+* `fix: <feature or bug>`
+* 如果重新运行了相同的相关测试目标并通过，修复提交也可作为 GREEN 验证检查点
+* 在继续之前，请验证此检查点提交位于当前活动分支上
 
 ### 步骤 6: 重构
 
@@ -121,6 +173,12 @@ npm test
 * 改进命名
 * 优化性能
 * 增强可读性
+
+如果仓库使用 Git，请在重构完成且测试保持绿色后立即创建检查点提交。
+推荐的提交信息格式：
+
+* `refactor: clean up after <feature or bug> implementation`
+* 在认为 TDD 循环完成之前，请验证此检查点提交位于当前活动分支上
 
 ### 步骤 7: 验证覆盖率
 
@@ -335,28 +393,28 @@ npm run test:coverage
 
 ## 应避免的常见测试错误
 
-### FAIL: 错误：测试实现细节
+### 失败：错误：测试实现细节
 
 ```typescript
 // Don't test internal state
 expect(component.state.count).toBe(5)
 ```
 
-### PASS: 正确：测试用户可见的行为
+### 通过：正确：测试用户可见行为
 
 ```typescript
 // Test what users see
 expect(screen.getByText('Count: 5')).toBeInTheDocument()
 ```
 
-### FAIL: 错误：脆弱的定位器
+### 失败：错误：脆弱的定位器
 
 ```typescript
 // Breaks easily
 await page.click('.css-class-xyz')
 ```
 
-### PASS: 正确：语义化定位器
+### 通过：正确：语义化定位器
 
 ```typescript
 // Resilient to changes
@@ -364,7 +422,7 @@ await page.click('button:has-text("Submit")')
 await page.click('[data-testid="submit-button"]')
 ```
 
-### FAIL: 错误：没有测试隔离
+### 失败：错误：无测试隔离
 
 ```typescript
 // Tests depend on each other
@@ -372,7 +430,7 @@ test('creates user', () => { /* ... */ })
 test('updates same user', () => { /* depends on previous test */ })
 ```
 
-### PASS: 正确：独立的测试
+### 通过：正确：独立测试
 
 ```typescript
 // Each test sets up its own data

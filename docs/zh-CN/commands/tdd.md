@@ -1,128 +1,32 @@
 ---
-description: 强制执行测试驱动开发工作流。首先搭建接口，生成测试，然后实现最小化代码以通过测试。确保 80%+ 覆盖率。
+description: 用于tdd-workflow技能的旧版斜杠入口垫片。建议直接使用该技能。
 ---
 
-# TDD 命令
+# TDD 命令（旧版兼容层）
 
-此命令调用 **tdd-guide** 代理来强制执行测试驱动开发方法。
+仅当您仍调用 `/tdd` 时使用此命令。当前维护的工作流位于 `skills/tdd-workflow/SKILL.md`。
 
-## 此命令的作用
+## 规范使用方式
 
-1. **搭建接口** - 首先定义类型/接口
-2. **首先生成测试** - 编写失败的测试（红）
-3. **实现最小化代码** - 编写刚好足够的代码以通过测试（绿）
-4. **重构** - 改进代码，同时保持测试通过（重构）
-5. **验证覆盖率** - 确保 80%+ 的测试覆盖率
+* 优先直接使用 `tdd-workflow` 技能。
+* 仅将此文件保留为兼容性入口点。
 
-## 何时使用
+## 参数
 
-在以下情况下使用 `/tdd`：
+`$ARGUMENTS`
 
-* 实现新功能时
-* 添加新函数/组件时
-* 修复错误时（首先编写重现错误的测试）
-* 重构现有代码时
-* 构建关键业务逻辑时
+## 委托执行
 
-## 工作原理
+应用 `tdd-workflow` 技能。
 
-tdd-guide 代理将：
-
-1. 为输入/输出**定义接口**
-2. **编写将会失败的测试**（因为代码尚不存在）
-3. **运行测试**并验证它们因正确的原因而失败
-4. **编写最小化实现**以使测试通过
-5. **运行测试**并验证它们通过
-6. **重构**代码，同时保持测试通过
-7. **检查覆盖率**，如果低于 80% 则添加更多测试
-
-## TDD 循环
-
-```
-RED → GREEN → REFACTOR → REPEAT
-
-RED:      编写一个失败测试
-GREEN:    编写通过测试的最简代码
-REFACTOR: 改进代码，保持测试通过
-REPEAT:   开始下一个功能/场景
-```
-
-## 使用示例
+* 严格遵守 RED -> GREEN -> REFACTOR 流程。
+* 保持测试优先、覆盖率明确、检查点证据清晰。
+* 使用该技能作为当前维护的 TDD 主体，而非在此处重复编写操作手册。
+  })
 
 ````
-User: /tdd I need a function to calculate market liquidity score
 
-Agent (tdd-guide):
-# TDD Session: Market Liquidity Score Calculator
-
-## Step 1: Define Interface (SCAFFOLD)
-
-```typescript
-// lib/liquidity.ts
-export interface MarketData {
-  totalVolume: number
-  bidAskSpread: number
-  activeTraders: number
-  lastTradeTime: Date
-}
-
-export function calculateLiquidityScore(market: MarketData): number {
-  // TODO: Implementation
-  throw new Error('Not implemented')
-}
-````
-
-## 步骤 2：编写失败的测试（红）
-
-```typescript
-// lib/liquidity.test.ts
-import { calculateLiquidityScore } from './liquidity'
-
-describe('calculateLiquidityScore', () => {
-  it('should return high score for liquid market', () => {
-    const market = {
-      totalVolume: 100000,
-      bidAskSpread: 0.01,
-      activeTraders: 500,
-      lastTradeTime: new Date()
-    }
-
-    const score = calculateLiquidityScore(market)
-
-    expect(score).toBeGreaterThan(80)
-    expect(score).toBeLessThanOrEqual(100)
-  })
-
-  it('should return low score for illiquid market', () => {
-    const market = {
-      totalVolume: 100,
-      bidAskSpread: 0.5,
-      activeTraders: 2,
-      lastTradeTime: new Date(Date.now() - 86400000) // 1 day ago
-    }
-
-    const score = calculateLiquidityScore(market)
-
-    expect(score).toBeLessThan(30)
-    expect(score).toBeGreaterThanOrEqual(0)
-  })
-
-  it('should handle edge case: zero volume', () => {
-    const market = {
-      totalVolume: 0,
-      bidAskSpread: 0,
-      activeTraders: 0,
-      lastTradeTime: new Date()
-    }
-
-    const score = calculateLiquidityScore(market)
-
-    expect(score).toBe(0)
-  })
-})
-```
-
-## 步骤 3：运行测试 - 验证失败
+## Step 3: 运行测试 - 验证失败
 
 ```bash
 npm test lib/liquidity.test.ts
@@ -132,9 +36,9 @@ FAIL lib/liquidity.test.ts
     Error: Not implemented
 
 1 test failed, 0 passed
-```
+````
 
-PASS: 测试按预期失败。准备实施。
+通过：测试按预期失败。准备实现。
 
 ## 步骤 4：实现最小化代码（绿）
 
@@ -180,7 +84,7 @@ PASS lib/liquidity.test.ts
 3 tests passed
 ```
 
-PASS: 所有测试通过！
+通过：所有测试通过！
 
 ## 步骤 6：重构（改进）
 
@@ -237,7 +141,7 @@ PASS lib/liquidity.test.ts
 3 tests passed
 ```
 
-PASS: 重构完成，测试仍然通过！
+通过：重构完成，测试依然通过！
 
 ## 步骤 8：检查覆盖率
 
@@ -251,26 +155,27 @@ liquidity.ts   |   100   |   100    |   100   |   100
 Coverage: 100% PASS: (Target: 80%)
 ```
 
-PASS: TDD 会话完成！
+通过：TDD 会话完成！
 
 ```
+
 ## TDD 最佳实践
 
-**应做：**
-- PASS: 先写测试，再写实现
-- PASS: 运行测试并确认失败，再实现功能
-- PASS: 编写最少代码使测试通过
-- PASS: 仅在测试通过后进行重构
-- PASS: 添加边界情况和错误场景
-- PASS: 目标覆盖率 80% 以上（关键代码 100%）
+**应做事项：**
+- 通过：先编写测试，再实现功能
+- 通过：运行测试并确认失败后再实现
+- 通过：编写最少量代码使测试通过
+- 通过：仅在测试通过后进行重构
+- 通过：添加边界情况和错误场景
+- 通过：目标覆盖率 80% 以上（关键代码 100%）
 
-**不应做：**
-- FAIL: 先写实现再写测试
-- FAIL: 每次更改后跳过运行测试
-- FAIL: 一次性编写过多代码
-- FAIL: 忽略失败的测试
-- FAIL: 测试实现细节（应测试行为）
-- FAIL: 过度模拟（优先使用集成测试）
+**禁止事项：**
+- 失败：先实现功能再写测试
+- 失败：每次更改后跳过运行测试
+- 失败：一次性编写过多代码
+- 失败：忽略失败的测试
+- 失败：测试实现细节（应测试行为）
+- 失败：过度模拟（优先集成测试）
 
 ## 应包含的测试类型
 
@@ -284,7 +189,7 @@ PASS: TDD 会话完成！
 - API 端点
 - 数据库操作
 - 外部服务调用
-- 包含钩子的 React 组件
+- 带钩子的 React 组件
 
 **端到端测试**（使用 `/e2e` 命令）：
 - 关键用户流程
@@ -296,25 +201,25 @@ PASS: TDD 会话完成！
 - 所有代码**最低 80%**
 - **必须达到 100%** 的代码：
   - 财务计算
-  - 认证逻辑
+  - 身份验证逻辑
   - 安全关键代码
   - 核心业务逻辑
 
 ## 重要说明
 
-**强制要求**：测试必须在实现之前编写。TDD 循环是：
+**强制要求**：必须在实现前编写测试。TDD 循环如下：
 
 1. **红** - 编写失败的测试
 2. **绿** - 实现功能使测试通过
 3. **重构** - 改进代码
 
-切勿跳过红阶段。切勿在测试之前编写代码。
+切勿跳过红阶段。切勿在测试前编写代码。
 
 ## 与其他命令的集成
 
-- 首先使用 `/plan` 来了解要构建什么
+- 先使用 `/plan` 了解要构建的内容
 - 使用 `/tdd` 进行带测试的实现
-- 如果出现构建错误，请使用 `/build-fix`
+- 如果出现构建错误，使用 `/build-fix`
 - 使用 `/code-review` 审查实现
 - 使用 `/test-coverage` 验证覆盖率
 
@@ -322,7 +227,7 @@ PASS: TDD 会话完成！
 
 此命令调用由 ECC 提供的 `tdd-guide` 代理。
 
-相关的 `tdd-workflow` 技能也随 ECC 捆绑提供。
+相关的 `tdd-workflow` 技能也随 ECC 捆绑。
 
 对于手动安装，源文件位于：
 - `agents/tdd-guide.md`

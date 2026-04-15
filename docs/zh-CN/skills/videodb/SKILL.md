@@ -382,5 +382,3 @@ recent_visual = [
 
 此技能的参考材料在 `skills/videodb/reference/` 下本地提供。
 请使用上面的本地副本，而不是在运行时遵循外部存储库链接。
-
-**维护者：** [VideoDB](https://www.videodb.io/)

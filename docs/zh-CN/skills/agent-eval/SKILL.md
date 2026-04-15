@@ -18,10 +18,7 @@ tools: Read, Write, Edit, Bash, Grep, Glob
 
 ## 安装
 
-```bash
-# pinned to v0.1.0 — latest stable commit
-pip install git+https://github.com/joaquinhuigomez/agent-eval.git@6d062a2f5cda6ea443bf5d458d361892c04e749b
-```
+> **注意：** 在审查源代码后，从其仓库安装 agent-eval。
 
 ## 核心概念
 

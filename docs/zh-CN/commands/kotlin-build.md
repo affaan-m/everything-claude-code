@@ -47,9 +47,9 @@ description: 逐步修复 Kotlin/Gradle 构建错误、编译器警告和依赖�
 User: /kotlin-build
 
 Agent:
-# Kotlin Build Resolution
+# Kotlin 构建问题解决
 
-## Initial Diagnostics
+## 初始诊断
 
 ```bash
 $ ./gradlew build
@@ -58,81 +58,81 @@ e: src/main/kotlin/com/example/routes/UserRoutes.kt:42:9 Type mismatch: inferred
 e: src/main/kotlin/com/example/routes/UserRoutes.kt:58:5 'when' expression must be exhaustive
 ```
 
-Errors found: 3
+发现错误：3
 
-## Fix 1: Unresolved Reference
+## 修复 1: 未解析的引用
 
-File: src/main/kotlin/com/example/service/UserService.kt:25
-Error: Unresolved reference: UserRepository
-Cause: Missing import
+文件: src/main/kotlin/com/example/service/UserService.kt:25
+错误: Unresolved reference: UserRepository
+原因: 缺少导入
 
 ```kotlin
-// Added import
+// 添加导入
 import com.example.repository.UserRepository
 ```
 
 ```bash
 $ ./gradlew build
-# 2 errors remaining
+# 剩余 2 个错误
 ```
 
-## Fix 2: Type Mismatch
+## 修复 2: 类型不匹配
 
-File: src/main/kotlin/com/example/routes/UserRoutes.kt:42
-Error: Type mismatch: inferred type is String but Int was expected
+文件: src/main/kotlin/com/example/routes/UserRoutes.kt:42
+错误: Type mismatch: inferred type is String but Int was expected
 
 ```kotlin
-// Changed
+// 将
 val count = call.parameters["count"]
-// To
+// 改为
 val count = call.parameters["count"]?.toIntOrNull()
     ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid count")
 ```
 
 ```bash
 $ ./gradlew build
-# 1 error remaining
+# 剩余 1 个错误
 ```
 
-## Fix 3: Non-Exhaustive When
+## 修复 3: 非穷尽的 When 表达式
 
-File: src/main/kotlin/com/example/routes/UserRoutes.kt:58
-Error: 'when' expression must be exhaustive
+文件: src/main/kotlin/com/example/routes/UserRoutes.kt:58
+错误: 'when' expression must be exhaustive
 
 ```kotlin
-// Added missing branch
+// 添加缺失的分支
 when (user.role) {
     Role.ADMIN -> handleAdmin(user)
     Role.USER -> handleUser(user)
-    Role.MODERATOR -> handleModerator(user) // Added
+    Role.MODERATOR -> handleModerator(user) // 已添加
 }
 ```
 
 ```bash
 $ ./gradlew build
-# Build successful!
+# 构建成功！
 ```
 
-## Final Verification
+## 最终验证
 
 ```bash
 $ ./gradlew detekt
-# No issues
+# 无问题
 
 $ ./gradlew test
-# All tests passed
+# 所有测试通过
 ```
 
-## Summary
+## 总结
 
-| Metric | Count |
+| 指标 | 数量 |
 |--------|-------|
-| Build errors fixed | 3 |
-| Detekt issues fixed | 0 |
-| Files modified | 2 |
-| Remaining issues | 0 |
+| 已修复的构建错误 | 3 |
+| 已修复的 Detekt 问题 | 0 |
+| 修改的文件 | 2 |
+| 剩余问题 | 0 |
 
-Build Status: PASS: SUCCESS
+构建状态: PASS: SUCCESS
 ````
 
 ## 常见的已修复错误

@@ -1,51 +1,24 @@
 ---
-description: 启动 NanoClaw v2 — ECC 的持久、零依赖 REPL，具备模型路由、技能热加载、分支、压缩、导出和指标功能。
+description: 用于nanoclaw-repl技能的旧版斜杠入口垫片。建议直接使用该技能。
 ---
 
-# Claw 命令
+# Claw 命令（旧版适配层）
 
-启动一个具有持久化 Markdown 历史记录和操作控制的交互式 AI 代理会话。
+仅在出于肌肉记忆仍想使用 `/claw` 时使用此命令。维护中的实现位于 `skills/nanoclaw-repl/SKILL.md`。
 
-## 使用方法
+## 规范使用方式
 
-```bash
-node scripts/claw.js
-```
+* 优先直接使用 `nanoclaw-repl` 技能。
+* 仅将此文件作为兼容性入口点保留，同时逐步淘汰命令优先的使用方式。
 
-或通过 npm：
+## 参数
 
-```bash
-npm run claw
-```
+`$ARGUMENTS`
 
-## 环境变量
+## 委托处理
 
-| 变量 | 默认值 | 描述 |
-|----------|---------|-------------|
-| `CLAW_SESSION` | `default` | 会话名称（字母数字 + 连字符） |
-| `CLAW_SKILLS` | *(空)* | 启动时加载的以逗号分隔的技能列表 |
-| `CLAW_MODEL` | `sonnet` | 会话的默认模型 |
+应用 `nanoclaw-repl` 技能，并将响应重点放在操作或扩展 `scripts/claw.js` 上。
 
-## REPL 命令
-
-```text
-/help                          显示帮助信息
-/clear                         清除当前会话历史
-/history                       打印完整对话历史
-/sessions                      列出已保存的会话
-/model [name]                  显示/设置模型
-/load <skill-name>             热加载技能到上下文
-/branch <session-name>         分支当前会话
-/search <query>                跨会话搜索查询
-/compact                       压缩旧轮次，保留近期上下文
-/export <md|json|txt> [path]   导出会话
-/metrics                       显示会话指标
-exit                           退出
-```
-
-## 说明
-
-* NanoClaw 保持零依赖。
-* 会话存储在 `~/.claude/claw/<session>.md`。
-* 压缩会保留最近的回合并写入压缩头。
-* 导出支持 Markdown、JSON 回合和纯文本。
+* 如果用户想要运行它，使用 `node scripts/claw.js` 或 `npm run claw`。
+* 如果用户想要扩展它，请保持其零依赖和基于 Markdown 的会话模型。
+* 如果请求实际上是关于长期运行编排而非 NanoClaw 本身，则重定向到 `dmux-workflows` 或 `autonomous-agent-harness`。
