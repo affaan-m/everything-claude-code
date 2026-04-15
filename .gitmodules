@@ -1,0 +1,3 @@
+[submodule "original_ecc"]
+	path = original_ecc
+	url = git@github.com:affaan-m/everything-claude-code.git
