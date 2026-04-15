@@ -74,10 +74,13 @@ def build_file_open_launch(
     always passed as a separate argv entry, never interpolated into a shell string.
 
     Per-platform launcher choice:
-      - Windows (``os.name == 'nt'``): ``start`` is a cmd.exe builtin, not a .exe,
-        so ``Popen(['start', path])`` raises FileNotFoundError. We spawn cmd.exe
-        and pass ``start "" <path>`` — the empty string is the window-title slot
-        ``start`` requires whenever its first quoted argument is a path.
+      - Windows (``os.name == 'nt'``): invoke ``explorer.exe`` directly with the
+        path as a single argv entry. Explorer hands the file to ShellExecute
+        (same mechanism ``os.startfile`` uses under the hood) and — crucially —
+        avoids cmd.exe entirely, so path metacharacters like ``&`` / ``|`` / ``^``
+        are never interpreted as command separators. Earlier drafts that routed
+        through ``cmd.exe /c start "" <path>`` re-introduced cmd parsing on the
+        Windows branch; this does not.
       - macOS (``platform.system() == 'Darwin'``): ``xdg-open`` does not ship; the
         native handler is ``open``.
       - Linux / other POSIX: ``xdg-open`` is the freedesktop standard.
@@ -86,7 +89,7 @@ def build_file_open_launch(
     resolved_system_name = system_name or platform.system()
 
     if resolved_os_name == 'nt':
-        return (['cmd.exe', '/c', 'start', '', path], {})
+        return (['explorer.exe', path], {})
 
     if resolved_system_name == 'Darwin':
         return (['open', path], {})

@@ -114,7 +114,7 @@ print(json.dumps({'argv': argv, 'kwargs': kwargs}))
     assert.deepStrictEqual(parsed.kwargs, {});
   })) passed++; else failed++;
 
-  if (test('build_file_open_launch wraps Windows start through cmd.exe with title placeholder', () => {
+  if (test('build_file_open_launch routes Windows through explorer.exe without cmd.exe', () => {
     const output = runPython(`
 import importlib.util, json
 spec = importlib.util.spec_from_file_location("ecc_dashboard_runtime", r"""${runtimeHelpersPath}""")
@@ -124,13 +124,15 @@ argv, kwargs = module.build_file_open_launch(r'C:\\\\Users\\\\user\\\\proj\\\\RE
 print(json.dumps({'argv': argv, 'kwargs': kwargs}))
 `);
     const parsed = JSON.parse(output);
-    // start is a cmd.exe builtin, not a .exe — Popen needs cmd.exe /c start "" <path>.
-    // Empty quoted string is the window-title slot start requires when the first
-    // quoted argument is a path. Asserting the full argv catches future drift.
+    // explorer.exe is a standalone .exe, so Popen invokes it via CreateProcessW
+    // without going through cmd.exe. That means path metacharacters like '&', '|'
+    // and '^' stay literal — the shell never sees them. Asserting the full argv
+    // catches any future drift back toward cmd.exe.
     assert.deepStrictEqual(
       parsed.argv,
-      ['cmd.exe', '/c', 'start', '', 'C:\\\\Users\\\\user\\\\proj\\\\README.md & del C:\\\\*']
+      ['explorer.exe', 'C:\\\\Users\\\\user\\\\proj\\\\README.md & del C:\\\\*']
     );
+    assert.ok(parsed.argv[0] !== 'cmd.exe', 'launcher must not go through cmd.exe');
     assert.deepStrictEqual(parsed.kwargs, {});
   })) passed++; else failed++;
 
