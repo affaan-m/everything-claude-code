@@ -3,55 +3,20 @@
  */
 
 const assert = require('assert');
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const { sanitizeSessionId } = require('../../scripts/lib/utils');
 
 const runner = path.join(__dirname, '..', '..', 'scripts', 'hooks', 'run-with-flags.js');
 const externalStateDir = process.env.GATEGUARD_STATE_DIR;
 const tmpRoot = process.env.TMPDIR || process.env.TEMP || process.env.TMP || '/tmp';
 const stateDir = externalStateDir || fs.mkdtempSync(path.join(tmpRoot, 'gateguard-test-'));
+const FALLBACK_PROJECT_DIR = '/tmp/ecc-gateguard-fallback-project';
+const SHARED_PROJECT_DIR = '/tmp/ecc-gateguard-shared-project';
 // Use a fixed session ID so test process and spawned hook process share the same state file
 const TEST_SESSION_ID = 'gateguard-test-session';
-const stateFile = path.join(stateDir, `state-${TEST_SESSION_ID}.json`);
-
-function test(name, fn) {
-  try {
-    fn();
-    console.log(`  ✓ ${name}`);
-    return true;
-  } catch (error) {
-    console.log(`  ✗ ${name}`);
-    console.log(`    Error: ${error.message}`);
-    return false;
-  }
-}
-
-function clearState() {
-  try {
-    if (fs.existsSync(stateFile)) {
-      fs.unlinkSync(stateFile);
-    }
-  } catch (err) {
-    console.error(`  [clearState] failed to remove ${stateFile}: ${err.message}`);
-  }
-}
-
-function writeExpiredState() {
-  try {
-    fs.mkdirSync(stateDir, { recursive: true });
-    const expired = {
-      checked: ['some_file.js', '__bash_session__'],
-      last_active: Date.now() - (31 * 60 * 1000) // 31 minutes ago
-    };
-    fs.writeFileSync(stateFile, JSON.stringify(expired), 'utf8');
-  } catch (_) { /* ignore */ }
-}
-
-function writeState(state) {
-  fs.mkdirSync(stateDir, { recursive: true });
-  fs.writeFileSync(stateFile, JSON.stringify(state), 'utf8');
-}
 
 function runHook(input, env = {}) {
   const rawInput = typeof input === 'string' ? input : JSON.stringify(input);
@@ -96,6 +61,213 @@ function runBashHook(input, env = {}) {
       ECC_HOOK_PROFILE: 'standard',
       GATEGUARD_STATE_DIR: stateDir,
       CLAUDE_SESSION_ID: TEST_SESSION_ID,
+      ...env
+    },
+    timeout: 15000,
+    stdio: ['pipe', 'pipe', 'pipe']
+  });
+
+  return {
+    code: Number.isInteger(result.status) ? result.status : 1,
+    stdout: result.stdout || '',
+    stderr: result.stderr || ''
+  };
+}
+
+function runBashHookWithoutSession(input, env = {}) {
+  const rawInput = typeof input === 'string' ? input : JSON.stringify(input);
+  const hookEnv = buildFallbackHookEnv(env);
+
+  const result = spawnSync('node', [
+    runner,
+    'pre:bash:gateguard-fact-force',
+    'scripts/hooks/gateguard-fact-force.js',
+    'standard,strict'
+  ], {
+    input: rawInput,
+    encoding: 'utf8',
+    env: hookEnv,
+    timeout: 15000,
+    stdio: ['pipe', 'pipe', 'pipe']
+  });
+
+  return {
+    code: Number.isInteger(result.status) ? result.status : 1,
+    stdout: result.stdout || '',
+    stderr: result.stderr || ''
+  };
+}
+
+function hashSessionKey(prefix, value) {
+  return prefix + crypto.createHash('sha1').update(value).digest('hex').slice(0, 16);
+}
+
+function sessionIdForStateFile(sessionId) {
+  const raw = String(sessionId || '');
+  const sanitized = sanitizeSessionId(raw) || '';
+  if (sanitized.length > 0 && sanitized.length <= 64) {
+    return sanitized;
+  }
+  return hashSessionKey('sid-', raw || 'empty-session');
+}
+
+function buildFallbackHookEnv(env = {}) {
+  const merged = {
+    ...process.env,
+    ECC_HOOK_PROFILE: 'standard',
+    GATEGUARD_STATE_DIR: stateDir,
+    CLAUDE_PROJECT_DIR: FALLBACK_PROJECT_DIR,
+    ...env
+  };
+
+  const {
+    CLAUDE_SESSION_ID: _claudeSessionId,
+    ECC_SESSION_ID: _eccSessionId,
+    CLAUDE_TRANSCRIPT_PATH: _claudeTranscriptPath,
+    ...hookEnv
+  } = merged;
+
+  return hookEnv;
+}
+
+function sessionStateFile(sessionId) {
+  return path.join(stateDir, `state-${sessionIdForStateFile(sessionId)}.json`);
+}
+
+const stateFile = sessionStateFile(TEST_SESSION_ID);
+
+function test(name, fn) {
+  try {
+    fn();
+    console.log(`  ✓ ${name}`);
+    return true;
+  } catch (error) {
+    console.log(`  ✗ ${name}`);
+    console.log(`    Error: ${error.message}`);
+    return false;
+  }
+}
+
+function clearState(sessionId = TEST_SESSION_ID) {
+  try {
+    const target = sessionStateFile(sessionId);
+    if (fs.existsSync(target)) {
+      fs.unlinkSync(target);
+    }
+  } catch (err) {
+    console.error(`  [clearState] failed to remove ${sessionStateFile(sessionId)}: ${err.message}`);
+  }
+}
+
+function writeExpiredState() {
+  try {
+    fs.mkdirSync(stateDir, { recursive: true });
+    const expired = {
+      checked: ['some_file.js', '__bash_session__'],
+      last_active: Date.now() - (31 * 60 * 1000) // 31 minutes ago
+    };
+    fs.writeFileSync(stateFile, JSON.stringify(expired), 'utf8');
+  } catch (_) { /* ignore */ }
+}
+
+function writeState(state) {
+  fs.mkdirSync(stateDir, { recursive: true });
+  fs.writeFileSync(stateFile, JSON.stringify(state), 'utf8');
+}
+
+function fallbackSessionId(env = {}) {
+  if (env.CLAUDE_SESSION_ID) return env.CLAUDE_SESSION_ID;
+  if (env.ECC_SESSION_ID) return env.ECC_SESSION_ID;
+  if (env.CLAUDE_TRANSCRIPT_PATH) {
+    return hashSessionKey('transcript-', env.CLAUDE_TRANSCRIPT_PATH);
+  }
+
+  const scope = env.CLAUDE_PROJECT_DIR || process.cwd();
+  return hashSessionKey('fallback-', scope);
+}
+
+function runHookWithSessionId(input, sessionId, env = {}) {
+  const rawInput = typeof input === 'string' ? input : JSON.stringify(input);
+  const result = spawnSync('node', [
+    runner,
+    'pre:bash:gateguard-fact-force',
+    'scripts/hooks/gateguard-fact-force.js',
+    'standard,strict'
+  ], {
+    input: rawInput,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      ECC_HOOK_PROFILE: 'standard',
+      GATEGUARD_STATE_DIR: stateDir,
+      CLAUDE_SESSION_ID: sessionId,
+      ...env
+    },
+    timeout: 15000,
+    stdio: ['pipe', 'pipe', 'pipe']
+  });
+
+  return {
+    code: Number.isInteger(result.status) ? result.status : 1,
+    stdout: result.stdout || '',
+    stderr: result.stderr || ''
+  };
+}
+
+function runBashHookWithInputSession(input, metadata = {}, env = {}) {
+  const rawInput = typeof input === 'string'
+    ? input
+    : JSON.stringify({
+      ...metadata,
+      ...input
+    });
+  const result = spawnSync('node', [
+    runner,
+    'pre:bash:gateguard-fact-force',
+    'scripts/hooks/gateguard-fact-force.js',
+    'standard,strict'
+  ], {
+    input: rawInput,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      ECC_HOOK_PROFILE: 'standard',
+      GATEGUARD_STATE_DIR: stateDir,
+      ...env
+    },
+    timeout: 15000,
+    stdio: ['pipe', 'pipe', 'pipe']
+  });
+
+  return {
+    code: Number.isInteger(result.status) ? result.status : 1,
+    stdout: result.stdout || '',
+    stderr: result.stderr || ''
+  };
+}
+
+function runBashHookWithFallbackOnly(input, metadata = {}, env = {}) {
+  const rawInput = typeof input === 'string'
+    ? input
+    : JSON.stringify({
+      ...metadata,
+      ...input
+    });
+  const result = spawnSync('node', [
+    runner,
+    'pre:bash:gateguard-fact-force',
+    'scripts/hooks/gateguard-fact-force.js',
+    'standard,strict'
+  ], {
+    input: rawInput,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      ECC_HOOK_PROFILE: 'standard',
+      GATEGUARD_STATE_DIR: stateDir,
+      CLAUDE_SESSION_ID: '',
+      ECC_SESSION_ID: '',
+      CLAUDE_TRANSCRIPT_PATH: '',
       ...env
     },
     timeout: 15000,
@@ -417,6 +589,147 @@ function runTests() {
     const persisted = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
     assert.ok(persisted.checked.includes('__bash_session__'), 'pruned state should retain __bash_session__');
     assert.ok(persisted.checked.length <= 500, 'pruned state should still honor the checked-entry cap');
+  })) passed++; else failed++;
+
+  // --- Test 14: fallback-only input still reuses state across retries ---
+  const fallbackOnlyEnv = {
+    CLAUDE_PROJECT_DIR: '/tmp/fallback-only-project'
+  };
+  clearState(fallbackSessionId(fallbackOnlyEnv));
+  if (test('reuses state when neither input nor env provides session metadata', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'echo "hello"' },
+      cwd: '/tmp/fallback-only-project'
+    };
+
+    const result1 = runBashHookWithFallbackOnly(input, {}, fallbackOnlyEnv);
+    assert.strictEqual(result1.code, 0, 'first fallback-only call exit code should be 0');
+    const output1 = parseOutput(result1.stdout);
+    assert.ok(output1, 'first fallback-only call should produce JSON output');
+    assert.strictEqual(output1.hookSpecificOutput.permissionDecision, 'deny');
+
+    const result2 = runBashHookWithFallbackOnly(input, {}, fallbackOnlyEnv);
+    assert.strictEqual(result2.code, 0, 'second fallback-only call exit code should be 0');
+    const output2 = parseOutput(result2.stdout);
+    assert.ok(output2, 'second fallback-only call should produce valid JSON output');
+    if (output2.hookSpecificOutput) {
+      assert.notStrictEqual(output2.hookSpecificOutput.permissionDecision, 'deny',
+        'fallback-only session resolution should map retries to the same state file');
+    } else {
+      assert.strictEqual(output2.tool_name, 'Bash', 'pass-through should preserve input');
+    }
+  })) passed++; else failed++;
+
+  // --- Test 15: fallback shares state for the same project scope ---
+  // Actually it should be isolated when 2 cli sessions are running at the same scope,
+  // but if there is no env and input to provide session information, the ppid and pid will be totally different
+  // and cause every call to be considered as a new one, blocking tool calling repeatedly.
+  const cliAEnv = {
+    CLAUDE_PROJECT_DIR: SHARED_PROJECT_DIR
+  };
+  const cliBEnv = {
+    CLAUDE_PROJECT_DIR: SHARED_PROJECT_DIR
+  };
+  clearState(fallbackSessionId(buildFallbackHookEnv(cliAEnv)));
+  clearState(fallbackSessionId(buildFallbackHookEnv(cliBEnv)));
+  if (test('shares fallback state across CLI fingerprints in the same project', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'echo "hello"' }
+    };
+
+    //CLI A seeds the shared project-scope fallback state
+    const cliAFirst = runBashHookWithoutSession(input, cliAEnv);
+    const cliAFirstOutput = parseOutput(cliAFirst.stdout);
+    assert.ok(cliAFirstOutput, 'CLI A first call should produce JSON output');
+    assert.strictEqual(cliAFirstOutput.hookSpecificOutput.permissionDecision, 'deny');
+
+    const cliASecond = runBashHookWithoutSession(input, cliAEnv);
+    const cliASecondOutput = parseOutput(cliASecond.stdout);
+    assert.ok(cliASecondOutput, 'CLI A second call should produce valid JSON output');
+    if (cliASecondOutput.hookSpecificOutput) {
+      assert.notStrictEqual(cliASecondOutput.hookSpecificOutput.permissionDecision, 'deny',
+        'CLI A second call should pass once its fallback state is set');
+    }
+
+    //CLI B should reuse the same project-scope fallback state
+    const cliBFirst = runBashHookWithoutSession(input, cliBEnv);
+    const cliBFirstOutput = parseOutput(cliBFirst.stdout);
+    assert.ok(cliBFirstOutput, 'CLI B first call should produce valid JSON output');
+    if (cliBFirstOutput.hookSpecificOutput) {
+      assert.notStrictEqual(cliBFirstOutput.hookSpecificOutput.permissionDecision, 'deny',
+        'CLI B should inherit the shared project-scope fallback state');
+    } else {
+      assert.strictEqual(cliBFirstOutput.tool_name, 'Bash', 'pass-through should preserve input');
+    }
+  })) passed++; else failed++;
+
+  // --- Test 16: long session IDs are reduced to a filesystem-safe state key ---
+  const longSessionId = 'session-' + 'x'.repeat(400);
+  clearState(sessionIdForStateFile(longSessionId));
+  if (test('allows retries when CLAUDE_SESSION_ID is extremely long', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'echo "hello"' }
+    };
+
+    const result1 = runHookWithSessionId(input, longSessionId);
+    assert.strictEqual(result1.code, 0, 'first long-session call exit code should be 0');
+    const output1 = parseOutput(result1.stdout);
+    assert.ok(output1, 'first long-session call should produce JSON output');
+    assert.strictEqual(output1.hookSpecificOutput.permissionDecision, 'deny');
+
+    const result2 = runHookWithSessionId(input, longSessionId);
+    assert.strictEqual(result2.code, 0, 'second long-session call exit code should be 0');
+    const output2 = parseOutput(result2.stdout);
+    assert.ok(output2, 'second long-session call should produce valid JSON output');
+    if (output2.hookSpecificOutput) {
+      assert.notStrictEqual(output2.hookSpecificOutput.permissionDecision, 'deny',
+        'long session IDs should still map to a stable state file');
+    }
+
+    const persisted = sessionStateFile(sessionIdForStateFile(longSessionId));
+    assert.ok(fs.existsSync(persisted), 'sanitized long-session state file should be created');
+    assert.ok(path.basename(persisted).length < 255, 'state filename should stay below common filesystem limits');
+  })) passed++; else failed++;
+
+  // --- Test 17: hook input session metadata ---
+  const inputSessionId = 'input-session-123';
+  clearState(sessionIdForStateFile(inputSessionId));
+  if (test('reuses state when session_id is only present in hook input', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'echo "hello"' }
+    };
+    const metadata = {
+      session_id: inputSessionId,
+      transcript_path: '/tmp/transcripts/input-session-123.jsonl',
+      cwd: '/tmp/input-session-project'
+    };
+
+    const result1 = runBashHookWithInputSession(input, metadata, {
+      CLAUDE_SESSION_ID: '',
+      ECC_SESSION_ID: '',
+      CLAUDE_TRANSCRIPT_PATH: ''
+    });
+    assert.strictEqual(result1.code, 0, 'first hook-input session call exit code should be 0');
+    const output1 = parseOutput(result1.stdout);
+    assert.ok(output1, 'first hook-input session call should produce JSON output');
+    assert.strictEqual(output1.hookSpecificOutput.permissionDecision, 'deny');
+
+    const result2 = runBashHookWithInputSession(input, metadata, {
+      CLAUDE_SESSION_ID: '',
+      ECC_SESSION_ID: '',
+      CLAUDE_TRANSCRIPT_PATH: ''
+    });
+    assert.strictEqual(result2.code, 0, 'second hook-input session call exit code should be 0');
+    const output2 = parseOutput(result2.stdout);
+    assert.ok(output2, 'second hook-input session call should produce valid JSON output');
+    if (output2.hookSpecificOutput) {
+      assert.notStrictEqual(output2.hookSpecificOutput.permissionDecision, 'deny',
+        'hook input session metadata should map to the same state file on retry');
+    }
   })) passed++; else failed++;
 
   // Cleanup only the temp directory created by this test file.

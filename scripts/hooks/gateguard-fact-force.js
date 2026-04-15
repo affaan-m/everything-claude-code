@@ -25,12 +25,59 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const { sanitizeSessionId } = require('../lib/utils');
 
 // Session state — scoped per session to avoid cross-session races.
-// Uses CLAUDE_SESSION_ID (set by Claude Code) or falls back to PID-based isolation.
+// Prefer Claude-provided session IDs. When they are unavailable (for example in
+// API/proxy setups), derive a stable fallback from the transcript path or from
+// the project scope plus a parent-process fingerprint. This avoids both
+// per-invocation PID churn and cross-CLI state leakage in the same project.
 const STATE_DIR = process.env.GATEGUARD_STATE_DIR || path.join(process.env.HOME || process.env.USERPROFILE || '/tmp', '.gateguard');
-const SESSION_ID = process.env.CLAUDE_SESSION_ID || process.env.ECC_SESSION_ID || `pid-${process.ppid || process.pid}`;
-const STATE_FILE = path.join(STATE_DIR, `state-${SESSION_ID.replace(/[^a-zA-Z0-9_-]/g, '_')}.json`);
+
+function hashSessionKey(prefix, value) {
+  return prefix + crypto.createHash('sha1').update(String(value)).digest('hex').slice(0, 16);
+}
+
+
+function sessionIdForStateFile(sessionId) {
+  const raw = String(sessionId || '');
+  const sanitized = sanitizeSessionId(raw) || '';
+  if (sanitized.length > 0 && sanitized.length <= 64) {
+    return sanitized;
+  }
+  return hashSessionKey('sid-', raw || 'empty-session');
+}
+
+function firstMeaningfulSessionId(...candidates) {
+  for (const candidate of candidates) {
+    if (sanitizeSessionId(candidate)) return candidate;
+  }
+  return null;
+}
+
+function resolveSessionId(data = {}) {
+  const explicitSessionId = firstMeaningfulSessionId(
+    data.session_id,
+    data.sessionId,
+    process.env.CLAUDE_SESSION_ID,
+    process.env.ECC_SESSION_ID
+  );
+  if (explicitSessionId) return explicitSessionId;
+
+  const transcriptPath = data.transcript_path || data.transcriptPath || process.env.CLAUDE_TRANSCRIPT_PATH;
+  if (transcriptPath) {
+    return hashSessionKey('transcript-', transcriptPath);
+  }
+
+  // this may not happen in real usage. If it does, we at least get a stable fallback per project directory fingerprint, instead of per-invocation random IDs.
+  const scope = data.cwd || process.env.CLAUDE_PROJECT_DIR || process.cwd();
+  return hashSessionKey('fallback-', scope);
+}
+
+function resolveStateFile(data = {}) {
+  const sessionId = resolveSessionId(data);
+  return path.join(STATE_DIR, `state-${sessionIdForStateFile(sessionId)}.json`);
+}
 
 // State expires after 30 minutes of inactivity
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
@@ -44,13 +91,13 @@ const DESTRUCTIVE_BASH = /\b(rm\s+-rf|git\s+reset\s+--hard|git\s+checkout\s+--|g
 
 // --- State management (per-session, atomic writes, bounded) ---
 
-function loadState() {
+function loadState(stateFile) {
   try {
-    if (fs.existsSync(STATE_FILE)) {
-      const state = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
+    if (fs.existsSync(stateFile)) {
+      const state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
       const lastActive = state.last_active || 0;
       if (Date.now() - lastActive > SESSION_TIMEOUT_MS) {
-        try { fs.unlinkSync(STATE_FILE); } catch (_) { /* ignore */ }
+        try { fs.unlinkSync(stateFile); } catch (_) { /* ignore */ }
         return { checked: [], last_active: Date.now() };
       }
       return state;
@@ -74,30 +121,30 @@ function pruneCheckedEntries(checked) {
   return [...preserved, ...cappedSession, ...cappedFiles];
 }
 
-function saveState(state) {
+function saveState(stateFile, state) {
   try {
     state.last_active = Date.now();
     state.checked = pruneCheckedEntries(state.checked);
     fs.mkdirSync(STATE_DIR, { recursive: true });
     // Atomic write: temp file + rename prevents partial reads
-    const tmpFile = STATE_FILE + '.tmp.' + process.pid;
+    const tmpFile = stateFile + '.tmp.' + process.pid;
     fs.writeFileSync(tmpFile, JSON.stringify(state, null, 2), 'utf8');
-    fs.renameSync(tmpFile, STATE_FILE);
+    fs.renameSync(tmpFile, stateFile);
   } catch (_) { /* ignore */ }
 }
 
-function markChecked(key) {
-  const state = loadState();
+function markChecked(stateFile, key) {
+  const state = loadState(stateFile);
   if (!state.checked.includes(key)) {
     state.checked.push(key);
-    saveState(state);
+    saveState(stateFile, state);
   }
 }
 
-function isChecked(key) {
-  const state = loadState();
+function isChecked(stateFile, key) {
+  const state = loadState(stateFile);
   const found = state.checked.includes(key);
-  saveState(state);
+  saveState(stateFile, state);
   return found;
 }
 
@@ -205,6 +252,7 @@ function run(rawInput) {
   } catch (_) {
     return rawInput; // allow on parse error
   }
+  const stateFile = resolveStateFile(data);
 
   const rawToolName = data.tool_name || '';
   const toolInput = data.tool_input || {};
@@ -218,8 +266,8 @@ function run(rawInput) {
       return rawInput; // allow
     }
 
-    if (!isChecked(filePath)) {
-      markChecked(filePath);
+    if (!isChecked(stateFile, filePath)) {
+      markChecked(stateFile, filePath);
       return denyResult(toolName === 'Edit' ? editGateMsg(filePath) : writeGateMsg(filePath));
     }
 
@@ -230,8 +278,8 @@ function run(rawInput) {
     const edits = toolInput.edits || [];
     for (const edit of edits) {
       const filePath = edit.file_path || '';
-      if (filePath && !isChecked(filePath)) {
-        markChecked(filePath);
+      if (filePath && !isChecked(stateFile, filePath)) {
+        markChecked(stateFile, filePath);
         return denyResult(editGateMsg(filePath));
       }
     }
@@ -244,15 +292,15 @@ function run(rawInput) {
     if (DESTRUCTIVE_BASH.test(command)) {
       // Gate destructive commands on first attempt; allow retry after facts presented
       const key = '__destructive__' + crypto.createHash('sha256').update(command).digest('hex').slice(0, 16);
-      if (!isChecked(key)) {
-        markChecked(key);
+      if (!isChecked(stateFile, key)) {
+        markChecked(stateFile, key);
         return denyResult(destructiveBashMsg());
       }
       return rawInput; // allow retry after facts presented
     }
 
-    if (!isChecked(ROUTINE_BASH_SESSION_KEY)) {
-      markChecked(ROUTINE_BASH_SESSION_KEY);
+    if (!isChecked(stateFile, ROUTINE_BASH_SESSION_KEY)) {
+      markChecked(stateFile, ROUTINE_BASH_SESSION_KEY);
       return denyResult(routineBashMsg());
     }
 
