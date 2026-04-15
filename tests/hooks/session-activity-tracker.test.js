@@ -309,6 +309,58 @@ function runTests() {
     fs.rmSync(repoDir, { recursive: true, force: true });
   }) ? passed++ : failed++);
 
+  (test('resolves repo-relative paths even when the hook runs from a nested cwd', () => {
+    const tmpHome = makeTempDir();
+    const repoDir = fs.mkdtempSync(path.join(os.tmpdir(), 'session-activity-tracker-nested-repo-'));
+
+    spawnSync('git', ['init'], { cwd: repoDir, encoding: 'utf8' });
+    spawnSync('git', ['config', 'user.email', 'ecc@example.com'], { cwd: repoDir, encoding: 'utf8' });
+    spawnSync('git', ['config', 'user.name', 'ECC Tests'], { cwd: repoDir, encoding: 'utf8' });
+
+    const srcDir = path.join(repoDir, 'src');
+    const nestedCwd = path.join(repoDir, 'subdir');
+    fs.mkdirSync(srcDir, { recursive: true });
+    fs.mkdirSync(nestedCwd, { recursive: true });
+
+    const trackedFile = path.join(srcDir, 'app.ts');
+    fs.writeFileSync(trackedFile, 'const count = 1;\n', 'utf8');
+    spawnSync('git', ['add', 'src/app.ts'], { cwd: repoDir, encoding: 'utf8' });
+    spawnSync('git', ['commit', '-m', 'init'], { cwd: repoDir, encoding: 'utf8' });
+
+    fs.writeFileSync(trackedFile, 'const count = 2;\n', 'utf8');
+
+    const input = {
+      tool_name: 'Write',
+      tool_input: {
+        file_path: 'src/app.ts',
+        content: 'const count = 2;\n',
+      },
+      tool_output: { output: 'updated src/app.ts' },
+    };
+    const result = runScript(input, {
+      ...withTempHome(tmpHome),
+      CLAUDE_HOOK_EVENT_NAME: 'PostToolUse',
+      ECC_SESSION_ID: 'ecc-session-nested-cwd',
+    }, {
+      cwd: nestedCwd,
+    });
+    assert.strictEqual(result.code, 0);
+
+    const metricsFile = path.join(tmpHome, '.claude', 'metrics', 'tool-usage.jsonl');
+    const row = JSON.parse(fs.readFileSync(metricsFile, 'utf8').trim());
+    assert.deepStrictEqual(row.file_events, [
+      {
+        path: 'src/app.ts',
+        action: 'modify',
+        diff_preview: 'const count = 1; -> const count = 2;',
+        patch_preview: '@@ -1 +1 @@\n-const count = 1;\n+const count = 2;',
+      },
+    ]);
+
+    fs.rmSync(tmpHome, { recursive: true, force: true });
+    fs.rmSync(repoDir, { recursive: true, force: true });
+  }) ? passed++ : failed++);
+
   (test('prefers ECC_SESSION_ID over CLAUDE_SESSION_ID and redacts bash summaries', () => {
     const tmpHome = makeTempDir();
     const input = {

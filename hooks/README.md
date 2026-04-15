@@ -16,6 +16,22 @@ User request → Claude picks a tool → PreToolUse hook runs → Tool executes 
 
 ## Hooks in This Plugin
 
+## Installing These Hooks Manually
+
+For Claude Code manual installs, do not paste the raw repo `hooks.json` into `~/.claude/settings.json` or copy it directly into `~/.claude/hooks/hooks.json`. The checked-in file still contains `${CLAUDE_PLUGIN_ROOT}` placeholders and is meant to be installed through the ECC installer or loaded as a plugin.
+
+Use the installer instead so hook commands are rewritten against your actual Claude root:
+
+```bash
+bash ./install.sh --target claude --modules hooks-runtime
+```
+
+```powershell
+pwsh -File .\install.ps1 --target claude --modules hooks-runtime
+```
+
+That installs resolved hooks to `~/.claude/hooks/hooks.json`. On Windows, the Claude config root is `%USERPROFILE%\\.claude`.
+
 ### PreToolUse Hooks
 
 | Hook | Matcher | Behavior | Exit Code |

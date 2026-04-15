@@ -116,10 +116,19 @@ function runTests() {
     assert.ok(plan.operations.length > 0, 'Should include scaffold operations');
     assert.ok(
       plan.operations.some(operation => (
-        operation.sourceRelativePath === '.cursor'
-        && operation.strategy === 'sync-root-children'
+        operation.sourceRelativePath === '.cursor/hooks.json'
+        && operation.destinationPath === path.join(projectRoot, '.cursor', 'hooks.json')
+        && operation.strategy === 'preserve-relative-path'
       )),
-      'Should flatten the native cursor root'
+      'Should preserve non-rule Cursor platform files'
+    );
+    assert.ok(
+      plan.operations.some(operation => (
+        operation.sourceRelativePath === 'rules/common/agents.md'
+        && operation.destinationPath === path.join(projectRoot, '.cursor', 'rules', 'common-agents.mdc')
+        && operation.strategy === 'flatten-copy'
+      )),
+      'Should produce Cursor .mdc rules while preferring rules-core over duplicate platform copies'
     );
   })) passed++; else failed++;
 

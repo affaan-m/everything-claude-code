@@ -1,5 +1,5 @@
 {
-  "name": "ecc",
+  "name": "everything-claude-code",
   "owner": {
     "name": "Affaan Mustafa",
     "email": "me@affaanmustafa.com"
@@ -9,7 +9,7 @@
   },
   "plugins": [
     {
-      "name": "ecc",
+      "name": "everything-claude-code",
       "source": "./",
       "description": "The most comprehensive Claude Code plugin — 38 agents, 156 skills, 72 legacy command shims, selective install profiles, and production-ready hooks for TDD, security scanning, code review, and continuous learning",
       "version": "1.10.0",

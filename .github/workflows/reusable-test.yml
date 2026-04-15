@@ -35,10 +35,18 @@ jobs:
           node-version: ${{ inputs.node-version }}
 
       - name: Setup pnpm
-        if: inputs.package-manager == 'pnpm'
-        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4
+        if: inputs.package-manager == 'pnpm' && inputs.node-version != '18.x'
+        uses: pnpm/action-setup@08c4be7e2e672a47d11bd04269e27e5f3e8529cb # v6.0.0
         with:
-          version: latest
+          # Keep an explicit pnpm major because this repo's packageManager is Yarn.
+          version: 10
+
+      - name: Setup pnpm (via Corepack)
+        if: inputs.package-manager == 'pnpm' && inputs.node-version == '18.x'
+        shell: bash
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
 
       - name: Setup Yarn (via Corepack)
         if: inputs.package-manager == 'yarn'
@@ -70,6 +78,8 @@ jobs:
         if: inputs.package-manager == 'pnpm'
         id: pnpm-cache-dir
         shell: bash
+        env:
+          COREPACK_ENABLE_STRICT: '0'
         run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - name: Cache pnpm
@@ -134,7 +144,7 @@ jobs:
 
       - name: Upload test artifacts
         if: failure()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-results-${{ inputs.os }}-node${{ inputs.node-version }}-${{ inputs.package-manager }}
           path: |

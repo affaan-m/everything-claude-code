@@ -6,6 +6,8 @@
 
 const assert = require('assert');
 const fs = require('fs');
+const http = require('http');
+const https = require('https');
 const os = require('os');
 const path = require('path');
 const { spawn, spawnSync } = require('child_process');
@@ -109,6 +111,39 @@ function waitForFile(filePath, timeoutMs = 5000) {
   }
   throw new Error(`Timed out waiting for ${filePath}`);
 }
+
+function waitForHttpReady(urlString, timeoutMs = 5000) {
+  const deadline = Date.now() + timeoutMs;
+  const { protocol } = new URL(urlString);
+  const client = protocol === 'https:' ? https : http;
+
+  return new Promise((resolve, reject) => {
+    const attempt = () => {
+      const req = client.request(urlString, { method: 'GET' }, res => {
+        res.resume();
+        resolve();
+      });
+
+      req.setTimeout(250, () => {
+        req.destroy(new Error('timeout'));
+      });
+
+      req.on('error', error => {
+        if (Date.now() >= deadline) {
+          reject(new Error(`Timed out waiting for ${urlString}: ${error.message}`));
+          return;
+        }
+
+        setTimeout(attempt, 25);
+      });
+
+      req.end();
+    };
+
+    attempt();
+  });
+}
+
 async function runTests() {
   console.log('\n=== Testing mcp-health-check.js ===\n');
 
@@ -329,6 +364,7 @@ async function runTests() {
 
     try {
       const port = waitForFile(portFile).trim();
+      await waitForHttpReady(`http://127.0.0.1:${port}/mcp`);
 
       writeConfig(configPath, {
         mcpServers: {
@@ -391,6 +427,7 @@ async function runTests() {
 
     try {
       const port = waitForFile(portFile).trim();
+      await waitForHttpReady(`http://127.0.0.1:${port}/mcp`);
 
       writeConfig(configPath, {
         mcpServers: {

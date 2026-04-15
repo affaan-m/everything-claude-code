@@ -196,7 +196,9 @@ function findPluginInstall(rootDir) {
   ];
   const candidateRoots = [
     path.join(rootDir, '.claude', 'plugins'),
+    path.join(rootDir, '.claude', 'plugins', 'marketplaces'),
     homeDir && path.join(homeDir, '.claude', 'plugins'),
+    homeDir && path.join(homeDir, '.claude', 'plugins', 'marketplaces'),
   ].filter(Boolean);
   const candidates = candidateRoots.flatMap((pluginsDir) =>
     pluginDirs.flatMap((pluginDir) => [

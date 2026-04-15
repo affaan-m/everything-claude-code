@@ -4,6 +4,7 @@ use cron::Schedule as CronSchedule;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fmt;
+use std::fs::OpenOptions;
 use std::path::{Path, PathBuf};
 use std::process::Stdio;
 use std::str::FromStr;
@@ -2983,7 +2984,28 @@ async fn spawn_session_runner_for_program(
     working_dir: &Path,
     current_exe: &Path,
 ) -> Result<()> {
-    let child = Command::new(current_exe)
+    let stderr_log_path = background_runner_stderr_log_path(working_dir, session_id);
+    if let Some(parent) = stderr_log_path.parent() {
+        std::fs::create_dir_all(parent).with_context(|| {
+            format!(
+                "Failed to create ECC runner log directory {}",
+                parent.display()
+            )
+        })?;
+    }
+    let stderr_log = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&stderr_log_path)
+        .with_context(|| {
+            format!(
+                "Failed to open ECC runner stderr log {}",
+                stderr_log_path.display()
+            )
+        })?;
+
+    let mut command = Command::new(current_exe);
+    command
         .arg("run-session")
         .arg("--session-id")
         .arg(session_id)
@@ -2995,7 +3017,10 @@ async fn spawn_session_runner_for_program(
         .arg(working_dir)
         .stdin(Stdio::null())
         .stdout(Stdio::null())
-        .stderr(Stdio::null())
+        .stderr(Stdio::from(stderr_log));
+    configure_background_runner_command(&mut command);
+
+    let child = command
         .spawn()
         .with_context(|| format!("Failed to spawn ECC runner from {}", current_exe.display()))?;
 
@@ -3003,6 +3028,46 @@ async fn spawn_session_runner_for_program(
         .id()
         .ok_or_else(|| anyhow::anyhow!("ECC runner did not expose a process id"))?;
     Ok(())
+}
+
+fn background_runner_stderr_log_path(working_dir: &Path, session_id: &str) -> PathBuf {
+    working_dir
+        .join(".claude")
+        .join("ecc2")
+        .join("logs")
+        .join(format!("{session_id}.runner-stderr.log"))
+}
+
+#[cfg(windows)]
+fn detached_creation_flags() -> u32 {
+    const DETACHED_PROCESS: u32 = 0x0000_0008;
+    const CREATE_NEW_PROCESS_GROUP: u32 = 0x0000_0200;
+    DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP
+}
+
+fn configure_background_runner_command(command: &mut Command) {
+    #[cfg(unix)]
+    {
+        use std::os::unix::process::CommandExt;
+
+        // Detach the runner from the caller's shell/session so it keeps
+        // processing a live harness session after `ecc-tui start` returns.
+        unsafe {
+            command.as_std_mut().pre_exec(|| {
+                if libc::setsid() == -1 {
+                    return Err(std::io::Error::last_os_error());
+                }
+                Ok(())
+            });
+        }
+    }
+
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+
+        command.as_std_mut().creation_flags(detached_creation_flags());
+    }
 }
 
 fn build_agent_command(
@@ -5032,6 +5097,22 @@ mod tests {
         anyhow::bail!("timed out waiting for {}", path.display());
     }
 
+    fn wait_for_text(path: &Path, needle: &str) -> Result<String> {
+        for _ in 0..200 {
+            if path.exists() {
+                let content = fs::read_to_string(path)
+                    .with_context(|| format!("failed to read {}", path.display()))?;
+                if content.contains(needle) {
+                    return Ok(content);
+                }
+            }
+
+            thread::sleep(StdDuration::from_millis(20));
+        }
+
+        anyhow::bail!("timed out waiting for {}", path.display());
+    }
+
     fn command_env_map(command: &Command) -> BTreeMap<String, String> {
         command
             .as_std()
@@ -5045,6 +5126,63 @@ mod tests {
                 })
             })
             .collect()
+    }
+
+    #[cfg(unix)]
+    #[tokio::test(flavor = "current_thread")]
+    async fn background_runner_command_starts_new_session() -> Result<()> {
+        let tempdir = TestDir::new("manager-detached-runner")?;
+        let script_path = tempdir.path().join("detached-runner.py");
+        let log_path = tempdir.path().join("detached-runner.log");
+        let script = format!(
+            "#!/usr/bin/env python3\nimport os\nimport pathlib\nimport time\n\npath = pathlib.Path(r\"{}\")\npath.write_text(f\"pid={{os.getpid()}} sid={{os.getsid(0)}}\", encoding=\"utf-8\")\ntime.sleep(30)\n",
+            log_path.display()
+        );
+        fs::write(&script_path, script)?;
+        let mut permissions = fs::metadata(&script_path)?.permissions();
+        permissions.set_mode(0o755);
+        fs::set_permissions(&script_path, permissions)?;
+
+        let mut command = Command::new(&script_path);
+        command
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null());
+        configure_background_runner_command(&mut command);
+
+        let mut child = command.spawn()?;
+        let child_pid = child.id().context("detached child pid")? as i32;
+        let content = wait_for_text(&log_path, "sid=")?;
+        let sid = content
+            .split_whitespace()
+            .find_map(|part| part.strip_prefix("sid="))
+            .context("session id should be logged")?
+            .parse::<i32>()
+            .context("session id should parse")?;
+        let parent_sid = unsafe { libc::getsid(0) };
+
+        assert_eq!(sid, child_pid);
+        assert_ne!(sid, parent_sid);
+
+        let _ = child.kill().await;
+        let _ = child.wait().await;
+        Ok(())
+    }
+
+    #[test]
+    fn background_runner_stderr_log_path_is_session_scoped() {
+        let path =
+            background_runner_stderr_log_path(Path::new("/tmp/ecc-repo"), "session-123");
+        assert_eq!(
+            path,
+            PathBuf::from("/tmp/ecc-repo/.claude/ecc2/logs/session-123.runner-stderr.log")
+        );
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn detached_creation_flags_include_detach_and_process_group() {
+        assert_eq!(detached_creation_flags(), 0x0000_0008 | 0x0000_0200);
     }
 
     fn write_package_manager_project_files(

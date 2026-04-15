@@ -27,7 +27,7 @@ Usage: install.sh [--target <${LEGACY_INSTALL_TARGETS.join('|')}>] [--dry-run] [
        install.sh [--dry-run] [--json] --config <path>
 
 Targets:
-  claude       (default) - Install rules to ~/.claude/rules/
+  claude       (default) - Install ECC into ~/.claude/ (hooks, commands, agents, rules, skills)
   cursor       - Install rules, hooks, and bundled Cursor configs to ./.cursor/
   antigravity  - Install rules, workflows, skills, and agents to ./.agent/
 
