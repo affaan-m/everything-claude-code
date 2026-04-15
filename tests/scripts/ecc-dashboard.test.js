@@ -86,13 +86,13 @@ print(json.dumps({'argv': argv, 'kwargs': kwargs}))
     assert.ok(Object.prototype.hasOwnProperty.call(parsed.kwargs, 'creationflags'));
   })) passed++; else failed++;
 
-  if (test('build_file_open_launch routes POSIX through xdg-open with path as a separate argv entry', () => {
+  if (test('build_file_open_launch routes Linux through xdg-open with path as a separate argv entry', () => {
     const output = runPython(`
 import importlib.util, json
 spec = importlib.util.spec_from_file_location("ecc_dashboard_runtime", r"""${runtimeHelpersPath}""")
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-argv, kwargs = module.build_file_open_launch('/tmp/proj/README.md; rm -rf ~', os_name='posix')
+argv, kwargs = module.build_file_open_launch('/tmp/proj/README.md; rm -rf ~', os_name='posix', system_name='Linux')
 print(json.dumps({'argv': argv, 'kwargs': kwargs}))
 `);
     const parsed = JSON.parse(output);
@@ -100,19 +100,37 @@ print(json.dumps({'argv': argv, 'kwargs': kwargs}))
     assert.deepStrictEqual(parsed.kwargs, {});
   })) passed++; else failed++;
 
-  if (test('build_file_open_launch routes Windows through start with path as a separate argv entry', () => {
+  if (test('build_file_open_launch routes macOS through native open command', () => {
     const output = runPython(`
 import importlib.util, json
 spec = importlib.util.spec_from_file_location("ecc_dashboard_runtime", r"""${runtimeHelpersPath}""")
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-argv, kwargs = module.build_file_open_launch(r'C:\\\\Users\\\\user\\\\proj\\\\README.md & del C:\\\\*', os_name='nt')
+argv, kwargs = module.build_file_open_launch('/Users/me/proj/README.md; touch ~/pwn', os_name='posix', system_name='Darwin')
 print(json.dumps({'argv': argv, 'kwargs': kwargs}))
 `);
     const parsed = JSON.parse(output);
-    assert.strictEqual(parsed.argv[0], 'start');
-    assert.ok(parsed.argv[1].includes('README.md & del'), 'path with metacharacters must remain literal');
-    assert.ok(parsed.argv[1].includes('C:'), 'windows drive prefix should be preserved');
+    assert.deepStrictEqual(parsed.argv, ['open', '/Users/me/proj/README.md; touch ~/pwn']);
+    assert.deepStrictEqual(parsed.kwargs, {});
+  })) passed++; else failed++;
+
+  if (test('build_file_open_launch wraps Windows start through cmd.exe with title placeholder', () => {
+    const output = runPython(`
+import importlib.util, json
+spec = importlib.util.spec_from_file_location("ecc_dashboard_runtime", r"""${runtimeHelpersPath}""")
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+argv, kwargs = module.build_file_open_launch(r'C:\\\\Users\\\\user\\\\proj\\\\README.md & del C:\\\\*', os_name='nt', system_name='Windows')
+print(json.dumps({'argv': argv, 'kwargs': kwargs}))
+`);
+    const parsed = JSON.parse(output);
+    // start is a cmd.exe builtin, not a .exe — Popen needs cmd.exe /c start "" <path>.
+    // Empty quoted string is the window-title slot start requires when the first
+    // quoted argument is a path. Asserting the full argv catches future drift.
+    assert.deepStrictEqual(
+      parsed.argv,
+      ['cmd.exe', '/c', 'start', '', 'C:\\\\Users\\\\user\\\\proj\\\\README.md & del C:\\\\*']
+    );
     assert.deepStrictEqual(parsed.kwargs, {});
   })) passed++; else failed++;
 
