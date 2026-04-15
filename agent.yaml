@@ -146,6 +146,7 @@ skills:
 commands:
   - agent-sort
   - aside
+  - auto-update
   - build-fix
   - checkpoint
   - claw

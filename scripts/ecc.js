@@ -33,6 +33,10 @@ const COMMANDS = {
     script: 'repair.js',
     description: 'Restore drifted or missing ECC-managed files',
   },
+  'auto-update': {
+    script: 'auto-update.js',
+    description: 'Pull latest ECC changes and reinstall the current managed targets',
+  },
   status: {
     script: 'status.js',
     description: 'Query the ECC SQLite state store status summary',
@@ -58,6 +62,7 @@ const PRIMARY_COMMANDS = [
   'list-installed',
   'doctor',
   'repair',
+  'auto-update',
   'status',
   'sessions',
   'session-inspect',
@@ -90,6 +95,7 @@ Examples:
   ecc list-installed --json
   ecc doctor --target cursor
   ecc repair --dry-run
+  ecc auto-update --dry-run
   ecc status --json
   ecc sessions
   ecc sessions session-active --json
