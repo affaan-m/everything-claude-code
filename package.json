@@ -6,6 +6,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node tests/run-all.js"
+    "test": "node tests/run-all.js",
+    "install-rules": "node scripts/install-rules.js"
   }
 }
