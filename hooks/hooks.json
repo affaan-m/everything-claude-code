@@ -12,92 +12,12 @@
               "-e",
               "const p=require('path');const r=(()=>{var e=process.env.CLAUDE_PLUGIN_ROOT;if(e&&e.trim())return e.trim();var p=require('path'),f=require('fs'),h=require('os').homedir(),d=p.join(h,'.claude'),q=p.join('scripts','lib','utils.js');if(f.existsSync(p.join(d,q)))return d;for(var s of [[\"ecc\"],[\"ecc@ecc\"],[\"marketplace\",\"ecc\"],[\"everything-claude-code\"],[\"everything-claude-code@everything-claude-code\"],[\"marketplace\",\"everything-claude-code\"]]){var l=p.join(d,'plugins',...s);if(f.existsSync(p.join(l,q)))return l}try{for(var g of [\"ecc\",\"everything-claude-code\"]){var b=p.join(d,'plugins','cache',g);for(var o of f.readdirSync(b,{withFileTypes:true})){if(!o.isDirectory())continue;for(var v of f.readdirSync(p.join(b,o.name),{withFileTypes:true})){if(!v.isDirectory())continue;var c=p.join(b,o.name,v.name);if(f.existsSync(p.join(c,q)))return c}}}}catch(x){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)",
               "node",
-              "scripts/hooks/run-with-flags.js",
-              "pre:bash:block-no-verify",
-              "scripts/hooks/block-no-verify.js",
-              "minimal,standard,strict"
+              "scripts/hooks/pre-bash-dispatcher.js"
             ]
           }
         ],
-        "description": "Block git hook-bypass flag to protect pre-commit, commit-msg, and pre-push hooks from being skipped",
-        "id": "pre:bash:block-no-verify"
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": [
-              "node",
-              "-e",
-              "const p=require('path');const r=(()=>{var e=process.env.CLAUDE_PLUGIN_ROOT;if(e&&e.trim())return e.trim();var p=require('path'),f=require('fs'),h=require('os').homedir(),d=p.join(h,'.claude'),q=p.join('scripts','lib','utils.js');if(f.existsSync(p.join(d,q)))return d;for(var s of [[\"ecc\"],[\"ecc@ecc\"],[\"marketplace\",\"ecc\"],[\"everything-claude-code\"],[\"everything-claude-code@everything-claude-code\"],[\"marketplace\",\"everything-claude-code\"]]){var l=p.join(d,'plugins',...s);if(f.existsSync(p.join(l,q)))return l}try{for(var g of [\"ecc\",\"everything-claude-code\"]){var b=p.join(d,'plugins','cache',g);for(var o of f.readdirSync(b,{withFileTypes:true})){if(!o.isDirectory())continue;for(var v of f.readdirSync(p.join(b,o.name),{withFileTypes:true})){if(!v.isDirectory())continue;var c=p.join(b,o.name,v.name);if(f.existsSync(p.join(c,q)))return c}}}}catch(x){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)",
-              "node",
-              "scripts/hooks/auto-tmux-dev.js"
-            ]
-          }
-        ],
-        "description": "Auto-start dev servers in tmux with directory-based session names",
-        "id": "pre:bash:auto-tmux-dev"
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": [
-              "node",
-              "-e",
-              "const p=require('path');const r=(()=>{var e=process.env.CLAUDE_PLUGIN_ROOT;if(e&&e.trim())return e.trim();var p=require('path'),f=require('fs'),h=require('os').homedir(),d=p.join(h,'.claude'),q=p.join('scripts','lib','utils.js');if(f.existsSync(p.join(d,q)))return d;for(var s of [[\"ecc\"],[\"ecc@ecc\"],[\"marketplace\",\"ecc\"],[\"everything-claude-code\"],[\"everything-claude-code@everything-claude-code\"],[\"marketplace\",\"everything-claude-code\"]]){var l=p.join(d,'plugins',...s);if(f.existsSync(p.join(l,q)))return l}try{for(var g of [\"ecc\",\"everything-claude-code\"]){var b=p.join(d,'plugins','cache',g);for(var o of f.readdirSync(b,{withFileTypes:true})){if(!o.isDirectory())continue;for(var v of f.readdirSync(p.join(b,o.name),{withFileTypes:true})){if(!v.isDirectory())continue;var c=p.join(b,o.name,v.name);if(f.existsSync(p.join(c,q)))return c}}}}catch(x){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)",
-              "node",
-              "scripts/hooks/run-with-flags.js",
-              "pre:bash:tmux-reminder",
-              "scripts/hooks/pre-bash-tmux-reminder.js",
-              "strict"
-            ]
-          }
-        ],
-        "description": "Reminder to use tmux for long-running commands",
-        "id": "pre:bash:tmux-reminder"
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": [
-              "node",
-              "-e",
-              "const p=require('path');const r=(()=>{var e=process.env.CLAUDE_PLUGIN_ROOT;if(e&&e.trim())return e.trim();var p=require('path'),f=require('fs'),h=require('os').homedir(),d=p.join(h,'.claude'),q=p.join('scripts','lib','utils.js');if(f.existsSync(p.join(d,q)))return d;for(var s of [[\"ecc\"],[\"ecc@ecc\"],[\"marketplace\",\"ecc\"],[\"everything-claude-code\"],[\"everything-claude-code@everything-claude-code\"],[\"marketplace\",\"everything-claude-code\"]]){var l=p.join(d,'plugins',...s);if(f.existsSync(p.join(l,q)))return l}try{for(var g of [\"ecc\",\"everything-claude-code\"]){var b=p.join(d,'plugins','cache',g);for(var o of f.readdirSync(b,{withFileTypes:true})){if(!o.isDirectory())continue;for(var v of f.readdirSync(p.join(b,o.name),{withFileTypes:true})){if(!v.isDirectory())continue;var c=p.join(b,o.name,v.name);if(f.existsSync(p.join(c,q)))return c}}}}catch(x){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)",
-              "node",
-              "scripts/hooks/run-with-flags.js",
-              "pre:bash:git-push-reminder",
-              "scripts/hooks/pre-bash-git-push-reminder.js",
-              "strict"
-            ]
-          }
-        ],
-        "description": "Reminder before git push to review changes",
-        "id": "pre:bash:git-push-reminder"
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": [
-              "node",
-              "-e",
-              "const p=require('path');const r=(()=>{var e=process.env.CLAUDE_PLUGIN_ROOT;if(e&&e.trim())return e.trim();var p=require('path'),f=require('fs'),h=require('os').homedir(),d=p.join(h,'.claude'),q=p.join('scripts','lib','utils.js');if(f.existsSync(p.join(d,q)))return d;for(var s of [[\"ecc\"],[\"ecc@ecc\"],[\"marketplace\",\"ecc\"],[\"everything-claude-code\"],[\"everything-claude-code@everything-claude-code\"],[\"marketplace\",\"everything-claude-code\"]]){var l=p.join(d,'plugins',...s);if(f.existsSync(p.join(l,q)))return l}try{for(var g of [\"ecc\",\"everything-claude-code\"]){var b=p.join(d,'plugins','cache',g);for(var o of f.readdirSync(b,{withFileTypes:true})){if(!o.isDirectory())continue;for(var v of f.readdirSync(p.join(b,o.name),{withFileTypes:true})){if(!v.isDirectory())continue;var c=p.join(b,o.name,v.name);if(f.existsSync(p.join(c,q)))return c}}}}catch(x){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)",
-              "node",
-              "scripts/hooks/run-with-flags.js",
-              "pre:bash:commit-quality",
-              "scripts/hooks/pre-bash-commit-quality.js",
-              "strict"
-            ]
-          }
-        ],
-        "description": "Pre-commit quality check: lint staged files, validate commit message format, detect console.log/debugger/secrets before committing",
-        "id": "pre:bash:commit-quality"
+        "description": "Consolidated Bash preflight dispatcher for quality, tmux, push, and GateGuard checks",
+        "id": "pre:bash:dispatcher"
       },
       {
         "matcher": "Write",
@@ -243,27 +163,6 @@
         ],
         "description": "Fact-forcing gate: block first Edit/Write/MultiEdit per file and demand investigation (importers, data schemas, user instruction) before allowing",
         "id": "pre:edit-write:gateguard-fact-force"
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": [
-              "node",
-              "-e",
-              "const p=require('path');const r=(()=>{var e=process.env.CLAUDE_PLUGIN_ROOT;if(e&&e.trim())return e.trim();var p=require('path'),f=require('fs'),h=require('os').homedir(),d=p.join(h,'.claude'),q=p.join('scripts','lib','utils.js');if(f.existsSync(p.join(d,q)))return d;for(var s of [[\"ecc\"],[\"ecc@ecc\"],[\"marketplace\",\"ecc\"],[\"everything-claude-code\"],[\"everything-claude-code@everything-claude-code\"],[\"marketplace\",\"everything-claude-code\"]]){var l=p.join(d,'plugins',...s);if(f.existsSync(p.join(l,q)))return l}try{for(var g of [\"ecc\",\"everything-claude-code\"]){var b=p.join(d,'plugins','cache',g);for(var o of f.readdirSync(b,{withFileTypes:true})){if(!o.isDirectory())continue;for(var v of f.readdirSync(p.join(b,o.name),{withFileTypes:true})){if(!v.isDirectory())continue;var c=p.join(b,o.name,v.name);if(f.existsSync(p.join(c,q)))return c}}}}catch(x){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)",
-              "node",
-              "scripts/hooks/run-with-flags.js",
-              "pre:bash:gateguard-fact-force",
-              "scripts/hooks/gateguard-fact-force.js",
-              "standard,strict"
-            ],
-            "timeout": 5
-          }
-        ],
-        "description": "Fact-forcing gate: block destructive Bash commands and demand rollback plan; quote user instruction on first Bash per session",
-        "id": "pre:bash:gateguard-fact-force"
       }
     ],
     "PreCompact": [
@@ -318,73 +217,14 @@
               "-e",
               "const p=require('path');const r=(()=>{var e=process.env.CLAUDE_PLUGIN_ROOT;if(e&&e.trim())return e.trim();var p=require('path'),f=require('fs'),h=require('os').homedir(),d=p.join(h,'.claude'),q=p.join('scripts','lib','utils.js');if(f.existsSync(p.join(d,q)))return d;for(var s of [[\"ecc\"],[\"ecc@ecc\"],[\"marketplace\",\"ecc\"],[\"everything-claude-code\"],[\"everything-claude-code@everything-claude-code\"],[\"marketplace\",\"everything-claude-code\"]]){var l=p.join(d,'plugins',...s);if(f.existsSync(p.join(l,q)))return l}try{for(var g of [\"ecc\",\"everything-claude-code\"]){var b=p.join(d,'plugins','cache',g);for(var o of f.readdirSync(b,{withFileTypes:true})){if(!o.isDirectory())continue;for(var v of f.readdirSync(p.join(b,o.name),{withFileTypes:true})){if(!v.isDirectory())continue;var c=p.join(b,o.name,v.name);if(f.existsSync(p.join(c,q)))return c}}}}catch(x){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)",
               "node",
-              "scripts/hooks/post-bash-command-log.js",
-              "audit"
-            ]
-          }
-        ],
-        "description": "Audit log all bash commands to ~/.claude/bash-commands.log",
-        "id": "post:bash:command-log-audit"
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": [
-              "node",
-              "-e",
-              "const p=require('path');const r=(()=>{var e=process.env.CLAUDE_PLUGIN_ROOT;if(e&&e.trim())return e.trim();var p=require('path'),f=require('fs'),h=require('os').homedir(),d=p.join(h,'.claude'),q=p.join('scripts','lib','utils.js');if(f.existsSync(p.join(d,q)))return d;for(var s of [[\"ecc\"],[\"ecc@ecc\"],[\"marketplace\",\"ecc\"],[\"everything-claude-code\"],[\"everything-claude-code@everything-claude-code\"],[\"marketplace\",\"everything-claude-code\"]]){var l=p.join(d,'plugins',...s);if(f.existsSync(p.join(l,q)))return l}try{for(var g of [\"ecc\",\"everything-claude-code\"]){var b=p.join(d,'plugins','cache',g);for(var o of f.readdirSync(b,{withFileTypes:true})){if(!o.isDirectory())continue;for(var v of f.readdirSync(p.join(b,o.name),{withFileTypes:true})){if(!v.isDirectory())continue;var c=p.join(b,o.name,v.name);if(f.existsSync(p.join(c,q)))return c}}}}catch(x){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)",
-              "node",
-              "scripts/hooks/post-bash-command-log.js",
-              "cost"
-            ]
-          }
-        ],
-        "description": "Cost tracker - log bash tool usage with timestamps",
-        "id": "post:bash:command-log-cost"
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": [
-              "node",
-              "-e",
-              "const p=require('path');const r=(()=>{var e=process.env.CLAUDE_PLUGIN_ROOT;if(e&&e.trim())return e.trim();var p=require('path'),f=require('fs'),h=require('os').homedir(),d=p.join(h,'.claude'),q=p.join('scripts','lib','utils.js');if(f.existsSync(p.join(d,q)))return d;for(var s of [[\"ecc\"],[\"ecc@ecc\"],[\"marketplace\",\"ecc\"],[\"everything-claude-code\"],[\"everything-claude-code@everything-claude-code\"],[\"marketplace\",\"everything-claude-code\"]]){var l=p.join(d,'plugins',...s);if(f.existsSync(p.join(l,q)))return l}try{for(var g of [\"ecc\",\"everything-claude-code\"]){var b=p.join(d,'plugins','cache',g);for(var o of f.readdirSync(b,{withFileTypes:true})){if(!o.isDirectory())continue;for(var v of f.readdirSync(p.join(b,o.name),{withFileTypes:true})){if(!v.isDirectory())continue;var c=p.join(b,o.name,v.name);if(f.existsSync(p.join(c,q)))return c}}}}catch(x){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)",
-              "node",
-              "scripts/hooks/run-with-flags.js",
-              "post:bash:pr-created",
-              "scripts/hooks/post-bash-pr-created.js",
-              "standard,strict"
-            ]
-          }
-        ],
-        "description": "Log PR URL and provide review command after PR creation",
-        "id": "post:bash:pr-created"
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": [
-              "node",
-              "-e",
-              "const p=require('path');const r=(()=>{var e=process.env.CLAUDE_PLUGIN_ROOT;if(e&&e.trim())return e.trim();var p=require('path'),f=require('fs'),h=require('os').homedir(),d=p.join(h,'.claude'),q=p.join('scripts','lib','utils.js');if(f.existsSync(p.join(d,q)))return d;for(var s of [[\"ecc\"],[\"ecc@ecc\"],[\"marketplace\",\"ecc\"],[\"everything-claude-code\"],[\"everything-claude-code@everything-claude-code\"],[\"marketplace\",\"everything-claude-code\"]]){var l=p.join(d,'plugins',...s);if(f.existsSync(p.join(l,q)))return l}try{for(var g of [\"ecc\",\"everything-claude-code\"]){var b=p.join(d,'plugins','cache',g);for(var o of f.readdirSync(b,{withFileTypes:true})){if(!o.isDirectory())continue;for(var v of f.readdirSync(p.join(b,o.name),{withFileTypes:true})){if(!v.isDirectory())continue;var c=p.join(b,o.name,v.name);if(f.existsSync(p.join(c,q)))return c}}}}catch(x){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)",
-              "node",
-              "scripts/hooks/run-with-flags.js",
-              "post:bash:build-complete",
-              "scripts/hooks/post-bash-build-complete.js",
-              "standard,strict"
+              "scripts/hooks/post-bash-dispatcher.js"
             ],
             "async": true,
             "timeout": 30
           }
         ],
-        "description": "Example: async hook for build analysis (runs in background without blocking)",
-        "id": "post:bash:build-complete"
+        "description": "Consolidated Bash postflight dispatcher for logging, PR, and build notifications",
+        "id": "post:bash:dispatcher"
       },
       {
         "matcher": "Edit|Write|MultiEdit",

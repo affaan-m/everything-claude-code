@@ -256,6 +256,14 @@ function getHookCommandByDescription(hooks, lifecycle, descriptionText) {
   return hookGroup.hooks[0].command;
 }
 
+function getHookCommandById(hooks, lifecycle, hookId) {
+  const hookGroup = hooks.hooks[lifecycle]?.find(entry => entry.id === hookId);
+
+  assert.ok(hookGroup, `Expected ${lifecycle} hook with id "${hookId}"`);
+  assert.ok(hookGroup.hooks?.[0]?.command, `Expected ${lifecycle} hook command for id "${hookId}"`);
+  return hookGroup.hooks[0].command;
+}
+
 // Test suite
 async function runTests() {
   console.log('\n=== Hook Integration Tests ===\n');
@@ -340,12 +348,7 @@ async function runTests() {
   })) passed++; else failed++;
 
   if (await asyncTest('dev server hook transforms command to tmux session', async () => {
-    // Test the auto-tmux dev hook — transforms dev commands to run in tmux
-    const hookCommand = getHookCommandByDescription(
-      hooks,
-      'PreToolUse',
-      'Auto-start dev servers in tmux'
-    );
+    const hookCommand = getHookCommandById(hooks, 'PreToolUse', 'pre:bash:dispatcher');
     const result = await runHookCommand(hookCommand, {
       tool_input: { command: 'npm run dev' }
     });
@@ -526,12 +529,7 @@ async function runTests() {
   })) passed++; else failed++;
 
   if (await asyncTest('dev server hook transforms yarn dev to tmux session', async () => {
-    // The auto-tmux dev hook transforms dev commands (yarn dev, npm run dev, etc.)
-    const hookCommand = getHookCommandByDescription(
-      hooks,
-      'PreToolUse',
-      'Auto-start dev servers in tmux'
-    );
+    const hookCommand = getHookCommandById(hooks, 'PreToolUse', 'pre:bash:dispatcher');
     const result = await runHookCommand(hookCommand, {
       tool_input: { command: 'yarn dev' }
     });
@@ -663,14 +661,8 @@ async function runTests() {
   })) passed++; else failed++;
 
   if (await asyncTest('PostToolUse PR hook extracts PR URL', async () => {
-    // Find the PR logging hook
-    const prHook = hooks.hooks.PostToolUse.find(h =>
-      h.description && h.description.includes('PR URL')
-    );
-
-    assert.ok(prHook, 'PR hook should exist');
-
-    const result = await runHookCommand(prHook.hooks[0].command, {
+    const hookCommand = getHookCommandById(hooks, 'PostToolUse', 'post:bash:dispatcher');
+    const result = await runHookCommand(hookCommand, {
       tool_input: { command: 'gh pr create --title "Test"' },
       tool_output: { output: 'Creating pull request...\nhttps://github.com/owner/repo/pull/123' }
     });

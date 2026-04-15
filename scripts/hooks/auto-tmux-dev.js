@@ -30,19 +30,10 @@ const { spawnSync } = require('child_process');
 
 const MAX_STDIN = 1024 * 1024; // 1MB limit
 let data = '';
-process.stdin.setEncoding('utf8');
 
-process.stdin.on('data', chunk => {
-  if (data.length < MAX_STDIN) {
-    const remaining = MAX_STDIN - data.length;
-    data += chunk.substring(0, remaining);
-  }
-});
-
-process.stdin.on('end', () => {
-  let input;
+function run(rawInput) {
   try {
-    input = JSON.parse(data);
+    const input = typeof rawInput === 'string' ? JSON.parse(rawInput) : rawInput;
     const cmd = input.tool_input?.command || '';
 
     // Detect dev server commands: npm run dev, pnpm dev, yarn dev, bun run dev
@@ -60,7 +51,13 @@ process.stdin.on('end', () => {
         // Windows: open in a new cmd window (non-blocking)
         // Escape double quotes in cmd for cmd /k syntax
         const escapedCmd = cmd.replace(/"/g, '""');
-        input.tool_input.command = `start "DevServer-${sessionName}" cmd /k "${escapedCmd}"`;
+        return JSON.stringify({
+          ...input,
+          tool_input: {
+            ...input.tool_input,
+            command: `start "DevServer-${sessionName}" cmd /k "${escapedCmd}"`,
+          },
+        });
       } else {
         // Unix (macOS/Linux): Check tmux is available before transforming
         const tmuxCheck = spawnSync('which', ['tmux'], { encoding: 'utf8' });
@@ -73,16 +70,38 @@ process.stdin.on('end', () => {
           // 2. Create new detached session with the dev command
           // 3. Echo confirmation message with instructions for viewing logs
           const transformedCmd = `SESSION="${sessionName}"; tmux kill-session -t "$SESSION" 2>/dev/null || true; tmux new-session -d -s "$SESSION" '${escapedCmd}' && echo "[Hook] Dev server started in tmux session '${sessionName}'. View logs: tmux capture-pane -t ${sessionName} -p -S -100"`;
-
-          input.tool_input.command = transformedCmd;
+          return JSON.stringify({
+            ...input,
+            tool_input: {
+              ...input.tool_input,
+              command: transformedCmd,
+            },
+          });
         }
         // else: tmux not found, pass through original command unchanged
       }
     }
-    process.stdout.write(JSON.stringify(input));
+
+    return JSON.stringify(input);
   } catch {
     // Invalid input — pass through original data unchanged
-    process.stdout.write(data);
+    return typeof rawInput === 'string' ? rawInput : JSON.stringify(rawInput);
   }
-  process.exit(0);
-});
+}
+
+if (require.main === module) {
+  process.stdin.setEncoding('utf8');
+  process.stdin.on('data', chunk => {
+    if (data.length < MAX_STDIN) {
+      const remaining = MAX_STDIN - data.length;
+      data += chunk.substring(0, remaining);
+    }
+  });
+
+  process.stdin.on('end', () => {
+    process.stdout.write(run(data));
+    process.exit(0);
+  });
+}
+
+module.exports = { run };
