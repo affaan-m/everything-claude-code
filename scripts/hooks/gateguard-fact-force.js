@@ -76,14 +76,37 @@ function pruneCheckedEntries(checked) {
 
 function saveState(state) {
   try {
-    state.last_active = Date.now();
-    state.checked = pruneCheckedEntries(state.checked);
     fs.mkdirSync(STATE_DIR, { recursive: true });
-    // Atomic write: temp file + rename prevents partial reads
-    const tmpFile = STATE_FILE + '.tmp.' + process.pid;
-    fs.writeFileSync(tmpFile, JSON.stringify(state, null, 2), 'utf8');
+
+    // 1. Prepare base state from what's currently in memory
+    let mergedChecked = state.checked || [];
+    let mergedLastActive = state.last_active || 0;
+
+    // 2. Merge with current disk state to prevent overwriting concurrent updates (Option 2: Merge-style saves)
+    try {
+      if (fs.existsSync(STATE_FILE)) {
+        const disk = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
+        if (Array.isArray(disk.checked)) {
+          // Union of checked items, preserving order (disk items first, then memory items)
+          mergedChecked = Array.from(new Set([...disk.checked, ...mergedChecked]));
+        }
+        if (typeof disk.last_active === 'number') {
+          mergedLastActive = Math.max(mergedLastActive, disk.last_active);
+        }
+      }
+    } catch (_) { /* ignore disk read errors, proceed with memory state */ }
+
+    // 3. Finalize state: update heartbeat and prune to bounded size
+    const finalState = {
+      checked: pruneCheckedEntries(mergedChecked),
+      last_active: Math.max(mergedLastActive, Date.now())
+    };
+
+    // 4. Atomic write: temp file + rename prevents partial reads
+    const tmpFile = STATE_FILE + '.tmp.' + process.pid + '.' + Math.random().toString(36).slice(2, 6);
+    fs.writeFileSync(tmpFile, JSON.stringify(finalState, null, 2), 'utf8');
     fs.renameSync(tmpFile, STATE_FILE);
-  } catch (_) { /* ignore */ }
+  } catch (_) { /* ignore all errors to ensure hook never blocks */ }
 }
 
 function markChecked(key) {
