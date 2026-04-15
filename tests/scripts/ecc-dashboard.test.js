@@ -86,6 +86,36 @@ print(json.dumps({'argv': argv, 'kwargs': kwargs}))
     assert.ok(Object.prototype.hasOwnProperty.call(parsed.kwargs, 'creationflags'));
   })) passed++; else failed++;
 
+  if (test('build_file_open_launch routes POSIX through xdg-open with path as a separate argv entry', () => {
+    const output = runPython(`
+import importlib.util, json
+spec = importlib.util.spec_from_file_location("ecc_dashboard_runtime", r"""${runtimeHelpersPath}""")
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+argv, kwargs = module.build_file_open_launch('/tmp/proj/README.md; rm -rf ~', os_name='posix')
+print(json.dumps({'argv': argv, 'kwargs': kwargs}))
+`);
+    const parsed = JSON.parse(output);
+    assert.deepStrictEqual(parsed.argv, ['xdg-open', '/tmp/proj/README.md; rm -rf ~']);
+    assert.deepStrictEqual(parsed.kwargs, {});
+  })) passed++; else failed++;
+
+  if (test('build_file_open_launch routes Windows through start with path as a separate argv entry', () => {
+    const output = runPython(`
+import importlib.util, json
+spec = importlib.util.spec_from_file_location("ecc_dashboard_runtime", r"""${runtimeHelpersPath}""")
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+argv, kwargs = module.build_file_open_launch(r'C:\\\\Users\\\\user\\\\proj\\\\README.md & del C:\\\\*', os_name='nt')
+print(json.dumps({'argv': argv, 'kwargs': kwargs}))
+`);
+    const parsed = JSON.parse(output);
+    assert.strictEqual(parsed.argv[0], 'start');
+    assert.ok(parsed.argv[1].includes('README.md & del'), 'path with metacharacters must remain literal');
+    assert.ok(parsed.argv[1].includes('C:'), 'windows drive prefix should be preserved');
+    assert.deepStrictEqual(parsed.kwargs, {});
+  })) passed++; else failed++;
+
   if (test('maximize_window falls back to Linux zoom attribute when zoomed state is unsupported', () => {
     const output = runPython(`
 import importlib.util, json

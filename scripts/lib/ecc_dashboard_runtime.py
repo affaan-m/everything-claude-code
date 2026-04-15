@@ -59,3 +59,19 @@ def build_terminal_launch(
         ['x-terminal-emulator', '-e', 'bash', '-lc', 'cd -- "$1"; exec bash', 'bash', path],
         {},
     )
+
+
+def build_file_open_launch(
+    path: str,
+    *,
+    os_name: Optional[str] = None,
+) -> Tuple[List[str], Dict[str, object]]:
+    """Return safe argv/kwargs for opening an arbitrary file in the OS default handler.
+
+    Mirrors the build_terminal_launch contract so dashboard callers can route every
+    external launch through the same testable, injection-safe helper. The path is
+    always passed as a separate argv entry, never interpolated into a shell string.
+    """
+    resolved_os_name = os_name or os.name
+    launcher = 'start' if resolved_os_name == 'nt' else 'xdg-open'
+    return ([launcher, path], {})
