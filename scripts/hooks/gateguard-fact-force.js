@@ -27,9 +27,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Session state — scoped per session to avoid cross-session races.
-// Uses CLAUDE_SESSION_ID (set by Claude Code) or falls back to PID-based isolation.
+// Uses CLAUDE_SESSION_ID (set by Claude Code) or falls back to stable CWD-based isolation.
 const STATE_DIR = process.env.GATEGUARD_STATE_DIR || path.join(process.env.HOME || process.env.USERPROFILE || '/tmp', '.gateguard');
-const SESSION_ID = process.env.CLAUDE_SESSION_ID || process.env.ECC_SESSION_ID || `pid-${process.ppid || process.pid}`;
+const SESSION_ID = process.env.CLAUDE_SESSION_ID || process.env.ECC_SESSION_ID || `cwd-${crypto.createHash('sha256').update(process.cwd()).digest('hex').slice(0, 16)}`;
 const STATE_FILE = path.join(STATE_DIR, `state-${SESSION_ID.replace(/[^a-zA-Z0-9_-]/g, '_')}.json`);
 
 // State expires after 30 minutes of inactivity
@@ -82,6 +82,9 @@ function saveState(state) {
     // Atomic write: temp file + rename prevents partial reads
     const tmpFile = STATE_FILE + '.tmp.' + process.pid;
     fs.writeFileSync(tmpFile, JSON.stringify(state, null, 2), 'utf8');
+    // On Windows, fs.renameSync throws EEXIST if the destination exists.
+    // Unlink first to ensure cross-platform replacement.
+    try { fs.unlinkSync(STATE_FILE); } catch (_) { /* ignore if not exists */ }
     fs.renameSync(tmpFile, STATE_FILE);
   } catch (_) { /* ignore */ }
 }
