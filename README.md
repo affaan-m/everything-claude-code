@@ -239,7 +239,7 @@ For manual install instructions see the README in the `rules/` folder. When copy
 /plugin list ecc@ecc
 ```
 
-**That's it!** You now have access to 47 agents, 181 skills, and 79 legacy command shims.
+**That's it!** You now have access to 47 agents, 181 skills, and 80 legacy command shims.
 
 ### Dashboard GUI
 
@@ -1198,7 +1198,7 @@ The configuration is automatically detected from `.opencode/opencode.json`.
 | Feature | Claude Code | OpenCode | Status |
 |---------|-------------|----------|--------|
 | Agents | PASS: 47 agents | PASS: 12 agents | **Claude Code leads** |
-| Commands | PASS: 79 commands | PASS: 31 commands | **Claude Code leads** |
+| Commands | PASS: 80 commands | PASS: 31 commands | **Claude Code leads** |
 | Skills | PASS: 181 skills | PASS: 37 skills | **Claude Code leads** |
 | Hooks | PASS: 8 event types | PASS: 11 events | **OpenCode has more!** |
 | Rules | PASS: 29 rules | PASS: 13 instructions | **Claude Code leads** |
@@ -1307,7 +1307,7 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 | Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |
 |---------|------------|------------|-----------|----------|
 | **Agents** | 47 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
-| **Commands** | 79 | Shared | Instruction-based | 31 |
+| **Commands** | 80 | Shared | Instruction-based | 31 |
 | **Skills** | 181 | Shared | 10 (native format) | 37 |
 | **Hook Events** | 8 types | 15 types | None yet | 11 types |
 | **Hook Scripts** | 20+ scripts | 16 scripts (DRY adapter) | N/A | Plugin hooks |
