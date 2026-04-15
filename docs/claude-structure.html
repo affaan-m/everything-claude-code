@@ -8,6 +8,18 @@
         integrity="sha384-R63zfMfSwJF4xCR11wXii+QUsbiBIdiDzDbtxia72oGWfkT7WHJfmD/I/eeHPJyT"
         crossorigin="anonymous"
         onerror="window.__mermaidFailed=true"></script>
+<!-- #1002: CDN fallback - retry from unpkg if jsdelivr fails -->
+<script>
+if (window.__mermaidFailed || typeof mermaid === 'undefined') {
+  (function() {
+    var fb = document.createElement('script');
+    fb.src = 'https://unpkg.com/mermaid@10.9.3/dist/mermaid.min.js';
+    fb.onload = function() { window.__mermaidFailed = false; };
+    fb.onerror = function() { window.__mermaidFailed = true; };
+    document.head.appendChild(fb);
+  })();
+}
+</script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -114,17 +126,17 @@
 <h1>~/.claude グローバル設定ディレクトリ構造</h1>
 <p class="subtitle">Claude Code の設定・フック・スキル・コマンド全体マップ（2026-04-09）</p>
 
-<div class="tabs">
-  <button class="tab active"  onclick="showPanel('overview',this)">全体概要</button>
-  <button class="tab" onclick="showPanel('hooks',this)">Hooks 詳細</button>
-  <button class="tab" onclick="showPanel('commands',this)">Commands 詳細</button>
-  <button class="tab" onclick="showPanel('rules',this)">Rules / Scripts</button>
-  <button class="tab" onclick="showPanel('skills',this)">Skills 一覧</button>
-  <button class="tab" onclick="showPanel('channels',this)">Channels / Agents</button>
+<div class="tabs" role="tablist" aria-label="構造ナビゲーション">
+  <button class="tab active" role="tab" aria-selected="true" aria-controls="panel-overview" onclick="showPanel('overview',this)">全体概要</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="panel-hooks" onclick="showPanel('hooks',this)">Hooks 詳細</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="panel-commands" onclick="showPanel('commands',this)">Commands 詳細</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="panel-rules" onclick="showPanel('rules',this)">Rules / Scripts</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="panel-skills" onclick="showPanel('skills',this)">Skills 一覧</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="panel-channels" onclick="showPanel('channels',this)">Channels / Agents</button>
 </div>
 
 <!-- ── OVERVIEW ── -->
-<div id="panel-overview" class="panel active">
+<div id="panel-overview" class="panel active" role="tabpanel" aria-label="全体概要">
   <div class="viewport" id="vp-overview">
     <div class="ztb" id="ztb-overview">
       <span class="ztb-pct" id="pct-overview">100%</span>
@@ -154,7 +166,7 @@ graph TD
 
     EXT --> COMMANDS["📁 commands/<br/><small>スラッシュコマンド 30+</small>"]:::commands
     EXT --> SKILLS["📁 skills/<br/><small>89 スキル</small>"]:::skills
-    EXT --> AGENTS["📁 agents/<br/><small>サブエージェント定義 10</small>"]:::agents
+    EXT --> AGENTS["📁 agents/<br/><small>サブエージェント定義 13</small>"]:::agents
     EXT --> PLUGINS["📁 plugins/<br/><small>claude-code-harness 等</small>"]:::plugins
 
     STORAGE --> DATA["📁 projects/ + session-search/<br/><small>履歴・ChromaDB・永続メモリ</small>"]:::data
@@ -198,14 +210,14 @@ graph TD
     <div class="legend-item"><div class="dot" style="background:#2ea043"></div>Hooks (自動実行)</div>
     <div class="legend-item"><div class="dot" style="background:#1f6feb"></div>Commands (スラッシュ)</div>
     <div class="legend-item"><div class="dot" style="background:#0ea5e9"></div>Skills (89個)</div>
-    <div class="legend-item"><div class="dot" style="background:#d97706"></div>Agents (10個)</div>
+    <div class="legend-item"><div class="dot" style="background:#d97706"></div>Agents (13個)</div>
     <div class="legend-item"><div class="dot" style="background:#ec4899"></div>Rules (詳細ルール)</div>
     <div class="legend-item"><div class="dot" style="background:#7c3aed"></div>Config (設定ファイル)</div>
   </div>
 </div>
 
 <!-- ── HOOKS DETAIL ── -->
-<div id="panel-hooks" class="panel">
+<div id="panel-hooks" class="panel" role="tabpanel" aria-label="Hooks 詳細">
   <div class="viewport" id="vp-hooks">
     <div class="ztb">
       <span class="ztb-pct" id="pct-hooks">100%</span>
@@ -268,7 +280,7 @@ graph TD
 </div>
 
 <!-- ── COMMANDS DETAIL ── -->
-<div id="panel-commands" class="panel">
+<div id="panel-commands" class="panel" role="tabpanel" aria-label="Commands 詳細">
   <div class="viewport" id="vp-commands">
     <div class="ztb">
       <span class="ztb-pct" id="pct-commands">100%</span>
@@ -341,7 +353,7 @@ graph TD
 </div>
 
 <!-- ── RULES / SCRIPTS ── -->
-<div id="panel-rules" class="panel">
+<div id="panel-rules" class="panel" role="tabpanel" aria-label="Rules / Scripts">
   <div class="viewport" id="vp-rules">
     <div class="ztb">
       <span class="ztb-pct" id="pct-rules">100%</span>
@@ -387,7 +399,7 @@ graph TD
 </div>
 
 <!-- ── SKILLS ── -->
-<div id="panel-skills" class="panel">
+<div id="panel-skills" class="panel" role="tabpanel" aria-label="Skills 一覧">
   <div class="viewport" id="vp-skills">
     <div class="ztb">
       <span class="ztb-pct" id="pct-skills">100%</span>
@@ -430,7 +442,7 @@ graph TD
 </div>
 
 <!-- ── CHANNELS / AGENTS ── -->
-<div id="panel-channels" class="panel">
+<div id="panel-channels" class="panel" role="tabpanel" aria-label="Channels / Agents">
   <div class="viewport" id="vp-channels">
     <div class="ztb">
       <span class="ztb-pct" id="pct-channels">100%</span>
@@ -450,13 +462,16 @@ graph TD
       SBL["📁 script-bridge-lower/<br/>📁 script-bridge-upper/<br/><small>優先度別キュー</small>"]:::ch
     end
 
-    subgraph AGENTS["📁 agents/ — サブエージェント定義 (10)"]
+    subgraph AGENTS["📁 agents/ — サブエージェント定義 (13)"]
       CODE_R["code-reviewer.md<br/><small>コードレビュー専門</small>"]:::ag
       CODE_S["code-simplifier.md<br/><small>コード簡略化</small>"]:::ag
+      COMMENT_A["comment-analyzer.md<br/><small>コメント分析</small>"]:::ag
       DEP["deployment-specialist.md<br/><small>Cloud Runデプロイ</small>"]:::ag
       GH["github-integration-specialist.md<br/><small>GitHub Issue/PR管理</small>"]:::ag
+      MOBILE_UX["mobile-ux-optimizer.md<br/><small>モバイルUX最適化</small>"]:::ag
       UI_V["ui-verification-specialist.md<br/><small>UI視覚検証 + スクショ確認</small>"]:::ag
       SCREEN["screen-verification-specialist.md<br/><small>画面確認 + CiC操作</small>"]:::ag
+      TYPE_D["type-design-analyzer.md<br/><small>型設計分析</small>"]:::ag
       UX["ux-researcher.md<br/><small>UXリサーチ</small>"]:::ag
       UI_D["ui-designer.md<br/><small>UIデザイン生成</small>"]:::ag
       PR_T["pr-test-analyzer.md<br/><small>PRテスト分析</small>"]:::ag
@@ -471,6 +486,9 @@ graph TD
     classDef ch fill:#3a0d3a,stroke:#a855f7,color:#d8b4fe
     classDef ag fill:#3a2a1a,stroke:#d97706,color:#fcd34d
     classDef pl fill:#1a3a3a,stroke:#06b6d4,color:#67e8f9
+    class CHANNELS ch
+    class AGENTS ag
+    class PLUGINS pl
       </div>
     </div>
   </div>
@@ -479,8 +497,12 @@ graph TD
 
 <script>
 if (window.__mermaidFailed || typeof mermaid === 'undefined') {
-  document.addEventListener('DOMContentLoaded', () => {
-    document.body.innerHTML = '<p style="color:#f85149;padding:2rem;font-family:sans-serif">Mermaid CDN の読み込みに失敗しました。ネットワーク接続を確認してリロードしてください。</p>';
+  // #1008: mermaid未定義時のReferenceError防止 - typeof チェック済み
+  // #1009: onerror時body null問題 - DOMContentLoaded + null チェック
+  document.addEventListener('DOMContentLoaded', function() {
+    if (document.body) {
+      document.body.innerHTML = '<p style="color:#f85149;padding:2rem;font-family:sans-serif">Mermaid CDN の読み込みに失敗しました。ネットワーク接続を確認してリロードしてください。</p>';
+    }
   });
 } else {
 mermaid.initialize({
@@ -622,31 +644,61 @@ function zpCall(id, method, arg) {
   if (zp[id]) zp[id][method](arg);
 }
 
-// Init after Mermaid finishes rendering (SVG existence check with retry)
+// #1003: MutationObserver でSVGレンダリング完了を検知（setTimeout依存を排除）
+// #1007: initAllPanels._initialized フラグで二重バインド防止
 function initAllPanels() {
+  if (initAllPanels._initialized) return; // 二重バインド防止
   if (window.__mermaidFailed || typeof mermaid === 'undefined') return;
-  const svg = document.querySelector('.mermaid svg');
-  if (!svg) {
-    // Mermaid未レンダリング: 200msごとにリトライ（最大15回 = 3秒）
-    if (!initAllPanels._retries) initAllPanels._retries = 0;
-    if (++initAllPanels._retries <= CFG.initMaxRetry) {
-      setTimeout(initAllPanels, CFG.initRetryMs);
-      return;
-    }
+  var svg = document.querySelector('.mermaid svg');
+  if (svg) {
+    // SVG描画済み: 即座に初期化
+    initAllPanels._initialized = true;
+    PANELS.forEach(function(id) { if (!zp[id]) zp[id] = new ZoomPan(id); });
+    if (zp['overview']) zp['overview'].fit();
+    return;
   }
-  PANELS.forEach(id => { if (!zp[id]) zp[id] = new ZoomPan(id); });
-  if (zp['overview']) zp['overview'].fit();
+  // SVG未描画: MutationObserverで監視（タイムアウト付き）
+  var container = document.querySelector('.mermaid');
+  if (!container) return;
+  var observer = new MutationObserver(function(mutations) {
+    var found = document.querySelector('.mermaid svg');
+    if (found) {
+      observer.disconnect();
+      clearTimeout(fallbackTimer);
+      if (!initAllPanels._initialized) {
+        initAllPanels._initialized = true;
+        PANELS.forEach(function(id) { if (!zp[id]) zp[id] = new ZoomPan(id); });
+        if (zp['overview']) zp['overview'].fit();
+      }
+    }
+  });
+  observer.observe(container, { childList: true, subtree: true });
+  // フォールバック: 最大3秒待っても描画されなければ諦める
+  var fallbackTimer = setTimeout(function() {
+    observer.disconnect();
+    if (!initAllPanels._initialized) {
+      initAllPanels._initialized = true;
+      PANELS.forEach(function(id) { if (!zp[id]) zp[id] = new ZoomPan(id); });
+      if (zp['overview']) zp['overview'].fit();
+    }
+  }, CFG.initRetryMs * CFG.initMaxRetry);
 }
+initAllPanels._initialized = false;
 window.addEventListener('load', initAllPanels);
 
 // Tab switching (re-fit on panel change)
+// #1004: aria-selected属性の同期更新
 function showPanel(name, btn) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t) {
+    t.classList.remove('active');
+    t.setAttribute('aria-selected', 'false');
+  });
   document.getElementById('panel-' + name).classList.add('active');
   btn.classList.add('active');
+  btn.setAttribute('aria-selected', 'true');
   // Re-fit after panel becomes visible (display:flex triggers reflow)
-  setTimeout(() => {
+  setTimeout(function() {
     if (!zp[name]) zp[name] = new ZoomPan(name);
     zp[name].fit();
   }, CFG.tabSwitchMs);
