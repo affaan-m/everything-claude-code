@@ -93,8 +93,9 @@ function runTests() {
     const hooksJson = plan.operations.find(operation => (
       normalizedRelativePath(operation.sourceRelativePath) === '.cursor/hooks.json'
     ));
+    // Use a rules/ path with no twin under .cursor/rules so rules-core flatten still appears after .cursor.
     const preserved = plan.operations.find(operation => (
-      normalizedRelativePath(operation.sourceRelativePath) === 'rules/common/coding-style.md'
+      normalizedRelativePath(operation.sourceRelativePath) === 'rules/perl/coding-style.md'
     ));
 
     assert.ok(hooksJson, 'Should preserve non-rule Cursor platform config files');
@@ -105,7 +106,7 @@ function runTests() {
     assert.strictEqual(preserved.strategy, 'flatten-copy');
     assert.strictEqual(
       preserved.destinationPath,
-      path.join(projectRoot, '.cursor', 'rules', 'common-coding-style.mdc')
+      path.join(projectRoot, '.cursor', 'rules', 'perl-coding-style.mdc')
     );
   })) passed++; else failed++;
 
@@ -236,8 +237,8 @@ function runTests() {
     assert.strictEqual(commonAgentsDestinations.length, 1, 'Should keep only one common-agents.mdc operation');
     assert.strictEqual(
       normalizedRelativePath(commonAgentsDestinations[0].sourceRelativePath),
-      'rules/common/agents.md',
-      'Should prefer rules-core when cursor platform rules would collide'
+      '.cursor/rules/common-agents.md',
+      'Should prefer native .cursor/rules when rules-core would collide'
     );
   })) passed++; else failed++;
 

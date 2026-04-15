@@ -7,9 +7,9 @@ alwaysApply: false
 
 > This file extends the common hooks rule with Python specific content.
 
-## PostToolUse Hooks
+## After-edit behavior
 
-Configure in `~/.claude/settings.json`:
+Align tooling with the **`afterFileEdit`** hook in **`.cursor/hooks.json`** (extend **`.cursor/hooks/after-file-edit.js`** or add language-specific hooks if needed):
 
 - **black/ruff**: Auto-format `.py` files after edit
 - **mypy/pyright**: Run type checking after editing `.py` files

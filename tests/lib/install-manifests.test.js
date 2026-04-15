@@ -124,11 +124,11 @@ function runTests() {
     );
     assert.ok(
       plan.operations.some(operation => (
-        operation.sourceRelativePath === 'rules/common/agents.md'
+        operation.sourceRelativePath === '.cursor/rules/common-agents.md'
         && operation.destinationPath === path.join(projectRoot, '.cursor', 'rules', 'common-agents.mdc')
         && operation.strategy === 'flatten-copy'
       )),
-      'Should produce Cursor .mdc rules while preferring rules-core over duplicate platform copies'
+      'Should produce Cursor .mdc rules while preferring .cursor/rules over duplicate rules-core copies'
     );
   })) passed++; else failed++;
 

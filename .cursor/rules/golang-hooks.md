@@ -7,9 +7,9 @@ alwaysApply: false
 
 > This file extends the common hooks rule with Go specific content.
 
-## PostToolUse Hooks
+## After-edit behavior
 
-Configure in `~/.claude/settings.json`:
+Align tooling with the **`afterFileEdit`** hook in **`.cursor/hooks.json`** (extend **`.cursor/hooks/after-file-edit.js`** or add Go-specific hooks if needed):
 
 - **gofmt/goimports**: Auto-format `.go` files after edit
 - **go vet**: Run static analysis after editing `.go` files

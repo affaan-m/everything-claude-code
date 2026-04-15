@@ -13,7 +13,7 @@ alwaysApply: true
 
 Types: feat, fix, refactor, docs, test, chore, perf, ci
 
-Note: Attribution disabled globally via ~/.claude/settings.json.
+Note: Commit attribution and similar git metadata are controlled by **Cursor Settings** and your local **`git config`**, not by Claude Code’s `~/.claude/settings.json`.
 
 ## Pull Request Workflow
 

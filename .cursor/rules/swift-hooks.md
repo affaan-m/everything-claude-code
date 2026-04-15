@@ -7,9 +7,9 @@ alwaysApply: false
 
 > This file extends the common hooks rule with Swift specific content.
 
-## PostToolUse Hooks
+## After-edit behavior
 
-Configure in `~/.claude/settings.json`:
+Align tooling with the **`afterFileEdit`** hook in **`.cursor/hooks.json`** (extend **`.cursor/hooks/after-file-edit.js`** or add Swift-specific hooks if needed):
 
 - **SwiftFormat**: Auto-format `.swift` files after edit
 - **SwiftLint**: Run lint checks after editing `.swift` files

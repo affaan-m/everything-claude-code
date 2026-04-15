@@ -7,9 +7,9 @@ alwaysApply: false
 
 > This file extends the common hooks rule with Kotlin-specific content.
 
-## PostToolUse Hooks
+## After-edit behavior
 
-Configure in `~/.claude/settings.json`:
+Align tooling with the **`afterFileEdit`** hook in **`.cursor/hooks.json`** (extend **`.cursor/hooks/after-file-edit.js`** or add Kotlin-specific hooks if needed):
 
 - **ktfmt/ktlint**: Auto-format `.kt` and `.kts` files after edit
 - **detekt**: Run static analysis after editing Kotlin files

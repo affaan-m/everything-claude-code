@@ -7,9 +7,9 @@ alwaysApply: false
 
 > This file extends the common hooks rule with TypeScript/JavaScript specific content.
 
-## PostToolUse Hooks
+## After-edit behavior
 
-Configure in `~/.claude/settings.json`:
+ECC implements this stack via **`afterFileEdit`** in **`.cursor/hooks.json`** (see **`.cursor/hooks/after-file-edit.js`**):
 
 - **Prettier**: Auto-format JS/TS files after edit
 - **TypeScript check**: Run `tsc` after editing `.ts`/`.tsx` files
