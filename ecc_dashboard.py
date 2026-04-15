@@ -886,16 +886,15 @@ Project: github.com/affaan-m/everything-claude-code"""
         # Many tkinter widgets (menus, system frames, notebook tabs) reject the
         # `background` option silently; log at DEBUG so noise stays out of the
         # default stream while still being discoverable when troubleshooting theming.
+        # The recursive call handles each child's own configure, so the loop just
+        # recurses — no per-child configure in addition (that was the pre-#1450
+        # shape and double-configured every descendant).
         def update_widget_colors(widget):
             try:
                 widget.configure(background=bg_color)
             except Exception:
                 logger.debug("Skip background recolor on %r", widget, exc_info=True)
             for child in widget.winfo_children():
-                try:
-                    child.configure(background=bg_color)
-                except Exception:
-                    logger.debug("Skip background recolor on child %r", child, exc_info=True)
                 try:
                     update_widget_colors(child)
                 except Exception:
