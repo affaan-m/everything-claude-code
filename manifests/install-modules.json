@@ -195,6 +195,26 @@
       "stability": "stable"
     },
     {
+      "id": "windows-desktop-e2e",
+      "kind": "skills",
+      "description": "E2E testing skill for Windows native desktop applications (WPF, WinForms, Win32/MFC, Qt) using pywinauto and Windows UI Automation.",
+      "paths": [
+        "skills/windows-desktop-e2e"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode",
+        "codebuddy"
+      ],
+      "dependencies": [],
+      "defaultInstall": false,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
       "id": "workflow-quality",
       "kind": "skills",
       "description": "Evaluation, TDD, verification, compaction, and learning skills, including the legacy continuous-learning v1 path.",

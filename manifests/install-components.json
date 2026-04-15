@@ -426,6 +426,14 @@
       "modules": [
         "research-apis"
       ]
+    },
+    {
+      "id": "skill:windows-desktop-e2e",
+      "family": "skill",
+      "description": "E2E testing for Windows native desktop apps (WPF, WinForms, Win32/MFC, Qt) using pywinauto and Windows UI Automation.",
+      "modules": [
+        "windows-desktop-e2e"
+      ]
     }
   ]
 }
