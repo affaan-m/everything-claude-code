@@ -1,6 +1,6 @@
 ---
+name: harvard-resume-validator
 description: Validates and helps write resumes against Harvard College's official guidelines. Use this skill whenever you're working with a resume—whether reviewing a .tex resume file, getting feedback on your current resume, or building a new one from scratch. Covers Harvard's standards for formatting, structure (education, experience, skills), action verbs, conciseness, tailoring to roles, and best practices. Trigger on phrases like "validate my resume", "review my resume against Harvard guidelines", "help me write a resume", "check my resume", or when you see a resume .tex file that needs evaluation or improvement.
-origin: ECC
 origin: ECC
 ---
 
