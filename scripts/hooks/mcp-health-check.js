@@ -51,8 +51,7 @@ function stateFilePath() {
 
 function configPaths() {
   if (process.env.ECC_MCP_CONFIG_PATH) {
-    return process.env.ECC_MCP_CONFIG_PATH
-      .split(path.delimiter)
+    return process.env.ECC_MCP_CONFIG_PATH.split(path.delimiter)
       .map(entry => entry.trim())
       .filter(Boolean)
       .map(entry => path.resolve(entry));
@@ -61,12 +60,7 @@ function configPaths() {
   const cwd = process.cwd();
   const home = os.homedir();
 
-  return [
-    path.join(cwd, '.claude.json'),
-    path.join(cwd, '.claude', 'settings.json'),
-    path.join(home, '.claude.json'),
-    path.join(home, '.claude', 'settings.json')
-  ];
+  return [path.join(cwd, '.claude.json'), path.join(cwd, '.claude', 'settings.json'), path.join(home, '.claude.json'), path.join(home, '.claude', 'settings.json')];
 }
 
 function readJsonFile(filePath) {
@@ -130,17 +124,8 @@ function safeParse(raw) {
 
 function extractMcpTarget(input) {
   const toolName = String(input.tool_name || input.name || '');
-  const explicitServer = input.server
-    || input.mcp_server
-    || input.tool_input?.server
-    || input.tool_input?.mcp_server
-    || input.tool_input?.connector
-    || null;
-  const explicitTool = input.tool
-    || input.mcp_tool
-    || input.tool_input?.tool
-    || input.tool_input?.mcp_tool
-    || null;
+  const explicitServer = input.server || input.mcp_server || input.tool_input?.server || input.tool_input?.mcp_server || input.tool_input?.connector || null;
+  const explicitTool = input.tool || input.mcp_tool || input.tool_input?.tool || input.tool_input?.mcp_tool || null;
 
   if (explicitServer) {
     return {
@@ -179,9 +164,7 @@ function extractMcpTargetFromRaw(raw) {
 function resolveServerConfig(serverName) {
   for (const filePath of configPaths()) {
     const data = readJsonFile(filePath);
-    const server = data?.mcpServers?.[serverName]
-      || data?.mcp_servers?.[serverName]
-      || null;
+    const server = data?.mcpServers?.[serverName] || data?.mcp_servers?.[serverName] || null;
 
     if (server && typeof server === 'object' && !Array.isArray(server)) {
       return {
@@ -212,7 +195,7 @@ function markUnhealthy(state, serverName, now, failureCode, errorMessage) {
   const previous = state.servers[serverName] || {};
   const failureCount = Number(previous.failureCount || 0) + 1;
   const backoffBase = envNumber('ECC_MCP_HEALTH_BACKOFF_MS', DEFAULT_BACKOFF_MS);
-  const nextRetryDelay = Math.min(backoffBase * (2 ** Math.max(failureCount - 1, 0)), MAX_BACKOFF_MS);
+  const nextRetryDelay = Math.min(backoffBase * 2 ** Math.max(failureCount - 1, 0), MAX_BACKOFF_MS);
 
   state.servers[serverName] = {
     status: 'unhealthy',
@@ -263,7 +246,7 @@ function requestHttp(urlString, headers, timeoutMs) {
       url,
       {
         method: 'GET',
-        headers,
+        headers
       },
       res => {
         if (settled) return;
@@ -370,9 +353,9 @@ function probeCommandServer(serverName, config) {
       }, 200).unref?.();
 
       finish({
-        ok: true,
+        ok: null,
         statusCode: null,
-        reason: `${serverName} accepted a new stdio process`
+        reason: `${serverName} process launched but did not complete handshake within timeout`
       });
     }, timeoutMs);
 
@@ -415,26 +398,65 @@ async function probeServer(serverName, resolvedConfig) {
   };
 }
 
+// Allowlist of permitted reconnect executables (shell: false is used; no shell expansion)
+const RECONNECT_ALLOWED_BINS = new Set(['claude', 'npx', 'node', 'npm', 'pnpm', 'yarn', 'bun']);
+
+function parseArgv(command) {
+  // Minimal argv splitter: handles single/double quoted segments, no shell expansion.
+  const argv = [];
+  let current = '';
+  let inSingle = false;
+  let inDouble = false;
+  for (let i = 0; i < command.length; i++) {
+    const ch = command[i];
+    if (ch === "'" && !inDouble) {
+      inSingle = !inSingle;
+    } else if (ch === '"' && !inSingle) {
+      inDouble = !inDouble;
+    } else if (ch === ' ' && !inSingle && !inDouble) {
+      if (current) {
+        argv.push(current);
+        current = '';
+      }
+    } else {
+      current += ch;
+    }
+  }
+  if (current) argv.push(current);
+  return argv;
+}
+
 function reconnectCommand(serverName) {
-  const key = `ECC_MCP_RECONNECT_${String(serverName).toUpperCase().replace(/[^A-Z0-9]/g, '_')}`;
+  const key = `ECC_MCP_RECONNECT_${String(serverName)
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '_')}`;
   const command = process.env[key] || process.env.ECC_MCP_RECONNECT_COMMAND || '';
   if (!command.trim()) {
     return null;
   }
 
-  return command.includes('{server}')
-    ? command.replace(/\{server\}/g, serverName)
-    : command;
+  const resolved = command.includes('{server}') ? command.replace(/\{server\}/g, serverName) : command;
+
+  const argv = parseArgv(resolved);
+  if (!argv.length) return null;
+
+  const bin = require('path').basename(argv[0].split(require('path').sep).pop() || argv[0]);
+  if (!RECONNECT_ALLOWED_BINS.has(bin)) {
+    process.stderr.write(`[mcp-health-check] Reconnect command rejected — executable "${bin}" not in allowlist\n`);
+    return null;
+  }
+
+  return argv;
 }
 
 function attemptReconnect(serverName) {
-  const command = reconnectCommand(serverName);
-  if (!command) {
+  const argv = reconnectCommand(serverName);
+  if (!argv) {
     return { attempted: false, success: false, reason: 'no reconnect command configured' };
   }
 
-  const result = spawnSync(command, {
-    shell: true,
+  const result = spawnSync(argv[0], argv.slice(1), {
+    shell: false,
     env: process.env,
     cwd: process.cwd(),
     encoding: 'utf8',
@@ -476,9 +498,7 @@ async function handlePreToolUse(rawInput, input, target, statePathValue, now) {
   }
 
   if (previous.status === 'unhealthy' && Number(previous.nextRetryAt || 0) > now) {
-    logs.push(
-      `[MCPHealthCheck] ${target.server} is marked unhealthy until ${new Date(previous.nextRetryAt).toISOString()}; skipping ${target.tool || 'tool'}`
-    );
+    logs.push(`[MCPHealthCheck] ${target.server} is marked unhealthy until ${new Date(previous.nextRetryAt).toISOString()}; skipping ${target.tool || 'tool'}`);
     return { rawInput, exitCode: shouldFailOpen() ? 0 : 2, logs };
   }
 
@@ -521,12 +541,8 @@ async function handlePreToolUse(rawInput, input, target, statePathValue, now) {
   markUnhealthy(state, target.server, now, probe.failureCode, probe.reason);
   saveState(statePathValue, state);
 
-  const reconnectSuffix = reconnect.attempted
-    ? ` Reconnect attempt: ${reconnect.success ? 'ok' : reconnect.reason}.`
-    : '';
-  logs.push(
-    `[MCPHealthCheck] ${target.server} is unavailable (${probe.reason}). Blocking ${target.tool || 'tool'} so Claude can fall back to non-MCP tools.${reconnectSuffix}`
-  );
+  const reconnectSuffix = reconnect.attempted ? ` Reconnect attempt: ${reconnect.success ? 'ok' : reconnect.reason}.` : '';
+  logs.push(`[MCPHealthCheck] ${target.server} is unavailable (${probe.reason}). Blocking ${target.tool || 'tool'} so Claude can fall back to non-MCP tools.${reconnectSuffix}`);
 
   return { rawInput, exitCode: shouldFailOpen() ? 0 : 2, logs };
 }
@@ -607,9 +623,8 @@ async function main() {
   const now = Date.now();
   const statePathValue = stateFilePath();
 
-  const result = eventName === 'PostToolUseFailure'
-    ? await handlePostToolUseFailure(rawInput, input, target, statePathValue, now)
-    : await handlePreToolUse(rawInput, input, target, statePathValue, now);
+  const result =
+    eventName === 'PostToolUseFailure' ? await handlePostToolUseFailure(rawInput, input, target, statePathValue, now) : await handlePreToolUse(rawInput, input, target, statePathValue, now);
 
   emitLogs(result.logs);
   process.stdout.write(result.rawInput);

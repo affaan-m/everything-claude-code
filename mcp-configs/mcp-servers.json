@@ -2,13 +2,14 @@
   "mcpServers": {
     "jira": {
       "command": "uvx",
-      "args": ["mcp-atlassian==0.21.0"],
+      "args": ["--from", "git+https://github.com/itsariuk/mcp-atlassian", "mcp-atlassian"],
       "env": {
         "JIRA_URL": "YOUR_JIRA_URL_HERE",
         "JIRA_EMAIL": "YOUR_JIRA_EMAIL_HERE",
         "JIRA_API_TOKEN": "YOUR_JIRA_API_TOKEN_HERE"
       },
-      "description": "Jira issue tracking — search, create, update, comment, transition issues"
+      "description": "Jira issue tracking — search, create, update, comment, transition issues",
+      "fork_upstream": "sooperset/mcp-atlassian"
     },
     "github": {
       "command": "npx",
@@ -16,147 +17,102 @@
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_PAT_HERE"
       },
-      "description": "GitHub operations - PRs, issues, repos"
-    },
-    "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "YOUR_FIRECRAWL_KEY_HERE"
-      },
-      "description": "Web scraping and crawling"
-    },
-    "supabase": {
-      "command": "npx",
-      "args": ["-y", "@supabase/mcp-server-supabase@latest", "--project-ref=YOUR_PROJECT_REF"],
-      "description": "Supabase database operations"
-    },
-    "memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"],
-      "description": "Persistent memory across sessions"
-    },
-    "omega-memory": {
-      "command": "uvx",
-      "args": ["omega-memory", "serve"],
-      "description": "Persistent agent memory with semantic search, multi-agent coordination, and knowledge graphs — run via uvx (richer than the basic memory store)"
-    },
-    "sequential-thinking": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
-      "description": "Chain-of-thought reasoning"
-    },
-    "vercel": {
-      "type": "http",
-      "url": "https://mcp.vercel.com",
-      "description": "Vercel deployments and projects"
-    },
-    "railway": {
-      "command": "npx",
-      "args": ["-y", "@railway/mcp-server"],
-      "description": "Railway deployments"
-    },
-    "cloudflare-docs": {
-      "type": "http",
-      "url": "https://docs.mcp.cloudflare.com/mcp",
-      "description": "Cloudflare documentation search"
-    },
-    "cloudflare-workers-builds": {
-      "type": "http",
-      "url": "https://builds.mcp.cloudflare.com/mcp",
-      "description": "Cloudflare Workers builds"
-    },
-    "cloudflare-workers-bindings": {
-      "type": "http",
-      "url": "https://bindings.mcp.cloudflare.com/mcp",
-      "description": "Cloudflare Workers bindings"
-    },
-    "cloudflare-observability": {
-      "type": "http",
-      "url": "https://observability.mcp.cloudflare.com/mcp",
-      "description": "Cloudflare observability/logs"
-    },
-    "clickhouse": {
-      "type": "http",
-      "url": "https://mcp.clickhouse.cloud/mcp",
-      "description": "ClickHouse analytics queries"
-    },
-    "exa-web-search": {
-      "command": "npx",
-      "args": ["-y", "exa-mcp-server"],
-      "env": {
-        "EXA_API_KEY": "YOUR_EXA_API_KEY_HERE"
-      },
-      "description": "Web search, research, and data ingestion via Exa API — prefer task-scoped use for broader research after GitHub search and primary docs"
-    },
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp@latest"],
-      "description": "Live documentation lookup — use with /docs command and documentation-lookup skill (resolve-library-id, query-docs)."
-    },
-    "magic": {
-      "command": "npx",
-      "args": ["-y", "@magicuidesign/mcp@latest"],
-      "description": "Magic UI components"
-    },
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/projects"],
-      "description": "Filesystem operations (set your path)"
-    },
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp", "--browser", "chrome"],
-      "description": "Browser automation and testing via Playwright"
-    },
-    "fal-ai": {
-      "command": "npx",
-      "args": ["-y", "fal-ai-mcp-server"],
-      "env": {
-        "FAL_KEY": "YOUR_FAL_KEY_HERE"
-      },
-      "description": "AI image/video/audio generation via fal.ai models"
-    },
-    "browserbase": {
-      "command": "npx",
-      "args": ["-y", "@browserbasehq/mcp-server-browserbase"],
-      "env": {
-        "BROWSERBASE_API_KEY": "YOUR_BROWSERBASE_KEY_HERE"
-      },
-      "description": "Cloud browser sessions via Browserbase"
-    },
-    "browser-use": {
-      "type": "http",
-      "url": "https://api.browser-use.com/mcp",
-      "headers": {
-        "x-browser-use-api-key": "YOUR_BROWSER_USE_KEY_HERE"
-      },
-      "description": "AI browser agent for web tasks"
-    },
-    "devfleet": {
-      "type": "http",
-      "url": "http://localhost:18801/mcp",
-      "description": "Multi-agent orchestration — dispatch parallel Claude Code agents in isolated worktrees. Plan projects, auto-chain missions, read structured reports. Repo: https://github.com/LEC-AI/claude-devfleet"
-    },
-    "token-optimizer": {
-      "command": "npx",
-      "args": ["-y", "token-optimizer-mcp"],
-      "description": "Token optimization for 95%+ context reduction via content deduplication and compression"
-    },
-    "laraplugins": {
-      "type": "http",
-      "url": "https://laraplugins.io/mcp/plugins",
-      "description": "Laravel plugin discovery — search packages by keyword, health score, Laravel/PHP version compatibility. Use with laravel-plugin-discovery skill."
+      "description": "GitHub operations — PRs, issues, code review, repo management",
+      "fork_upstream": "modelcontextprotocol/servers",
+      "fork_url": "https://github.com/itsariuk/servers",
+      "fork_note": "Monorepo — run from npm; clone itsariuk/servers and build src/github/ to use your fork locally"
     },
     "confluence": {
       "command": "npx",
-      "args": ["-y", "confluence-mcp-server"],
+      "args": ["-y", "github:itsariuk/confluence-mcp-server"],
       "env": {
         "CONFLUENCE_BASE_URL": "YOUR_CONFLUENCE_URL_HERE",
         "CONFLUENCE_EMAIL": "YOUR_EMAIL_HERE",
         "CONFLUENCE_API_TOKEN": "YOUR_CONFLUENCE_TOKEN_HERE"
       },
-      "description": "Confluence Cloud integration — search pages, retrieve content, explore spaces"
+      "description": "Confluence — search pages, retrieve ADRs, runbooks, onboarding docs",
+      "fork_upstream": "qihaze123/confluence-mcp-server"
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "github:itsariuk/context7"],
+      "description": "Live documentation lookup — Rails gems, Python packages, Go modules. Use resolve-library-id then query-docs.",
+      "fork_upstream": "upstash/context7"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "description": "Structured chain-of-thought for architectural decisions and complex debugging",
+      "fork_upstream": "modelcontextprotocol/servers",
+      "fork_url": "https://github.com/itsariuk/servers",
+      "fork_note": "Monorepo — run from npm; clone itsariuk/servers and build src/sequentialthinking/ to use your fork locally"
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "description": "Persistent memory — retains project context, decisions, and patterns across sessions",
+      "fork_upstream": "modelcontextprotocol/servers",
+      "fork_url": "https://github.com/itsariuk/servers",
+      "fork_note": "Monorepo — run from npm; clone itsariuk/servers and build src/memory/ to use your fork locally"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/projects"],
+      "description": "Filesystem operations — set path to your projects root",
+      "fork_upstream": "modelcontextprotocol/servers",
+      "fork_url": "https://github.com/itsariuk/servers",
+      "fork_note": "Monorepo — run from npm; clone itsariuk/servers and build src/filesystem/ to use your fork locally"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "github:itsariuk/playwright-mcp", "--browser", "chrome"],
+      "description": "Browser automation — Rails system tests, Python web app testing, Go HTTP handler verification",
+      "fork_upstream": "microsoft/playwright-mcp"
+    },
+    "cloudflare-docs": {
+      "type": "http",
+      "url": "https://docs.mcp.cloudflare.com/mcp",
+      "description": "Cloudflare documentation search",
+      "fork_note": "Remote SaaS endpoint — not forkable"
+    },
+    "cloudflare-workers-builds": {
+      "type": "http",
+      "url": "https://builds.mcp.cloudflare.com/mcp",
+      "description": "Cloudflare Workers builds",
+      "fork_note": "Remote SaaS endpoint — not forkable"
+    },
+    "cloudflare-workers-bindings": {
+      "type": "http",
+      "url": "https://bindings.mcp.cloudflare.com/mcp",
+      "description": "Cloudflare Workers bindings",
+      "fork_note": "Remote SaaS endpoint — not forkable"
+    },
+    "cloudflare-observability": {
+      "type": "http",
+      "url": "https://observability.mcp.cloudflare.com/mcp",
+      "description": "Cloudflare observability/logs",
+      "fork_note": "Remote SaaS endpoint — not forkable"
+    },
+    "exa-web-search": {
+      "command": "npx",
+      "args": ["-y", "github:itsariuk/exa-mcp-server"],
+      "env": {
+        "EXA_API_KEY": "YOUR_EXA_API_KEY_HERE"
+      },
+      "description": "Web search — research obscure bugs, CVEs, library changelogs, stack-specific solutions",
+      "fork_upstream": "exa-labs/exa-mcp-server"
+    },
+    "laraplugins": {
+      "type": "http",
+      "url": "https://laraplugins.io/mcp/plugins",
+      "description": "Laravel plugin discovery — search packages by keyword, health score, Laravel/PHP version compatibility. Use with laravel-plugin-discovery skill.",
+      "fork_note": "Remote SaaS endpoint — not forkable"
+    },
+    "magic": {
+      "command": "npx",
+      "args": ["-y", "github:itsariuk/mcp"],
+      "description": "Magic UI components",
+      "fork_upstream": "magicuidesign/mcp"
     },
     "evalview": {
       "command": "python3",
@@ -164,13 +120,18 @@
       "env": {
         "OPENAI_API_KEY": "YOUR_OPENAI_API_KEY_HERE"
       },
-      "description": "AI agent regression testing — snapshot behavior, detect regressions in tool calls and output quality. 8 tools: create_test, run_snapshot, run_check, list_tests, validate_skill, generate_skill_tests, run_skill_test, generate_visual_report. API key optional — deterministic checks (tool diff, output hash) work without it. Install: pip install \"evalview>=0.5,<1\""
+      "description": "AI agent regression testing — snapshot behavior, detect regressions. Useful for Python AI/ML services. API key optional for deterministic checks. Install from fork: pip install git+https://github.com/itsariuk/eval-view",
+      "fork_upstream": "hidai25/eval-view",
+      "fork_note": "Install from fork: pip install git+https://github.com/itsariuk/eval-view"
     }
   },
   "_comments": {
     "usage": "Copy the servers you need to your ~/.claude.json mcpServers section",
     "env_vars": "Replace YOUR_*_HERE placeholders with actual values",
-    "disabling": "Use ECC_DISABLED_MCPS=github,context7,... to disable bundled ECC MCPs during install/sync, or use disabledMcpServers in project config for per-project overrides",
-    "context_warning": "Keep under 10 MCPs enabled to preserve context window"
+    "stack": "Tuned for enterprise Rails / Python / Go development",
+    "disabling": "Use ECC_DISABLED_MCPS=github,context7,... to disable bundled ECC MCPs during install/sync",
+    "context_warning": "Keep under 10 MCPs enabled to preserve context window",
+    "forks": "All forkable MCPs point to github:itsariuk/* forks. Upstream repos in fork_upstream fields.",
+    "removed": "Removed: firecrawl, supabase, omega-memory, vercel, railway, clickhouse, fal-ai, browserbase, browser-use, devfleet, token-optimizer"
   }
 }
