@@ -1,0 +1,20 @@
+{
+  "skill_name": "academic-final-review-cs",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Perform a final review checklist on this paper description:\n\nA paper with all main sections (Abstract, Intro, Methods, Results, Discussion, Conclusion). Bibliography uses mixed citation styles (some APA, some Chicago). Figure 1 appears on page 5 with caption 'Results'. Figure 2 is captioned but never cited in text. All tables have captions and are cited. The word 'attention mechanism' is used on page 3 without definition. Methods section is written entirely in passive voice, while Results uses active voice.",
+      "expected_output": "Delimited output showing: PASS on structure, FAIL on bibliography formatting, FAIL on figure citations, WARN on undefined terms and voice consistency"
+    },
+    {
+      "id": 2,
+      "prompt": "Checklist review for submission readiness:\n\nPaper has: Abstract, Intro, Methods, Results, Discussion, Conclusion, Bibliography. All 5 figures are captioned and cited. All 3 tables are captioned and cited. Citation style is consistent (APA throughout). All technical terms are defined. Writing voice is consistently active. Page numbers present throughout. No orphaned references.",
+      "expected_output": "Delimited output with all PASS marks (well-prepared paper)"
+    },
+    {
+      "id": 3,
+      "prompt": "Review this incomplete paper:\n\nMissing: Introduction section, Discussion section. Bibliography is missing. Figures 1-3 have no captions. Only 2 of 4 figures are cited in text. Heading hierarchy inconsistent (# and ### without ##). References in text but no bibliography section. Methods written in passive voice (95%), Results in active (70%).",
+      "expected_output": "Delimited output showing multiple FAIL entries: missing sections, missing bibliography, uncaptioned figures, uncited figures, heading inconsistency, voice inconsistency"
+    }
+  ]
+}

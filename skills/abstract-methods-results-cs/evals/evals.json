@@ -1,0 +1,20 @@
+{
+  "skill_name": "abstract-methods-results-cs",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this Abstract and Methods section from a machine learning paper:\n\nAbstract:\nWe propose a new approach to improve deep learning model performance. The method is based on advanced techniques and achieves better results on standard benchmarks. We demonstrate that our approach is effective across different domains.\n\nMethods:\nWe use a deep neural network architecture. The network is trained using gradient descent optimization. Data preprocessing was performed to normalize inputs. The model is evaluated using cross-validation. Various hyperparameters were tested to find optimal settings.",
+      "expected_output": "JSONL with issues including: vague objectives without metrics, unsupported claims, passive voice overuse, incomplete method description (missing details on architecture, hyperparameters, datasets)"
+    },
+    {
+      "id": 2,
+      "prompt": "Review this Results section:\n\nResults:\nOur method was tested on three datasets. The results show improvement over previous work. On dataset A, accuracy increased. Dataset B also showed good results. The approach generalizes well to different domains as shown by the results on dataset C.",
+      "expected_output": "JSONL with issues including: lack of specific metrics (should report actual numbers), no baseline comparison, passive voice, missing std dev/confidence intervals"
+    },
+    {
+      "id": 3,
+      "prompt": "Review this complete Abstract:\n\nAbstract:\nObject detection in real-time scenarios requires both accuracy and speed. We present FastDetect, a novel two-stage detector that achieves 95.3% mAP at 60 FPS on COCO dataset, outperforming previous state-of-the-art by 3.2 percentage points. Our core innovation is a selective region proposal mechanism that reduces candidate boxes by 40% without accuracy loss. We validate on three benchmarks and provide reproducible code.",
+      "expected_output": "JSONL with no critical issues (well-written abstract with metrics and clear claims); possibly minor notes"
+    }
+  ]
+}
