@@ -437,6 +437,13 @@ everything-claude-code/
 |   |-- perl-testing/              # Perl TDD with Test2::V0, prove, Devel::Cover (NEW)
 |   |-- autonomous-loops/           # Autonomous loop patterns: sequential pipelines, PR loops, DAG orchestration (NEW)
 |   |-- plankton-code-quality/      # Write-time code quality enforcement with Plankton hooks (NEW)
+|   |-- abstract-methods-results-cs/ # Review Abstract, Methods, Results sections of CS papers (NEW)
+|   |-- academic-final-review-cs/   # Pre-submission checklist for CS research papers (NEW)
+|   |-- paper-structure-cs/         # Validate paper structure against academic standards (NEW)
+|   |-- sentence-clarity-cs/        # Edit CS paper sentences for clarity and conciseness (NEW)
+|   |-- harvard-resume-validator/   # Resume validation against Harvard College guidelines (NEW)
+|   |-- kickass-resume-validator/   # Resume validation against industry-standard guide (NEW)
+|   |-- resume-job-alignment/       # Resume-to-job alignment and tailoring (NEW)
 |
 |-- commands/         # Legacy slash-entry shims; prefer skills/
 |   |-- tdd.md              # /tdd - Test-driven development
