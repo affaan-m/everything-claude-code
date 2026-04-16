@@ -12,7 +12,9 @@
       "expected_output": "JSONL flagging heading_skip issues (# to ### without ##) and heading_level_inconsistent (Methods section jumps to ### instead of ##)"
     },
     {
+    {
+      "id": 3,
+      "prompt": "Check the heading hierarchy of this paper outline:\n\n# 1. Introduction\n## 1.1 Background\n### 1.1.1 Motivation\n#### 1.1.1.1 Problem Details\n# 2. Methods\n## 2.1 Algorithm\n# 3. Results",
       "expected_output": "JSONL with one or two issues: heading_level_inconsistent or heading_skip flagging #### (fourth-level heading depth violates the skill's 3-level maximum); remainder of structure is correct"
     }
-  ]
 }
