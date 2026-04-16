@@ -1,34 +1,20 @@
-**Language:** English | [Português (Brasil)](docs/pt-BR/README.md) | [简体中文](README.zh-CN.md) | [繁體中文](docs/zh-TW/README.md) | [日本語](docs/ja-JP/README.md) | [한국어](docs/ko-KR/README.md) | [Türkçe](docs/tr/README.md)
+# superchuck
 
-# Everything Claude Code
-
-[![Stars](https://img.shields.io/github/stars/affaan-m/everything-claude-code?style=flat)](https://github.com/affaan-m/everything-claude-code/stargazers)
-[![Forks](https://img.shields.io/github/forks/affaan-m/everything-claude-code?style=flat)](https://github.com/affaan-m/everything-claude-code/network/members)
-[![Contributors](https://img.shields.io/github/contributors/affaan-m/everything-claude-code?style=flat)](https://github.com/affaan-m/everything-claude-code/graphs/contributors)
-[![npm ecc-universal](https://img.shields.io/npm/dw/ecc-universal?label=ecc-universal%20weekly%20downloads&logo=npm)](https://www.npmjs.com/package/ecc-universal)
-[![npm ecc-agentshield](https://img.shields.io/npm/dw/ecc-agentshield?label=ecc-agentshield%20weekly%20downloads&logo=npm)](https://www.npmjs.com/package/ecc-agentshield)
-[![GitHub App Install](https://img.shields.io/badge/GitHub%20App-150%20installs-2ea44f?logo=github)](https://github.com/marketplace/ecc-tools)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-![Shell](https://img.shields.io/badge/-Shell-4EAA25?logo=gnu-bash&logoColor=white)
-![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
-![Python](https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=white)
-![Go](https://img.shields.io/badge/-Go-00ADD8?logo=go&logoColor=white)
-![Java](https://img.shields.io/badge/-Java-ED8B00?logo=openjdk&logoColor=white)
-![Perl](https://img.shields.io/badge/-Perl-39457E?logo=perl&logoColor=white)
-![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown&logoColor=white)
 
-> **140K+ stars** | **21K+ forks** | **170+ contributors** | **12+ language ecosystems** | **Anthropic Hackathon Winner**
+> Chuck's private fork of [`affaan-m/everything-claude-code`](https://github.com/affaan-m/everything-claude-code), rebuilt as a chief-of-staff orchestrator for Claude Code. Subscription-only (no API tokens).
+
+**What this is:** a Claude Code plugin that turns Claude into a chief-of-staff orchestrator. Chuck states a goal, the top-level agent plans and dispatches specialized subagents (planner, architect, reviewers, docs, CI/CD), and produces reviewed changes on feature/staging branches for manual promotion to `main`.
+
+**What this isn't:** the public [`ecc-universal`](https://www.npmjs.com/package/ecc-universal) npm package. Upstream docs below are inherited and will be rewritten incrementally — some references still point to affaan-m's repo, commands, and npm packages.
+
+## Attribution
+
+This project is derived from the MIT-licensed upstream [Everything Claude Code](https://github.com/affaan-m/everything-claude-code) by Affaan Mustafa. Original work, original license. Superchuck retains the agents, skills, and hook architecture; adds Chuck's orchestrator, removes components that require paid API tokens, and diverges from upstream heuristics over time.
 
 ---
 
-<div align="center">
-
-**Language / 语言 / 語言 / Dil**
-
-[**English**](README.md) | [Português (Brasil)](docs/pt-BR/README.md) | [简体中文](README.zh-CN.md) | [繁體中文](docs/zh-TW/README.md) | [日本語](docs/ja-JP/README.md) | [한국어](docs/ko-KR/README.md)
- | [Türkçe](docs/tr/README.md)
-
-</div>
+**Upstream README below (to be rewritten for superchuck).**
 
 ---
 

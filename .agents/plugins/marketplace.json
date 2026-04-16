@@ -1,11 +1,11 @@
 {
-  "name": "ecc",
+  "name": "superchuck",
   "interface": {
-    "displayName": "Everything Claude Code"
+    "displayName": "Superchuck"
   },
   "plugins": [
     {
-      "name": "ecc",
+      "name": "superchuck",
       "version": "1.10.0",
       "source": {
         "source": "local",

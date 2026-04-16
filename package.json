@@ -1,10 +1,8 @@
 {
-  "name": "ecc-universal",
+  "name": "superchuck",
   "version": "1.10.0",
-  "description": "Complete collection of battle-tested Claude Code configs — agents, skills, hooks, rules, and legacy command shims evolved over 10+ months of intensive daily use by an Anthropic hackathon winner",
-  "publishConfig": {
-    "access": "public"
-  },
+  "private": true,
+  "description": "Chief-of-staff orchestrator for Claude Code — Chuck's fork of everything-claude-code, customized for subscription-only agent delegation across his projects.",
   "keywords": [
     "claude-code",
     "ai",
@@ -28,17 +26,24 @@
     "slides"
   ],
   "author": {
-    "name": "Affaan Mustafa",
-    "url": "https://x.com/affaanmustafa"
+    "name": "Chuck",
+    "email": "chucknmore@gmail.com"
   },
+  "contributors": [
+    {
+      "name": "Affaan Mustafa",
+      "url": "https://x.com/affaanmustafa",
+      "note": "original author of everything-claude-code, which superchuck forks"
+    }
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/affaan-m/everything-claude-code.git"
+    "url": "git+https://github.com/chucknmore/superchuck.git"
   },
-  "homepage": "https://github.com/affaan-m/everything-claude-code#readme",
+  "homepage": "https://github.com/chucknmore/superchuck#readme",
   "bugs": {
-    "url": "https://github.com/affaan-m/everything-claude-code/issues"
+    "url": "https://github.com/chucknmore/superchuck/issues"
   },
   "files": [
     ".agents/",
@@ -240,7 +245,7 @@
     "ecc-install": "scripts/install-apply.js"
   },
   "scripts": {
-    "postinstall": "echo '\\n  ecc-universal installed!\\n  Run: npx ecc typescript\\n  Compat: npx ecc-install typescript\\n  Docs: https://github.com/affaan-m/everything-claude-code\\n'",
+    "postinstall": "echo '\\n  superchuck installed!\\n  Run: npx ecc typescript\\n  Compat: npx ecc-install typescript\\n  Docs: https://github.com/chucknmore/superchuck\\n'",
     "catalog:check": "node scripts/ci/catalog.js --text",
     "catalog:sync": "node scripts/ci/catalog.js --write --text",
     "lint": "eslint . && markdownlint '**/*.md' --ignore node_modules",

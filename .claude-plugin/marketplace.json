@@ -1,34 +1,32 @@
 {
-  "name": "everything-claude-code",
+  "name": "superchuck",
   "owner": {
-    "name": "Affaan Mustafa",
-    "email": "me@affaanmustafa.com"
+    "name": "Chuck",
+    "email": "chucknmore@gmail.com"
   },
   "metadata": {
-    "description": "Battle-tested Claude Code configurations from an Anthropic hackathon winner"
+    "description": "Chuck's chief-of-staff orchestrator fork of Everything Claude Code (subscription-only)"
   },
   "plugins": [
     {
-      "name": "everything-claude-code",
+      "name": "superchuck",
       "source": "./",
-      "description": "The most comprehensive Claude Code plugin — 38 agents, 156 skills, 72 legacy command shims, selective install profiles, and production-ready hooks for TDD, security scanning, code review, and continuous learning",
+      "description": "Chief-of-staff orchestrator for Claude Code — Chuck's fork of everything-claude-code with selected agents, skills, and commands for subscription-only agent delegation.",
       "version": "1.10.0",
       "author": {
-        "name": "Affaan Mustafa",
-        "email": "me@affaanmustafa.com"
+        "name": "Chuck",
+        "email": "chucknmore@gmail.com"
       },
-      "homepage": "https://ecc.tools",
-      "repository": "https://github.com/affaan-m/everything-claude-code",
+      "homepage": "https://github.com/chucknmore/superchuck",
+      "repository": "https://github.com/chucknmore/superchuck",
       "license": "MIT",
       "keywords": [
         "agents",
         "skills",
         "hooks",
         "commands",
-        "tdd",
-        "code-review",
-        "security",
-        "best-practices"
+        "orchestrator",
+        "chief-of-staff"
       ],
       "category": "workflow",
       "tags": [
@@ -36,10 +34,8 @@
         "skills",
         "hooks",
         "commands",
-        "tdd",
-        "code-review",
-        "security",
-        "best-practices"
+        "orchestrator",
+        "chief-of-staff"
       ],
       "strict": false
     }

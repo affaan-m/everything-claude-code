@@ -1,13 +1,20 @@
 {
-  "name": "everything-claude-code",
+  "name": "superchuck",
   "version": "1.10.0",
-  "description": "Battle-tested Claude Code plugin for engineering teams — 38 agents, 156 skills, 72 legacy command shims, production-ready hooks, and selective install workflows evolved through continuous real-world use",
+  "description": "Chief-of-staff orchestrator plugin for Claude Code — Chuck's fork of everything-claude-code with selected agents, skills, and commands for subscription-only agent delegation.",
   "author": {
-    "name": "Affaan Mustafa",
-    "url": "https://x.com/affaanmustafa"
+    "name": "Chuck",
+    "email": "chucknmore@gmail.com"
   },
-  "homepage": "https://ecc.tools",
-  "repository": "https://github.com/affaan-m/everything-claude-code",
+  "contributors": [
+    {
+      "name": "Affaan Mustafa",
+      "url": "https://x.com/affaanmustafa",
+      "note": "original author of everything-claude-code"
+    }
+  ],
+  "homepage": "https://github.com/chucknmore/superchuck",
+  "repository": "https://github.com/chucknmore/superchuck",
   "license": "MIT",
   "keywords": [
     "claude-code",
@@ -15,12 +22,8 @@
     "skills",
     "hooks",
     "rules",
-    "tdd",
-    "code-review",
-    "security",
-    "workflow",
-    "automation",
-    "best-practices"
+    "orchestrator",
+    "chief-of-staff"
   ],
   "agents": [
     "./agents/architect.md",

@@ -209,7 +209,7 @@ test('claude plugin.json version matches package.json', () => {
 });
 
 test('claude plugin.json uses published plugin name', () => {
-  assert.strictEqual(claudePlugin.name, 'everything-claude-code');
+  assert.strictEqual(claudePlugin.name, 'superchuck');
 });
 
 test('claude plugin.json agents is an array', () => {
@@ -280,8 +280,8 @@ test('claude marketplace.json keeps only Claude-supported top-level keys', () =>
 
 test('claude marketplace.json has plugins array with the published plugin entry', () => {
   assert.ok(Array.isArray(claudeMarketplace.plugins) && claudeMarketplace.plugins.length > 0, 'Expected plugins array');
-  assert.strictEqual(claudeMarketplace.name, 'everything-claude-code');
-  assert.strictEqual(claudeMarketplace.plugins[0].name, 'everything-claude-code');
+  assert.strictEqual(claudeMarketplace.name, 'superchuck');
+  assert.strictEqual(claudeMarketplace.plugins[0].name, 'superchuck');
 });
 
 test('claude marketplace.json plugin version matches package.json', () => {
@@ -308,7 +308,7 @@ test('codex plugin.json has name field', () => {
 });
 
 test('codex plugin.json uses short plugin slug', () => {
-  assert.strictEqual(codexPlugin.name, 'ecc');
+  assert.strictEqual(codexPlugin.name, 'superchuck');
 });
 
 test('codex plugin.json has version field', () => {
@@ -411,7 +411,7 @@ test('marketplace.json has name field', () => {
 });
 
 test('marketplace.json uses short marketplace slug', () => {
-  assert.strictEqual(marketplace.name, 'ecc');
+  assert.strictEqual(marketplace.name, 'superchuck');
 });
 
 test('marketplace.json has plugins array with at least one entry', () => {
@@ -429,7 +429,7 @@ test('marketplace.json plugin entries have required fields', () => {
 });
 
 test('marketplace.json plugin entry uses short plugin slug', () => {
-  assert.strictEqual(marketplace.plugins[0].name, 'ecc');
+  assert.strictEqual(marketplace.plugins[0].name, 'superchuck');
 });
 
 test('marketplace.json plugin version matches package.json', () => {
