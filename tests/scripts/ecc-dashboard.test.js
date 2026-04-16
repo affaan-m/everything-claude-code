@@ -69,20 +69,20 @@ print(json.dumps({'argv': argv, 'kwargs': kwargs}))
     assert.deepStrictEqual(parsed.kwargs, {});
   })) passed++; else failed++;
 
-  if (test('build_terminal_launch uses cwd + CREATE_NEW_CONSOLE style launch on Windows', () => {
+  if (test('build_terminal_launch keeps Windows metachar paths out of the cmd.exe command string', () => {
     const output = runPython(`
-import importlib.util, json
+import importlib.util, json, subprocess
 spec = importlib.util.spec_from_file_location("ecc_dashboard_runtime", r"""${runtimeHelpersPath}""")
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-argv, kwargs = module.build_terminal_launch(r'C:\\\\Users\\\\user\\\\proj & del C:\\\\*', os_name='nt', system_name='Windows')
-print(json.dumps({'argv': argv, 'kwargs': kwargs}))
+path = r'C:\\\\tmp\\\\proj&del'
+argv, kwargs = module.build_terminal_launch(path, os_name='nt', system_name='Windows')
+print(json.dumps({'argv': argv, 'kwargs': kwargs, 'cmdline': subprocess.list2cmdline(argv), 'path': path}))
 `);
     const parsed = JSON.parse(output);
-    assert.deepStrictEqual(parsed.argv.slice(0, 4), ['cmd.exe', '/k', 'cd', '/d']);
-    assert.strictEqual(parsed.argv[4], parsed.kwargs.cwd);
-    assert.ok(parsed.argv[4].includes('proj & del'), 'path should remain a literal argv entry');
-    assert.ok(parsed.argv[4].includes('C:'), 'windows drive prefix should be preserved');
+    assert.deepStrictEqual(parsed.argv, ['cmd.exe']);
+    assert.strictEqual(parsed.kwargs.cwd, parsed.path);
+    assert.ok(!parsed.cmdline.includes(parsed.path), 'metachar path should not appear in the cmd.exe command string');
     assert.ok(Object.prototype.hasOwnProperty.call(parsed.kwargs, 'creationflags'));
   })) passed++; else failed++;
 

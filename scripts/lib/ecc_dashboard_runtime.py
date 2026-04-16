@@ -45,7 +45,7 @@ def build_terminal_launch(
     if resolved_os_name == 'nt':
         creationflags = getattr(subprocess, 'CREATE_NEW_CONSOLE', 0)
         return (
-            ['cmd.exe', '/k', 'cd', '/d', path],
+            ['cmd.exe'],
             {
                 'cwd': path,
                 'creationflags': creationflags,
