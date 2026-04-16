@@ -40,6 +40,7 @@
     "./agents/gan-generator.md",
     "./agents/gan-planner.md",
     "./agents/go-build-resolver.md",
+    "./agents/harmonyos-app-resolver.md",
     "./agents/go-reviewer.md",
     "./agents/harness-optimizer.md",
     "./agents/healthcare-reviewer.md",
