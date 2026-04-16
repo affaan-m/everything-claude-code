@@ -33,7 +33,6 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode",
         "codebuddy"
       ],
       "dependencies": [],
@@ -117,11 +116,15 @@
         "skills/backend-patterns",
         "skills/coding-standards",
         "skills/compose-multiplatform-patterns",
+        "skills/csharp-testing",
         "skills/cpp-coding-standards",
         "skills/cpp-testing",
+        "skills/dart-flutter-patterns",
         "skills/django-patterns",
         "skills/django-tdd",
         "skills/django-verification",
+        "skills/dotnet-patterns",
+        "skills/frontend-design",
         "skills/frontend-patterns",
         "skills/frontend-slides",
         "skills/golang-patterns",
@@ -137,6 +140,7 @@
         "skills/laravel-tdd",
         "skills/laravel-verification",
         "skills/mcp-server-patterns",
+        "skills/nestjs-patterns",
         "skills/perl-patterns",
         "skills/perl-testing",
         "skills/python-patterns",
@@ -193,17 +197,21 @@
     {
       "id": "workflow-quality",
       "kind": "skills",
-      "description": "Evaluation, TDD, verification, learning, and compaction skills.",
+      "description": "Evaluation, TDD, verification, compaction, and learning skills, including the legacy continuous-learning v1 path.",
       "paths": [
+        "skills/agent-sort",
+        "skills/agent-introspection-debugging",
         "skills/ai-regression-testing",
         "skills/configure-ecc",
+        "skills/code-tour",
         "skills/continuous-learning",
         "skills/continuous-learning-v2",
+        "skills/council",
         "skills/e2e-testing",
         "skills/eval-harness",
+        "skills/hookify-rules",
         "skills/iterative-retrieval",
         "skills/plankton-code-quality",
-        "skills/project-guidelines-example",
         "skills/skill-stocktake",
         "skills/strategic-compact",
         "skills/tdd-workflow",
@@ -229,12 +237,19 @@
       "kind": "skills",
       "description": "Security review and security-focused framework guidance.",
       "paths": [
+        "skills/defi-amm-security",
         "skills/django-security",
+        "skills/healthcare-phi-compliance",
+        "skills/hipaa-compliance",
         "skills/laravel-security",
+        "skills/llm-trading-agent-security",
+        "skills/nodejs-keccak256",
         "skills/perl-security",
         "skills/security-review",
         "skills/security-scan",
+        "skills/security-bounty-hunter",
         "skills/springboot-security",
+        "skills/evm-token-decimals",
         "the-security-guide.md"
       ],
       "targets": [
@@ -259,7 +274,8 @@
       "paths": [
         "skills/claude-api",
         "skills/deep-research",
-        "skills/exa-search"
+        "skills/exa-search",
+        "skills/research-ops"
       ],
       "targets": [
         "claude",
@@ -282,10 +298,14 @@
       "description": "Business, writing, market, and investor communication skills.",
       "paths": [
         "skills/article-writing",
+        "skills/brand-voice",
         "skills/content-engine",
         "skills/investor-materials",
         "skills/investor-outreach",
         "skills/lead-intelligence",
+        "skills/product-capability",
+        "skills/social-graph-ranker",
+        "skills/seo",
         "skills/market-research"
       ],
       "targets": [
@@ -302,6 +322,44 @@
       "defaultInstall": false,
       "cost": "heavy",
       "stability": "stable"
+    },
+    {
+      "id": "operator-workflows",
+      "kind": "skills",
+      "description": "Connected-app operator workflows for setup audits, billing operations, program tracking, Google Workspace, and network optimization.",
+      "paths": [
+        "skills/automation-audit-ops",
+        "skills/api-connector-builder",
+        "skills/connections-optimizer",
+        "skills/customer-billing-ops",
+        "skills/dashboard-builder",
+        "skills/ecc-tools-cost-audit",
+        "skills/email-ops",
+        "skills/finance-billing-ops",
+        "skills/github-ops",
+        "skills/google-workspace-ops",
+        "skills/jira-integration",
+        "skills/knowledge-ops",
+        "skills/messages-ops",
+        "skills/project-flow-ops",
+        "skills/terminal-ops",
+        "skills/unified-notifications-ops",
+        "skills/workspace-surface-audit"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode",
+        "codebuddy"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "beta"
     },
     {
       "id": "social-distribution",
@@ -329,10 +387,12 @@
     {
       "id": "media-generation",
       "kind": "skills",
-      "description": "Media generation and AI-assisted editing skills.",
+      "description": "Media generation, technical explainers, and AI-assisted editing skills.",
       "paths": [
         "skills/fal-ai-media",
+        "skills/manim-video",
         "skills/remotion-video-creation",
+        "skills/ui-demo",
         "skills/video-editing",
         "skills/videodb"
       ],

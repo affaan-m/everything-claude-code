@@ -60,6 +60,50 @@ function runTests() {
     assert.ok(fs.existsSync(home), 'Home dir should exist');
   })) passed++; else failed++;
 
+  if (test('getHomeDir prefers HOME override when set', () => {
+    const originalHome = process.env.HOME;
+    const originalUserProfile = process.env.USERPROFILE;
+    const fakeHome = path.join(process.cwd(), 'tmp-home-override');
+    try {
+      process.env.HOME = fakeHome;
+      process.env.USERPROFILE = '';
+      assert.strictEqual(utils.getHomeDir(), fakeHome);
+    } finally {
+      if (originalHome === undefined) {
+        delete process.env.HOME;
+      } else {
+        process.env.HOME = originalHome;
+      }
+      if (originalUserProfile === undefined) {
+        delete process.env.USERPROFILE;
+      } else {
+        process.env.USERPROFILE = originalUserProfile;
+      }
+    }
+  })) passed++; else failed++;
+
+  if (test('getHomeDir falls back to USERPROFILE when HOME is empty', () => {
+    const originalHome = process.env.HOME;
+    const originalUserProfile = process.env.USERPROFILE;
+    const fakeHome = path.join(process.cwd(), 'tmp-userprofile-override');
+    try {
+      process.env.HOME = '';
+      process.env.USERPROFILE = fakeHome;
+      assert.strictEqual(utils.getHomeDir(), fakeHome);
+    } finally {
+      if (originalHome === undefined) {
+        delete process.env.HOME;
+      } else {
+        process.env.HOME = originalHome;
+      }
+      if (originalUserProfile === undefined) {
+        delete process.env.USERPROFILE;
+      } else {
+        process.env.USERPROFILE = originalUserProfile;
+      }
+    }
+  })) passed++; else failed++;
+
   if (test('getClaudeDir returns path under home', () => {
     const claudeDir = utils.getClaudeDir();
     const homeDir = utils.getHomeDir();

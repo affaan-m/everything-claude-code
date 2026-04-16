@@ -14,6 +14,9 @@ ANALYZING=0
 LAST_ANALYSIS_EPOCH=0
 # Minimum seconds between analyses (prevents rapid re-triggering)
 ANALYSIS_COOLDOWN="${ECC_OBSERVER_ANALYSIS_COOLDOWN:-60}"
+IDLE_TIMEOUT_SECONDS="${ECC_OBSERVER_IDLE_TIMEOUT_SECONDS:-1800}"
+SESSION_LEASE_DIR="${PROJECT_DIR}/.observer-sessions"
+ACTIVITY_FILE="${PROJECT_DIR}/.observer-last-activity"
 
 cleanup() {
   [ -n "$SLEEP_PID" ] && kill "$SLEEP_PID" 2>/dev/null
@@ -23,6 +26,62 @@ cleanup() {
   exit 0
 }
 trap cleanup TERM INT
+
+file_mtime_epoch() {
+  local file="$1"
+  if [ ! -f "$file" ]; then
+    printf '0\n'
+    return
+  fi
+
+  if stat -c %Y "$file" >/dev/null 2>&1; then
+    stat -c %Y "$file" 2>/dev/null || printf '0\n'
+    return
+  fi
+
+  if stat -f %m "$file" >/dev/null 2>&1; then
+    stat -f %m "$file" 2>/dev/null || printf '0\n'
+    return
+  fi
+
+  printf '0\n'
+}
+
+has_active_session_leases() {
+  if [ ! -d "$SESSION_LEASE_DIR" ]; then
+    return 1
+  fi
+
+  find "$SESSION_LEASE_DIR" -type f -name '*.json' -print -quit 2>/dev/null | grep -q .
+}
+
+latest_activity_epoch() {
+  local observations_epoch activity_epoch
+  observations_epoch="$(file_mtime_epoch "$OBSERVATIONS_FILE")"
+  activity_epoch="$(file_mtime_epoch "$ACTIVITY_FILE")"
+
+  if [ "$activity_epoch" -gt "$observations_epoch" ] 2>/dev/null; then
+    printf '%s\n' "$activity_epoch"
+  else
+    printf '%s\n' "$observations_epoch"
+  fi
+}
+
+exit_if_idle_without_sessions() {
+  if has_active_session_leases; then
+    return
+  fi
+
+  local last_activity now_epoch idle_for
+  last_activity="$(latest_activity_epoch)"
+  now_epoch="$(date +%s)"
+  idle_for=$(( now_epoch - last_activity ))
+
+  if [ "$last_activity" -eq 0 ] || [ "$idle_for" -ge "$IDLE_TIMEOUT_SECONDS" ]; then
+    echo "[$(date)] Observer idle without active session leases for ${idle_for}s; exiting" >> "$LOG_FILE"
+    cleanup
+  fi
+}
 
 analyze_observations() {
   if [ ! -f "$OBSERVATIONS_FILE" ]; then
@@ -110,33 +169,44 @@ Rules:
 - Examples of project patterns: use React functional components, follow Django REST framework conventions
 PROMPT
 
+  # Read the prompt into memory before the Claude subprocess is spawned.
+  # On Windows/MSYS2, the mktemp path can differ from the shell's later path
+  # resolution, so relying on cat "$prompt_file" inside the claude invocation
+  # can fail even though the file was created successfully.
+  prompt_content="$(cat "$prompt_file" 2>/dev/null || true)"
+  rm -f "$prompt_file"
+  if [ -z "$prompt_content" ]; then
+    echo "[$(date)] Failed to load observer prompt content, skipping analysis" >> "$LOG_FILE"
+    rm -f "$analysis_file"
+    return
+  fi
+
   timeout_seconds="${ECC_OBSERVER_TIMEOUT_SECONDS:-120}"
-  max_turns="${ECC_OBSERVER_MAX_TURNS:-10}"
+  max_turns="${ECC_OBSERVER_MAX_TURNS:-20}"
   exit_code=0
 
   case "$max_turns" in
     ''|*[!0-9]*)
-      max_turns=10
+      max_turns=20
       ;;
   esac
 
   if [ "$max_turns" -lt 4 ]; then
-    max_turns=10
+    max_turns=20
   fi
 
   # Ensure CWD is PROJECT_DIR so the relative analysis_relpath resolves correctly
   # on all platforms, not just when the observer happens to be launched from the project root.
-  cd "$PROJECT_DIR" || { echo "[$(date)] Failed to cd to PROJECT_DIR ($PROJECT_DIR), skipping analysis" >> "$LOG_FILE"; rm -f "$prompt_file" "$analysis_file"; return; }
+  cd "$PROJECT_DIR" || { echo "[$(date)] Failed to cd to PROJECT_DIR ($PROJECT_DIR), skipping analysis" >> "$LOG_FILE"; rm -f "$analysis_file"; return; }
 
   # Prevent observe.sh from recording this automated Haiku session as observations.
   # Pass prompt via -p flag instead of stdin redirect for Windows compatibility (#842).
+  # prompt_content is already loaded in-memory so this no longer depends on the
+  # mktemp absolute path continuing to resolve after cwd changes (#1296).
   ECC_SKIP_OBSERVE=1 ECC_HOOK_PROFILE=minimal claude --model haiku --max-turns "$max_turns" --print \
     --allowedTools "Read,Write" \
-    -p "$(cat "$prompt_file")" >> "$LOG_FILE" 2>&1 &
+    -p "$prompt_content" >> "$LOG_FILE" 2>&1 &
   claude_pid=$!
-  # prompt_file content was already expanded by the shell; remove early to avoid
-  # leaving stale temp files during the (potentially long) analysis window.
-  rm -f "$prompt_file"
 
   (
     sleep "$timeout_seconds"
@@ -197,11 +267,13 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 "${CLV2_PYTHON_CMD:-python3}" "${SCRIPT_DIR}/../scripts/instinct-cli.py" prune --quiet >> "$LOG_FILE" 2>&1 || echo "[$(date)] Warning: instinct prune failed (non-fatal)" >> "$LOG_FILE"
 
 while true; do
+  exit_if_idle_without_sessions
   sleep "$OBSERVER_INTERVAL_SECONDS" &
   SLEEP_PID=$!
   wait "$SLEEP_PID" 2>/dev/null
   SLEEP_PID=""
 
+  exit_if_idle_without_sessions
   if [ "$USR1_FIRED" -eq 1 ]; then
     USR1_FIRED=0
   else

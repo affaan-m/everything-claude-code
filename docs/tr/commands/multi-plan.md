@@ -207,8 +207,8 @@ Her iki analizi sentezle, **Adım Adım Implementation Planı** oluştur:
 **Plan oluşturuldu ve `.claude/plan/actual-feature-name.md` dosyasına kaydedildi**
 
 **Lütfen yukarıdaki planı inceleyin. Şunları yapabilirsiniz:**
-   - **Planı değiştir**: Neyin ayarlanması gerektiğini söyleyin, planı güncelleyeceğim
-   - **Planı çalıştır**: Aşağıdaki komutu yeni bir oturuma kopyalayın
+- **Planı değiştir**: Neyin ayarlanması gerektiğini söyleyin, planı güncelleyeceğim
+- **Planı çalıştır**: Aşağıdaki komutu yeni bir oturuma kopyalayın
 
    ```
    /ccg:execute .claude/plan/actual-feature-name.md

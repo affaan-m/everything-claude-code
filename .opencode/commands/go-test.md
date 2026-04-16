@@ -1,6 +1,6 @@
 ---
 description: Go TDD workflow with table-driven tests
-agent: tdd-guide
+agent: everything-claude-code:tdd-guide
 subtask: true
 ---
 

@@ -5,7 +5,7 @@ metadata:
   tags: animations, transitions, frames, useCurrentFrame
 ---
 
-All animations MUST be driven by the `useCurrentFrame()` hook.  
+All animations MUST be driven by the `useCurrentFrame()` hook.
 Write animations in seconds and multiply them by the `fps` value from `useVideoConfig()`.
 
 ```tsx
@@ -18,12 +18,12 @@ export const FadeIn = () => {
   const opacity = interpolate(frame, [0, 2 * fps], [0, 1], {
     extrapolateRight: 'clamp',
   });
- 
+
   return (
     <div style={{ opacity }}>Hello World!</div>
   );
 };
 ```
 
-CSS transitions or animations are FORBIDDEN - they will not render correctly.  
-Tailwind animation class names are FORBIDDEN - they will not render correctly.  
+CSS transitions or animations are FORBIDDEN - they will not render correctly.
+Tailwind animation class names are FORBIDDEN - they will not render correctly.

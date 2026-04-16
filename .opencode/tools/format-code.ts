@@ -5,13 +5,13 @@
  * This avoids shell execution assumptions while still giving precise guidance.
  */
 
-import { tool } from "@opencode-ai/plugin/tool"
+import { tool, type ToolDefinition } from "@opencode-ai/plugin/tool"
 import * as path from "path"
 import * as fs from "fs"
 
 type Formatter = "biome" | "prettier" | "black" | "gofmt" | "rustfmt"
 
-export default tool({
+const formatCodeTool: ToolDefinition = tool({
   description:
     "Detect formatter for a file and return the exact command to run (Biome, Prettier, Black, gofmt, rustfmt).",
   args: {
@@ -42,6 +42,8 @@ export default tool({
     })
   },
 })
+
+export default formatCodeTool
 
 function detectFormatter(cwd: string, ext: string): Formatter | null {
   if (["ts", "tsx", "js", "jsx", "json", "css", "scss", "md", "yaml", "yml"].includes(ext)) {

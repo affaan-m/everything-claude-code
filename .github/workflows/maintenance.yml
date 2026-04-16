@@ -43,7 +43,7 @@ jobs:
     name: Stale Issues/PRs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9
+      - uses: actions/stale@b5d41d4e1d5dceea10e7104786b73624c18a190f # v10.2.0
         with:
           stale-issue-message: 'This issue is stale due to inactivity.'
           stale-pr-message: 'This PR is stale due to inactivity.'

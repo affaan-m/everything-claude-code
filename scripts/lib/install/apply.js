@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { writeInstallState } = require('../install-state');
+const { filterMcpConfig, parseDisabledMcpServers } = require('../mcp-config');
 
 function readJsonObject(filePath, label) {
   let parsed;
@@ -20,21 +21,29 @@ function readJsonObject(filePath, label) {
   return parsed;
 }
 
-function mergeHookEntries(existingEntries, incomingEntries) {
-  const mergedEntries = [];
-  const seenEntries = new Set();
-
-  for (const entry of [...existingEntries, ...incomingEntries]) {
-    const entryKey = JSON.stringify(entry);
-    if (seenEntries.has(entryKey)) {
-      continue;
-    }
-
-    seenEntries.add(entryKey);
-    mergedEntries.push(entry);
+function replacePluginRootPlaceholders(value, pluginRoot) {
+  if (!pluginRoot) {
+    return value;
   }
 
-  return mergedEntries;
+  if (typeof value === 'string') {
+    return value.split('${CLAUDE_PLUGIN_ROOT}').join(pluginRoot);
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(item => replacePluginRootPlaceholders(item, pluginRoot));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nestedValue]) => [
+        key,
+        replacePluginRootPlaceholders(nestedValue, pluginRoot),
+      ])
+    );
+  }
+
+  return value;
 }
 
 function findHooksSourcePath(plan, hooksDestinationPath) {
@@ -42,11 +51,55 @@ function findHooksSourcePath(plan, hooksDestinationPath) {
   return operation ? operation.sourcePath : null;
 }
 
-function buildMergedSettings(plan) {
+function isMcpConfigPath(filePath) {
+  const basename = path.basename(String(filePath || ''));
+  return basename === '.mcp.json' || basename === 'mcp.json';
+}
+
+function buildFilteredMcpWrites(plan) {
+  const disabledServers = parseDisabledMcpServers(process.env.ECC_DISABLED_MCPS);
+  if (disabledServers.length === 0) {
+    return [];
+  }
+
+  const writes = [];
+
+  for (const operation of plan.operations) {
+    if (!isMcpConfigPath(operation.destinationPath) || !operation.sourcePath || !fs.existsSync(operation.sourcePath)) {
+      continue;
+    }
+
+    let sourceConfig;
+    try {
+      sourceConfig = readJsonObject(operation.sourcePath, 'MCP config');
+    } catch {
+      continue;
+    }
+
+    if (!sourceConfig.mcpServers || typeof sourceConfig.mcpServers !== 'object' || Array.isArray(sourceConfig.mcpServers)) {
+      continue;
+    }
+
+    const filtered = filterMcpConfig(sourceConfig, disabledServers);
+    if (filtered.removed.length === 0) {
+      continue;
+    }
+
+    writes.push({
+      destinationPath: operation.destinationPath,
+      filteredConfig: filtered.config,
+    });
+  }
+
+  return writes;
+}
+
+function buildResolvedClaudeHooks(plan) {
   if (!plan.adapter || plan.adapter.target !== 'claude') {
     return null;
   }
 
+  const pluginRoot = plan.targetRoot;
   const hooksDestinationPath = path.join(plan.targetRoot, 'hooks', 'hooks.json');
   const hooksSourcePath = findHooksSourcePath(plan, hooksDestinationPath) || hooksDestinationPath;
   if (!fs.existsSync(hooksSourcePath)) {
@@ -54,52 +107,43 @@ function buildMergedSettings(plan) {
   }
 
   const hooksConfig = readJsonObject(hooksSourcePath, 'hooks config');
-  const incomingHooks = hooksConfig.hooks;
-  if (!incomingHooks || typeof incomingHooks !== 'object' || Array.isArray(incomingHooks)) {
+  const resolvedHooks = replacePluginRootPlaceholders(hooksConfig.hooks, pluginRoot);
+  if (!resolvedHooks || typeof resolvedHooks !== 'object' || Array.isArray(resolvedHooks)) {
     throw new Error(`Invalid hooks config at ${hooksSourcePath}: expected "hooks" to be a JSON object`);
   }
 
-  const settingsPath = path.join(plan.targetRoot, 'settings.json');
-  let settings = {};
-  if (fs.existsSync(settingsPath)) {
-    settings = readJsonObject(settingsPath, 'existing settings');
-  }
-
-  const existingHooks = settings.hooks && typeof settings.hooks === 'object' && !Array.isArray(settings.hooks)
-    ? settings.hooks
-    : {};
-  const mergedHooks = { ...existingHooks };
-
-  for (const [eventName, incomingEntries] of Object.entries(incomingHooks)) {
-    const currentEntries = Array.isArray(existingHooks[eventName]) ? existingHooks[eventName] : [];
-    const nextEntries = Array.isArray(incomingEntries) ? incomingEntries : [];
-    mergedHooks[eventName] = mergeHookEntries(currentEntries, nextEntries);
-  }
-
-  const mergedSettings = {
-    ...settings,
-    hooks: mergedHooks,
-  };
-
   return {
-    settingsPath,
-    mergedSettings,
+    hooksDestinationPath,
+    resolvedHooksConfig: {
+      ...hooksConfig,
+      hooks: resolvedHooks,
+    },
   };
 }
 
 function applyInstallPlan(plan) {
-  const mergedSettingsPlan = buildMergedSettings(plan);
+  const resolvedClaudeHooksPlan = buildResolvedClaudeHooks(plan);
+  const filteredMcpWrites = buildFilteredMcpWrites(plan);
 
   for (const operation of plan.operations) {
     fs.mkdirSync(path.dirname(operation.destinationPath), { recursive: true });
     fs.copyFileSync(operation.sourcePath, operation.destinationPath);
   }
 
-  if (mergedSettingsPlan) {
-    fs.mkdirSync(path.dirname(mergedSettingsPlan.settingsPath), { recursive: true });
+  if (resolvedClaudeHooksPlan) {
+    fs.mkdirSync(path.dirname(resolvedClaudeHooksPlan.hooksDestinationPath), { recursive: true });
     fs.writeFileSync(
-      mergedSettingsPlan.settingsPath,
-      JSON.stringify(mergedSettingsPlan.mergedSettings, null, 2) + '\n',
+      resolvedClaudeHooksPlan.hooksDestinationPath,
+      JSON.stringify(resolvedClaudeHooksPlan.resolvedHooksConfig, null, 2) + '\n',
+      'utf8'
+    );
+  }
+
+  for (const writePlan of filteredMcpWrites) {
+    fs.mkdirSync(path.dirname(writePlan.destinationPath), { recursive: true });
+    fs.writeFileSync(
+      writePlan.destinationPath,
+      JSON.stringify(writePlan.filteredConfig, null, 2) + '\n',
       'utf8'
     );
   }

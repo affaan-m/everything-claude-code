@@ -98,21 +98,21 @@ Write to `gan-harness/generator-state.md` after each iteration:
 
 The Evaluator will specifically penalize these patterns. **Avoid them:**
 
-- ❌ Generic gradient backgrounds (#667eea → #764ba2 is an instant tell)
-- ❌ Excessive rounded corners on everything
-- ❌ Stock hero sections with "Welcome to [App Name]"
-- ❌ Default Material UI / Shadcn themes without customization
-- ❌ Placeholder images from unsplash/placeholder services
-- ❌ Generic card grids with identical layouts
-- ❌ "AI-generated" decorative SVG patterns
+- Avoid generic gradient backgrounds (#667eea -> #764ba2 is an instant tell)
+- Avoid excessive rounded corners on everything
+- Avoid stock hero sections with "Welcome to [App Name]"
+- Avoid default Material UI / Shadcn themes without customization
+- Avoid placeholder images from unsplash/placeholder services
+- Avoid generic card grids with identical layouts
+- Avoid "AI-generated" decorative SVG patterns
 
 **Instead, aim for:**
-- ✅ A specific, opinionated color palette (follow the spec)
-- ✅ Thoughtful typography hierarchy (different weights, sizes for different content)
-- ✅ Custom layouts that match the content (not generic grids)
-- ✅ Meaningful animations tied to user actions (not decoration)
-- ✅ Real empty states with personality
-- ✅ Error states that help the user (not just "Something went wrong")
+- Use a specific, opinionated color palette (follow the spec)
+- Use thoughtful typography hierarchy (different weights, sizes for different content)
+- Use custom layouts that match the content (not generic grids)
+- Use meaningful animations tied to user actions (not decoration)
+- Use real empty states with personality
+- Use error states that help the user (not just "Something went wrong")
 
 ## Interaction with Evaluator
 

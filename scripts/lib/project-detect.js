@@ -51,6 +51,11 @@ const LANGUAGE_RULES = [
     extensions: ['.java']
   },
   {
+    type: 'c',
+    markers: [],
+    extensions: ['.c']
+  },
+  {
     type: 'csharp',
     markers: [],
     extensions: ['.cs', '.csproj', '.sln']

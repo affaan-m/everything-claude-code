@@ -1,4 +1,4 @@
-**언어:** [English](../../README.md) | [简体中文](../../README.zh-CN.md) | [繁體中文](../zh-TW/README.md) | [日本語](../ja-JP/README.md) | 한국어
+**언어:** [English](../../README.md) | [Português (Brasil)](../pt-BR/README.md) | [简体中文](../../README.zh-CN.md) | [繁體中文](../zh-TW/README.md) | [日本語](../ja-JP/README.md) | 한국어 | [Türkçe](../tr/README.md)
 
 # Everything Claude Code
 
@@ -16,15 +16,15 @@
 ![Java](https://img.shields.io/badge/-Java-ED8B00?logo=openjdk&logoColor=white)
 ![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown&logoColor=white)
 
-> **50K+ stars** | **6K+ forks** | **30 contributors** | **6개 언어 지원** | **Anthropic 해커톤 우승**
+> **140K+ stars** | **21K+ forks** | **170+ contributors** | **12+ language ecosystems** | **Anthropic 해커톤 우승**
 
 ---
 
 <div align="center">
 
-**Language / 语言 / 語言 / 언어**
+**Language / 语言 / 語言 / 언어 / Dil**
 
-[**English**](../../README.md) | [简体中文](../../README.zh-CN.md) | [繁體中文](../zh-TW/README.md) | [日本語](../ja-JP/README.md) | [한국어](README.md)
+[**English**](../../README.md) | [Português (Brasil)](../pt-BR/README.md) | [简体中文](../../README.zh-CN.md) | [繁體中文](../zh-TW/README.md) | [日本語](../ja-JP/README.md) | [한국어](README.md) | [Türkçe](../tr/README.md)
 
 </div>
 
@@ -34,7 +34,7 @@
 
 단순한 설정 파일 모음이 아닙니다. 스킬, 직관(Instinct), 메모리 최적화, 지속적 학습, 보안 스캐닝, 리서치 우선 개발을 아우르는 완전한 시스템입니다. 10개월 이상 실제 프로덕트를 만들며 매일 집중적으로 사용해 발전시킨 프로덕션 레벨의 에이전트, 훅, 커맨드, 룰, MCP 설정이 포함되어 있습니다.
 
-**Claude Code**, **Codex**, **Cowork** 등 다양한 AI 에이전트 하네스에서 사용할 수 있습니다.
+**Claude Code**, **Codex**, **Cursor**, **OpenCode**, **Gemini** 등 다양한 AI 에이전트 하네스에서 사용할 수 있습니다.
 
 ---
 
@@ -112,10 +112,10 @@
 
 ```bash
 # 마켓플레이스 추가
-/plugin marketplace add affaan-m/everything-claude-code
+/plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # 플러그인 설치
-/plugin install everything-claude-code@everything-claude-code
+/plugin install everything-claude-code
 ```
 
 ### 2단계: 룰 설치 (필수)
@@ -141,7 +141,7 @@ cd everything-claude-code
 
 ```bash
 # 커맨드 실행 (플러그인 설치 시 네임스페이스 형태 사용)
-/everything-claude-code:plan "사용자 인증 추가"
+/ecc:plan "사용자 인증 추가"
 
 # 수동 설치(옵션 2) 시에는 짧은 형태를 사용:
 # /plan "사용자 인증 추가"
@@ -356,10 +356,10 @@ Claude Code v2.1+는 설치된 플러그인의 `hooks/hooks.json`을 **자동으
 
 ```bash
 # 마켓플레이스 추가
-/plugin marketplace add affaan-m/everything-claude-code
+/plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # 플러그인 설치
-/plugin install everything-claude-code@everything-claude-code
+/plugin install everything-claude-code
 ```
 
 또는 `~/.claude/settings.json`에 직접 추가:
@@ -367,7 +367,7 @@ Claude Code v2.1+는 설치된 플러그인의 `hooks/hooks.json`을 **자동으
 ```json
 {
   "extraKnownMarketplaces": {
-    "everything-claude-code": {
+    "ecc": {
       "source": {
         "source": "github",
         "repo": "affaan-m/everything-claude-code"
@@ -489,8 +489,8 @@ rules/
 
 | 하고 싶은 것 | 사용할 커맨드 | 사용되는 에이전트 |
 |-------------|-------------|-----------------|
-| 새 기능 계획하기 | `/everything-claude-code:plan "인증 추가"` | planner |
-| 시스템 아키텍처 설계 | `/everything-claude-code:plan` + architect 에이전트 | architect |
+| 새 기능 계획하기 | `/ecc:plan "인증 추가"` | planner |
+| 시스템 아키텍처 설계 | `/ecc:plan` + architect 에이전트 | architect |
 | 테스트를 먼저 작성하며 코딩 | `/tdd` | tdd-guide |
 | 방금 작성한 코드 리뷰 | `/code-review` | code-reviewer |
 | 빌드 실패 수정 | `/build-fix` | build-error-resolver |
@@ -507,7 +507,7 @@ rules/
 
 **새로운 기능 시작:**
 ```
-/everything-claude-code:plan "OAuth를 사용한 사용자 인증 추가"
+/ecc:plan "OAuth를 사용한 사용자 인증 추가"
                                               → planner가 구현 청사진 작성
 /tdd                                          → tdd-guide가 테스트 먼저 작성 강제
 /code-review                                  → code-reviewer가 코드 검토
@@ -631,7 +631,7 @@ node tests/hooks/hooks.test.js
 ### 기여 아이디어
 
 - 언어별 스킬 (Rust, C#, Swift, Kotlin) — Go, Python, Java는 이미 포함
-- 프레임워크별 설정 (Rails, Laravel, FastAPI, NestJS) — Django, Spring Boot는 이미 포함
+- 프레임워크별 설정 (Rails, Laravel, FastAPI) — Django, NestJS, Spring Boot는 이미 포함
 - DevOps 에이전트 (Kubernetes, Terraform, AWS, Docker)
 - 테스팅 전략 (다양한 프레임워크, 비주얼 리그레션)
 - 도메인별 지식 (ML, 데이터 엔지니어링, 모바일)

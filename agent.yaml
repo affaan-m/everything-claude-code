@@ -1,6 +1,6 @@
 spec_version: "0.1.0"
 name: everything-claude-code
-version: 1.9.0
+version: 1.10.0
 description: "Initial gitagent export surface for ECC's shared skill catalog, governance, and identity. Native agents, commands, and hooks remain authoritative in the repository while manifest coverage expands."
 author: affaan-m
 license: MIT
@@ -107,7 +107,6 @@ skills:
   - postgres-patterns
   - product-lens
   - production-scheduling
-  - project-guidelines-example
   - prompt-optimizer
   - python-patterns
   - python-testing
@@ -144,6 +143,86 @@ skills:
   - videodb
   - visa-doc-translate
   - x-api
+commands:
+  - agent-sort
+  - aside
+  - build-fix
+  - checkpoint
+  - claw
+  - code-review
+  - context-budget
+  - cpp-build
+  - cpp-review
+  - cpp-test
+  - devfleet
+  - docs
+  - e2e
+  - eval
+  - evolve
+  - feature-dev
+  - flutter-build
+  - flutter-review
+  - flutter-test
+  - gan-build
+  - gan-design
+  - go-build
+  - go-review
+  - go-test
+  - gradle-build
+  - harness-audit
+  - hookify
+  - hookify-configure
+  - hookify-help
+  - hookify-list
+  - instinct-export
+  - instinct-import
+  - instinct-status
+  - jira
+  - kotlin-build
+  - kotlin-review
+  - kotlin-test
+  - learn
+  - learn-eval
+  - loop-start
+  - loop-status
+  - model-route
+  - multi-backend
+  - multi-execute
+  - multi-frontend
+  - multi-plan
+  - multi-workflow
+  - orchestrate
+  - plan
+  - pm2
+  - projects
+  - promote
+  - prompt-optimize
+  - prp-commit
+  - prp-implement
+  - prp-plan
+  - prp-pr
+  - prp-prd
+  - prune
+  - python-review
+  - quality-gate
+  - refactor-clean
+  - resume-session
+  - review-pr
+  - rules-distill
+  - rust-build
+  - rust-review
+  - rust-test
+  - santa-loop
+  - save-session
+  - sessions
+  - setup-pm
+  - skill-create
+  - skill-health
+  - tdd
+  - test-coverage
+  - update-codemaps
+  - update-docs
+  - verify
 tags:
   - agent-harness
   - developer-tools

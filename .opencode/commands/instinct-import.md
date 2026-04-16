@@ -1,6 +1,6 @@
 ---
 description: Import instincts from external sources
-agent: build
+agent: everything-claude-code:build
 ---
 
 # Instinct Import Command

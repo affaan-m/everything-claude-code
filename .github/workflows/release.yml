@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   release:
@@ -18,6 +19,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify OpenCode package payload
+        run: node tests/scripts/build-opencode.test.js
+
       - name: Validate version tag
         run: |
           if ! [[ "${REF_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -27,17 +40,37 @@ jobs:
 
         env:
           REF_NAME: ${{ github.ref_name }}
-      - name: Verify plugin.json version matches tag
+      - name: Verify package version matches tag
         env:
           TAG_NAME: ${{ github.ref_name }}
         run: |
           TAG_VERSION="${TAG_NAME#v}"
-          PLUGIN_VERSION=$(grep -oE '"version": *"[^"]*"' .claude-plugin/plugin.json | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
-          if [ "$TAG_VERSION" != "$PLUGIN_VERSION" ]; then
-            echo "::error::Tag version ($TAG_VERSION) does not match plugin.json version ($PLUGIN_VERSION)"
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          if [ "$TAG_VERSION" != "$PACKAGE_VERSION" ]; then
+            echo "::error::Tag version ($TAG_VERSION) does not match package.json version ($PACKAGE_VERSION)"
             echo "Run: ./scripts/release.sh $TAG_VERSION"
             exit 1
           fi
+
+      - name: Verify release metadata stays in sync
+        run: node tests/plugin-manifest.test.js
+
+      - name: Check npm publish state
+        id: npm_publish_state
+        run: |
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version >/dev/null 2>&1; then
+            echo "already_published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "already_published=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish npm package
+        if: steps.npm_publish_state.outputs.already_published != 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
 
       - name: Generate release highlights
         id: highlights
@@ -59,11 +92,13 @@ jobs:
           - Improved release-note generation and changelog hygiene
 
           ### Notes
+          - npm package: \`ecc-universal\`
+          - Claude marketplace/plugin identifier: \`everything-claude-code@everything-claude-code\`
           - For migration tips and compatibility notes, see README and CHANGELOG.
           EOF
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
         with:
           body_path: release_body.md
           generate_release_notes: true

@@ -304,24 +304,24 @@ Register the agent in AGENTS.md
 Optionally update README.md and docs/COMMAND-AGENT-MAP.md
 ```
 
-### Add New Command
+### Add New Workflow Surface
 
-Adds a new command to the system, often paired with a backing skill.
+Adds or updates a workflow entrypoint. Default to skills-first; only add a command shim when legacy slash compatibility is still required.
 
 **Frequency**: ~1 times per month
 
 **Steps**:
-1. Create a new markdown file under commands/{command-name}.md
-2. Optionally add or update a backing skill under skills/{skill-name}/SKILL.md
+1. Create or update the canonical workflow under skills/{skill-name}/SKILL.md
+2. Only if needed, add or update commands/{command-name}.md as a compatibility shim
 
 **Files typically involved**:
-- `commands/*.md`
 - `skills/*/SKILL.md`
+- `commands/*.md` (only when a legacy shim is intentionally retained)
 
 **Example commit sequence**:
 ```
-Create a new markdown file under commands/{command-name}.md
-Optionally add or update a backing skill under skills/{skill-name}/SKILL.md
+Create or update the canonical skill under skills/{skill-name}/SKILL.md
+Only if needed, add or update commands/{command-name}.md as a compatibility shim
 ```
 
 ### Sync Catalog Counts

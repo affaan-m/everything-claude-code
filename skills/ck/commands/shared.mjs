@@ -5,8 +5,8 @@
  * No external dependencies. Node.js stdlib only.
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
-import { resolve, basename } from 'path';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { resolve } from 'path';
 import { homedir } from 'os';
 import { spawnSync } from 'child_process';
 import { randomBytes } from 'crypto';
@@ -270,7 +270,7 @@ export function renderContextMd(ctx) {
 }
 
 /** Render the bordered briefing box used by /ck:resume */
-export function renderBriefingBox(ctx, meta = {}) {
+export function renderBriefingBox(ctx, _meta = {}) {
   const latest = ctx.sessions?.[ctx.sessions.length - 1] || {};
   const W = 57;
   const pad = (str, w) => {
@@ -344,7 +344,7 @@ export function renderInfoBlock(ctx) {
 }
 
 /** Render ASCII list table used by /ck:list */
-export function renderListTable(entries, cwd, todayStr) {
+export function renderListTable(entries, cwd, _todayStr) {
   // entries: [{name, contextDir, path, context, lastUpdated}]
   // Sorted alphabetically by contextDir before calling
   const rows = entries.map((e, i) => {

@@ -11,8 +11,8 @@ You can create bar charts in Remotion by using regular React code - HTML and SVG
 
 ## No animations not powered by `useCurrentFrame()`
 
-Disable all animations by third party libraries.  
-They will cause flickering during rendering.  
+Disable all animations by third party libraries.
+They will cause flickering during rendering.
 Instead, drive all animations from `useCurrentFrame()`.
 
 ## Bar Chart Animations

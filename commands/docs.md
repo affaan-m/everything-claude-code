@@ -1,31 +1,23 @@
 ---
-description: Look up current documentation for a library or topic via Context7.
+description: Legacy slash-entry shim for the documentation-lookup skill. Prefer the skill directly.
 ---
 
-# /docs
+# Docs Command (Legacy Shim)
 
-## Purpose
+Use this only if you still reach for `/docs`. The maintained workflow lives in `skills/documentation-lookup/SKILL.md`.
 
-Look up up-to-date documentation for a library, framework, or API and return a summarized answer with relevant code snippets. Uses the Context7 MCP (resolve-library-id and query-docs) so answers reflect current docs, not training data.
+## Canonical Surface
 
-## Usage
+- Prefer the `documentation-lookup` skill directly.
+- Keep this file only as a compatibility entry point.
 
-```
-/docs [library name] [question]
-```
+## Arguments
 
-Use quotes for multi-word arguments so they are parsed as a single token. Example: `/docs "Next.js" "How do I configure middleware?"`
+`$ARGUMENTS`
 
-If library or question is omitted, prompt the user for:
-1. The library or product name (e.g. Next.js, Prisma, Supabase).
-2. The specific question or task (e.g. "How do I set up middleware?", "Auth methods").
+## Delegation
 
-## Workflow
-
-1. **Resolve library ID** — Call the Context7 tool `resolve-library-id` with the library name and the user's question to get a Context7-compatible library ID (e.g. `/vercel/next.js`).
-2. **Query docs** — Call `query-docs` with that library ID and the user's question.
-3. **Summarize** — Return a concise answer and include relevant code examples from the fetched documentation. Mention the library (and version if relevant).
-
-## Output
-
-The user receives a short, accurate answer backed by current docs, plus any code snippets that help. If Context7 is not available, say so and answer from training data with a note that docs may be outdated.
+Apply the `documentation-lookup` skill.
+- If the library or the question is missing, ask for the missing part.
+- Use live documentation through Context7 instead of training data.
+- Return only the current answer and the minimum code/example surface needed.

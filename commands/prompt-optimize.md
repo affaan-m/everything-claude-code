@@ -1,38 +1,23 @@
 ---
-description: Analyze a draft prompt and output an optimized, ECC-enriched version ready to paste and run. Does NOT execute the task — outputs advisory analysis only.
+description: Legacy slash-entry shim for the prompt-optimizer skill. Prefer the skill directly.
 ---
 
-# /prompt-optimize
+# Prompt Optimize (Legacy Shim)
 
-Analyze and optimize the following prompt for maximum ECC leverage.
+Use this only if you still invoke `/prompt-optimize`. The maintained workflow lives in `skills/prompt-optimizer/SKILL.md`.
 
-## Your Task
+## Canonical Surface
 
-Apply the **prompt-optimizer** skill to the user's input below. Follow the 6-phase analysis pipeline:
+- Prefer the `prompt-optimizer` skill directly.
+- Keep this file only as a compatibility entry point.
 
-0. **Project Detection** — Read CLAUDE.md, detect tech stack from project files (package.json, go.mod, pyproject.toml, etc.)
-1. **Intent Detection** — Classify the task type (new feature, bug fix, refactor, research, testing, review, documentation, infrastructure, design)
-2. **Scope Assessment** — Evaluate complexity (TRIVIAL / LOW / MEDIUM / HIGH / EPIC), using codebase size as signal if detected
-3. **ECC Component Matching** — Map to specific skills, commands, agents, and model tier
-4. **Missing Context Detection** — Identify gaps. If 3+ critical items missing, ask the user to clarify before generating
-5. **Workflow & Model** — Determine lifecycle position, recommend model tier, and split into multiple prompts if HIGH/EPIC
+## Arguments
 
-## Output Requirements
+`$ARGUMENTS`
 
-- Present diagnosis, recommended ECC components, and an optimized prompt using the Output Format from the prompt-optimizer skill
-- Provide both **Full Version** (detailed) and **Quick Version** (compact, varied by intent type)
-- Respond in the same language as the user's input
-- The optimized prompt must be complete and ready to copy-paste into a new session
-- End with a footer offering adjustment or a clear next step for starting a separate execution request
+## Delegation
 
-## CRITICAL
-
-Do NOT execute the user's task. Output ONLY the analysis and optimized prompt.
-If the user asks for direct execution, explain that `/prompt-optimize` only produces advisory output and tell them to start a normal task request instead.
-
-Note: `blueprint` is a **skill**, not a slash command. Write "Use the blueprint skill"
-instead of presenting it as a `/...` command.
-
-## User Input
-
-$ARGUMENTS
+Apply the `prompt-optimizer` skill.
+- Keep it advisory-only: optimize the prompt, do not execute the task.
+- Return the recommended ECC components plus a ready-to-run prompt.
+- If the user actually wants direct execution, say so and tell them to make a normal task request instead of staying inside the shim.

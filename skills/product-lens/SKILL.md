@@ -1,10 +1,14 @@
 ---
 name: product-lens
-description: Use this skill to validate the "why" before building, run product diagnostics, and convert vague ideas into specs.
+description: Use this skill to validate the "why" before building, run product diagnostics, and pressure-test product direction before the request becomes an implementation contract.
 origin: ECC
 ---
 
 # Product Lens — Think Before You Build
+
+This lane owns product diagnosis, not implementation-ready specification writing.
+
+If the user needs a durable PRD-to-SRS or capability-contract artifact, hand off to `product-capability`.
 
 ## When to Use
 
@@ -12,7 +16,7 @@ origin: ECC
 - Weekly product review — are we building the right thing?
 - When stuck choosing between features
 - Before a launch — sanity check the user journey
-- When converting a vague idea into a spec
+- When converting a vague idea into a product brief before engineering planning starts
 
 ## How It Works
 
@@ -31,6 +35,8 @@ Like YC office hours but automated. Asks the hard questions:
 ```
 
 Output: a `PRODUCT-BRIEF.md` with answers, risks, and a go/no-go recommendation.
+
+If the result is "yes, build this," the next lane is `product-capability`, not more founder-theater.
 
 ### Mode 2: Founder Review
 
@@ -83,3 +89,4 @@ Pair with:
 - `/browser-qa` to verify the user journey audit findings
 - `/design-system audit` for visual polish assessment
 - `/canary-watch` for post-launch monitoring
+- `product-capability` when the product brief needs to become an implementation-ready capability plan

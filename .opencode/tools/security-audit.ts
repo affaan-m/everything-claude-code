@@ -8,11 +8,11 @@
  * The regex patterns below are used to DETECT potential issues in user code.
  */
 
-import { tool } from "@opencode-ai/plugin/tool"
+import { tool, type ToolDefinition } from "@opencode-ai/plugin/tool"
 import * as path from "path"
 import * as fs from "fs"
 
-export default tool({
+const securityAuditTool: ToolDefinition = tool({
   description:
     "Run a comprehensive security audit including dependency vulnerabilities, secret scanning, and common security issues.",
   args: {
@@ -105,6 +105,8 @@ export default tool({
     return JSON.stringify(results)
   },
 })
+
+export default securityAuditTool
 
 interface AuditCheck {
   name: string

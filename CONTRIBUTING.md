@@ -7,6 +7,7 @@ Thanks for wanting to contribute! This repo is a community resource for Claude C
 - [What We're Looking For](#what-were-looking-for)
 - [Quick Start](#quick-start)
 - [Contributing Skills](#contributing-skills)
+- [Skill Adaptation Policy](#skill-adaptation-policy)
 - [Contributing Agents](#contributing-agents)
 - [Contributing Hooks](#contributing-hooks)
 - [Contributing Commands](#contributing-commands)
@@ -73,7 +74,7 @@ git add . && git commit -m "feat: add my-skill" && git push -u origin feat/my-co
 
 Skills are knowledge modules that Claude Code loads based on context.
 
-> ** Comprehensive Guide:** For detailed guidance on creating effective skills, see [Skill Development Guide](docs/SKILL-DEVELOPMENT-GUIDE.md). It covers:
+> **Comprehensive Guide:** For detailed guidance on creating effective skills, see [Skill Development Guide](docs/SKILL-DEVELOPMENT-GUIDE.md). It covers:
 > - Skill architecture and categories
 > - Writing effective content with examples
 > - Best practices and common patterns
@@ -142,7 +143,18 @@ Link to complementary skills (e.g., `related-skill-1`, `related-skill-2`).
 | **Workflow** | Step-by-step processes | `tdd-workflow`, `refactoring-workflow` |
 | **Domain Knowledge** | Specialized domains | `security-review`, `api-design` |
 | **Tool Integration** | Tool/library usage | `docker-patterns`, `supabase-patterns` |
-| **Template** | Project-specific skill templates | `project-guidelines-example` |
+| **Template** | Project-specific skill templates | `docs/examples/project-guidelines-template.md` |
+
+### Skill Adaptation Policy
+
+If you are porting an idea from another repo, plugin, harness, or personal prompt pack, read [Skill Adaptation Policy](docs/skill-adaptation-policy.md) before opening the PR.
+
+Short version:
+
+- copy the underlying idea, not the external product identity
+- rename the skill when ECC materially changes or expands the surface
+- prefer ECC-native rules, skills, scripts, and MCPs over new default third-party dependencies
+- do not ship a skill whose main value is telling users to install an unvetted package
 
 ### Skill Checklist
 
@@ -165,7 +177,7 @@ Link to complementary skills (e.g., `related-skill-1`, `related-skill-2`).
 | `backend-patterns/` | Framework Patterns | API and database patterns |
 | `security-review/` | Domain Knowledge | Security checklist |
 | `tdd-workflow/` | Workflow | Test-driven development process |
-| `project-guidelines-example/` | Template | Project-specific skill template |
+| `docs/examples/project-guidelines-template.md` | Template | Project-specific skill template |
 
 ---
 

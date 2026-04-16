@@ -220,6 +220,20 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  console.log('\nC Detection:');
+
+  if (test('detects c from top-level .c files', () => {
+    const dir = createTempDir();
+    try {
+      writeTestFile(dir, 'main.c', 'int main(void) { return 0; }\n');
+      const result = detectProjectType(dir);
+      assert.ok(result.languages.includes('c'));
+      assert.strictEqual(result.primary, 'c');
+    } finally {
+      cleanupDir(dir);
+    }
+  })) passed++; else failed++;
+
   // Go detection
   console.log('\nGo Detection:');
 

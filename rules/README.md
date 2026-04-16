@@ -17,6 +17,7 @@ rules/
 ├── typescript/      # TypeScript/JavaScript specific
 ├── python/          # Python specific
 ├── golang/          # Go specific
+├── web/             # Web and frontend specific
 ├── swift/           # Swift specific
 └── php/             # PHP specific
 ```
@@ -33,6 +34,7 @@ rules/
 ./install.sh typescript
 ./install.sh python
 ./install.sh golang
+./install.sh web
 ./install.sh swift
 ./install.sh php
 
@@ -56,6 +58,7 @@ cp -r rules/common ~/.claude/rules/common
 cp -r rules/typescript ~/.claude/rules/typescript
 cp -r rules/python ~/.claude/rules/python
 cp -r rules/golang ~/.claude/rules/golang
+cp -r rules/web ~/.claude/rules/web
 cp -r rules/swift ~/.claude/rules/swift
 cp -r rules/php ~/.claude/rules/php
 
@@ -85,6 +88,8 @@ To add support for a new language (e.g., `rust/`):
    > This file extends [common/xxx.md](../common/xxx.md) with <Language> specific content.
    ```
 4. Reference existing skills if available, or create new ones under `skills/`.
+
+For non-language domains like `web/`, follow the same layered pattern when there is enough reusable domain-specific guidance to justify a standalone ruleset.
 
 ## Rule Priority
 

@@ -8,8 +8,7 @@
  * exit 0: success  exit 1: no projects
  */
 
-import { readProjects, loadContext, today, CONTEXTS_DIR } from './shared.mjs';
-import { renderListTable } from './shared.mjs';
+import { readProjects, loadContext, today, renderListTable } from './shared.mjs';
 
 const cwd = process.env.PWD || process.cwd();
 const projects = readProjects();

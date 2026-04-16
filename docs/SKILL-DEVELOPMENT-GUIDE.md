@@ -909,7 +909,7 @@ npm run test:e2e
 ## Additional Resources
 
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - General contribution guidelines
-- [project-guidelines-example](../skills/project-guidelines-example/SKILL.md) - Project-specific skill template
+- [project-guidelines-template](./examples/project-guidelines-template.md) - Project-specific skill template
 - [coding-standards](../skills/coding-standards/SKILL.md) - Example of standards skill
 - [tdd-workflow](../skills/tdd-workflow/SKILL.md) - Example of workflow skill
 - [security-review](../skills/security-review/SKILL.md) - Example of domain knowledge skill

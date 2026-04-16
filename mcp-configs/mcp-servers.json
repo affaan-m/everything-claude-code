@@ -1,5 +1,15 @@
 {
   "mcpServers": {
+    "jira": {
+      "command": "uvx",
+      "args": ["mcp-atlassian==0.21.0"],
+      "env": {
+        "JIRA_URL": "YOUR_JIRA_URL_HERE",
+        "JIRA_EMAIL": "YOUR_JIRA_EMAIL_HERE",
+        "JIRA_API_TOKEN": "YOUR_JIRA_API_TOKEN_HERE"
+      },
+      "description": "Jira issue tracking — search, create, update, comment, transition issues"
+    },
     "github": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
@@ -94,11 +104,6 @@
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/projects"],
       "description": "Filesystem operations (set your path)"
     },
-    "insaits": {
-      "command": "python3",
-      "args": ["-m", "insa_its.mcp_server"],
-      "description": "AI-to-AI security monitoring — anomaly detection, credential exposure, hallucination checks, forensic tracing. 23 anomaly types, OWASP MCP Top 10 coverage. 100% local. Install: pip install insa-its"
-    },
     "playwright": {
       "command": "npx",
       "args": ["-y", "@playwright/mcp", "--browser", "chrome"],
@@ -165,7 +170,7 @@
   "_comments": {
     "usage": "Copy the servers you need to your ~/.claude.json mcpServers section",
     "env_vars": "Replace YOUR_*_HERE placeholders with actual values",
-    "disabling": "Use disabledMcpServers array in project config to disable per-project",
+    "disabling": "Use ECC_DISABLED_MCPS=github,context7,... to disable bundled ECC MCPs during install/sync, or use disabledMcpServers in project config for per-project overrides",
     "context_warning": "Keep under 10 MCPs enabled to preserve context window"
   }
 }

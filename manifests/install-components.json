@@ -140,9 +140,17 @@
     {
       "id": "capability:content",
       "family": "capability",
-      "description": "Business, writing, market, and investor communication skills.",
+      "description": "Business, writing, market, investor communication, and reusable voice-system skills.",
       "modules": [
         "business-content"
+      ]
+    },
+    {
+      "id": "capability:operators",
+      "family": "capability",
+      "description": "Connected-app operator workflows for setup audits, billing operations, program tracking, Google Workspace, and network optimization.",
+      "modules": [
+        "operator-workflows"
       ]
     },
     {
@@ -156,7 +164,7 @@
     {
       "id": "capability:media",
       "family": "capability",
-      "description": "Media generation and AI-assisted editing skills.",
+      "description": "Media generation, technical explainers, and AI-assisted editing skills.",
       "modules": [
         "media-generation"
       ]
@@ -181,6 +189,14 @@
       "id": "lang:cpp",
       "family": "language",
       "description": "C++ coding standards and testing guidance. Currently resolves through the shared framework-language module.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
+      "id": "lang:c",
+      "family": "language",
+      "description": "C engineering guidance using the shared C/C++ standards and testing stack. Currently resolves through the shared framework-language module.",
       "modules": [
         "framework-language"
       ]
@@ -342,7 +358,7 @@
     {
       "id": "skill:continuous-learning",
       "family": "skill",
-      "description": "Session pattern extraction and continuous learning skill.",
+      "description": "Legacy v1 Stop-hook session pattern extraction skill; prefer continuous-learning-v2 for new installs.",
       "modules": [
         "workflow-quality"
       ]

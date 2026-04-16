@@ -1,4 +1,4 @@
-**言語:** English | [简体中文](../../README.zh-CN.md) | [繁體中文](../zh-TW/README.md) | [日本語](README.md) | [한국어](../ko-KR/README.md)
+**言語:** [English](../../README.md) | [Português (Brasil)](../pt-BR/README.md) | [简体中文](../../README.zh-CN.md) | [繁體中文](../zh-TW/README.md) | [日本語](README.md) | [한국어](../ko-KR/README.md) | [Türkçe](../tr/README.md)
 
 # Everything Claude Code
 
@@ -13,15 +13,15 @@
 ![Java](https://img.shields.io/badge/-Java-ED8B00?logo=openjdk&logoColor=white)
 ![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown&logoColor=white)
 
-> **42K+ stars** | **5K+ forks** | **24 contributors** | **6 languages supported**
+> **140K+ stars** | **21K+ forks** | **170+ contributors** | **12+ language ecosystems**
 
 ---
 
 <div align="center">
 
-**言語 / Language / 語言**
+**言語 / Language / 語言 / Dil**
 
-[**English**](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](docs/zh-TW/README.md) | [日本語](docs/ja-JP/README.md)
+[**English**](../../README.md) | [Português (Brasil)](../pt-BR/README.md) | [简体中文](../../README.zh-CN.md) | [繁體中文](../zh-TW/README.md) | [日本語](README.md) | [한국어](../ko-KR/README.md) | [Türkçe](../tr/README.md)
 
 </div>
 
@@ -107,10 +107,10 @@
 
 ```bash
 # マーケットプレイスを追加
-/plugin marketplace add affaan-m/everything-claude-code
+/plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # プラグインをインストール
-/plugin install everything-claude-code@everything-claude-code
+/plugin install everything-claude-code
 ```
 
 ### ステップ2：ルールをインストール（必須）
@@ -134,7 +134,7 @@ cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
 
 ```bash
 # コマンドを試す（プラグインはネームスペース形式）
-/everything-claude-code:plan "ユーザー認証を追加"
+/ecc:plan "ユーザー認証を追加"
 
 # 手動インストール（オプション2）は短縮形式：
 # /plan "ユーザー認証を追加"
@@ -424,10 +424,10 @@ Duplicate hook file detected: ./hooks/hooks.json is already resolved to a loaded
 
 ```bash
 # このリポジトリをマーケットプレイスとして追加
-/plugin marketplace add affaan-m/everything-claude-code
+/plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # プラグインをインストール
-/plugin install everything-claude-code@everything-claude-code
+/plugin install everything-claude-code
 ```
 
 または、`~/.claude/settings.json` に直接追加：
@@ -435,7 +435,7 @@ Duplicate hook file detected: ./hooks/hooks.json is already resolved to a loaded
 ```json
 {
   "extraKnownMarketplaces": {
-    "everything-claude-code": {
+    "ecc": {
       "source": {
         "source": "github",
         "repo": "affaan-m/everything-claude-code"
@@ -497,7 +497,9 @@ cp -r everything-claude-code/skills/* ~/.claude/skills/
 
 #### settings.json にフックを追加
 
-`hooks/hooks.json` のフックを `~/.claude/settings.json` にコピーします。
+手動インストール時のみ、`hooks/hooks.json` のフックを `~/.claude/settings.json` にコピーします。
+
+`/plugin install` で ECC を導入した場合は、これらのフックを `settings.json` にコピーしないでください。Claude Code v2.1+ はプラグインの `hooks/hooks.json` を自動読み込みするため、二重登録すると重複実行や `${CLAUDE_PLUGIN_ROOT}` の解決失敗が発生します。
 
 #### MCP を設定
 
@@ -600,7 +602,7 @@ node tests/hooks/hooks.test.js
 ### 貢献アイデア
 
 - 言語固有のスキル（Rust、C#、Swift、Kotlin） — Go、Python、Javaは既に含まれています
-- フレームワーク固有の設定（Rails、Laravel、FastAPI、NestJS） — Django、Spring Bootは既に含まれています
+- フレームワーク固有の設定（Rails、Laravel、FastAPI） — Django、NestJS、Spring Bootは既に含まれています
 - DevOpsエージェント（Kubernetes、Terraform、AWS、Docker）
 - テスト戦略（異なるフレームワーク、ビジュアルリグレッション）
 - 専門領域の知識（ML、データエンジニアリング、モバイル開発）

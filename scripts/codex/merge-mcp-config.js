@@ -19,6 +19,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { parseDisabledMcpServers } = require('../lib/mcp-config');
 
 let TOML;
 try {
@@ -210,6 +211,7 @@ function main() {
   const configPath = args.find(a => !a.startsWith('-'));
   const dryRun = args.includes('--dry-run');
   const updateMcp = args.includes('--update-mcp');
+  const disabledServers = new Set(parseDisabledMcpServers(process.env.ECC_DISABLED_MCPS));
 
   if (!configPath) {
     console.error('Usage: merge-mcp-config.js <config.toml> [--dry-run] [--update-mcp]');
@@ -222,6 +224,9 @@ function main() {
   }
 
   log(`Package manager: ${PM_NAME} (exec: ${PM_EXEC})`);
+  if (disabledServers.size > 0) {
+    log(`Disabled via ECC_DISABLED_MCPS: ${[...disabledServers].join(', ')}`);
+  }
 
   let raw = fs.readFileSync(configPath, 'utf8');
   let parsed;
@@ -248,6 +253,18 @@ function main() {
     const urlEntry = !resolvedEntry && entry && typeof entry.url === 'string' ? entry : null;
     const finalEntry = resolvedEntry || urlEntry;
     const resolvedLabel = hasCanonical ? name : legacyName || name;
+
+    if (disabledServers.has(name)) {
+      if (finalEntry) {
+        toRemoveLog.push(`mcp_servers.${resolvedLabel} (disabled)`);
+        raw = removeServerFromText(raw, resolvedLabel, existing);
+        if (resolvedLabel !== name) {
+          raw = removeServerFromText(raw, name, existing);
+        }
+      }
+      log(`  [skip] mcp_servers.${name} (disabled)`);
+      continue;
+    }
 
     if (finalEntry) {
       if (updateMcp) {
@@ -278,7 +295,9 @@ function main() {
     }
   }
 
-  if (toAppend.length === 0) {
+  const hasRemovals = toRemoveLog.length > 0;
+
+  if (toAppend.length === 0 && !hasRemovals) {
     log('All ECC MCP servers already present. Nothing to do.');
     return;
   }
@@ -297,12 +316,17 @@ function main() {
 
   // Write: for add-only, append to preserve existing content byte-for-byte.
   // For --update-mcp, we modified `raw` above, so write the full file + appended sections.
-  if (updateMcp) {
+  if (updateMcp || hasRemovals) {
     for (const label of toRemoveLog) log(`  [update] ${label}`);
     const cleaned = raw.replace(/\n+$/, '\n');
-    fs.writeFileSync(configPath, cleaned + appendText, 'utf8');
+    fs.writeFileSync(configPath, cleaned + (toAppend.length > 0 ? appendText : ''), 'utf8');
   } else {
     fs.appendFileSync(configPath, appendText, 'utf8');
+  }
+
+  if (hasRemovals && toAppend.length === 0) {
+    log(`Done. Removed ${toRemoveLog.length} disabled server(s).`);
+    return;
   }
 
   log(`Done. ${toAppend.length} server(s) ${updateMcp ? 'updated' : 'added'}.`);

@@ -1,6 +1,6 @@
 ---
 description: Create implementation plan with risk assessment
-agent: planner
+agent: everything-claude-code:planner
 subtask: true
 ---
 

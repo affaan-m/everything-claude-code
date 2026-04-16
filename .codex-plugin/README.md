@@ -12,7 +12,7 @@ This directory contains the **Codex plugin manifest** for Everything Claude Code
 
 ## What This Provides
 
-- **125 skills** from `./skills/` — reusable Codex workflows for TDD, security,
+- **156 skills** from `./skills/` — reusable Codex workflows for TDD, security,
   code review, architecture, and more
 - **6 MCP servers** — GitHub, Context7, Exa, Memory, Playwright, Sequential Thinking
 
@@ -30,6 +30,9 @@ codex plugin install ./
 Run this from the repository root so `./` points to the repo root and `.mcp.json` resolves correctly.
 ```
 
+The installed plugin registers under the short slug `ecc` so tool and command names
+stay below provider length limits.
+
 ## MCP Servers Included
 
 | Server | Purpose |
@@ -45,5 +48,7 @@ Run this from the repository root so `./` points to the repo root and `.mcp.json
 
 - The `skills/` directory at the repo root is shared between Claude Code (`.claude-plugin/`)
   and Codex (`.codex-plugin/`) — same source of truth, no duplication
+- ECC is moving to a skills-first workflow surface. Legacy `commands/` remain for
+  compatibility on harnesses that still expect slash-entry shims.
 - MCP server credentials are inherited from the launching environment (env vars)
 - This manifest does **not** override `~/.codex/config.toml` settings

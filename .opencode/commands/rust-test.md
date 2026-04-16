@@ -1,6 +1,6 @@
 ---
 description: Rust TDD workflow with unit and property tests
-agent: tdd-guide
+agent: everything-claude-code:tdd-guide
 subtask: true
 ---
 

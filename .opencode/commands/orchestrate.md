@@ -1,6 +1,6 @@
 ---
 description: Orchestrate multiple agents for complex tasks
-agent: planner
+agent: everything-claude-code:planner
 subtask: true
 ---
 

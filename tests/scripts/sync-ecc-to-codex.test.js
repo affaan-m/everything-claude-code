@@ -74,6 +74,15 @@ function runTests() {
     assert.ok(!source.includes('run_or_echo cp -R "$skill_dir" "$dest"'), 'skill sync cp should be removed');
   })) passed++; else failed++;
 
+  if (test('sync script avoids GNU-only grep -P parsing', () => {
+    assert.ok(!source.includes('grep -oP'), 'sync-ecc-to-codex.sh should remain portable across BSD and GNU environments');
+  })) passed++; else failed++;
+
+  if (test('extract_context7_key uses a portable parser', () => {
+    assert.ok(source.includes('extract_context7_key() {'), 'Expected extract_context7_key helper');
+    assert.ok(source.includes('node - "$file"'), 'extract_context7_key should use Node-based parsing');
+  })) passed++; else failed++;
+
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
 }

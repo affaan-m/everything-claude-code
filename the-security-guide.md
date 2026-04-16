@@ -447,7 +447,7 @@ Scan your setup: [github.com/affaan-m/agentshield](https://github.com/affaan-m/a
 If you haven't read the previous guides, start here:
 
 > [The Shorthand Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2012378465664745795)
-
+>
 > [The Longform Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2014040193557471352)
 
 go do that and also save these repos:

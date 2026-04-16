@@ -7,9 +7,13 @@ license = "MIT"
 authors = ["Affaan Mustafa <me@affaanmustafa.com>"]
 repository = "https://github.com/affaan-m/everything-claude-code"
 
+[features]
+default = ["vendored-openssl"]
+vendored-openssl = ["git2/vendored-openssl"]
+
 [dependencies]
 # TUI
-ratatui = "0.29"
+ratatui = { version = "0.30", features = ["crossterm_0_28"] }
 crossterm = "0.28"
 
 # Async runtime
@@ -19,12 +23,15 @@ tokio = { version = "1", features = ["full"] }
 rusqlite = { version = "0.32", features = ["bundled"] }
 
 # Git integration
-git2 = "0.20"
+git2 = { version = "0.20", features = ["ssh"] }
 
 # Serialization
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 toml = "0.8"
+regex = "1"
+sha2 = "0.10"
+ureq = { version = "2", features = ["json"] }
 
 # CLI
 clap = { version = "4", features = ["derive"] }
@@ -40,6 +47,7 @@ libc = "0.2"
 
 # Time
 chrono = { version = "0.4", features = ["serde"] }
+cron = "0.12"
 
 # UUID for session IDs
 uuid = { version = "1", features = ["v4"] }

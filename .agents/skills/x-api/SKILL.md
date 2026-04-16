@@ -19,7 +19,7 @@ Programmatic interaction with X (Twitter) for posting, reading, searching, and a
 
 ## Authentication
 
-### OAuth 2.0 (App-Only / User Context)
+### OAuth 2.0 Bearer Token (App-Only)
 
 Best for: read-heavy operations, search, public data.
 
@@ -46,25 +46,27 @@ tweets = resp.json()
 
 ### OAuth 1.0a (User Context)
 
-Required for: posting tweets, managing account, DMs.
+Required for: posting tweets, managing account, DMs, and any write flow.
 
 ```bash
 # Environment setup — source before use
-export X_API_KEY="your-api-key"
-export X_API_SECRET="your-api-secret"
+export X_CONSUMER_KEY="your-consumer-key"
+export X_CONSUMER_SECRET="your-consumer-secret"
 export X_ACCESS_TOKEN="your-access-token"
-export X_ACCESS_SECRET="your-access-secret"
+export X_ACCESS_TOKEN_SECRET="your-access-token-secret"
 ```
+
+Legacy aliases such as `X_API_KEY`, `X_API_SECRET`, and `X_ACCESS_SECRET` may exist in older setups. Prefer the `X_CONSUMER_*` and `X_ACCESS_TOKEN_SECRET` names when documenting or wiring new flows.
 
 ```python
 import os
 from requests_oauthlib import OAuth1Session
 
 oauth = OAuth1Session(
-    os.environ["X_API_KEY"],
-    client_secret=os.environ["X_API_SECRET"],
+    os.environ["X_CONSUMER_KEY"],
+    client_secret=os.environ["X_CONSUMER_SECRET"],
     resource_owner_key=os.environ["X_ACCESS_TOKEN"],
-    resource_owner_secret=os.environ["X_ACCESS_SECRET"],
+    resource_owner_secret=os.environ["X_ACCESS_TOKEN_SECRET"],
 )
 ```
 
@@ -92,7 +94,6 @@ def post_thread(oauth, tweets: list[str]) -> list[str]:
         if reply_to:
             payload["reply"] = {"in_reply_to_tweet_id": reply_to}
         resp = oauth.post("https://api.x.com/2/tweets", json=payload)
-        resp.raise_for_status()
         tweet_id = resp.json()["data"]["id"]
         ids.append(tweet_id)
         reply_to = tweet_id
@@ -126,6 +127,21 @@ resp = requests.get(
 )
 ```
 
+### Pull Recent Original Posts for Voice Modeling
+
+```python
+resp = requests.get(
+    "https://api.x.com/2/tweets/search/recent",
+    headers=headers,
+    params={
+        "query": "from:affaanmustafa -is:retweet -is:reply",
+        "max_results": 25,
+        "tweet.fields": "created_at,public_metrics",
+    }
+)
+voice_samples = resp.json()
+```
+
 ### Get User by Username
 
 ```python
@@ -155,17 +171,12 @@ resp = oauth.post(
 )
 ```
 
-## Rate Limits Reference
+## Rate Limits
 
-| Endpoint | Limit | Window |
-|----------|-------|--------|
-| POST /2/tweets | 200 | 15 min |
-| GET /2/tweets/search/recent | 450 | 15 min |
-| GET /2/users/:id/tweets | 1500 | 15 min |
-| GET /2/users/by/username | 300 | 15 min |
-| POST media/upload | 415 | 15 min |
-
-Always check `x-rate-limit-remaining` and `x-rate-limit-reset` headers.
+X API rate limits vary by endpoint, auth method, and account tier, and they change over time. Always:
+- Check the current X developer docs before hardcoding assumptions
+- Read `x-rate-limit-remaining` and `x-rate-limit-reset` headers at runtime
+- Back off automatically instead of relying on static tables in code
 
 ```python
 import time
@@ -202,13 +213,18 @@ else:
 
 ## Integration with Content Engine
 
-Use `content-engine` skill to generate platform-native content, then post via X API:
-1. Generate content with content-engine (X platform format)
-2. Validate length (280 chars for single tweet)
-3. Post via X API using patterns above
-4. Track engagement via public_metrics
+Use `brand-voice` plus `content-engine` to generate platform-native content, then post via X API:
+1. Pull recent original posts when voice matching matters
+2. Build or reuse a `VOICE PROFILE`
+3. Generate content with `content-engine` in X-native format
+4. Validate length and thread structure
+5. Return the draft for approval unless the user explicitly asked to post now
+6. Post via X API only after approval
+7. Track engagement via public_metrics
 
 ## Related Skills
 
+- `brand-voice` — Build a reusable voice profile from real X and site/source material
 - `content-engine` — Generate platform-native content for X
 - `crosspost` — Distribute content across X, LinkedIn, and other platforms
+- `connections-optimizer` — Reorganize the X graph before drafting network-driven outreach

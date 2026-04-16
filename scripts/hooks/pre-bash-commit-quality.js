@@ -67,7 +67,7 @@ function findFileIssues(filePath) {
   
   try {
     const content = getStagedFileContent(filePath);
-    if (content == null) {
+    if (content === null || content === undefined) {
       return issues;
     }
     const lines = content.split('\n');
@@ -380,7 +380,11 @@ function evaluate(rawInput) {
 }
 
 function run(rawInput) {
-  return evaluate(rawInput).output;
+  const result = evaluate(rawInput);
+  return {
+    stdout: result.output,
+    exitCode: result.exitCode,
+  };
 }
 
 // ── stdin entry point ────────────────────────────────────────────

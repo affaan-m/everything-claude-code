@@ -1,4 +1,4 @@
-import { tool } from "@opencode-ai/plugin/tool"
+import { tool, type ToolDefinition } from "@opencode-ai/plugin/tool"
 import {
   buildTree,
   getChangedPaths,
@@ -26,7 +26,7 @@ function renderTree(nodes: TreeNode[], indent: string): string {
   return lines.join("\n")
 }
 
-export default tool({
+const changedFilesTool: ToolDefinition = tool({
   description:
     "List files changed by agents in this session as a navigable tree. Shows added (+), modified (~), and deleted (-) indicators. Use filter to show only specific change types. Returns paths for git diff.",
   args: {
@@ -79,3 +79,5 @@ export default tool({
     return output
   },
 })
+
+export default changedFilesTool

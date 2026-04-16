@@ -17,7 +17,7 @@ Everything Claude Code プロジェクトのインタラクティブなステッ
 ## 前提条件
 
 このスキルは起動前に Claude Code からアクセス可能である必要があります。ブートストラップには2つの方法があります：
-1. **プラグイン経由**: `/plugin install everything-claude-code` — プラグインがこのスキルを自動的にロードします
+1. **プラグイン経由**: `/plugin install everything-claude-code@everything-claude-code` — プラグインがこのスキルを自動的にロードします
 2. **手動**: このスキルのみを `~/.claude/skills/configure-ecc/SKILL.md` にコピーし、"configure ecc" と言って起動します
 
 ---
@@ -126,7 +126,7 @@ Options:
 
 | スキル | 説明 |
 |-------|-------------|
-| `project-guidelines-example` | プロジェクト固有のスキルを作成するためのテンプレート |
+| `docs/examples/project-guidelines-template.md` | プロジェクト固有のスキルを作成するためのテンプレート |
 
 ### 2c: インストールの実行
 

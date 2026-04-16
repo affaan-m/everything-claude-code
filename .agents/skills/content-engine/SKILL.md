@@ -6,83 +6,126 @@ origin: ECC
 
 # Content Engine
 
-Turn one idea into strong, platform-native content instead of posting the same thing everywhere.
+Build platform-native content without flattening the author's real voice into platform slop.
 
 ## When to Activate
 
 - writing X posts or threads
 - drafting LinkedIn posts or launch updates
 - scripting short-form video or YouTube explainers
-- repurposing articles, podcasts, demos, or docs into social content
-- building a lightweight content plan around a launch, milestone, or theme
+- repurposing articles, podcasts, demos, docs, or internal notes into public content
+- building a launch sequence or ongoing content system around a product, insight, or narrative
 
-## First Questions
+## Non-Negotiables
 
-Clarify:
-- source asset: what are we adapting from
-- audience: builders, investors, customers, operators, or general audience
-- platform: X, LinkedIn, TikTok, YouTube, newsletter, or multi-platform
-- goal: awareness, conversion, recruiting, authority, launch support, or engagement
+1. Start from source material, not generic post formulas.
+2. Adapt the format for the platform, not the persona.
+3. One post should carry one actual claim.
+4. Specificity beats adjectives.
+5. No engagement bait unless the user explicitly asks for it.
 
-## Core Rules
+## Source-First Workflow
 
-1. Adapt for the platform. Do not cross-post the same copy.
-2. Hooks matter more than summaries.
-3. Every post should carry one clear idea.
-4. Use specifics over slogans.
-5. Keep the ask small and clear.
+Before drafting, identify the source set:
+- published articles
+- notes or internal memos
+- product demos
+- docs or changelogs
+- transcripts
+- screenshots
+- prior posts from the same author
 
-## Platform Guidance
+If the user wants a specific voice, build a voice profile from real examples before writing.
+Use `brand-voice` as the canonical workflow when voice consistency matters across more than one output.
+
+## Voice Handling
+
+`brand-voice` is the canonical voice layer.
+
+Run it first when:
+
+- there are multiple downstream outputs
+- the user explicitly cares about writing style
+- the content is launch, outreach, or reputation-sensitive
+
+Reuse the resulting `VOICE PROFILE` here instead of rebuilding a second voice model.
+If the user wants Affaan / ECC voice specifically, still treat `brand-voice` as the source of truth and feed it the best live or source-derived material available.
+
+## Hard Bans
+
+Delete and rewrite any of these:
+- "In today's rapidly evolving landscape"
+- "game-changer", "revolutionary", "cutting-edge"
+- "here's why this matters" unless it is followed immediately by something concrete
+- ending with a LinkedIn-style question just to farm replies
+- forced casualness on LinkedIn
+- fake engagement padding that was not present in the source material
+
+## Platform Adaptation Rules
 
 ### X
-- open fast
-- one idea per post or per tweet in a thread
-- keep links out of the main body unless necessary
-- avoid hashtag spam
+
+- open with the strongest claim, artifact, or tension
+- keep the compression if the source voice is compressed
+- if writing a thread, each post must advance the argument
+- do not pad with context the audience does not need
 
 ### LinkedIn
-- strong first line
-- short paragraphs
-- more explicit framing around lessons, results, and takeaways
 
-### TikTok / Short Video
-- first 3 seconds must interrupt attention
-- script around visuals, not just narration
-- one demo, one claim, one CTA
+- expand only enough for people outside the immediate niche to follow
+- do not turn it into a fake lesson post unless the source material actually is reflective
+- no corporate inspiration cadence
+- no praise-stacking, no "journey" filler
+
+### Short Video
+
+- script around the visual sequence and proof points
+- first seconds should show the result, problem, or punch
+- do not write narration that sounds better on paper than on screen
 
 ### YouTube
-- show the result early
-- structure by chapter
-- refresh the visual every 20-30 seconds
+
+- show the result or tension early
+- organize by argument or progression, not filler sections
+- use chaptering only when it helps clarity
 
 ### Newsletter
-- deliver one clear lens, not a bundle of unrelated items
-- make section titles skimmable
-- keep the opening paragraph doing real work
+
+- open with the point, conflict, or artifact
+- do not spend the first paragraph warming up
+- every section needs to add something new
 
 ## Repurposing Flow
 
-Default cascade:
-1. anchor asset: article, video, demo, memo, or launch doc
-2. extract 3-7 atomic ideas
-3. write platform-native variants
-4. trim repetition across outputs
-5. align CTAs with platform intent
+1. Pick the anchor asset.
+2. Extract 3 to 7 atomic claims or scenes.
+3. Rank them by sharpness, novelty, and proof.
+4. Assign one strong idea per output.
+5. Adapt structure for each platform.
+6. Strip platform-shaped filler.
+7. Run the quality gate.
 
 ## Deliverables
 
 When asked for a campaign, return:
+- a short voice profile if voice matching matters
 - the core angle
-- platform-specific drafts
-- optional posting order
-- optional CTA variants
-- any missing inputs needed before publishing
+- platform-native drafts
+- posting order only if it helps execution
+- gaps that must be filled before publishing
 
 ## Quality Gate
 
 Before delivering:
-- each draft reads natively for its platform
-- hooks are strong and specific
-- no generic hype language
+- every draft sounds like the intended author, not the platform stereotype
+- every draft contains a real claim, proof point, or concrete observation
+- no generic hype language remains
+- no fake engagement bait remains
 - no duplicated copy across platforms unless requested
-- the CTA matches the content and audience
+- any CTA is earned and user-approved
+
+## Related Skills
+
+- `brand-voice` for source-derived voice profiles
+- `crosspost` for platform-specific distribution
+- `x-api` for sourcing recent posts and publishing approved X output
