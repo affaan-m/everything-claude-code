@@ -22,6 +22,11 @@
   "plugin": [
     "./plugins"
   ],
+  "skills": {
+    "paths": [
+      "../skills"
+    ]
+  },
   "agent": {
     "build": {
       "description": "Primary coding agent for development work",
