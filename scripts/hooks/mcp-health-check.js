@@ -377,7 +377,14 @@ function probeCommandServer(serverName, config) {
           // When spawned via shell on Windows, child is cmd.exe. kill() only
           // terminates the shell and leaves the real server process orphaned.
           // taskkill /T kills the entire process tree rooted at cmd.exe.
-          spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
+          const killResult = spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
+          if (killResult.error || (typeof killResult.status === 'number' && killResult.status !== 0)) {
+            // taskkill not on PATH, permission denied, or already exited.
+            // Best-effort fallback: signal the cmd.exe shell directly. The
+            // child tree may still leak if it already detached, but this at
+            // least kills the shell we spawned.
+            try { child.kill('SIGKILL'); } catch { /* ignore */ }
+          }
         } else {
           child.kill('SIGTERM');
           setTimeout(() => {
