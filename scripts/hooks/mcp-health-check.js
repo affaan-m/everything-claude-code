@@ -373,18 +373,24 @@ function probeCommandServer(serverName, config) {
 
     const timer = setTimeout(() => {
       try {
-        child.kill('SIGTERM');
+        if (needsShell && child.pid && process.platform === 'win32') {
+          // When spawned via shell on Windows, child is cmd.exe. kill() only
+          // terminates the shell and leaves the real server process orphaned.
+          // taskkill /T kills the entire process tree rooted at cmd.exe.
+          spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
+        } else {
+          child.kill('SIGTERM');
+          setTimeout(() => {
+            try {
+              child.kill('SIGKILL');
+            } catch {
+              // ignore
+            }
+          }, 200).unref?.();
+        }
       } catch {
         // ignore
       }
-
-      setTimeout(() => {
-        try {
-          child.kill('SIGKILL');
-        } catch {
-          // ignore
-        }
-      }, 200).unref?.();
 
       finish({
         ok: true,
