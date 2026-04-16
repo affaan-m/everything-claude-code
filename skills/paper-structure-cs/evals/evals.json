@@ -12,9 +12,7 @@
       "expected_output": "JSONL flagging heading_skip issues (# to ### without ##) and heading_level_inconsistent (Methods section jumps to ### instead of ##)"
     },
     {
-      "id": 3,
-      "prompt": "Review this paper structure for completeness:\n\n1. Abstract - Present\n2. Introduction - Present\n3. Related Work - Present\n4. Methods - Present\n5. Experiments/Results - Present\n6. Discussion - Present\n7. Conclusion - Present\n8. Bibliography - Present (all in-text citations matched)\n\nTable of Contents matches all sections. Headings follow ## ### #### hierarchy consistently.",
-      "expected_output": "JSONL with minimal issues (well-structured); possibly minor formatting notes"
+      "expected_output": "JSONL with one or two issues: heading_level_inconsistent or heading_skip flagging #### (fourth-level heading depth violates the skill's 3-level maximum); remainder of structure is correct"
     }
   ]
 }
