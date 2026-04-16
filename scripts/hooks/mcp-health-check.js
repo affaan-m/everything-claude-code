@@ -320,7 +320,17 @@ function probeCommandServer(serverName, config) {
     // 'C:\Program Files\nodejs\node.exe') must NOT use shell mode because
     // cmd.exe misparses paths containing spaces. Only enable shell for
     // non-absolute commands that need PATH resolution.
-    const needsShell = process.platform === 'win32' && !path.isAbsolute(command);
+    //
+    // Security: validate the command for shell metacharacters before enabling
+    // shell mode. cmd.exe treats &, |, <, >, ^, %, !, (, ), ;, and whitespace
+    // as operators/separators. A crafted command value from an MCP config file
+    // could otherwise inject arbitrary shell commands.
+    const UNSAFE_SHELL_CHARS = /[&|<>^%!()\s;]/;
+    const needsShell =
+      process.platform === 'win32' &&
+      typeof command === 'string' &&
+      !path.isAbsolute(command) &&
+      !UNSAFE_SHELL_CHARS.test(command);
     let child;
     try {
       child = spawn(command, args, {

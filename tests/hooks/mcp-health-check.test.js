@@ -457,7 +457,7 @@ async function runTests() {
     }
   })) passed++; else failed++;
 
-  if (await asyncTest('probes command servers using non-absolute commands (e.g. npx) via shell on Windows', async () => {
+  if (await asyncTest('probes command servers using non-absolute commands (e.g. npx) via PATH resolution', async () => {
     const tempDir = createTempDir();
     const configPath = path.join(tempDir, 'claude.json');
     const statePath = path.join(tempDir, 'mcp-health.json');
@@ -467,9 +467,10 @@ async function runTests() {
       // Create a server script that stays alive
       fs.writeFileSync(serverScript, "setInterval(() => {}, 1000);\n");
 
-      // Use 'node' (non-absolute) as the command — this requires PATH resolution,
-      // which on Windows needs shell: true because 'node' resolves to 'node.cmd'
-      // or 'node.exe' via PATHEXT. This simulates how 'npx' commands work.
+      // Use 'node' (non-absolute) as the command to exercise PATH-based resolution.
+      // On Windows, shell execution is especially relevant for commands exposed via
+      // batch wrappers such as 'npx.cmd'; using 'node' here simulates that class of
+      // non-absolute command without depending on npx being available in the environment.
       writeConfig(configPath, {
         mcpServers: {
           shelltest: {
