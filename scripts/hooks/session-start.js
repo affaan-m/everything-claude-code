@@ -202,7 +202,7 @@ function selectMatchingSession(sessions, cwd, currentProject) {
   // When ECC_SESSION_STRICT_MATCH=1, skip fallback to prevent cross-project
   // context injection. Without this, unrelated session data can silently
   // influence Claude's behavior in the wrong project.
-  if (fallbackSession && !process.env.ECC_SESSION_STRICT_MATCH) {
+  if (fallbackSession && process.env.ECC_SESSION_STRICT_MATCH !== '1') {
     return { session: fallbackSession, content: fallbackContent, matchReason: 'recency-fallback' };
   }
 
