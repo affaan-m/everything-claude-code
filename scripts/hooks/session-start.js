@@ -9,6 +9,7 @@
  * sessions and learned skills.
  */
 
+const path = require('path');
 const {
   getSessionsDir,
   getLearnedSkillsDir,
@@ -16,8 +17,10 @@ const {
   ensureDir,
   readFile,
   log,
-  output
+  output,
+  getSessionIdShort
 } = require('../lib/utils');
+const { parseSessionFilename } = require('../lib/session-manager');
 const { getPackageManager, getSelectionPrompt } = require('../lib/package-manager');
 const { listAliases } = require('../lib/session-aliases');
 const { detectProjectType } = require('../lib/project-detect');
@@ -33,9 +36,20 @@ async function main() {
   // Check for recent session files (last 7 days)
   const recentSessions = findFiles(sessionsDir, '*-session.tmp', { maxAge: 7 });
 
-  if (recentSessions.length > 0) {
-    const latest = recentSessions[0];
-    log(`[SessionStart] Found ${recentSessions.length} recent session(s)`);
+  // CRITICAL: Filter by the current invocation's shortId so sessions from
+  // other worktrees/cwds/projects are NEVER injected into this context.
+  // Before this filter, the hook picked the globally-newest session file and
+  // leaked it cross-worktree — e.g. worktree A received worktree B's summary,
+  // causing downstream agents to act on another worktree's task.
+  const currentShortId = getSessionIdShort();
+  const scopedSessions = recentSessions.filter(f => {
+    const parsed = parseSessionFilename(path.basename(f.path));
+    return parsed && parsed.shortId === currentShortId;
+  });
+
+  if (scopedSessions.length > 0) {
+    const latest = scopedSessions[0];
+    log(`[SessionStart] Found ${scopedSessions.length} recent session(s) for shortId=${currentShortId}`);
     log(`[SessionStart] Latest: ${latest.path}`);
 
     // Read and inject the latest session content into Claude's context
@@ -44,6 +58,8 @@ async function main() {
       // Only inject if the session has actual content (not the blank template)
       output(`Previous session summary:\n${content}`);
     }
+  } else if (recentSessions.length > 0) {
+    log(`[SessionStart] ${recentSessions.length} recent session(s) exist but none match shortId=${currentShortId}; skipping injection`);
   }
 
   // Check for learned skills

@@ -244,14 +244,17 @@ async function runTests() {
       fs.mkdirSync(sessionsDir, { recursive: true });
       fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
 
-      // Create a real session file
+      // Create a real session file whose shortId matches the invocation's
+      // shortId (last 8 chars of CLAUDE_SESSION_ID). session-start now scopes
+      // injection by shortId to prevent cross-worktree content leakage.
       const sessionFile = path.join(sessionsDir, '2026-02-11-efgh5678-session.tmp');
       fs.writeFileSync(sessionFile, '# Real Session\n\nI worked on authentication refactor.\n');
 
       try {
         const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
           HOME: isoHome,
-          USERPROFILE: isoHome
+          USERPROFILE: isoHome,
+          CLAUDE_SESSION_ID: 'test-fake-session-efgh5678'
         });
         assert.strictEqual(result.code, 0);
         assert.ok(result.stdout.includes('Previous session summary'), 'Should inject real session content');
@@ -3671,14 +3674,19 @@ async function runTests() {
       fs.mkdirSync(sessionsDir, { recursive: true });
       fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
 
+      // Both files share the same shortId so they match the current invocation
+      // (session-start scopes injection by shortId). maxAge filtering still
+      // excludes the 8-day-old one.
+      const SHORT_ID = 'testid01';
+
       // Create session file 6.9 days old (should be INCLUDED by maxAge:7)
-      const recentFile = path.join(sessionsDir, '2026-02-06-recent69-session.tmp');
+      const recentFile = path.join(sessionsDir, `2026-02-06-${SHORT_ID}-session.tmp`);
       fs.writeFileSync(recentFile, '# Recent Session\n\nRECENT CONTENT HERE');
       const sixPointNineDaysAgo = new Date(Date.now() - 6.9 * 24 * 60 * 60 * 1000);
       fs.utimesSync(recentFile, sixPointNineDaysAgo, sixPointNineDaysAgo);
 
       // Create session file 8 days old (should be EXCLUDED by maxAge:7)
-      const oldFile = path.join(sessionsDir, '2026-02-05-old8day-session.tmp');
+      const oldFile = path.join(sessionsDir, `2026-02-05-${SHORT_ID}-session.tmp`);
       fs.writeFileSync(oldFile, '# Old Session\n\nOLD CONTENT SHOULD NOT APPEAR');
       const eightDaysAgo = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000);
       fs.utimesSync(oldFile, eightDaysAgo, eightDaysAgo);
@@ -3686,7 +3694,8 @@ async function runTests() {
       try {
         const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
           HOME: isoHome,
-          USERPROFILE: isoHome
+          USERPROFILE: isoHome,
+          CLAUDE_SESSION_ID: `fake-session-${SHORT_ID}`
         });
         assert.strictEqual(result.code, 0);
         assert.ok(result.stderr.includes('1 recent session'), `Should find 1 recent session (6.9-day included, 8-day excluded), stderr: ${result.stderr}`);
@@ -3711,20 +3720,25 @@ async function runTests() {
 
       const now = Date.now();
 
+      // Both files share the same shortId so both are in scope for this
+      // invocation (session-start scopes by shortId). The newest by mtime wins.
+      const SHORT_ID = 'samescp1';
+
       // Create older session (2 days ago)
-      const olderSession = path.join(sessionsDir, '2026-02-11-olderabc-session.tmp');
+      const olderSession = path.join(sessionsDir, `2026-02-11-${SHORT_ID}-session.tmp`);
       fs.writeFileSync(olderSession, '# Older Session\n\nOLDER_CONTEXT_MARKER');
       fs.utimesSync(olderSession, new Date(now - 2 * 86400000), new Date(now - 2 * 86400000));
 
       // Create newer session (1 day ago)
-      const newerSession = path.join(sessionsDir, '2026-02-12-newerdef-session.tmp');
+      const newerSession = path.join(sessionsDir, `2026-02-12-${SHORT_ID}-session.tmp`);
       fs.writeFileSync(newerSession, '# Newer Session\n\nNEWER_CONTEXT_MARKER');
       fs.utimesSync(newerSession, new Date(now - 1 * 86400000), new Date(now - 1 * 86400000));
 
       try {
         const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
           HOME: isoHome,
-          USERPROFILE: isoHome
+          USERPROFILE: isoHome,
+          CLAUDE_SESSION_ID: `fake-session-${SHORT_ID}`
         });
         assert.strictEqual(result.code, 0);
         assert.ok(result.stderr.includes('2 recent session'), `Should find 2 recent sessions, stderr: ${result.stderr}`);
