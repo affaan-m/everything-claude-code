@@ -603,6 +603,80 @@
       "defaultInstall": false,
       "cost": "medium",
       "stability": "stable"
+    },
+    {
+      "id": "frontend-ux",
+      "kind": "skills",
+      "description": "Accessibility (WCAG 2.2) audits and design-system generation/audit skills for UX work not tied to a specific framework.",
+      "paths": [
+        "skills/accessibility",
+        "skills/design-system"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode",
+        "codebuddy"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "ops-observability",
+      "kind": "skills",
+      "description": "Post-deploy monitoring and safety skills: performance baselines, canary regression detection, and destructive-op prevention on production systems.",
+      "paths": [
+        "skills/benchmark",
+        "skills/canary-watch",
+        "skills/safety-guard"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode",
+        "codebuddy"
+      ],
+      "dependencies": [
+        "workflow-quality",
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "beta"
+    },
+    {
+      "id": "healthcare",
+      "kind": "skills",
+      "description": "Patient-safety-critical healthcare skills: clinical decision support, EMR/EHR workflows, and healthcare-specific evaluation harness.",
+      "paths": [
+        "skills/healthcare-cdss-patterns",
+        "skills/healthcare-emr-patterns",
+        "skills/healthcare-eval-harness"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode",
+        "codebuddy"
+      ],
+      "dependencies": [
+        "security",
+        "workflow-quality",
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "heavy",
+      "stability": "stable"
     }
   ]
 }

@@ -23,7 +23,9 @@
         "workflow-quality",
         "framework-language",
         "database",
-        "orchestration"
+        "orchestration",
+        "frontend-ux",
+        "ops-observability"
       ]
     },
     "security": {
@@ -74,7 +76,10 @@
         "agentic-patterns",
         "devops-infra",
         "supply-chain-domain",
-        "document-processing"
+        "document-processing",
+        "frontend-ux",
+        "ops-observability",
+        "healthcare"
       ]
     }
   }
