@@ -49,7 +49,8 @@
         "workflow-quality",
         "research-apis",
         "business-content",
-        "social-distribution"
+        "social-distribution",
+        "academic-writing"
       ]
     },
     "full": {
@@ -74,7 +75,9 @@
         "agentic-patterns",
         "devops-infra",
         "supply-chain-domain",
-        "document-processing"
+        "document-processing",
+        "academic-writing",
+        "resume-toolkit"
       ]
     }
   }

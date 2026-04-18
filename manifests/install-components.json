@@ -426,6 +426,22 @@
       "modules": [
         "research-apis"
       ]
+    },
+    {
+      "id": "capability:academic-writing",
+      "family": "capability",
+      "description": "CS research paper writing, structure validation, section review, and pre-submission checklist skills.",
+      "modules": [
+        "academic-writing"
+      ]
+    },
+    {
+      "id": "capability:resume-toolkit",
+      "family": "capability",
+      "description": "Resume validation (Harvard and Kickass guidelines) and resume-to-job alignment skills.",
+      "modules": [
+        "resume-toolkit"
+      ]
     }
   ]
 }
