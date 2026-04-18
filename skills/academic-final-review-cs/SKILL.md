@@ -4,9 +4,9 @@ description: Final pre-submission checklist for CS research papers. Verify abstr
 origin: ECC
 ---
 
-# Academic Final Review Checklist (Delimited Output)
+# Academic Final Review Checklist (JSONL Output)
 
-You perform a final pre-submission review of CS research papers using a structured checklist. Output is delimited (pipe-separated), one verification item per line.
+You perform a final pre-submission review of CS research papers using a structured checklist. Output is JSONL — one JSON object per line, one verification item per line — aligned with the sibling CS paper-review skills (`paper-structure-cs`, `abstract-methods-results-cs`, `sentence-clarity-cs`). The machine-readable schema lives at `schema/output.schema.json`.
 
 ## When to Activate
 
@@ -39,42 +39,44 @@ When given a complete (or nearly complete) paper, verify all standard academic r
 
 Output one checklist item per line with status and guidance.
 
-## Output Format (Pipe-Delimited)
+## Output Format (JSONL)
 
-Use format: `item|status|guidance`
+One JSON object per line. Each object is one checklist item. Fields:
 
-Where:
-- `item` = checklist item name
-- `status` = `PASS`, `FAIL`, or `WARN` (warn for partial/inconsistent)
-- `guidance` = guidance text (empty if PASS, specific action if FAIL/WARN)
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `item` | string | yes | Canonical checklist item name from the table below |
+| `status` | string | yes | `"PASS"`, `"FAIL"`, or `"WARN"` |
+| `guidance` | string | yes | Empty string `""` when status is `PASS`; a specific, actionable fix otherwise |
 
-```
-item|status|guidance
-Has abstract|PASS|
-Has introduction|PASS|
-Has methods|PASS|
-Has results|PASS|
-Has discussion|PASS|
-Has conclusion|PASS|
-Bibliography formatted|FAIL|Use consistent citation style. Found mixed APA/Chicago on lines 523, 561, 589. Reformat all to APA.
-All figures captioned|FAIL|Figure 3 ("Baseline Comparison") missing caption. Add descriptive caption explaining subfigures.
-All figures cited|FAIL|Figure 3 not cited in text. Add reference in Results section before Figure 3 appears.
-All tables captioned|PASS|
-All tables cited|PASS|
-No undefined terms|WARN|Term "BLEU score" used on line 142 without definition. Define on first use or reference standard citation.
-Consistent voice|WARN|Methods uses passive (75%), Results uses active (55%), Discussion uses passive (80%). Choose one and update for consistency.
-No orphaned references|PASS|
-Headings consistent|PASS|
-Page numbers present|PASS|
-Abstract word count|PASS|
-Author info complete|PASS|
-Keywords present|PASS|
-Acknowledgments section|PASS|
-Appendices referenced|PASS|
-Code/data availability|FAIL|Paper lacks data availability statement. Add section before conclusion or in appendix.
-Ethical considerations|WARN|Paper studies ML fairness but no ethics statement present. Add paragraph explaining ethical implications.
-Page count within limits|PASS|
-Font and margins|PASS|
+Example output:
+
+```jsonl
+{"item": "Has abstract", "status": "PASS", "guidance": ""}
+{"item": "Has introduction", "status": "PASS", "guidance": ""}
+{"item": "Has methods", "status": "PASS", "guidance": ""}
+{"item": "Has results", "status": "PASS", "guidance": ""}
+{"item": "Has discussion", "status": "PASS", "guidance": ""}
+{"item": "Has conclusion", "status": "PASS", "guidance": ""}
+{"item": "Bibliography formatted", "status": "FAIL", "guidance": "Mixed APA/Chicago on lines 523, 561, 589. Reformat all to APA."}
+{"item": "All figures captioned", "status": "FAIL", "guidance": "Figure 3 ('Baseline Comparison') has no caption. Add descriptive caption explaining subfigures."}
+{"item": "All figures cited", "status": "FAIL", "guidance": "Figure 3 not cited in text. Add reference in Results before Figure 3 appears."}
+{"item": "All tables captioned", "status": "PASS", "guidance": ""}
+{"item": "All tables cited", "status": "PASS", "guidance": ""}
+{"item": "No undefined terms", "status": "WARN", "guidance": "'BLEU score' used on line 142 without definition. Define on first use or cite Papineni et al. 2002."}
+{"item": "Consistent voice", "status": "WARN", "guidance": "Methods 75% passive; Results 55% active; Discussion 80% passive. Pick one and normalize."}
+{"item": "No orphaned references", "status": "PASS", "guidance": ""}
+{"item": "Headings consistent", "status": "PASS", "guidance": ""}
+{"item": "Page numbers present", "status": "PASS", "guidance": ""}
+{"item": "Abstract word count", "status": "PASS", "guidance": ""}
+{"item": "Author info complete", "status": "PASS", "guidance": ""}
+{"item": "Keywords present", "status": "PASS", "guidance": ""}
+{"item": "Acknowledgments section", "status": "PASS", "guidance": ""}
+{"item": "Appendices referenced", "status": "PASS", "guidance": ""}
+{"item": "Code/data availability", "status": "FAIL", "guidance": "No data-availability statement. Add a paragraph before Conclusion: 'Code and datasets are available at <URL>.'"}
+{"item": "Ethical considerations", "status": "WARN", "guidance": "Paper studies ML fairness but has no ethics statement. Add a paragraph addressing fairness and deployment risks."}
+{"item": "Page count within limits", "status": "PASS", "guidance": ""}
+{"item": "Font and margins", "status": "PASS", "guidance": ""}
 ```
 
 ## Checklist Items (Extended)
@@ -122,45 +124,11 @@ Font and margins|PASS|
 
 ## Output Requirements
 
-- One checklist item per line (delimited format: `item|status|guidance`)
-- `status` must be exactly `PASS`, `FAIL`, or `WARN`
-- `guidance` is empty (``) for PASS items
-- `guidance` includes specific line numbers, examples, or actions for FAIL/WARN
-- Keep guidance concise but actionable (1-2 sentences max)
-- Report exactly the items listed in the extended table above (or a subset if some don't apply)
-- Do NOT add custom items; stick to the standard checklist
-- Order items in same sequence as the checklist table
-
-## Example Review Output
-
-```
-item|status|guidance
-Has abstract|PASS|
-Has introduction|PASS|
-Has methods|PASS|
-Has results|PASS|
-Has discussion|PASS|
-Has conclusion|PASS|
-Bibliography formatted|FAIL|Inconsistent style. Lines 45-120 use APA; lines 121-180 use Chicago. Convert all to APA: Author (Year) Title. Source.
-All figures captioned|FAIL|Figure 2 missing caption. Figures 4 and 5 have vague captions ("Results"). Make descriptive: e.g., "Figure 2: Convergence curves for baseline vs. proposed method."
-All figures cited|PASS|
-All tables captioned|WARN|Table 1 caption reads "Data" (too vague). Revise to "Table 1: Dataset statistics (sample size, feature count, class distribution)."
-All tables cited|FAIL|Table 3 appears on page 8 but not cited in text. Add reference in Results: "Table 3 shows comparison results."
-No undefined terms|FAIL|"Attention mechanism" used on line 42 without explanation. Add: "Attention mechanism (Vaswani et al., 2017) weights input representations."
-Consistent voice|WARN|Methods section is 90% passive; Results uses active voice (80%). Choose one style for whole paper. Recommend active for clarity.
-No orphaned references|PASS|
-Headings consistent|PASS|
-Page numbers present|FAIL|Pages 5-7 missing page numbers. Add page numbers to all pages using document settings.
-Abstract word count|FAIL|Abstract is 312 words; venue limit is 250. Remove 62 words by condensing background and focusing on contribution.
-Author info complete|WARN|Author email missing for second author. Add affiliation and email per venue guidelines.
-Keywords present|PASS|
-Acknowledgments section|PASS|
-Appendices referenced|FAIL|Appendix B ("Extended Results") not referenced in main text. Add reference in Results section or remove appendix.
-Code/data availability|FAIL|Paper lacks data availability statement. Add before conclusion: "Code and datasets are available at [repository URL]."
-Ethical considerations|WARN|Paper studies facial recognition but no ethics discussion. Add paragraph addressing privacy and fairness concerns.
-Page count within limits|PASS|
-Font and margins|PASS|
-```
+- One JSON object per checklist item, one object per line (JSONL).
+- `status` must be exactly `"PASS"`, `"FAIL"`, or `"WARN"`.
+- `guidance` is `""` for PASS; otherwise a specific, actionable fix with line numbers where relevant.
+- Report the items from the extended table above in the same order. Omit an item only if it doesn't apply to the target venue.
+- Do NOT add custom items; stick to the canonical list.
 
 ## LaTeX-Specific Checks (If Applicable)
 
@@ -286,6 +254,15 @@ When reviewing a paper, explain findings in concrete terms. Instead of saying "v
 - **Venue awareness**: Ask about target venue if not obvious; tailor checks (ACM vs. IEEE vs. arXiv)
 - **Severity reporting**: Flag FAIL for blocking issues (missing sections, formatting violations); WARN for improvements (vague captions, minor inconsistencies)
 
+## Related Skills
+
+This skill is the last stop in the paper-review pipeline. Run earlier skills first; this one catches what slipped through.
+
+1. `paper-structure-cs` — verify all sections are present and correctly ordered.
+2. `abstract-methods-results-cs` — deep review of the three most-scrutinized sections.
+3. `sentence-clarity-cs` — prose polish at the sentence level.
+4. **`academic-final-review-cs` (this skill)** — final pre-submission checklist.
+
 ## Summary
 
-This skill provides a comprehensive final-review checklist for CS papers before submission. Use pipe-delimited output for easy parsing and clear status reporting. The checklist scales from 16 core items to 25+ extended items depending on paper completeness and venue requirements. Always include actionable guidance for FAIL and WARN items. Output is designed for machine parsing (delimited) but remains human-readable for author review.
+This skill provides a comprehensive final-review checklist for CS papers before submission. Output is JSONL — one object per checklist item — so it can be diffed against prior reviews or parsed by downstream tooling. The checklist scales from 16 core items to 25+ extended items depending on paper completeness and venue requirements. Always include actionable guidance for FAIL and WARN items.

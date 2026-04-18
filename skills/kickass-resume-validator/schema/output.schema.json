@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ecc.tools/skills/kickass-resume-validator/output.schema.json",
+  "title": "kickass-resume-validator output",
+  "description": "Single JSON object summarizing a Kickass-guidelines review of a resume.",
+  "type": "object",
+  "required": [
+    "file_analyzed",
+    "situation",
+    "one_page",
+    "alignment_to_kickass",
+    "ats_compliance",
+    "summary",
+    "sections",
+    "top_3_fixes"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "file_analyzed": { "type": "string" },
+    "situation": {
+      "type": "string",
+      "enum": ["student", "recent_grad", "professional", "career_changer"]
+    },
+    "one_page": { "type": "string", "enum": ["yes", "no"] },
+    "alignment_to_kickass": { "type": "string" },
+    "ats_compliance": { "type": "string" },
+    "summary": { "type": "string" },
+    "sections": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status", "issues", "suggestions", "priority"],
+        "additionalProperties": false,
+        "properties": {
+          "status": { "type": "string", "enum": ["pass", "flag", "rewrite"] },
+          "issues": { "type": "array", "items": { "type": "string" } },
+          "suggestions": { "type": "array", "items": { "type": "string" } },
+          "priority": { "type": "string", "enum": ["high", "medium", "low"] }
+        }
+      }
+    },
+    "top_3_fixes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "maxItems": 3
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "skill_name": "harvard-resume-validator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Validate this undergrad resume against Harvard guidelines:\n\nHeader: Jane Doe, jane.doe@college.harvard.edu, Cambridge, MA.\nEducation: Harvard College, A.B. Computer Science, expected May 2026. GPA 3.82. Relevant coursework: CS50, CS61, CS161, CS171.\nExperience: Software Engineering Intern, Stripe, Summer 2025.\n  - Engineered REST endpoints in Go serving 20K+ req/s; reduced p99 latency 38% via cache tier.\n  - Led onboarding redesign with 2 engineers; shipped feature adopted by 15K merchants.\n  - Authored 40+ integration tests; raised module coverage from 62% to 94%.\nLeadership: President, Harvard CS Club, 2024-2025. Grew membership 40% to 180 members.\nSkills: Python, Go, TypeScript, React, Postgres, Docker.",
+      "expected_output": "JSON with alignment_to_harvard near 95%+, all sections status 'pass', empty issues arrays, and top_3_fixes suggesting only minor polish or none."
+    },
+    {
+      "id": 2,
+      "prompt": "Validate this resume:\n\nHeader: John Smith, john.smith@college.harvard.edu, Cambridge, MA.\nEducation: Harvard College, A.B. Computer Science, expected May 2027. GPA 3.4. Relevant coursework: CS50.\nExperience: Research Assistant, Physics Lab, Fall 2024 - present.\n  - I was responsible for helping with data collection.\n  - Worked on analysis scripts.\nSkills: Programming, Problem Solving, Team Player.",
+      "expected_output": "JSON flagging education status 'flag' (GPA 3.4 below 3.7 threshold), experience status 'rewrite' (pronouns, 'Responsible for', 'Worked on', no metrics, no action verbs), skills status 'rewrite' (generic soft skills). top_3_fixes should include removing GPA, rewriting both experience bullets with action verbs and metrics, and listing concrete technical skills."
+    },
+    {
+      "id": 3,
+      "prompt": "Validate this resume:\n\nHeader: Maya Patel, maya.patel@college.harvard.edu.\nEducation: Harvard College, A.B. Applied Math, May 2025. GPA 3.92.\nExperience: ML Research Intern, Anthropic, Summer 2024.\n  - Implemented RLHF reward-model eval harness in PyTorch; benchmarked 4 candidate models on 18K preference pairs.\n  - Authored internal report cited in two downstream design reviews.\n  - Presented findings to safety team of 12; design adopted for Claude 3 eval suite.\nLeadership: Co-chair, Harvard ML Reading Group. Organized 14 sessions; grew attendance from 8 to 35.\nSkills: Python, PyTorch, JAX, C++, SQL, Distributed training, Bayesian inference.",
+      "expected_output": "JSON with alignment_to_harvard near 95%+, all sections 'pass', and top_3_fixes containing at most minor polish items (e.g. adding location to header)."
+    }
+  ]
+}

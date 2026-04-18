@@ -27,41 +27,61 @@ When given a paper or section to review, identify issues in Abstract, Methods, a
 
 ## Output Format (JSONL)
 
-Output exactly one JSON object per line. Each object represents one independent issue. Do NOT use array syntax—just newline-separated objects.
+Output exactly one JSON object per line. Each object represents one independent issue. Do NOT use array syntax—just newline-separated objects. The machine-readable schema lives at `schema/output.schema.json`.
+
+Each object must have these fields:
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `section` | string | yes | `"abstract"`, `"methods"`, or `"results"` |
+| `line` | integer | yes | Approximate line number where the issue starts |
+| `problem_type` | string | yes | One of the category keys below |
+| `severity` | string | yes | `"critical"`, `"important"`, or `"minor"` |
+| `issue` | string | yes | One-sentence description of what's wrong |
+| `suggested_fix` | string | yes | Concrete rewrite or action — not "improve clarity" |
+
+Example output:
+
+```jsonl
+{"section": "abstract", "line": 3, "problem_type": "vague_objective", "severity": "important", "issue": "Claims 'improve performance' without metric or baseline", "suggested_fix": "State the metric and the baseline: 'reduces decoding latency by 23% vs. greedy search on WMT-En-De'"}
+{"section": "methods", "line": 47, "problem_type": "reproducibility_gap", "severity": "critical", "issue": "Random seed not reported; results cannot be replicated", "suggested_fix": "Add: 'All runs used seed 42 unless noted; we report mean over 5 seeds.'"}
+{"section": "results", "line": 112, "problem_type": "incomplete_data", "severity": "important", "issue": "Table 1 reports accuracy without standard deviation", "suggested_fix": "Add ± std over ≥3 random seeds, or mark as 'single run' if compute-constrained"}
+```
 
 ## Issue Categories
 
 **Abstract issues:**
-- `vague_objective` - Objectives lack specificity (no metrics, unclear scope)
-- `missing_context` - No problem statement or motivation
-- `unsupported_claim` - Conclusions without supporting data mentioned
-- `passive_overuse` - More than 30% passive sentences
+- `vague_objective` — Objectives lack specificity (no metrics, unclear scope)
+- `missing_context` — No problem statement or motivation
+- `unsupported_claim` — Conclusions without supporting data mentioned
+- `passive_overuse` — More than 30% passive sentences
 
 **Methods issues:**
-- `incomplete_description` - Missing algorithm details, hyperparameters, or setup
-- `reproducibility_gap` - Reader cannot reproduce the work
-- `passive_overuse` - Methods written entirely in passive voice
-- `missing_detail` - Ambiguous section (dataset size, training duration, hardware)
-- `undefined_terms` - Jargon without definition in context
+- `incomplete_description` — Missing algorithm details, hyperparameters, or setup
+- `reproducibility_gap` — Reader cannot reproduce the work
+- `passive_overuse` — Methods written entirely in passive voice
+- `missing_detail` — Ambiguous section (dataset size, training duration, hardware)
+- `undefined_terms` — Jargon without definition in context
 
 **Results issues:**
-- `premature_conclusion` - Interprets results as conclusions (belongs in Discussion)
-- `unsupported_claim` - Claims not backed by reported metrics
-- `passive_presentation` - Results hidden in passive constructions
-- `missing_context` - Baseline/comparison method not stated
-- `incomplete_data` - Should report std dev, confidence intervals, statistical tests
+- `premature_conclusion` — Interprets results as conclusions (belongs in Discussion)
+- `unsupported_claim` — Claims not backed by reported metrics
+- `passive_overuse` — Results hidden in passive constructions (same category as above, different section)
+- `missing_context` — Baseline/comparison method not stated
+- `incomplete_data` — Should report std dev, confidence intervals, statistical tests
+
+`passive_overuse` is the single passive-voice category; use `section` to distinguish where it applies.
 
 ## Output Requirements
 
-- One issue per line (JSONL format)
-- Include `line` number (approximate, best effort)
-- Set `severity` to: `critical`, `important`, or `minor`
-- Keep `issue` and `suggested_fix` concise but complete
-- Do NOT group or pattern-match issues—report each independently
+- One issue per line (JSONL format).
+- Every field in the table above is required on every object.
+- Do NOT group or pattern-match issues — report each independently.
+- Order issues by `line` number within each `section`, then in section order: abstract → methods → results.
 
 ---
 
-# Deep Guidance: Writing Abstract, Methods, and Results
+## Deep Guidance: Writing Abstract, Methods, and Results
 
 ## Abstract Section
 
@@ -474,3 +494,14 @@ Strengths: All numbers include standard deviations and sample count (5 runs), st
 - [ ] Inconsistencies or unexpected results explained
 - [ ] Results organized in narrative order (baselines → main results → ablations)
 - [ ] No duplication: if result is in table, mention in prose only if highlighting significance
+
+---
+
+## Related Skills
+
+This skill sits mid-pipeline for paper review. Use in this order:
+
+1. `paper-structure-cs` — verify sections are present and correctly ordered first.
+2. **`abstract-methods-results-cs` (this skill)** — review the content of the three most scrutinized sections.
+3. `sentence-clarity-cs` — polish prose at the sentence level.
+4. `academic-final-review-cs` — final pre-submission checklist.

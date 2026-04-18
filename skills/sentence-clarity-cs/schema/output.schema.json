@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ecc.tools/skills/sentence-clarity-cs/output.schema.json",
+  "title": "sentence-clarity-cs output",
+  "description": "JSONL: one object per line. Each object is one sentence-level clarity improvement in CS research prose.",
+  "type": "object",
+  "required": ["line", "problem_type", "current", "suggested", "reason"],
+  "additionalProperties": false,
+  "properties": {
+    "line": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "problem_type": {
+      "type": "string",
+      "enum": [
+        "sentence_length",
+        "weak_verb",
+        "ambiguous_pronoun",
+        "passive_voice",
+        "nested_clauses",
+        "unclear_referent",
+        "nominalization",
+        "hedge_language"
+      ]
+    },
+    "current": {
+      "type": "string",
+      "minLength": 1
+    },
+    "suggested": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

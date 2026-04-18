@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ecc.tools/skills/harvard-resume-validator/output.schema.json",
+  "title": "harvard-resume-validator output",
+  "description": "Single JSON object summarizing a Harvard-guidelines review of a resume.",
+  "type": "object",
+  "required": ["file_analyzed", "alignment_to_harvard", "summary", "sections", "top_3_fixes"],
+  "additionalProperties": false,
+  "properties": {
+    "file_analyzed": { "type": "string" },
+    "alignment_to_harvard": { "type": "string" },
+    "summary": { "type": "string" },
+    "sections": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status", "issues", "suggestions", "priority"],
+        "additionalProperties": false,
+        "properties": {
+          "status": { "type": "string", "enum": ["pass", "flag", "rewrite"] },
+          "issues": { "type": "array", "items": { "type": "string" } },
+          "suggestions": { "type": "array", "items": { "type": "string" } },
+          "priority": { "type": "string", "enum": ["high", "medium", "low"] }
+        }
+      }
+    },
+    "top_3_fixes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "maxItems": 3
+    }
+  }
+}

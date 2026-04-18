@@ -4,9 +4,9 @@ description: Validate paper structure against academic standards: required secti
 origin: ECC
 ---
 
-# Paper Structure Validator (JSONL with optional dependencies)
+# Paper Structure Validator (JSONL)
 
-You validate the structural organization of CS research papers. Output JSONL format—one issue per line. Some issues may have optional `depends_on` markers to indicate lightweight sequencing.
+You validate the structural organization of CS research papers. Output JSONL — one issue per line, one per independent structural problem. The machine-readable schema lives at `schema/output.schema.json`.
 
 ## When to Activate
 
@@ -34,13 +34,25 @@ When given a paper outline, table of contents, or full paper, verify:
 
 ## Output Format (JSONL)
 
-Output exactly one JSON object per line. Use optional `depends_on` to mark lightweight dependencies (not complex relationships like tesis-validator).
+Output exactly one JSON object per line. Each object is one independent structural issue. Fields:
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `id` | string | yes | Stable identifier, e.g. `"struct_001"` |
+| `type` | string | yes | One of the category keys below |
+| `severity` | string | yes | `"critical"`, `"important"`, or `"minor"` |
+| `issue` | string | yes | One-sentence description of what's wrong |
+| `suggested_fix` | string | yes | Concrete action the author should take |
+| `section` | string | no | Name of the affected section (e.g. `"Methods"`) when applicable |
+| `location` | string | no | Line number or heading text when applicable |
+
+Example output:
 
 ```jsonl
-{"id": "struct_001", "type": "missing_section", "section": "Methods", "severity": "critical", "issue": "Methods section not found", "suggested_fix": "Add Methods section after Literature Review and before Results", "depends_on": null}
-{"id": "struct_002", "type": "heading_skip", "location": "Line 45", "current_heading": "# Introduction", "next_heading": "### Related Work", "severity": "important", "issue": "Heading hierarchy skips level (# to ###)", "suggested_fix": "Insert ## heading between # and ###", "depends_on": null}
-{"id": "struct_003", "type": "section_order", "current_position": 6, "section": "Bibliography", "expected_position": "Last", "severity": "important", "issue": "Bibliography appears before Conclusion", "suggested_fix": "Move Bibliography to end of paper", "depends_on": null}
-{"id": "struct_004", "type": "toc_mismatch", "issue": "TOC lists 'Experimental Setup' but paper has 'Methodology'", "severity": "minor", "suggested_fix": "Update TOC to match actual section title, or rename section for consistency", "depends_on": "struct_001"}
+{"id": "struct_001", "type": "missing_section", "section": "Methods", "severity": "critical", "issue": "Methods section not found", "suggested_fix": "Add a Methods section after Related Work and before Results."}
+{"id": "struct_002", "type": "heading_skip", "location": "Line 45", "severity": "important", "issue": "Heading hierarchy jumps from # directly to ### (Related Work)", "suggested_fix": "Insert a ## heading between # Introduction and ### Related Work, or promote Related Work to ##."}
+{"id": "struct_003", "type": "section_order", "section": "Bibliography", "severity": "important", "issue": "Bibliography appears before Conclusion", "suggested_fix": "Move Bibliography to the end of the paper, after Conclusion."}
+{"id": "struct_004", "type": "toc_mismatch", "severity": "minor", "issue": "TOC lists 'Experimental Setup' but paper uses 'Methodology'", "suggested_fix": "Rename section or update TOC to use consistent terminology."}
 ```
 
 ## Issue Categories
@@ -64,19 +76,17 @@ Output exactly one JSON object per line. Use optional `depends_on` to mark light
 
 ## Output Requirements
 
-- One issue per line (JSONL format)
-- Assign unique `id` for reference (e.g., "struct_001", "struct_002")
-- `severity`: `critical` (structure broken), `important` (confusing/non-standard), or `minor` (cosmetic)
-- Use optional `depends_on: "struct_ID"` only if an issue logically depends on another being fixed first (rare)
-- Keep `issue` and `suggested_fix` concise
-- Include `location` if referencing a specific line or heading
-- Do NOT create complex dependency chains—only flag true prerequisites
+- One issue per line (JSONL).
+- Every required field in the table above must be present on every object.
+- Report issues independently; do not create dependency chains. If the author should fix X before considering Y, rely on ordering (emit X first) rather than a synthetic `depends_on` field.
+- Keep `issue` and `suggested_fix` each to one sentence.
+- Include `location` whenever referencing a specific line or heading.
 
 ## Example Review
 
 Given a paper outline:
 
-```
+```text
 1. Abstract
 2. Related Work
 3. Methods
@@ -88,9 +98,9 @@ Given a paper outline:
 Output:
 
 ```jsonl
-{"id": "struct_001", "type": "missing_section", "section": "Introduction", "severity": "critical", "issue": "Introduction section missing between Abstract and Related Work", "suggested_fix": "Add Introduction section after Abstract to provide problem context and motivation", "depends_on": null}
-{"id": "struct_002", "type": "missing_section", "section": "Discussion", "severity": "important", "issue": "Discussion section missing before Conclusion", "suggested_fix": "Add Discussion section between Results and Conclusion to interpret findings", "depends_on": "struct_001"}
-{"id": "struct_003", "type": "section_order", "current_position": 2, "section": "Related Work", "expected_position": "After Introduction", "severity": "important", "issue": "Related Work appears before Introduction (should establish context first)", "suggested_fix": "Reorder: Abstract → Introduction → Related Work → Methods → Results → Discussion → Conclusion", "depends_on": "struct_001"}
+{"id": "struct_001", "type": "missing_section", "section": "Introduction", "severity": "critical", "issue": "Introduction section missing between Abstract and Related Work", "suggested_fix": "Add an Introduction after Abstract with problem statement, motivation, and contributions."}
+{"id": "struct_002", "type": "missing_section", "section": "Discussion", "severity": "important", "issue": "Discussion section missing before Conclusion", "suggested_fix": "Add a Discussion between Results and Conclusion that interprets findings and notes limitations."}
+{"id": "struct_003", "type": "section_order", "section": "Related Work", "severity": "important", "issue": "Related Work appears before Introduction", "suggested_fix": "Reorder: Abstract → Introduction → Related Work → Methods → Results → Discussion → Conclusion → Bibliography."}
 ```
 
 ---
@@ -240,82 +250,9 @@ Typical structure for workshop submissions (narrow scope, preliminary work):
 - Subsections as ## if needed (e.g., "3.1 Baseline Comparisons")
 - No excessive nesting
 
-## Heading Hierarchy Best Practices
+## Heading Hierarchy Rules
 
-### Proper Nesting Rules
-
-```
-# Main Section Title (only ONE per paper structure level)
-  ## Subsection (primary subdivision)
-    ### Sub-subsection (tertiary; use sparingly)
-      #### Sub-sub-subsection (AVOID in academic papers)
-```
-
-**DO:** 
-- Use one # per main section
-- Use ## for the first level of subdivision within a section
-- Use ### only when you have 3+ subsections under a ##
-- Keep maximum depth at 3 levels (# → ## → ###)
-
-**DON'T:**
-- Skip levels (# → ### is wrong; insert ## in between)
-- Use # for subsections
-- Nest more than 3 levels deep
-- Use #### or deeper in academic papers
-
-### Heading Naming Conventions
-
-**DO:**
-- Use descriptive, specific titles: "Machine Learning Pipeline Design", not "Technical Approach"
-- Use parallel structure across parallel sections: "Experiment 1", "Experiment 2", "Experiment 3"
-- Use sentence case for most headings in LNCS/IEEE; title case for ACM
-- Include units if relevant: "Results on MNIST Dataset" instead of just "Results"
-
-**DON'T:**
-- Use vague titles: "Methods", "System", "Implementation" (be specific)
-- Mix naming styles: don't have both "3.1. Data Processing" and "3.2 algorithm details"
-- Use overly long headings (>10 words)
-- Use special characters or math symbols in headings (hard to parse)
-
-### Example: Proper Heading Hierarchy
-
-Bad:
-```
-# Introduction
-## Background
-### Motivation
-#### Problem Statement
-## Related Work
-# Methods
-### Algorithm Design
-## Results
-```
-
-Good:
-```
-# Introduction
-## Motivation
-## Problem Statement
-## Contributions
-
-# Related Work
-## Systems Approaches
-## Machine Learning Baselines
-
-# Methods
-## Data Collection
-## Feature Engineering
-## Algorithm Design
-
-# Evaluation
-## Experimental Setup
-## Results
-## Ablation Studies
-
-# Discussion
-
-# Conclusion
-```
+A correctly-nested paper uses `#` for main sections, `##` for subdivisions, and `###` only when a `##` has three or more children. Skipping a level (`#` → `###` with no `##` between) emits `heading_skip`. Mixing levels across parallel sections (e.g. some top-level headings at `#`, others at `##`) emits `heading_level_inconsistent`. Vague top-level titles ("Methods", "System") or mixed case styles across parallel headings are reported as `heading_level_inconsistent` with a rename suggestion.
 
 ## Section Flow and Transitions
 
@@ -624,10 +561,21 @@ Appendices (if needed)
 
 ## Guidelines
 
-- **Structural rigor**: Academic papers follow a standard format; deviations should be flagged
-- **Light dependencies**: Only use `depends_on` for true sequential dependencies (e.g., can't check "TOC matches sections" if sections aren't defined yet)
-- **Completeness**: Every standard section must be present; missing = critical
-- **Hierarchy**: Heading levels matter for readability and document generation; enforce consistency
-- **Venue awareness**: Different venues (ACM, IEEE, NeurIPS) have slightly different expectations; note deviations
-- **Section balance**: Long, dense sections (>3 pages) should be subdivided; short sections (<0.5 page) may be too thin
-- **Flow and transitions**: Sections should connect logically with explicit transitions, not jump abruptly
+- **Structural rigor**: Academic papers follow a standard format; deviations should be flagged.
+- **Independent issues**: Report each structural problem as its own JSONL object. Do not chain them with `depends_on`; order the output so a reader working top-down fixes prerequisites first.
+- **Completeness**: Every standard section must be present; missing = critical.
+- **Hierarchy**: Heading levels matter for readability and document generation; enforce consistency.
+- **Venue awareness**: Different venues (ACM, IEEE, NeurIPS) have slightly different expectations; note deviations.
+- **Section balance**: Long, dense sections (>3 pages) should be subdivided; short sections (<0.5 page) may be too thin.
+- **Flow and transitions**: Sections should connect logically with explicit transitions, not jump abruptly.
+
+---
+
+## Related Skills
+
+This is the first stop in the paper-review pipeline — get the skeleton right before reviewing what's inside it.
+
+1. **`paper-structure-cs` (this skill)** — verify sections are present and correctly ordered.
+2. `abstract-methods-results-cs` — deep review of the three most-scrutinized sections.
+3. `sentence-clarity-cs` — prose polish at the sentence level.
+4. `academic-final-review-cs` — final pre-submission checklist.

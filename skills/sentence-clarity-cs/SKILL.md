@@ -29,7 +29,25 @@ When given paper text, identify sentences that are unclear, too long, use weak v
 
 ## Output Format (JSONL)
 
-Output exactly one JSON object per line. Each object is one sentence-level improvement opportunity. Keep each JSON object on a single line (no wrapping).
+Output exactly one JSON object per line. Each object is one sentence-level improvement opportunity. Keep each JSON object on a single line (no wrapping). The machine-readable schema lives at `schema/output.schema.json`.
+
+Required fields:
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `line` | integer | Approximate line where the sentence starts |
+| `problem_type` | string | One of the category keys below |
+| `current` | string | The original sentence (may truncate with `…` if very long, keep enough to locate it) |
+| `suggested` | string | The revised sentence |
+| `reason` | string | One sentence: why the new form is clearer, shorter, stronger, or more direct |
+
+Example output:
+
+```jsonl
+{"line": 42, "problem_type": "sentence_length", "current": "The performance of our system, which integrates multiple machine learning models with real-time data processing capabilities, is evaluated against several baseline systems on a diverse set of benchmarks that span different application domains.", "suggested": "We evaluate our system—which integrates multiple ML models with real-time data processing—against baselines across diverse benchmarks.", "reason": "Cuts 38→22 words; active voice surfaces agency; em-dash preserves the qualifier without nesting."}
+{"line": 88, "problem_type": "ambiguous_pronoun", "current": "This improves scalability and reduces latency.", "suggested": "Hierarchical clustering improves scalability and reduces latency.", "reason": "Replaces 'This' with its concrete antecedent so the referent is unambiguous."}
+{"line": 131, "problem_type": "hedge_language", "current": "It could be argued that the method is somewhat better than existing approaches.", "suggested": "Our method outperforms existing approaches by 14% F1 on CoNLL-2003.", "reason": "Removes five hedges; replaces vague claim with a specific quantitative result."}
+```
 
 ## Issue Categories
 
@@ -238,18 +256,22 @@ When reviewing your own sentences, ask:
 
 ---
 
-## Output Format (JSONL)
-
-Output exactly one JSON object per line. Each object is one sentence-level improvement opportunity.
-
 ## Output Requirements
 
-- One sentence per line (JSONL format)
-- Include `line` number (approximate, where the sentence begins)
-- `problem_type` must be one of the categories listed above (sentence_length, weak_verb, ambiguous_pronoun, passive_voice, nested_clauses, unclear_referent, nominalization, or hedge_language)
-- Include `current` (original sentence, possibly truncated if very long—but show enough context to be useful)
-- Include `suggested` (revised sentence)
-- `reason` explains the improvement in one sentence (focus on impact: clarity, brevity, strength, directness)
-- Keep output concise—each JSON object should fit on one line
-- Do NOT group related sentences—report each independently
-- Order suggestions by line number
+- One sentence per line (JSONL format); fields as documented in "Output Format (JSONL)" above.
+- `problem_type` must be one of the categories listed (sentence_length, weak_verb, ambiguous_pronoun, passive_voice, nested_clauses, unclear_referent, nominalization, or hedge_language).
+- `current` may be truncated with `…` when the sentence is unusually long; keep enough on either side to locate it in the source.
+- `reason` explains the improvement in one sentence; focus on impact — clarity, brevity, strength, directness.
+- Do not group related sentences — report each independently.
+- Order suggestions by ascending `line` number.
+
+---
+
+## Related Skills
+
+This skill handles sentence-level polish in the paper-review pipeline. Run the skills in order for the strongest coverage:
+
+1. `paper-structure-cs` — verify sections are present and correctly ordered.
+2. `abstract-methods-results-cs` — deep review of the three most-scrutinized sections.
+3. **`sentence-clarity-cs` (this skill)** — polish prose at the sentence level.
+4. `academic-final-review-cs` — final pre-submission checklist.
