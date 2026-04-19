@@ -5,8 +5,6 @@ argument-hint: "[base-branch] (default: main)"
 
 # Create Pull Request
 
-> Adapted from PRPs-agentic-eng by Wirasm. Part of the PRP workflow series.
-
 **Input**: `$ARGUMENTS` — optional, may contain a base branch name and/or flags (e.g., `--draft`).
 
 **Parse `$ARGUMENTS`**:
@@ -29,7 +27,7 @@ git log origin/<base>..HEAD --oneline
 | Check | Condition | Action if Failed |
 |---|---|---|
 | Not on base branch | Current branch ≠ base | Stop: "Switch to a feature branch first." |
-| Clean working directory | No uncommitted changes | Warn: "You have uncommitted changes. Commit or stash first. Use `/prp-commit` to commit." |
+| Clean working directory | No uncommitted changes | Warn: "You have uncommitted changes. Commit or stash first." |
 | Has commits ahead | `git log origin/<base>..HEAD` not empty | Stop: "No commits ahead of `<base>`. Nothing to PR." |
 | No existing PR | `gh pr list --head <branch> --json number` is empty | Stop: "PR already exists: #<number>. Use `gh pr view <number> --web` to open it." |
 
@@ -71,12 +69,11 @@ git diff origin/<base>..HEAD --name-only
 
 Categorize changed files: source, tests, docs, config, migrations.
 
-### PRP Artifacts
+### Planning Artifacts
 
-Check for related PRP artifacts:
-- `.claude/PRPs/reports/` — Implementation reports
-- `.claude/PRPs/plans/` — Plans that were executed
-- `.claude/PRPs/prds/` — Related PRDs
+Check for related artifacts produced by `/plan-prd` and `/plan`:
+- `.claude/prds/` — PRDs this PR implements a milestone of
+- `.claude/plans/` — Plans executed by this PR
 
 Reference these in the PR body if they exist.
 
@@ -165,7 +162,7 @@ Changes: +<additions> -<deletions> across <changedFiles> files
 CI Checks: <status summary or "pending" or "none configured">
 
 Artifacts referenced:
-  - <any PRP reports/plans linked in PR body>
+  - <any PRDs/plans linked in PR body>
 
 Next steps:
   - gh pr view <number> --web   → open in browser
