@@ -98,6 +98,10 @@ function getSessionStartAdditionalContext(stdout) {
   return payload.hookSpecificOutput.additionalContext;
 }
 
+const RESUME_SESSION_SENTINEL = 'RESUME_CONTEXT_SHOULD_NOT_BE_INJECTED';
+const INVALID_STDIN_SENTINEL = 'INVALID_STDIN_CONTEXT_SHOULD_NOT_BE_INJECTED';
+const CROSS_WORKTREE_PROJECT_SENTINEL = 'CROSS_WORKTREE_PROJECT_CONTEXT_SHOULD_NOT_BE_INJECTED';
+
 function buildSessionStartFixture(content, options = {}) {
   const title = options.title || '# Session';
   const project = options.project || path.basename(process.cwd());
@@ -529,7 +533,7 @@ async function runTests() {
       const sessionFile = path.join(sessionsDir, '2026-02-11-resume123-session.tmp');
       fs.writeFileSync(
         sessionFile,
-        buildSessionStartFixture('RESUME_CONTEXT_SHOULD_NOT_BE_INJECTED', { title: '# Resume Session' })
+        buildSessionStartFixture(RESUME_SESSION_SENTINEL, { title: '# Resume Session' })
       );
 
       try {
@@ -544,6 +548,38 @@ async function runTests() {
         assert.strictEqual(result.code, 0);
         const additionalContext = getSessionStartAdditionalContext(result.stdout);
         assert.ok(!additionalContext.includes('Previous session summary'), 'Should skip previous session summary on resume');
+        assert.ok(!additionalContext.includes(RESUME_SESSION_SENTINEL), 'Should not inject resume session content under another label');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('skips previous session summary injection on malformed non-empty SessionStart stdin', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-invalid-start-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-11-invalid123-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        buildSessionStartFixture(INVALID_STDIN_SENTINEL, { title: '# Invalid Stdin Session' })
+      );
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '{"hookName":', {
+          HOME: isoHome,
+          USERPROFILE: isoHome
+        });
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(!additionalContext.includes('Previous session summary'), 'Should skip previous session summary on malformed stdin');
+        assert.ok(!additionalContext.includes(INVALID_STDIN_SENTINEL), 'Should not inject malformed-stdin session content');
+        assert.ok(result.stderr.includes('Invalid stdin payload'), `Should log invalid stdin payload, stderr: ${result.stderr}`);
       } finally {
         fs.rmSync(isoHome, { recursive: true, force: true });
       }
@@ -4412,6 +4448,42 @@ async function runTests() {
         assert.ok(
           !additionalContext.includes('UNRELATED_CONTEXT_SHOULD_NOT_BE_INJECTED'),
           'Should not inject unrelated session content'
+        );
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('does not use project-name fallback when session records a different worktree', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-start-cross-worktree-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-12-cross-worktree-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        buildSessionStartFixture(CROSS_WORKTREE_PROJECT_SENTINEL, {
+          title: '# Cross Worktree Project Session',
+          project: path.basename(process.cwd()),
+          worktree: '/tmp/some-other-worktree'
+        })
+      );
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome
+        });
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(
+          !additionalContext.includes(CROSS_WORKTREE_PROJECT_SENTINEL),
+          'Should not inject same-project content from a different recorded worktree'
         );
       } finally {
         fs.rmSync(isoHome, { recursive: true, force: true });

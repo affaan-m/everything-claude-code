@@ -27,6 +27,8 @@ const { detectProjectType } = require('../lib/project-detect');
 const path = require('path');
 const fs = require('fs');
 
+const SESSION_START_MODE_SKIP = 'skip';
+
 function getSessionStartMode(rawInput) {
   const raw = typeof rawInput === 'string' ? rawInput.trim() : '';
   if (!raw) return null;
@@ -36,8 +38,10 @@ function getSessionStartMode(rawInput) {
     const hookName = typeof input?.hookName === 'string' ? input.hookName : '';
     if (hookName === 'SessionStart:resume') return 'resume';
     if (hookName === 'SessionStart:startup') return 'startup';
-  } catch {
-    // Ignore malformed stdin and fall back to default startup behavior.
+  } catch (error) {
+    const truncatedRaw = raw.length > 200 ? `${raw.slice(0, 200)}…` : raw;
+    log(`[SessionStart] Invalid stdin payload (${error.message}); skipping previous session summary injection. Raw: ${truncatedRaw}`);
+    return SESSION_START_MODE_SKIP;
   }
 
   return null;
@@ -140,7 +144,7 @@ function selectMatchingSession(sessions, cwd, currentProject) {
     }
 
     // Project name match — keep searching for a worktree match
-    if (!projectMatch && currentProject) {
+    if (!projectMatch && currentProject && !sessionWorktree) {
       const projectFieldMatch = content.match(/\*\*Project:\*\*\s*(.+)$/m);
       const sessionProject = projectFieldMatch ? projectFieldMatch[1].trim() : '';
       if (sessionProject && sessionProject === currentProject) {
@@ -186,8 +190,8 @@ async function main() {
   if (recentSessions.length > 0) {
     log(`[SessionStart] Found ${recentSessions.length} recent session(s)`);
 
-    if (sessionStartMode === 'resume') {
-      log('[SessionStart] Skipping previous session summary injection on resume');
+    if (sessionStartMode === 'resume' || sessionStartMode === SESSION_START_MODE_SKIP) {
+      log(`[SessionStart] Skipping previous session summary injection on ${sessionStartMode === 'resume' ? 'resume' : 'invalid stdin payload'}`);
     } else {
       // Prefer a session that matches the current working directory or project.
       // Session files contain **Project:** and **Worktree:** header fields written
