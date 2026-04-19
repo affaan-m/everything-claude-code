@@ -27,6 +27,22 @@ const { detectProjectType } = require('../lib/project-detect');
 const path = require('path');
 const fs = require('fs');
 
+function getSessionStartMode(rawInput) {
+  const raw = typeof rawInput === 'string' ? rawInput.trim() : '';
+  if (!raw) return null;
+
+  try {
+    const input = JSON.parse(raw);
+    const hookName = typeof input?.hookName === 'string' ? input.hookName : '';
+    if (hookName === 'SessionStart:resume') return 'resume';
+    if (hookName === 'SessionStart:startup') return 'startup';
+  } catch {
+    // Ignore malformed stdin and fall back to default startup behavior.
+  }
+
+  return null;
+}
+
 /**
  * Resolve a filesystem path to its canonical (real) form.
  *
@@ -88,7 +104,7 @@ function dedupeRecentSessions(searchDirs) {
  * Priority (highest to lowest):
  *   1. Exact worktree (cwd) match — most recent
  *   2. Same project name match — most recent
- *   3. Fallback to overall most recent (original behavior)
+ *   3. Otherwise do not inject previous session context
  *
  * Sessions are already sorted newest-first, so the first match in each
  * category wins.
@@ -108,18 +124,10 @@ function selectMatchingSession(sessions, cwd, currentProject) {
 
   let projectMatch = null;
   let projectMatchContent = null;
-  let fallbackSession = null;
-  let fallbackContent = null;
 
   for (const session of sessions) {
     const content = readFile(session.path);
     if (!content) continue;
-
-    // Cache first readable session+content pair for fallback
-    if (!fallbackSession) {
-      fallbackSession = session;
-      fallbackContent = content;
-    }
 
     // Extract **Worktree:** field
     const worktreeMatch = content.match(/\*\*Worktree:\*\*\s*(.+)$/m);
@@ -146,16 +154,12 @@ function selectMatchingSession(sessions, cwd, currentProject) {
     return { session: projectMatch, content: projectMatchContent, matchReason: 'project' };
   }
 
-  // Fallback: most recent readable session (original behavior)
-  if (fallbackSession) {
-    return { session: fallbackSession, content: fallbackContent, matchReason: 'recency-fallback' };
-  }
-
-  log('[SessionStart] All session files were unreadable');
+  log('[SessionStart] No worktree/project session match found');
   return null;
 }
 
 async function main() {
+  const sessionStartMode = getSessionStartMode(fs.readFileSync(0, 'utf8'));
   const sessionsDir = getSessionsDir();
   const learnedDir = getLearnedSkillsDir();
   const additionalContextParts = [];
@@ -182,24 +186,28 @@ async function main() {
   if (recentSessions.length > 0) {
     log(`[SessionStart] Found ${recentSessions.length} recent session(s)`);
 
-    // Prefer a session that matches the current working directory or project.
-    // Session files contain **Project:** and **Worktree:** header fields written
-    // by session-end.js, so we can match against them.
-    const cwd = process.cwd();
-    const currentProject = getProjectName() || '';
-
-    const result = selectMatchingSession(recentSessions, cwd, currentProject);
-
-    if (result) {
-      log(`[SessionStart] Selected: ${result.session.path} (match: ${result.matchReason})`);
-
-      // Use the already-read content from selectMatchingSession (no duplicate I/O)
-      const content = stripAnsi(result.content);
-      if (content && !content.includes('[Session context goes here]')) {
-        additionalContextParts.push(`Previous session summary:\n${content}`);
-      }
+    if (sessionStartMode === 'resume') {
+      log('[SessionStart] Skipping previous session summary injection on resume');
     } else {
-      log('[SessionStart] No matching session found');
+      // Prefer a session that matches the current working directory or project.
+      // Session files contain **Project:** and **Worktree:** header fields written
+      // by session-end.js, so we can match against them.
+      const cwd = process.cwd();
+      const currentProject = getProjectName() || '';
+
+      const result = selectMatchingSession(recentSessions, cwd, currentProject);
+
+      if (result) {
+        log(`[SessionStart] Selected: ${result.session.path} (match: ${result.matchReason})`);
+
+        // Use the already-read content from selectMatchingSession (no duplicate I/O)
+        const content = stripAnsi(result.content);
+        if (content && !content.includes('[Session context goes here]')) {
+          additionalContextParts.push(`Previous session summary:\n${content}`);
+        }
+      } else {
+        log('[SessionStart] No matching session found');
+      }
     }
   }
 
