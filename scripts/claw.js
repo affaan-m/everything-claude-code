@@ -95,7 +95,8 @@ function askClaude(systemPrompt, history, userMessage, model) {
     encoding: 'utf8',
     stdio: ['pipe', 'pipe', 'pipe'],
     env: { ...process.env, CLAUDECODE: '' },
-    timeout: 300000,
+    timeout: 300000, 
+    shell: process.platform === 'win32',
   });
 
   if (result.error) {
