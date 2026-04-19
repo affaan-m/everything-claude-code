@@ -12,7 +12,7 @@ This directory contains the **Codex plugin manifest** for Everything Claude Code
 
 ## What This Provides
 
-- **142 skills** from `./skills/` — reusable Codex workflows for TDD, security,
+- **156 skills** from `./skills/` — reusable Codex workflows for TDD, security,
   code review, architecture, and more
 - **6 MCP servers** — GitHub, Context7, Exa, Memory, Playwright, Sequential Thinking
 
@@ -29,6 +29,9 @@ codex plugin install ./
 
 Run this from the repository root so `./` points to the repo root and `.mcp.json` resolves correctly.
 ```
+
+The installed plugin registers under the short slug `ecc` so tool and command names
+stay below provider length limits.
 
 ## MCP Servers Included
 

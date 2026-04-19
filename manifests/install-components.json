@@ -194,6 +194,14 @@
       ]
     },
     {
+      "id": "lang:c",
+      "family": "language",
+      "description": "C engineering guidance using the shared C/C++ standards and testing stack. Currently resolves through the shared framework-language module.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
       "id": "lang:kotlin",
       "family": "language",
       "description": "Kotlin, Ktor, Exposed, Coroutines, and Compose Multiplatform guidance. Currently resolves through the shared framework-language module.",
@@ -350,7 +358,7 @@
     {
       "id": "skill:continuous-learning",
       "family": "skill",
-      "description": "Session pattern extraction and continuous learning skill.",
+      "description": "Legacy v1 Stop-hook session pattern extraction skill; prefer continuous-learning-v2 for new installs.",
       "modules": [
         "workflow-quality"
       ]

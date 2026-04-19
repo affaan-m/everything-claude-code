@@ -4,13 +4,13 @@
  * Detects the appropriate linter and returns a runnable lint command.
  */
 
-import { tool } from "@opencode-ai/plugin/tool"
+import { tool, type ToolDefinition } from "@opencode-ai/plugin/tool"
 import * as path from "path"
 import * as fs from "fs"
 
 type Linter = "biome" | "eslint" | "ruff" | "pylint" | "golangci-lint"
 
-export default tool({
+const lintCheckTool: ToolDefinition = tool({
   description:
     "Detect linter for a target path and return command for check/fix runs.",
   args: {
@@ -42,6 +42,8 @@ export default tool({
     })
   },
 })
+
+export default lintCheckTool
 
 function detectLinter(cwd: string): Linter {
   if (fs.existsSync(path.join(cwd, "biome.json")) || fs.existsSync(path.join(cwd, "biome.jsonc"))) {

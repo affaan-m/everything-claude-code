@@ -169,6 +169,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opencode-ai/plugin@npm:^1.0.0":
+  version: 1.3.15
+  resolution: "@opencode-ai/plugin@npm:1.3.15"
+  dependencies:
+    "@opencode-ai/sdk": "npm:1.3.15"
+    zod: "npm:4.1.8"
+  peerDependencies:
+    "@opentui/core": ">=0.1.96"
+    "@opentui/solid": ">=0.1.96"
+  peerDependenciesMeta:
+    "@opentui/core":
+      optional: true
+    "@opentui/solid":
+      optional: true
+  checksum: 10c0/1a662ff700812223310612f3c8c7fd4465eda5763d726ec4d29d0eae26babf344ef176c9b987d79fe1e29c8a498178881a47d7080bb9f4db3e70dad59eb8cd9e
+  languageName: node
+  linkType: hard
+
+"@opencode-ai/sdk@npm:1.3.15":
+  version: 1.3.15
+  resolution: "@opencode-ai/sdk@npm:1.3.15"
+  dependencies:
+    cross-spawn: "npm:7.0.6"
+  checksum: 10c0/3957ae62e0ec1e339d9493e03a2440c95afdd64a608a2dc9db8383338650318a294280b2142305db5b0147badacbefa0d07e949d31167e5a4a49c9d057d016fa
+  languageName: node
+  linkType: hard
+
 "@types/debug@npm:^4.0.0":
   version: 4.1.12
   resolution: "@types/debug@npm:4.1.12"
@@ -210,6 +237,15 @@ __metadata:
   version: 2.1.0
   resolution: "@types/ms@npm:2.1.0"
   checksum: 10c0/5ce692ffe1549e1b827d99ef8ff71187457e0eb44adbae38fdf7b9a74bae8d20642ee963c14516db1d35fa2652e65f47680fdf679dcbde52bbfadd021f497225
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.19.24":
+  version: 20.19.39
+  resolution: "@types/node@npm:20.19.39"
+  dependencies:
+    undici-types: "npm:~6.21.0"
+  checksum: 10c0/1d16da7b5f47a7415b827fcf3b94d279febf4c14671afec74a03e47856b5270023d9beb1b9aeab4d3b622fd97d61a60206cfc2cca588663181331bc592468289
   languageName: node
   linkType: hard
 
@@ -444,7 +480,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-spawn@npm:^7.0.6":
+"cross-spawn@npm:7.0.6, cross-spawn@npm:^7.0.6":
   version: 7.0.6
   resolution: "cross-spawn@npm:7.0.6"
   dependencies:
@@ -512,12 +548,15 @@ __metadata:
   dependencies:
     "@eslint/js": "npm:^9.39.2"
     "@iarna/toml": "npm:^2.2.5"
+    "@opencode-ai/plugin": "npm:^1.0.0"
+    "@types/node": "npm:^20.19.24"
     ajv: "npm:^8.18.0"
     c8: "npm:^11.0.0"
     eslint: "npm:^9.39.2"
-    globals: "npm:^17.1.0"
+    globals: "npm:^17.4.0"
     markdownlint-cli: "npm:^0.48.0"
     sql.js: "npm:^1.14.1"
+    typescript: "npm:^5.9.3"
   bin:
     ecc: scripts/ecc.js
     ecc-install: scripts/install-apply.js
@@ -795,10 +834,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:^17.1.0":
-  version: 17.1.0
-  resolution: "globals@npm:17.1.0"
-  checksum: 10c0/4a4a17847676a09f164b8bdce7df105a4f484d6d44586e374087ba9ec7089cbf4c578b8648838dee9917074199c542ce157ea3c07b266f708dfb1652010900c8
+"globals@npm:^17.4.0":
+  version: 17.4.0
+  resolution: "globals@npm:17.4.0"
+  checksum: 10c0/2be9e8c2b9035836f13d420b22f0247a328db82967d3bebfc01126d888ed609305f06c05895914e969653af5c6ba35fd7a0920f3e6c869afa60666c810630feb
   languageName: node
   linkType: hard
 
@@ -1744,10 +1783,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:^5.9.3":
+  version: 5.9.3
+  resolution: "typescript@npm:5.9.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10c0/6bd7552ce39f97e711db5aa048f6f9995b53f1c52f7d8667c1abdc1700c68a76a308f579cd309ce6b53646deb4e9a1be7c813a93baaf0a28ccd536a30270e1c5
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A^5.9.3#optional!builtin<compat/typescript>":
+  version: 5.9.3
+  resolution: "typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10c0/ad09fdf7a756814dce65bc60c1657b40d44451346858eea230e10f2e95a289d9183b6e32e5c11e95acc0ccc214b4f36289dcad4bf1886b0adb84d711d336a430
+  languageName: node
+  linkType: hard
+
 "uc.micro@npm:^2.0.0, uc.micro@npm:^2.1.0":
   version: 2.1.0
   resolution: "uc.micro@npm:2.1.0"
   checksum: 10c0/8862eddb412dda76f15db8ad1c640ccc2f47cdf8252a4a30be908d535602c8d33f9855dfcccb8b8837855c1ce1eaa563f7fa7ebe3c98fd0794351aab9b9c55fa
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~6.21.0":
+  version: 6.21.0
+  resolution: "undici-types@npm:6.21.0"
+  checksum: 10c0/c01ed51829b10aa72fc3ce64b747f8e74ae9b60eafa19a7b46ef624403508a54c526ffab06a14a26b3120d055e1104d7abe7c9017e83ced038ea5cf52f8d5e04
   languageName: node
   linkType: hard
 
@@ -1833,5 +1899,12 @@ __metadata:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: 10c0/dceb44c28578b31641e13695d200d34ec4ab3966a5729814d5445b194933c096b7ced71494ce53a0e8820685d1d010df8b2422e5bf2cdea7e469d97ffbea306f
+  languageName: node
+  linkType: hard
+
+"zod@npm:4.1.8":
+  version: 4.1.8
+  resolution: "zod@npm:4.1.8"
+  checksum: 10c0/5eae39da09d7bd0564a30dfd2348811e4e2e7dd15955d8f3444f8e196f35e5422b1482eda234b722fafb0738f4a8b718adb042b860936bfdd2cc19cdbdac8a9a
   languageName: node
   linkType: hard

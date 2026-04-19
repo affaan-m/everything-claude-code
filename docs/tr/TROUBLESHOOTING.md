@@ -6,7 +6,7 @@ Everything Claude Code (ECC) eklentisi için yaygın sorunlar ve çözümler.
 
 - [Bellek ve Context Sorunları](#bellek-ve-context-sorunları)
 - [Ajan Harness Hataları](#ajan-harness-hataları)
-- [Hook ve İş Akışı Hataları](#hook-ve-iş-akışı-hataları)
+- [Hook ve İş Akışı Hataları](#hook-ve-i̇ş-akışı-hataları)
 - [Kurulum ve Yapılandırma](#kurulum-ve-yapılandırma)
 - [Performans Sorunları](#performans-sorunları)
 - [Yaygın Hata Mesajları](#yaygın-hata-mesajları)
@@ -370,7 +370,7 @@ chmod -R u+rwX,go+rX ~/.claude/homunculus
 
 ```bash
 # Eklenti bağımlılıklarını kur
-cd ~/.claude/plugins/cache/everything-claude-code
+cd ~/.claude/plugins/cache/ecc
 npm install
 
 # Veya manuel kurulum için

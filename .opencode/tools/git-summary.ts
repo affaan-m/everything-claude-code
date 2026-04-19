@@ -4,10 +4,10 @@
  * Returns branch/status/log/diff details for the active repository.
  */
 
-import { tool } from "@opencode-ai/plugin/tool"
+import { tool, type ToolDefinition } from "@opencode-ai/plugin/tool"
 import { execSync } from "child_process"
 
-export default tool({
+const gitSummaryTool: ToolDefinition = tool({
   description:
     "Generate git summary with branch, status, recent commits, and optional diff stats.",
   args: {
@@ -44,6 +44,8 @@ export default tool({
     return JSON.stringify(result)
   },
 })
+
+export default gitSummaryTool
 
 function run(command: string, cwd: string): string {
   try {

@@ -110,6 +110,17 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (!powerShellCommand) {
+    console.log('  - skipped help text test; PowerShell is not available in PATH');
+  } else if (test('exposes the corrected Claude target help text', () => {
+    const result = run(powerShellCommand, ['--help']);
+    assert.strictEqual(result.code, 0, result.stderr);
+    assert.ok(
+      result.stdout.includes('claude       (default) - Install ECC into ~/.claude/'),
+      'help text should describe the Claude target as a full ~/.claude install surface'
+    );
+  })) passed++; else failed++;
+
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
 }

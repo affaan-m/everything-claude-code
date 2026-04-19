@@ -164,7 +164,8 @@ test('default max analysis lines is 500', () => {
 test('analysis temp file is created and cleaned up', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
   assert.ok(content.includes('ecc-observer-analysis'), 'Should create a temp analysis file');
-  assert.ok(content.includes('rm -f "$prompt_file" "$analysis_file"'), 'Should clean up both prompt and analysis temp files');
+  assert.ok(content.includes('rm -f "$prompt_file"'), 'Should clean up the prompt temp file after loading it');
+  assert.ok(content.includes('rm -f "$analysis_file"'), 'Should clean up the analysis temp file');
 });
 
 test('observer-loop uses project-local temp directory for analysis artifacts', () => {
@@ -172,6 +173,13 @@ test('observer-loop uses project-local temp directory for analysis artifacts', (
   assert.ok(content.includes('observer_tmp_dir="${PROJECT_DIR}/.observer-tmp"'), 'Should keep observer temp files inside the project');
   assert.ok(content.includes('mktemp "${observer_tmp_dir}/ecc-observer-analysis.'), 'Analysis temp file should use the project temp dir');
   assert.ok(content.includes('mktemp "${observer_tmp_dir}/ecc-observer-prompt.'), 'Prompt temp file should use the project temp dir');
+});
+
+test('observer-loop loads prompt content before invoking claude', () => {
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  assert.ok(content.includes('prompt_content="$(cat "$prompt_file" 2>/dev/null || true)"'), 'Prompt should be read into memory before the claude invocation');
+  assert.ok(content.includes('-p "$prompt_content"'), 'Claude should receive the in-memory prompt content');
+  assert.ok(!content.includes('-p "$(cat "$prompt_file")"'), 'Claude should not depend on re-reading the prompt file during invocation');
 });
 
 test('observer-loop prompt requires direct instinct writes without asking permission', () => {

@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Update monthly metrics issue
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const owner = context.repo.owner;
@@ -28,6 +28,10 @@ jobs:
               if (!linkHeader) return null;
               const match = linkHeader.match(/&page=(\d+)>; rel="last"/);
               return match ? Number(match[1]) : null;
+            }
+
+            function escapeRegex(value) {
+              return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
             }
 
             function fmt(value) {
@@ -167,14 +171,17 @@ jobs:
             }
 
             const currentBody = issue.body || "";
-            if (currentBody.includes(`| ${monthKey} |`)) {
-              console.log(`Issue #${issue.number} already has snapshot row for ${monthKey}`);
-              return;
-            }
+            const rowPattern = new RegExp(`^\\| ${escapeRegex(monthKey)} \\|.*$`, "m");
 
-            const body = currentBody.includes("| Month (UTC) |")
-              ? `${currentBody.trimEnd()}\n${row}\n`
-              : `${intro}\n${row}\n`;
+            let body;
+            if (rowPattern.test(currentBody)) {
+              body = currentBody.replace(rowPattern, row);
+              console.log(`Refreshed issue #${issue.number} snapshot row for ${monthKey}`);
+            } else {
+              body = currentBody.includes("| Month (UTC) |")
+                ? `${currentBody.trimEnd()}\n${row}\n`
+                : `${intro}\n${row}\n`;
+            }
 
             await github.rest.issues.update({
               owner,

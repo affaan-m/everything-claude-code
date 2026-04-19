@@ -76,6 +76,28 @@ if (
   passed++;
 else failed++;
 
+if (
+  test('command markdown frontmatter uses plugin-scoped agent ids', () => {
+    const commandsDir = path.join(opencodeDir, 'commands');
+
+    for (const entry of fs.readdirSync(commandsDir)) {
+      const body = fs.readFileSync(path.join(commandsDir, entry), 'utf8');
+      const match = body.match(/^agent:\s*(.+)$/m);
+
+      if (!match) {
+        continue;
+      }
+
+      assert.ok(
+        match[1].startsWith('everything-claude-code:'),
+        `Expected plugin-scoped agent id in ${entry}, got: ${match[1]}`
+      );
+    }
+  })
+)
+  passed++;
+else failed++;
+
 console.log(`\nPassed: ${passed}`);
 console.log(`Failed: ${failed}`);
 process.exit(failed > 0 ? 1 : 0);

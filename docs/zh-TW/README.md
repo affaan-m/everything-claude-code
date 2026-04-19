@@ -11,9 +11,9 @@
 
 <div align="center">
 
-**Language / 语言 / 語言**
+**Language / 语言 / 語言 / Dil**
 
-[**English**](../../README.md) | [简体中文](../../README.zh-CN.md) | [繁體中文](README.md) | [日本語](../../docs/ja-JP/README.md) | [한국어](../ko-KR/README.md)
+[**English**](../../README.md) | [Português (Brasil)](../pt-BR/README.md) | [简体中文](../../README.zh-CN.md) | [繁體中文](README.md) | [日本語](../ja-JP/README.md) | [한국어](../ko-KR/README.md) | [Türkçe](../tr/README.md)
 
 </div>
 
@@ -67,10 +67,10 @@
 
 ```bash
 # 新增市集
-/plugin marketplace add affaan-m/everything-claude-code
+/plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # 安裝外掛程式
-/plugin install everything-claude-code@everything-claude-code
+/plugin install everything-claude-code
 ```
 
 ### 第二步：安裝規則（必需）
@@ -89,7 +89,7 @@ cp -r everything-claude-code/rules/* ~/.claude/rules/
 
 ```bash
 # 嘗試一個指令（外掛安裝使用命名空間形式）
-/everything-claude-code:plan "新增使用者認證"
+/ecc:plan "新增使用者認證"
 
 # 手動安裝（選項2）使用簡短形式：
 # /plan "新增使用者認證"
@@ -267,10 +267,10 @@ everything-claude-code/
 
 ```bash
 # 將此儲存庫新增為市集
-/plugin marketplace add affaan-m/everything-claude-code
+/plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # 安裝外掛程式
-/plugin install everything-claude-code@everything-claude-code
+/plugin install everything-claude-code
 ```
 
 或直接新增到您的 `~/.claude/settings.json`：
@@ -278,7 +278,7 @@ everything-claude-code/
 ```json
 {
   "extraKnownMarketplaces": {
-    "everything-claude-code": {
+    "ecc": {
       "source": {
         "source": "github",
         "repo": "affaan-m/everything-claude-code"
@@ -318,7 +318,9 @@ cp -r everything-claude-code/skills/* ~/.claude/skills/
 
 #### 將鉤子新增到 settings.json
 
-將 `hooks/hooks.json` 中的鉤子複製到您的 `~/.claude/settings.json`。
+僅在手動安裝時，才將 `hooks/hooks.json` 中的鉤子複製到您的 `~/.claude/settings.json`。
+
+如果您是透過 `/plugin install` 安裝 ECC，請不要再把這些鉤子複製到 `settings.json`。Claude Code v2.1+ 會自動載入外掛中的 `hooks/hooks.json`，重複註冊會導致重複執行以及 `${CLAUDE_PLUGIN_ROOT}` 無法解析。
 
 #### 設定 MCP
 

@@ -1,6 +1,6 @@
 ---
 description: Analyze and improve test coverage
-agent: tdd-guide
+agent: everything-claude-code:tdd-guide
 subtask: true
 ---
 

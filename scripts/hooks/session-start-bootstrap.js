@@ -30,6 +30,18 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
+const CURRENT_PLUGIN_SLUG = 'ecc';
+const LEGACY_PLUGIN_SLUG = 'everything-claude-code';
+const KNOWN_PLUGIN_PATHS = [
+  [CURRENT_PLUGIN_SLUG],
+  [`${CURRENT_PLUGIN_SLUG}@${CURRENT_PLUGIN_SLUG}`],
+  ['marketplace', CURRENT_PLUGIN_SLUG],
+  [LEGACY_PLUGIN_SLUG],
+  [`${LEGACY_PLUGIN_SLUG}@${LEGACY_PLUGIN_SLUG}`],
+  ['marketplace', LEGACY_PLUGIN_SLUG],
+];
+const CACHE_PLUGIN_SLUGS = [CURRENT_PLUGIN_SLUG, LEGACY_PLUGIN_SLUG];
+
 // Read the raw JSON event from stdin
 const raw = fs.readFileSync(0, 'utf8');
 
@@ -52,8 +64,8 @@ function hasRunnerRoot(candidate) {
  * Resolves the ECC plugin root using the following priority order:
  *   1. CLAUDE_PLUGIN_ROOT environment variable
  *   2. ~/.claude (direct install)
- *   3. Several well-known plugin sub-paths under ~/.claude/plugins/
- *   4. Versioned cache directories under ~/.claude/plugins/cache/everything-claude-code/
+ *   3. Several well-known plugin sub-paths under ~/.claude/plugins/ (current + legacy)
+ *   4. Versioned cache directories under ~/.claude/plugins/cache/{ecc,everything-claude-code}/
  *   5. Falls back to ~/.claude if nothing else matches
  *
  * @returns {string}
@@ -71,11 +83,9 @@ function resolvePluginRoot() {
     return claudeDir;
   }
 
-  const knownPaths = [
-    path.join(claudeDir, 'plugins', 'everything-claude-code'),
-    path.join(claudeDir, 'plugins', 'everything-claude-code@everything-claude-code'),
-    path.join(claudeDir, 'plugins', 'marketplace', 'everything-claude-code'),
-  ];
+  const knownPaths = KNOWN_PLUGIN_PATHS.map((segments) =>
+    path.join(claudeDir, 'plugins', ...segments)
+  );
 
   for (const candidate of knownPaths) {
     if (hasRunnerRoot(candidate)) {
@@ -83,16 +93,18 @@ function resolvePluginRoot() {
     }
   }
 
-  // Walk versioned cache: ~/.claude/plugins/cache/everything-claude-code/<org>/<version>/
+  // Walk versioned cache: ~/.claude/plugins/cache/{ecc,everything-claude-code}/<org>/<version>/
   try {
-    const cacheBase = path.join(claudeDir, 'plugins', 'cache', 'everything-claude-code');
-    for (const org of fs.readdirSync(cacheBase, { withFileTypes: true })) {
-      if (!org.isDirectory()) continue;
-      for (const version of fs.readdirSync(path.join(cacheBase, org.name), { withFileTypes: true })) {
-        if (!version.isDirectory()) continue;
-        const candidate = path.join(cacheBase, org.name, version.name);
-        if (hasRunnerRoot(candidate)) {
-          return candidate;
+    for (const slug of CACHE_PLUGIN_SLUGS) {
+      const cacheBase = path.join(claudeDir, 'plugins', 'cache', slug);
+      for (const org of fs.readdirSync(cacheBase, { withFileTypes: true })) {
+        if (!org.isDirectory()) continue;
+        for (const version of fs.readdirSync(path.join(cacheBase, org.name), { withFileTypes: true })) {
+          if (!version.isDirectory()) continue;
+          const candidate = path.join(cacheBase, org.name, version.name);
+          if (hasRunnerRoot(candidate)) {
+            return candidate;
+          }
         }
       }
     }

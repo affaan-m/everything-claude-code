@@ -1,6 +1,6 @@
 ---
 description: List registered projects and instinct counts
-agent: build
+agent: everything-claude-code:build
 ---
 
 # Projects Command

@@ -33,7 +33,6 @@
         "cursor",
         "antigravity",
         "codex",
-        "opencode",
         "codebuddy"
       ],
       "dependencies": [],
@@ -125,6 +124,7 @@
         "skills/django-tdd",
         "skills/django-verification",
         "skills/dotnet-patterns",
+        "skills/frontend-design",
         "skills/frontend-patterns",
         "skills/frontend-slides",
         "skills/golang-patterns",
@@ -197,17 +197,21 @@
     {
       "id": "workflow-quality",
       "kind": "skills",
-      "description": "Evaluation, TDD, verification, learning, and compaction skills.",
+      "description": "Evaluation, TDD, verification, compaction, and learning skills, including the legacy continuous-learning v1 path.",
       "paths": [
+        "skills/agent-sort",
+        "skills/agent-introspection-debugging",
         "skills/ai-regression-testing",
         "skills/configure-ecc",
+        "skills/code-tour",
         "skills/continuous-learning",
         "skills/continuous-learning-v2",
+        "skills/council",
         "skills/e2e-testing",
         "skills/eval-harness",
+        "skills/hookify-rules",
         "skills/iterative-retrieval",
         "skills/plankton-code-quality",
-        "skills/project-guidelines-example",
         "skills/skill-stocktake",
         "skills/strategic-compact",
         "skills/tdd-workflow",
@@ -233,12 +237,19 @@
       "kind": "skills",
       "description": "Security review and security-focused framework guidance.",
       "paths": [
+        "skills/defi-amm-security",
         "skills/django-security",
+        "skills/healthcare-phi-compliance",
+        "skills/hipaa-compliance",
         "skills/laravel-security",
+        "skills/llm-trading-agent-security",
+        "skills/nodejs-keccak256",
         "skills/perl-security",
         "skills/security-review",
         "skills/security-scan",
+        "skills/security-bounty-hunter",
         "skills/springboot-security",
+        "skills/evm-token-decimals",
         "the-security-guide.md"
       ],
       "targets": [
@@ -263,7 +274,8 @@
       "paths": [
         "skills/claude-api",
         "skills/deep-research",
-        "skills/exa-search"
+        "skills/exa-search",
+        "skills/research-ops"
       ],
       "targets": [
         "claude",
@@ -291,7 +303,9 @@
         "skills/investor-materials",
         "skills/investor-outreach",
         "skills/lead-intelligence",
+        "skills/product-capability",
         "skills/social-graph-ranker",
+        "skills/seo",
         "skills/market-research"
       ],
       "targets": [
@@ -314,11 +328,22 @@
       "kind": "skills",
       "description": "Connected-app operator workflows for setup audits, billing operations, program tracking, Google Workspace, and network optimization.",
       "paths": [
+        "skills/automation-audit-ops",
+        "skills/api-connector-builder",
         "skills/connections-optimizer",
         "skills/customer-billing-ops",
+        "skills/dashboard-builder",
+        "skills/ecc-tools-cost-audit",
+        "skills/email-ops",
+        "skills/finance-billing-ops",
+        "skills/github-ops",
         "skills/google-workspace-ops",
         "skills/jira-integration",
+        "skills/knowledge-ops",
+        "skills/messages-ops",
         "skills/project-flow-ops",
+        "skills/terminal-ops",
+        "skills/unified-notifications-ops",
         "skills/workspace-surface-audit"
       ],
       "targets": [

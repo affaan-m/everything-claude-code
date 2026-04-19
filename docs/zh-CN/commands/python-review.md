@@ -314,6 +314,6 @@ result = "".join(str(item) for item in items)
 | 海象运算符 (`:=`) | 3.8+ |
 | 仅限位置参数 | 3.8+ |
 | Match 语句 | 3.10+ |
-| 类型联合 (\`x | None\`) | 3.10+ |
+| 类型联合 (`x \| None`) | 3.10+ |
 
 确保你的项目 `pyproject.toml` 或 `setup.py` 指定了正确的最低 Python 版本。

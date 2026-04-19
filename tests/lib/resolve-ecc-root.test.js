@@ -13,6 +13,9 @@ const assert = require('assert');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const CURRENT_PACKAGE_VERSION = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', '..', 'package.json'), 'utf8')
+).version;
 
 const { resolveEccRoot, INLINE_RESOLVE } = require('../../scripts/lib/resolve-ecc-root');
 
@@ -47,10 +50,10 @@ function setupLegacyPluginInstall(homeDir, segments) {
   fs.writeFileSync(path.join(scriptDir, 'utils.js'), '// stub');
   return legacyDir;
 }
-function setupPluginCache(homeDir, orgName, version) {
+function setupPluginCache(homeDir, pluginSlug, orgName, version) {
   const cacheDir = path.join(
     homeDir, '.claude', 'plugins', 'cache',
-    'everything-claude-code', orgName, version
+    pluginSlug, orgName, version
   );
   const scriptDir = path.join(cacheDir, 'scripts', 'lib');
   fs.mkdirSync(scriptDir, { recursive: true });
@@ -111,6 +114,28 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (test('finds current plugin install at ~/.claude/plugins/ecc', () => {
+    const homeDir = createTempDir();
+    try {
+      const expected = setupLegacyPluginInstall(homeDir, ['ecc']);
+      const result = resolveEccRoot({ envRoot: '', homeDir });
+      assert.strictEqual(result, expected);
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
+  if (test('finds current plugin install at ~/.claude/plugins/ecc@ecc', () => {
+    const homeDir = createTempDir();
+    try {
+      const expected = setupLegacyPluginInstall(homeDir, ['ecc@ecc']);
+      const result = resolveEccRoot({ envRoot: '', homeDir });
+      assert.strictEqual(result, expected);
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
   if (test('finds exact legacy plugin install at ~/.claude/plugins/everything-claude-code', () => {
     const homeDir = createTempDir();
     try {
@@ -133,6 +158,17 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (test('finds marketplace current plugin install at ~/.claude/plugins/marketplace/ecc', () => {
+    const homeDir = createTempDir();
+    try {
+      const expected = setupLegacyPluginInstall(homeDir, ['marketplace', 'ecc']);
+      const result = resolveEccRoot({ envRoot: '', homeDir });
+      assert.strictEqual(result, expected);
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
   if (test('finds marketplace legacy plugin install at ~/.claude/plugins/marketplace/everything-claude-code', () => {
     const homeDir = createTempDir();
     try {
@@ -147,8 +183,8 @@ function runTests() {
   if (test('prefers exact legacy plugin install over plugin cache', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupLegacyPluginInstall(homeDir, ['marketplace', 'everything-claude-code']);
-      setupPluginCache(homeDir, 'everything-claude-code', '1.8.0');
+      const expected = setupLegacyPluginInstall(homeDir, ['marketplace', 'ecc']);
+      setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected);
     } finally {
@@ -160,7 +196,7 @@ function runTests() {
   if (test('discovers plugin root from cache directory', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupPluginCache(homeDir, 'everything-claude-code', '1.8.0');
+      const expected = setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected);
     } finally {
@@ -172,7 +208,7 @@ function runTests() {
     const homeDir = createTempDir();
     try {
       const claudeDir = setupStandardInstall(homeDir);
-      setupPluginCache(homeDir, 'everything-claude-code', '1.8.0');
+      setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, claudeDir,
         'Standard install should take precedence over plugin cache');
@@ -184,13 +220,13 @@ function runTests() {
   if (test('handles multiple versions in plugin cache', () => {
     const homeDir = createTempDir();
     try {
-      setupPluginCache(homeDir, 'everything-claude-code', '1.7.0');
-      const expected = setupPluginCache(homeDir, 'everything-claude-code', '1.8.0');
+      setupPluginCache(homeDir, 'everything-claude-code', 'legacy-org', '1.7.0');
+      const expected = setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       // Should find one of them (either is valid)
       assert.ok(
         result === expected ||
-        result === path.join(homeDir, '.claude', 'plugins', 'cache', 'everything-claude-code', 'everything-claude-code', '1.7.0'),
+        result === path.join(homeDir, '.claude', 'plugins', 'cache', 'everything-claude-code', 'legacy-org', '1.7.0'),
         'Should resolve to a valid plugin cache directory'
       );
     } finally {
@@ -262,7 +298,7 @@ function runTests() {
   if (test('INLINE_RESOLVE discovers exact legacy plugin root when env var is unset', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupLegacyPluginInstall(homeDir, ['marketplace', 'everything-claude-code']);
+      const expected = setupLegacyPluginInstall(homeDir, ['marketplace', 'ecc']);
       const { execFileSync } = require('child_process');
       const result = execFileSync('node', [
         '-e', `console.log(${INLINE_RESOLVE})`,
@@ -278,7 +314,7 @@ function runTests() {
   if (test('INLINE_RESOLVE discovers plugin cache when env var is unset', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupPluginCache(homeDir, 'everything-claude-code', '1.9.0');
+      const expected = setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const { execFileSync } = require('child_process');
       const result = execFileSync('node', [
         '-e', `console.log(${INLINE_RESOLVE})`,

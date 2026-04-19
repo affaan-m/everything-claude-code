@@ -1,6 +1,6 @@
 ---
 description: Rust code review for ownership, safety, and idiomatic patterns
-agent: rust-reviewer
+agent: everything-claude-code:rust-reviewer
 subtask: true
 ---
 

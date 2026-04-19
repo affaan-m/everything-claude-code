@@ -74,8 +74,18 @@ function runTests() {
     const components = listInstallComponents();
     assert.ok(components.some(component => component.id === 'lang:typescript'),
       'Should include lang:typescript');
+    assert.ok(components.some(component => component.id === 'lang:c'),
+      'Should include lang:c');
     assert.ok(components.some(component => component.id === 'capability:security'),
       'Should include capability:security');
+  })) passed++; else failed++;
+
+  if (test('labels continuous-learning as a legacy v1 install surface', () => {
+    const components = listInstallComponents({ family: 'skill' });
+    const component = components.find(entry => entry.id === 'skill:continuous-learning');
+    assert.ok(component, 'Should include skill:continuous-learning');
+    assert.match(component.description, /legacy/i, 'Should label continuous-learning as legacy');
+    assert.match(component.description, /continuous-learning-v2/, 'Should point new installs to continuous-learning-v2');
   })) passed++; else failed++;
 
   if (test('lists supported legacy compatibility languages', () => {
@@ -87,6 +97,7 @@ function runTests() {
     assert.ok(languages.includes('kotlin'));
     assert.ok(languages.includes('rust'));
     assert.ok(languages.includes('cpp'));
+    assert.ok(languages.includes('c'));
     assert.ok(languages.includes('csharp'));
   })) passed++; else failed++;
 
@@ -105,10 +116,19 @@ function runTests() {
     assert.ok(plan.operations.length > 0, 'Should include scaffold operations');
     assert.ok(
       plan.operations.some(operation => (
-        operation.sourceRelativePath === '.cursor'
-        && operation.strategy === 'sync-root-children'
+        operation.sourceRelativePath === '.cursor/hooks.json'
+        && operation.destinationPath === path.join(projectRoot, '.cursor', 'hooks.json')
+        && operation.strategy === 'preserve-relative-path'
       )),
-      'Should flatten the native cursor root'
+      'Should preserve non-rule Cursor platform files'
+    );
+    assert.ok(
+      plan.operations.some(operation => (
+        operation.sourceRelativePath === '.cursor/rules/common-agents.md'
+        && operation.destinationPath === path.join(projectRoot, '.cursor', 'rules', 'common-agents.mdc')
+        && operation.strategy === 'flatten-copy'
+      )),
+      'Should produce Cursor .mdc rules while preferring native Cursor platform copies over duplicate rules-core files'
     );
   })) passed++; else failed++;
 
@@ -181,6 +201,17 @@ function runTests() {
     assert.ok(selection.moduleIds.includes('rules-core'));
     assert.ok(selection.moduleIds.includes('framework-language'),
       'cpp should resolve to framework-language module');
+  })) passed++; else failed++;
+
+  if (test('resolves c legacy compatibility into framework-language module', () => {
+    const selection = resolveLegacyCompatibilitySelection({
+      target: 'cursor',
+      legacyLanguages: ['c'],
+    });
+
+    assert.ok(selection.moduleIds.includes('rules-core'));
+    assert.ok(selection.moduleIds.includes('framework-language'),
+      'c should resolve to framework-language module');
   })) passed++; else failed++;
 
   if (test('resolves csharp legacy compatibility into framework-language module', () => {

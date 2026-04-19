@@ -1,6 +1,6 @@
 # Working Context
 
-Last updated: 2026-04-02
+Last updated: 2026-04-08
 
 ## Purpose
 
@@ -9,8 +9,11 @@ Public ECC plugin repo for agents, skills, commands, hooks, rules, install surfa
 ## Current Truth
 
 - Default branch: `main`
-- Immediate blocker addressed: CI lockfile drift and hook validation breakage fixed in `a273c62`
-- Local full suite status after fix: `1723/1723` passing
+- Public release surface is aligned at `v1.10.0`
+- Public catalog truth is `47` agents, `79` commands, and `181` skills
+- Public plugin slug is now `ecc`; legacy `everything-claude-code` install paths remain supported for compatibility
+- Release discussion: `#1272`
+- ECC 2.0 exists in-tree and builds, but it is still alpha rather than GA
 - Main active operational work:
   - keep default branch green
   - continue issue-driven fixes from `main` now that the public PR backlog is at zero
@@ -24,12 +27,16 @@ Public ECC plugin repo for agents, skills, commands, hooks, rules, install surfa
 
 ## Active Queues
 
-- PR backlog: currently cleared on the public queue; new work should land through direct mainline fixes or fresh narrowly scoped PRs
+- PR backlog: reduced but active; keep direct-porting only safe ECC-native changes and close overlap, stale generators, and unaudited external-runtime lanes
+- Upstream branch backlog still needs selective mining and cleanup:
+  - `origin/feat/hermes-generated-ops-skills` still has three unique commits, but only reusable ECC-native skills should be salvaged from it
+  - multiple `origin/ecc-tools/*` automation branches are stale and should be pruned after confirming they carry no unique value
 - Product:
   - selective install cleanup
   - control plane primitives
   - operator surface
   - self-improving skills
+  - keep `agent.yaml` export parity with the shipped `commands/` and `skills/` directories so modern install surfaces do not silently lose command registration
 - Skill quality:
   - rewrite content-facing skills to use source-backed voice modeling
   - remove generic LLM rhetoric, canned CTA patterns, and forced platform stereotypes
@@ -84,6 +91,13 @@ Keep this file detailed for only the current sprint, blockers, and next actions.
 
 ## Latest Execution Notes
 
+- 2026-04-05: Continued `#1213` overlap cleanup by narrowing `coding-standards` into the baseline cross-project conventions layer instead of deleting it. The skill now explicitly points detailed React/UI guidance to `frontend-patterns`, backend/API structure to `backend-patterns` / `api-design`, and keeps only reusable naming, readability, immutability, and code-quality expectations.
+- 2026-04-05: Added a packaging regression guard for the OpenCode release path after `#1287` showed the published `v1.10.0` artifact was still stale. `tests/scripts/build-opencode.test.js` now asserts the `npm pack --dry-run` tarball includes `.opencode/dist/index.js` plus compiled plugin/tool entrypoints, so future releases cannot silently omit the built OpenCode payload.
+- 2026-04-05: Landed `skills/agent-introspection-debugging` for `#829` as an ECC-native self-debugging framework. It is intentionally guidance-first rather than fake runtime automation: capture failure state, classify the pattern, apply the smallest contained recovery action, then emit a structured introspection report and hand off to `verification-loop` / `continuous-learning-v2` when appropriate.
+- 2026-04-05: Fixed the `main` npm CI break after the latest direct ports. `package-lock.json` had drifted behind `package.json` on the `globals` devDependency (`^17.1.0` vs `^17.4.0`), which caused all npm-based GitHub Actions jobs to fail at `npm ci`. Refreshed the lockfile only, verified `npm ci --ignore-scripts`, and kept the mixed-lock workspace otherwise untouched.
+- 2026-04-05: Direct-ported the useful discoverability part of `#1221` without duplicating a second healthcare compliance system. Added `skills/hipaa-compliance/SKILL.md` as a thin HIPAA-specific entrypoint that points into the canonical `healthcare-phi-compliance` / `healthcare-reviewer` lane, and wired both healthcare privacy skills into the `security` install module for selective installs.
+- 2026-04-05: Direct-ported the audited blockchain/web3 security lane from `#1222` into `main` as four self-contained skills: `defi-amm-security`, `evm-token-decimals`, `llm-trading-agent-security`, and `nodejs-keccak256`. These are now part of the `security` install module instead of living as an unmerged fork PR.
+- 2026-04-05: Finished the useful salvage pass from `#1203` directly on `main`. `skills/security-bounty-hunter`, `skills/api-connector-builder`, and `skills/dashboard-builder` are now in-tree as ECC-native rewrites instead of the thinner original community drafts. The original PR should be treated as superseded rather than merged.
 - 2026-04-02: `ECC-Tools/main` shipped `9566637` (`fix: prefer commit lookup over git ref resolution`). The PR-analysis fire is now fixed in the app repo by preferring explicit commit resolution before `git.getRef`, with regression coverage for pull refs and plain branch refs. Mirrored public tracking issue `#1184` in this repo was closed as resolved upstream.
 - 2026-04-02: Direct-ported the clean native-support core of `#1043` into `main`: `agents/csharp-reviewer.md`, `skills/dotnet-patterns/SKILL.md`, and `skills/csharp-testing/SKILL.md`. This fills the gap between existing C# rule/docs mentions and actual shipped C# review/testing guidance.
 - 2026-04-02: Direct-ported the clean native-support core of `#1055` into `main`: `agents/dart-build-resolver.md`, `commands/flutter-build.md`, `commands/flutter-review.md`, `commands/flutter-test.md`, `rules/dart/*`, and `skills/dart-flutter-patterns/SKILL.md`. The skill paths were wired into the current `framework-language` module instead of replaying the older PR's separate `flutter-dart` module layout.
@@ -129,3 +143,37 @@ Keep this file detailed for only the current sprint, blockers, and next actions.
 - 2026-04-02: Fixed `#1141` on `main` in `16e9b17`. The observer lifecycle is now session-aware instead of purely detached: `SessionStart` writes a project-scoped lease, `SessionEnd` removes that lease and stops the observer when the final lease disappears, `observe.sh` records project activity, and `observer-loop.sh` now exits on idle when no leases remain. Targeted validation passed with `bash -n`, `node tests/hooks/observer-memory.test.js`, `node tests/integration/hooks.test.js`, `node scripts/ci/validate-hooks.js hooks/hooks.json`, and `node scripts/ci/check-unicode-safety.js`.
 - 2026-04-02: Fixed the remaining Windows-only hook regression behind `#1070` by making `scripts/lib/utils.js#getHomeDir()` honor explicit `HOME` / `USERPROFILE` overrides before falling back to `os.homedir()`. This restores test-isolated observer state paths for hook integration runs on Windows. Added regression coverage in `tests/lib/utils.test.js`. Targeted validation passed with `node tests/lib/utils.test.js`, `node tests/integration/hooks.test.js`, `node tests/hooks/observer-memory.test.js`, and `node scripts/ci/check-unicode-safety.js`.
 - 2026-04-02: Direct-ported NestJS support for `#1022` into `main` as `skills/nestjs-patterns/SKILL.md` and wired it into the `framework-language` install module. Synced the repo catalog afterward (`38` agents, `72` commands, `156` skills) and updated the docs so NestJS is no longer listed as an unfilled framework gap.
+- 2026-04-05: Shipped `846ffb7` (`chore: ship v1.10.0 release surface refresh`). This updated README/plugin metadata/package versions, synced the explicit plugin agent inventory, bumped stale star/fork/contributor counts, created `docs/releases/1.10.0/*`, tagged and released `v1.10.0`, and posted the announcement discussion at `#1272`.
+- 2026-04-05: Salvaged the reusable Hermes-branch operator skills in `6eba30f` without replaying the full branch. Added `skills/github-ops`, `skills/knowledge-ops`, and `skills/hookify-rules`, wired them into install modules, and re-synced the repo to `159` skills. `knowledge-ops` was explicitly adapted to the current workspace model: live code in cloned repos, active truth in GitHub/Linear, broader non-code context in the KB/archive layers.
+- 2026-04-05: Fixed the remaining OpenCode npm-publish gap in `db6d52e`. The root package now builds `.opencode/dist` during `prepack`, includes the compiled OpenCode plugin assets in the published tarball, and carries a dedicated regression test (`tests/scripts/build-opencode.test.js`) so the package no longer ships only raw TypeScript source for that surface.
+- 2026-04-05: Added `skills/council`, direct-ported the safe `code-tour` lane from `#1193`, and re-synced the repo to `162` skills. `code-tour` stays self-contained and only produces `.tours/*.tour` artifacts with real file/line anchors; no external runtime or extension install is assumed inside the skill.
+- 2026-04-05: Closed the latest auto-generated ECC bundle PR wave (`#1275`-`#1281`) after deploying `ECC-Tools/main` fix `f615905`, which now blocks repo-level issue-comment `/analyze` requests from opening repeated bundle PRs while still allowing PR-thread retry analysis to run against immutable head SHAs.
+- 2026-04-05: Filled the SEO gap by direct-porting `agents/seo-specialist.md` and `skills/seo/SKILL.md` into `main`, then wiring `skills/seo` into `business-content`. This resolves the stale `team-builder` reference to an SEO specialist and brings the public catalog to `39` agents and `163` skills without merging the stale PR wholesale.
+- 2026-04-05: Salvaged the useful common-rule deltas from `#1214` directly into `rules/common/coding-style.md` and `rules/common/testing.md` (KISS/DRY/YAGNI reminders, naming conventions, code-smell guidance, and AAA-style test guidance), then closed the original mixed deletion PR. The broad skill removals in that PR were intentionally not replayed.
+- 2026-04-05: Fixed the stale-row bug in `.github/workflows/monthly-metrics.yml` with `bf5961e`. The workflow now refreshes the current month row in issue `#1087` instead of early-returning when the month already exists, and the dispatched run updated the April snapshot to the current star/fork/release counts.
+- 2026-04-05: Recovered the useful cost-control workflow from the divergent Hermes branch as a small ECC-native operator skill instead of replaying the branch. `skills/ecc-tools-cost-audit/SKILL.md` is now wired into `operator-workflows` and focused on webhook -> queue -> worker tracing, burn containment, quota bypass, premium-model leakage, and retry fanout in the sibling `ECC-Tools` repo.
+- 2026-04-05: Added `skills/council/SKILL.md` in `753da37` as an ECC-native four-voice decision workflow. The useful protocol from PR `#1254` was retained, but the shadow `~/.claude/notes` write path was explicitly removed in favor of `knowledge-ops`, `/save-session`, or direct GitHub/Linear updates when a decision delta matters.
+- 2026-04-05: Direct-ported the safe `globals` bump from PR `#1243` into `main` as part of the council lane and closed the PR as superseded.
+- 2026-04-05: Closed PR `#1232` after full audit. The proposed `skill-scout` workflow overlaps current `search-first`, `/skill-create`, and `skill-stocktake`; if a dedicated marketplace-discovery layer returns later it should be rebuilt on top of the current install/catalog model rather than landing as a parallel discovery path.
+- 2026-04-05: Ported the safe localized README switcher fixes from PR `#1209` directly into `main` rather than merging the docs PR wholesale. The navigation now consistently includes `Português (Brasil)` and `Türkçe` across the localized README switchers, while newer localized body copy stays intact.
+- 2026-04-05: Removed the stale InsAIts shipped surface from `main`. ECC no longer ships the external Python MCP entry, opt-in hook wiring, wrapper/monitor scripts, or current docs mentions for `insa-its`; changelog history remains, but the live product surface is now fully ECC-native again.
+- 2026-04-05: Salvaged the reusable Hermes-generated operator workflow lane without replaying the whole branch. Added six ECC-native top-level skills instead of the old nested `skills/hermes-generated/*` tree: `automation-audit-ops`, `email-ops`, `finance-billing-ops`, `messages-ops`, `research-ops`, and `terminal-ops`. `research-ops` now wraps the existing research stack, while the other five extend `operator-workflows` without introducing any external runtime assumptions.
+- 2026-04-05: Added `skills/product-capability` plus `docs/examples/product-capability-template.md` as the canonical PRD-to-SRS lane for issue `#1185`. This is the ECC-native capability-contract step between vague product intent and implementation, and it lives in `business-content` rather than spawning a parallel planning subsystem.
+- 2026-04-05: Tightened `product-lens` so it no longer overlaps the new capability-contract lane. `product-lens` now explicitly owns product diagnosis / brief validation, while `product-capability` owns implementation-ready capability plans and SRS-style constraints.
+- 2026-04-05: Continued `#1213` cleanup by removing stale references to the deleted `project-guidelines-example` skill from exported inventory/docs and marking `continuous-learning` v1 as a supported legacy path with an explicit handoff to `continuous-learning-v2`.
+- 2026-04-05: Removed the last orphaned localized `project-guidelines-example` docs from `docs/ko-KR` and `docs/zh-CN`. The template now lives only in `docs/examples/project-guidelines-template.md`, which matches the current repo surface and avoids shipping translated docs for a deleted skill.
+- 2026-04-05: Added `docs/HERMES-OPENCLAW-MIGRATION.md` as the current public migration guide for issue `#1051`. It reframes Hermes/OpenClaw as source systems to distill from, not the final runtime, and maps scheduler, dispatch, memory, skill, and service layers onto the ECC-native surfaces and ECC 2.0 backlog that already exist.
+- 2026-04-05: Landed `skills/agent-sort` and the legacy `/agent-sort` shim from issue `#916` as an ECC-native selective-install workflow. It classifies agents, skills, commands, rules, hooks, and extras into DAILY vs LIBRARY buckets using concrete repo evidence, then hands off installation changes to `configure-ecc` instead of inventing a parallel installer. Catalog truth is now `39` agents, `73` commands, and `179` skills.
+- 2026-04-05: Direct-ported the safe README-only `#1285` slice into `main` instead of merging the branch: added a small `Community Projects` section so downstream teams can link public work built on ECC without changing install, security, or runtime surfaces. Rejected `#1286` at review because it adds an external third-party GitHub Action (`hashgraph-online/codex-plugin-scanner`) that does not meet the current supply-chain policy.
+- 2026-04-05: Re-audited `origin/feat/hermes-generated-ops-skills` by full diff. The branch is still not mergeable: it deletes current ECC-native surfaces, regresses packaging/install metadata, and removes newer `main` content. Continued the selective-salvage policy instead of branch merge.
+- 2026-04-05: Selectively salvaged `skills/frontend-design` from the Hermes branch as a self-contained ECC-native skill, mirrored it into `.agents`, wired it into `framework-language`, and re-synced the catalog to `180` skills after validation. The branch itself remains reference-only until every remaining unique file is either ported intentionally or rejected.
+- 2026-04-05: Selectively salvaged the `hookify` command bundle plus the supporting `conversation-analyzer` agent from the Hermes branch. `hookify-rules` already existed as the canonical skill; this pass restores the user-facing command surfaces (`/hookify`, `/hookify-help`, `/hookify-list`, `/hookify-configure`) without pulling in any external runtime or branch-wide regressions. Catalog truth is now `40` agents, `77` commands, and `180` skills.
+- 2026-04-05: Selectively salvaged the self-contained review/development bundle from the Hermes branch: `review-pr`, `feature-dev`, and the supporting analyzer/architecture agents (`code-architect`, `code-explorer`, `code-simplifier`, `comment-analyzer`, `pr-test-analyzer`, `silent-failure-hunter`, `type-design-analyzer`). This adds ECC-native command surfaces around PR review and feature planning without merging the branch's broader regressions. Catalog truth is now `47` agents, `79` commands, and `180` skills.
+- 2026-04-05: Ported `docs/HERMES-SETUP.md` from the Hermes branch as a sanitized operator-topology document for the migration lane. This is docs-only support for `#1051`, not a runtime change and not a sign that the Hermes branch itself is mergeable.
+- 2026-04-05: Finished the useful salvage pass over `origin/feat/hermes-generated-ops-skills`. The remaining unique files were explicitly rejected:
+  - duplicate git helper commands (`commit`, `commit-push-pr`, `clean-gone`) overlap current checkpoint / publish flows
+  - `scripts/hooks/security-reminder*` adds a new Python-backed hook path not justified by current runtime policy
+  - `skills/oura-health` and `skills/pmx-guidelines` are user- or project-specific, not canonical ECC surfaces
+  - `docs/releases/2.0.0-preview/*` is premature collateral and should be rebuilt from current product truth later
+  - nested `skills/hermes-generated/*` is superseded by the top-level ECC-native operator skills already ported to `main`
+- 2026-04-08: Fixed the command-export regression reported in `#1327` by restoring a canonical `commands:` section in `agent.yaml` and adding `tests/ci/agent-yaml-surface.test.js` to enforce exact parity between the YAML export surface and the real `commands/` directory. Verified with the full repo test sweep: `1764/1764` passing.

@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 
 from scripts.grader import ComplianceResult, StepResult, grade
-from scripts.parser import parse_spec, parse_trace
+from scripts.parser import ComplianceSpec, Detector, ObservationEvent, Step, parse_spec, parse_trace
 
 FIXTURES = Path(__file__).parent.parent / "fixtures"
 
@@ -135,3 +135,63 @@ class TestGradeEdgeCases:
     def test_spec_id_in_result(self, mock_cls, tdd_spec, compliant_trace) -> None:
         result = grade(tdd_spec, compliant_trace)
         assert result.spec_id == "tdd-workflow"
+
+    @patch("scripts.grader.classify_events")
+    def test_after_step_can_reference_later_declared_spec_step(self, mock_cls) -> None:
+        spec = ComplianceSpec(
+            id="out-of-order-after-step",
+            name="Out of order after_step",
+            source_rule="rules/common/testing.md",
+            version="1.0",
+            steps=(
+                Step(
+                    id="step_a",
+                    description="Occurs after step_b even though it is declared first",
+                    required=True,
+                    detector=Detector(
+                        description="Event A",
+                        after_step="step_b",
+                    ),
+                ),
+                Step(
+                    id="step_b",
+                    description="Reference step declared later",
+                    required=True,
+                    detector=Detector(
+                        description="Event B",
+                    ),
+                ),
+            ),
+            threshold_promote_to_hook=0.5,
+        )
+        trace = [
+            ObservationEvent(
+                timestamp="2026-03-20T10:00:01Z",
+                event="tool_complete",
+                tool="Write",
+                session="sess-order",
+                input='{"file_path":"src/b.py"}',
+                output="step b",
+            ),
+            ObservationEvent(
+                timestamp="2026-03-20T10:00:02Z",
+                event="tool_complete",
+                tool="Write",
+                session="sess-order",
+                input='{"file_path":"src/a.py"}',
+                output="step a",
+            ),
+        ]
+        mock_cls.return_value = {
+            "step_a": [1],
+            "step_b": [0],
+        }
+
+        result = grade(spec, trace)
+
+        step_a = next(step for step in result.steps if step.step_id == "step_a")
+        step_b = next(step for step in result.steps if step.step_id == "step_b")
+        assert step_a.detected is True
+        assert step_a.failure_reason is None
+        assert step_b.detected is True
+        assert result.compliance_rate == 1.0

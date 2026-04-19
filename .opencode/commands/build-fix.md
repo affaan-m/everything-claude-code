@@ -1,6 +1,6 @@
 ---
 description: Fix build and TypeScript errors with minimal changes
-agent: build-error-resolver
+agent: everything-claude-code:build-error-resolver
 subtask: true
 ---
 
