@@ -39,9 +39,16 @@ function getSessionStartMode(rawInput) {
     const hookName = typeof input?.hookName === 'string' ? input.hookName : '';
     if (hookName === 'SessionStart:resume') return 'resume';
     if (hookName === 'SessionStart:startup') return 'startup';
+
+    const hookEventName = typeof input?.hook_event_name === 'string' ? input.hook_event_name : '';
+    const source = typeof input?.source === 'string' ? input.source.toLowerCase() : '';
+    if (hookEventName === 'SessionStart') {
+      if (source === 'resume') return 'resume';
+      if (source === 'startup') return 'startup';
+      if (source === 'clear' || source === 'compact') return SESSION_START_MODE_SKIP;
+    }
   } catch (error) {
-    const truncatedRaw = raw.length > 200 ? `${raw.slice(0, 200)}…` : raw;
-    log(`[SessionStart] Invalid stdin payload (${error.message}); skipping previous session summary injection. Raw: ${truncatedRaw}`);
+    log(`[SessionStart] Invalid stdin payload (${error.message}); skipping previous session summary injection. Length: ${raw.length}`);
     return SESSION_START_MODE_SKIP;
   }
 

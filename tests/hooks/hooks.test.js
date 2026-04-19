@@ -101,6 +101,9 @@ function getSessionStartAdditionalContext(stdout) {
 const RESUME_SESSION_SENTINEL = 'RESUME_CONTEXT_SHOULD_NOT_BE_INJECTED';
 const INVALID_STDIN_SENTINEL = 'INVALID_STDIN_CONTEXT_SHOULD_NOT_BE_INJECTED';
 const CROSS_WORKTREE_PROJECT_SENTINEL = 'CROSS_WORKTREE_PROJECT_CONTEXT_SHOULD_NOT_BE_INJECTED';
+const INVALID_STDIN_LOG_SENTINEL = 'SENSITIVE_STDIN_SHOULD_NOT_BE_LOGGED';
+const CLI_RESUME_SESSION_SENTINEL = 'CLI_RESUME_CONTEXT_SHOULD_NOT_BE_INJECTED';
+const CLI_CLEAR_SESSION_SENTINEL = 'CLI_CLEAR_CONTEXT_SHOULD_NOT_BE_INJECTED';
 
 function buildSessionStartFixture(content, options = {}) {
   const title = options.title || '# Session';
@@ -558,6 +561,74 @@ async function runTests() {
   else failed++;
 
   if (
+    await asyncTest('does not inject previous session summary on CLI SessionStart resume payload', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-cli-resume-start-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-11-cliresume123-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        buildSessionStartFixture(CLI_RESUME_SESSION_SENTINEL, { title: '# CLI Resume Session' })
+      );
+
+      try {
+        const result = await runScript(
+          path.join(scriptsDir, 'session-start.js'),
+          JSON.stringify({ hook_event_name: 'SessionStart', source: 'resume' }),
+          {
+            HOME: isoHome,
+            USERPROFILE: isoHome
+          }
+        );
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(!additionalContext.includes('Previous session summary'), 'Should skip previous session summary on CLI resume');
+        assert.ok(!additionalContext.includes(CLI_RESUME_SESSION_SENTINEL), 'Should not inject CLI resume session content');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('does not inject previous session summary on CLI SessionStart clear payload', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-cli-clear-start-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-11-cliclear123-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        buildSessionStartFixture(CLI_CLEAR_SESSION_SENTINEL, { title: '# CLI Clear Session' })
+      );
+
+      try {
+        const result = await runScript(
+          path.join(scriptsDir, 'session-start.js'),
+          JSON.stringify({ hook_event_name: 'SessionStart', source: 'clear' }),
+          {
+            HOME: isoHome,
+            USERPROFILE: isoHome
+          }
+        );
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(!additionalContext.includes('Previous session summary'), 'Should skip previous session summary on CLI clear');
+        assert.ok(!additionalContext.includes(CLI_CLEAR_SESSION_SENTINEL), 'Should not inject CLI clear session content');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
     await asyncTest('skips previous session summary injection on malformed non-empty SessionStart stdin', async () => {
       const isoHome = path.join(os.tmpdir(), `ecc-invalid-start-${Date.now()}`);
       const sessionsDir = getCanonicalSessionsDir(isoHome);
@@ -571,7 +642,8 @@ async function runTests() {
       );
 
       try {
-        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '{"hookName":', {
+        const malformedPayload = `{"hookName":"SessionStart:resume","secret":"${INVALID_STDIN_LOG_SENTINEL}"`;
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), malformedPayload, {
           HOME: isoHome,
           USERPROFILE: isoHome
         });
@@ -580,6 +652,8 @@ async function runTests() {
         assert.ok(!additionalContext.includes('Previous session summary'), 'Should skip previous session summary on malformed stdin');
         assert.ok(!additionalContext.includes(INVALID_STDIN_SENTINEL), 'Should not inject malformed-stdin session content');
         assert.ok(result.stderr.includes('Invalid stdin payload'), `Should log invalid stdin payload, stderr: ${result.stderr}`);
+        assert.ok(result.stderr.includes(`Length: ${malformedPayload.length}`), `Should log malformed stdin length, stderr: ${result.stderr}`);
+        assert.ok(!result.stderr.includes(INVALID_STDIN_LOG_SENTINEL), 'Should not log raw malformed stdin contents');
       } finally {
         fs.rmSync(isoHome, { recursive: true, force: true });
       }
