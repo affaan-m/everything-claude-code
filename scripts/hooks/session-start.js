@@ -29,6 +29,7 @@ const path = require('path');
 const fs = require('fs');
 
 const SESSION_START_MODE_SKIP = 'skip';
+const SESSION_START_MODE_INVALID = 'invalid';
 
 function getSessionStartMode(rawInput) {
   const raw = typeof rawInput === 'string' ? rawInput.trim() : '';
@@ -39,20 +40,23 @@ function getSessionStartMode(rawInput) {
     const hookName = typeof input?.hookName === 'string' ? input.hookName : '';
     if (hookName === 'SessionStart:resume') return 'resume';
     if (hookName === 'SessionStart:startup') return 'startup';
+    if (hookName === 'SessionStart:clear') return 'clear';
+    if (hookName === 'SessionStart:compact') return 'compact';
 
     const hookEventName = typeof input?.hook_event_name === 'string' ? input.hook_event_name : '';
     const source = typeof input?.source === 'string' ? input.source.toLowerCase() : '';
     if (hookEventName === 'SessionStart') {
       if (source === 'resume') return 'resume';
       if (source === 'startup') return 'startup';
-      if (source === 'clear' || source === 'compact') return SESSION_START_MODE_SKIP;
+      if (source === 'clear') return 'clear';
+      if (source === 'compact') return 'compact';
     }
+
+    return SESSION_START_MODE_SKIP;
   } catch (error) {
     log(`[SessionStart] Invalid stdin payload (${error.message}); skipping previous session summary injection. Length: ${raw.length}`);
-    return SESSION_START_MODE_SKIP;
+    return SESSION_START_MODE_INVALID;
   }
-
-  return null;
 }
 const INSTINCT_CONFIDENCE_THRESHOLD = 0.7;
 const MAX_INJECTED_INSTINCTS = 6;
@@ -400,8 +404,12 @@ async function main() {
   if (recentSessions.length > 0) {
     log(`[SessionStart] Found ${recentSessions.length} recent session(s)`);
 
-    if (sessionStartMode === 'resume' || sessionStartMode === SESSION_START_MODE_SKIP) {
-      log(`[SessionStart] Skipping previous session summary injection on ${sessionStartMode === 'resume' ? 'resume' : 'invalid stdin payload'}`);
+    if (sessionStartMode && sessionStartMode !== 'startup') {
+      if (sessionStartMode === SESSION_START_MODE_INVALID) {
+        log('[SessionStart] Skipping previous session summary injection for invalid stdin payload');
+      } else {
+        log(`[SessionStart] Skipping previous session summary injection for non-startup SessionStart mode: ${sessionStartMode}`);
+      }
     } else {
       // Prefer a session that matches the current working directory or project.
       // Session files contain **Project:** and **Worktree:** header fields written

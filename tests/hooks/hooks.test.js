@@ -104,11 +104,13 @@ const CROSS_WORKTREE_PROJECT_SENTINEL = 'CROSS_WORKTREE_PROJECT_CONTEXT_SHOULD_N
 const INVALID_STDIN_LOG_SENTINEL = 'SENSITIVE_STDIN_SHOULD_NOT_BE_LOGGED';
 const CLI_RESUME_SESSION_SENTINEL = 'CLI_RESUME_CONTEXT_SHOULD_NOT_BE_INJECTED';
 const CLI_CLEAR_SESSION_SENTINEL = 'CLI_CLEAR_CONTEXT_SHOULD_NOT_BE_INJECTED';
+const DESKTOP_CLEAR_SESSION_SENTINEL = 'DESKTOP_CLEAR_CONTEXT_SHOULD_NOT_BE_INJECTED';
+const PROJECT_ONLY_SESSION_SENTINEL = 'PROJECT_ONLY_CONTEXT_SHOULD_BE_INJECTED';
 
 function buildSessionStartFixture(content, options = {}) {
-  const title = options.title || '# Session';
-  const project = options.project || path.basename(process.cwd());
-  const worktree = options.worktree || process.cwd();
+  const title = options.title ?? '# Session';
+  const project = options.project ?? path.basename(process.cwd());
+  const worktree = options.worktree ?? process.cwd();
   return [title, `**Project:** ${project}`, `**Worktree:** ${worktree}`, '', content, ''].join('\n');
 }
 
@@ -620,6 +622,40 @@ async function runTests() {
         const additionalContext = getSessionStartAdditionalContext(result.stdout);
         assert.ok(!additionalContext.includes('Previous session summary'), 'Should skip previous session summary on CLI clear');
         assert.ok(!additionalContext.includes(CLI_CLEAR_SESSION_SENTINEL), 'Should not inject CLI clear session content');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('does not inject previous session summary on Desktop SessionStart clear payload', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-desktop-clear-start-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-11-desktopclear123-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        buildSessionStartFixture(DESKTOP_CLEAR_SESSION_SENTINEL, { title: '# Desktop Clear Session' })
+      );
+
+      try {
+        const result = await runScript(
+          path.join(scriptsDir, 'session-start.js'),
+          JSON.stringify({ hookName: 'SessionStart:clear' }),
+          {
+            HOME: isoHome,
+            USERPROFILE: isoHome
+          }
+        );
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(!additionalContext.includes('Previous session summary'), 'Should skip previous session summary on Desktop clear');
+        assert.ok(!additionalContext.includes(DESKTOP_CLEAR_SESSION_SENTINEL), 'Should not inject Desktop clear session content');
       } finally {
         fs.rmSync(isoHome, { recursive: true, force: true });
       }
@@ -4626,6 +4662,44 @@ async function runTests() {
         assert.ok(
           !additionalContext.includes(CROSS_WORKTREE_PROJECT_SENTINEL),
           'Should not inject same-project content from a different recorded worktree'
+        );
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('uses project-name fallback when session has no recorded worktree metadata', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-start-project-only-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-12-project-only-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        [
+          '# Project Only Session',
+          `**Project:** ${path.basename(process.cwd())}`,
+          '',
+          PROJECT_ONLY_SESSION_SENTINEL,
+          ''
+        ].join('\n')
+      );
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome
+        });
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(
+          additionalContext.includes(PROJECT_ONLY_SESSION_SENTINEL),
+          'Should inject same-project content when recorded worktree metadata is blank'
         );
       } finally {
         fs.rmSync(isoHome, { recursive: true, force: true });
