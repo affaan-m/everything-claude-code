@@ -79,13 +79,15 @@ const endpoint = BuildProfile.API_ENDPOINT
 
 // GOOD: use HUKS to encrypt/decrypt data without exposing key material
 import { huks } from '@kit.UniversalKeystoreKit'
-async function decryptWithKeystore(alias: string, cipherData: Uint8Array): Promise<Uint8Array> {
+async function decryptWithKeystore(alias: string, nonce: Uint8Array, aad: Uint8Array, cipherData: Uint8Array): Promise<Uint8Array> {
   const options: huks.HuksOptions = {
     properties: [
       { tag: huks.HuksTag.HUKS_TAG_ALGORITHM, value: huks.HuksKeyAlg.HUKS_ALG_AES },
       { tag: huks.HuksTag.HUKS_TAG_PURPOSE, value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_DECRYPT },
       { tag: huks.HuksTag.HUKS_TAG_BLOCK_MODE, value: huks.HuksCipherMode.HUKS_MODE_GCM },
-      { tag: huks.HuksTag.HUKS_TAG_PADDING, value: huks.HuksKeyPadding.HUKS_PADDING_NONE }
+      { tag: huks.HuksTag.HUKS_TAG_PADDING, value: huks.HuksKeyPadding.HUKS_PADDING_NONE },
+      { tag: huks.HuksTag.HUKS_TAG_NONCE, value: nonce },
+      { tag: huks.HuksTag.HUKS_TAG_ASSOCIATED_DATA, value: aad }
     ],
     inData: cipherData
   }
