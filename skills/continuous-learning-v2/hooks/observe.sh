@@ -27,18 +27,45 @@ if [ -z "$INPUT_JSON" ]; then
   exit 0
 fi
 
+_is_windows_app_installer_stub() {
+  # Windows 10/11 ships an "App Execution Alias" stub at
+  #   %LOCALAPPDATA%\Microsoft\WindowsApps\python.exe
+  #   %LOCALAPPDATA%\Microsoft\WindowsApps\python3.exe
+  # Both are symlinks to AppInstallerPythonRedirector.exe which, when Python
+  # is not installed from the Store, neither launches Python nor honors "-c".
+  # Calls to it hang or print a bare "Python " line, silently breaking every
+  # JSON-parsing step in this hook. Detect and skip such stubs here.
+  local _candidate="$1"
+  [ -z "$_candidate" ] && return 1
+  local _resolved
+  _resolved="$(command -v "$_candidate" 2>/dev/null || true)"
+  [ -z "$_resolved" ] && return 1
+  case "$_resolved" in
+    *AppInstallerPythonRedirector.exe|*AppInstallerPythonRedirector.EXE) return 0 ;;
+  esac
+  # Also resolve one level of symlink on POSIX-like shells (Git Bash, WSL).
+  if command -v readlink >/dev/null 2>&1; then
+    local _target
+    _target="$(readlink -f "$_resolved" 2>/dev/null || readlink "$_resolved" 2>/dev/null || true)"
+    case "$_target" in
+      *AppInstallerPythonRedirector.exe|*AppInstallerPythonRedirector.EXE) return 0 ;;
+    esac
+  fi
+  return 1
+}
+
 resolve_python_cmd() {
   if [ -n "${CLV2_PYTHON_CMD:-}" ] && command -v "$CLV2_PYTHON_CMD" >/dev/null 2>&1; then
     printf '%s\n' "$CLV2_PYTHON_CMD"
     return 0
   fi
 
-  if command -v python3 >/dev/null 2>&1; then
+  if command -v python3 >/dev/null 2>&1 && ! _is_windows_app_installer_stub python3; then
     printf '%s\n' python3
     return 0
   fi
 
-  if command -v python >/dev/null 2>&1; then
+  if command -v python >/dev/null 2>&1 && ! _is_windows_app_installer_stub python; then
     printf '%s\n' python
     return 0
   fi
@@ -51,6 +78,11 @@ if [ -z "$PYTHON_CMD" ]; then
   echo "[observe] No python interpreter found, skipping observation" >&2
   exit 0
 fi
+
+# Propagate our stub-aware selection so detect-project.sh (which is sourced
+# below) does not re-resolve and silently fall back to the App Installer stub.
+# detect-project.sh honors an already-set CLV2_PYTHON_CMD.
+export CLV2_PYTHON_CMD="${CLV2_PYTHON_CMD:-$PYTHON_CMD}"
 
 # ─────────────────────────────────────────────
 # Extract cwd from stdin for project detection
