@@ -359,11 +359,11 @@ async def list_items(
 # app/tests/conftest.py
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.main import create_app
-from app.db.session import get_db_session
+from app.dependencies import get_db
 
 
 @pytest.fixture
@@ -375,13 +375,14 @@ async def client():
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
+    test_session_maker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
-    async def override_get_db():
-        async with engine.begin() as conn:
-            yield conn
+    async def override_get_db() -> AsyncSession:
+        async with test_session_maker() as session:
+            yield session
 
     app = create_app()
-    app.dependency_overrides[get_db_session] = override_get_db
+    app.dependency_overrides[get_db] = override_get_db
 
     with TestClient(app) as test_client:
         yield test_client
