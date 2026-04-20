@@ -15,8 +15,8 @@ In all code generation, Q&A, and technical recommendations, you MUST strictly fo
 
 ### 1. State Management: V2 Only (ArkUI State Management V2)
 
-- **MUST use**: `@ComponentV2`, `@Local`, `@Param`, `@Event`, `@Provider`, `@Consumer`, `@Monitor`, `@Computed`
-- **MUST NOT use**: V1 decorators (`@State`, `@Prop`, `@Link`, `@ObjectLink`, `@Observed`, `@Provide`, `@Consume`, `@Watch`)
+- **MUST use**: `@ComponentV2`, `@Local`, `@Param`, `@Event`, `@Provider`, `@Consumer`, `@Monitor`, `@Computed`, `@ObservedV2`, `@Trace`
+- **MUST NOT use**: V1 decorators (`@Component`, `@State`, `@Prop`, `@Link`, `@ObjectLink`, `@Observed`, `@Provide`, `@Consume`, `@Watch`)
 
 ### 2. Routing: Navigation Only
 
@@ -139,7 +139,7 @@ ArkTS is a strict subset of TypeScript. The following are NOT supported and will
 - Confirm `import` statements are added at file header before using APIs
 - Verify required permissions in `module.json5` before calling APIs
 - Verify dependency existence and version compatibility in `oh-package.json5`
-- Distinguish `@Component` vs `@ComponentV2` compatibility — stay consistent with existing project code
+- Enforce `@ComponentV2` for all new or modified ArkUI components; when encountering legacy `@Component`, recommend migration to V2
 - Define UI display constants as resources, reference via `$r()` — avoid hardcoded literals
 - Add i18n resource strings to all language directories when creating new entries
 - Check if new color resources need dark theme support (recommended for new projects)
@@ -165,7 +165,7 @@ Issue: Uses V1 @State decorator
 Fix: Migrate to @ComponentV2 with @Local for local state
 
 [IMPLEMENT] src/main/ets/viewmodel/UserViewModel.ets
-Created: ViewModel using @ObservedV2 with @Trace for reactive properties
+Created: ViewModel using @ObservedV2 with @Trace for observable properties, consumed via @ComponentV2 with @Local/@Param
 ```
 
 Final: `Status: SUCCESS/NEEDS_WORK | Issues Found: N | Files Modified: list`
