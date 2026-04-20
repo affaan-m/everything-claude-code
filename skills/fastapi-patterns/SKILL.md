@@ -948,7 +948,7 @@ def custom_openapi(app: FastAPI):
 
 
 app = create_app()
-custom_openapi(app)
+app.openapi = lambda: custom_openapi(app)
 ```
 
 ### Response Documentation
