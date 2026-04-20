@@ -225,6 +225,17 @@ function runTests() {
       'csharp should resolve to framework-language module');
   })) passed++; else failed++;
 
+  if (test('resolves fsharp legacy compatibility into framework-language module', () => {
+    const selection = resolveLegacyCompatibilitySelection({
+      target: 'cursor',
+      legacyLanguages: ['fsharp'],
+    });
+
+    assert.ok(selection.moduleIds.includes('rules-core'));
+    assert.ok(selection.moduleIds.includes('framework-language'),
+      'fsharp should resolve to framework-language module');
+  })) passed++; else failed++;
+
   if (test('keeps antigravity legacy compatibility selections target-safe', () => {
     const selection = resolveLegacyCompatibilitySelection({
       target: 'antigravity',
