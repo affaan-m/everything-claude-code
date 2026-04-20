@@ -50,7 +50,7 @@ class User(BaseModel):
 
 ```python
 # PASS: Dependency injection
-@router.get("/users/{id}")
+@router.get("/users/{user_id}")
 async def get_user(
     user_id: str,
     db: AsyncSession = Depends(get_db),
