@@ -1124,17 +1124,18 @@ import redis.asyncio as redis
 from fastapi import Request
 from functools import wraps
 import json
+from typing import Any, Optional
 
 
 class RedisCache:
     def __init__(self, redis_url: str):
         self.redis = redis.from_url(redis_url)
 
-    async def get(self, key: str) -> Optional[any]:
+    async def get(self, key: str) -> Optional[Any]:
         data = await self.redis.get(key)
         return json.loads(data) if data else None
 
-    async def set(self, key: str, value: any, expire: int = 300):
+    async def set(self, key: str, value: Any, expire: int = 300):
         await self.redis.setex(key, expire, json.dumps(value))
 
     async def delete(self, key: str):
@@ -1148,7 +1149,7 @@ def cached(expire: int = 300):
     """Decorator for caching endpoint responses."""
     def decorator(func):
         @wraps(func)
-        async def wrapper(*args, request: Request = None, **kwargs):
+        async def wrapper(*args, request: Request, **kwargs):
             cache_key = f"{func.__name__}:{request.url.path}:{request.query_params}"
             
             cached_data = await cache.get(cache_key)
