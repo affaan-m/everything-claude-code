@@ -371,6 +371,7 @@ everything-claude-code/
 |   |-- rust-reviewer.md     # Rust code review
 |   |-- rust-build-resolver.md # Rust build error resolution
 |   |-- pytorch-build-resolver.md # PyTorch/CUDA training errors
+|   |-- harmonyos-app-resolver.md # HarmonyOS/ArkTS app development (NEW)
 |
 |-- skills/           # Workflow definitions and domain knowledge
 |   |-- coding-standards/           # Language best practices
@@ -489,6 +490,7 @@ everything-claude-code/
 |   |-- golang/              # Go specific
 |   |-- swift/               # Swift specific
 |   |-- php/                 # PHP specific (NEW)
+|   |-- arkts/              # HarmonyOS / ArkTS specific (NEW)
 |
 |-- hooks/            # Trigger-based automations
 |   |-- README.md                 # Hook documentation, recipes, and customization guide
@@ -526,6 +528,7 @@ everything-claude-code/
 |   |-- django-api-CLAUDE.md      # Real-world Django REST API (DRF + Celery)
 |   |-- laravel-api-CLAUDE.md     # Real-world Laravel API (PostgreSQL + Redis) (NEW)
 |   |-- rust-api-CLAUDE.md        # Real-world Rust API (Axum + SQLx + PostgreSQL) (NEW)
+|   |-- harmonyos-app-CLAUDE.md   # HarmonyOS app (ArkTS + ArkUI + V2 State) (NEW)
 |
 |-- mcp-configs/      # MCP server configurations
 |   |-- mcp-servers.json    # GitHub, Supabase, Vercel, Railway, etc.
@@ -834,6 +837,7 @@ rules/
   golang/          # Go specific patterns and tools
   swift/           # Swift specific patterns and tools
   php/             # PHP specific patterns and tools
+  arkts/           # HarmonyOS / ArkTS patterns and constraints
 ```
 
 See [`rules/README.md`](rules/README.md) for installation and structure details.
@@ -859,6 +863,7 @@ Not sure where to start? Use this quick reference. Skills are the canonical work
 | Review Python code | `/python-review` | python-reviewer |
 | Review TypeScript/JavaScript code | *(invoke `typescript-reviewer` directly)* | typescript-reviewer |
 | Audit database queries | *(auto-delegated)* | database-reviewer |
+| Develop HarmonyOS apps | *(invoke `harmonyos-app-resolver` directly)* | harmonyos-app-resolver |
 
 ### Common Workflows
 
@@ -1019,7 +1024,7 @@ Please contribute! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ### Ideas for Contributions
 
-- Language-specific skills (Rust, C#, Kotlin, Java) — Go, Python, Perl, Swift, and TypeScript already included
+- Language-specific skills (Rust, C#, Kotlin, Java) — Go, Python, Perl, Swift, TypeScript, and HarmonyOS/ArkTS already included
 - Framework-specific configs (Rails, FastAPI) — Django, NestJS, Spring Boot, and Laravel already included
 - DevOps agents (Kubernetes, Terraform, AWS, Docker)
 - Testing strategies (different frameworks, visual regression)
