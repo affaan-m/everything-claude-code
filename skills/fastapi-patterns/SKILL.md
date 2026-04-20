@@ -497,10 +497,9 @@ class CRUDBase(Generic[T]):
         db_obj: T,
         obj_in: dict,
     ) -> T:
-        obj_in_dict = obj_in.model_dump() if hasattr(obj_in, "model_dump") else obj_in
+        obj_in_dict = obj_in.model_dump(exclude_unset=True) if hasattr(obj_in, "model_dump") else obj_in
         for field, value in obj_in_dict.items():
-            if value is not None:
-                setattr(db_obj, field, value)
+            setattr(db_obj, field, value)
         db.add(db_obj)
         await db.flush()
         await db.refresh(db_obj)
