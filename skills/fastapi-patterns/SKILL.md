@@ -378,7 +378,14 @@ async def client():
 
     async def override_get_db():
         async with AsyncSession(engine) as session:
-            yield session
+            try:
+                yield session
+                await session.commit()
+            except Exception:
+                await session.rollback()
+                raise
+            finally:
+                await session.close()
     app = create_app()
     app.dependency_overrides[get_db_session] = override_get_db
 
