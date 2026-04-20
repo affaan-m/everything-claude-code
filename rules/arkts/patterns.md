@@ -100,7 +100,7 @@ struct MainPage {
   }
 
   @Builder
-  routerMap(name: string, param: object) {
+  routerMap(name: string, param: ESObject) {
     if (name === 'detail') {
       DetailPage()
     } else if (name === 'settings') {
@@ -167,15 +167,17 @@ feature/
 @ComponentV2
 struct AnimatedCard {
   @Local isExpanded: boolean = false
+  @Local cardScale: number = 0.8
 
   build() {
     Column() {
       // Content
     }
-    .width(this.isExpanded ? '100%' : '80%')
+    .scale({ x: this.cardScale, y: this.cardScale })
     .animation({ duration: 300, curve: Curve.EaseInOut })
     .onClick(() => {
       this.isExpanded = !this.isExpanded
+      this.cardScale = this.isExpanded ? 1.0 : 0.8
     })
   }
 }

@@ -103,7 +103,7 @@ ArkTS is a strict, statically-typed subset of TypeScript. Violating these constr
 - Prefer double quotes for strings
 - Semicolons at end of statements
 - Never use `var` — prefer `const`, then `let`
-- No `any` types — all methods, parameters, return values must have complete type annotations
+- All methods, parameters, return values must have complete type annotations
 
 ## File Organization
 

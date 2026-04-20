@@ -73,10 +73,23 @@ async function checkAndRequestPermission(permission: Permissions): Promise<boole
 // BAD: hardcoded secret
 const API_KEY: string = 'sk-xxxxxxxxxxxx'
 
-// GOOD: from secure storage or build config
-import { preferences } from '@kit.ArkData'
-const prefs = await preferences.getPreferences(getContext(), 'config')
-const apiKey = await prefs.get('api_key', '') as string
+// GOOD: from build profile config (non-sensitive)
+import { BuildProfile } from 'BuildProfile'
+const endpoint = BuildProfile.API_ENDPOINT
+
+// GOOD: from secure keystore (sensitive credentials)
+import { huks } from '@kit.UniversalKeystoreKit'
+async function getSecureKey(alias: string): Promise<string> {
+  const options: huks.HuksOptions = {
+    properties: [
+      { tag: huks.HuksTag.HUKS_TAG_ALGORITHM, value: huks.HuksKeyAlg.HUKS_ALG_AES },
+      { tag: huks.HuksTag.HUKS_TAG_PURPOSE, value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_DECRYPT }
+    ],
+    inData: new Uint8Array(0)
+  }
+  const result = await huks.exportKeyItem(alias, options)
+  return new TextDecoder().decode(result.outData)
+}
 ```
 
 ## Input Validation

@@ -202,7 +202,7 @@
       ]
     },
     {
-      "id": "lang:harmonyos",
+      "id": "lang:arkts",
       "family": "language",
       "description": "HarmonyOS, ArkTS, and ArkUI development guidance including V2 state management, Navigation routing, and HarmonyOS API best practices.",
       "modules": [

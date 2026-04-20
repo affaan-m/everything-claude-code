@@ -47,8 +47,8 @@ Run hvigor build to check for ArkTS compilation errors:
 {
   "type": "PostToolUse",
   "matcher": {
-    "tool": "Edit",
-    "filePath": "**/*.ets"
+    "tool": ["Edit", "Write"],
+    "filePath": ["**/*.ets", "**/*.ts"]
   },
   "hooks": [
     {
@@ -111,7 +111,7 @@ Warn when code contains V1 state management decorators:
 {
   "type": "PreToolUse",
   "matcher": {
-    "tool": "Write",
+    "tool": ["Write", "Edit"],
     "filePath": "**/*.ets"
   },
   "hooks": [

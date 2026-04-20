@@ -110,9 +110,10 @@ Follow the standard TDD cycle adapted for HarmonyOS:
 
 ## Test Coverage Requirements
 
-- Minimum 80% coverage for ViewModel logic
-- Unit tests for all utility functions
-- UI tests for critical user flows (login, navigation, data submission)
+- Minimum 80% coverage for all critical application code (ViewModels, services, utilities)
+- **Unit tests**: All utility functions, ViewModel logic, data models
+- **Integration tests**: API calls, database operations, cross-module interactions
+- **E2E / UI tests**: Critical user flows (login, navigation, data submission)
 - Test edge cases: empty data, network errors, permission denials
 
 ## Testing Best Practices
