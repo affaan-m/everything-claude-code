@@ -761,7 +761,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.dependencies import get_db
 from app.schemas.token import Token
 from app.core.security import verify_password, create_access_token
-from app.db.session import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.crud import user_crud
 
 router = APIRouter()
