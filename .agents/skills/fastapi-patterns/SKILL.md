@@ -377,8 +377,8 @@ async def client():
     )
 
     async def override_get_db():
-        async with engine.begin() as conn:
-            yield conn
+        async with AsyncSession(engine) as session:
+            yield session
 
     app = create_app()
     app.dependency_overrides[get_db_session] = override_get_db
