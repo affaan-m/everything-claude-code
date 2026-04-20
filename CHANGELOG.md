@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- `scripts/ci/validate-agents.js`: detects duplicate top-level YAML frontmatter keys in agent files (e.g. two `model:` lines silently collapsing to the last value) and fails validation with the duplicated key names.
+- `SECURITY.md`: new operational sections — Secrets Handling (including a user-scope `~/.claude/settings.json` audit recipe for macOS/Linux/Windows), Local MCP Ports (how to verify the listener on bundled HTTP MCP endpoints such as `devfleet`), and a Triage section explaining Claude Code's ephemeral client-side `<system-reminder>` blocks (to avoid misclassifying them as prompt injections).
+
+### Fixed
+
+- `agents/a11y-architect.md`: removed stray duplicate `model:` line so YAML parsers no longer silently override `sonnet` with a later `opus` entry.
+
 ## 1.10.0 - 2026-04-05
 
 ### Highlights
