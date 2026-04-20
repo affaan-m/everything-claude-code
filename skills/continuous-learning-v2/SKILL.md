@@ -142,7 +142,7 @@ Add to your `~/.claude/settings.json`.
 
 **If installed as a plugin** (recommended):
 
-no hook configuration is needed, the plugin auto-registers it.
+No hook configuration is needed; the plugin auto-registers the observation hooks.
 
 **If installed manually** to `~/.claude/skills`:
 
