@@ -142,26 +142,7 @@ Add to your `~/.claude/settings.json`.
 
 **If installed as a plugin** (recommended):
 
-```json
-{
-  "hooks": {
-    "PreToolUse": [{
-      "matcher": "*",
-      "hooks": [{
-        "type": "command",
-        "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh"
-      }]
-    }],
-    "PostToolUse": [{
-      "matcher": "*",
-      "hooks": [{
-        "type": "command",
-        "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh"
-      }]
-    }]
-  }
-}
-```
+no hook configuration is needed, the plugin auto-registers it.
 
 **If installed manually** to `~/.claude/skills`:
 
