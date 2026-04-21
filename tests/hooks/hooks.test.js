@@ -98,6 +98,22 @@ function getSessionStartAdditionalContext(stdout) {
   return payload.hookSpecificOutput.additionalContext;
 }
 
+const RESUME_SESSION_SENTINEL = 'RESUME_CONTEXT_SHOULD_NOT_BE_INJECTED';
+const INVALID_STDIN_SENTINEL = 'INVALID_STDIN_CONTEXT_SHOULD_NOT_BE_INJECTED';
+const CROSS_WORKTREE_PROJECT_SENTINEL = 'CROSS_WORKTREE_PROJECT_CONTEXT_SHOULD_NOT_BE_INJECTED';
+const INVALID_STDIN_LOG_SENTINEL = 'SENSITIVE_STDIN_SHOULD_NOT_BE_LOGGED';
+const CLI_RESUME_SESSION_SENTINEL = 'CLI_RESUME_CONTEXT_SHOULD_NOT_BE_INJECTED';
+const CLI_CLEAR_SESSION_SENTINEL = 'CLI_CLEAR_CONTEXT_SHOULD_NOT_BE_INJECTED';
+const DESKTOP_CLEAR_SESSION_SENTINEL = 'DESKTOP_CLEAR_CONTEXT_SHOULD_NOT_BE_INJECTED';
+const PROJECT_ONLY_SESSION_SENTINEL = 'PROJECT_ONLY_CONTEXT_SHOULD_BE_INJECTED';
+
+function buildSessionStartFixture(content, options = {}) {
+  const title = options.title ?? '# Session';
+  const project = options.project ?? path.basename(process.cwd());
+  const worktree = options.worktree ?? process.cwd();
+  return [title, `**Project:** ${project}`, `**Worktree:** ${worktree}`, '', content, ''].join('\n');
+}
+
 // Test helper
 function test(name, fn) {
   try {
@@ -413,7 +429,10 @@ async function runTests() {
 
       // Create a real session file
       const sessionFile = path.join(sessionsDir, '2026-02-11-efgh5678-session.tmp');
-      fs.writeFileSync(sessionFile, '# Real Session\n\nI worked on authentication refactor.\n');
+      fs.writeFileSync(
+        sessionFile,
+        buildSessionStartFixture('I worked on authentication refactor.', { title: '# Real Session' })
+      );
 
       try {
         const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
@@ -448,8 +467,14 @@ async function runTests() {
       fs.mkdirSync(legacyDir, { recursive: true });
       fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
 
-      fs.writeFileSync(canonicalFile, '# Canonical Session\n\nUse the canonical session-data copy.\n');
-      fs.writeFileSync(legacyFile, '# Legacy Session\n\nDo not prefer the legacy duplicate.\n');
+      fs.writeFileSync(
+        canonicalFile,
+        buildSessionStartFixture('Use the canonical session-data copy.', { title: '# Canonical Session' })
+      );
+      fs.writeFileSync(
+        legacyFile,
+        buildSessionStartFixture('Do not prefer the legacy duplicate.', { title: '# Legacy Session' })
+      );
       fs.utimesSync(canonicalFile, canonicalTime, canonicalTime);
       fs.utimesSync(legacyFile, legacyTime, legacyTime);
 
@@ -480,7 +505,9 @@ async function runTests() {
       const sessionFile = path.join(sessionsDir, '2026-02-11-winansi00-session.tmp');
       fs.writeFileSync(
         sessionFile,
-        '\x1b[H\x1b[2J\x1b[3J# Real Session\n\nI worked on \x1b[1;36mWindows terminal handling\x1b[0m.\x1b[K\n'
+        buildSessionStartFixture('I worked on \x1b[1;36mWindows terminal handling\x1b[0m.\x1b[K', {
+          title: '\x1b[H\x1b[2J\x1b[3J# Real Session'
+        })
       );
 
       try {
@@ -493,6 +520,176 @@ async function runTests() {
         assert.ok(additionalContext.includes('Previous session summary'), 'Should inject real session content');
         assert.ok(additionalContext.includes('Windows terminal handling'), 'Should preserve sanitized session text');
         assert.ok(!additionalContext.includes('\x1b['), 'Should not emit ANSI escape codes');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('does not inject previous session summary on SessionStart:resume', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-resume-start-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-11-resume123-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        buildSessionStartFixture(RESUME_SESSION_SENTINEL, { title: '# Resume Session' })
+      );
+
+      try {
+        const result = await runScript(
+          path.join(scriptsDir, 'session-start.js'),
+          JSON.stringify({ hookName: 'SessionStart:resume' }),
+          {
+            HOME: isoHome,
+            USERPROFILE: isoHome
+          }
+        );
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(!additionalContext.includes('Previous session summary'), 'Should skip previous session summary on resume');
+        assert.ok(!additionalContext.includes(RESUME_SESSION_SENTINEL), 'Should not inject resume session content under another label');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('does not inject previous session summary on CLI SessionStart resume payload', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-cli-resume-start-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-11-cliresume123-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        buildSessionStartFixture(CLI_RESUME_SESSION_SENTINEL, { title: '# CLI Resume Session' })
+      );
+
+      try {
+        const result = await runScript(
+          path.join(scriptsDir, 'session-start.js'),
+          JSON.stringify({ hook_event_name: 'SessionStart', source: 'resume' }),
+          {
+            HOME: isoHome,
+            USERPROFILE: isoHome
+          }
+        );
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(!additionalContext.includes('Previous session summary'), 'Should skip previous session summary on CLI resume');
+        assert.ok(!additionalContext.includes(CLI_RESUME_SESSION_SENTINEL), 'Should not inject CLI resume session content');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('does not inject previous session summary on CLI SessionStart clear payload', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-cli-clear-start-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-11-cliclear123-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        buildSessionStartFixture(CLI_CLEAR_SESSION_SENTINEL, { title: '# CLI Clear Session' })
+      );
+
+      try {
+        const result = await runScript(
+          path.join(scriptsDir, 'session-start.js'),
+          JSON.stringify({ hook_event_name: 'SessionStart', source: 'clear' }),
+          {
+            HOME: isoHome,
+            USERPROFILE: isoHome
+          }
+        );
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(!additionalContext.includes('Previous session summary'), 'Should skip previous session summary on CLI clear');
+        assert.ok(!additionalContext.includes(CLI_CLEAR_SESSION_SENTINEL), 'Should not inject CLI clear session content');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('does not inject previous session summary on Desktop SessionStart clear payload', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-desktop-clear-start-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-11-desktopclear123-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        buildSessionStartFixture(DESKTOP_CLEAR_SESSION_SENTINEL, { title: '# Desktop Clear Session' })
+      );
+
+      try {
+        const result = await runScript(
+          path.join(scriptsDir, 'session-start.js'),
+          JSON.stringify({ hookName: 'SessionStart:clear' }),
+          {
+            HOME: isoHome,
+            USERPROFILE: isoHome
+          }
+        );
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(!additionalContext.includes('Previous session summary'), 'Should skip previous session summary on Desktop clear');
+        assert.ok(!additionalContext.includes(DESKTOP_CLEAR_SESSION_SENTINEL), 'Should not inject Desktop clear session content');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('skips previous session summary injection on malformed non-empty SessionStart stdin', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-invalid-start-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-11-invalid123-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        buildSessionStartFixture(INVALID_STDIN_SENTINEL, { title: '# Invalid Stdin Session' })
+      );
+
+      try {
+        const malformedPayload = `{"hookName":"SessionStart:resume","secret":"${INVALID_STDIN_LOG_SENTINEL}"`;
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), malformedPayload, {
+          HOME: isoHome,
+          USERPROFILE: isoHome
+        });
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(!additionalContext.includes('Previous session summary'), 'Should skip previous session summary on malformed stdin');
+        assert.ok(!additionalContext.includes(INVALID_STDIN_SENTINEL), 'Should not inject malformed-stdin session content');
+        assert.ok(result.stderr.includes('Invalid stdin payload'), `Should log invalid stdin payload, stderr: ${result.stderr}`);
+        assert.ok(result.stderr.includes(`Length: ${malformedPayload.length}`), `Should log malformed stdin length, stderr: ${result.stderr}`);
+        assert.ok(!result.stderr.includes(INVALID_STDIN_LOG_SENTINEL), 'Should not log raw malformed stdin contents');
       } finally {
         fs.rmSync(isoHome, { recursive: true, force: true });
       }
@@ -4285,13 +4482,19 @@ async function runTests() {
 
       // Create session file 6.9 days old (should be INCLUDED by maxAge:7)
       const recentFile = path.join(sessionsDir, '2026-02-06-recent69-session.tmp');
-      fs.writeFileSync(recentFile, '# Recent Session\n\nRECENT CONTENT HERE');
+      fs.writeFileSync(
+        recentFile,
+        buildSessionStartFixture('RECENT CONTENT HERE', { title: '# Recent Session' })
+      );
       const sixPointNineDaysAgo = new Date(Date.now() - 6.9 * 24 * 60 * 60 * 1000);
       fs.utimesSync(recentFile, sixPointNineDaysAgo, sixPointNineDaysAgo);
 
       // Create session file 8 days old (should be EXCLUDED by maxAge:7)
       const oldFile = path.join(sessionsDir, '2026-02-05-old8day-session.tmp');
-      fs.writeFileSync(oldFile, '# Old Session\n\nOLD CONTENT SHOULD NOT APPEAR');
+      fs.writeFileSync(
+        oldFile,
+        buildSessionStartFixture('OLD CONTENT SHOULD NOT APPEAR', { title: '# Old Session' })
+      );
       const eightDaysAgo = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000);
       fs.utimesSync(oldFile, eightDaysAgo, eightDaysAgo);
 
@@ -4362,12 +4565,18 @@ async function runTests() {
 
       // Create older session (2 days ago)
       const olderSession = path.join(sessionsDir, '2026-02-11-olderabc-session.tmp');
-      fs.writeFileSync(olderSession, '# Older Session\n\nOLDER_CONTEXT_MARKER');
+      fs.writeFileSync(
+        olderSession,
+        buildSessionStartFixture('OLDER_CONTEXT_MARKER', { title: '# Older Session' })
+      );
       fs.utimesSync(olderSession, new Date(now - 2 * 86400000), new Date(now - 2 * 86400000));
 
       // Create newer session (1 day ago)
       const newerSession = path.join(sessionsDir, '2026-02-12-newerdef-session.tmp');
-      fs.writeFileSync(newerSession, '# Newer Session\n\nNEWER_CONTEXT_MARKER');
+      fs.writeFileSync(
+        newerSession,
+        buildSessionStartFixture('NEWER_CONTEXT_MARKER', { title: '# Newer Session' })
+      );
       fs.utimesSync(newerSession, new Date(now - 1 * 86400000), new Date(now - 1 * 86400000));
 
       try {
@@ -4380,6 +4589,118 @@ async function runTests() {
         // Should inject the NEWER session, not the older one
         const additionalContext = getSessionStartAdditionalContext(result.stdout);
         assert.ok(additionalContext.includes('NEWER_CONTEXT_MARKER'), 'Should inject the newest session content');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  console.log('\nRound 55: session-start.js (no cross-project recency fallback):');
+
+  if (
+    await asyncTest('does not inject unrelated recent session when worktree and project do not match', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-start-unrelated-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-12-unrelated-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        buildSessionStartFixture('UNRELATED_CONTEXT_SHOULD_NOT_BE_INJECTED', {
+          title: '# Unrelated Session',
+          project: 'different-project',
+          worktree: '/tmp/different-project'
+        })
+      );
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome
+        });
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(
+          !additionalContext.includes('UNRELATED_CONTEXT_SHOULD_NOT_BE_INJECTED'),
+          'Should not inject unrelated session content'
+        );
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('does not use project-name fallback when session records a different worktree', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-start-cross-worktree-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-12-cross-worktree-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        buildSessionStartFixture(CROSS_WORKTREE_PROJECT_SENTINEL, {
+          title: '# Cross Worktree Project Session',
+          project: path.basename(process.cwd()),
+          worktree: '/tmp/some-other-worktree'
+        })
+      );
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome
+        });
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(
+          !additionalContext.includes(CROSS_WORKTREE_PROJECT_SENTINEL),
+          'Should not inject same-project content from a different recorded worktree'
+        );
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('uses project-name fallback when session has no recorded worktree metadata', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-start-project-only-${Date.now()}`);
+      const sessionsDir = getCanonicalSessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-12-project-only-session.tmp');
+      fs.writeFileSync(
+        sessionFile,
+        [
+          '# Project Only Session',
+          `**Project:** ${path.basename(process.cwd())}`,
+          '',
+          PROJECT_ONLY_SESSION_SENTINEL,
+          ''
+        ].join('\n')
+      );
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome
+        });
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(
+          additionalContext.includes(PROJECT_ONLY_SESSION_SENTINEL),
+          'Should inject same-project content when recorded worktree metadata is blank'
+        );
       } finally {
         fs.rmSync(isoHome, { recursive: true, force: true });
       }
