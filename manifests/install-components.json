@@ -202,6 +202,14 @@
       ]
     },
     {
+      "id": "lang:arkts",
+      "family": "language",
+      "description": "HarmonyOS, ArkTS, and ArkUI development guidance including V2 state management, Navigation routing, and HarmonyOS API best practices.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
       "id": "lang:kotlin",
       "family": "language",
       "description": "Kotlin, Ktor, Exposed, Coroutines, and Compose Multiplatform guidance. Currently resolves through the shared framework-language module.",
@@ -327,6 +335,14 @@
       "id": "agent:e2e-runner",
       "family": "agent",
       "description": "Playwright E2E testing agent.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
+      "id": "agent:harmonyos-app-resolver",
+      "family": "agent",
+      "description": "HarmonyOS application development expert agent.",
       "modules": [
         "agents-core"
       ]
