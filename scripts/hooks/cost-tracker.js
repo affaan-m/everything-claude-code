@@ -8,11 +8,8 @@
 'use strict';
 
 const path = require('path');
-const {
-  ensureDir,
-  appendFile,
-  getClaudeDir,
-} = require('../lib/utils');
+const { ensureDir, appendFile, getClaudeDir } = require('../lib/utils');
+const { estimateCost } = require('../lib/cost-estimate');
 
 const MAX_STDIN = 1024 * 1024;
 let raw = '';
@@ -20,23 +17,6 @@ let raw = '';
 function toNumber(value) {
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
-}
-
-function estimateCost(model, inputTokens, outputTokens) {
-  // Approximate per-1M-token blended rates. Conservative defaults.
-  const table = {
-    'haiku': { in: 0.8, out: 4.0 },
-    'sonnet': { in: 3.0, out: 15.0 },
-    'opus': { in: 15.0, out: 75.0 },
-  };
-
-  const normalized = String(model || '').toLowerCase();
-  let rates = table.sonnet;
-  if (normalized.includes('haiku')) rates = table.haiku;
-  if (normalized.includes('opus')) rates = table.opus;
-
-  const cost = (inputTokens / 1_000_000) * rates.in + (outputTokens / 1_000_000) * rates.out;
-  return Math.round(cost * 1e6) / 1e6;
 }
 
 process.stdin.setEncoding('utf8');
@@ -66,7 +46,7 @@ process.stdin.on('end', () => {
       model,
       input_tokens: inputTokens,
       output_tokens: outputTokens,
-      estimated_cost_usd: estimateCost(model, inputTokens, outputTokens),
+      estimated_cost_usd: estimateCost(model, inputTokens, outputTokens)
     };
 
     appendFile(path.join(metricsDir, 'costs.jsonl'), `${JSON.stringify(row)}\n`);
