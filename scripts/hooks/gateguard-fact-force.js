@@ -9,7 +9,8 @@
  * The act of investigation creates awareness that self-evaluation never did.
  *
  * Gates:
- *   - Edit/Write: list importers, affected API, verify data schemas, quote instruction
+ *   - Edit: quote instruction, list importers, list affected public API, detect conflicts (instruction wins), verify data schemas
+ *   - Write: quote instruction, name call sites, check duplicates, detect conflicts (instruction wins), verify data schemas
  *   - Bash (destructive): list targets, rollback plan, quote instruction
  *   - Bash (routine): quote current instruction (once per session)
  *
@@ -262,10 +263,11 @@ function editGateMsg(filePath) {
     '',
     `Before editing ${safe}, present these facts:`,
     '',
-    '1. List ALL files that import/require this file (use Grep)',
-    '2. List the public functions/classes affected by this change',
-    '3. If this file reads/writes data files, show field names, structure, and date format (use redacted or synthetic values, not raw production data)',
-    '4. Quote the user\'s current instruction verbatim',
+    '1. Quote the user\'s current instruction verbatim (to confirm the change is in scope)',
+    '2. List ALL files that import/require this file (use Grep)',
+    '3. List the public functions/classes affected by this change',
+    '4. If the existing code\'s patterns conflict with the user\'s instruction, state the conflict explicitly. When in conflict, the user\'s instruction takes priority.',
+    '5. If this file reads/writes data files, check one real record and verify field names, structure, and date format match your implementation (use redacted or synthetic values, not raw production data)',
     '',
     'Present the facts, then retry the same operation.'
   ].join('\n');
@@ -278,10 +280,11 @@ function writeGateMsg(filePath) {
     '',
     `Before creating ${safe}, present these facts:`,
     '',
-    '1. Name the file(s) and line(s) that will call this new file',
-    '2. Confirm no existing file serves the same purpose (use Glob)',
-    '3. If this file reads/writes data files, show field names, structure, and date format (use redacted or synthetic values, not raw production data)',
-    '4. Quote the user\'s current instruction verbatim',
+    '1. Quote the user\'s current instruction verbatim',
+    '2. Name the file(s) and line(s) that will call this new file',
+    '3. Confirm no existing file serves the same purpose (use Glob)',
+    '4. If the existing code\'s patterns conflict with the user\'s instruction, state the conflict explicitly. When in conflict, the user\'s instruction takes priority.',
+    '5. If this file reads/writes data files, check one real record and verify field names, structure, and date format match your implementation (use redacted or synthetic values, not raw production data)',
     '',
     'Present the facts, then retry the same operation.'
   ].join('\n');
