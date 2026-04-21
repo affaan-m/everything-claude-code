@@ -578,6 +578,56 @@
       "defaultInstall": false,
       "cost": "medium",
       "stability": "stable"
+    },
+    {
+      "id": "academic-writing",
+      "kind": "skills",
+      "description": "CS research paper writing helpers: sentence clarity, abstract and methods and results review, structure validation, and pre-submission checklist.",
+      "paths": [
+        "skills/abstract-methods-results-cs",
+        "skills/academic-final-review-cs",
+        "skills/paper-structure-cs",
+        "skills/sentence-clarity-cs"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode",
+        "codebuddy"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "resume-toolkit",
+      "kind": "skills",
+      "description": "Resume validation against Harvard and Kickass guidelines plus resume-to-job alignment scoring, with shared resume conventions.",
+      "paths": [
+        "skills/_shared",
+        "skills/harvard-resume-validator",
+        "skills/kickass-resume-validator",
+        "skills/resume-job-alignment"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode",
+        "codebuddy"
+      ],
+      "dependencies": [
+        "platform-configs"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
     }
   ]
 }

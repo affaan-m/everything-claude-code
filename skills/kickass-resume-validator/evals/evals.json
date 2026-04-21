@@ -1,0 +1,20 @@
+{
+  "skill_name": "kickass-resume-validator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Validate this student resume against Kickass guidelines:\n\nHeader: Priya Shah, priya@example.com, github.com/pshah, Austin TX. Single-column, one page, Helvetica 10.5pt.\nEducation: UT Austin, B.S. Computer Science, expected May 2026. GPA 3.72.\nExperience: SWE Intern, Shopify, Summer 2025.\n  - Engineered Rails service that reduced checkout p99 latency 42% (180ms → 104ms) across 8M daily orders.\n  - Shipped A/B framework adopted by 4 squads; currently running 60+ concurrent experiments.\n  - Authored 30 integration tests, lifting module coverage from 58% to 91%.\nProjects: Spotify Wrapped clone (Next.js, Postgres). 1,400 users in 2 weeks; 210 GitHub stars.\nSkills: Languages: Python, Ruby, TypeScript, Go. Frameworks: Rails, Next.js, React. Tools: Docker, GitHub Actions, Terraform. Databases: Postgres, Redis.\nIndustry Involvement: HackUT 2024 — 2nd place (240 teams). Mentored 8 freshmen through ACM-W peer program.",
+      "expected_output": "JSON with situation 'student', one_page 'yes', alignment_to_kickass near 95%+, ats_compliance 'yes', all sections 'pass', top_3_fixes containing only minor polish (or empty)."
+    },
+    {
+      "id": 2,
+      "prompt": "Validate this resume:\n\nHeader: Alex Kim, alexk@example.com. Two-column layout using tikz boxes. Three pages.\nEducation: State U, CS, 2023. GPA 3.1.\nExperience: Backend Engineer, Acme Corp, 2023-present.\n  - Responsible for backend services.\n  - Helped with the deployment pipeline.\n  - Worked on various bug fixes.\nProjects: Made some side projects.\nSkills: Problem Solving, Team Player, Communication, Hard Worker.",
+      "expected_output": "JSON with situation 'professional', one_page 'no', alignment_to_kickass low (e.g. ~25%), ats_compliance 'no' (tikz two-column), experience status 'rewrite' (weak verbs, no metrics), projects status 'rewrite' (vague), skills status 'rewrite' (generic soft skills only), education status 'flag' (GPA 3.1 below 3.5 threshold). top_3_fixes must include cutting to one page, switching to single-column layout without tikz, and rewriting all experience bullets with action verbs and metrics."
+    },
+    {
+      "id": 3,
+      "prompt": "Validate this professional resume:\n\nHeader: Sam Rivera, sam@example.com, linkedin.com/in/samrivera, Seattle WA. One page, Source Sans Pro 10.5pt, single column.\nExperience (listed first — 6-year professional):\n  Senior SWE, DataCo, 2022-present.\n    - Led migration of 14-service monolith to event-driven architecture; cut p99 API latency 63% and reduced on-call pages 48%.\n    - Mentored 3 engineers through promotion; one advanced to senior within 18 months.\n    - Drove RFC process adopted company-wide; 42 RFCs shipped in first year.\n  SWE, StartupX, 2019-2022.\n    - Built real-time analytics platform (Kafka, Flink) handling 1.2M events/sec.\n    - Reduced AWS spend 31% via rightsizing and spot-instance migration, saving $840K annually.\nEducation: U Washington, B.S. CS, 2019.\nProjects: Open-source contributor to Prometheus (8 merged PRs, 2 documentation improvements).\nSkills: Languages: Go, Rust, Python. Infra: Kubernetes, Terraform, AWS. Data: Kafka, Flink, ClickHouse.\nIndustry Involvement: Speaker, KubeCon 2024 (audience 600+); organizer, Seattle Go meetup (220 members).",
+      "expected_output": "JSON with situation 'professional', one_page 'yes', alignment_to_kickass 95%+, Experience listed first (correct for professional), all sections 'pass'. top_3_fixes should be empty or suggest only minor polish."
+    }
+  ]
+}

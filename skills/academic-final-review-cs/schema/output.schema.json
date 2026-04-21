@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ecc.tools/skills/academic-final-review-cs/output.schema.json",
+  "title": "academic-final-review-cs output",
+  "description": "JSONL: one object per line. Each object is one final-review checklist item with PASS/FAIL/WARN status.",
+  "type": "object",
+  "required": ["item", "status", "guidance"],
+  "additionalProperties": false,
+  "properties": {
+    "item": {
+      "type": "string",
+      "enum": [
+        "Has abstract",
+        "Has introduction",
+        "Has methods",
+        "Has results",
+        "Has discussion",
+        "Has conclusion",
+        "Bibliography formatted",
+        "All figures captioned",
+        "All figures cited",
+        "All tables captioned",
+        "All tables cited",
+        "No undefined terms",
+        "Consistent voice",
+        "No orphaned references",
+        "Headings consistent",
+        "Page numbers present",
+        "Abstract word count",
+        "Author info complete",
+        "Keywords present",
+        "Acknowledgments section",
+        "Appendices referenced",
+        "Code/data availability",
+        "Ethical considerations",
+        "Page count within limits",
+        "Font and margins"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "WARN"]
+    },
+    "guidance": {
+      "type": "string"
+    }
+  }
+}

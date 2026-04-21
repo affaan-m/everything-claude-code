@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ecc.tools/skills/resume-job-alignment/output.schema.json",
+  "title": "resume-job-alignment output",
+  "description": "Single JSON object scoring resume-to-job alignment and proposing targeted bullet rewrites.",
+  "type": "object",
+  "required": [
+    "job_title",
+    "resume_analyzed",
+    "overall_alignment",
+    "alignment_breakdown",
+    "key_matches",
+    "gaps",
+    "tailoring_suggestions",
+    "priority_roadmap"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "job_title": { "type": "string" },
+    "resume_analyzed": { "type": "string" },
+    "overall_alignment": { "type": "string" },
+    "alignment_breakdown": {
+      "type": "object",
+      "required": [
+        "required_qualifications",
+        "nice_to_have",
+        "technical_skills",
+        "soft_skills",
+        "domain_knowledge"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "required_qualifications": { "type": "string" },
+        "nice_to_have": { "type": "string" },
+        "technical_skills": { "type": "string" },
+        "soft_skills": { "type": "string" },
+        "domain_knowledge": { "type": "string" }
+      }
+    },
+    "key_matches": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["requirement", "your_status", "priority", "suggestion"],
+        "additionalProperties": false,
+        "properties": {
+          "requirement": { "type": "string" },
+          "your_status": { "type": "string" },
+          "priority": { "type": "string", "enum": ["high", "medium", "low"] },
+          "suggestion": { "type": "string" }
+        }
+      }
+    },
+    "tailoring_suggestions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "section",
+          "current_bullet",
+          "job_focus",
+          "suggested_rewrite",
+          "why_better"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "section": { "type": "string" },
+          "current_bullet": { "type": "string" },
+          "job_focus": { "type": "string" },
+          "suggested_rewrite": { "type": "string" },
+          "why_better": { "type": "string" }
+        }
+      }
+    },
+    "priority_roadmap": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

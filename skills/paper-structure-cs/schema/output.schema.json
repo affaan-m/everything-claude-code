@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ecc.tools/skills/paper-structure-cs/output.schema.json",
+  "title": "paper-structure-cs output",
+  "description": "JSONL: one object per line. Each object is one independent structural issue in a CS research paper.",
+  "type": "object",
+  "required": ["id", "type", "severity", "issue", "suggested_fix"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^struct_[0-9]{3,}$"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "missing_section",
+        "section_order",
+        "heading_skip",
+        "heading_level_inconsistent",
+        "toc_mismatch",
+        "missing_bibliography",
+        "citation_incomplete",
+        "orphaned_section"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["critical", "important", "minor"]
+    },
+    "issue": {
+      "type": "string",
+      "minLength": 1
+    },
+    "suggested_fix": {
+      "type": "string",
+      "minLength": 1
+    },
+    "section": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    }
+  }
+}

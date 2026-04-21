@@ -1,0 +1,20 @@
+{
+  "skill_name": "resume-job-alignment",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Align this resume with this job posting.\n\nJob: 'ML Research Engineer. Required: Python, PyTorch, empirical ML research experience, track record of publishing or open-sourcing work. Preferred: distributed training, model evaluation at scale.'\n\nResume highlights: Python/PyTorch 4 years. Published first-author paper on neural-network robustness (NeurIPS 2024). Open-sourced eval framework (900 GitHub stars, adopted by 12 research groups). Trained transformer on 8-GPU cluster for distillation project. Built benchmark harness running 40K eval examples.",
+      "expected_output": "JSON with overall_alignment 90%+, required_qualifications near 100%, strong key_matches covering Python/PyTorch/publishing/open-source, gaps few and low-priority, priority_roadmap focused on polish (e.g. surfacing the 8-GPU distributed training more prominently)."
+    },
+    {
+      "id": 2,
+      "prompt": "Align this resume with this job posting.\n\nJob: 'Senior Backend Engineer, Ads Platform. Required: Go, 5+ years backend, distributed systems at scale (1M+ QPS), SQL/NoSQL. Preferred: AdTech domain experience, Kafka, OpenTelemetry.'\n\nResume highlights: 2 years Python backend at fintech startup. Built REST API serving 50K daily requests. Used Postgres and Redis. No Go. No AdTech. No Kafka.",
+      "expected_output": "JSON with overall_alignment low (around 35-45%), required_qualifications near 30%, gaps list containing high-priority entries for Go (missing), 5+ years (only 2), and 1M+ QPS scale (current 50K/day is orders of magnitude off). priority_roadmap should honestly surface that this is a significant gap, not suggest fabrication. Tailoring suggestions should focus on transferable signals (backend fundamentals, Postgres/Redis scaling) while acknowledging the language and scale mismatch."
+    },
+    {
+      "id": 3,
+      "prompt": "Align this resume with this job posting.\n\nJob: 'Full-Stack Engineer at early-stage startup. Scrappy builder, wear multiple hats, ship features users love. Required: TypeScript, React, Node. Preferred: Next.js, Postgres, prior startup or side-project experience.'\n\nResume highlights: TypeScript/React/Node 3 years at mid-size SaaS. Shipped 8 production features. One side project: Next.js + Postgres music-discovery app, 3,200 monthly active users, grew by word-of-mouth. Zero startup experience.",
+      "expected_output": "JSON with overall_alignment near 80-85%, required_qualifications 100% (all three matched), nice_to_have covered (Next.js + Postgres side project, organic growth demonstrates scrappiness). gaps list should include 'no prior startup experience' at medium priority, with a suggestion framing the side project as the startup-mindset signal. Tailoring suggestions should reframe the side-project bullet to foreground shipping velocity and user-love signals."
+    }
+  ]
+}

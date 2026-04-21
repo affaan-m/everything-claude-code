@@ -22,6 +22,7 @@ function validateSkills() {
   let validCount = 0;
 
   for (const dir of dirs) {
+    if (dir.startsWith('_')) continue;
     const skillMd = path.join(SKILLS_DIR, dir, 'SKILL.md');
     if (!fs.existsSync(skillMd)) {
       console.error(`ERROR: ${dir}/ - Missing SKILL.md`);

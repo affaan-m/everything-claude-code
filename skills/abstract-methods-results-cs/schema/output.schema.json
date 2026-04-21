@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ecc.tools/skills/abstract-methods-results-cs/output.schema.json",
+  "title": "abstract-methods-results-cs output",
+  "description": "JSONL: one object per line. Each object is one independent issue in a paper's Abstract, Methods, or Results section.",
+  "type": "object",
+  "required": ["section", "line", "problem_type", "severity", "issue", "suggested_fix"],
+  "additionalProperties": false,
+  "properties": {
+    "section": {
+      "type": "string",
+      "enum": ["abstract", "methods", "results"]
+    },
+    "line": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "problem_type": {
+      "type": "string",
+      "enum": [
+        "vague_objective",
+        "missing_context",
+        "unsupported_claim",
+        "passive_overuse",
+        "incomplete_description",
+        "reproducibility_gap",
+        "missing_detail",
+        "undefined_terms",
+        "premature_conclusion",
+        "incomplete_data"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["critical", "important", "minor"]
+    },
+    "issue": {
+      "type": "string",
+      "minLength": 1
+    },
+    "suggested_fix": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

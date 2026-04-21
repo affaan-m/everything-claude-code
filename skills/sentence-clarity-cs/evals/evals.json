@@ -1,0 +1,20 @@
+{
+  "skill_name": "sentence-clarity-cs",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Edit these sentences for clarity:\n\n1. The machine learning algorithm that was developed by researchers over a two-year period and was trained on massive datasets containing millions of images was evaluated on the ImageNet benchmark.\n\n2. This approach has been shown to have better performance than previous methods.\n\n3. When the data was processed, it was normalized and then it was used to train the model.",
+      "expected_output": "JSONL with sentence improvements: sentence_length (47+ words → shortened), weak_verb (passive voice converted to active), ambiguous_pronoun (clarify 'it' and 'this')"
+    },
+    {
+      "id": 2,
+      "prompt": "Improve clarity of this research methodology description:\n\nThe experiment was designed to test whether the proposed framework could achieve comparable results when applied to real-world scenarios, which involved collecting data from five different sources and processing it through multiple validation stages before final evaluation was performed.",
+      "expected_output": "JSONL highlighting sentence_length issue and suggesting active voice restructuring"
+    },
+    {
+      "id": 3,
+      "prompt": "Review this paragraph for clarity:\n\nWe use gradient descent to optimize the loss function. Parameters are initialized randomly and then are updated iteratively. The convergence criterion is met when the gradient norm falls below a threshold.",
+      "expected_output": "JSONL with minimal issues (reasonably clear); possibly flag one weak passive construction"
+    }
+  ]
+}
