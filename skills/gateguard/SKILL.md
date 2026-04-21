@@ -84,7 +84,8 @@ Triggers on: `rm -rf`, `git reset --hard`, `git push --force`, `drop table`, etc
 ### Routine Bash Gate (once per session)
 
 ```
-Quote the user's current instruction verbatim.
+1. The current user request in one sentence
+2. What this specific command verifies or produces
 ```
 
 ## Quick Start

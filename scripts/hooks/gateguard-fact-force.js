@@ -62,13 +62,7 @@ function hashSessionKey(prefix, value) {
 }
 
 function resolveSessionKey(data) {
-  const directCandidates = [
-    data && data.session_id,
-    data && data.sessionId,
-    data && data.session && data.session.id,
-    process.env.CLAUDE_SESSION_ID,
-    process.env.ECC_SESSION_ID,
-  ];
+  const directCandidates = [data && data.session_id, data && data.sessionId, data && data.session && data.session.id, process.env.CLAUDE_SESSION_ID, process.env.ECC_SESSION_ID];
 
   for (const candidate of directCandidates) {
     const sanitized = sanitizeSessionKey(candidate);
@@ -101,12 +95,18 @@ function loadState() {
       const state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
       const lastActive = state.last_active || 0;
       if (Date.now() - lastActive > SESSION_TIMEOUT_MS) {
-        try { fs.unlinkSync(stateFile); } catch (_) { /* ignore */ }
+        try {
+          fs.unlinkSync(stateFile);
+        } catch (_) {
+          /* ignore */
+        }
         return { checked: [], last_active: Date.now() };
       }
       return state;
     }
-  } catch (_) { /* ignore */ }
+  } catch (_) {
+    /* ignore */
+  }
   return { checked: [], last_active: Date.now() };
 }
 
@@ -139,7 +139,11 @@ function saveState(state) {
       fs.renameSync(tmpFile, stateFile);
     } catch (error) {
       if (error && (error.code === 'EEXIST' || error.code === 'EPERM')) {
-        try { fs.unlinkSync(stateFile); } catch (_) { /* ignore */ }
+        try {
+          fs.unlinkSync(stateFile);
+        } catch (_) {
+          /* ignore */
+        }
         fs.renameSync(tmpFile, stateFile);
       } else {
         throw error;
@@ -147,7 +151,11 @@ function saveState(state) {
     }
   } catch (_) {
     if (tmpFile) {
-      try { fs.unlinkSync(tmpFile); } catch (_) { /* ignore */ }
+      try {
+        fs.unlinkSync(tmpFile);
+      } catch (_) {
+        /* ignore */
+      }
     }
   }
 }
@@ -186,7 +194,9 @@ function isChecked(key) {
         // Ignore files that disappear between readdir/stat/unlink.
       }
     }
-  } catch (_) { /* ignore */ }
+  } catch (_) {
+    /* ignore */
+  }
 })();
 
 // --- Sanitize file path against injection ---
@@ -198,13 +208,15 @@ function sanitizePath(filePath) {
     const code = char.codePointAt(0);
     const isAsciiControl = code <= 0x1f || code === 0x7f;
     const isBidiOverride = (code >= 0x200e && code <= 0x200f) || (code >= 0x202a && code <= 0x202e) || (code >= 0x2066 && code <= 0x2069);
-    sanitized += (isAsciiControl || isBidiOverride) ? ' ' : char;
+    sanitized += isAsciiControl || isBidiOverride ? ' ' : char;
   }
   return sanitized.trim().slice(0, 500);
 }
 
 function normalizeForMatch(value) {
-  return String(value || '').replace(/\\/g, '/').toLowerCase();
+  return String(value || '')
+    .replace(/\\/g, '/')
+    .toLowerCase();
 }
 
 function isClaudeSettingsPath(filePath) {
@@ -265,7 +277,7 @@ function editGateMsg(filePath) {
     '1. List ALL files that import/require this file (use Grep)',
     '2. List the public functions/classes affected by this change',
     '3. If this file reads/writes data files, show field names, structure, and date format (use redacted or synthetic values, not raw production data)',
-    '4. Quote the user\'s current instruction verbatim',
+    "4. Quote the user's current instruction verbatim",
     '',
     'Present the facts, then retry the same operation.'
   ].join('\n');
@@ -281,7 +293,7 @@ function writeGateMsg(filePath) {
     '1. Name the file(s) and line(s) that will call this new file',
     '2. Confirm no existing file serves the same purpose (use Glob)',
     '3. If this file reads/writes data files, show field names, structure, and date format (use redacted or synthetic values, not raw production data)',
-    '4. Quote the user\'s current instruction verbatim',
+    "4. Quote the user's current instruction verbatim",
     '',
     'Present the facts, then retry the same operation.'
   ].join('\n');
@@ -295,7 +307,7 @@ function destructiveBashMsg() {
     '',
     '1. List all files/data this command will modify or delete',
     '2. Write a one-line rollback procedure',
-    '3. Quote the user\'s current instruction verbatim',
+    "3. Quote the user's current instruction verbatim",
     '',
     'Present the facts, then retry the same operation.'
   ].join('\n');
@@ -344,7 +356,7 @@ function run(rawInput) {
   const rawToolName = data.tool_name || '';
   const toolInput = data.tool_input || {};
   // Normalize: case-insensitive matching via lookup map
-  const TOOL_MAP = { 'edit': 'Edit', 'write': 'Write', 'multiedit': 'MultiEdit', 'bash': 'Bash' };
+  const TOOL_MAP = { edit: 'Edit', write: 'Write', multiedit: 'MultiEdit', bash: 'Bash' };
   const toolName = TOOL_MAP[rawToolName.toLowerCase()] || rawToolName;
 
   if (toolName === 'Edit' || toolName === 'Write') {
