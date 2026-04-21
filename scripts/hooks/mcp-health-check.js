@@ -315,12 +315,29 @@ function probeCommandServer(serverName, config) {
       resolve(result);
     }
 
+    // On Windows, commands like 'npx' are actually 'npx.cmd' batch files that
+    // require shell expansion to resolve. However, absolute paths (e.g.
+    // 'C:\Program Files\nodejs\node.exe') must NOT use shell mode because
+    // cmd.exe misparses paths containing spaces. Only enable shell for
+    // non-absolute commands that need PATH resolution.
+    //
+    // Security: validate the command for shell metacharacters before enabling
+    // shell mode. cmd.exe treats &, |, <, >, ^, %, !, (, ), ;, and whitespace
+    // as operators/separators. A crafted command value from an MCP config file
+    // could otherwise inject arbitrary shell commands.
+    const UNSAFE_SHELL_CHARS = /[&|<>^%!()\s;]/;
+    const needsShell =
+      process.platform === 'win32' &&
+      typeof command === 'string' &&
+      !path.isAbsolute(command) &&
+      !UNSAFE_SHELL_CHARS.test(command);
     let child;
     try {
       child = spawn(command, args, {
         env: mergedEnv,
         cwd: process.cwd(),
-        stdio: ['pipe', 'ignore', 'pipe']
+        stdio: ['pipe', 'ignore', 'pipe'],
+        shell: needsShell
       });
     } catch (error) {
       finish({
@@ -356,18 +373,31 @@ function probeCommandServer(serverName, config) {
 
     const timer = setTimeout(() => {
       try {
-        child.kill('SIGTERM');
+        if (needsShell && child.pid && process.platform === 'win32') {
+          // When spawned via shell on Windows, child is cmd.exe. kill() only
+          // terminates the shell and leaves the real server process orphaned.
+          // taskkill /T kills the entire process tree rooted at cmd.exe.
+          const killResult = spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
+          if (killResult.error || (typeof killResult.status === 'number' && killResult.status !== 0)) {
+            // taskkill not on PATH, permission denied, or already exited.
+            // Best-effort fallback: signal the cmd.exe shell directly. The
+            // child tree may still leak if it already detached, but this at
+            // least kills the shell we spawned.
+            try { child.kill('SIGKILL'); } catch { /* ignore */ }
+          }
+        } else {
+          child.kill('SIGTERM');
+          setTimeout(() => {
+            try {
+              child.kill('SIGKILL');
+            } catch {
+              // ignore
+            }
+          }, 200).unref?.();
+        }
       } catch {
         // ignore
       }
-
-      setTimeout(() => {
-        try {
-          child.kill('SIGKILL');
-        } catch {
-          // ignore
-        }
-      }, 200).unref?.();
 
       finish({
         ok: true,

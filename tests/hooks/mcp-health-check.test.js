@@ -457,6 +457,46 @@ async function runTests() {
     }
   })) passed++; else failed++;
 
+  if (await asyncTest('probes command servers using non-absolute commands (e.g. npx) via PATH resolution', async () => {
+    const tempDir = createTempDir();
+    const configPath = path.join(tempDir, 'claude.json');
+    const statePath = path.join(tempDir, 'mcp-health.json');
+    const serverScript = path.join(tempDir, 'shell-server.js');
+
+    try {
+      // Create a server script that stays alive
+      fs.writeFileSync(serverScript, "setInterval(() => {}, 1000);\n");
+
+      // Use 'node' (non-absolute) as the command to exercise PATH-based resolution.
+      // On Windows, shell execution is especially relevant for commands exposed via
+      // batch wrappers such as 'npx.cmd'; using 'node' here simulates that class of
+      // non-absolute command without depending on npx being available in the environment.
+      writeConfig(configPath, {
+        mcpServers: {
+          shelltest: {
+            command: 'node',
+            args: [serverScript]
+          }
+        }
+      });
+
+      const input = { tool_name: 'mcp__shelltest__ping', tool_input: {} };
+      const result = runHook(input, {
+        CLAUDE_HOOK_EVENT_NAME: 'PreToolUse',
+        ECC_MCP_CONFIG_PATH: configPath,
+        ECC_MCP_HEALTH_STATE_PATH: statePath,
+        ECC_MCP_HEALTH_TIMEOUT_MS: '100'
+      });
+
+      assert.strictEqual(result.code, 0, `Expected non-absolute command to resolve via shell, got ${result.code}`);
+
+      const state = readState(statePath);
+      assert.strictEqual(state.servers.shelltest.status, 'healthy', 'Expected shell-resolved server to be marked healthy');
+    } finally {
+      cleanupTempDir(tempDir);
+    }
+  })) passed++; else failed++;
+
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
 }
