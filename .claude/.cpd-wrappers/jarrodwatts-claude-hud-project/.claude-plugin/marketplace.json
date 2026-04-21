@@ -1,0 +1,16 @@
+{
+  "name": "cpd-jarrodwatts-claude-hud-project",
+  "owner": {
+    "name": "ClaudePluginHub CLI"
+  },
+  "plugins": [
+    {
+      "name": "claude-hud",
+      "source": {
+        "source": "github",
+        "repo": "jarrodwatts/claude-hud"
+      },
+      "strict": false
+    }
+  ]
+}
