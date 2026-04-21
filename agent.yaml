@@ -193,15 +193,12 @@ commands:
   - multi-workflow
   - orchestrate
   - plan
+  - plan-prd
   - pm2
+  - pr
   - projects
   - promote
   - prompt-optimize
-  - prp-commit
-  - prp-implement
-  - prp-plan
-  - prp-pr
-  - prp-prd
   - prune
   - python-review
   - quality-gate
