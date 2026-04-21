@@ -36,7 +36,7 @@ jobs:
 
       - name: Setup pnpm
         if: inputs.package-manager == 'pnpm' && inputs.node-version != '18.x'
-        uses: pnpm/action-setup@08c4be7e2e672a47d11bd04269e27e5f3e8529cb # v6.0.0
+        uses: pnpm/action-setup@078e9d416474b29c0c387560859308974f7e9c53 # v6.0.1
         with:
           # Keep an explicit pnpm major because this repo's packageManager is Yarn.
           version: 10
