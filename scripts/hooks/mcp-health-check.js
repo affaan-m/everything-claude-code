@@ -308,10 +308,15 @@ function probeCommandServer(serverName, config) {
 
     let stderr = '';
     let done = false;
+    let timer = null;
 
     function finish(result) {
       if (done) return;
       done = true;
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
       resolve(result);
     }
 
@@ -354,7 +359,19 @@ function probeCommandServer(serverName, config) {
       });
     });
 
-    const timer = setTimeout(() => {
+    timer = setTimeout(() => {
+      // A fast-crashing stdio server can finish before the timer callback runs
+      // on a loaded machine. Check the process state again before classifying it
+      // as healthy on timeout.
+      if (child.exitCode !== null || child.signalCode !== null) {
+        finish({
+          ok: false,
+          statusCode: child.exitCode,
+          reason: stderr.trim() || `process exited before handshake (${child.signalCode || child.exitCode || 'unknown'})`
+        });
+        return;
+      }
+
       try {
         child.kill('SIGTERM');
       } catch {
