@@ -422,7 +422,22 @@ async function runTests() {
         });
         assert.strictEqual(result.code, 0);
         const additionalContext = getSessionStartAdditionalContext(result.stdout);
-        assert.ok(additionalContext.includes('Previous session summary'), 'Should inject real session content');
+        assert.ok(
+          additionalContext.includes('HISTORICAL REFERENCE ONLY'),
+          'Should wrap injected session with the stale-replay guard preamble'
+        );
+        assert.ok(
+          additionalContext.includes('STALE-BY-DEFAULT'),
+          'Should spell out the stale-by-default contract so the model does not re-execute prior ARGUMENTS'
+        );
+        assert.ok(
+          additionalContext.includes('--- BEGIN PRIOR-SESSION SUMMARY ---'),
+          'Should delimit the prior-session summary with an explicit begin marker'
+        );
+        assert.ok(
+          additionalContext.includes('--- END PRIOR-SESSION SUMMARY ---'),
+          'Should delimit the prior-session summary with an explicit end marker'
+        );
         assert.ok(additionalContext.includes('authentication refactor'), 'Should include session content text');
       } finally {
         fs.rmSync(isoHome, { recursive: true, force: true });
@@ -490,7 +505,10 @@ async function runTests() {
         });
         assert.strictEqual(result.code, 0);
         const additionalContext = getSessionStartAdditionalContext(result.stdout);
-        assert.ok(additionalContext.includes('Previous session summary'), 'Should inject real session content');
+        assert.ok(
+          additionalContext.includes('HISTORICAL REFERENCE ONLY'),
+          'Should wrap injected session with the stale-replay guard preamble'
+        );
         assert.ok(additionalContext.includes('Windows terminal handling'), 'Should preserve sanitized session text');
         assert.ok(!additionalContext.includes('\x1b['), 'Should not emit ANSI escape codes');
       } finally {
