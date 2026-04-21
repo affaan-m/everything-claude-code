@@ -1463,6 +1463,7 @@ Projects built on or inspired by Everything Claude Code:
 | Project | Description |
 |---------|-------------|
 | [EVC](https://github.com/SaigonXIII/evc) | Marketing agent workspace — 42 commands for content operators, brand governance, and multi-channel publishing. [Visual overview](https://saigonxiii.github.io/evc). |
+| [ChatGPT Plus Guide](https://github.com/xyzm6/chatgpt-plus-guide) | Practical guide for ChatGPT Plus/Pro subscribers — regional pricing, payment methods for blocked regions, account safety checklist. |
 
 Built something with ECC? Open a PR to add it here.
 
