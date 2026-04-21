@@ -305,8 +305,12 @@ function routineBashMsg() {
   return [
     '[Fact-Forcing Gate]',
     '',
-    'Quote the user\'s current instruction verbatim.',
-    'Then retry the same operation.'
+    'Before the first Bash command this session, present these facts:',
+    '',
+    '1. The current user request in one sentence',
+    '2. What this specific command verifies or produces',
+    '',
+    'Present the facts, then retry the same operation.'
   ].join('\n');
 }
 
