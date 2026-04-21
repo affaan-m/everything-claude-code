@@ -178,6 +178,8 @@ function mergeSessionHeader(content, today, currentTime, metadata) {
 }
 
 async function main() {
+    // Skip if running inside an AI-summary subprocess to prevent overwriting parent session files
+  if (process.env.ECC_SUMMARY_SUBPROCESS === '1') process.exit(0);
   // Parse stdin JSON to get transcript_path
   let transcriptPath = null;
   try {
