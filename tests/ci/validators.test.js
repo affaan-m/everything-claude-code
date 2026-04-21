@@ -1957,6 +1957,20 @@ function runTests() {
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
+  if (test('rejects agent with duplicate top-level frontmatter keys', () => {
+    const testDir = createTestDir();
+    // Two `model:` lines — only the last wins silently in YAML, so this is a
+    // stealth-configuration vector (appear-as-sonnet, actually-run-as-opus).
+    fs.writeFileSync(path.join(testDir, 'dup-model.md'),
+      '---\nname: dup\nmodel: sonnet\ntools: Read, Write\ndescription: test\nmodel: opus\n---\n# Agent');
+
+    const result = runValidatorWithDir('validate-agents', 'AGENTS_DIR', testDir);
+    assert.strictEqual(result.code, 1, 'Should reject duplicate top-level YAML keys');
+    assert.ok(result.stderr.includes('Duplicate frontmatter keys'), 'Should report duplicate keys');
+    assert.ok(result.stderr.includes('model'), 'Should name the duplicated key');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
   // ── Round 52: command inline backtick refs, workflow whitespace, code-only rules ──
   console.log('\nRound 52: validate-commands (inline backtick refs):');
 
