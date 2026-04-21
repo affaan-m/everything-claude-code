@@ -9,12 +9,15 @@ from llm.core.types import ProviderType
 from llm.providers.claude import ClaudeProvider
 from llm.providers.openai import OpenAIProvider
 from llm.providers.ollama import OllamaProvider
+from llm.providers.astraflow import AstraflowProvider, AstraflowCNProvider
 
 
 _PROVIDER_MAP: dict[ProviderType, type[LLMProvider]] = {
     ProviderType.CLAUDE: ClaudeProvider,
     ProviderType.OPENAI: OpenAIProvider,
     ProviderType.OLLAMA: OllamaProvider,
+    ProviderType.ASTRAFLOW: AstraflowProvider,
+    ProviderType.ASTRAFLOW_CN: AstraflowCNProvider,
 }
 
 
