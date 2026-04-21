@@ -124,6 +124,15 @@ function runTests() {
     );
     assert.ok(
       plan.operations.some(operation => (
+        operation.sourceRelativePath === '.mcp.json'
+        && operation.destinationPath === path.join(projectRoot, '.cursor', 'mcp.json')
+        && operation.kind === 'merge-json'
+        && operation.strategy === 'merge-json'
+      )),
+      'Should materialize Cursor MCP config at the native project path'
+    );
+    assert.ok(
+      plan.operations.some(operation => (
         operation.sourceRelativePath === '.cursor/rules/common-agents.md'
         && operation.destinationPath === path.join(projectRoot, '.cursor', 'rules', 'common-agents.mdc')
         && operation.strategy === 'flatten-copy'

@@ -93,6 +93,9 @@ function runTests() {
     const hooksJson = plan.operations.find(operation => (
       normalizedRelativePath(operation.sourceRelativePath) === '.cursor/hooks.json'
     ));
+    const mcpJson = plan.operations.find(operation => (
+      normalizedRelativePath(operation.sourceRelativePath) === '.mcp.json'
+    ));
     const preserved = plan.operations.find(operation => (
       normalizedRelativePath(operation.sourceRelativePath) === '.cursor/rules/common-coding-style.md'
     ));
@@ -100,6 +103,10 @@ function runTests() {
     assert.ok(hooksJson, 'Should preserve non-rule Cursor platform config files');
     assert.strictEqual(hooksJson.strategy, 'preserve-relative-path');
     assert.strictEqual(hooksJson.destinationPath, path.join(projectRoot, '.cursor', 'hooks.json'));
+    assert.ok(mcpJson, 'Should materialize a Cursor MCP config from the shared root MCP config');
+    assert.strictEqual(mcpJson.kind, 'merge-json');
+    assert.strictEqual(mcpJson.strategy, 'merge-json');
+    assert.strictEqual(mcpJson.destinationPath, path.join(projectRoot, '.cursor', 'mcp.json'));
 
     assert.ok(preserved, 'Should include flattened Cursor rule scaffold operations');
     assert.strictEqual(preserved.strategy, 'flatten-copy');
@@ -200,6 +207,14 @@ function runTests() {
         && operation.destinationPath === path.join(projectRoot, '.cursor', 'hooks.json')
       )),
       'Should preserve non-rule Cursor platform config files'
+    );
+    assert.ok(
+      plan.operations.some(operation => (
+        normalizedRelativePath(operation.sourceRelativePath) === '.mcp.json'
+        && operation.kind === 'merge-json'
+        && operation.destinationPath === path.join(projectRoot, '.cursor', 'mcp.json')
+      )),
+      'Should materialize a project-level Cursor MCP config'
     );
     assert.ok(
       !plan.operations.some(operation => (

@@ -18,6 +18,39 @@ function toCursorRuleFileName(fileName, sourceRelativeFile) {
     : fileName;
 }
 
+function readJsonObject(filePath, label) {
+  let parsed;
+  try {
+    parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch (error) {
+    throw new Error(`Failed to parse ${label} at ${filePath}: ${error.message}`);
+  }
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`Invalid ${label} at ${filePath}: expected a JSON object`);
+  }
+
+  return parsed;
+}
+
+function createJsonMergeOperation({ moduleId, repoRoot, sourceRelativePath, destinationPath }) {
+  const sourcePath = path.join(repoRoot, sourceRelativePath);
+  if (!fs.existsSync(sourcePath) || !fs.statSync(sourcePath).isFile()) {
+    return null;
+  }
+
+  return createManagedOperation({
+    kind: 'merge-json',
+    moduleId,
+    sourceRelativePath,
+    destinationPath,
+    strategy: 'merge-json',
+    ownership: 'managed',
+    scaffoldOnly: false,
+    mergePayload: readJsonObject(sourcePath, sourceRelativePath),
+  });
+}
+
 module.exports = createInstallTargetAdapter({
   id: 'cursor-project',
   target: 'cursor',
@@ -93,6 +126,13 @@ module.exports = createInstallTargetAdapter({
     }
 
     return entries.flatMap(({ module, sourceRelativePath }) => {
+      const cursorMcpOperation = createJsonMergeOperation({
+        moduleId: module.id,
+        repoRoot,
+        sourceRelativePath: '.mcp.json',
+        destinationPath: path.join(targetRoot, 'mcp.json'),
+      });
+
       if (sourceRelativePath === 'rules') {
         return takeUniqueOperations(createFlatRuleOperations({
           moduleId: module.id,
@@ -127,7 +167,21 @@ module.exports = createInstallTargetAdapter({
           destinationNameTransform: toCursorRuleFileName,
         });
 
-        return takeUniqueOperations([...childOperations, ...ruleOperations]);
+        return takeUniqueOperations([
+          ...childOperations,
+          ...(cursorMcpOperation ? [cursorMcpOperation] : []),
+          ...ruleOperations,
+        ]);
+      }
+
+      if (sourceRelativePath === 'mcp-configs') {
+        const operations = [
+          adapter.createScaffoldOperation(module.id, sourceRelativePath, planningInput),
+        ];
+        if (cursorMcpOperation) {
+          operations.push(cursorMcpOperation);
+        }
+        return takeUniqueOperations(operations);
       }
 
       return takeUniqueOperations([
