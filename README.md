@@ -191,10 +191,12 @@ This is intentional. Anthropic marketplace/plugin installs are keyed by a canoni
 
 ### Step 2: Install Rules (Required)
 
-> WARNING: **Important:** Claude Code plugins cannot distribute `rules` automatically. Install them manually:
+> WARNING: **Important:** Claude Code plugins cannot distribute `rules` automatically.
 >
-> If your local Claude setup was wiped or reset, that does not mean you need to repurchase ECC. Start with `ecc list-installed`, then run `ecc doctor` and `ecc repair` before reinstalling anything. That usually restores ECC-managed files without rebuilding your setup. If the problem is account or marketplace access for ECC Tools, handle billing/account recovery separately.
-
+> If you already installed ECC via `/plugin install`, **do not run `./install.sh --profile full`, `.\install.ps1 --profile full`, or `npx ecc-install --profile full` afterward**. The plugin already loads ECC skills, commands, and hooks. Running the full installer after a plugin install copies those same surfaces into your user directories and can create duplicate skills plus duplicate runtime behavior.
+>
+> For plugin installs, manually copy only the `rules/` directories you want. Use the full installer only when you are doing a fully manual ECC install instead of the plugin path.
+>
 > If your local Claude setup was wiped or reset, that does not mean you need to repurchase ECC. Start with `ecc list-installed`, then run `ecc doctor` and `ecc repair` before reinstalling anything. That usually restores ECC-managed files without rebuilding your setup. If the problem is account or marketplace access for ECC Tools, handle billing/account recovery separately.
 
 ```bash
@@ -205,34 +207,26 @@ cd everything-claude-code
 # Install dependencies (pick your package manager)
 npm install        # or: pnpm install | yarn install | bun install
 
-# macOS/Linux
+# Plugin install path: copy only rules
+mkdir -p ~/.claude/rules
+cp -R rules/common ~/.claude/rules/
+cp -R rules/typescript ~/.claude/rules/
 
-# Recommended: install everything (full profile)
-./install.sh --profile full
-
-# Or install for specific languages only
-./install.sh typescript    # or python or golang or swift or php
-# ./install.sh typescript python golang swift php
-# ./install.sh --target cursor typescript
-# ./install.sh --target antigravity typescript
-# ./install.sh --target gemini --profile full
+# Fully manual ECC install path (use this instead of /plugin install)
+# ./install.sh --profile full
 ```
 
 ```powershell
 # Windows PowerShell
 
-# Recommended: install everything (full profile)
-.\install.ps1 --profile full
+# Plugin install path: copy only rules
+New-Item -ItemType Directory -Force -Path "$HOME/.claude/rules" | Out-Null
+Copy-Item -Recurse rules/common "$HOME/.claude/rules/"
+Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 
-# Or install for specific languages only
-.\install.ps1 typescript   # or python or golang or swift or php
-# .\install.ps1 typescript python golang swift php
-# .\install.ps1 --target cursor typescript
-# .\install.ps1 --target antigravity typescript
-# .\install.ps1 --target gemini --profile full
-
-# npm-installed compatibility entrypoint also works cross-platform
-npx ecc-install typescript
+# Fully manual ECC install path (use this instead of /plugin install)
+# .\install.ps1 --profile full
+# npx ecc-install --profile full
 ```
 
 For manual install instructions see the README in the `rules/` folder. When copying rules manually, copy the whole language directory (for example `rules/common` or `rules/golang`), not the files inside it, so relative references keep working and filenames do not collide.

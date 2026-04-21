@@ -109,7 +109,11 @@
 
 ### 第二步：安装规则（必需）
 
-> WARNING: **重要提示：** Claude Code 插件无法自动分发 `rules`，需要手动安装：
+> WARNING: **重要提示：** Claude Code 插件无法自动分发 `rules`。
+>
+> 如果你已经通过 `/plugin install` 安装了 ECC，**不要再运行 `./install.sh --profile full`、`.\install.ps1 --profile full` 或 `npx ecc-install --profile full`**。插件已经会自动加载 ECC 的技能、命令和 hooks；此时再执行完整安装，会把同一批内容再次复制到用户目录，导致技能重复以及运行时行为重复。
+>
+> 对于插件安装路径，请只手动复制你需要的 `rules/` 目录。只有在你完全不走插件安装、而是选择“纯手动安装 ECC”时，才应该使用完整安装器。
 
 ```bash
 # 首先克隆仓库
@@ -119,34 +123,26 @@ cd everything-claude-code
 # 安装依赖（选择你常用的包管理器）
 npm install        # 或：pnpm install | yarn install | bun install
 
-# macOS/Linux 系统
+# 插件安装路径：只复制规则
+mkdir -p ~/.claude/rules
+cp -R rules/common ~/.claude/rules/
+cp -R rules/typescript ~/.claude/rules/
 
-# 推荐方式：完整安装（完整配置文件）
-./install.sh --profile full
-
-# 或仅为指定编程语言安装
-./install.sh typescript    # 也可安装 python、golang、swift、php
-# ./install.sh typescript python golang swift php
-# ./install.sh --target cursor typescript
-# ./install.sh --target antigravity typescript
-# ./install.sh --target gemini --profile full
+# 纯手动安装 ECC（不要和 /plugin install 叠加）
+# ./install.sh --profile full
 ```
 
 ```powershell
 # Windows 系统（PowerShell）
 
-# 推荐方式：完整安装（完整配置文件）
-.\install.ps1 --profile full
+# 插件安装路径：只复制规则
+New-Item -ItemType Directory -Force -Path "$HOME/.claude/rules" | Out-Null
+Copy-Item -Recurse rules/common "$HOME/.claude/rules/"
+Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 
-# 或仅为指定编程语言安装
-.\install.ps1 typescript   # 也可安装 python、golang、swift、php
-# .\install.ps1 typescript python golang swift php
-# .\install.ps1 --target cursor typescript
-# .\install.ps1 --target antigravity typescript
-# .\install.ps1 --target gemini --profile full
-
-# 通过 npm 安装的兼容入口，支持全平台使用
-npx ecc-install typescript
+# 纯手动安装 ECC（不要和 /plugin install 叠加）
+# .\install.ps1 --profile full
+# npx ecc-install --profile full
 ```
 
 如需手动安装说明，请查看 `rules/` 文件夹中的 README 文档。手动复制规则文件时，请直接复制**整个语言目录**（例如 `rules/common` 或 `rules/golang`），而非目录内的单个文件，以保证相对路径引用正常、文件名不会冲突。

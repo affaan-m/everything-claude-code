@@ -25,6 +25,7 @@ const publicInstallDocs = [
   'README.md',
   'README.zh-CN.md',
   'docs/pt-BR/README.md',
+  'docs/zh-CN/README.md',
   'docs/ja-JP/skills/configure-ecc/SKILL.md',
   'docs/zh-CN/skills/configure-ecc/SKILL.md',
 ];
@@ -40,6 +41,32 @@ for (const relativePath of publicInstallDocs) {
 
   test(`${relativePath} documents the canonical marketplace plugin identifier`, () => {
     assert.ok(content.includes('everything-claude-code@everything-claude-code'));
+  });
+}
+
+const pluginAndManualInstallDocs = [
+  'README.md',
+  'README.zh-CN.md',
+  'docs/zh-CN/README.md',
+];
+
+for (const relativePath of pluginAndManualInstallDocs) {
+  const content = fs.readFileSync(path.join(repoRoot, relativePath), 'utf8');
+
+  test(`${relativePath} warns not to run the full installer after plugin install`, () => {
+    assert.ok(
+      content.includes('--profile full'),
+      'Expected docs to mention the full installer explicitly'
+    );
+    assert.ok(
+      content.includes('/plugin install'),
+      'Expected docs to mention plugin install explicitly'
+    );
+    assert.ok(
+      content.includes('不要再运行')
+      || content.includes('do not run'),
+      'Expected docs to warn that plugin install and full install are not sequential'
+    );
   });
 }
 
