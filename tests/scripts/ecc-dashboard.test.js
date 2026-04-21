@@ -86,6 +86,56 @@ print(json.dumps({'argv': argv, 'kwargs': kwargs}))
     assert.ok(Object.prototype.hasOwnProperty.call(parsed.kwargs, 'creationflags'));
   })) passed++; else failed++;
 
+  if (test('build_file_open_launch routes Linux through xdg-open with path as a separate argv entry', () => {
+    const output = runPython(`
+import importlib.util, json
+spec = importlib.util.spec_from_file_location("ecc_dashboard_runtime", r"""${runtimeHelpersPath}""")
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+argv, kwargs = module.build_file_open_launch('/tmp/proj/README.md; rm -rf ~', os_name='posix', system_name='Linux')
+print(json.dumps({'argv': argv, 'kwargs': kwargs}))
+`);
+    const parsed = JSON.parse(output);
+    assert.deepStrictEqual(parsed.argv, ['xdg-open', '/tmp/proj/README.md; rm -rf ~']);
+    assert.deepStrictEqual(parsed.kwargs, {});
+  })) passed++; else failed++;
+
+  if (test('build_file_open_launch routes macOS through native open command', () => {
+    const output = runPython(`
+import importlib.util, json
+spec = importlib.util.spec_from_file_location("ecc_dashboard_runtime", r"""${runtimeHelpersPath}""")
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+argv, kwargs = module.build_file_open_launch('/Users/me/proj/README.md; touch ~/pwn', os_name='posix', system_name='Darwin')
+print(json.dumps({'argv': argv, 'kwargs': kwargs}))
+`);
+    const parsed = JSON.parse(output);
+    assert.deepStrictEqual(parsed.argv, ['open', '/Users/me/proj/README.md; touch ~/pwn']);
+    assert.deepStrictEqual(parsed.kwargs, {});
+  })) passed++; else failed++;
+
+  if (test('build_file_open_launch routes Windows through explorer.exe without cmd.exe', () => {
+    const output = runPython(`
+import importlib.util, json
+spec = importlib.util.spec_from_file_location("ecc_dashboard_runtime", r"""${runtimeHelpersPath}""")
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+argv, kwargs = module.build_file_open_launch(r'C:\\\\Users\\\\user\\\\proj\\\\README.md & del C:\\\\*', os_name='nt', system_name='Windows')
+print(json.dumps({'argv': argv, 'kwargs': kwargs}))
+`);
+    const parsed = JSON.parse(output);
+    // explorer.exe is a standalone .exe, so Popen invokes it via CreateProcessW
+    // without going through cmd.exe. That means path metacharacters like '&', '|'
+    // and '^' stay literal — the shell never sees them. Asserting the full argv
+    // catches any future drift back toward cmd.exe.
+    assert.deepStrictEqual(
+      parsed.argv,
+      ['explorer.exe', 'C:\\\\Users\\\\user\\\\proj\\\\README.md & del C:\\\\*']
+    );
+    assert.ok(parsed.argv[0] !== 'cmd.exe', 'launcher must not go through cmd.exe');
+    assert.deepStrictEqual(parsed.kwargs, {});
+  })) passed++; else failed++;
+
   if (test('maximize_window falls back to Linux zoom attribute when zoomed state is unsupported', () => {
     const output = runPython(`
 import importlib.util, json

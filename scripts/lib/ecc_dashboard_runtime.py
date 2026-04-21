@@ -59,3 +59,39 @@ def build_terminal_launch(
         ['x-terminal-emulator', '-e', 'bash', '-lc', 'cd -- "$1"; exec bash', 'bash', path],
         {},
     )
+
+
+def build_file_open_launch(
+    path: str,
+    *,
+    os_name: Optional[str] = None,
+    system_name: Optional[str] = None,
+) -> Tuple[List[str], Dict[str, object]]:
+    """Return safe argv/kwargs for opening an arbitrary file in the OS default handler.
+
+    Mirrors the build_terminal_launch contract so dashboard callers can route every
+    external launch through the same testable, injection-safe helper. The path is
+    always passed as a separate argv entry, never interpolated into a shell string.
+
+    Per-platform launcher choice:
+      - Windows (``os.name == 'nt'``): invoke ``explorer.exe`` directly with the
+        path as a single argv entry. Explorer hands the file to ShellExecute
+        (same mechanism ``os.startfile`` uses under the hood) and — crucially —
+        avoids cmd.exe entirely, so path metacharacters like ``&`` / ``|`` / ``^``
+        are never interpreted as command separators. Earlier drafts that routed
+        through ``cmd.exe /c start "" <path>`` re-introduced cmd parsing on the
+        Windows branch; this does not.
+      - macOS (``platform.system() == 'Darwin'``): ``xdg-open`` does not ship; the
+        native handler is ``open``.
+      - Linux / other POSIX: ``xdg-open`` is the freedesktop standard.
+    """
+    resolved_os_name = os_name or os.name
+    resolved_system_name = system_name or platform.system()
+
+    if resolved_os_name == 'nt':
+        return (['explorer.exe', path], {})
+
+    if resolved_system_name == 'Darwin':
+        return (['open', path], {})
+
+    return (['xdg-open', path], {})

@@ -4,6 +4,7 @@ ECC Dashboard - Everything Claude Code GUI
 Cross-platform TkInter application for managing ECC components
 """
 
+import logging
 import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
 import os
@@ -11,7 +12,13 @@ import json
 import subprocess
 from typing import Dict, List, Optional
 
-from scripts.lib.ecc_dashboard_runtime import build_terminal_launch, maximize_window
+from scripts.lib.ecc_dashboard_runtime import (
+    build_file_open_launch,
+    build_terminal_launch,
+    maximize_window,
+)
+
+logger = logging.getLogger(__name__)
 
 # ============================================================================
 # DATA LOADERS - Load ECC data from the project
@@ -98,8 +105,8 @@ def load_skills(project_path: str) -> List[Dict]:
                                 if line.startswith('# '):
                                     description = line[2:].strip()[:100]
                                     break
-                    except:
-                        pass
+                    except Exception:
+                        logger.exception("Failed to parse skill description from %s", skill_file)
                 
                 # Determine category
                 category = "General"
@@ -172,8 +179,8 @@ def load_commands(project_path: str) -> List[Dict]:
                             if line.startswith('# '):
                                 description = line[2:].strip()
                                 break
-                except:
-                    pass
+                except Exception:
+                    logger.exception("Failed to parse command description from %s", item)
                 
                 commands.append({
                     'name': cmd_name,
@@ -266,8 +273,8 @@ class ECCDashboard(tk.Tk):
         try:
             self.icon_image = tk.PhotoImage(file='assets/images/ecc-logo.png')
             self.iconphoto(True, self.icon_image)
-        except:
-            pass
+        except Exception:
+            logger.exception("Failed to load taskbar icon assets/images/ecc-logo.png")
         
         self.minsize(800, 600)
         
@@ -330,8 +337,8 @@ class ECCDashboard(tk.Tk):
             self.logo_image = tk.PhotoImage(file='assets/images/ecc-logo.png')
             self.logo_image = self.logo_image.subsample(2, 2)
             ttk.Label(header_frame, image=self.logo_image).pack(side=tk.LEFT, padx=(0, 10))
-        except:
-            pass
+        except Exception:
+            logger.exception("Failed to render header logo assets/images/ecc-logo.png")
         
         self.title_label = ttk.Label(header_frame, text="ECC Dashboard", font=('Open Sans', 18, 'bold'))
         self.title_label.pack(side=tk.LEFT)
@@ -799,19 +806,19 @@ Project: github.com/affaan-m/everything-claude-code"""
     
     def open_readme(self):
         """Open README in default browser/reader"""
-        import subprocess
         path = os.path.join(self.path_entry.get(), 'README.md')
         if os.path.exists(path):
-            subprocess.Popen(['xdg-open' if os.name != 'nt' else 'start', path])
+            argv, kwargs = build_file_open_launch(path)
+            subprocess.Popen(argv, **kwargs)
         else:
             messagebox.showerror("Error", "README.md not found")
-    
+
     def open_agents(self):
         """Open AGENTS.md"""
-        import subprocess
         path = os.path.join(self.path_entry.get(), 'AGENTS.md')
         if os.path.exists(path):
-            subprocess.Popen(['xdg-open' if os.name != 'nt' else 'start', path])
+            argv, kwargs = build_file_open_launch(path)
+            subprocess.Popen(argv, **kwargs)
         else:
             messagebox.showerror("Error", "AGENTS.md not found")
     
@@ -876,25 +883,27 @@ Project: github.com/affaan-m/everything-claude-code"""
         self.title_label.configure(font=(font_family, 18, 'bold'))
         self.version_label.configure(font=(font_family, 10))
         
+        # Many tkinter widgets (menus, system frames, notebook tabs) reject the
+        # `background` option silently; log at DEBUG so noise stays out of the
+        # default stream while still being discoverable when troubleshooting theming.
+        # The recursive call handles each child's own configure, so the loop just
+        # recurses — no per-child configure in addition (that was the pre-#1450
+        # shape and double-configured every descendant).
         def update_widget_colors(widget):
             try:
                 widget.configure(background=bg_color)
-            except:
-                pass
+            except Exception:
+                logger.debug("Skip background recolor on %r", widget, exc_info=True)
             for child in widget.winfo_children():
                 try:
-                    child.configure(background=bg_color)
-                except:
-                    pass
-                try:
                     update_widget_colors(child)
-                except:
-                    pass
-        
+                except Exception:
+                    logger.debug("Skip recursive recolor on child %r", child, exc_info=True)
+
         try:
             update_widget_colors(self)
-        except:
-            pass
+        except Exception:
+            logger.exception("Theme apply traversal failed at the root widget")
         
         self.update()
 
