@@ -1,11 +1,28 @@
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
 const { spawnSync } = require('child_process');
 const { getClaudeDir, ensureDir, sanitizeSessionId } = require('./utils');
 
 function getHomunculusDir() {
-  return path.join(getClaudeDir(), 'homunculus');
+  const override = process.env.CLV2_HOMUNCULUS_DIR;
+  if (override) {
+    if (path.isAbsolute(override)) {
+      return override;
+    }
+    process.stderr.write(`[ecc] CLV2_HOMUNCULUS_DIR=${override} is not absolute; ignoring\n`);
+  }
+
+  const xdg = process.env.XDG_DATA_HOME;
+  if (xdg) {
+    if (path.isAbsolute(xdg)) {
+      return path.join(xdg, 'ecc-homunculus');
+    }
+    process.stderr.write(`[ecc] XDG_DATA_HOME=${xdg} is not absolute; ignoring\n`);
+  }
+
+  return path.join(os.homedir(), '.local', 'share', 'ecc-homunculus');
 }
 
 function getProjectsDir() {
@@ -163,6 +180,7 @@ function stopObserverForContext(context) {
 }
 
 module.exports = {
+  getHomunculusDir,
   resolveProjectContext,
   getObserverActivityFile,
   getObserverPidFile,

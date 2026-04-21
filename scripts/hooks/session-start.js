@@ -21,7 +21,7 @@ const {
   stripAnsi,
   log
 } = require('../lib/utils');
-const { resolveProjectContext, writeSessionLease, resolveSessionId } = require('../lib/observer-sessions');
+const { resolveProjectContext, writeSessionLease, resolveSessionId, getHomunculusDir } = require('../lib/observer-sessions');
 const { getPackageManager, getSelectionPrompt } = require('../lib/package-manager');
 const { listAliases } = require('../lib/session-aliases');
 const { detectProjectType } = require('../lib/project-detect');
@@ -295,7 +295,7 @@ function extractInstinctAction(content) {
 }
 
 function summarizeActiveInstincts(observerContext) {
-  const homunculusDir = path.join(getClaudeDir(), 'homunculus');
+  const homunculusDir = getHomunculusDir();
   const globalDirs = [
     { dir: path.join(homunculusDir, 'instincts', 'personal'), scope: 'global' },
     { dir: path.join(homunculusDir, 'instincts', 'inherited'), scope: 'global' },

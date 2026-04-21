@@ -277,9 +277,16 @@ test('observe.sh creates counter file and increments on each call', () => {
   // Create a minimal detect-project.sh that sets required vars
   const skillRoot = path.join(testDir, 'skill');
   const scriptsDir = path.join(skillRoot, 'scripts');
+  const scriptsLibDir = path.join(scriptsDir, 'lib');
   const hooksDir = path.join(skillRoot, 'hooks');
-  fs.mkdirSync(scriptsDir, { recursive: true });
+  fs.mkdirSync(scriptsLibDir, { recursive: true });
   fs.mkdirSync(hooksDir, { recursive: true });
+
+  // Stub the shared homunculus-dir helper that observe.sh sources
+  fs.writeFileSync(
+    path.join(scriptsLibDir, 'homunculus-dir.sh'),
+    '_ecc_resolve_homunculus_dir() { printf "%s/.local/share/ecc-homunculus\\n" "$HOME"; }\n'
+  );
 
   // Minimal detect-project.sh stub
   fs.writeFileSync(

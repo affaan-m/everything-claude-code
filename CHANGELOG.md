@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### BREAKING
+
+- `continuous-learning-v2`: observer data directory moved from `~/.claude/homunculus/` to `${XDG_DATA_HOME:-$HOME/.local/share}/ecc-homunculus/`. Set `CLV2_HOMUNCULUS_DIR` to override. Run `skills/continuous-learning-v2/scripts/migrate-homunculus.sh` once to move existing data. Required because Claude Code's `--print`-mode sensitive-path guard on `~/.claude/**` blocks instinct writes from the Haiku observer subprocess.
+
 ## 1.10.0 - 2026-04-05
 
 ### Highlights
