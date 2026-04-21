@@ -1463,6 +1463,7 @@ Projects built on or inspired by Everything Claude Code:
 | Project | Description |
 |---------|-------------|
 | [EVC](https://github.com/SaigonXIII/evc) | Marketing agent workspace — 42 commands for content operators, brand governance, and multi-channel publishing. [Visual overview](https://saigonxiii.github.io/evc). |
+| [Claude-Commander](https://github.com/MINHLEFORME123/Claude-Commander) | Local delegation bridge that offloads token-heavy or long-running work from Claude Code to Gemini CLI, with durable session storage and automatic context compaction. |
 
 Built something with ECC? Open a PR to add it here.
 
