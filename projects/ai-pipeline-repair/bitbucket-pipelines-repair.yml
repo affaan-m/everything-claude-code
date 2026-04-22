@@ -1,0 +1,47 @@
+# ==========================================================================
+# AI Pipeline Repair — Bitbucket Pipelines Template
+# ==========================================================================
+# Add this step to your bitbucket-pipelines.yml to enable auto-repair.
+#
+# Usage in bitbucket-pipelines.yml:
+#   pipelines:
+#     default:
+#       - step:
+#           name: Build & Test
+#           script:
+#             - npm test
+#       - step: *ai-repair-step    # anchor reference
+#
+# Required Repository Variables (Settings > Pipelines > Repository Variables):
+#   - ANTHROPIC_API_KEY: Anthropic Claude API key
+#   - BITBUCKET_TOKEN: App password with repository:write and pullrequest:write
+# ==========================================================================
+
+# Define as YAML anchor for reuse
+definitions:
+  steps:
+    - step: &ai-repair-step
+        name: AI Pipeline Repair
+        image: python:3.12-slim
+        trigger: manual          # or set to "automatic" for full automation
+        condition:
+          changesets:
+            includePaths:
+              - "**/*"
+        script:
+          - pip install --quiet -r projects/ai-pipeline-repair/requirements.txt
+          - apt-get update -qq && apt-get install -qq -y git nodejs npm > /dev/null 2>&1 || true
+          - |
+            cd projects/ai-pipeline-repair
+            export REPAIR_PROVIDER=bitbucket
+            export REPO_OWNER=$BITBUCKET_REPO_OWNER
+            export REPO_NAME=$BITBUCKET_REPO_SLUG
+            python -m src.main repair \
+              "$BITBUCKET_PIPELINE_UUID" \
+              --owner "$REPO_OWNER" \
+              --repo "$REPO_NAME" \
+              --provider bitbucket
+        artifacts:
+          - repair-result.json
+        after-script:
+          - echo "Repair agent completed"

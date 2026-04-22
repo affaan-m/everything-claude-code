@@ -1,0 +1,52 @@
+# ── Environment / secrets ─────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+# Keep example files (they contain no secrets)
+!.env.example
+!.env.local.example
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+
+# ── Node / Next.js ────────────────────────────────────────────────────────────
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+# (docker-compose.yml itself is committed; local override files are not)
+docker-compose.override.yml
+
+# ── Uploads / generated data ──────────────────────────────────────────────────
+apps/api/uploads/
+apps/api/.pytest_rag_layer1.db
+
+# ── OS / IDE ──────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/settings.json
+*.swp
+*.swo

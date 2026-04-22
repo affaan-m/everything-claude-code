@@ -1,0 +1,8 @@
+anthropic>=0.40.0
+httpx>=0.27.0
+pydantic>=2.6.0
+pyyaml>=6.0.0
+tenacity>=8.2.0
+structlog>=24.1.0
+click>=8.1.0
+python-gitlab>=4.4.0
