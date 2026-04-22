@@ -1,99 +1,267 @@
 ---
 name: security-bounty-hunter
-description: Hunt for exploitable, bounty-worthy security issues in repositories. Focuses on remotely reachable vulnerabilities that qualify for real reports instead of noisy local-only findings.
-origin: ECC direct-port adaptation
-version: "1.0.0"
+description: Use this skill when scanning repositories for network-exploitable vulnerabilities that qualify for bug bounties on Huntr, HackerOne, or Bugcrowd. Knows which findings get accepted vs rejected, skips local-only patterns, and produces submission-ready reports.
+origin: community
 ---
 
 # Security Bounty Hunter
 
-Use this when the goal is practical vulnerability discovery for responsible disclosure or bounty submission, not a broad best-practices review.
+Systematic vulnerability scanning for bug bounty submissions. Focuses exclusively on network-exploitable findings that platforms actually accept and pay for.
 
-## When to Use
+## When to Activate
 
-- Scanning a repository for exploitable vulnerabilities
-- Preparing a Huntr, HackerOne, or similar bounty submission
-- Triage where the question is "does this actually pay?" rather than "is this theoretically unsafe?"
+- Scanning a GitHub repository for security vulnerabilities
+- Preparing a bug bounty submission for Huntr, HackerOne, or Bugcrowd
+- Evaluating whether a finding is in-scope for a bounty
+- Writing a proof-of-concept for a vulnerability
+- Reviewing code for SSRF, auth bypass, RCE, SQLi, or path traversal
+
+## Core Principle: Network-Exploitable Only
+
+Bug bounty platforms reject local-only findings. Every vulnerability must be triggerable by a remote attacker over the network.
+
+### In-Scope (Platforms Pay For)
+
+| Category | Examples |
+|----------|---------|
+| **SSRF** | Attacker-controlled URLs fetched server-side |
+| **Auth Bypass** | Missing or broken authentication on endpoints |
+| **RCE** | Remote code execution via user input |
+| **SQLi** | SQL injection in query parameters or bodies |
+| **Path Traversal** | Reading files outside intended directories |
+| **XSS (Stored)** | Persistent cross-site scripting |
+| **IDOR** | Accessing other users' data via ID manipulation |
+| **Prototype Pollution** | Polluting Object.prototype via user input in Node.js |
+
+### Out-of-Scope (Platforms Reject)
+
+| Category | Why Rejected |
+|----------|-------------|
+| **Generic pickle/torch deserialization WITHOUT sandbox bypass** | Rejected when the data source is a local file with no attacker control; if attacker supplies serialized data over HTTP, report under In-Scope RCE instead |
+| **ReDoS** | Low severity, rarely paid |
+| **Missing rate limiting** | Informational only |
+| **Self-XSS** | Requires victim to paste code |
+| **Open redirects** | Low severity unless chained |
+| **Missing security headers** | Informational |
+| **Denial of service via resource exhaustion** | Usually informational |
 
 ## How It Works
 
-Bias toward remotely reachable, user-controlled attack paths and throw away patterns that platforms routinely reject as informative or out of scope.
-
-## In-Scope Patterns
-
-These are the kinds of issues that consistently matter:
-
-| Pattern | CWE | Typical impact |
-| --- | --- | --- |
-| SSRF through user-controlled URLs | CWE-918 | internal network access, cloud metadata theft |
-| Auth bypass in middleware or API guards | CWE-287 | unauthorized account or data access |
-| Remote deserialization or upload-to-RCE paths | CWE-502 | code execution |
-| SQL injection in reachable endpoints | CWE-89 | data exfiltration, auth bypass, data destruction |
-| Command injection in request handlers | CWE-78 | code execution |
-| Path traversal in file-serving paths | CWE-22 | arbitrary file read or write |
-| Auto-triggered XSS | CWE-79 | session theft, admin compromise |
-
-## Skip These
-
-These are usually low-signal or out of bounty scope unless the program says otherwise:
-
-- Local-only `pickle.loads`, `torch.load`, or equivalent with no remote path
-- `eval()` or `exec()` in CLI-only tooling
-- `shell=True` on fully hardcoded commands
-- Missing security headers by themselves
-- Generic rate-limiting complaints without exploit impact
-- Self-XSS requiring the victim to paste code manually
-- CI/CD injection that is not part of the target program scope
-- Demo, example, or test-only code
-
-## Workflow
-
-1. Check scope first: program rules, SECURITY.md, disclosure channel, and exclusions.
-2. Find real entrypoints: HTTP handlers, uploads, background jobs, webhooks, parsers, and integration endpoints.
-3. Run static tooling where it helps, but treat it as triage input only.
-4. Read the real code path end to end.
-5. Prove user control reaches a meaningful sink.
-6. Confirm exploitability and impact with the smallest safe PoC possible.
-7. Check for duplicates before drafting a report.
-
-## Example Triage Loop
+### Step 1: Identify Attack Surface
 
 ```bash
-semgrep --config=auto --severity=ERROR --severity=WARNING --json
+# Find all route handlers and endpoints
+grep -rn "@app\.\(get\|post\|put\|delete\|patch\)" --include="*.py" .
+grep -rn "router\.\(get\|post\|put\|delete\|patch\)" --include="*.ts" --include="*.js" .
+grep -rn "app\.\(get\|post\|put\|delete\|patch\)" --include="*.js" .
+
+# Find input handling
+grep -rn "request\.\(args\|form\|json\|data\|files\|headers\)" --include="*.py" .
+grep -rn "req\.\(body\|params\|query\|headers\)" --include="*.ts" --include="*.js" .
 ```
 
-Then manually filter:
+### Step 2: Trace User Input to Dangerous Sinks
 
-- drop tests, demos, fixtures, vendored code
-- drop local-only or non-reachable paths
-- keep only findings with a clear network or user-controlled route
+For each input point, trace data flow to these sinks:
 
-## Report Structure
+```python
+# SSRF sinks
+requests.get(user_input)
+urllib.request.urlopen(user_input)
+httpx.get(user_input)
+
+# SQLi sinks
+cursor.execute(f"SELECT * FROM users WHERE id={user_input}")
+db.engine.execute("SELECT * FROM " + user_input)
+
+# RCE sinks
+os.system(user_input)
+subprocess.call(user_input, shell=True)
+eval(user_input)
+
+# Path traversal sinks
+open(base_path + user_input)
+send_file(user_controlled_path)
+```
+
+```javascript
+// SSRF sinks
+fetch(userInput)
+axios.get(userInput)
+http.request(userInput)
+
+// RCE sinks
+child_process.exec(userInput)
+vm.runInNewContext(userInput)
+eval(userInput)
+
+// SQLi sinks
+db.query(`SELECT * FROM users WHERE id=${userInput}`)
+connection.query("SELECT * FROM " + userInput)
+
+// Prototype pollution sinks
+merge(target, userInput)
+Object.assign(target, JSON.parse(userInput))
+_.defaultsDeep(target, userInput)
+```
+
+### Step 3: Verify Exploitability
+
+Before reporting, confirm:
+
+1. **Input is attacker-controlled** -- comes from HTTP request, not config file
+2. **No sanitization blocks the attack** -- check for input validation, WAFs, parameterized queries
+3. **The sink is reachable** -- follow the code path, check for early returns or auth guards
+4. **Impact is meaningful** -- data leak, code execution, or privilege escalation
+
+### Step 4: Build Proof of Concept
+
+```python
+# PoC template for SSRF
+import requests
+
+target = "https://vulnerable-app.com/api/fetch"
+payload = {"url": "http://169.254.169.254/latest/meta-data/"}
+response = requests.post(target, json=payload)
+print(f"Status: {response.status_code}")
+print(f"Body: {response.text[:500]}")
+```
+
+```python
+# PoC template for SQLi
+import requests
+
+target = "https://vulnerable-app.com/api/users"
+payload = {"id": "1' OR '1'='1' --"}
+response = requests.get(target, params=payload)
+print(f"Status: {response.status_code}")
+try:
+    data = response.json()
+    print(f"Returned {len(data)} records (expected 1)")
+except Exception:
+    print(f"Body: {response.text[:500]}")
+```
+
+## Report Template
 
 ```markdown
-## Description
-[What the vulnerability is and why it matters]
+## Summary
 
-## Vulnerable Code
-[File path, line range, and a small snippet]
+[One sentence describing the vulnerability]
+
+## Vulnerability Type
+
+[SSRF / SQLi / RCE / Auth Bypass / Path Traversal / XSS / IDOR]
+
+## Affected Component
+
+- **File:** `path/to/vulnerable/file.py`
+- **Line:** 42
+- **Function:** `fetch_remote_resource()`
+- **Endpoint:** `POST /api/fetch`
+
+## Description
+
+[2-3 paragraphs explaining the vulnerability, how user input reaches
+the dangerous sink, and what an attacker can achieve]
+
+## Steps to Reproduce
+
+1. Send a POST request to `/api/fetch`
+2. Observe the response contains internal data
+3. This confirms the server processes attacker-controlled input unsafely
 
 ## Proof of Concept
-[Minimal working request or script]
+
+[Include working PoC script]
 
 ## Impact
-[What the attacker can achieve]
 
-## Affected Version
-[Version, commit, or deployment target tested]
+[Describe what an attacker can achieve: data exfiltration, RCE, etc.]
+
+## Suggested Fix
+
+[Provide a concrete code fix]
 ```
 
-## Quality Gate
+## Anti-Patterns
 
-Before submitting:
+### WRONG: Reporting local-only deserialization
 
-- The code path is reachable from a real user or network boundary
-- The input is genuinely user-controlled
-- The sink is meaningful and exploitable
-- The PoC works
-- The issue is not already covered by an advisory, CVE, or open ticket
-- The target is actually in scope for the bounty program
+```python
+# Local file deserialization is out-of-scope -- no attacker control
+torch.load(model_path)          # NOT a bounty -- local file
+pickle.loads(open("model.pkl", "rb").read())  # NOT a bounty -- local file
+```
+
+### RIGHT: Reporting attacker-controlled deserialization
+
+```python
+# Attacker controls the serialized data via HTTP -- valid RCE bounty
+pickle.loads(request.data)      # IS a bounty -- attacker-controlled bytes over HTTP
+torch.load(uploaded_file)       # IS a bounty -- attacker uploaded the file
+```
+
+### WRONG: Reporting without verifying the code path
+
+```python
+# DO NOT report a sink behind authentication you cannot bypass
+@require_admin        # <-- This blocks unauthenticated attackers
+def dangerous_endpoint(request):
+    os.system(request.data["cmd"])  # Sink exists but is not reachable
+```
+
+### WRONG: Submitting duplicate findings
+
+Always check existing reports on the platform before submitting. Search the repo's security advisories and closed issues for prior reports of the same finding.
+
+## Best Practices
+
+- Read the program's scope and rules before scanning
+- Check if the repository has a `SECURITY.md` or bug bounty program link
+- One vulnerability per report -- do not bundle multiple findings
+- Include exact file paths, line numbers, and commit hashes
+- Provide a working PoC, not just a theoretical description
+- Suggest a fix with a code snippet
+- Be professional and concise in report language
+- Follow responsible disclosure timelines
+
+## Platform-Specific Notes
+
+### Huntr
+- Focuses on open-source repositories
+- Fastest triage (usually 48-72 hours)
+- Pays for confirmed vulnerabilities in popular packages
+- Rejects: local deserialization, ReDoS, missing headers
+
+### HackerOne
+- Scope varies per program -- always read program policy
+- Requires clear impact statement
+- Duplicate reports get closed, check first
+
+### Bugcrowd
+- P1-P4 severity scale determines payout
+- P1 (critical): RCE, auth bypass on admin
+- P2 (high): SQLi, SSRF with internal access
+- P3 (medium): stored XSS, IDOR
+- P4 (low): rarely paid
+
+## Examples
+
+```
+User: "Scan this Flask app for vulnerabilities"
+→ Skill identifies routes, traces user input to sinks, finds SSRF in /api/proxy endpoint, generates PoC and submission-ready report.
+
+User: "Is this eval() call exploitable?"
+→ Skill traces input source — if from HTTP request with no sanitization, confirms RCE and builds PoC. If from config file, marks out-of-scope.
+
+User: "Write a bounty report for this SQLi"
+→ Skill generates report using the template: summary, affected component, description, steps to reproduce, PoC script, impact, and suggested fix.
+```
+
+## Related Skills
+
+- `security-review` -- general security checklist
+- `security-scan` -- automated scanning patterns
+- `django-security` -- Django-specific security
+- `springboot-security` -- Spring Boot security
