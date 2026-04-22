@@ -217,8 +217,23 @@ PROMPT
   ) &
   watchdog_pid=$!
 
-  wait "$claude_pid"
-  exit_code=$?
+  # observe.sh sends SIGUSR1 to the observer while an analysis is in flight.
+  # A bare `wait "$claude_pid"` returns 128+signum (e.g. 158 on SIGUSR1) as soon
+  # as the trap fires, while the child is still running, causing a bogus
+  # "Claude analysis failed" log and premature observations-file archival.
+  # Resume waiting until the child actually exits. The outer loop uses
+  # `while :` (not `while kill -0`) so `wait` always runs at least once —
+  # otherwise a fast non-zero exit before the first `kill -0` check would
+  # leave exit_code=0 and mask the failure.
+  exit_code=0
+  while :; do
+    wait "$claude_pid"
+    exit_code=$?
+    if [ "$exit_code" -gt 128 ] && kill -0 "$claude_pid" 2>/dev/null; then
+      continue
+    fi
+    break
+  done
   kill "$watchdog_pid" 2>/dev/null || true
   rm -f "$analysis_file"
 
@@ -277,6 +292,12 @@ while true; do
   if [ "$USR1_FIRED" -eq 1 ]; then
     USR1_FIRED=0
   else
+    # Gate with ANALYZING so a SIGUSR1 during this analysis hits the
+    # re-entrancy check in on_usr1() instead of nesting and clobbering
+    # claude_pid/watchdog_pid.
+    ANALYZING=1
     analyze_observations
+    LAST_ANALYSIS_EPOCH=$(date +%s)
+    ANALYZING=0
   fi
 done

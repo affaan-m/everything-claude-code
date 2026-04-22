@@ -2628,6 +2628,29 @@ async function runTests() {
     passed++;
   else failed++;
 
+  if (
+    test('observer-loop resumes wait when a trapped signal interrupts the claude child', () => {
+      const observerLoopSource = fs.readFileSync(path.join(__dirname, '..', '..', 'skills', 'continuous-learning-v2', 'agents', 'observer-loop.sh'), 'utf8');
+
+      assert.ok(!/\n\s*wait "\$claude_pid"\n\s*exit_code=\$\?\n\s*kill "\$watchdog_pid"/.test(observerLoopSource), 'observer-loop should not use a bare `wait "$claude_pid"` followed by exit_code capture, because SIGUSR1 from observe.sh returns 128+signum while the child is still alive');
+      assert.ok(/while\s*:\s*;\s*do[\s\S]*?wait "\$claude_pid"[\s\S]*?exit_code=\$\?[\s\S]*?if \[ "\$exit_code" -gt 128 \] && kill -0 "\$claude_pid"/.test(observerLoopSource), 'observer-loop must run `wait "$claude_pid"` unconditionally inside a `while :;` loop so fast non-zero exits are not masked when the child has already terminated before kill -0 is evaluated');
+      assert.ok(!/while kill -0 "\$claude_pid"\s*2>\/dev\/null;\s*do\s*\n\s*wait "\$claude_pid"/.test(observerLoopSource), 'observer-loop must not guard the outer wait loop with `while kill -0`: if the child exits quickly before the guard runs, wait is skipped and a non-zero exit_code is lost');
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    test('observer-loop gates the interval-driven analyze_observations call against SIGUSR1 re-entrancy', () => {
+      const observerLoopSource = fs.readFileSync(path.join(__dirname, '..', '..', 'skills', 'continuous-learning-v2', 'agents', 'observer-loop.sh'), 'utf8');
+
+      assert.ok(/if \[ "\$ANALYZING" -eq 1 \]/.test(observerLoopSource), 'on_usr1 must keep its ANALYZING re-entrancy check');
+      assert.ok(/USR1_FIRED=0\s*\n\s*else\s*\n[\s\S]*?ANALYZING=1\s*\n\s*analyze_observations\s*\n[\s\S]*?ANALYZING=0/.test(observerLoopSource), 'the interval-driven analyze_observations call must be wrapped with ANALYZING=1 before and ANALYZING=0 after, so a SIGUSR1 trap firing during the main-loop analysis hits the re-entrancy guard instead of nesting and clobbering claude_pid/watchdog_pid');
+    })
+  )
+    passed++;
+  else failed++;
+
   if (SKIP_BASH) {
     console.log('  ⊘ detect-project exports the resolved Python command (skipped on Windows)');
     passed++;
