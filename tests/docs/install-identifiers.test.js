@@ -70,6 +70,29 @@ for (const relativePath of pluginAndManualInstallDocs) {
   });
 }
 
+const slashNamespaceDocs = [
+  'README.md',
+  'README.zh-CN.md',
+  'docs/ja-JP/README.md',
+  'docs/ko-KR/README.md',
+  'docs/pt-BR/README.md',
+  'docs/tr/README.md',
+  'docs/zh-CN/README.md',
+  'docs/zh-TW/README.md',
+];
+
+for (const relativePath of slashNamespaceDocs) {
+  const content = fs.readFileSync(path.join(repoRoot, relativePath), 'utf8');
+
+  test(`${relativePath} does not use the stale /ecc: slash-command namespace`, () => {
+    assert.ok(
+      !content.includes('/ecc:'),
+      'Expected docs not to reference /ecc: — the plugin manifest registers the name as '
+        + '"everything-claude-code", so the live slash-command namespace is /everything-claude-code:'
+    );
+  });
+}
+
 if (failed > 0) {
   console.log(`\nFailed: ${failed}`);
   process.exit(1);
