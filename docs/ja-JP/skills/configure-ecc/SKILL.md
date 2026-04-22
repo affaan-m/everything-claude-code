@@ -65,7 +65,7 @@ mkdir -p $TARGET/skills $TARGET/rules
 
 ### 2a: スキルカテゴリの選択
 
-27個のスキルが4つのカテゴリに分類されています。`multiSelect: true` で `AskUserQuestion` を使用します：
+31個のスキルが4つのカテゴリに分類されています。`multiSelect: true` で `AskUserQuestion` を使用します：
 
 ```
 Question: "どのスキルカテゴリをインストールしますか？"
@@ -80,7 +80,7 @@ Options:
 
 選択された各カテゴリについて、以下の完全なスキルリストを表示し、ユーザーに確認または特定のものの選択解除を依頼します。リストが4項目を超える場合、リストをテキストとして表示し、`AskUserQuestion` で「リストされたすべてをインストール」オプションと、ユーザーが特定の名前を貼り付けるための「その他」オプションを使用します。
 
-**カテゴリ: Framework & Language（16スキル）**
+**カテゴリ: Framework & Language（20スキル）**
 
 | スキル | 説明 |
 |-------|-------------|
@@ -96,6 +96,10 @@ Options:
 | `java-coding-standards` | Spring Boot 用 Java コーディング標準: 命名、不変性、Optional、ストリーム |
 | `python-patterns` | Pythonic なイディオム、PEP 8、型ヒント、ベストプラクティス |
 | `python-testing` | pytest、TDD、フィクスチャ、モック、パラメータ化による Python テスト |
+| `quarkus-patterns` | Quarkus アーキテクチャ、Camel メッセージング、CDI サービス、Panache データアクセス |
+| `quarkus-security` | Quarkus セキュリティ: JWT/OIDC、RBAC、入力バリデーション、シークレット管理 |
+| `quarkus-tdd` | JUnit 5、Mockito、REST Assured、Camel テストによる Quarkus TDD |
+| `quarkus-verification` | Quarkus 検証: ビルド、静的解析、テスト、ネイティブコンパイル |
 | `springboot-patterns` | Spring Boot アーキテクチャ、REST API、レイヤードサービス、キャッシング、非同期 |
 | `springboot-security` | Spring Security: 認証/認可、検証、CSRF、シークレット、レート制限 |
 | `springboot-tdd` | JUnit 5、Mockito、MockMvc、Testcontainers による Spring Boot TDD |

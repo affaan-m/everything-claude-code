@@ -126,6 +126,10 @@ mkdir -p $TARGET/skills $TARGET/rules
 | `java-coding-standards` | Spring Boot 的 Java 编码标准：命名、不可变性、Optional、流 |
 | `python-patterns` | Pythonic 惯用法、PEP 8、类型提示、最佳实践 |
 | `python-testing` | 使用 pytest、TDD、夹具、模拟、参数化进行 Python 测试 |
+| `quarkus-patterns` | Quarkus 架构、使用 Camel 的事件驱动模式、Panache 数据访问、CDI 服务 |
+| `quarkus-security` | Quarkus 安全：JWT/OIDC 认证、RBAC、Bean 验证、CORS、密钥管理 |
+| `quarkus-tdd` | 使用 JUnit 5、Mockito、REST Assured、Camel 测试进行 Quarkus TDD |
+| `quarkus-verification` | Quarkus 验证：构建、静态分析、测试、安全扫描、原生编译 |
 | `springboot-patterns` | Spring Boot 架构、REST API、分层服务、缓存、异步处理 |
 | `springboot-security` | Spring Security：认证/授权、验证、CSRF、密钥、速率限制 |
 | `springboot-tdd` | 使用 JUnit 5、Mockito、MockMvc、Testcontainers 进行 Spring Boot TDD |
@@ -274,6 +278,7 @@ grep -rn "skills/" $TARGET/skills/
 
 * `django-tdd` 可能会引用 `django-patterns`
 * `laravel-tdd` 可能会引用 `laravel-patterns`
+* `quarkus-tdd` 可能会引用 `quarkus-patterns`
 * `springboot-tdd` 可能会引用 `springboot-patterns`
 * `continuous-learning-v2` 引用 `~/.claude/homunculus/` 目录
 * `python-testing` 可能会引用 `python-patterns`

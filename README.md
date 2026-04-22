@@ -402,6 +402,10 @@ everything-claude-code/
 |   |-- laravel-verification/       # Laravel verification loops (NEW)
 |   |-- python-patterns/            # Python idioms and best practices (NEW)
 |   |-- python-testing/             # Python testing with pytest (NEW)
+|   |-- quarkus-patterns/            # Java Quarkus patterns (NEW)
+|   |-- quarkus-security/            # Quarkus security (NEW)
+|   |-- quarkus-tdd/                 # Quarkus TDD (NEW)
+|   |-- quarkus-verification/        # Quarkus verification (NEW)
 |   |-- springboot-patterns/        # Java Spring Boot patterns (NEW)
 |   |-- springboot-security/        # Spring Boot security (NEW)
 |   |-- springboot-tdd/             # Spring Boot TDD (NEW)
@@ -726,7 +730,7 @@ cp -r everything-claude-code/.agents/skills/* ~/.claude/skills/
 cp -r everything-claude-code/skills/search-first ~/.claude/skills/
 
 # Optional: add niche/framework-specific skills only when needed
-# for s in django-patterns django-tdd laravel-patterns springboot-patterns; do
+# for s in django-patterns django-tdd laravel-patterns springboot-patterns quarkus-patterns; do
 # cp -r everything-claude-code/skills/$s ~/.claude/skills/
 # done
 

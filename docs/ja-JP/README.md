@@ -228,6 +228,10 @@ everything-claude-code/
 |   |-- django-verification/        # Django 検証ループ（新規）
 |   |-- python-patterns/            # Python イディオムとベストプラクティス（新規）
 |   |-- python-testing/             # pytest を使った Python テスト（新規）
+|   |-- quarkus-patterns/            # Quarkus アーキテクチャ、Camel、CDI、Panache パターン（新規）
+|   |-- quarkus-security/           # Quarkus セキュリティ: JWT/OIDC、RBAC、バリデーション（新規）
+|   |-- quarkus-tdd/                # Quarkus TDD: JUnit 5、Mockito、REST Assured（新規）
+|   |-- quarkus-verification/       # Quarkus 検証: ビルド、テスト、ネイティブコンパイル（新規）
 |   |-- springboot-patterns/        # Java Spring Boot パターン（新規）
 |   |-- springboot-security/        # Spring Boot セキュリティ（新規）
 |   |-- springboot-tdd/             # Spring Boot TDD（新規）
