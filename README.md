@@ -1457,6 +1457,7 @@ Projects built on or inspired by Everything Claude Code:
 | Project | Description |
 |---------|-------------|
 | [EVC](https://github.com/SaigonXIII/evc) | Marketing agent workspace — 42 commands for content operators, brand governance, and multi-channel publishing. [Visual overview](https://saigonxiii.github.io/evc). |
+| [trading-skills](https://github.com/VictorVVedtion/trading-skills) | 68 trading legends as Claude Code skills — Warren Buffett reviews your trades, Jim Simons asks if you backtested. Pre-trade risk gate with ghost warnings from SBF, Do Kwon, 3AC. |
 
 Built something with ECC? Open a PR to add it here.
 
