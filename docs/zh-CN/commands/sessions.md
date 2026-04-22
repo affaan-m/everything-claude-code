@@ -4,7 +4,7 @@ description: 管理Claude Code会话历史、别名和会话元数据。
 
 # Sessions 命令
 
-管理 Claude Code 会话历史 - 列出、加载、设置别名和编辑存储在 `~/.claude/sessions/` 中的会话。
+管理 Claude Code 会话历史 - 列出、加载、设置别名和编辑存储在 `~/.claude/session-data/` 中的会话，同时兼容读取旧的 `~/.claude/sessions/` 文件。
 
 ## 用法
 
@@ -91,7 +91,7 @@ const size = sm.getSessionSize(session.sessionPath);
 const aliases = aa.getAliasesForSession(session.filename);
 
 console.log('Session: ' + session.filename);
-console.log('Path: ~/.claude/sessions/' + session.filename);
+console.log('Path: ' + session.sessionPath);
 console.log('');
 console.log('Statistics:');
 console.log('  Lines: ' + stats.lineCount);
@@ -334,7 +334,7 @@ $ARGUMENTS:
 
 ## 备注
 
-* 会话以 Markdown 文件形式存储在 `~/.claude/sessions/`
+* 会话以 Markdown 文件形式存储在 `~/.claude/session-data/`，并继续兼容读取旧的 `~/.claude/sessions/`
 * 别名存储在 `~/.claude/session-aliases.json`
 * 会话 ID 可以缩短（通常前 4-8 个字符就足够唯一）
 * 为经常引用的会话使用别名
