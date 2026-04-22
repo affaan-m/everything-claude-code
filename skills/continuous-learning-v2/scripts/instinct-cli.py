@@ -28,6 +28,16 @@ from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 from typing import Optional
 
+# Force UTF-8 stdout/stderr on Windows so the confidence bar (█░) and any
+# non-ASCII instinct metadata don't crash `status` under cp1250/cp1252.
+# No-op on Linux/macOS, where stdout is already UTF-8 by default.
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 try:
     import fcntl
     _HAS_FCNTL = True
