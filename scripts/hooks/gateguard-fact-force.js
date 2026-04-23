@@ -326,6 +326,29 @@ function routineBashMsg() {
   ].join('\n');
 }
 
+// --- Subagent detection ---
+//
+// Claude Code's hook payload includes `parent_tool_use_id` for tool calls
+// spawned inside a Task/Agent subagent. Top-level tool calls have no such
+// parent. When a subagent is present, the main session has already satisfied
+// the fact-forcing gate for the user's request — re-gating every subagent
+// produces pure friction (see #1548) without adding any safety value.
+// Destructive Bash remains gated even in subagent context (safety gate,
+// not a friction gate).
+
+function isSubagentInvocation(data) {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
+  const candidates = [data.parent_tool_use_id, data.parentToolUseId];
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // --- Deny helper ---
 
 function denyResult(reason) {
@@ -359,7 +382,17 @@ function run(rawInput) {
   const TOOL_MAP = { edit: 'Edit', write: 'Write', multiedit: 'MultiEdit', bash: 'Bash' };
   const toolName = TOOL_MAP[rawToolName.toLowerCase()] || rawToolName;
 
+  // Subagents (Task/Agent tool) inherit the user's instruction from the parent
+  // session, which has already satisfied the fact-forcing gate. Bypass the
+  // friction gates for subagent invocations (see #1548). Destructive Bash is
+  // still gated below as a safety check, regardless of subagent context.
+  const inSubagent = isSubagentInvocation(data);
+
   if (toolName === 'Edit' || toolName === 'Write') {
+    if (inSubagent) {
+      return rawInput; // allow — parent session already gated
+    }
+
     const filePath = toolInput.file_path || '';
     if (!filePath || isClaudeSettingsPath(filePath)) {
       return rawInput; // allow
@@ -374,6 +407,10 @@ function run(rawInput) {
   }
 
   if (toolName === 'MultiEdit') {
+    if (inSubagent) {
+      return rawInput; // allow — parent session already gated
+    }
+
     const edits = toolInput.edits || [];
     for (const edit of edits) {
       const filePath = edit.file_path || '';
@@ -392,13 +429,18 @@ function run(rawInput) {
     }
 
     if (DESTRUCTIVE_BASH.test(command)) {
-      // Gate destructive commands on first attempt; allow retry after facts presented
+      // Gate destructive commands on first attempt; allow retry after facts presented.
+      // Safety gate: applies in both top-level and subagent contexts.
       const key = '__destructive__' + crypto.createHash('sha256').update(command).digest('hex').slice(0, 16);
       if (!isChecked(key)) {
         markChecked(key);
         return denyResult(destructiveBashMsg());
       }
       return rawInput; // allow retry after facts presented
+    }
+
+    if (inSubagent) {
+      return rawInput; // allow — parent session already gated the routine-bash intent
     }
 
     if (!isChecked(ROUTINE_BASH_SESSION_KEY)) {
