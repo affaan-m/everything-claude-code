@@ -69,6 +69,28 @@
 
 ## 新機能
 
+### v1.10.0 — サーフェスリフレッシュ、オペレーターワークフロー、ECC 2.0 アルファ（2026年4月）
+
+- **ダッシュボード GUI** — 新しい Tkinter ベースのデスクトップアプリケーション（`ecc_dashboard.py` または `npm run dashboard`）。ダーク/ライトテーマ切り替え、フォントカスタマイズ、ヘッダーとタスクバーのプロジェクトロゴに対応。
+- **公開サーフェスを実リポジトリと同期** — メタデータ、カタログ件数、プラグインマニフェスト、インストール関連ドキュメントが実際の OSS サーフェスと一致：38 エージェント、156 スキル、72 レガシーコマンド shim。
+- **オペレーター & アウトバウンドワークフローの拡張** — `brand-voice`、`social-graph-ranker`、`connections-optimizer`、`customer-billing-ops`、`ecc-tools-cost-audit`、`google-workspace-ops`、`project-flow-ops`、`workspace-surface-audit` でオペレーターレーンを補強。
+- **メディア & ローンチツール** — `manim-video`、`remotion-video-creation`、およびアップグレードされたソーシャル配信サーフェスにより、技術解説とローンチコンテンツを同一システムで扱えます。
+- **フレームワーク & 製品サーフェスの拡張** — `nestjs-patterns`、より充実した Codex/OpenCode インストールサーフェス、拡張されたクロスハーネスパッケージングにより、Claude Code 以外でも利用可能。
+- **ECC 2.0 アルファをリポジトリに含む** — `ecc2/` の Rust コントロールプレーンプロトタイプがローカルでビルドされ、`dashboard`、`start`、`sessions`、`status`、`stop`、`resume`、`daemon` コマンドを提供。まだ一般リリースではなくアルファ段階。
+- **エコシステムの強化** — AgentShield、ECC Tools のコスト制御、ビリングポータル、ウェブサイトリフレッシュが別サイロに分かれず、コアプラグイン周辺で継続的に出荷されます。
+
+### v1.9.0 — 選択的インストール & 多言語拡張（2026年3月）
+
+- **選択的インストールアーキテクチャ** — `install-plan.js` と `install-apply.js` を用いたマニフェスト駆動のインストールパイプラインで、対象コンポーネントのみをインストール。状態ストアがインストール済み項目を追跡し、増分アップデートを可能にします。
+- **6 つの新規エージェント** — `typescript-reviewer`、`pytorch-build-resolver`、`java-build-resolver`、`java-reviewer`、`kotlin-reviewer`、`kotlin-build-resolver` により言語カバレッジを 10 言語に拡大。
+- **新スキル** — ディープラーニング向け `pytorch-patterns`、API リファレンス調査向け `documentation-lookup`、モダン JS ツールチェーン向け `bun-runtime` および `nextjs-turbopack`、8 つの運用ドメインスキル、`mcp-server-patterns`。
+- **セッション & 状態インフラ** — クエリ CLI 付き SQLite 状態ストア、構造化記録用のセッションアダプター、自己改善スキルの基盤となるスキル進化（evolution）の基礎。
+- **オーケストレーションの刷新** — ハーネス監査スコアを決定論的に、オーケストレーション状態とランチャー互換性を強化、5 層ガードによるオブザーバーループ防止。
+- **オブザーバーの安定性** — スロットリングとテールサンプリングによるメモリ暴発修正、サンドボックスアクセス修正、遅延開始ロジック、再入ガード。
+- **12 言語エコシステム** — 既存の TypeScript、Python、Go、共通ルールに加え、Java、PHP、Perl、Kotlin/Android/KMP、C++、Rust の新規ルールを追加。
+- **コミュニティ貢献** — 韓国語・中国語翻訳、biome フック最適化、ビデオ処理スキル、運用スキル、PowerShell インストーラー、Antigravity IDE サポート。
+- **CI の強化** — 19 件のテスト失敗修正、カタログ件数強制、インストールマニフェスト検証、全テストグリーン。
+
 ### v1.4.1 — バグ修正（2026年2月）
 
 - **instinctインポート時のコンテンツ喪失を修正** — `/instinct-import`実行時に`parse_instinct_file()`がfrontmatter後のすべてのコンテンツ（Action、Evidence、Examplesセクション）を暗黙的に削除していた問題を修正。コミュニティ貢献者@ericcai0814により解決されました（[#148](https://github.com/affaan-m/everything-claude-code/issues/148), [#161](https://github.com/affaan-m/everything-claude-code/pull/161)）
@@ -105,13 +127,25 @@
 
 ### ステップ 1：プラグインをインストール
 
+> NOTE: プラグインは便利ですが、Claude Code ビルドがセルフホスト型マーケットプレイスのエントリを解決できない場合は、OSS インストーラーが依然として最も信頼性の高い経路です。
+
 ```bash
 # マーケットプレイスを追加
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # プラグインをインストール
-/plugin install everything-claude-code
+/plugin install everything-claude-code@everything-claude-code
 ```
+
+### ネーミング + マイグレーションに関する注意
+
+ECC には現在 3 つの公開識別子があり、相互に互換性はありません：
+
+- GitHub ソースリポジトリ：`affaan-m/everything-claude-code`
+- Claude マーケットプレイス/プラグイン識別子：`everything-claude-code@everything-claude-code`
+- npm パッケージ：`ecc-universal`
+
+これは意図的なものです。Anthropic のマーケットプレイス/プラグインインストールは正規のプラグイン識別子をキーとするため、ECC はリスト名・`/plugin install`・`/plugin list`・リポジトリドキュメントを 1 つの公開インストールサーフェスに揃える目的で `everything-claude-code@everything-claude-code` に標準化しました。過去の投稿には旧来の短い略称が残っている場合がありますが、その略称は非推奨です。別件として、npm パッケージは `ecc-universal` のまま維持されているため、npm インストールとマーケットプレイスインストールは意図的に異なる名前を使用します。
 
 ### ステップ2：ルールをインストール（必須）
 
@@ -133,7 +167,10 @@ cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
 ### ステップ3：使用開始
 
 ```bash
-# コマンドを試す（プラグインはネームスペース形式）
+# スキルが主要なワークフローサーフェスです。
+# ECC が commands/ から移行している間、既存のスラッシュコマンド名も引き続き動作します。
+
+# プラグインインストール時はネームスペース形式
 /ecc:plan "ユーザー認証を追加"
 
 # 手動インストール（オプション2）は短縮形式：
@@ -143,7 +180,38 @@ cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**完了です！** これで13のエージェント、43のスキル、31のコマンドにアクセスできます。
+**完了です！** これで 48 エージェント、183 スキル、79 のレガシーコマンド shim にアクセスできます。
+
+### ダッシュボード GUI
+
+デスクトップダッシュボードを起動して、ECC コンポーネントを視覚的に探索できます：
+
+```bash
+npm run dashboard
+# または
+python3 ./ecc_dashboard.py
+```
+
+**機能：**
+- タブインターフェース：Agents、Skills、Commands、Rules、Settings
+- ダーク/ライトテーマ切り替え
+- フォントカスタマイズ（ファミリー & サイズ）
+- ヘッダーとタスクバーのプロジェクトロゴ
+- すべてのコンポーネントに対する検索/フィルター
+
+### マルチモデルコマンドには別途セットアップが必要
+
+> WARNING: `multi-*` コマンドは上記の基本プラグイン/ルールインストールに **含まれていません**。
+>
+> `/multi-plan`、`/multi-execute`、`/multi-backend`、`/multi-frontend`、`/multi-workflow` を使用するには、`ccg-workflow` ランタイムも併せてインストールする必要があります。
+>
+> `npx ccg-workflow` で初期化してください。
+>
+> このランタイムは、これらのコマンドが期待する外部依存関係を提供します：
+> - `~/.claude/bin/codeagent-wrapper`
+> - `~/.claude/.ccg/prompts/*`
+>
+> `ccg-workflow` がないと、これらの `multi-*` コマンドは正常に動作しません。
 
 ---
 
