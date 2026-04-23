@@ -25,21 +25,21 @@ const skillHealthDoc = fs.readFileSync(path.join(__dirname, '..', '..', 'command
 
 test('sessions command uses shared inline resolver in all node scripts', () => {
   assert.strictEqual((sessionsDoc.match(/const _r = /g) || []).length, 6);
-  assert.strictEqual((sessionsDoc.match(/\['marketplace','ecc'\]/g) || []).length, 6);
-  assert.strictEqual((sessionsDoc.match(/\['marketplace','everything-claude-code'\]/g) || []).length, 6);
+  assert.strictEqual((sessionsDoc.match(/\['marketplaces','ecc'\]/g) || []).length, 6);
+  assert.strictEqual((sessionsDoc.match(/\['marketplaces','everything-claude-code'\]/g) || []).length, 6);
   assert.strictEqual((sessionsDoc.match(/\['ecc','everything-claude-code'\]/g) || []).length, 6);
 });
 
 test('skill-health command uses shared inline resolver in all shell snippets', () => {
   assert.strictEqual((skillHealthDoc.match(/var r=/g) || []).length, 3);
-  assert.strictEqual((skillHealthDoc.match(/\['marketplace','ecc'\]/g) || []).length, 3);
-  assert.strictEqual((skillHealthDoc.match(/\['marketplace','everything-claude-code'\]/g) || []).length, 3);
+  assert.strictEqual((skillHealthDoc.match(/\['marketplaces','ecc'\]/g) || []).length, 3);
+  assert.strictEqual((skillHealthDoc.match(/\['marketplaces','everything-claude-code'\]/g) || []).length, 3);
   assert.strictEqual((skillHealthDoc.match(/\['ecc','everything-claude-code'\]/g) || []).length, 3);
 });
 
 test('inline resolver covers current and legacy marketplace plugin roots', () => {
-  assert.ok(INLINE_RESOLVE.includes('"marketplace","ecc"'));
-  assert.ok(INLINE_RESOLVE.includes('"marketplace","everything-claude-code"'));
+  assert.ok(INLINE_RESOLVE.includes('"marketplaces","ecc"'));
+  assert.ok(INLINE_RESOLVE.includes('"marketplaces","everything-claude-code"'));
 });
 
 console.log(`Passed: ${passed}`);

@@ -158,10 +158,10 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('finds marketplace current plugin install at ~/.claude/plugins/marketplace/ecc', () => {
+  if (test('finds marketplace current plugin install at ~/.claude/plugins/marketplaces/ecc', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupLegacyPluginInstall(homeDir, ['marketplace', 'ecc']);
+      const expected = setupLegacyPluginInstall(homeDir, ['marketplaces', 'ecc']);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected);
     } finally {
@@ -169,10 +169,10 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('finds marketplace legacy plugin install at ~/.claude/plugins/marketplace/everything-claude-code', () => {
+  if (test('finds marketplace legacy plugin install at ~/.claude/plugins/marketplaces/everything-claude-code', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupLegacyPluginInstall(homeDir, ['marketplace', 'everything-claude-code']);
+      const expected = setupLegacyPluginInstall(homeDir, ['marketplaces', 'everything-claude-code']);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected);
     } finally {
@@ -183,7 +183,7 @@ function runTests() {
   if (test('prefers exact legacy plugin install over plugin cache', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupLegacyPluginInstall(homeDir, ['marketplace', 'ecc']);
+      const expected = setupLegacyPluginInstall(homeDir, ['marketplaces', 'ecc']);
       setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected);
@@ -298,7 +298,7 @@ function runTests() {
   if (test('INLINE_RESOLVE discovers exact legacy plugin root when env var is unset', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupLegacyPluginInstall(homeDir, ['marketplace', 'ecc']);
+      const expected = setupLegacyPluginInstall(homeDir, ['marketplaces', 'ecc']);
       const { execFileSync } = require('child_process');
       const result = execFileSync('node', [
         '-e', `console.log(${INLINE_RESOLVE})`,
