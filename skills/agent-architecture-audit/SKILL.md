@@ -218,7 +218,8 @@ Audits should produce structured reports following this shape:
 
 ```json
 {
-  "schema_version": "oh-my-agent-check.report.v1",
+{
+  "schema_version": "ecc.agent-architecture-audit.report.v1",
   "executive_verdict": {
     "overall_health": "high_risk",
     "primary_failure_mode": "string",
@@ -227,7 +228,6 @@ Audits should produce structured reports following this shape:
   "scope": {
     "target_name": "string",
     "model_stack": ["string"],
-    "symptoms": ["string"],
     "layers_to_audit": ["string"]
   },
   "findings": [
