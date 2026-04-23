@@ -8,6 +8,15 @@ origin: ECC
 
 Comprehensive Playwright patterns for building stable, fast, and maintainable E2E test suites.
 
+## When to Activate
+
+- Writing end-to-end tests for critical user flows (login, checkout, onboarding)
+- Setting up a Playwright test suite from scratch
+- Diagnosing or fixing flaky E2E tests
+- Integrating E2E tests into a CI/CD pipeline
+- Reviewing test artifacts (screenshots, videos, traces)
+- Adding cross-browser coverage for web applications
+
 ## Test File Organization
 
 ```
