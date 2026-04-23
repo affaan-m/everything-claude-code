@@ -119,6 +119,8 @@ Comece em menos de 2 minutos:
 
 ### Passo 1: Instalar o Plugin
 
+> NOTE: O plugin é conveniente, mas se sua build do Claude Code tiver dificuldade para resolver entradas de marketplace auto-hospedadas, o instalador OSS abaixo ainda é o caminho mais confiável.
+
 ```bash
 # Adicionar marketplace
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
@@ -126,6 +128,16 @@ Comece em menos de 2 minutos:
 # Instalar plugin
 /plugin install everything-claude-code@everything-claude-code
 ```
+
+### Observação sobre Nomenclatura + Migração
+
+O ECC agora possui três identificadores públicos e eles não são intercambiáveis:
+
+- Repositório fonte no GitHub: `affaan-m/everything-claude-code`
+- Identificador de marketplace/plugin do Claude: `everything-claude-code@everything-claude-code`
+- Pacote npm: `ecc-universal`
+
+Isso é intencional. As instalações de marketplace/plugin da Anthropic são indexadas por um identificador canônico de plugin, portanto o ECC padronizou o nome da listagem, `/plugin install`, `/plugin list` e a documentação do repositório em uma única superfície pública de instalação: `everything-claude-code@everything-claude-code`. Publicações antigas ainda podem mostrar o apelido curto anterior; essa abreviação está descontinuada. Separadamente, o pacote npm permaneceu como `ecc-universal`, então instalações via npm e via marketplace intencionalmente usam nomes diferentes.
 
 ### Passo 2: Instalar as Regras (Obrigatório)
 
@@ -160,6 +172,9 @@ npx ecc-install typescript
 ### Passo 3: Começar a Usar
 
 ```bash
+# Skills são a superfície principal de workflow.
+# Os nomes de slash commands existentes continuam funcionando enquanto o ECC migra de commands/.
+
 # Experimente um comando (a instalação do plugin usa forma com namespace)
 /ecc:plan "Adicionar autenticação de usuário"
 
@@ -170,7 +185,38 @@ npx ecc-install typescript
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**Pronto!** Você agora tem acesso a 28 agentes, 116 skills e 59 comandos.
+**Pronto!** Você agora tem acesso a 48 agentes, 183 skills e 79 legacy command shims.
+
+### Dashboard GUI
+
+Inicie o dashboard desktop para explorar visualmente os componentes do ECC:
+
+```bash
+npm run dashboard
+# ou
+python3 ./ecc_dashboard.py
+```
+
+**Recursos:**
+- Interface com abas: Agents, Skills, Commands, Rules, Settings
+- Alternância de tema claro/escuro
+- Personalização de fonte (família & tamanho)
+- Logo do projeto no cabeçalho e na barra de tarefas
+- Busca/filtro em todos os componentes
+
+### Comandos multi-modelo exigem configuração adicional
+
+> WARNING: Os comandos `multi-*` **não** estão incluídos na instalação básica de plugin/regras acima.
+>
+> Para usar `/multi-plan`, `/multi-execute`, `/multi-backend`, `/multi-frontend` e `/multi-workflow`, você também precisa instalar o runtime `ccg-workflow`.
+>
+> Inicialize com `npx ccg-workflow`.
+>
+> Esse runtime fornece as dependências externas que esses comandos esperam:
+> - `~/.claude/bin/codeagent-wrapper`
+> - `~/.claude/.ccg/prompts/*`
+>
+> Sem `ccg-workflow`, esses comandos `multi-*` não funcionarão corretamente.
 
 ---
 
