@@ -1,6 +1,6 @@
 ---
 name: xquik
-description: X/Twitter data access via Xquik's remote MCP server — search tweets, look up users, extract data, post, monitor accounts, run giveaway draws, and query trends. 2 tools covering 122 endpoints. Use when the user needs X/Twitter data or automation and has an Xquik API key.
+description: X/Twitter data access via Xquik's remote MCP server - search tweets, look up users, extract data, post, monitor accounts, run giveaway draws, and query trends. 2 tools covering 122 endpoints. Use when the user needs X/Twitter data or automation and has an Xquik API key.
 origin: ECC
 ---
 
@@ -10,7 +10,7 @@ origin: ECC
 
 X/Twitter data and automation via Xquik's remote MCP server. Two tools cover 122 API endpoints: search, lookup, extraction, writing, monitoring, giveaway draws, webhooks, and trends.
 
-## When to Use
+## When to Activate
 
 - User wants to search tweets, look up profiles, or extract X/Twitter data
 - User wants to post, delete, like, retweet, or follow programmatically
@@ -34,7 +34,7 @@ Add to `~/.claude.json` mcpServers:
 }
 ```
 
-Get an API key at xquik.com. The MCP server is remote — no local process to run.
+Get an API key at xquik.com. The MCP server is remote - no local process to run.
 
 ## MCP Tools
 
@@ -42,7 +42,7 @@ Xquik exposes two tools:
 
 ### `explore`
 
-Searches the Xquik API spec. Use it to discover what endpoints exist before calling `xquik`. Free — does not consume credits.
+Searches the Xquik API spec. Use it to discover what endpoints exist before calling `xquik`. Free - does not consume credits.
 
 **Parameters:**
 - `query` (string, required): Natural-language or keyword query (e.g. "search tweets", "get followers", "post tweet")
@@ -63,7 +63,7 @@ Executes any Xquik API endpoint. Consumes credits for data-fetching operations.
 
 ## How It Works
 
-### Step 1 — Discover
+### Step 1 - Discover
 
 Use `explore` to find the right endpoint before calling `xquik`. This avoids guessing at paths and surfaces the correct parameter names.
 
@@ -71,7 +71,7 @@ Use `explore` to find the right endpoint before calling `xquik`. This avoids gue
 explore({ query: "search tweets by keyword" })
 ```
 
-### Step 2 — Execute
+### Step 2 - Execute
 
 Call `xquik` with the endpoint and parameters returned by `explore`.
 
@@ -82,7 +82,7 @@ xquik({
 })
 ```
 
-### Step 3 — Iterate
+### Step 3 - Iterate
 
 If pagination is available (the response includes a `next_cursor` or similar field), pass it back to `xquik` in the next call. Check the `explore` output for pagination parameters.
 
@@ -169,11 +169,11 @@ xquik({
 **Do not hardcode API keys.**
 
 ```json
-// Wrong — exposes key in committed config
+// Wrong - exposes key in committed config
 "headers": { "Authorization": "Bearer xq_abc123live" }
 ```
 
-Use an environment variable reference or a secrets manager. Never commit API keys to version control. The `~/.claude.json` config is user-local and gitignored — store keys there, but treat them with the same care as any credential.
+Use an environment variable reference or a secrets manager. Never commit API keys to version control. The `~/.claude.json` config is user-local and gitignored - store keys there, but treat them with the same care as any credential.
 
 **Do not poll when webhooks are available.**
 
@@ -207,6 +207,6 @@ These are the major functional areas. Use `explore` to enumerate endpoints withi
 
 ## Related Skills
 
-- `x-api` — Direct X API integration (OAuth, raw HTTP, no MCP)
-- `mcp-server-patterns` — How to build or configure MCP servers
-- `content-engine` — Generate platform-native content for X posts
+- `x-api` - Direct X API integration (OAuth, raw HTTP, no MCP)
+- `mcp-server-patterns` - How to build or configure MCP servers
+- `content-engine` - Generate platform-native content for X posts
