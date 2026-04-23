@@ -135,7 +135,7 @@ rg "must.*tool|必须.*工具|required.*call" --type md
 rg "tool_call|toolCall|tool_use" --type py --type ts
 
 # Hidden LLM calls outside main agent loop
-rg "completion|chat\.create|messages\.create|llm\.invoke" --type py --type ts
+rg "completion|chat\.create|messages\.create|llm\.invoke"
 
 # Memory admission without user-correction priority
 rg "memory.*admit|long.*term.*update|persist.*memory" --type py --type ts
