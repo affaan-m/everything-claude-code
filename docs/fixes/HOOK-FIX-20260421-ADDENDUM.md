@@ -87,9 +87,9 @@ hook command が `"C:\Program Files\Git\bin\bash.exe" "C:\Users\...\wrapper.sh"`
 ### 回避策
 
 第1トークンを bash.exe のフルパス＋スペース付きパスにしないこと：
-1. ✅ `bash` （PATH 解決の単一トークン）— 夜fix / hooks.json パターン
-2. ✅ `.sh` 直接パス（Claude Code の .sh ハンドリングに依存）— 朝fix
-3. ❌ `"C:\Program Files\Git\bin\bash.exe" "<path>"` — 1トークン目が quoted で空白込み
+1. `OK:` `bash` （PATH 解決の単一トークン）— 夜fix / hooks.json パターン
+2. `OK:` `.sh` 直接パス（Claude Code の .sh ハンドリングに依存）— 朝fix
+3. `BAD:` `"C:\Program Files\Git\bin\bash.exe" "<path>"` — 1トークン目が quoted で空白込み
 
 ## 結論
 
