@@ -81,6 +81,16 @@
 
 ## 最新动态
 
+### v1.10.0 — 界面刷新、运营工作流与 ECC 2.0 Alpha（2026 年 4 月）
+
+* **Dashboard GUI** — 全新基于 Tkinter 的桌面应用程序（`ecc_dashboard.py` 或 `npm run dashboard`），支持深色/浅色主题切换、字体自定义，以及页眉和任务栏中的项目 Logo。
+* **公开界面与实际仓库同步** — 元数据、目录数量、插件清单与安装相关文档现已与实际 OSS 界面一致：38 个智能体、156 项技能、72 个 legacy 命令 shim。
+* **运营与对外工作流扩展** — `brand-voice`、`social-graph-ranker`、`connections-optimizer`、`customer-billing-ops`、`ecc-tools-cost-audit`、`google-workspace-ops`、`project-flow-ops`、`workspace-surface-audit` 进一步充实运营通道。
+* **媒体与发布工具** — `manim-video`、`remotion-video-creation` 以及升级后的社交发布界面，使技术讲解与发布内容成为同一系统的一部分。
+* **框架与产品界面扩展** — `nestjs-patterns`、更丰富的 Codex/OpenCode 安装界面，以及扩展后的跨 harness 打包，让本仓库在 Claude Code 之外仍然可用。
+* **ECC 2.0 Alpha 已进入主仓** — `ecc2/` 中的 Rust 控制面原型现已可在本地构建，并提供 `dashboard`、`start`、`sessions`、`status`、`stop`、`resume`、`daemon` 命令。仍为 alpha 阶段，尚非正式发布。
+* **生态系统巩固** — AgentShield、ECC Tools 成本控制、计费门户与网站更新等工作继续围绕核心插件交付，不再分散到独立仓库。
+
 ### v1.9.0 — 选择性安装与语言扩展 (2026年3月)
 
 * **选择性安装架构** — 基于清单的安装流程，使用 `install-plan.js` 和 `install-apply.js` 进行针对性组件安装。状态存储跟踪已安装内容并支持增量更新。
@@ -156,6 +166,8 @@
 
 ### 步骤 1：安装插件
 
+> NOTE: 插件方式很方便，但如果你的 Claude Code 构建在解析自托管市场条目时遇到问题，下方的 OSS 安装器仍是最可靠的路径。
+
 ```bash
 # Add marketplace
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
@@ -163,6 +175,16 @@
 # Install plugin
 /plugin install everything-claude-code@everything-claude-code
 ```
+
+### 命名 + 迁移说明
+
+ECC 现在有三个对外公开的标识符，且彼此不可互换：
+
+- GitHub 源仓库：`affaan-m/everything-claude-code`
+- Claude 市场/插件标识符：`everything-claude-code@everything-claude-code`
+- npm 包：`ecc-universal`
+
+这是有意设计。Anthropic 的市场/插件安装以规范的插件标识符为键，因此 ECC 将列表名称、`/plugin install`、`/plugin list` 和仓库文档统一指向同一个公开安装入口 `everything-claude-code@everything-claude-code`。旧帖子中可能仍然出现早期的短别称；该简写已弃用。另一方面，npm 包保留为 `ecc-universal`，因此 npm 安装与市场安装会有意使用不同的名称。
 
 ### 步骤 2：安装规则（必需）
 
@@ -205,6 +227,9 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 ### 步骤 3：开始使用
 
 ```bash
+# Skills are the primary workflow surface.
+# Existing slash-style command names still work while ECC migrates off commands/.
+
 # Try a command (plugin install uses namespaced form)
 /ecc:plan "Add user authentication"
 
@@ -215,7 +240,38 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**搞定！** 你现在可以使用 48 个智能体、183 项技能和 79 个命令了。
+**搞定！** 你现在可以使用 48 个智能体、183 项技能和 79 个 legacy 命令 shim。
+
+### Dashboard GUI
+
+启动桌面 Dashboard 可视化浏览 ECC 组件：
+
+```bash
+npm run dashboard
+# 或
+python3 ./ecc_dashboard.py
+```
+
+**功能：**
+- 标签式界面：Agents、Skills、Commands、Rules、Settings
+- 深色/浅色主题切换
+- 字体自定义（字族 & 字号）
+- 页眉和任务栏中的项目 Logo
+- 跨所有组件的搜索/筛选
+
+### 多模型命令需要额外设置
+
+> WARNING: `multi-*` 命令 **不包含** 在上方的基础插件/规则安装中。
+>
+> 要使用 `/multi-plan`、`/multi-execute`、`/multi-backend`、`/multi-frontend`、`/multi-workflow`，你必须同时安装 `ccg-workflow` 运行时。
+>
+> 使用 `npx ccg-workflow` 初始化。
+>
+> 该运行时提供这些命令所需的外部依赖：
+> - `~/.claude/bin/codeagent-wrapper`
+> - `~/.claude/.ccg/prompts/*`
+>
+> 没有 `ccg-workflow`，这些 `multi-*` 命令将无法正常运行。
 
 ***
 
