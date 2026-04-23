@@ -74,6 +74,28 @@
 
 ## 새로운 소식
 
+### v1.10.0 — 서피스 리프레시, 운영자 워크플로우, ECC 2.0 알파 (2026년 4월)
+
+- **대시보드 GUI** — 새로운 Tkinter 기반 데스크톱 애플리케이션(`ecc_dashboard.py` 또는 `npm run dashboard`). 다크/라이트 테마 토글, 폰트 커스터마이징, 헤더와 작업 표시줄의 프로젝트 로고를 지원합니다.
+- **공개 서피스를 실제 저장소와 동기화** — 메타데이터, 카탈로그 수량, 플러그인 매니페스트, 설치 관련 문서가 실제 OSS 서피스와 일치합니다: 38개 에이전트, 156개 스킬, 72개 legacy 커맨드 shim.
+- **운영자 및 아웃바운드 워크플로우 확장** — `brand-voice`, `social-graph-ranker`, `connections-optimizer`, `customer-billing-ops`, `ecc-tools-cost-audit`, `google-workspace-ops`, `project-flow-ops`, `workspace-surface-audit`로 운영자 레인을 보강.
+- **미디어 및 런칭 도구** — `manim-video`, `remotion-video-creation`, 그리고 업그레이드된 소셜 퍼블리싱 서피스로 기술 설명 콘텐츠와 런칭 콘텐츠를 동일 시스템에 포함.
+- **프레임워크 및 제품 서피스 확장** — `nestjs-patterns`, 더 풍부해진 Codex/OpenCode 설치 서피스, 확장된 크로스 하네스 패키징으로 Claude Code 외에서도 유용하게 사용 가능.
+- **ECC 2.0 알파가 리포에 포함** — `ecc2/`의 Rust 컨트롤 플레인 프로토타입이 로컬에서 빌드되며 `dashboard`, `start`, `sessions`, `status`, `stop`, `resume`, `daemon` 커맨드를 제공합니다. 아직 일반 릴리스가 아닌 알파 단계입니다.
+- **생태계 강화** — AgentShield, ECC Tools 비용 제어, 빌링 포털, 웹사이트 갱신 작업이 별도 사일로로 흩어지지 않고 코어 플러그인 주변에서 계속 출하됩니다.
+
+### v1.9.0 — 선택적 설치 & 다국어 확장 (2026년 3월)
+
+- **선택적 설치 아키텍처** — `install-plan.js`와 `install-apply.js` 기반의 매니페스트 주도 설치 파이프라인으로 타겟 컴포넌트만 설치. 상태 저장소가 설치된 항목을 추적하여 증분 업데이트가 가능합니다.
+- **6개의 신규 에이전트** — `typescript-reviewer`, `pytorch-build-resolver`, `java-build-resolver`, `java-reviewer`, `kotlin-reviewer`, `kotlin-build-resolver`로 언어 커버리지를 10개로 확대.
+- **신규 스킬** — 딥러닝 워크플로우용 `pytorch-patterns`, API 레퍼런스 리서치용 `documentation-lookup`, 모던 JS 툴체인용 `bun-runtime` 및 `nextjs-turbopack`, 8개의 운영 도메인 스킬, `mcp-server-patterns`.
+- **세션 & 상태 인프라** — 쿼리 CLI를 갖춘 SQLite 상태 저장소, 구조화된 기록용 세션 어댑터, 자기 개선 스킬의 기반이 되는 스킬 진화(evolution) 기반.
+- **오케스트레이션 정비** — 하네스 감사 점수를 결정적으로 변경, 오케스트레이션 상태 및 런처 호환성 강화, 5계층 가드로 옵저버 루프 방지.
+- **옵저버 안정성** — 스로틀링과 테일 샘플링으로 메모리 폭증 수정, 샌드박스 접근 수정, 지연 시작 로직, 재진입 가드.
+- **12개 언어 생태계** — 기존 TypeScript, Python, Go, 공통 룰에 더해 Java, PHP, Perl, Kotlin/Android/KMP, C++, Rust 신규 룰 추가.
+- **커뮤니티 기여** — 한국어·중국어 번역, biome 훅 최적화, 비디오 처리 스킬, 운영 스킬, PowerShell 인스톨러, Antigravity IDE 지원.
+- **CI 강화** — 19건의 테스트 실패 수정, 카탈로그 개수 강제, 설치 매니페스트 검증, 전체 테스트 통과.
+
 ### v1.8.0 — 하네스 성능 시스템 (2026년 3월)
 
 - **하네스 중심 릴리스** — ECC는 이제 단순 설정 모음이 아닌, 에이전트 하네스 성능 시스템으로 명시됩니다.
@@ -110,13 +132,25 @@
 
 ### 1단계: 플러그인 설치
 
+> NOTE: 플러그인은 편리하지만, Claude Code 빌드가 자체 호스팅 마켓플레이스 항목을 해석하지 못할 때에는 아래의 OSS 인스톨러가 여전히 가장 신뢰성 있는 경로입니다.
+
 ```bash
 # 마켓플레이스 추가
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # 플러그인 설치
-/plugin install everything-claude-code
+/plugin install everything-claude-code@everything-claude-code
 ```
+
+### 네이밍 + 마이그레이션 참고
+
+ECC에는 이제 세 가지 공개 식별자가 있으며, 서로 호환되지 않습니다:
+
+- GitHub 원본 저장소: `affaan-m/everything-claude-code`
+- Claude 마켓플레이스/플러그인 식별자: `everything-claude-code@everything-claude-code`
+- npm 패키지: `ecc-universal`
+
+이는 의도된 것입니다. Anthropic 마켓플레이스/플러그인 설치는 표준 플러그인 식별자를 키로 사용하므로, ECC는 리스팅 이름·`/plugin install`·`/plugin list`·리포 문서를 하나의 공개 설치 서피스로 맞추기 위해 `everything-claude-code@everything-claude-code`를 표준화했습니다. 예전 게시글에는 옛 짧은 별칭이 남아 있을 수 있으나, 그 약칭은 더 이상 사용되지 않습니다. 별개로 npm 패키지는 `ecc-universal` 그대로 유지되어 있어, npm 설치와 마켓플레이스 설치는 의도적으로 다른 이름을 사용합니다.
 
 ### 2단계: 룰 설치 (필수)
 
@@ -140,7 +174,10 @@ cd everything-claude-code
 ### 3단계: 사용 시작
 
 ```bash
-# 커맨드 실행 (플러그인 설치 시 네임스페이스 형태 사용)
+# 스킬이 기본 워크플로우 서피스입니다.
+# ECC가 commands/ 구조에서 이전되는 동안 기존 슬래시 커맨드 이름도 계속 동작합니다.
+
+# 플러그인 설치 시 네임스페이스 형태 사용
 /ecc:plan "사용자 인증 추가"
 
 # 수동 설치(옵션 2) 시에는 짧은 형태를 사용:
@@ -150,7 +187,38 @@ cd everything-claude-code
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**끝!** 이제 16개 에이전트, 65개 스킬, 40개 커맨드를 사용할 수 있습니다.
+**끝!** 이제 48개 에이전트, 183개 스킬, 79개 legacy 커맨드 shim에 접근할 수 있습니다.
+
+### 대시보드 GUI
+
+데스크톱 대시보드를 실행해 ECC 컴포넌트를 시각적으로 탐색할 수 있습니다:
+
+```bash
+npm run dashboard
+# 또는
+python3 ./ecc_dashboard.py
+```
+
+**기능:**
+- 탭 인터페이스: Agents, Skills, Commands, Rules, Settings
+- 다크/라이트 테마 토글
+- 폰트 커스터마이징 (패밀리 & 크기)
+- 헤더와 작업 표시줄의 프로젝트 로고
+- 모든 컴포넌트에 대한 검색/필터
+
+### 멀티 모델 커맨드는 별도 설정 필요
+
+> WARNING: `multi-*` 커맨드는 위의 기본 플러그인/룰 설치에 **포함되지 않습니다**.
+>
+> `/multi-plan`, `/multi-execute`, `/multi-backend`, `/multi-frontend`, `/multi-workflow`를 사용하려면 `ccg-workflow` 런타임도 함께 설치해야 합니다.
+>
+> `npx ccg-workflow`로 초기화하세요.
+>
+> 이 런타임은 해당 커맨드들이 기대하는 외부 의존성을 제공합니다:
+> - `~/.claude/bin/codeagent-wrapper`
+> - `~/.claude/.ccg/prompts/*`
+>
+> `ccg-workflow` 없이는 이 `multi-*` 커맨드가 정상 동작하지 않습니다.
 
 ---
 
