@@ -107,10 +107,10 @@ To build a seller (server that accepts x402 payments), fetch the complete refere
 
 - **TypeScript** (Express, Hono, Fastify, Next.js) — `@okxweb3/x402-express` etc.
   `https://raw.githubusercontent.com/okx/payments/main/typescript/SELLER.md`
-- **Go** (Gin, Echo, net/http) — `github.com/okx/payments/go`
-  `https://raw.githubusercontent.com/okx/payments/main/go/SELLER.md`
-- **Rust** (Axum) — `github.com/okx/payments/rust`
-  `https://raw.githubusercontent.com/okx/payments/main/rust/SELLER.md`
+- **Go** (Gin, Echo, net/http) — `github.com/okx/payments/go/x402`
+  `https://raw.githubusercontent.com/okx/payments/main/go/x402/SELLER.md`
+- **Rust** (Axum) — `github.com/okx/payments/rust/x402`
+  `https://raw.githubusercontent.com/okx/payments/main/rust/x402/SELLER.md`
 
 Supported seller languages: TypeScript, Go, Rust. Python and Java are not yet available — check [okx/payments](https://github.com/okx/payments) for updates.
 
