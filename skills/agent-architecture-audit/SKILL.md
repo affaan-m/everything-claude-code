@@ -227,7 +227,7 @@ Audits should produce structured reports following this shape:
   "scope": {
     "target_name": "string",
     "model_stack": ["string"],
-    "symptoms": ["string"],
+  "schema_version": "ecc.agent-architecture-audit.report.v1",
     "layers_to_audit": ["string"]
   },
   "findings": [
