@@ -59,19 +59,59 @@
 
 ---
 
+## 最新動態
+
+### v1.10.0 — 介面更新、操作者工作流與 ECC 2.0 Alpha（2026 年 4 月）
+
+- **儀表板 GUI** — 全新基於 Tkinter 的桌面應用程式（`ecc_dashboard.py` 或 `npm run dashboard`），支援深色/淺色主題切換、字型自訂、頁首與工作列的專案 Logo。
+- **公開介面與實際儲存庫同步** — 中繼資料、目錄數量、外掛程式資訊清單與安裝相關文件現已與實際 OSS 介面一致：38 個代理程式、156 項技能、72 個 legacy 指令 shim。
+- **操作者與對外工作流擴充** — `brand-voice`、`social-graph-ranker`、`connections-optimizer`、`customer-billing-ops`、`ecc-tools-cost-audit`、`google-workspace-ops`、`project-flow-ops`、`workspace-surface-audit` 補強操作者通道。
+- **媒體與發佈工具** — `manim-video`、`remotion-video-creation`，以及升級後的社群發佈介面，讓技術說明與發佈內容成為同一系統的一部分。
+- **框架與產品介面擴充** — `nestjs-patterns`、更豐富的 Codex/OpenCode 安裝介面，以及擴充後的跨 harness 封裝，讓本儲存庫在 Claude Code 之外仍然好用。
+- **ECC 2.0 Alpha 已進入主儲存庫** — `ecc2/` 中的 Rust 控制面原型現已可在本機建置，並提供 `dashboard`、`start`、`sessions`、`status`、`stop`、`resume`、`daemon` 指令。目前為 alpha 階段，尚非正式發行。
+- **生態系統強化** — AgentShield、ECC Tools 成本控制、帳務入口與網站更新等工作持續圍繞核心外掛程式交付，不再分散為獨立儲存庫。
+
+### v1.9.0 — 選擇性安裝與多語言擴充（2026 年 3 月）
+
+- **選擇性安裝架構** — 以 `install-plan.js` 與 `install-apply.js` 為基礎的資訊清單驅動安裝流程，僅安裝所需元件。狀態儲存追蹤已安裝項目並支援增量更新。
+- **6 個新代理程式** — `typescript-reviewer`、`pytorch-build-resolver`、`java-build-resolver`、`java-reviewer`、`kotlin-reviewer`、`kotlin-build-resolver` 將語言涵蓋範圍擴充至 10 種。
+- **新技能** — 用於深度學習的 `pytorch-patterns`、用於 API 參考查詢的 `documentation-lookup`、用於現代 JS 工具鏈的 `bun-runtime` 與 `nextjs-turbopack`，以及 8 個營運領域技能與 `mcp-server-patterns`。
+- **工作階段與狀態基礎建設** — 附查詢 CLI 的 SQLite 狀態儲存、用於結構化紀錄的工作階段轉接器、作為自我進化技能基礎的技能進化框架。
+- **協調系統大幅整修** — 讓 harness 稽核評分具決定性，強化協調狀態與啟動器相容性，以 5 層防護避免觀察者迴圈。
+- **觀察者可靠性** — 以節流與尾端取樣修正記憶體爆炸問題、修正沙箱存取、延遲啟動邏輯、加入重入防護。
+- **12 個語言生態系** — 在既有 TypeScript、Python、Go、通用規則之外，新增 Java、PHP、Perl、Kotlin/Android/KMP、C++、Rust 規則。
+- **社群貢獻** — 韓文與中文翻譯、biome 鉤子最佳化、影片處理技能、營運技能、PowerShell 安裝程式、Antigravity IDE 支援。
+- **CI 強化** — 修正 19 項測試失敗、強制目錄計數、驗證安裝資訊清單，並讓完整測試套件通過。
+
+完整變更紀錄請見 [Releases](https://github.com/affaan-m/everything-claude-code/releases)。
+
+---
+
 ## 快速開始
 
 在 2 分鐘內快速上手：
 
 ### 第一步：安裝外掛程式
 
+> NOTE: 外掛程式很方便，但如果您的 Claude Code 版本在解析自架市集項目時遇到問題，以下 OSS 安裝程式仍是最穩妥的路徑。
+
 ```bash
 # 新增市集
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # 安裝外掛程式
-/plugin install everything-claude-code
+/plugin install everything-claude-code@everything-claude-code
 ```
+
+### 命名 + 遷移說明
+
+ECC 目前有三個對外公開的識別碼，彼此不可互換：
+
+- GitHub 原始儲存庫：`affaan-m/everything-claude-code`
+- Claude 市集/外掛識別碼：`everything-claude-code@everything-claude-code`
+- npm 套件：`ecc-universal`
+
+這是刻意設計。Anthropic 的市集/外掛安裝以正規化的外掛識別碼為鍵，因此 ECC 將列表名稱、`/plugin install`、`/plugin list` 和儲存庫文件統一指向同一個公開安裝介面 `everything-claude-code@everything-claude-code`。舊文章中可能仍看到早期的短別稱；該縮寫已不建議使用。另一方面，npm 套件則保留為 `ecc-universal`，因此 npm 安裝與市集安裝會刻意使用不同名稱。
 
 ### 第二步：安裝規則（必需）
 
@@ -88,6 +128,9 @@ cp -r everything-claude-code/rules/* ~/.claude/rules/
 ### 第三步：開始使用
 
 ```bash
+# 技能是主要的工作流介面。
+# 在 ECC 從 commands/ 移轉的期間，既有的斜線指令名稱仍可使用。
+
 # 嘗試一個指令（外掛安裝使用命名空間形式）
 /ecc:plan "新增使用者認證"
 
@@ -98,7 +141,38 @@ cp -r everything-claude-code/rules/* ~/.claude/rules/
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**完成！** 您現在使用 15+ 代理程式、30+ 技能和 20+ 指令。
+**完成！** 您現在可以使用 48 個代理程式、183 項技能以及 79 個 legacy 指令 shim。
+
+### 儀表板 GUI
+
+啟動桌面儀表板，可視化瀏覽 ECC 元件：
+
+```bash
+npm run dashboard
+# 或
+python3 ./ecc_dashboard.py
+```
+
+**功能：**
+- 分頁介面：Agents、Skills、Commands、Rules、Settings
+- 深色/淺色主題切換
+- 字型自訂（字型與字級）
+- 頁首與工作列的專案 Logo
+- 跨所有元件的搜尋/篩選
+
+### 多模型指令需要額外設定
+
+> WARNING: `multi-*` 指令 **不包含** 在上述基本外掛/規則安裝之中。
+>
+> 若要使用 `/multi-plan`、`/multi-execute`、`/multi-backend`、`/multi-frontend`、`/multi-workflow`，您必須一併安裝 `ccg-workflow` 執行期。
+>
+> 使用 `npx ccg-workflow` 進行初始化。
+>
+> 該執行期提供這些指令所需的外部相依：
+> - `~/.claude/bin/codeagent-wrapper`
+> - `~/.claude/.ccg/prompts/*`
+>
+> 沒有 `ccg-workflow`，這些 `multi-*` 指令將無法正常執行。
 
 ---
 
