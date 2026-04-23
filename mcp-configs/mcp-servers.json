@@ -165,6 +165,14 @@
         "OPENAI_API_KEY": "YOUR_OPENAI_API_KEY_HERE"
       },
       "description": "AI agent regression testing — snapshot behavior, detect regressions in tool calls and output quality. 8 tools: create_test, run_snapshot, run_check, list_tests, validate_skill, generate_skill_tests, run_skill_test, generate_visual_report. API key optional — deterministic checks (tool diff, output hash) work without it. Install: pip install \"evalview>=0.5,<1\""
+    },
+    "xquik": {
+      "type": "http",
+      "url": "https://xquik.com/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_XQUIK_API_KEY_HERE"
+      },
+      "description": "X/Twitter data platform — 2 tools covering 122 endpoints: search, lookup, extract, post, monitor, draws, webhooks, trends. Use with xquik skill."
     }
   },
   "_comments": {
