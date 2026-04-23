@@ -120,13 +120,25 @@ Bu repository yalnızca ham kodu içerir. Rehberler her şeyi açıklıyor.
 
 ### Adım 1: Plugin'i Kurun
 
+> NOTE: Plugin rahat bir yoldur, ancak Claude Code sürümünüz kendi host ettiğimiz marketplace girişlerini çözmekte zorlanıyorsa, aşağıdaki OSS installer hâlâ en güvenilir yoldur.
+
 ```bash
 # Marketplace ekle
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # Plugin'i kur
-/plugin install everything-claude-code
+/plugin install everything-claude-code@everything-claude-code
 ```
+
+### İsimlendirme + Geçiş Notu
+
+ECC'nin artık üç ayrı kamuya açık tanımlayıcısı var ve bunlar birbirinin yerine kullanılamaz:
+
+- GitHub kaynak deposu: `affaan-m/everything-claude-code`
+- Claude marketplace/plugin tanımlayıcısı: `everything-claude-code@everything-claude-code`
+- npm paketi: `ecc-universal`
+
+Bu kasıtlı bir tercih. Anthropic marketplace/plugin kurulumları kanonik plugin tanımlayıcısını anahtar olarak kullanıyor; bu yüzden ECC, listeleme adı, `/plugin install`, `/plugin list` ve depo dokümanlarını tek bir kamuya açık kurulum yüzeyi olan `everything-claude-code@everything-claude-code` etrafında standart hale getirdi. Eski paylaşımlarda kısa lakap hâlâ görünebilir; o kısaltma artık kullanılmıyor. Ayrıca npm paketi `ecc-universal` olarak kaldı; bu nedenle npm kurulumu ile marketplace kurulumu bilerek farklı isimler kullanıyor.
 
 ### Adım 2: Rule'ları Kurun (Gerekli)
 
@@ -163,6 +175,9 @@ Manuel kurulum talimatları için `rules/` klasöründeki README'ye bakın.
 ### Adım 3: Kullanmaya Başlayın
 
 ```bash
+# Asıl iş akışı yüzeyi skill'lerdir.
+# ECC commands/ dizininden taşınırken mevcut slash komut adları da çalışmaya devam eder.
+
 # Bir command deneyin (plugin kurulumu namespace'li form kullanır)
 /ecc:plan "Kullanıcı kimlik doğrulaması ekle"
 
@@ -173,7 +188,38 @@ Manuel kurulum talimatları için `rules/` klasöründeki README'ye bakın.
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**Bu kadar!** Artık 28 agent, 116 skill ve 59 command'a erişiminiz var.
+**Bu kadar!** Artık 48 agent, 183 skill ve 79 legacy command shim'ine erişiminiz var.
+
+### Dashboard GUI
+
+ECC bileşenlerini görsel olarak keşfetmek için masaüstü dashboard'u başlatın:
+
+```bash
+npm run dashboard
+# veya
+python3 ./ecc_dashboard.py
+```
+
+**Özellikler:**
+- Sekmeli arayüz: Agents, Skills, Commands, Rules, Settings
+- Koyu/Açık tema geçişi
+- Yazı tipi özelleştirme (aile & boyut)
+- Başlıkta ve görev çubuğunda proje logosu
+- Tüm bileşenler arasında arama/filtreleme
+
+### Multi-model command'ları ek kurulum gerektirir
+
+> WARNING: `multi-*` command'ları yukarıdaki temel plugin/rule kurulumuna **dahil değildir**.
+>
+> `/multi-plan`, `/multi-execute`, `/multi-backend`, `/multi-frontend` ve `/multi-workflow` komutlarını kullanmak için `ccg-workflow` runtime'ını da kurmanız gerekir.
+>
+> `npx ccg-workflow` ile başlatın.
+>
+> Bu runtime, söz konusu komutların beklediği harici bağımlılıkları sağlar:
+> - `~/.claude/bin/codeagent-wrapper`
+> - `~/.claude/.ccg/prompts/*`
+>
+> `ccg-workflow` olmadan bu `multi-*` command'ları düzgün çalışmaz.
 
 ---
 
