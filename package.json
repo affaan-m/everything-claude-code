@@ -2,6 +2,9 @@
   "name": "ecc-universal",
   "version": "1.10.0",
   "description": "Complete collection of battle-tested Claude Code configs — agents, skills, hooks, rules, and legacy command shims evolved over 10+ months of intensive daily use by an Anthropic hackathon winner",
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "claude-code",
     "ai",

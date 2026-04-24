@@ -93,15 +93,22 @@ function runTests() {
     const hooksJson = plan.operations.find(operation => (
       normalizedRelativePath(operation.sourceRelativePath) === '.cursor/hooks.json'
     ));
+    const mcpJson = plan.operations.find(operation => (
+      normalizedRelativePath(operation.sourceRelativePath) === '.mcp.json'
+    ));
     const preserved = plan.operations.find(operation => (
-      normalizedRelativePath(operation.sourceRelativePath) === 'rules/common/coding-style.md'
+      normalizedRelativePath(operation.sourceRelativePath) === '.cursor/rules/common-coding-style.md'
     ));
 
     assert.ok(hooksJson, 'Should preserve non-rule Cursor platform config files');
     assert.strictEqual(hooksJson.strategy, 'preserve-relative-path');
     assert.strictEqual(hooksJson.destinationPath, path.join(projectRoot, '.cursor', 'hooks.json'));
+    assert.ok(mcpJson, 'Should materialize a Cursor MCP config from the shared root MCP config');
+    assert.strictEqual(mcpJson.kind, 'merge-json');
+    assert.strictEqual(mcpJson.strategy, 'merge-json');
+    assert.strictEqual(mcpJson.destinationPath, path.join(projectRoot, '.cursor', 'mcp.json'));
 
-    assert.ok(preserved, 'Should include flattened rules scaffold operations');
+    assert.ok(preserved, 'Should include flattened Cursor rule scaffold operations');
     assert.strictEqual(preserved.strategy, 'flatten-copy');
     assert.strictEqual(
       preserved.destinationPath,
@@ -202,6 +209,14 @@ function runTests() {
       'Should preserve non-rule Cursor platform config files'
     );
     assert.ok(
+      plan.operations.some(operation => (
+        normalizedRelativePath(operation.sourceRelativePath) === '.mcp.json'
+        && operation.kind === 'merge-json'
+        && operation.destinationPath === path.join(projectRoot, '.cursor', 'mcp.json')
+      )),
+      'Should materialize a project-level Cursor MCP config'
+    );
+    assert.ok(
       !plan.operations.some(operation => (
         operation.destinationPath === path.join(projectRoot, '.cursor', 'rules', 'README.mdc')
       )),
@@ -236,8 +251,8 @@ function runTests() {
     assert.strictEqual(commonAgentsDestinations.length, 1, 'Should keep only one common-agents.mdc operation');
     assert.strictEqual(
       normalizedRelativePath(commonAgentsDestinations[0].sourceRelativePath),
-      'rules/common/agents.md',
-      'Should prefer rules-core when cursor platform rules would collide'
+      '.cursor/rules/common-agents.md',
+      'Should prefer native .cursor/rules content when cursor platform rules would collide'
     );
   })) passed++; else failed++;
 

@@ -124,7 +124,7 @@ Comece em menos de 2 minutos:
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # Instalar plugin
-/plugin install ecc@ecc
+/plugin install everything-claude-code@everything-claude-code
 ```
 
 ### Passo 2: Instalar as Regras (Obrigatório)
@@ -167,7 +167,7 @@ npx ecc-install typescript
 # /plan "Adicionar autenticação de usuário"
 
 # Verificar comandos disponíveis
-/plugin list ecc@ecc
+/plugin list everything-claude-code@everything-claude-code
 ```
 
 **Pronto!** Você agora tem acesso a 28 agentes, 116 skills e 59 comandos.
@@ -313,7 +313,7 @@ claude --version
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # Instalar o plugin
-/plugin install ecc@ecc
+/plugin install everything-claude-code@everything-claude-code
 ```
 
 Ou adicione diretamente ao seu `~/.claude/settings.json`:
@@ -329,7 +329,7 @@ Ou adicione diretamente ao seu `~/.claude/settings.json`:
     }
   },
   "enabledPlugins": {
-    "ecc@ecc": true
+    "everything-claude-code@everything-claude-code": true
   }
 }
 ```
@@ -452,7 +452,7 @@ Regras são diretrizes sempre seguidas, organizadas em `common/` (agnóstico à 
 <summary><b>Como verificar quais agentes/comandos estão instalados?</b></summary>
 
 ```bash
-/plugin list ecc@ecc
+/plugin list everything-claude-code@everything-claude-code
 ```
 </details>
 

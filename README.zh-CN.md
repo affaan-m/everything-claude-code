@@ -99,15 +99,21 @@
 
 ```bash
 # 添加市场
-/plugin marketplace add affaan-m/everything-claude-code
+/plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # 安装插件
-/plugin install ecc@ecc
+/plugin install everything-claude-code@everything-claude-code
 ```
+
+> 安装名称说明：较早的帖子里可能还会出现旧的短别名。那个旧缩写现在已经废弃。Anthropic 的 marketplace/plugin 安装是按规范化插件标识符寻址的，因此 ECC 统一为 `everything-claude-code@everything-claude-code`，这样市场条目、安装命令、`/plugin list` 输出和仓库文档都使用同一个公开名称，不再出现两个名字指向同一插件的混乱。
 
 ### 第二步：安装规则（必需）
 
-> WARNING: **重要提示：** Claude Code 插件无法自动分发 `rules`，需要手动安装：
+> WARNING: **重要提示：** Claude Code 插件无法自动分发 `rules`。
+>
+> 如果你已经通过 `/plugin install` 安装了 ECC，**不要再运行 `./install.sh --profile full`、`.\install.ps1 --profile full` 或 `npx ecc-install --profile full`**。插件已经会自动加载 ECC 的技能、命令和 hooks；此时再执行完整安装，会把同一批内容再次复制到用户目录，导致技能重复以及运行时行为重复。
+>
+> 对于插件安装路径，请只手动复制你需要的 `rules/` 目录。只有在你完全不走插件安装、而是选择“纯手动安装 ECC”时，才应该使用完整安装器。
 
 ```bash
 # 首先克隆仓库
@@ -117,34 +123,26 @@ cd everything-claude-code
 # 安装依赖（选择你常用的包管理器）
 npm install        # 或：pnpm install | yarn install | bun install
 
-# macOS/Linux 系统
+# 插件安装路径：只复制规则
+mkdir -p ~/.claude/rules
+cp -R rules/common ~/.claude/rules/
+cp -R rules/typescript ~/.claude/rules/
 
-# 推荐方式：完整安装（完整配置文件）
-./install.sh --profile full
-
-# 或仅为指定编程语言安装
-./install.sh typescript    # 也可安装 python、golang、swift、php
-# ./install.sh typescript python golang swift php
-# ./install.sh --target cursor typescript
-# ./install.sh --target antigravity typescript
-# ./install.sh --target gemini --profile full
+# 纯手动安装 ECC（不要和 /plugin install 叠加）
+# ./install.sh --profile full
 ```
 
 ```powershell
 # Windows 系统（PowerShell）
 
-# 推荐方式：完整安装（完整配置文件）
-.\install.ps1 --profile full
+# 插件安装路径：只复制规则
+New-Item -ItemType Directory -Force -Path "$HOME/.claude/rules" | Out-Null
+Copy-Item -Recurse rules/common "$HOME/.claude/rules/"
+Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 
-# 或仅为指定编程语言安装
-.\install.ps1 typescript   # 也可安装 python、golang、swift、php
-# .\install.ps1 typescript python golang swift php
-# .\install.ps1 --target cursor typescript
-# .\install.ps1 --target antigravity typescript
-# .\install.ps1 --target gemini --profile full
-
-# 通过 npm 安装的兼容入口，支持全平台使用
-npx ecc-install typescript
+# 纯手动安装 ECC（不要和 /plugin install 叠加）
+# .\install.ps1 --profile full
+# npx ecc-install --profile full
 ```
 
 如需手动安装说明，请查看 `rules/` 文件夹中的 README 文档。手动复制规则文件时，请直接复制**整个语言目录**（例如 `rules/common` 或 `rules/golang`），而非目录内的单个文件，以保证相对路径引用正常、文件名不会冲突。
@@ -159,10 +157,10 @@ npx ecc-install typescript
 # /plan "添加用户认证"
 
 # 查看可用命令
-/plugin list ecc@ecc
+/plugin list everything-claude-code@everything-claude-code
 ```
 
-**完成！** 你现在可以使用 47 个代理、181 个技能和 79 个命令。
+**完成！** 你现在可以使用 48 个代理、183 个技能和 79 个命令。
 
 ### multi-* 命令需要额外配置
 
@@ -543,10 +541,10 @@ Claude Code v2.1+ 会**按照约定自动加载**已安装插件中的 `hooks/ho
 
 ```bash
 # 将此仓库添加为市场
-/plugin marketplace add affaan-m/everything-claude-code
+/plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # 安装插件
-/plugin install ecc@ecc
+/plugin install everything-claude-code@everything-claude-code
 ```
 
 或直接添加到你的 `~/.claude/settings.json`：
@@ -562,7 +560,7 @@ Claude Code v2.1+ 会**按照约定自动加载**已安装插件中的 `hooks/ho
     }
   },
   "enabledPlugins": {
-    "ecc@ecc": true
+    "everything-claude-code@everything-claude-code": true
   }
 }
 ```

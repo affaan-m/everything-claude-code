@@ -79,6 +79,28 @@ function assertSafeRepoRelativePath(relativePath, label) {
   );
 }
 
+function collectMarkdownFiles(rootPath) {
+  if (!fs.existsSync(rootPath)) {
+    return [];
+  }
+
+  const stat = fs.statSync(rootPath);
+  if (stat.isFile()) {
+    return rootPath.endsWith('.md') ? [rootPath] : [];
+  }
+
+  const files = [];
+  for (const entry of fs.readdirSync(rootPath, { withFileTypes: true })) {
+    const nextPath = path.join(rootPath, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...collectMarkdownFiles(nextPath));
+    } else if (entry.isFile() && nextPath.endsWith('.md')) {
+      files.push(nextPath);
+    }
+  }
+  return files;
+}
+
 const rootPackage = loadJsonObject(packageJsonPath, 'package.json');
 const packageLock = loadJsonObject(packageLockPath, 'package-lock.json');
 const opencodePackageLock = loadJsonObject(opencodePackageLockPath, '.opencode/package-lock.json');
@@ -190,37 +212,11 @@ test('claude plugin.json uses published plugin name', () => {
   assert.strictEqual(claudePlugin.name, 'everything-claude-code');
 });
 
-test('claude plugin.json agents is an array', () => {
-  assert.ok(Array.isArray(claudePlugin.agents), 'Expected agents to be an array (not a string/directory)');
-});
-
-test('claude plugin.json agents uses explicit file paths (not directories)', () => {
-  for (const agentPath of claudePlugin.agents) {
-    assertSafeRepoRelativePath(agentPath, 'Agent path');
-    assert.ok(
-      agentPath.endsWith('.md'),
-      `Expected explicit .md file path, got: ${agentPath}`,
-    );
-    assert.ok(
-      !agentPath.endsWith('/'),
-      `Expected explicit file path, not directory, got: ${agentPath}`,
-    );
-  }
-});
-
-test('claude plugin.json all agent files exist', () => {
-  for (const agentRelPath of claudePlugin.agents) {
-    assertSafeRepoRelativePath(agentRelPath, 'Agent path');
-    const absolute = path.resolve(repoRoot, agentRelPath);
-    assert.ok(
-      absolute === repoRoot || absolute.startsWith(repoRootWithSep),
-      `Agent path resolves outside repo root: ${agentRelPath}`,
-    );
-    assert.ok(
-      fs.existsSync(absolute),
-      `Agent file missing: ${agentRelPath}`,
-    );
-  }
+test('claude plugin.json does NOT have agents field (unsupported by Claude Code validator)', () => {
+  assert.ok(
+    !('agents' in claudePlugin),
+    'agents field must NOT be declared — Claude Code plugin validator rejects it',
+  );
 });
 
 test('claude plugin.json skills is an array', () => {
@@ -452,6 +448,51 @@ test('README version row matches package.json', () => {
   const match = readme.match(/^\| \*\*Version\*\* \| Plugin \| Plugin \| Reference config \| ([0-9][0-9.]*) \|$/m);
   assert.ok(match, 'Expected README version summary row');
   assert.strictEqual(match[1], expectedVersion);
+});
+
+test('user-facing docs do not use deprecated ecc@ecc install commands', () => {
+  const markdownFiles = [
+    path.join(repoRoot, 'README.md'),
+    path.join(repoRoot, 'README.zh-CN.md'),
+    path.join(repoRoot, 'skills', 'configure-ecc', 'SKILL.md'),
+    ...collectMarkdownFiles(path.join(repoRoot, 'docs')),
+  ];
+
+  const offenders = [];
+  for (const filePath of markdownFiles) {
+    const source = fs.readFileSync(filePath, 'utf8');
+    if (/\/plugin\s+(install|list)\s+ecc@ecc\b/.test(source)) {
+      offenders.push(path.relative(repoRoot, filePath));
+    }
+  }
+
+  assert.deepStrictEqual(
+    offenders,
+    [],
+    `Deprecated ecc@ecc install commands must not appear in user-facing docs: ${offenders.join(', ')}`,
+  );
+});
+
+test('user-facing docs do not use the legacy non-URL marketplace add form', () => {
+  const markdownFiles = [
+    path.join(repoRoot, 'README.md'),
+    path.join(repoRoot, 'README.zh-CN.md'),
+    ...collectMarkdownFiles(path.join(repoRoot, 'docs')),
+  ];
+
+  const offenders = [];
+  for (const filePath of markdownFiles) {
+    const source = fs.readFileSync(filePath, 'utf8');
+    if (source.includes('/plugin marketplace add affaan-m/everything-claude-code')) {
+      offenders.push(path.relative(repoRoot, filePath));
+    }
+  }
+
+  assert.deepStrictEqual(
+    offenders,
+    [],
+    `Legacy non-URL marketplace add form must not appear in user-facing docs: ${offenders.join(', ')}`,
+  );
 });
 
 test('docs/zh-CN/README.md version row matches package.json', () => {

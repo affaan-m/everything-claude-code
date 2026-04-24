@@ -184,6 +184,41 @@ function addFileCopyOperation(operations, options) {
   return true;
 }
 
+function readJsonObject(filePath, label) {
+  let parsed;
+  try {
+    parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch (error) {
+    throw new Error(`Failed to parse ${label} at ${filePath}: ${error.message}`);
+  }
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`Invalid ${label} at ${filePath}: expected a JSON object`);
+  }
+
+  return parsed;
+}
+
+function addJsonMergeOperation(operations, options) {
+  const sourcePath = path.join(options.sourceRoot, options.sourceRelativePath);
+  if (!fs.existsSync(sourcePath)) {
+    return false;
+  }
+
+  operations.push({
+    kind: 'merge-json',
+    moduleId: options.moduleId,
+    sourceRelativePath: options.sourceRelativePath,
+    destinationPath: options.destinationPath,
+    strategy: 'merge-json',
+    ownership: 'managed',
+    scaffoldOnly: false,
+    mergePayload: readJsonObject(sourcePath, options.sourceRelativePath),
+  });
+
+  return true;
+}
+
 function addMatchingRuleOperations(operations, options) {
   const sourceDir = path.join(options.sourceRoot, options.sourceRelativeDir);
   if (!fs.existsSync(sourceDir)) {
@@ -342,10 +377,10 @@ function planCursorLegacyInstall(context) {
     sourceRelativePath: path.join('.cursor', 'hooks.json'),
     destinationPath: path.join(targetRoot, 'hooks.json'),
   });
-  addFileCopyOperation(operations, {
+  addJsonMergeOperation(operations, {
     moduleId: 'legacy-cursor-install',
     sourceRoot: context.sourceRoot,
-    sourceRelativePath: path.join('.cursor', 'mcp.json'),
+    sourceRelativePath: '.mcp.json',
     destinationPath: path.join(targetRoot, 'mcp.json'),
   });
 
@@ -540,6 +575,22 @@ function createLegacyCompatInstallPlan(options = {}) {
 }
 
 function materializeScaffoldOperation(sourceRoot, operation) {
+  if (operation.kind === 'merge-json') {
+    return [{
+      kind: 'merge-json',
+      moduleId: operation.moduleId,
+      sourceRelativePath: operation.sourceRelativePath,
+      destinationPath: operation.destinationPath,
+      strategy: operation.strategy || 'merge-json',
+      ownership: operation.ownership || 'managed',
+      scaffoldOnly: Object.hasOwn(operation, 'scaffoldOnly') ? operation.scaffoldOnly : false,
+      mergePayload: readJsonObject(
+        path.join(sourceRoot, operation.sourceRelativePath),
+        operation.sourceRelativePath
+      ),
+    }];
+  }
+
   const sourcePath = path.join(sourceRoot, operation.sourceRelativePath);
   if (!fs.existsSync(sourcePath)) {
     return [];

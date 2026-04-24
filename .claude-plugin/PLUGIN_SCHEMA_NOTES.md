@@ -45,60 +45,37 @@ Example:
 
 The following fields **must always be arrays**:
 
-* `agents`
 * `commands`
 * `skills`
 * `hooks` (if present)
 
 Even if there is only one entry, **strings are not accepted**.
 
-### Invalid
-
-```json
-{
-  "agents": "./agents"
-}
-```
-
-### Valid
-
-```json
-{
-  "agents": ["./agents/planner.md"]
-}
-```
-
 This applies consistently across all component path fields.
 
 ---
 
-## Path Resolution Rules (Critical)
+## The `agents` Field: DO NOT ADD
 
-### Agents MUST use explicit file paths
+> WARNING: **CRITICAL:** Do NOT add an `"agents"` field to `plugin.json`. The Claude Code plugin validator rejects it entirely.
 
-The validator **does not accept directory paths for `agents`**.
+### Why This Matters
 
-Even the following will fail:
+The `agents` field is not part of the Claude Code plugin manifest schema. Any form of it -- string path, array of paths, or array of directories -- causes a validation error:
 
-```json
-{
-  "agents": ["./agents/"]
-}
+```
+agents: Invalid input
 ```
 
-Instead, you must enumerate agent files explicitly:
+Agent `.md` files under `agents/` are discovered automatically by convention (similar to hooks). They do not need to be declared in the manifest.
 
-```json
-{
-  "agents": [
-    "./agents/planner.md",
-    "./agents/architect.md",
-    "./agents/code-reviewer.md"
-  ]
-}
-```
+### History
 
-This is the most common source of validation errors.
+Previously this repo listed agents explicitly in `plugin.json` as an array of file paths. This passed the repo's own schema but failed Claude Code's actual validator, which does not recognize the field. Removed in #1459.
+
+---
+
+## Path Resolution Rules
 
 ### Commands and Skills
 
@@ -160,7 +137,7 @@ The test `plugin.json does NOT have explicit hooks declaration` in `tests/hooks/
 These look correct but are rejected:
 
 * String values instead of arrays
-* Arrays of directories for `agents`
+* **Adding `"agents"` in any form** - not a recognized manifest field, causes `Invalid input`
 * Missing `version`
 * Relying on inferred paths
 * Assuming marketplace behavior matches local validation
@@ -175,10 +152,6 @@ Avoid cleverness. Be explicit.
 ```json
 {
   "version": "1.1.0",
-  "agents": [
-    "./agents/planner.md",
-    "./agents/code-reviewer.md"
-  ],
   "commands": ["./commands/"],
   "skills": ["./skills/"]
 }
@@ -186,7 +159,7 @@ Avoid cleverness. Be explicit.
 
 This structure has been validated against the Claude plugin validator.
 
-**Important:** Notice there is NO `"hooks"` field. The `hooks/hooks.json` file is loaded automatically by convention. Adding it explicitly causes a duplicate error.
+**Important:** Notice there is NO `"hooks"` field and NO `"agents"` field. Both are loaded automatically by convention. Adding either explicitly causes errors.
 
 ---
 
@@ -194,9 +167,9 @@ This structure has been validated against the Claude plugin validator.
 
 Before submitting changes that touch `plugin.json`:
 
-1. Use explicit file paths for agents
-2. Ensure all component fields are arrays
-3. Include a `version`
+1. Ensure all component fields are arrays
+2. Include a `version`
+3. Do NOT add `agents` or `hooks` fields (both are auto-loaded by convention)
 4. Run:
 
 ```bash

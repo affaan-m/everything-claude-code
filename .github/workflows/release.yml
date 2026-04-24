@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   release:
@@ -22,6 +23,7 @@ jobs:
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: npm ci
@@ -53,6 +55,23 @@ jobs:
       - name: Verify release metadata stays in sync
         run: node tests/plugin-manifest.test.js
 
+      - name: Check npm publish state
+        id: npm_publish_state
+        run: |
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version >/dev/null 2>&1; then
+            echo "already_published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "already_published=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish npm package
+        if: steps.npm_publish_state.outputs.already_published != 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
+
       - name: Generate release highlights
         id: highlights
         env:
@@ -73,6 +92,8 @@ jobs:
           - Improved release-note generation and changelog hygiene
 
           ### Notes
+          - npm package: \`ecc-universal\`
+          - Claude marketplace/plugin identifier: \`everything-claude-code@everything-claude-code\`
           - For migration tips and compatibility notes, see README and CHANGELOG.
           EOF
 
