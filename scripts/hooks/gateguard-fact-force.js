@@ -326,6 +326,48 @@ function routineBashMsg() {
   ].join('\n');
 }
 
+// --- Subagent detection ---
+//
+// Claude Code's hook payload carries `agent_id` (with `agent_type`) when the
+// hook fires from within a Task/Agent subagent. Per the documented hook
+// schema: "Present only when the hook fires from within a subagent (e.g.,
+// a tool called by an AgentTool worker). Absent for the main thread, even
+// in --agent sessions. Use this field (not agent_type) to distinguish
+// subagent calls from main-thread calls." The rest of this repo already
+// keys off `agent_id` for the same purpose (see
+// skills/continuous-learning-v2/hooks/observe.sh and tests/hooks/hooks.test.js).
+//
+// Some internal Claude Code stream events carry `parent_tool_use_id`
+// instead. We check it as a defensive fallback in case a future hook
+// payload surfaces that field, but the canonical documented signal is
+// `agent_id`.
+//
+// When a subagent is detected, the main session has already satisfied the
+// first-touch fact-forcing gate for the user's request, so re-gating
+// Edit/Write/MultiEdit on the subagent's first touch of each file produces
+// pure friction (see #1548) without adding safety value. Bash (both
+// routine AND destructive) stays gated in subagent context: the routine-
+// Bash gate is the containment net for destructive commands that slip
+// past the narrow DESTRUCTIVE_BASH regex (rm -f, mkfs, curl|sh, etc.).
+
+function isSubagentInvocation(data) {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
+  const candidates = [
+    data.agent_id,
+    data.agentId,
+    data.parent_tool_use_id,
+    data.parentToolUseId
+  ];
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // --- Deny helper ---
 
 function denyResult(reason) {
@@ -359,10 +401,27 @@ function run(rawInput) {
   const TOOL_MAP = { edit: 'Edit', write: 'Write', multiedit: 'MultiEdit', bash: 'Bash' };
   const toolName = TOOL_MAP[rawToolName.toLowerCase()] || rawToolName;
 
+  // Subagents (Task/Agent tool) inherit the user's instruction from the parent
+  // session, which has already satisfied the fact-forcing gate. Bypass the
+  // first-touch file gates (Edit/Write/MultiEdit) for subagents (see #1548).
+  // Bash stays fully gated in subagent context: the DESTRUCTIVE_BASH regex
+  // is narrow, so the routine-Bash gate is the containment net for commands
+  // like `rm -f`, `mkfs`, `curl | sh`, `chmod -R 777 /`, redirects to /etc,
+  // etc. that would otherwise get unlimited silent passes in a subagent.
+  const inSubagent = isSubagentInvocation(data);
+
   if (toolName === 'Edit' || toolName === 'Write') {
     const filePath = toolInput.file_path || '';
+    // Settings-file writes are handled by other validators, not this
+    // fact-forcing gate. Keep this pass-through at the top — running it
+    // before the subagent bypass preserves the exact same control-flow
+    // shape the top-level path already had.
     if (!filePath || isClaudeSettingsPath(filePath)) {
       return rawInput; // allow
+    }
+
+    if (inSubagent) {
+      return rawInput; // allow — parent session already gated
     }
 
     if (!isChecked(filePath)) {
@@ -374,6 +433,10 @@ function run(rawInput) {
   }
 
   if (toolName === 'MultiEdit') {
+    if (inSubagent) {
+      return rawInput; // allow — parent session already gated
+    }
+
     const edits = toolInput.edits || [];
     for (const edit of edits) {
       const filePath = edit.file_path || '';
@@ -392,7 +455,8 @@ function run(rawInput) {
     }
 
     if (DESTRUCTIVE_BASH.test(command)) {
-      // Gate destructive commands on first attempt; allow retry after facts presented
+      // Gate destructive commands on first attempt; allow retry after facts presented.
+      // Safety gate: applies in both top-level and subagent contexts.
       const key = '__destructive__' + crypto.createHash('sha256').update(command).digest('hex').slice(0, 16);
       if (!isChecked(key)) {
         markChecked(key);
@@ -401,6 +465,8 @@ function run(rawInput) {
       return rawInput; // allow retry after facts presented
     }
 
+    // Note: no subagent bypass for routine Bash. See comment above —
+    // DESTRUCTIVE_BASH is narrow and routine-Bash is the containment net.
     if (!isChecked(ROUTINE_BASH_SESSION_KEY)) {
       markChecked(ROUTINE_BASH_SESSION_KEY);
       return denyResult(routineBashMsg());
