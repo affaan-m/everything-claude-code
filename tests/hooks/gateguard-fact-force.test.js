@@ -528,153 +528,6 @@ function runTests() {
     assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('current instruction'));
   })) passed++; else failed++;
 
-  // --- Tests 20-25: subagent context bypasses friction gates (issue #1548) ---
-  //
-  // Subagent invocations (Task/Agent tool) carry `parent_tool_use_id` in the
-  // hook payload. The main session has already satisfied the fact-forcing gate
-  // for the user's request, so re-gating every subagent tool call is pure
-  // friction — especially on Linux where subagents can end up with a different
-  // session_id and therefore a fresh, empty state file. Friction gates
-  // (routine Bash, Edit/Write/MultiEdit first-touch) bypass in subagent
-  // context; destructive Bash remains gated as a safety check.
-
-  // --- Test 20: subagent routine Bash is not gated even with a fresh session_id ---
-  clearState();
-  if (test('allows subagent routine Bash without gating (parent_tool_use_id set)', () => {
-    const input = {
-      tool_name: 'Bash',
-      tool_input: { command: 'pwd' },
-      session_id: 'subagent-fresh-session',
-      parent_tool_use_id: 'toolu_parent_01'
-    };
-    const result = runBashHook(input, {
-      CLAUDE_SESSION_ID: '',
-      ECC_SESSION_ID: '',
-    });
-    assert.strictEqual(result.code, 0, 'exit code should be 0');
-    const output = parseOutput(result.stdout);
-    assert.ok(output, 'should produce valid JSON output');
-    if (output.hookSpecificOutput) {
-      assert.notStrictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
-        'subagent routine Bash must not be gated');
-    } else {
-      assert.strictEqual(output.tool_name, 'Bash', 'pass-through should preserve input');
-    }
-  })) passed++; else failed++;
-
-  // --- Test 21: subagent destructive Bash is STILL gated (safety gate) ---
-  clearState();
-  if (test('gates subagent destructive Bash for safety (parent_tool_use_id set)', () => {
-    const input = {
-      tool_name: 'Bash',
-      tool_input: { command: 'rm -rf /tmp/demo-path' },
-      session_id: 'subagent-fresh-session',
-      parent_tool_use_id: 'toolu_parent_02'
-    };
-    const result = runBashHook(input, {
-      CLAUDE_SESSION_ID: '',
-      ECC_SESSION_ID: '',
-    });
-    const output = parseOutput(result.stdout);
-    assert.ok(output, 'should produce JSON output');
-    assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
-      'destructive Bash must still be gated in subagent context');
-    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('Destructive'));
-  })) passed++; else failed++;
-
-  // --- Test 22: subagent Edit is not gated ---
-  clearState();
-  if (test('allows subagent Edit without gating (parent_tool_use_id set)', () => {
-    const input = {
-      tool_name: 'Edit',
-      tool_input: { file_path: '/src/subagent-touched.js', old_string: 'a', new_string: 'b' },
-      session_id: 'subagent-fresh-session',
-      parent_tool_use_id: 'toolu_parent_03'
-    };
-    const result = runHook(input, {
-      CLAUDE_SESSION_ID: '',
-      ECC_SESSION_ID: '',
-    });
-    const output = parseOutput(result.stdout);
-    assert.ok(output, 'should produce valid JSON output');
-    if (output.hookSpecificOutput) {
-      assert.notStrictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
-        'subagent Edit must not be gated');
-    } else {
-      assert.strictEqual(output.tool_name, 'Edit', 'pass-through should preserve input');
-    }
-  })) passed++; else failed++;
-
-  // --- Test 23: subagent MultiEdit is not gated ---
-  clearState();
-  if (test('allows subagent MultiEdit without gating (parent_tool_use_id set)', () => {
-    const input = {
-      tool_name: 'MultiEdit',
-      tool_input: {
-        edits: [
-          { file_path: '/src/subagent-multi-a.js', old_string: 'a', new_string: 'b' },
-          { file_path: '/src/subagent-multi-b.js', old_string: 'c', new_string: 'd' }
-        ]
-      },
-      session_id: 'subagent-fresh-session',
-      parent_tool_use_id: 'toolu_parent_04'
-    };
-    const result = runHook(input, {
-      CLAUDE_SESSION_ID: '',
-      ECC_SESSION_ID: '',
-    });
-    const output = parseOutput(result.stdout);
-    assert.ok(output, 'should produce valid JSON output');
-    if (output.hookSpecificOutput) {
-      assert.notStrictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
-        'subagent MultiEdit must not be gated');
-    } else {
-      assert.strictEqual(output.tool_name, 'MultiEdit', 'pass-through should preserve input');
-    }
-  })) passed++; else failed++;
-
-  // --- Test 24: camelCase parentToolUseId variant is honored ---
-  clearState();
-  if (test('honors camelCase parentToolUseId variant', () => {
-    const input = {
-      tool_name: 'Bash',
-      tool_input: { command: 'uptime' },
-      session_id: 'subagent-fresh-session',
-      parentToolUseId: 'toolu_parent_camel'
-    };
-    const result = runBashHook(input, {
-      CLAUDE_SESSION_ID: '',
-      ECC_SESSION_ID: '',
-    });
-    const output = parseOutput(result.stdout);
-    assert.ok(output, 'should produce valid JSON output');
-    if (output.hookSpecificOutput) {
-      assert.notStrictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
-        'camelCase parentToolUseId should also bypass the routine-Bash gate');
-    } else {
-      assert.strictEqual(output.tool_name, 'Bash', 'pass-through should preserve input');
-    }
-  })) passed++; else failed++;
-
-  // --- Test 25: empty-string parent_tool_use_id does NOT mark as subagent ---
-  clearState();
-  if (test('empty parent_tool_use_id does not bypass routine Bash gate', () => {
-    const input = {
-      tool_name: 'Bash',
-      tool_input: { command: 'pwd' },
-      session_id: 'top-level-fresh',
-      parent_tool_use_id: ''
-    };
-    const result = runBashHook(input, {
-      CLAUDE_SESSION_ID: '',
-      ECC_SESSION_ID: '',
-    });
-    const output = parseOutput(result.stdout);
-    assert.ok(output, 'should produce JSON output');
-    assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
-      'empty parent_tool_use_id must not be treated as subagent context');
-  })) passed++; else failed++;
-
   // --- Test 19: long raw session IDs hash instead of collapsing to project fallback ---
   clearState();
   if (test('uses a stable hash for long raw session ids', () => {
@@ -707,6 +560,302 @@ function runTests() {
     } else {
       assert.strictEqual(secondOutput.tool_name, 'Bash');
     }
+  })) passed++; else failed++;
+
+  // --- Tests 20-30: subagent context bypasses first-touch file gates (issue #1548) ---
+  //
+  // Background: Claude Code's PreToolUse hook payload carries `agent_id`
+  // (with `agent_type`) when the hook fires from inside a Task/Agent
+  // subagent. The documented schema says: "Present only when the hook fires
+  // from within a subagent... Use this field (not agent_type) to distinguish
+  // subagent calls from main-thread calls." On Linux, subagents frequently
+  // get a different session_id than the parent, producing a fresh empty
+  // state file and re-triggering the first-touch gate for every subagent
+  // call.
+  //
+  // These tests verify the subagent detection logic via strict A/B asserts:
+  // the SAME input without the subagent marker is denied (gate fires), and
+  // WITH the marker is allowed (bypass fires). This proves the bypass path
+  // is being exercised rather than, e.g., a pass-through earlier in the
+  // control flow.
+  //
+  // Tests also verify:
+  //   - Bash stays fully gated in subagent context (routine-Bash is the
+  //     containment net for destructive commands the narrow DESTRUCTIVE_BASH
+  //     regex misses: `rm -f`, `mkfs`, `curl | sh`, etc.)
+  //   - Non-string subagent markers (numbers, null) are ignored
+  //   - Two sequential subagent Edit calls on different files both pass
+  //     (reproduces the #1548 scenario)
+
+  function runBashWithFreshSession(extra = {}) {
+    return runBashHook({
+      tool_name: 'Bash',
+      tool_input: { command: 'pwd' },
+      session_id: 'subagent-fresh-session',
+      ...extra,
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+  }
+
+  function runEditWithFreshSession(filePath, extra = {}) {
+    return runHook({
+      tool_name: 'Edit',
+      tool_input: { file_path: filePath, old_string: 'a', new_string: 'b' },
+      session_id: 'subagent-fresh-session',
+      ...extra,
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+  }
+
+  // --- Test 20: A/B — top-level Edit denies; subagent Edit (agent_id) allows ---
+  clearState();
+  if (test('A/B: same Edit input denies at top level, allows with agent_id', () => {
+    // A: no subagent marker → must deny (first-touch gate fires)
+    clearState();
+    const topLevel = runEditWithFreshSession('/src/ab-edit.js');
+    const topOut = parseOutput(topLevel.stdout);
+    assert.ok(topOut, 'top-level should produce JSON output');
+    assert.strictEqual(topOut.hookSpecificOutput.permissionDecision, 'deny',
+      'same Edit must be denied without subagent marker (first-touch gate)');
+
+    // B: with agent_id → must allow (subagent bypass fires)
+    clearState();
+    const subagent = runEditWithFreshSession('/src/ab-edit.js', { agent_id: 'agent-abc-123' });
+    const subOut = parseOutput(subagent.stdout);
+    assert.ok(subOut, 'subagent should produce JSON output');
+    assert.ok(
+      !subOut.hookSpecificOutput || subOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'same Edit must pass through in subagent context (agent_id set)'
+    );
+  })) passed++; else failed++;
+
+  // --- Test 21: A/B — top-level Write denies; subagent Write (agent_id) allows ---
+  clearState();
+  if (test('A/B: same Write input denies at top level, allows with agent_id', () => {
+    clearState();
+    const topLevel = runHook({
+      tool_name: 'Write',
+      tool_input: { file_path: '/src/ab-write.js', content: 'x' },
+      session_id: 'subagent-fresh-session',
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+    const topOut = parseOutput(topLevel.stdout);
+    assert.ok(topOut, 'top-level should produce JSON output');
+    assert.strictEqual(topOut.hookSpecificOutput.permissionDecision, 'deny',
+      'same Write must be denied without subagent marker');
+
+    clearState();
+    const subagent = runHook({
+      tool_name: 'Write',
+      tool_input: { file_path: '/src/ab-write.js', content: 'x' },
+      session_id: 'subagent-fresh-session',
+      agent_id: 'agent-abc-123',
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+    const subOut = parseOutput(subagent.stdout);
+    assert.ok(subOut, 'subagent should produce JSON output');
+    assert.ok(
+      !subOut.hookSpecificOutput || subOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'same Write must pass through in subagent context'
+    );
+  })) passed++; else failed++;
+
+  // --- Test 22: A/B — top-level MultiEdit denies; subagent MultiEdit allows ---
+  clearState();
+  if (test('A/B: same MultiEdit input denies at top level, allows with agent_id', () => {
+    const edits = [
+      { file_path: '/src/ab-multi-a.js', old_string: 'a', new_string: 'b' },
+      { file_path: '/src/ab-multi-b.js', old_string: 'c', new_string: 'd' }
+    ];
+
+    clearState();
+    const topLevel = runHook({
+      tool_name: 'MultiEdit',
+      tool_input: { edits },
+      session_id: 'subagent-fresh-session',
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+    const topOut = parseOutput(topLevel.stdout);
+    assert.ok(topOut, 'top-level should produce JSON output');
+    assert.strictEqual(topOut.hookSpecificOutput.permissionDecision, 'deny',
+      'same MultiEdit must be denied without subagent marker');
+
+    clearState();
+    const subagent = runHook({
+      tool_name: 'MultiEdit',
+      tool_input: { edits },
+      session_id: 'subagent-fresh-session',
+      agent_id: 'agent-abc-123',
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+    const subOut = parseOutput(subagent.stdout);
+    assert.ok(subOut, 'subagent should produce JSON output');
+    assert.ok(
+      !subOut.hookSpecificOutput || subOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'same MultiEdit must pass through in subagent context'
+    );
+  })) passed++; else failed++;
+
+  // --- Test 23: routine Bash stays gated in subagent context (safety containment) ---
+  clearState();
+  if (test('routine Bash is STILL gated in subagent context (containment for narrow DESTRUCTIVE_BASH regex)', () => {
+    const result = runBashWithFreshSession({ agent_id: 'agent-abc-123' });
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'should produce JSON output');
+    assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
+      'routine Bash must remain gated in subagents to catch rm -f, mkfs, curl|sh, etc.');
+  })) passed++; else failed++;
+
+  // --- Test 24: destructive Bash remains gated in subagent context ---
+  clearState();
+  if (test('destructive Bash (rm -rf) is gated in subagent context', () => {
+    const result = runBashHook({
+      tool_name: 'Bash',
+      tool_input: { command: 'rm -rf /tmp/demo-path' },
+      session_id: 'subagent-fresh-session',
+      agent_id: 'agent-abc-123',
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'should produce JSON output');
+    assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
+      'destructive Bash must be denied in subagent context');
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('Destructive'),
+      'deny reason should name the Destructive gate');
+  })) passed++; else failed++;
+
+  // --- Test 25: parent_tool_use_id is honored as a fallback marker ---
+  clearState();
+  if (test('parent_tool_use_id is honored as a fallback subagent marker for Edit', () => {
+    clearState();
+    const topLevel = runEditWithFreshSession('/src/fallback-edit.js');
+    const topOut = parseOutput(topLevel.stdout);
+    assert.strictEqual(topOut.hookSpecificOutput.permissionDecision, 'deny',
+      'top-level edit should deny');
+
+    clearState();
+    const subagent = runEditWithFreshSession('/src/fallback-edit.js', {
+      parent_tool_use_id: 'toolu_parent_01'
+    });
+    const subOut = parseOutput(subagent.stdout);
+    assert.ok(
+      !subOut.hookSpecificOutput || subOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'parent_tool_use_id fallback should allow the subagent Edit'
+    );
+  })) passed++; else failed++;
+
+  // --- Test 26: camelCase variants (agentId, parentToolUseId) are honored ---
+  clearState();
+  if (test('camelCase subagent markers are honored (agentId, parentToolUseId)', () => {
+    clearState();
+    const a = runEditWithFreshSession('/src/camel-agent.js', { agentId: 'agent-camel' });
+    const aOut = parseOutput(a.stdout);
+    assert.ok(
+      !aOut.hookSpecificOutput || aOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'camelCase agentId should allow subagent Edit'
+    );
+
+    clearState();
+    const b = runEditWithFreshSession('/src/camel-parent.js', { parentToolUseId: 'toolu_camel' });
+    const bOut = parseOutput(b.stdout);
+    assert.ok(
+      !bOut.hookSpecificOutput || bOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'camelCase parentToolUseId should allow subagent Edit'
+    );
+  })) passed++; else failed++;
+
+  // --- Test 27: empty-string and non-string markers do NOT mark as subagent ---
+  clearState();
+  if (test('empty/non-string subagent markers do not trigger bypass', () => {
+    // Empty string agent_id: must still deny the first-touch gate.
+    clearState();
+    const empty = runEditWithFreshSession('/src/empty-marker.js', { agent_id: '' });
+    const emptyOut = parseOutput(empty.stdout);
+    assert.strictEqual(emptyOut.hookSpecificOutput.permissionDecision, 'deny',
+      'empty-string agent_id must not be treated as a subagent marker');
+
+    // Numeric agent_id: also must not trigger bypass.
+    clearState();
+    const numeric = runEditWithFreshSession('/src/numeric-marker.js', { agent_id: 12345 });
+    const numericOut = parseOutput(numeric.stdout);
+    assert.strictEqual(numericOut.hookSpecificOutput.permissionDecision, 'deny',
+      'non-string (numeric) agent_id must not be treated as a subagent marker');
+
+    // Null agent_id: ditto.
+    clearState();
+    const nullMarker = runEditWithFreshSession('/src/null-marker.js', { agent_id: null });
+    const nullOut = parseOutput(nullMarker.stdout);
+    assert.strictEqual(nullOut.hookSpecificOutput.permissionDecision, 'deny',
+      'null agent_id must not be treated as a subagent marker');
+
+    // Whitespace-only agent_id: ditto.
+    clearState();
+    const wsMarker = runEditWithFreshSession('/src/ws-marker.js', { agent_id: '   ' });
+    const wsOut = parseOutput(wsMarker.stdout);
+    assert.strictEqual(wsOut.hookSpecificOutput.permissionDecision, 'deny',
+      'whitespace-only agent_id must not be treated as a subagent marker');
+  })) passed++; else failed++;
+
+  // --- Test 28: #1548 reproduction — two sequential subagent Edits on different files ---
+  // The classic #1548 trace: a subagent invoked with a fresh session_id touches
+  // file A (would normally be denied by first-touch gate on fresh state), then
+  // touches file B. Without the bypass both would deny. With the bypass both
+  // must pass through.
+  clearState();
+  if (test('two sequential subagent Edits on different files both pass (repro #1548)', () => {
+    clearState();
+    const first = runEditWithFreshSession('/src/seq-file-a.js', { agent_id: 'agent-sequential' });
+    const firstOut = parseOutput(first.stdout);
+    assert.ok(firstOut, 'first call should produce JSON');
+    assert.ok(
+      !firstOut.hookSpecificOutput || firstOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'first subagent Edit must pass through'
+    );
+
+    const second = runEditWithFreshSession('/src/seq-file-b.js', { agent_id: 'agent-sequential' });
+    const secondOut = parseOutput(second.stdout);
+    assert.ok(secondOut, 'second call should produce JSON');
+    assert.ok(
+      !secondOut.hookSpecificOutput || secondOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'second subagent Edit on a different file must also pass through (no residual gating)'
+    );
+  })) passed++; else failed++;
+
+  // --- Test 29: subagent MultiEdit mixing settings path + regular file passes ---
+  // The Edit/Write branch runs `isClaudeSettingsPath` before the subagent
+  // bypass so settings-path handling is unaffected. MultiEdit takes the
+  // subagent short-circuit as-is. Verify both.
+  clearState();
+  if (test('subagent MultiEdit with settings path + regular file is allowed', () => {
+    const result = runHook({
+      tool_name: 'MultiEdit',
+      tool_input: {
+        edits: [
+          { file_path: '/some/.claude/settings.json', old_string: '{}', new_string: '{"k":1}' },
+          { file_path: '/src/multi-settings-regular.js', old_string: 'a', new_string: 'b' }
+        ]
+      },
+      session_id: 'subagent-fresh-session',
+      agent_id: 'agent-multi-settings'
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'should produce JSON output');
+    assert.ok(
+      !output.hookSpecificOutput || output.hookSpecificOutput.permissionDecision !== 'deny',
+      'subagent MultiEdit mixing settings + regular file should pass'
+    );
+  })) passed++; else failed++;
+
+  // --- Test 30: top-level Edit to .claude/settings.json path passes through unchanged ---
+  // Safety-preservation test: the settings-path short-circuit must still fire
+  // BEFORE the subagent check at the top of Edit/Write, so other validators
+  // continue to own that file. This test just asserts the pre-existing
+  // behavior is unchanged by the refactor.
+  clearState();
+  if (test('top-level Edit to .claude/settings.json passes (unchanged)', () => {
+    const result = runHook({
+      tool_name: 'Edit',
+      tool_input: { file_path: '/home/u/.claude/settings.json', old_string: '{}', new_string: '{"k":1}' }
+    });
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'should produce JSON output');
+    assert.ok(
+      !output.hookSpecificOutput || output.hookSpecificOutput.permissionDecision !== 'deny',
+      'Edit to Claude settings path should always pass through'
+    );
   })) passed++; else failed++;
 
   // Cleanup only the temp directory created by this test file.
