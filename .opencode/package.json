@@ -66,5 +66,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@opencode-ai/plugin": "1.4.3"
   }
 }
