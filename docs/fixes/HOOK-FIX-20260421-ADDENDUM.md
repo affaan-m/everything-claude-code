@@ -86,6 +86,14 @@ hook command が `"C:\Program Files\Git\bin\bash.exe" "C:\Users\...\wrapper.sh"`
 
 ### 回避策
 
+<!--
+  Note: this list originally used check-mark (U+2705) and
+  cross-mark (U+274C) emoji, but the repo-wide check-unicode-safety
+  CI rejects those codepoints. PR #1567 (gateguard subagent fix)
+  was blocked by these pre-existing violations, so they are
+  replaced with plain-text PASS/FAIL to unblock CI. Not a content
+  change - semantics are identical.
+-->
 第1トークンを bash.exe のフルパス＋スペース付きパスにしないこと：
 1. PASS: `bash` （PATH 解決の単一トークン）— 夜fix / hooks.json パターン
 2. PASS: `.sh` 直接パス（Claude Code の .sh ハンドリングに依存）— 朝fix
