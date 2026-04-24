@@ -86,7 +86,7 @@ function gitInit(dir) {
   assert.strictEqual(commitResult.status, 0, commitResult.stderr);
 }
 
-function runObserve({ homeDir, cwd }) {
+function runObserve({ homeDir, cwd, args = ['post'], extraEnv = {} }) {
   const payload = JSON.stringify({
     tool_name: 'Read',
     tool_input: { file_path: 'README.md' },
@@ -95,7 +95,7 @@ function runObserve({ homeDir, cwd }) {
     cwd,
   });
 
-  return spawnSync('bash', [observeShPath, 'post'], {
+  return spawnSync('bash', [observeShPath, ...args], {
     cwd: repoRoot,
     encoding: 'utf8',
     input: payload,
@@ -107,6 +107,7 @@ function runObserve({ homeDir, cwd }) {
       CLAUDE_CODE_ENTRYPOINT: 'cli',
       ECC_HOOK_PROFILE: 'standard',
       ECC_SKIP_OBSERVE: '0',
+      ...extraEnv,
     },
   });
 }
@@ -210,6 +211,40 @@ test('observe.sh writes project metadata for the git root when cwd is a subdirec
 
     const observationsPath = path.join(projectDir, 'observations.jsonl');
     assert.ok(fs.existsSync(observationsPath), 'observe.sh should append an observation');
+  } finally {
+    cleanupDir(testRoot);
+  }
+});
+
+
+test('observe.sh falls back to CLAUDE_HOOK_EVENT_NAME when no phase argument is passed', () => {
+  const testRoot = createTempDir();
+
+  try {
+    const homeDir = path.join(testRoot, 'home');
+    const repoDir = path.join(testRoot, 'repo');
+    fs.mkdirSync(homeDir, { recursive: true });
+    fs.mkdirSync(repoDir, { recursive: true });
+    gitInit(repoDir);
+
+    const result = runObserve({
+      homeDir,
+      cwd: repoDir,
+      args: [],
+      extraEnv: { CLAUDE_HOOK_EVENT_NAME: 'PreToolUse' },
+    });
+    assert.strictEqual(result.status, 0, result.stderr);
+
+    const { projectDir } = readSingleProjectMetadata(homeDir);
+    const observationsPath = path.join(projectDir, 'observations.jsonl');
+    const observation = JSON.parse(fs.readFileSync(observationsPath, 'utf8').trim());
+    assert.strictEqual(
+      observation.event,
+      'tool_start',
+      'manual PreToolUse installs without argv should record tool_start'
+    );
+    assert.ok(Object.prototype.hasOwnProperty.call(observation, 'input'));
+    assert.ok(!Object.prototype.hasOwnProperty.call(observation, 'output'));
   } finally {
     cleanupDir(testRoot);
   }
