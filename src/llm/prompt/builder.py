@@ -35,14 +35,16 @@ class PromptBuilder:
         ):
             raise ValueError("Pass either config or PromptBuilder keyword options, not both")
 
-        self.config = config or PromptConfig(
-            system_template=system_template,
-            user_template=user_template,
-            include_tools_in_system=(
-                include_tools_in_system if include_tools_in_system is not None else True
-            ),
-            tool_format=tool_format or "native",
-        )
+        if config is None:
+            overrides = {
+                "system_template": system_template,
+                "user_template": user_template,
+                "include_tools_in_system": include_tools_in_system,
+                "tool_format": tool_format,
+            }
+            config = PromptConfig(**{key: value for key, value in overrides.items() if value is not None})
+
+        self.config = config
 
     def build(self, messages: list[Message], tools: list[ToolDefinition] | None = None) -> list[Message]:
         if not messages:

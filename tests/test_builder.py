@@ -24,7 +24,7 @@ class TestPromptBuilder:
         assert len(result) == 2
         assert result[0].role == Role.SYSTEM
 
-    def test_build_adds_system_from_config(self):
+    def test_build_adds_system_from_keyword_options(self):
         messages = [Message(role=Role.USER, content="Hello")]
         builder = PromptBuilder(system_template="You are a pirate.")
         result = builder.build(messages)
@@ -32,13 +32,14 @@ class TestPromptBuilder:
         assert len(result) == 2
         assert "pirate" in result[0].content
 
-    def test_build_adds_system_from_config(self):
+    def test_build_adds_system_from_prompt_config(self):
         messages = [Message(role=Role.USER, content="Hello")]
         builder = PromptBuilder(config=PromptConfig(system_template="You are a pirate."))
         result = builder.build(messages)
 
         assert len(result) == 2
         assert "pirate" in result[0].content
+
     def test_build_with_tools(self):
         messages = [Message(role=Role.USER, content="Search for something")]
         tools = [
