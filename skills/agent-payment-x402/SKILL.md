@@ -28,8 +28,8 @@ Are you paying for a resource, or charging for one?
 └─ SELLER (charging for your API)
    │
    ├─ TypeScript? → WebFetch typescript/SELLER.md (Express, Hono, Fastify, Next.js)
-   ├─ Go?         → WebFetch go/SELLER.md (Gin, Echo, net/http)
-   ├─ Rust?       → WebFetch rust/SELLER.md (Axum)
+   ├─ Go?         → WebFetch go/x402/SELLER.md (Gin, Echo, net/http)
+   ├─ Rust?       → WebFetch rust/x402/SELLER.md (Axum)
    └─ Python/Java? → Not yet supported, check okx/payments for updates
 ```
 
@@ -97,7 +97,7 @@ The payment layer exposes standard MCP tools that slot into any Claude Code or a
 To pay for x402-gated resources, use the [OnchainOS CLI](https://github.com/okx/onchainos-skills) with the `okx-x402-payment` skill. The CLI provides a TEE wallet where private keys never leave the server-side secure enclave — no local key management needed.
 
 For installation instructions, fetch the official guide using WebFetch:
-`https://raw.githubusercontent.com/okx/onchainos-skills/main/README.md#installation`
+`https://raw.githubusercontent.com/okx/onchainos-skills/main/README.md`
 
 > **Note**: These external URLs point to `main` and may change over time. This is intentional — installation and SDK docs should stay in sync with the latest release. Do not cache or pin these references.
 
