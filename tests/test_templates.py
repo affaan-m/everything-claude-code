@@ -15,8 +15,10 @@ def restore_template_registry():
     snapshot = dict(TEMPLATES)
     clear_templates()
     yield
-    clear_templates()
-    TEMPLATES.update(snapshot)
+    try:
+        clear_templates()
+    finally:
+        TEMPLATES.update(snapshot)
 
 
 @pytest.mark.unit
@@ -56,14 +58,14 @@ def test_clear_templates_removes_all_registered_templates():
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    ("name", "template"),
+    ("name", "template", "error_match"),
     [
-        ("", "content"),
-        ("   ", "content"),
-        ("system", ""),
-        ("system", "   "),
+        ("", "content", "Template name must be a non-empty string"),
+        ("   ", "content", "Template name must be a non-empty string"),
+        ("system", "", "Template content must be a non-empty string"),
+        ("system", "   ", "Template content must be a non-empty string"),
     ],
 )
-def test_register_template_rejects_empty_inputs(name, template):
-    with pytest.raises(ValueError):
+def test_register_template_rejects_empty_inputs(name, template, error_match):
+    with pytest.raises(ValueError, match=error_match):
         register_template(name, template)
