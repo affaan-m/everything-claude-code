@@ -1,13 +1,69 @@
 import pytest
 
-from llm.prompt import TEMPLATES, get_template, get_template_or_default, register_template
+from llm.prompt import (
+    TEMPLATES,
+    clear_templates,
+    deregister_template,
+    get_template,
+    get_template_or_default,
+    register_template,
+)
 
 
-def test_register_template_exposes_read_only_template_mapping():
+@pytest.fixture(autouse=True)
+def restore_template_registry():
+    snapshot = dict(TEMPLATES)
+    clear_templates()
+    yield
+    clear_templates()
+    TEMPLATES.update(snapshot)
+
+
+@pytest.mark.unit
+def test_register_template_exposes_public_template_mapping():
     register_template("system", "You are helpful.")
 
     assert get_template("system") == "You are helpful."
     assert get_template_or_default("missing", "fallback") == "fallback"
     assert TEMPLATES["system"] == "You are helpful."
-    with pytest.raises(TypeError):
-        TEMPLATES["other"] = "mutable"  # type: ignore[index]
+
+
+@pytest.mark.unit
+def test_templates_mapping_remains_mutable_for_existing_callers():
+    TEMPLATES["legacy"] = "Use the existing public mapping."
+
+    assert get_template("legacy") == "Use the existing public mapping."
+
+
+@pytest.mark.unit
+def test_deregister_template_removes_named_template():
+    register_template("system", "You are helpful.")
+
+    deregister_template("system")
+
+    assert get_template("system") is None
+
+
+@pytest.mark.unit
+def test_clear_templates_removes_all_registered_templates():
+    register_template("system", "You are helpful.")
+    register_template("user", "Answer clearly.")
+
+    clear_templates()
+
+    assert TEMPLATES == {}
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("name", "template"),
+    [
+        ("", "content"),
+        ("   ", "content"),
+        ("system", ""),
+        ("system", "   "),
+    ],
+)
+def test_register_template_rejects_empty_inputs(name, template):
+    with pytest.raises(ValueError):
+        register_template(name, template)
