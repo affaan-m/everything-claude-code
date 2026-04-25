@@ -40,6 +40,20 @@ class TestPromptBuilder:
         assert len(result) == 2
         assert "pirate" in result[0].content
 
+    def test_rejects_config_with_keyword_options(self):
+        with pytest.raises(ValueError, match="Pass either config or PromptBuilder keyword options"):
+            PromptBuilder(
+                config=PromptConfig(system_template="Configured."),
+                system_template="Keyword override.",
+            )
+
+    def test_empty_system_template_does_not_add_blank_system_message(self):
+        messages = [Message(role=Role.USER, content="Hello")]
+        builder = PromptBuilder(system_template="")
+        result = builder.build(messages)
+
+        assert result == messages
+
     def test_build_with_tools(self):
         messages = [Message(role=Role.USER, content="Search for something")]
         tools = [
