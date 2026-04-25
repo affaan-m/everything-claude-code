@@ -61,7 +61,7 @@ function validateInstallManifests() {
   let hasErrors = false;
   let modulesData;
   let profilesData;
-  let componentsData = { version: null, components: [] };
+  let componentsData = { version: 0, components: [] };
 
   try {
     modulesData = readJson(MODULES_MANIFEST_PATH, 'install-modules.json');
