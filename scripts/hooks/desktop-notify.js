@@ -20,6 +20,7 @@
 'use strict';
 
 const { spawnSync, execFileSync } = require('child_process');
+const fs = require('fs');
 const { isMacOS, log } = require('../lib/utils');
 
 const TITLE = 'Claude Code';
@@ -31,7 +32,7 @@ const MAX_BODY_LENGTH = 100;
 let isWSL = false;
 if (process.platform === 'linux') {
   try {
-    isWSL = require('fs').readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
+    isWSL = fs.readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
   } catch {
     isWSL = false;
   }
@@ -114,6 +115,7 @@ function findTerminalTTY() {
     try {
       const out = execFileSync('ps', ['-o', 'ppid=,tty=', '-p', String(pid)], {
         stdio: ['ignore', 'pipe', 'ignore'],
+        timeout: 2000,
       }).toString().trim();
       const m = out.match(/^\s*(\d+)\s+(\S+)\s*$/);
       if (!m) return null;
@@ -148,7 +150,8 @@ function notifyMacOS(title, body) {
     try {
       const tty = findTerminalTTY();
       if (tty) {
-        const fs = require('fs');
+        // Strip control chars (incl. ESC/BEL) to prevent escape-sequence injection.
+        // eslint-disable-next-line no-control-regex
         const message = `${title}: ${body}`.replace(/[\x00-\x1f\x7f]/g, ' ');
         fs.writeFileSync(tty, `\x1b]9;${message}\x07`);
         return;
