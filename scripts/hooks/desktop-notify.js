@@ -4,8 +4,12 @@
  *
  * Sends a native desktop notification with the task summary when Claude
  * finishes responding.  Supports:
- *   - macOS: osascript (native)
+ *   - macOS: iTerm2 native escape sequence (preferred) or osascript (fallback)
  *   - WSL: PowerShell 7 or Windows PowerShell + BurntToast module
+ *
+ * On macOS under iTerm2, the notification is owned by iTerm2 — clicking it
+ * focuses the iTerm2 tab where Claude Code runs. Outside iTerm2, falls back
+ * to osascript (notification owned by Script Editor; clicks launch it).
  *
  * On WSL, if BurntToast is not installed, logs a tip for installation.
  *
@@ -15,7 +19,7 @@
 
 'use strict';
 
-const { spawnSync } = require('child_process');
+const { spawnSync, execFileSync } = require('child_process');
 const { isMacOS, log } = require('../lib/utils');
 
 const TITLE = 'Claude Code';
@@ -99,13 +103,62 @@ function extractSummary(message) {
 }
 
 /**
- * Send a macOS notification via osascript.
- * AppleScript strings do not support backslash escapes, so we replace
- * double quotes with curly quotes and strip backslashes before embedding.
+ * Walk up the process tree to find an ancestor attached to a real TTY.
+ * Hook subprocesses are detached from a controlling terminal, but the parent
+ * Claude Code process still owns the terminal emulator's tty (e.g. iTerm2 tab).
+ * Returns absolute path like "/dev/ttys017", or null if none found.
+ */
+function findTerminalTTY() {
+  let pid = process.pid;
+  for (let depth = 0; depth < 30; depth += 1) {
+    try {
+      const out = execFileSync('ps', ['-o', 'ppid=,tty=', '-p', String(pid)], {
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).toString().trim();
+      const m = out.match(/^\s*(\d+)\s+(\S+)\s*$/);
+      if (!m) return null;
+      const [, ppidStr, tty] = m;
+      if (tty && !tty.startsWith('?')) return `/dev/${tty}`;
+      const ppid = parseInt(ppidStr, 10);
+      if (!ppid || ppid <= 1) return null;
+      pid = ppid;
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+/**
+ * Send a macOS notification.
+ *
+ * On iTerm2, prefers the native escape sequence (ESC ] 9 ; <message> BEL)
+ * written to the parent terminal's tty. This makes iTerm2 the notification
+ * owner, so clicking the notification focuses the exact iTerm2 tab where
+ * Claude Code is running. The default osascript path makes Script Editor
+ * the owner instead, which causes clicks to launch Script Editor.
+ *
+ * Falls back to osascript when not running under iTerm2 or when tty
+ * discovery fails. AppleScript strings do not support backslash escapes,
+ * so we replace double quotes with curly quotes and strip backslashes
+ * before embedding.
  */
 function notifyMacOS(title, body) {
-  const safeBody = body.replace(/\\/g, '').replace(/"/g, '\u201C');
-  const safeTitle = title.replace(/\\/g, '').replace(/"/g, '\u201C');
+  if (process.env.TERM_PROGRAM === 'iTerm.app') {
+    try {
+      const tty = findTerminalTTY();
+      if (tty) {
+        const fs = require('fs');
+        const message = `${title}: ${body}`.replace(/[\x00-\x1f\x7f]/g, ' ');
+        fs.writeFileSync(tty, `\x1b]9;${message}\x07`);
+        return;
+      }
+    } catch (err) {
+      log(`[DesktopNotify] iTerm escape failed, falling back to osascript: ${err.message}`);
+    }
+  }
+  const safeBody = body.replace(/\\/g, '').replace(/"/g, '“');
+  const safeTitle = title.replace(/\\/g, '').replace(/"/g, '“');
   const script = `display notification "${safeBody}" with title "${safeTitle}"`;
   const result = spawnSync('osascript', ['-e', script], { stdio: 'ignore', timeout: 5000 });
   if (result.error || result.status !== 0) {
