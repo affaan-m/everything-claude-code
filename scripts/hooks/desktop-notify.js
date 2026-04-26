@@ -25,6 +25,8 @@ const { isMacOS, log } = require('../lib/utils');
 
 const TITLE = 'Claude Code';
 const MAX_BODY_LENGTH = 100;
+const MAX_TTY_LOOKUP_DEPTH = 30;
+const PS_TIMEOUT_MS = 2000;
 
 /**
  * Memoized WSL detection at module load (avoids repeated /proc/version reads).
@@ -111,11 +113,11 @@ function extractSummary(message) {
  */
 function findTerminalTTY() {
   let pid = process.pid;
-  for (let depth = 0; depth < 30; depth += 1) {
+  for (let depth = 0; depth < MAX_TTY_LOOKUP_DEPTH; depth += 1) {
     try {
       const out = execFileSync('ps', ['-o', 'ppid=,tty=', '-p', String(pid)], {
         stdio: ['ignore', 'pipe', 'ignore'],
-        timeout: 2000,
+        timeout: PS_TIMEOUT_MS,
       }).toString().trim();
       const m = out.match(/^\s*(\d+)\s+(\S+)\s*$/);
       if (!m) return null;
