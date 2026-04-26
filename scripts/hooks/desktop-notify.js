@@ -120,7 +120,12 @@ function findTerminalTTY() {
       const m = out.match(/^\s*(\d+)\s+(\S+)\s*$/);
       if (!m) return null;
       const [, ppidStr, tty] = m;
-      if (tty && !tty.startsWith('?')) return `/dev/${tty}`;
+      if (tty && !tty.startsWith('?')) {
+        // `ps -o tty=` may emit either "ttys001" or the short form "s001"
+        // depending on macOS version; normalize so the resulting path exists.
+        const name = tty.startsWith('tty') ? tty : `tty${tty}`;
+        return `/dev/${name}`;
+      }
       const ppid = parseInt(ppidStr, 10);
       if (!ppid || ppid <= 1) return null;
       pid = ppid;
@@ -132,21 +137,35 @@ function findTerminalTTY() {
 }
 
 /**
+ * Detect whether the process runs under a terminal multiplexer that would
+ * swallow OSC 9. tmux and screen don't pass OSC 9 through by default, so the
+ * sequence written to their pty never reaches iTerm2 and the user gets no
+ * notification. In that case we skip the iTerm2 fast path and let osascript
+ * handle the notification instead.
+ */
+function isUnderMultiplexer() {
+  if (process.env.TMUX) return true;
+  const term = process.env.TERM || '';
+  return /^screen/.test(term) || /^tmux/.test(term);
+}
+
+/**
  * Send a macOS notification.
  *
- * On iTerm2, prefers the native escape sequence (ESC ] 9 ; <message> BEL)
- * written to the parent terminal's tty. This makes iTerm2 the notification
- * owner, so clicking the notification focuses the exact iTerm2 tab where
- * Claude Code is running. The default osascript path makes Script Editor
- * the owner instead, which causes clicks to launch Script Editor.
+ * On iTerm2 (and not inside tmux/screen), prefers the native escape sequence
+ * (ESC ] 9 ; <message> BEL) written to the parent terminal's tty. This makes
+ * iTerm2 the notification owner, so clicking the notification focuses the
+ * exact iTerm2 tab where Claude Code is running. The default osascript path
+ * makes Script Editor the owner instead, which causes clicks to launch
+ * Script Editor.
  *
- * Falls back to osascript when not running under iTerm2 or when tty
- * discovery fails. AppleScript strings do not support backslash escapes,
- * so we replace double quotes with curly quotes and strip backslashes
- * before embedding.
+ * Falls back to osascript when not running under iTerm2, when tty discovery
+ * fails, or when running inside a multiplexer that would swallow OSC 9.
+ * AppleScript strings do not support backslash escapes, so we replace double
+ * quotes with curly quotes and strip backslashes before embedding.
  */
 function notifyMacOS(title, body) {
-  if (process.env.TERM_PROGRAM === 'iTerm.app') {
+  if (process.env.TERM_PROGRAM === 'iTerm.app' && !isUnderMultiplexer()) {
     try {
       const tty = findTerminalTTY();
       if (tty) {
