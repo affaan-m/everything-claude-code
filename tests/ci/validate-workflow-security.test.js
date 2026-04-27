@@ -81,6 +81,17 @@ function run() {
     assert.match(result.stderr, /pull_request\.head\.sha/);
   })) passed++; else failed++;
 
+  // Quoted action names (`uses: "actions/checkout@v4"`) are valid YAML and
+  // appear in the wild. The original `uses:\s*actions/checkout@` filter
+  // skipped quoted forms, letting unsafe `with: ref:` slip past the validator.
+  if (test('detects unsafe checkout when uses: value is quoted', () => {
+    const result = runValidator({
+      'unsafe-quoted.yml': `name: Unsafe\non:\n  pull_request_target:\n    branches: [main]\njobs:\n  inspect:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: "actions/checkout@v4"\n        with:\n          ref: \${{ github.event.pull_request.head.sha }}\n`,
+    });
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on quoted uses:');
+    assert.match(result.stderr, /pull_request\.head\.sha/);
+  })) passed++; else failed++;
+
   console.log(`\nPassed: ${passed}`);
   console.log(`Failed: ${failed}`);
 
