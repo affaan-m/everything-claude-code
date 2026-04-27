@@ -84,11 +84,21 @@ function run() {
   // Quoted action names (`uses: "actions/checkout@v4"`) are valid YAML and
   // appear in the wild. The original `uses:\s*actions/checkout@` filter
   // skipped quoted forms, letting unsafe `with: ref:` slip past the validator.
-  if (test('detects unsafe checkout when uses: value is quoted', () => {
+  // Cover both double- and single-quoted forms since the regex's ['"]? class
+  // makes them distinct branches.
+  if (test('detects unsafe checkout when uses: value is double-quoted', () => {
     const result = runValidator({
-      'unsafe-quoted.yml': `name: Unsafe\non:\n  pull_request_target:\n    branches: [main]\njobs:\n  inspect:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: "actions/checkout@v4"\n        with:\n          ref: \${{ github.event.pull_request.head.sha }}\n`,
+      'unsafe-double-quoted.yml': `name: Unsafe\non:\n  pull_request_target:\n    branches: [main]\njobs:\n  inspect:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: "actions/checkout@v4"\n        with:\n          ref: \${{ github.event.pull_request.head.sha }}\n`,
     });
-    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on quoted uses:');
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on double-quoted uses:');
+    assert.match(result.stderr, /pull_request\.head\.sha/);
+  })) passed++; else failed++;
+
+  if (test('detects unsafe checkout when uses: value is single-quoted', () => {
+    const result = runValidator({
+      'unsafe-single-quoted.yml': `name: Unsafe\non:\n  pull_request_target:\n    branches: [main]\njobs:\n  inspect:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: 'actions/checkout@v4'\n        with:\n          ref: \${{ github.event.pull_request.head.sha }}\n`,
+    });
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on single-quoted uses:');
     assert.match(result.stderr, /pull_request\.head\.sha/);
   })) passed++; else failed++;
 
