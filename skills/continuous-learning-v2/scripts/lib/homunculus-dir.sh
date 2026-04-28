@@ -31,5 +31,11 @@ _ecc_resolve_homunculus_dir() {
     esac
   fi
 
-  printf '%s/.local/share/ecc-homunculus\n' "$HOME"
+  case "${HOME:-}" in
+    /*) printf '%s/.local/share/ecc-homunculus\n' "$HOME" ;;
+    *)
+      printf '[ecc] HOME=%s is not absolute; cannot resolve homunculus dir\n' "${HOME:-}" >&2
+      return 1
+      ;;
+  esac
 }

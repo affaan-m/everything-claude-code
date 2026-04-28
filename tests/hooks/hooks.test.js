@@ -154,11 +154,22 @@ async function asyncTest(name, fn) {
   }
 }
 
+// Build subprocess env that clears inherited homunculus resolver vars unless
+// the caller explicitly sets them. Without this, tests asserting against
+// `$HOME/.local/share/ecc-homunculus` are non-deterministic when the test
+// runner has XDG_DATA_HOME or CLV2_HOMUNCULUS_DIR set in its own environment.
+function buildSubprocessEnv(callerEnv) {
+  const baseEnv = { ...process.env };
+  if (!('XDG_DATA_HOME' in callerEnv)) delete baseEnv.XDG_DATA_HOME;
+  if (!('CLV2_HOMUNCULUS_DIR' in callerEnv)) delete baseEnv.CLV2_HOMUNCULUS_DIR;
+  return { ...baseEnv, ...callerEnv };
+}
+
 // Run a script and capture output
 function runScript(scriptPath, input = '', env = {}) {
   return new Promise((resolve, reject) => {
     const proc = spawn('node', [scriptPath], {
-      env: { ...process.env, ...env },
+      env: buildSubprocessEnv(env),
       stdio: ['pipe', 'pipe', 'pipe']
     });
 
@@ -185,7 +196,7 @@ function runShellScript(scriptPath, args = [], input = '', env = {}, cwd = proce
   return new Promise((resolve, reject) => {
     const proc = spawn('bash', [toBashPath(scriptPath), ...args], {
       cwd,
-      env: { ...process.env, ...env },
+      env: buildSubprocessEnv(env),
       stdio: ['pipe', 'pipe', 'pipe']
     });
 
@@ -286,6 +297,11 @@ function assertNoProjectDetectionSideEffects(homeDir, testName) {
 
   const projectEntries = fs.existsSync(projectsDir) ? fs.readdirSync(projectsDir).filter(entry => fs.statSync(path.join(projectsDir, entry)).isDirectory()) : [];
   assert.strictEqual(projectEntries.length, 0, `${testName} should not create project directories`);
+
+  // Defense in depth: catch any regression that writes to the legacy path,
+  // which is still inside Claude Code's `~/.claude/**` write guard.
+  const legacyDir = path.join(homeDir, '.claude', 'homunculus');
+  assert.ok(!fs.existsSync(legacyDir), `${testName} should not write to legacy ~/.claude/homunculus path`);
 }
 
 async function assertObserveSkipBeforeProjectDetection(testCase) {

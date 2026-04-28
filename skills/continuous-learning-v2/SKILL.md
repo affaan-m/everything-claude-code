@@ -260,7 +260,21 @@ The data directory used to live at `~/.claude/homunculus/`. It moved out because
 
 ### Migrating from `~/.claude/homunculus`
 
-Run once, after exiting all Claude Code sessions:
+Run once, after exiting all Claude Code sessions.
+
+If installed as a Claude Code plugin:
+
+```bash
+bash "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/scripts/migrate-homunculus.sh"
+```
+
+If installed under `~/.claude/skills/`:
+
+```bash
+bash "$HOME/.claude/skills/continuous-learning-v2/scripts/migrate-homunculus.sh"
+```
+
+If running from a clone of this repo:
 
 ```bash
 bash skills/continuous-learning-v2/scripts/migrate-homunculus.sh

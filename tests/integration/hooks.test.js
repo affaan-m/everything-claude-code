@@ -47,10 +47,21 @@ async function asyncTest(name, fn) {
  * @param {object} env - Environment variables
  * @returns {Promise<{code: number, stdout: string, stderr: string}>}
  */
+// Build subprocess env that clears inherited homunculus resolver vars unless
+// the caller explicitly sets them. Without this, tests asserting against
+// `$testDir/.local/share/ecc-homunculus` are non-deterministic when the test
+// runner has XDG_DATA_HOME or CLV2_HOMUNCULUS_DIR set in its own environment.
+function buildSubprocessEnv(callerEnv) {
+  const baseEnv = { ...process.env };
+  if (!('XDG_DATA_HOME' in callerEnv)) delete baseEnv.XDG_DATA_HOME;
+  if (!('CLV2_HOMUNCULUS_DIR' in callerEnv)) delete baseEnv.CLV2_HOMUNCULUS_DIR;
+  return { ...baseEnv, ...callerEnv };
+}
+
 function runHookWithInput(scriptPath, input = {}, env = {}, timeoutMs = 10000) {
   return new Promise((resolve, reject) => {
     const proc = spawn('node', [scriptPath], {
-      env: { ...process.env, ...env },
+      env: buildSubprocessEnv(env),
       stdio: ['pipe', 'pipe', 'pipe']
     });
 
