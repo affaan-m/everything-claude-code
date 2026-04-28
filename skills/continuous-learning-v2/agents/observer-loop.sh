@@ -291,22 +291,30 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 while true; do
   exit_if_idle_without_sessions
-  sleep "$OBSERVER_INTERVAL_SECONDS" &
-  SLEEP_PID=$!
-  wait "$SLEEP_PID" 2>/dev/null
-  SLEEP_PID=""
 
-  exit_if_idle_without_sessions
+  # Catch up on any deferred nudge BEFORE sleeping. on_usr1() only sets
+  # PENDING_ANALYSIS=1 while ANALYZING=1, so the only way it stays set
+  # across loop iterations is if a SIGUSR1 fired during the previous
+  # analysis. Running it here makes the catch-up immediate instead of
+  # waiting a full OBSERVER_INTERVAL_SECONDS, which is what the trap
+  # explicitly signaled "analyze again now".
   if [ "$PENDING_ANALYSIS" -eq 1 ]; then
-    # SIGUSR1 fired while a previous analysis was running. Catch up now
-    # so the nudge isn't silently dropped for a full interval.
     PENDING_ANALYSIS=0
     USR1_FIRED=0
     ANALYZING=1
     analyze_observations
     LAST_ANALYSIS_EPOCH=$(date +%s)
     ANALYZING=0
-  elif [ "$USR1_FIRED" -eq 1 ]; then
+    continue
+  fi
+
+  sleep "$OBSERVER_INTERVAL_SECONDS" &
+  SLEEP_PID=$!
+  wait "$SLEEP_PID" 2>/dev/null
+  SLEEP_PID=""
+
+  exit_if_idle_without_sessions
+  if [ "$USR1_FIRED" -eq 1 ]; then
     USR1_FIRED=0
   else
     # Gate with ANALYZING so a SIGUSR1 during this analysis hits the

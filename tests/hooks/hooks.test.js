@@ -2471,7 +2471,7 @@ async function runTests() {
       assert.ok(/^PENDING_ANALYSIS=0$/m.test(observerLoopSource), 'observer-loop must initialize PENDING_ANALYSIS=0 at top level so the deferred-nudge branch reads a deterministic value');
       assert.ok(/on_usr1\(\)\s*\{[\s\S]*?if \[ "\$ANALYZING" -eq 1 \]; then\s*\n\s*PENDING_ANALYSIS=1/.test(observerLoopSource), 'on_usr1 must set PENDING_ANALYSIS=1 inside the ANALYZING re-entrancy branch so the main loop runs a follow-up analysis after the in-flight one completes');
       assert.ok(!/on_usr1\(\)\s*\{[\s\S]*?SLEEP_PID=""\s*\n\s*USR1_FIRED=1/.test(observerLoopSource), 'on_usr1 must not set USR1_FIRED=1 before the ANALYZING re-entrancy check; doing so causes the main loop to clear the flag on the next iteration and silently drop the deferred nudge');
-      assert.ok(/if \[ "\$PENDING_ANALYSIS" -eq 1 \]; then[\s\S]*?PENDING_ANALYSIS=0[\s\S]*?ANALYZING=1\s*\n\s*analyze_observations[\s\S]*?ANALYZING=0\s*\n\s*elif \[ "\$USR1_FIRED" -eq 1 \]/.test(observerLoopSource), 'main loop must check PENDING_ANALYSIS first and run a deferred analysis before the USR1_FIRED skip branch, otherwise a SIGUSR1 that arrived during the previous analysis is dropped');
+      assert.ok(/while true; do[\s\S]*?if \[ "\$PENDING_ANALYSIS" -eq 1 \]; then[\s\S]*?PENDING_ANALYSIS=0[\s\S]*?ANALYZING=1\s*\n\s*analyze_observations[\s\S]*?ANALYZING=0\s*\n\s*continue\s*\n\s*fi\s*\n\s*\n?\s*sleep "\$OBSERVER_INTERVAL_SECONDS"/.test(observerLoopSource), 'main loop must check PENDING_ANALYSIS BEFORE the interval sleep and use `continue` to run the deferred analysis immediately; otherwise the catch-up waits a full interval, contradicting the "analyze again now" semantics of the SIGUSR1 nudge');
     })
   )
     passed++;
