@@ -21,6 +21,8 @@ const AGENTS_PATH = path.join(ROOT, 'AGENTS.md');
 const README_ZH_CN_PATH = path.join(ROOT, 'README.zh-CN.md');
 const DOCS_ZH_CN_README_PATH = path.join(ROOT, 'docs', 'zh-CN', 'README.md');
 const DOCS_ZH_CN_AGENTS_PATH = path.join(ROOT, 'docs', 'zh-CN', 'AGENTS.md');
+const PLUGIN_JSON_PATH = path.join(ROOT, '.claude-plugin', 'plugin.json');
+const MARKETPLACE_JSON_PATH = path.join(ROOT, '.claude-plugin', 'marketplace.json');
 const WRITE_MODE = process.argv.includes('--write');
 
 const OUTPUT_MODE = process.argv.includes('--md')
@@ -346,6 +348,57 @@ function parseZhAgentsDocExpectations(agentsContent) {
   return expectations;
 }
 
+
+function parseCatalogDescriptionExpectations(content, source, getDescription) {
+  let parsed;
+  try {
+    parsed = JSON.parse(content);
+  } catch (error) {
+    throw new Error(`${source} is not valid JSON: ${error.message}`);
+  }
+
+  const description = getDescription(parsed);
+  if (typeof description !== 'string') {
+    throw new Error(`${source} is missing the catalog count description`);
+  }
+
+  const match = description.match(/(\d+)\s+agents,\s+(\d+)\s+skills,\s+(\d+)\s+legacy command shims?/i);
+  if (!match) {
+    throw new Error(`${source} is missing the catalog count description`);
+  }
+
+  return [
+    { category: 'agents', mode: 'exact', expected: Number(match[1]), source },
+    { category: 'skills', mode: 'exact', expected: Number(match[2]), source },
+    { category: 'commands', mode: 'exact', expected: Number(match[3]), source },
+  ];
+}
+
+function syncCatalogDescription(content, catalog, source, getDescription, setDescription) {
+  let parsed;
+  try {
+    parsed = JSON.parse(content);
+  } catch (error) {
+    throw new Error(`${source} is not valid JSON: ${error.message}`);
+  }
+
+  const description = getDescription(parsed);
+  if (typeof description !== 'string') {
+    throw new Error(`${source} is missing the catalog count description`);
+  }
+
+  const nextDescription = replaceOrThrow(
+    description,
+    /(\d+)(\s+agents,\s+)(\d+)(\s+skills,\s+)(\d+)(\s+legacy command shims?)/i,
+    (_, __, agentsSuffix, ___, skillsSuffix, ____, commandsSuffix) =>
+      `${catalog.agents.count}${agentsSuffix}${catalog.skills.count}${skillsSuffix}${catalog.commands.count}${commandsSuffix}`,
+    source
+  );
+
+  setDescription(parsed, nextDescription);
+  return `${JSON.stringify(parsed, null, 2)}\n`;
+}
+
 function evaluateExpectations(catalog, expectations) {
   return expectations.map(expectation => {
     const actual = catalog[expectation.category].count;
@@ -547,6 +600,8 @@ function createDocumentSpecs(paths = {}) {
     zhRootReadmePath = README_ZH_CN_PATH,
     zhDocsReadmePath = DOCS_ZH_CN_README_PATH,
     zhDocsAgentsPath = DOCS_ZH_CN_AGENTS_PATH,
+    pluginJsonPath = PLUGIN_JSON_PATH,
+    marketplaceJsonPath = MARKETPLACE_JSON_PATH,
   } = paths;
 
   return [
@@ -575,6 +630,36 @@ function createDocumentSpecs(paths = {}) {
       parseExpectations: parseZhAgentsDocExpectations,
       syncContent: syncZhAgents,
     },
+    {
+      filePath: pluginJsonPath,
+      parseExpectations: content => parseCatalogDescriptionExpectations(
+        content,
+        '.claude-plugin/plugin.json description',
+        parsed => parsed.description
+      ),
+      syncContent: (content, catalog) => syncCatalogDescription(
+        content,
+        catalog,
+        '.claude-plugin/plugin.json description',
+        parsed => parsed.description,
+        (parsed, description) => { parsed.description = description; }
+      ),
+    },
+    {
+      filePath: marketplaceJsonPath,
+      parseExpectations: content => parseCatalogDescriptionExpectations(
+        content,
+        '.claude-plugin/marketplace.json plugin description',
+        parsed => parsed.plugins?.[0]?.description
+      ),
+      syncContent: (content, catalog) => syncCatalogDescription(
+        content,
+        catalog,
+        '.claude-plugin/marketplace.json plugin description',
+        parsed => parsed.plugins?.[0]?.description,
+        (parsed, description) => { parsed.plugins[0].description = description; }
+      ),
+    },
   ];
 }
 
@@ -585,6 +670,8 @@ function createDocumentSpecsForRoot(root) {
     zhRootReadmePath: path.join(root, 'README.zh-CN.md'),
     zhDocsReadmePath: path.join(root, 'docs', 'zh-CN', 'README.md'),
     zhDocsAgentsPath: path.join(root, 'docs', 'zh-CN', 'AGENTS.md'),
+    pluginJsonPath: path.join(root, '.claude-plugin', 'plugin.json'),
+    marketplaceJsonPath: path.join(root, '.claude-plugin', 'marketplace.json'),
   });
 }
 
@@ -689,11 +776,13 @@ module.exports = {
   formatExpectation,
   main,
   parseAgentsDocExpectations,
+  parseCatalogDescriptionExpectations,
   parseReadmeExpectations,
   parseZhAgentsDocExpectations,
   parseZhDocsReadmeExpectations,
   parseZhRootReadmeExpectations,
   runCatalogCheck,
+  syncCatalogDescription,
   syncEnglishAgents,
   syncEnglishReadme,
   syncZhAgents,
