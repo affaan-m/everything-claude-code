@@ -262,6 +262,17 @@ async function runTests() {
     } finally {
       if (serverProcess) {
         serverProcess.kill('SIGTERM');
+        await new Promise(resolve => {
+          let settled = false;
+          const finish = () => {
+            if (settled) return;
+            settled = true;
+            resolve();
+          };
+          serverProcess.once('exit', finish);
+          serverProcess.once('close', finish);
+          setTimeout(finish, 500);
+        });
       }
       cleanupTempDir(tempDir);
     }
