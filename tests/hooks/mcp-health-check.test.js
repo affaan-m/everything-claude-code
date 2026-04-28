@@ -6,7 +6,6 @@
 
 const assert = require('assert');
 const fs = require('fs');
-const http = require('http');
 const os = require('os');
 const path = require('path');
 const { spawn, spawnSync } = require('child_process');
@@ -212,9 +211,7 @@ async function runTests() {
     const statePath = path.join(tempDir, 'mcp-health.json');
     const serverScript = path.join(tempDir, 'http-400-server.js');
     const portFile = path.join(tempDir, 'server-port.txt');
-    const serverProcess = spawn(process.execPath, [serverScript, portFile], {
-      stdio: 'ignore'
-    });
+    let serverProcess;
 
     try {
       fs.writeFileSync(
@@ -233,6 +230,10 @@ async function runTests() {
           "setInterval(() => {}, 1000);"
         ].join('\n')
       );
+
+      serverProcess = spawn(process.execPath, [serverScript, portFile], {
+        stdio: 'ignore'
+      });
 
       const port = waitForFile(portFile).trim();
 
@@ -259,7 +260,9 @@ async function runTests() {
       const state = readState(statePath);
       assert.strictEqual(state.servers.github.status, 'healthy', 'Expected HTTP MCP server to be marked healthy');
     } finally {
-      serverProcess.kill('SIGTERM');
+      if (serverProcess) {
+        serverProcess.kill('SIGTERM');
+      }
       cleanupTempDir(tempDir);
     }
   })) passed++; else failed++;
