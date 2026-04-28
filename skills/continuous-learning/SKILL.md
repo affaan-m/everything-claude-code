@@ -1,9 +1,23 @@
 ---
 name: continuous-learning
-description: Automatically extract reusable patterns from Claude Code sessions and save them as learned skills for future use.
+description: "[DEPRECATED — use continuous-learning-v2] Legacy v1 stop-hook skill extractor. v2 is a strict superset (instinct-based, project-scoped, hook-reliable). Do not invoke v1; route all 'continuous learning' / 'session learning' / 'pattern extraction' requests to continuous-learning-v2."
 ---
 
-# Continuous Learning Skill
+# Continuous Learning Skill — DEPRECATED
+
+> **DEPRECATED 2026-04-28.** Use `continuous-learning-v2` instead. v2 is a strict superset:
+> stop-hook → PreToolUse/PostToolUse (100% reliable observation), full skills → atomic
+> instincts with confidence scoring, no scope → project-scoped + global with promotion.
+> See v2's "What's New in v2 (vs v1)" table for the full delta.
+>
+> Kept for archival reference. The `name` and `description` above route the skill picker
+> away from v1, and the body below remains in case any existing consumer still relies on
+> the v1 trigger surface. Maintainers may choose to delete this file entirely if backward
+> compatibility is no longer needed.
+
+---
+
+## Original v1 Documentation (archival)
 
 Automatically evaluates Claude Code sessions on end to extract reusable patterns that can be saved as learned skills.
 
