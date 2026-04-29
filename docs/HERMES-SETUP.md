@@ -83,13 +83,26 @@ These stay local and should be configured per operator:
 ## Suggested Bring-Up Order
 
 0. Run `ecc migrate audit --source ~/.hermes` first to inventory the legacy workspace and see which parts already map onto ECC2.
-0.5. Generate and review artifacts with `ecc migrate plan` / `ecc migrate scaffold`, scaffold reusable legacy skills with `ecc migrate import-skills --output-dir migration-artifacts/skills`, scaffold legacy tool translation templates with `ecc migrate import-tools --output-dir migration-artifacts/tools`, scaffold legacy bridge plugins with `ecc migrate import-plugins --output-dir migration-artifacts/plugins`, preview recurring jobs with `ecc migrate import-schedules --dry-run`, preview gateway dispatch with `ecc migrate import-remote --dry-run`, preview safe env/service context with `ecc migrate import-env --dry-run`, then import sanitized workspace memory with `ecc migrate import-memory`.
-1. Install ECC and verify the baseline harness setup.
+0.5. Plan and scaffold migration artifacts before importing anything:
+   - generate reviewable plans with `ecc migrate plan` and `ecc migrate scaffold`
+   - scaffold reusable legacy skills with `ecc migrate import-skills --output-dir migration-artifacts/skills`
+   - scaffold tool translation templates with `ecc migrate import-tools --output-dir migration-artifacts/tools`
+   - scaffold bridge plugin templates with `ecc migrate import-plugins --output-dir migration-artifacts/plugins`
+   - preview recurring jobs with `ecc migrate import-schedules --dry-run`
+   - preview gateway dispatch with `ecc migrate import-remote --dry-run`
+   - preview safe env/service context with `ecc migrate import-env --dry-run`
+   - import sanitized workspace memory with `ecc migrate import-memory`
+1. Install ECC and verify the baseline harness setup with `node tests/run-all.js`; the expected result is a zero-failure test summary.
 2. Install Hermes and point it at ECC-imported skills.
 3. Register the MCP servers you actually use every day.
 4. Authenticate Google Drive first, then GitHub, then distribution channels.
 5. Start with a small cron surface: readiness check, content accountability, inbox triage, revenue monitor.
 6. Only then add heavier personal workflows like health, relationship graphing, or outbound sequencing.
+
+## Related Docs
+
+- [Hermes/OpenClaw migration guide](HERMES-OPENCLAW-MIGRATION.md)
+- [Cross-harness architecture](architecture/cross-harness.md)
 
 ## Why Hermes x ECC
 

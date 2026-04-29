@@ -26,7 +26,7 @@ The system now has a clearer shape:
 - cross-harness install surfaces for Claude Code, Codex, OpenCode, Cursor, and related tools
 - Hermes as an optional operator shell for chat, cron, handoffs, and daily work routing
 
-## Preview Boundaries
+## Release Candidate Boundaries
 
 This is a release candidate, not the final GA claim.
 

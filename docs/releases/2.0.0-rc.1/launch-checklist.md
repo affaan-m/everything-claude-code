@@ -10,8 +10,8 @@
 
 ## Release Surface
 
-- confirm package and plugin version policy for `2.0.0-rc.1` (drafted in manifest bump prep)
-- confirm whether `ecc2/Cargo.toml` moves from `0.1.0` to `2.0.0-rc.1`
+- verify package, plugin, marketplace, OpenCode, and agent metadata stays at `2.0.0-rc.1`
+- verify `ecc2/Cargo.toml` stays at `0.1.0` for rc.1; `ecc2/` remains an alpha control-plane scaffold
 - update release metadata in one dedicated release-version PR
 - run the root test suite
 - run `cd ecc2 && cargo test`
