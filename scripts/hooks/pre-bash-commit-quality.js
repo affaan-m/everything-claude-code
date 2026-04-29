@@ -188,6 +188,54 @@ function validateCommitMessage(command) {
   return { message, issues };
 }
 
+function getPathEnv() {
+  const pathKey = Object.keys(process.env).find(key => key.toLowerCase() === 'path') || 'PATH';
+  return process.env[pathKey] || '';
+}
+
+function isPathLike(command) {
+  return command.includes(path.sep) || (process.platform === 'win32' && /[\\/]/.test(command));
+}
+
+function getExecutableCandidates(command) {
+  if (process.platform !== 'win32' || path.extname(command)) {
+    return [command];
+  }
+
+  const pathExt = process.env.PATHEXT || '.COM;.EXE;.BAT;.CMD';
+  return [command, ...pathExt.split(';').filter(Boolean).map(ext => `${command}${ext.toLowerCase()}`)];
+}
+
+function resolveCommand(command) {
+  if (isPathLike(command)) {
+    return getExecutableCandidates(command).find(candidate => fs.existsSync(candidate)) || null;
+  }
+
+  for (const dir of getPathEnv().split(path.delimiter).filter(Boolean)) {
+    for (const candidate of getExecutableCandidates(path.join(dir, command))) {
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
+    }
+  }
+
+  return null;
+}
+
+function runLinterCommand(command, args) {
+  const useShell = process.platform === 'win32' && /\.(?:cmd|bat)$/i.test(command);
+  return spawnSync(command, args, {
+    encoding: 'utf8',
+    stdio: ['pipe', 'pipe', 'pipe'],
+    timeout: 30000,
+    shell: useShell
+  });
+}
+
+function commandOutput(result) {
+  return result.stdout || result.stderr || result.error?.message || '';
+}
+
 /**
  * Run linter on staged files
  * @param {string[]} files 
@@ -209,14 +257,10 @@ function runLinter(files) {
     const eslintBin = process.platform === 'win32' ? 'eslint.cmd' : 'eslint';
     const eslintPath = path.join(process.cwd(), 'node_modules', '.bin', eslintBin);
     if (fs.existsSync(eslintPath)) {
-      const result = spawnSync(eslintPath, ['--format', 'compact', ...jsFiles], {
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'pipe'],
-        timeout: 30000
-      });
+      const result = runLinterCommand(eslintPath, ['--format', 'compact', ...jsFiles]);
       results.eslint = {
         success: result.status === 0,
-        output: result.stdout || result.stderr
+        output: commandOutput(result)
       };
     }
   }
@@ -224,17 +268,14 @@ function runLinter(files) {
   // Run Pylint if available
   if (pyFiles.length > 0) {
     try {
-      const result = spawnSync('pylint', ['--output-format=text', ...pyFiles], {
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'pipe'],
-        timeout: 30000
-      });
-      if (result.error && result.error.code === 'ENOENT') {
+      const pylintPath = resolveCommand('pylint');
+      if (!pylintPath) {
         results.pylint = null;
       } else {
+        const result = runLinterCommand(pylintPath, ['--output-format=text', ...pyFiles]);
         results.pylint = {
           success: result.status === 0,
-          output: result.stdout || result.stderr
+          output: commandOutput(result)
         };
       }
     } catch {
@@ -245,17 +286,14 @@ function runLinter(files) {
   // Run golint if available
   if (goFiles.length > 0) {
     try {
-      const result = spawnSync('golint', goFiles, {
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'pipe'],
-        timeout: 30000
-      });
-      if (result.error && result.error.code === 'ENOENT') {
+      const golintPath = resolveCommand('golint');
+      if (!golintPath) {
         results.golint = null;
       } else {
+        const result = runLinterCommand(golintPath, goFiles);
         results.golint = {
           success: !result.stdout || result.stdout.trim() === '',
-          output: result.stdout
+          output: commandOutput(result)
         };
       }
     } catch {

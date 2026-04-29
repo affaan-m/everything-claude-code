@@ -274,11 +274,12 @@ if (test('stdin entry point truncates oversized input and preserves pass-through
       filler: 'x'.repeat(1024 * 1024 + 1024)
     }
   });
-  const result = spawnSync('node', [path.join(__dirname, '..', '..', 'scripts', 'hooks', 'pre-bash-commit-quality.js')], {
+  const result = spawnSync(process.execPath, [path.join(__dirname, '..', '..', 'scripts', 'hooks', 'pre-bash-commit-quality.js')], {
     input: oversized,
     encoding: 'utf8',
     stdio: ['pipe', 'pipe', 'pipe'],
-    timeout: 10000
+    timeout: 10000,
+    maxBuffer: 2 * 1024 * 1024
   });
 
   assert.strictEqual(result.status, 0);
