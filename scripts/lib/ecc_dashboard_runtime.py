@@ -59,3 +59,9 @@ def build_terminal_launch(
         ['x-terminal-emulator', '-e', 'bash', '-lc', 'cd -- "$1"; exec bash', 'bash', path],
         {},
     )
+
+
+def launch_terminal(path: str) -> None:
+    """Open a terminal at the given path."""
+    argv, kwargs = build_terminal_launch(path)
+    subprocess.Popen(argv, **kwargs)  # nosec B603

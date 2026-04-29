@@ -8,10 +8,10 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
 import os
 import json
-import subprocess
+
 from typing import Dict, List, Optional
 
-from scripts.lib.ecc_dashboard_runtime import build_terminal_launch, maximize_window
+from scripts.lib.ecc_dashboard_runtime import build_terminal_launch, launch_terminal, maximize_window
 
 # ============================================================================
 # DATA LOADERS - Load ECC data from the project
@@ -794,24 +794,25 @@ Project: github.com/affaan-m/everything-claude-code"""
     def open_terminal(self):
         """Open terminal at project path"""
         path = self.path_entry.get()
-        argv, kwargs = build_terminal_launch(path)
-        subprocess.Popen(argv, **kwargs)
+        launch_terminal(path)
     
     def open_readme(self):
         """Open README in default browser/reader"""
-        import subprocess
-        path = os.path.join(self.path_entry.get(), 'README.md')
+        import webbrowser
+        base = os.path.realpath(self.path_entry.get())
+        path = os.path.join(base, 'README.md')
         if os.path.exists(path):
-            subprocess.Popen(['xdg-open' if os.name != 'nt' else 'start', path])
+            webbrowser.open(path)
         else:
             messagebox.showerror("Error", "README.md not found")
     
     def open_agents(self):
         """Open AGENTS.md"""
-        import subprocess
-        path = os.path.join(self.path_entry.get(), 'AGENTS.md')
+        import webbrowser
+        base = os.path.realpath(self.path_entry.get())
+        path = os.path.join(base, 'AGENTS.md')
         if os.path.exists(path):
-            subprocess.Popen(['xdg-open' if os.name != 'nt' else 'start', path])
+            webbrowser.open(path)
         else:
             messagebox.showerror("Error", "AGENTS.md not found")
     
