@@ -21,6 +21,38 @@ function readJsonObject(filePath, label) {
   return parsed;
 }
 
+function cloneJsonValue(value) {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  return JSON.parse(JSON.stringify(value));
+}
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function deepMergeJson(baseValue, patchValue) {
+  if (!isPlainObject(baseValue) || !isPlainObject(patchValue)) {
+    return cloneJsonValue(patchValue);
+  }
+
+  const merged = { ...baseValue };
+  for (const [key, value] of Object.entries(patchValue)) {
+    if (isPlainObject(value) && isPlainObject(merged[key])) {
+      merged[key] = deepMergeJson(merged[key], value);
+    } else {
+      merged[key] = cloneJsonValue(value);
+    }
+  }
+  return merged;
+}
+
+function formatJson(value) {
+  return `${JSON.stringify(value, null, 2)}\n`;
+}
+
 function replacePluginRootPlaceholders(value, pluginRoot) {
   if (!pluginRoot) {
     return value;
@@ -56,44 +88,6 @@ function isMcpConfigPath(filePath) {
   return basename === '.mcp.json' || basename === 'mcp.json';
 }
 
-function buildFilteredMcpWrites(plan) {
-  const disabledServers = parseDisabledMcpServers(process.env.ECC_DISABLED_MCPS);
-  if (disabledServers.length === 0) {
-    return [];
-  }
-
-  const writes = [];
-
-  for (const operation of plan.operations) {
-    if (!isMcpConfigPath(operation.destinationPath) || !operation.sourcePath || !fs.existsSync(operation.sourcePath)) {
-      continue;
-    }
-
-    let sourceConfig;
-    try {
-      sourceConfig = readJsonObject(operation.sourcePath, 'MCP config');
-    } catch {
-      continue;
-    }
-
-    if (!sourceConfig.mcpServers || typeof sourceConfig.mcpServers !== 'object' || Array.isArray(sourceConfig.mcpServers)) {
-      continue;
-    }
-
-    const filtered = filterMcpConfig(sourceConfig, disabledServers);
-    if (filtered.removed.length === 0) {
-      continue;
-    }
-
-    writes.push({
-      destinationPath: operation.destinationPath,
-      filteredConfig: filtered.config,
-    });
-  }
-
-  return writes;
-}
-
 function buildResolvedClaudeHooks(plan) {
   if (!plan.adapter || plan.adapter.target !== 'claude') {
     return null;
@@ -123,10 +117,38 @@ function buildResolvedClaudeHooks(plan) {
 
 function applyInstallPlan(plan) {
   const resolvedClaudeHooksPlan = buildResolvedClaudeHooks(plan);
-  const filteredMcpWrites = buildFilteredMcpWrites(plan);
+  const disabledServers = parseDisabledMcpServers(process.env.ECC_DISABLED_MCPS);
 
   for (const operation of plan.operations) {
     fs.mkdirSync(path.dirname(operation.destinationPath), { recursive: true });
+
+    if (operation.kind === 'merge-json') {
+      const payload = cloneJsonValue(operation.mergePayload);
+      if (payload === undefined) {
+        throw new Error(`Missing merge payload for ${operation.destinationPath}`);
+      }
+
+      const filteredPayload = (
+        isMcpConfigPath(operation.destinationPath) && disabledServers.length > 0
+      )
+        ? filterMcpConfig(payload, disabledServers).config
+        : payload;
+
+      const currentValue = fs.existsSync(operation.destinationPath)
+        ? readJsonObject(operation.destinationPath, 'existing JSON config')
+        : {};
+      const mergedValue = deepMergeJson(currentValue, filteredPayload);
+      fs.writeFileSync(operation.destinationPath, formatJson(mergedValue), 'utf8');
+      continue;
+    }
+
+    if (operation.kind === 'copy-file' && isMcpConfigPath(operation.destinationPath) && disabledServers.length > 0) {
+      const sourceConfig = readJsonObject(operation.sourcePath, 'MCP config');
+      const filteredConfig = filterMcpConfig(sourceConfig, disabledServers).config;
+      fs.writeFileSync(operation.destinationPath, formatJson(filteredConfig), 'utf8');
+      continue;
+    }
+
     fs.copyFileSync(operation.sourcePath, operation.destinationPath);
   }
 
@@ -135,15 +157,6 @@ function applyInstallPlan(plan) {
     fs.writeFileSync(
       resolvedClaudeHooksPlan.hooksDestinationPath,
       JSON.stringify(resolvedClaudeHooksPlan.resolvedHooksConfig, null, 2) + '\n',
-      'utf8'
-    );
-  }
-
-  for (const writePlan of filteredMcpWrites) {
-    fs.mkdirSync(path.dirname(writePlan.destinationPath), { recursive: true });
-    fs.writeFileSync(
-      writePlan.destinationPath,
-      JSON.stringify(writePlan.filteredConfig, null, 2) + '\n',
       'utf8'
     );
   }

@@ -19,7 +19,7 @@ origin: ECC
 
 此技能必须在激活前对 Claude Code 可访问。有两种引导方式：
 
-1. **通过插件**: `/plugin install ecc@ecc` — 插件会自动加载此技能
+1. **通过插件**: `/plugin install everything-claude-code@everything-claude-code` — 插件会自动加载此技能
 2. **手动**: 仅将此技能复制到 `~/.claude/skills/configure-ecc/SKILL.md`，然后通过说 "configure ecc" 激活
 
 ***

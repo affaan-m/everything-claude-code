@@ -33,8 +33,8 @@ function normalizePathSegments(relativePath) {
   return relativePath.split(path.sep).join('/');
 }
 
-function listMatchingFiles(relativeDir, matcher) {
-  const directory = path.join(ROOT, relativeDir);
+function listMatchingFiles(root, relativeDir, matcher) {
+  const directory = path.join(root, relativeDir);
   if (!fs.existsSync(directory)) {
     return [];
   }
@@ -45,11 +45,11 @@ function listMatchingFiles(relativeDir, matcher) {
     .sort();
 }
 
-function buildCatalog() {
-  const agents = listMatchingFiles('agents', entry => entry.isFile() && entry.name.endsWith('.md'));
-  const commands = listMatchingFiles('commands', entry => entry.isFile() && entry.name.endsWith('.md'));
-  const skills = listMatchingFiles('skills', entry => (
-    entry.isDirectory() && fs.existsSync(path.join(ROOT, 'skills', entry.name, 'SKILL.md'))
+function buildCatalog(root = ROOT) {
+  const agents = listMatchingFiles(root, 'agents', entry => entry.isFile() && entry.name.endsWith('.md'));
+  const commands = listMatchingFiles(root, 'commands', entry => entry.isFile() && entry.name.endsWith('.md'));
+  const skills = listMatchingFiles(root, 'skills', entry => (
+    entry.isDirectory() && fs.existsSync(path.join(root, 'skills', entry.name, 'SKILL.md'))
   )).map(skillDir => `${skillDir}/SKILL.md`);
 
   return {
@@ -540,33 +540,55 @@ function syncZhAgents(content, catalog) {
   return nextContent;
 }
 
-const DOCUMENT_SPECS = [
-  {
-    filePath: README_PATH,
-    parseExpectations: parseReadmeExpectations,
-    syncContent: syncEnglishReadme,
-  },
-  {
-    filePath: AGENTS_PATH,
-    parseExpectations: parseAgentsDocExpectations,
-    syncContent: syncEnglishAgents,
-  },
-  {
-    filePath: README_ZH_CN_PATH,
-    parseExpectations: parseZhRootReadmeExpectations,
-    syncContent: syncZhRootReadme,
-  },
-  {
-    filePath: DOCS_ZH_CN_README_PATH,
-    parseExpectations: parseZhDocsReadmeExpectations,
-    syncContent: syncZhDocsReadme,
-  },
-  {
-    filePath: DOCS_ZH_CN_AGENTS_PATH,
-    parseExpectations: parseZhAgentsDocExpectations,
-    syncContent: syncZhAgents,
-  },
-];
+function createDocumentSpecs(paths = {}) {
+  const {
+    readmePath = README_PATH,
+    agentsPath = AGENTS_PATH,
+    zhRootReadmePath = README_ZH_CN_PATH,
+    zhDocsReadmePath = DOCS_ZH_CN_README_PATH,
+    zhDocsAgentsPath = DOCS_ZH_CN_AGENTS_PATH,
+  } = paths;
+
+  return [
+    {
+      filePath: readmePath,
+      parseExpectations: parseReadmeExpectations,
+      syncContent: syncEnglishReadme,
+    },
+    {
+      filePath: agentsPath,
+      parseExpectations: parseAgentsDocExpectations,
+      syncContent: syncEnglishAgents,
+    },
+    {
+      filePath: zhRootReadmePath,
+      parseExpectations: parseZhRootReadmeExpectations,
+      syncContent: syncZhRootReadme,
+    },
+    {
+      filePath: zhDocsReadmePath,
+      parseExpectations: parseZhDocsReadmeExpectations,
+      syncContent: syncZhDocsReadme,
+    },
+    {
+      filePath: zhDocsAgentsPath,
+      parseExpectations: parseZhAgentsDocExpectations,
+      syncContent: syncZhAgents,
+    },
+  ];
+}
+
+function createDocumentSpecsForRoot(root) {
+  return createDocumentSpecs({
+    readmePath: path.join(root, 'README.md'),
+    agentsPath: path.join(root, 'AGENTS.md'),
+    zhRootReadmePath: path.join(root, 'README.zh-CN.md'),
+    zhDocsReadmePath: path.join(root, 'docs', 'zh-CN', 'README.md'),
+    zhDocsAgentsPath: path.join(root, 'docs', 'zh-CN', 'AGENTS.md'),
+  });
+}
+
+const DOCUMENT_SPECS = createDocumentSpecs();
 
 function renderText(result) {
   console.log('Catalog counts:');
@@ -608,11 +630,16 @@ function renderMarkdown(result) {
   }
 }
 
-function main() {
-  const catalog = buildCatalog();
+function runCatalogCheck(options = {}) {
+  const root = options.root || ROOT;
+  const writeMode = options.writeMode ?? WRITE_MODE;
+  const documentSpecs = options.documentSpecs || (
+    root === ROOT ? DOCUMENT_SPECS : createDocumentSpecsForRoot(root)
+  );
+  const catalog = buildCatalog(root);
 
-  if (WRITE_MODE) {
-    for (const spec of DOCUMENT_SPECS) {
+  if (writeMode) {
+    for (const spec of documentSpecs) {
       const currentContent = readFileOrThrow(spec.filePath);
       const nextContent = spec.syncContent(currentContent, catalog);
       if (nextContent !== currentContent) {
@@ -621,28 +648,55 @@ function main() {
     }
   }
 
-  const expectations = DOCUMENT_SPECS.flatMap(spec => (
+  const expectations = documentSpecs.flatMap(spec => (
     spec.parseExpectations(readFileOrThrow(spec.filePath))
   ));
   const checks = evaluateExpectations(catalog, expectations);
-  const result = { catalog, checks };
+  return { catalog, checks };
+}
 
-  if (OUTPUT_MODE === 'json') {
+function main(options = {}) {
+  const outputMode = options.outputMode || OUTPUT_MODE;
+  const result = runCatalogCheck(options);
+
+  if (outputMode === 'json') {
     console.log(JSON.stringify(result, null, 2));
-  } else if (OUTPUT_MODE === 'md') {
+  } else if (outputMode === 'md') {
     renderMarkdown(result);
   } else {
     renderText(result);
   }
 
-  if (checks.some(check => !check.ok)) {
+  if (result.checks.some(check => !check.ok)) {
     process.exit(1);
   }
 }
 
-try {
-  main();
-} catch (error) {
-  console.error(`ERROR: ${error.message}`);
-  process.exit(1);
+if (require.main === module) {
+  try {
+    main();
+  } catch (error) {
+    console.error(`ERROR: ${error.message}`);
+    process.exit(1);
+  }
 }
+
+module.exports = {
+  buildCatalog,
+  createDocumentSpecs,
+  createDocumentSpecsForRoot,
+  evaluateExpectations,
+  formatExpectation,
+  main,
+  parseAgentsDocExpectations,
+  parseReadmeExpectations,
+  parseZhAgentsDocExpectations,
+  parseZhDocsReadmeExpectations,
+  parseZhRootReadmeExpectations,
+  runCatalogCheck,
+  syncEnglishAgents,
+  syncEnglishReadme,
+  syncZhAgents,
+  syncZhDocsReadme,
+  syncZhRootReadme,
+};

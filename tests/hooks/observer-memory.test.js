@@ -205,6 +205,63 @@ test('prompt references analysis_file not full OBSERVATIONS_FILE', () => {
   assert.ok(promptSection.includes('${analysis_relpath}'), 'Prompt should point Claude at the sampled analysis file (via relative path), not the full observations file');
 });
 
+test('observer-loop wait helper retries SIGUSR1-interrupted waits while claude child is alive', () => {
+  if (process.platform === 'win32') {
+    return;
+  }
+
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  const helperMatch = content.match(/wait_for_claude_analysis\(\) \{[\s\S]*?\n\}/);
+  assert.ok(helperMatch, 'observer-loop.sh should define wait_for_claude_analysis helper');
+
+  const script = [
+    'set +e',
+    helperMatch[0],
+    'trap ":" USR1',
+    '( sleep 0.35; exit 0 ) &',
+    'claude_child=$!',
+    '( sleep 0.05; kill -USR1 $$ ) &',
+    'signaler=$!',
+    'wait_for_claude_analysis "$claude_child"',
+    'status=$?',
+    'wait "$signaler" 2>/dev/null || true',
+    'exit "$status"'
+  ].join('\n');
+
+  const result = spawnSync('bash', ['-c', script], {
+    encoding: 'utf8',
+    timeout: 5000
+  });
+
+  assert.strictEqual(result.status, 0, `interrupted wait should return child exit 0, got ${result.status}; stderr: ${result.stderr}`);
+});
+
+test('observer-loop wait helper preserves real nonzero claude exits', () => {
+  if (process.platform === 'win32') {
+    return;
+  }
+
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  const helperMatch = content.match(/wait_for_claude_analysis\(\) \{[\s\S]*?\n\}/);
+  assert.ok(helperMatch, 'observer-loop.sh should define wait_for_claude_analysis helper');
+
+  const script = [
+    'set +e',
+    helperMatch[0],
+    '( sleep 0.05; exit 7 ) &',
+    'claude_child=$!',
+    'wait_for_claude_analysis "$claude_child"',
+    'exit "$?"'
+  ].join('\n');
+
+  const result = spawnSync('bash', ['-c', script], {
+    encoding: 'utf8',
+    timeout: 5000
+  });
+
+  assert.strictEqual(result.status, 7, `real child failure should be preserved, got ${result.status}; stderr: ${result.stderr}`);
+});
+
 // ──────────────────────────────────────────────────────
 // Test group 5: Signal counter file simulation
 // ──────────────────────────────────────────────────────

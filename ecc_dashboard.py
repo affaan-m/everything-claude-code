@@ -8,7 +8,10 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
 import os
 import json
+import subprocess
 from typing import Dict, List, Optional
+
+from scripts.lib.ecc_dashboard_runtime import build_terminal_launch, maximize_window
 
 # ============================================================================
 # DATA LOADERS - Load ECC data from the project
@@ -17,6 +20,7 @@ from typing import Dict, List, Optional
 def get_project_path() -> str:
     """Get the ECC project path - assumes this script is run from the project dir"""
     return os.path.dirname(os.path.abspath(__file__))
+
 
 def load_agents(project_path: str) -> List[Dict]:
     """Load agents from AGENTS.md"""
@@ -257,7 +261,7 @@ class ECCDashboard(tk.Tk):
         self.project_path = get_project_path()
         self.title("ECC Dashboard - Everything Claude Code")
         
-        self.state('zoomed')
+        maximize_window(self)
         
         try:
             self.icon_image = tk.PhotoImage(file='assets/images/ecc-logo.png')
@@ -789,14 +793,9 @@ Project: github.com/affaan-m/everything-claude-code"""
     
     def open_terminal(self):
         """Open terminal at project path"""
-        import subprocess
         path = self.path_entry.get()
-        if os.name == 'nt':  # Windows
-            subprocess.Popen(['cmd', '/c', 'start', 'cmd', '/k', f'cd /d "{path}"'])
-        elif os.uname().sysname == 'Darwin':  # macOS
-            subprocess.Popen(['open', '-a', 'Terminal', path])
-        else:  # Linux
-            subprocess.Popen(['x-terminal-emulator', '-e', f'cd {path}'])
+        argv, kwargs = build_terminal_launch(path)
+        subprocess.Popen(argv, **kwargs)
     
     def open_readme(self):
         """Open README in default browser/reader"""

@@ -100,9 +100,9 @@ This stack is useful when you want:
 - automation that can nudge, audit, and escalate
 - a public repo that shows the system shape without exposing your private operator state
 
-## Public Preview Scope
+## Public Release Candidate Scope
 
-ECC 2.0 preview documents the Hermes surface and ships launch collateral now.
+ECC v2.0.0-rc.1 documents the Hermes surface and ships launch collateral now.
 
 The remaining private pieces can be layered later:
 

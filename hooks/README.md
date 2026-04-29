@@ -18,7 +18,7 @@ User request → Claude picks a tool → PreToolUse hook runs → Tool executes 
 
 ## Installing These Hooks Manually
 
-For Claude Code manual installs, do not paste the raw repo `hooks.json` into `~/.claude/settings.json` or copy it directly into `~/.claude/hooks/hooks.json`. The checked-in file still contains `${CLAUDE_PLUGIN_ROOT}` placeholders and is meant to be installed through the ECC installer or loaded as a plugin.
+For Claude Code manual installs, do not paste the raw repo `hooks.json` into `~/.claude/settings.json` or copy it directly into `~/.claude/hooks/hooks.json`. The checked-in file is plugin/repo-oriented and is meant to be installed through the ECC installer or loaded as a plugin.
 
 Use the installer instead so hook commands are rewritten against your actual Claude root:
 

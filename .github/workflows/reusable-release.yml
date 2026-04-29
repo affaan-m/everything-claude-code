@@ -12,9 +12,24 @@ on:
         required: false
         type: boolean
         default: true
+    secrets:
+      NPM_TOKEN:
+        required: false
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag to release or republish (e.g., v2.0.0-rc.1)'
+        required: true
+        type: string
+      generate-notes:
+        description: 'Auto-generate release notes'
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   release:
@@ -26,11 +41,13 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          ref: ${{ inputs.tag }}
 
       - name: Setup Node.js
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: npm ci
@@ -42,8 +59,8 @@ jobs:
         env:
           INPUT_TAG: ${{ inputs.tag }}
         run: |
-          if ! [[ "$INPUT_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Invalid version tag format. Expected vX.Y.Z"
+          if ! [[ "$INPUT_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid version tag format. Expected vX.Y.Z or vX.Y.Z-prerelease"
             exit 1
           fi
 
@@ -62,6 +79,19 @@ jobs:
       - name: Verify release metadata stays in sync
         run: node tests/plugin-manifest.test.js
 
+      - name: Check npm publish state
+        id: npm_publish_state
+        run: |
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          NPM_DIST_TAG=$(node -p "require('./package.json').version.includes('-') ? 'next' : 'latest'")
+          if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version >/dev/null 2>&1; then
+            echo "already_published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "already_published=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "dist_tag=${NPM_DIST_TAG}" >> "$GITHUB_OUTPUT"
+
       - name: Generate release highlights
         env:
           TAG_NAME: ${{ inputs.tag }}
@@ -74,6 +104,10 @@ jobs:
           - Harness reliability and cross-platform compatibility
           - Eval-driven quality improvements
           - Better workflow and operator ergonomics
+
+          ### Package Notes
+          - npm package: \`ecc-universal\`
+          - Claude marketplace/plugin identifier: \`everything-claude-code@everything-claude-code\`
           EOF
 
       - name: Create GitHub Release
@@ -82,3 +116,11 @@ jobs:
           tag_name: ${{ inputs.tag }}
           body_path: release_body.md
           generate_release_notes: ${{ inputs.generate-notes }}
+          prerelease: ${{ contains(inputs.tag, '-') }}
+          make_latest: ${{ contains(inputs.tag, '-') && 'false' || 'true' }}
+
+      - name: Publish npm package
+        if: steps.npm_publish_state.outputs.already_published != 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance --tag "${{ steps.npm_publish_state.outputs.dist_tag }}"

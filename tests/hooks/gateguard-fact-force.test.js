@@ -10,10 +10,12 @@ const { spawnSync } = require('child_process');
 const runner = path.join(__dirname, '..', '..', 'scripts', 'hooks', 'run-with-flags.js');
 const externalStateDir = process.env.GATEGUARD_STATE_DIR;
 const tmpRoot = process.env.TMPDIR || process.env.TEMP || process.env.TMP || '/tmp';
-const stateDir = externalStateDir || fs.mkdtempSync(path.join(tmpRoot, 'gateguard-test-'));
+const baseStateDir = externalStateDir || tmpRoot;
+const stateDir = fs.mkdtempSync(path.join(baseStateDir, 'gateguard-test-'));
 // Use a fixed session ID so test process and spawned hook process share the same state file
 const TEST_SESSION_ID = 'gateguard-test-session';
 const stateFile = path.join(stateDir, `state-${TEST_SESSION_ID}.json`);
+const READ_HEARTBEAT_MS = 60 * 1000;
 
 function test(name, fn) {
   try {
@@ -29,11 +31,12 @@ function test(name, fn) {
 
 function clearState() {
   try {
-    if (fs.existsSync(stateFile)) {
-      fs.unlinkSync(stateFile);
+    if (fs.existsSync(stateDir)) {
+      fs.rmSync(stateDir, { recursive: true, force: true });
     }
+    fs.mkdirSync(stateDir, { recursive: true });
   } catch (err) {
-    console.error(`  [clearState] failed to remove ${stateFile}: ${err.message}`);
+    console.error(`  [clearState] failed to remove state files in ${stateDir}: ${err.message}`);
   }
 }
 
@@ -363,17 +366,44 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  // --- Test 12: reads refresh active session state ---
+  // --- Test 12: hot-path reads do not rewrite state within heartbeat ---
   clearState();
-  if (test('touches last_active on read so active sessions do not age out', () => {
-    const staleButActive = Date.now() - (29 * 60 * 1000);
+  if (test('does not rewrite state on hot-path reads within heartbeat window', () => {
+    const recentlyActive = Date.now() - (READ_HEARTBEAT_MS - 10 * 1000);
+    writeState({
+      checked: ['/src/keep-alive.js'],
+      last_active: recentlyActive
+    });
+
+    const beforeStat = fs.statSync(stateFile);
+    const before = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
+    assert.strictEqual(before.last_active, recentlyActive, 'seed state should use the expected timestamp');
+
+    const result = runHook({
+      tool_name: 'Edit',
+      tool_input: { file_path: '/src/keep-alive.js', old_string: 'a', new_string: 'b' }
+    });
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'should produce valid JSON output');
+    if (output.hookSpecificOutput) {
+      assert.notStrictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
+        'already-checked file should still be allowed');
+    }
+
+    const afterStat = fs.statSync(stateFile);
+    const after = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
+    assert.strictEqual(after.last_active, recentlyActive, 'read should not touch last_active within heartbeat');
+    assert.strictEqual(afterStat.mtimeMs, beforeStat.mtimeMs, 'read should not rewrite the state file within heartbeat');
+  })) passed++; else failed++;
+
+  // --- Test 13: reads refresh stale active state after heartbeat ---
+  clearState();
+  if (test('refreshes last_active after heartbeat elapses', () => {
+    const staleButActive = Date.now() - (READ_HEARTBEAT_MS + 5 * 1000);
     writeState({
       checked: ['/src/keep-alive.js'],
       last_active: staleButActive
     });
-
-    const before = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
-    assert.strictEqual(before.last_active, staleButActive, 'seed state should use the expected timestamp');
 
     const result = runHook({
       tool_name: 'Edit',
@@ -387,10 +417,10 @@ function runTests() {
     }
 
     const after = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
-    assert.ok(after.last_active > staleButActive, 'successful reads should refresh last_active');
+    assert.ok(after.last_active > staleButActive, 'read should refresh last_active after heartbeat');
   })) passed++; else failed++;
 
-  // --- Test 13: pruning preserves routine bash gate marker ---
+  // --- Test 14: pruning preserves routine bash gate marker ---
   clearState();
   if (test('preserves __bash_session__ when pruning oversized state', () => {
     const checked = ['__bash_session__'];
@@ -419,15 +449,126 @@ function runTests() {
     assert.ok(persisted.checked.length <= 500, 'pruned state should still honor the checked-entry cap');
   })) passed++; else failed++;
 
-  // Cleanup only the temp directory created by this test file.
-  if (!externalStateDir) {
-    try {
-      if (fs.existsSync(stateDir)) {
-        fs.rmSync(stateDir, { recursive: true, force: true });
-      }
-    } catch (err) {
-      console.error(`  [cleanup] failed to remove ${stateDir}: ${err.message}`);
+  // --- Test 15: raw input session IDs provide stable retry state without env vars ---
+  clearState();
+  if (test('uses raw input session_id when hook env vars are missing', () => {
+    const input = {
+      session_id: 'raw-session-1234',
+      tool_name: 'Bash',
+      tool_input: { command: 'ls -la' }
+    };
+
+    const first = runBashHook(input, {
+      CLAUDE_SESSION_ID: '',
+      ECC_SESSION_ID: '',
+    });
+    const firstOutput = parseOutput(first.stdout);
+    assert.strictEqual(firstOutput.hookSpecificOutput.permissionDecision, 'deny');
+
+    const second = runBashHook(input, {
+      CLAUDE_SESSION_ID: '',
+      ECC_SESSION_ID: '',
+    });
+    const secondOutput = parseOutput(second.stdout);
+    if (secondOutput.hookSpecificOutput) {
+      assert.notStrictEqual(secondOutput.hookSpecificOutput.permissionDecision, 'deny',
+        'retry should be allowed when raw session_id is stable');
+    } else {
+      assert.strictEqual(secondOutput.tool_name, 'Bash');
     }
+  })) passed++; else failed++;
+
+  // --- Test 16: allows Claude settings edits so the hook can be disabled safely ---
+  clearState();
+  if (test('allows edits to .claude/settings.json without gating', () => {
+    const input = {
+      tool_name: 'Edit',
+      tool_input: { file_path: '/workspace/app/.claude/settings.json', old_string: '{}', new_string: '{"hooks":[]}' }
+    };
+    const result = runHook(input);
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'should produce valid JSON output');
+    if (output.hookSpecificOutput) {
+      assert.notStrictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
+        'settings edits must not be blocked by gateguard');
+    } else {
+      assert.strictEqual(output.tool_name, 'Edit');
+    }
+  })) passed++; else failed++;
+
+  // --- Test 17: allows read-only git introspection without first-bash gating ---
+  clearState();
+  if (test('allows read-only git status without first-bash gating', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'git status --short' }
+    };
+    const result = runBashHook(input);
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'should produce valid JSON output');
+    if (output.hookSpecificOutput) {
+      assert.notStrictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
+        'read-only git introspection should not be blocked');
+    } else {
+      assert.strictEqual(output.tool_name, 'Bash');
+    }
+  })) passed++; else failed++;
+
+  // --- Test 18: rejects mutating git commands that only share a prefix ---
+  clearState();
+  if (test('does not treat mutating git commands as read-only introspection', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'git status && rm -rf /tmp/demo' }
+    };
+    const result = runBashHook(input);
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'should produce valid JSON output');
+    assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny');
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('current instruction'));
+  })) passed++; else failed++;
+
+  // --- Test 19: long raw session IDs hash instead of collapsing to project fallback ---
+  clearState();
+  if (test('uses a stable hash for long raw session ids', () => {
+    const longSessionId = `session-${'x'.repeat(120)}`;
+    const input = {
+      session_id: longSessionId,
+      tool_name: 'Bash',
+      tool_input: { command: 'ls -la' }
+    };
+
+    const first = runBashHook(input, {
+      CLAUDE_SESSION_ID: '',
+      ECC_SESSION_ID: '',
+    });
+    const firstOutput = parseOutput(first.stdout);
+    assert.strictEqual(firstOutput.hookSpecificOutput.permissionDecision, 'deny');
+
+    const stateFiles = fs.readdirSync(stateDir).filter(entry => entry.startsWith('state-') && entry.endsWith('.json'));
+    assert.strictEqual(stateFiles.length, 1, 'long raw session id should still produce a dedicated state file');
+    assert.ok(/state-sid-[a-f0-9]{24}\.json$/.test(stateFiles[0]), 'long raw session ids should hash to a bounded sid-* key');
+
+    const second = runBashHook(input, {
+      CLAUDE_SESSION_ID: '',
+      ECC_SESSION_ID: '',
+    });
+    const secondOutput = parseOutput(second.stdout);
+    if (secondOutput.hookSpecificOutput) {
+      assert.notStrictEqual(secondOutput.hookSpecificOutput.permissionDecision, 'deny',
+        'retry should be allowed when long raw session_id is stable');
+    } else {
+      assert.strictEqual(secondOutput.tool_name, 'Bash');
+    }
+  })) passed++; else failed++;
+
+  // Cleanup only the temp directory created by this test file.
+  try {
+    if (fs.existsSync(stateDir)) {
+      fs.rmSync(stateDir, { recursive: true, force: true });
+    }
+  } catch (err) {
+    console.error(`  [cleanup] failed to remove ${stateDir}: ${err.message}`);
   }
 
   console.log(`\n  ${passed} passed, ${failed} failed\n`);

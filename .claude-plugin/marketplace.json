@@ -11,8 +11,8 @@
     {
       "name": "everything-claude-code",
       "source": "./",
-      "description": "The most comprehensive Claude Code plugin — 38 agents, 156 skills, 72 legacy command shims, selective install profiles, and production-ready hooks for TDD, security scanning, code review, and continuous learning",
-      "version": "1.10.0",
+      "description": "The most comprehensive Claude Code plugin — 48 agents, 184 skills, 79 legacy command shims, selective install profiles, and production-ready hooks for TDD, security scanning, code review, and continuous learning",
+      "version": "2.0.0-rc.1",
       "author": {
         "name": "Affaan Mustafa",
         "email": "me@affaanmustafa.com"

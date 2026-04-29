@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.0.0-rc.1 - 2026-04-28
+
+### Highlights
+
+- Adds the public ECC 2.0 release-candidate surface for the Hermes operator story.
+- Documents ECC as the reusable cross-harness substrate across Claude Code, Codex, Cursor, OpenCode, and Gemini.
+- Adds a sanitized Hermes import skill surface instead of publishing private operator state.
+
+### Release Surface
+
+- Updated package, plugin, marketplace, OpenCode, agent, and README metadata to `2.0.0-rc.1`.
+- Added `docs/releases/2.0.0-rc.1/` with release notes, social drafts, launch checklist, handoff notes, and demo prompts.
+- Added `docs/architecture/cross-harness.md` and regression coverage for the ECC/Hermes boundary.
+- Kept `ecc2/` versioning independent for now; it remains an alpha control-plane scaffold unless release engineering decides otherwise.
+
+### Notes
+
+- This is a release candidate, not a GA claim for the full ECC 2.0 control-plane roadmap.
+- Prerelease npm publishing should use the `next` dist-tag unless release engineering explicitly chooses otherwise.
+
 ## 1.10.0 - 2026-04-05
 
 ### Highlights
