@@ -11,7 +11,10 @@ import json
 
 from typing import Dict, List, Optional
 
-from scripts.lib.ecc_dashboard_runtime import build_terminal_launch, launch_terminal, maximize_window
+from pathlib import Path
+import webbrowser
+
+from scripts.lib.ecc_dashboard_runtime import launch_terminal, maximize_window
 
 # ============================================================================
 # DATA LOADERS - Load ECC data from the project
@@ -793,28 +796,32 @@ Project: github.com/affaan-m/everything-claude-code"""
     
     def open_terminal(self):
         """Open terminal at project path"""
-        path = self.path_entry.get()
-        launch_terminal(path)
+        path = os.path.realpath(self.path_entry.get())
+        try:
+            launch_terminal(path)
+        except Exception as exc:
+            messagebox.showerror("Error", f"Could not open terminal: {exc}")
     
+    def _open_project_doc(self, filename: str) -> None:
+        """Open a project document safely, constrained to the project directory."""
+        base = os.path.realpath(self.path_entry.get())
+        target = os.path.realpath(os.path.join(base, filename))
+        # Boundary check: reject paths that escape the project root
+        if target != base and not target.startswith(base + os.sep):
+            messagebox.showerror("Error", "Access denied: path is outside the project directory")
+            return
+        if os.path.exists(target):
+            webbrowser.open(Path(target).as_uri())
+        else:
+            messagebox.showerror("Error", f"{filename} not found")
+
     def open_readme(self):
         """Open README in default browser/reader"""
-        import webbrowser
-        base = os.path.realpath(self.path_entry.get())
-        path = os.path.join(base, 'README.md')
-        if os.path.exists(path):
-            webbrowser.open(path)
-        else:
-            messagebox.showerror("Error", "README.md not found")
+        self._open_project_doc('README.md')
     
     def open_agents(self):
         """Open AGENTS.md"""
-        import webbrowser
-        base = os.path.realpath(self.path_entry.get())
-        path = os.path.join(base, 'AGENTS.md')
-        if os.path.exists(path):
-            webbrowser.open(path)
-        else:
-            messagebox.showerror("Error", "AGENTS.md not found")
+        self._open_project_doc('AGENTS.md')
     
     def refresh_data(self):
         """Refresh all data"""

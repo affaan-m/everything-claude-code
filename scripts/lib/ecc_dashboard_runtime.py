@@ -45,7 +45,7 @@ def build_terminal_launch(
     if resolved_os_name == 'nt':
         creationflags = getattr(subprocess, 'CREATE_NEW_CONSOLE', 0)
         return (
-            ['cmd.exe', '/k', 'cd', '/d', path],
+            ['cmd.exe'],
             {
                 'cwd': path,
                 'creationflags': creationflags,
@@ -62,6 +62,15 @@ def build_terminal_launch(
 
 
 def launch_terminal(path: str) -> None:
-    """Open a terminal at the given path."""
-    argv, kwargs = build_terminal_launch(path)
-    subprocess.Popen(argv, **kwargs)  # nosec B603
+    """Open a terminal at the given path.
+
+    Canonicalizes *path* and verifies it is an existing directory before
+    spawning the process so callers cannot supply traversal sequences.
+    Raises ValueError for invalid paths; raises OSError when the terminal
+    executable cannot be found.
+    """
+    canonical = os.path.realpath(path)
+    if not os.path.isdir(canonical):
+        raise ValueError(f"Path is not a valid directory: {canonical!r}")
+    argv, kwargs = build_terminal_launch(canonical)
+    subprocess.Popen(argv, **kwargs)  # noqa: S603 – list argv, no shell=True, path validated above
