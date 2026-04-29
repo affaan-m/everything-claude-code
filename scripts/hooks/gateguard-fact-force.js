@@ -129,12 +129,33 @@ function saveState(state) {
   const stateFile = getStateFile();
   let tmpFile = null;
   try {
-    state.last_active = Date.now();
-    state.checked = pruneCheckedEntries(state.checked);
     fs.mkdirSync(STATE_DIR, { recursive: true });
+
+    let mergedChecked = Array.isArray(state.checked) ? state.checked : [];
+    let mergedLastActive = typeof state.last_active === 'number' ? state.last_active : 0;
+
+    try {
+      if (fs.existsSync(stateFile)) {
+        const diskState = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
+        if (Array.isArray(diskState.checked)) {
+          mergedChecked = Array.from(new Set([...diskState.checked, ...mergedChecked]));
+        }
+        if (typeof diskState.last_active === 'number') {
+          mergedLastActive = Math.max(mergedLastActive, diskState.last_active);
+        }
+      }
+    } catch (_) {
+      /* ignore malformed or transient disk state */
+    }
+
+    const finalState = {
+      checked: pruneCheckedEntries(mergedChecked),
+      last_active: Math.max(mergedLastActive, Date.now())
+    };
+
     // Atomic write: temp file + rename prevents partial reads
-    tmpFile = stateFile + '.tmp.' + process.pid;
-    fs.writeFileSync(tmpFile, JSON.stringify(state, null, 2), 'utf8');
+    tmpFile = `${stateFile}.tmp.${process.pid}.${crypto.randomBytes(4).toString('hex')}`;
+    fs.writeFileSync(tmpFile, JSON.stringify(finalState, null, 2), 'utf8');
     try {
       fs.renameSync(tmpFile, stateFile);
     } catch (error) {
@@ -149,6 +170,7 @@ function saveState(state) {
         throw error;
       }
     }
+    tmpFile = null;
   } catch (_) {
     if (tmpFile) {
       try {
@@ -183,7 +205,8 @@ function isChecked(key) {
     const files = fs.readdirSync(STATE_DIR);
     const now = Date.now();
     for (const f of files) {
-      if (!f.startsWith('state-') || !f.endsWith('.json')) continue;
+      const isStateFile = f.startsWith('state-') && (f.endsWith('.json') || f.includes('.json.tmp.'));
+      if (!isStateFile) continue;
       const fp = path.join(STATE_DIR, f);
       try {
         const stat = fs.statSync(fp);

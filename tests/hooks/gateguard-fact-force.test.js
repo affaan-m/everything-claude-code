@@ -752,6 +752,58 @@ function runTests() {
     assert.ok(reason.includes('evil.js'), 'sanitized path should retain visible filename text');
   })) passed++; else failed++;
 
+  // --- Test 28: saveState preserves concurrent disk updates ---
+  clearState();
+  if (test('merges state written by another process during save', () => {
+    const hook = loadDirectHook();
+    const originalMkdirSync = fs.mkdirSync;
+    let injected = false;
+
+    fs.mkdirSync = function patchedMkdirSync(target) {
+      const result = originalMkdirSync.apply(fs, arguments);
+      if (!injected && path.resolve(String(target)) === path.resolve(stateDir)) {
+        injected = true;
+        fs.writeFileSync(stateFile, JSON.stringify({
+          checked: ['/src/concurrent.js'],
+          last_active: Date.now()
+        }), 'utf8');
+      }
+      return result;
+    };
+
+    try {
+      const result = hook.run({
+        tool_name: 'Edit',
+        tool_input: { file_path: '/src/new-edit.js', old_string: 'a', new_string: 'b' }
+      });
+      const output = parseOutput(result.stdout);
+      assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny', 'first edit should still be gated');
+    } finally {
+      fs.mkdirSync = originalMkdirSync;
+    }
+
+    const persisted = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
+    assert.ok(persisted.checked.includes('/src/concurrent.js'), 'concurrent disk entry should be preserved');
+    assert.ok(persisted.checked.includes('/src/new-edit.js'), 'new in-memory entry should be persisted');
+  })) passed++; else failed++;
+
+  // --- Test 29: stale temp files from interrupted writes are pruned ---
+  clearState();
+  if (test('prunes stale state temp files at module load', () => {
+    fs.mkdirSync(stateDir, { recursive: true });
+    const staleTmp = path.join(stateDir, `${path.basename(stateFile)}.tmp.1234.abcd`);
+    const freshState = path.join(stateDir, 'state-fresh-session.json');
+    fs.writeFileSync(staleTmp, '{}', 'utf8');
+    fs.writeFileSync(freshState, '{}', 'utf8');
+    const staleTime = new Date(Date.now() - (61 * 60 * 1000));
+    fs.utimesSync(staleTmp, staleTime, staleTime);
+
+    loadDirectHook();
+
+    assert.ok(!fs.existsSync(staleTmp), 'stale temp state file should be pruned');
+    assert.ok(fs.existsSync(freshState), 'fresh state file should remain');
+  })) passed++; else failed++;
+
   // Cleanup only the temp directory created by this test file.
   try {
     if (fs.existsSync(stateDir)) {
