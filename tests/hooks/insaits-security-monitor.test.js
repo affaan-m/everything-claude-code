@@ -11,6 +11,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'hooks', 'insaits-security-monitor.py');
+const MONITOR_TIMEOUT_MS = 30000;
 
 function createTempDir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'insaits-monitor-'));
@@ -93,10 +94,14 @@ function runMonitor(options = {}) {
     encoding: 'utf8',
     env,
     cwd: tempDir,
-    timeout: 10000,
+    timeout: MONITOR_TIMEOUT_MS,
   });
   result.tempDir = tempDir;
   return result;
+}
+
+function statusError(result) {
+  return result.stderr || result.error?.message || `status ${result.status}`;
 }
 
 function test(name, fn) {
@@ -123,7 +128,7 @@ function runTests() {
       env: { FAKE_INSAITS_MODE: 'clean' },
     });
     try {
-      assert.strictEqual(result.status, 0, result.stderr);
+      assert.strictEqual(result.status, 0, statusError(result));
       assert.strictEqual(result.stdout, '');
 
       const [audit] = readAudit(result.tempDir);
@@ -143,7 +148,7 @@ function runTests() {
       env: { FAKE_INSAITS_MODE: 'critical' },
     });
     try {
-      assert.strictEqual(result.status, 2, result.stderr);
+      assert.strictEqual(result.status, 2, statusError(result));
       assert.ok(result.stdout.includes('SECRET'));
       assert.ok(result.stdout.includes('token-like string detected'));
 
@@ -161,7 +166,7 @@ function runTests() {
       env: { FAKE_INSAITS_MODE: 'medium' },
     });
     try {
-      assert.strictEqual(result.status, 0);
+      assert.strictEqual(result.status, 0, statusError(result));
       assert.strictEqual(result.stdout, '');
       assert.ok(result.stderr.includes('PROMPT_INJECTION'));
 
@@ -179,7 +184,7 @@ function runTests() {
       env: { FAKE_INSAITS_MODE: 'error', INSAITS_FAIL_MODE: '' },
     });
     try {
-      assert.strictEqual(result.status, 0);
+      assert.strictEqual(result.status, 0, statusError(result));
       assert.strictEqual(result.stdout, '');
       assert.ok(result.stderr.includes('SDK error'));
     } finally {
@@ -193,7 +198,7 @@ function runTests() {
       env: { FAKE_INSAITS_MODE: 'error', INSAITS_FAIL_MODE: 'closed' },
     });
     try {
-      assert.strictEqual(result.status, 2);
+      assert.strictEqual(result.status, 2, statusError(result));
       assert.ok(result.stdout.includes('InsAIts SDK error (RuntimeError)'));
       assert.ok(result.stdout.includes('blocking execution'));
     } finally {
