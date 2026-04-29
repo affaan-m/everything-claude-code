@@ -138,32 +138,13 @@ Each project gets a 12-character hash ID (e.g., `a1b2c3d4e5f6`). A registry file
 
 ### 1. Enable Observation Hooks
 
-Add to your `~/.claude/settings.json`.
-
 **If installed as a plugin** (recommended):
 
-```json
-{
-  "hooks": {
-    "PreToolUse": [{
-      "matcher": "*",
-      "hooks": [{
-        "type": "command",
-        "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh"
-      }]
-    }],
-    "PostToolUse": [{
-      "matcher": "*",
-      "hooks": [{
-        "type": "command",
-        "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh"
-      }]
-    }]
-  }
-}
-```
+No extra `settings.json` hook block is required. Claude Code v2.1+ auto-loads the plugin `hooks/hooks.json`, and `observe.sh` is already registered there.
 
-**If installed manually** to `~/.claude/skills`:
+If you previously copied `observe.sh` into `~/.claude/settings.json`, remove that duplicate `PreToolUse` / `PostToolUse` block. Duplicating the plugin hook causes double execution and `${CLAUDE_PLUGIN_ROOT}` resolution errors because that variable is only available inside plugin-managed `hooks/hooks.json` entries.
+
+**If installed manually** to `~/.claude/skills`, add this to your `~/.claude/settings.json`:
 
 ```json
 {

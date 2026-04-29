@@ -138,10 +138,18 @@ function runTests() {
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'agents', 'architect.md')));
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'commands', 'plan.md')));
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'hooks.json')));
+      assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'mcp.json')));
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'hooks', 'session-start.js')));
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'scripts', 'lib', 'utils.js')));
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'skills', 'tdd-workflow', 'SKILL.md')));
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'skills', 'coding-standards', 'SKILL.md')));
+
+      const hooksConfig = readJson(path.join(projectDir, '.cursor', 'hooks.json'));
+      const mcpConfig = readJson(path.join(projectDir, '.cursor', 'mcp.json'));
+      assert.strictEqual(hooksConfig.version, 1);
+      assert.ok(hooksConfig.hooks.sessionStart, 'Should keep Cursor sessionStart hooks');
+      assert.ok(mcpConfig.mcpServers.github, 'Should install shared MCP servers into Cursor');
+      assert.ok(mcpConfig.mcpServers.context7, 'Should include bundled documentation MCPs');
 
       const statePath = path.join(projectDir, '.cursor', 'ecc-install-state.json');
       const state = readJson(statePath);
@@ -157,6 +165,35 @@ function runTests() {
         )),
         'Should record manifest command file copy operation'
       );
+    } finally {
+      cleanup(homeDir);
+      cleanup(projectDir);
+    }
+  })) passed++; else failed++;
+
+  if (test('installs Cursor MCP config by merging bundled servers into an existing mcp.json', () => {
+    const homeDir = createTempDir('install-apply-home-');
+    const projectDir = createTempDir('install-apply-project-');
+
+    try {
+      const cursorRoot = path.join(projectDir, '.cursor');
+      fs.mkdirSync(cursorRoot, { recursive: true });
+      fs.writeFileSync(path.join(cursorRoot, 'mcp.json'), JSON.stringify({
+        mcpServers: {
+          custom: {
+            command: 'node',
+            args: ['custom-mcp.js'],
+          },
+        },
+      }, null, 2));
+
+      const result = run(['--target', 'cursor', 'typescript'], { cwd: projectDir, homeDir });
+      assert.strictEqual(result.code, 0, result.stderr);
+
+      const mcpConfig = readJson(path.join(projectDir, '.cursor', 'mcp.json'));
+      assert.ok(mcpConfig.mcpServers.custom, 'Should preserve existing custom Cursor MCP servers');
+      assert.ok(mcpConfig.mcpServers.github, 'Should merge bundled GitHub MCP server');
+      assert.ok(mcpConfig.mcpServers.playwright, 'Should merge bundled Playwright MCP server');
     } finally {
       cleanup(homeDir);
       cleanup(projectDir);
@@ -350,7 +387,7 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('resolves CLAUDE_PLUGIN_ROOT placeholders in installed claude hooks', () => {
+  if (test('installs claude hooks with the safe plugin bootstrap contract', () => {
     const homeDir = createTempDir('install-apply-home-');
     const projectDir = createTempDir('install-apply-project-');
 
@@ -361,18 +398,28 @@ function runTests() {
       const claudeRoot = path.join(homeDir, '.claude');
       const installedHooks = readJson(path.join(claudeRoot, 'hooks', 'hooks.json'));
 
-      const normSep = (s) => s.replace(/\\/g, '/');
-      const expectedFragment = normSep(path.join(claudeRoot, 'scripts', 'hooks', 'auto-tmux-dev.js'));
-
-      const installedAutoTmuxEntry = installedHooks.hooks.PreToolUse.find(entry => entry.id === 'pre:bash:auto-tmux-dev');
-      assert.ok(installedAutoTmuxEntry, 'hooks/hooks.json should include the auto tmux hook');
+      const installedBashDispatcherEntry = installedHooks.hooks.PreToolUse.find(entry => entry.id === 'pre:bash:dispatcher');
+      assert.ok(installedBashDispatcherEntry, 'hooks/hooks.json should include the consolidated Bash dispatcher hook');
+      assert.strictEqual(typeof installedBashDispatcherEntry.hooks[0].command, 'string', 'hooks/hooks.json should install string-form commands for Claude Code schema compatibility');
       assert.ok(
-        normSep(installedAutoTmuxEntry.hooks[0].command).includes(expectedFragment),
-        'hooks/hooks.json should use the installed Claude root for hook commands'
+        installedBashDispatcherEntry.hooks[0].command.startsWith('node -e '),
+        'hooks/hooks.json should use the inline node bootstrap contract'
       );
       assert.ok(
-        !installedAutoTmuxEntry.hooks[0].command.includes('${CLAUDE_PLUGIN_ROOT}'),
-        'hooks/hooks.json should not retain CLAUDE_PLUGIN_ROOT placeholders after install'
+        installedBashDispatcherEntry.hooks[0].command.includes('plugin-hook-bootstrap.js'),
+        'hooks/hooks.json should route plugin-managed hooks through the shared bootstrap'
+      );
+      assert.ok(
+        installedBashDispatcherEntry.hooks[0].command.includes('CLAUDE_PLUGIN_ROOT'),
+        'hooks/hooks.json should still consult CLAUDE_PLUGIN_ROOT for runtime resolution'
+      );
+      assert.ok(
+        installedBashDispatcherEntry.hooks[0].command.includes('pre-bash-dispatcher.js'),
+        'hooks/hooks.json should point the Bash preflight contract at the consolidated dispatcher'
+      );
+      assert.ok(
+        !installedBashDispatcherEntry.hooks[0].command.includes('${CLAUDE_PLUGIN_ROOT}'),
+        'hooks/hooks.json should not retain raw CLAUDE_PLUGIN_ROOT shell placeholders after install'
       );
     } finally {
       cleanup(homeDir);

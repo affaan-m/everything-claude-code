@@ -130,7 +130,10 @@ jobs:
         run: |
           case "${{ inputs.package-manager }}" in
             npm) npm ci ;;
-            pnpm) pnpm install --no-frozen-lockfile ;;
+            # pnpm v10 can fail CI on ignored native build scripts
+            # (for example msgpackr-extract) even though this repo is Yarn-native
+            # and pnpm is only exercised here as a compatibility lane.
+            pnpm) pnpm install --config.strict-dep-builds=false --no-frozen-lockfile ;;
             # Yarn Berry (v4+) removed --ignore-engines; engine checking is no longer a core feature
             yarn) yarn install ;;
             bun) bun install ;;

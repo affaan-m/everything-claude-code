@@ -1,0 +1,7 @@
+interface:
+  display_name: "Frontend Design"
+  short_description: "Production-grade frontend interface design"
+  brand_color: "#0EA5E9"
+  default_prompt: "Use $frontend-design to build a distinctive production-grade interface."
+policy:
+  allow_implicit_invocation: true

@@ -6,6 +6,26 @@
 
 - `continuous-learning-v2`: observer can now persist instincts. Previously, all writes from the Haiku observer subprocess to `~/.claude/homunculus/**` were silently blocked by Claude Code's `--print`-mode sensitive-path guard, so analysis ran but no instincts were written. Data now lives at `${XDG_DATA_HOME:-$HOME/.local/share}/ecc-homunculus/` (override with `CLV2_HOMUNCULUS_DIR`). New installs work out of the box. Existing users with data at `~/.claude/homunculus` run `bash skills/continuous-learning-v2/scripts/migrate-homunculus.sh` once.
 
+## 2.0.0-rc.1 - 2026-04-28
+
+### Highlights
+
+- Adds the public ECC 2.0 release-candidate surface for the Hermes operator story.
+- Documents ECC as the reusable cross-harness substrate across Claude Code, Codex, Cursor, OpenCode, and Gemini.
+- Adds a sanitized Hermes import skill surface instead of publishing private operator state.
+
+### Release Surface
+
+- Updated package, plugin, marketplace, OpenCode, agent, and README metadata to `2.0.0-rc.1`.
+- Added `docs/releases/2.0.0-rc.1/` with release notes, social drafts, launch checklist, handoff notes, and demo prompts.
+- Added `docs/architecture/cross-harness.md` and regression coverage for the ECC/Hermes boundary.
+- Kept `ecc2/` versioning independent for now; it remains an alpha control-plane scaffold unless release engineering decides otherwise.
+
+### Notes
+
+- This is a release candidate, not a GA claim for the full ECC 2.0 control-plane roadmap.
+- Prerelease npm publishing should use the `next` dist-tag unless release engineering explicitly chooses otherwise.
+
 ## 1.10.0 - 2026-04-05
 
 ### Highlights

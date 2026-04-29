@@ -31,10 +31,6 @@
       "type": "array",
       "items": { "type": "string" }
     },
-    "agents": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
     "features": {
       "type": "object",
       "properties": {

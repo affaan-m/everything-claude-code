@@ -703,7 +703,7 @@ Suggested payload:
     "skippedModules": []
   },
   "source": {
-    "repoVersion": "1.10.0",
+    "repoVersion": "2.0.0-rc.1",
     "repoCommit": "git-sha",
     "manifestVersion": 1
   },

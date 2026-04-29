@@ -83,6 +83,28 @@ exit_if_idle_without_sessions() {
   fi
 }
 
+wait_for_claude_analysis() {
+  local child_pid="$1"
+  local wait_status=0
+
+  while true; do
+    wait "$child_pid"
+    wait_status=$?
+
+    if [ "$wait_status" -eq 0 ]; then
+      return 0
+    fi
+
+    # SIGUSR1 can interrupt wait while the Claude child is still running.
+    # Re-wait in that case so a signal is not logged as a false child failure.
+    if kill -0 "$child_pid" 2>/dev/null; then
+      continue
+    fi
+
+    return "$wait_status"
+  done
+}
+
 analyze_observations() {
   if [ ! -f "$OBSERVATIONS_FILE" ]; then
     return
@@ -217,7 +239,7 @@ PROMPT
   ) &
   watchdog_pid=$!
 
-  wait "$claude_pid"
+  wait_for_claude_analysis "$claude_pid"
   exit_code=$?
   kill "$watchdog_pid" 2>/dev/null || true
   rm -f "$analysis_file"

@@ -91,11 +91,16 @@ function askClaude(systemPrompt, history, userMessage, model) {
   }
   args.push('-p', fullPrompt);
 
+  // On Windows, the `claude` binary installed via npm is `claude.cmd`.
+  // Node's spawn() cannot resolve `.cmd` wrappers via PATH without shell: true,
+  // so this call fails with `spawn claude ENOENT` on Windows otherwise.
+  // 'claude' is a hardcoded literal here (not user input), so shell mode is safe.
   const result = spawnSync('claude', args, {
     encoding: 'utf8',
     stdio: ['pipe', 'pipe', 'pipe'],
     env: { ...process.env, CLAUDECODE: '' },
     timeout: 300000,
+    shell: process.platform === 'win32',
   });
 
   if (result.error) {
