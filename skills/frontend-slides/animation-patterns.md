@@ -34,6 +34,10 @@ Use this reference when generating presentations. Match animations to the intend
     transform: scale(0.9);
     transition: opacity 0.6s, transform 0.6s var(--ease-out-expo);
 }
+.visible .reveal-scale {
+    opacity: 1;
+    transform: scale(1);
+}
 
 /* Slide from Left */
 .reveal-left {
@@ -41,12 +45,20 @@ Use this reference when generating presentations. Match animations to the intend
     transform: translateX(-50px);
     transition: opacity 0.6s, transform 0.6s var(--ease-out-expo);
 }
+.visible .reveal-left {
+    opacity: 1;
+    transform: translateX(0);
+}
 
 /* Blur In */
 .reveal-blur {
     opacity: 0;
     filter: blur(10px);
     transition: opacity 0.8s, filter 0.8s var(--ease-out-expo);
+}
+.visible .reveal-blur {
+    opacity: 1;
+    filter: blur(0);
 }
 ```
 
