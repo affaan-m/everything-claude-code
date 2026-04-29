@@ -36,6 +36,15 @@ echo ========================================================
 echo TARGET PROJECT: %TARGET_DIR%
 echo.
 
+:: Auto-update ECC source if it's a git repository
+if exist "%SOURCE_DIR%\.git\" (
+    echo [0/4] Checking for latest ECC updates from GitHub...
+    pushd "%SOURCE_DIR%"
+    git pull
+    popd
+    echo.
+)
+
 :: Auto-detect language
 set "DETECTED_LANG="
 if exist "%TARGET_DIR%\package.json" set "DETECTED_LANG=typescript"
