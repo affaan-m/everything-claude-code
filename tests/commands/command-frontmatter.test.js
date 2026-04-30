@@ -29,19 +29,16 @@ function getCommandFiles() {
 }
 
 function parseFrontmatter(content) {
-  if (!content.startsWith('---\n')) {
-    return null;
-  }
-
-  const endIndex = content.indexOf('\n---', 4);
-  if (endIndex === -1) {
-    return null;
-  }
-
-  return content.slice(4, endIndex);
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+  return match ? match[1] : null;
 }
 
 console.log('\n=== Testing command frontmatter metadata ===\n');
+
+test('frontmatter parser accepts LF and CRLF line endings', () => {
+  assert.strictEqual(parseFrontmatter('---\ndescription: ok\n---\n# Title'), 'description: ok');
+  assert.strictEqual(parseFrontmatter('---\r\ndescription: ok\r\n---\r\n# Title'), 'description: ok');
+});
 
 for (const fileName of getCommandFiles()) {
   test(`${fileName} declares command metadata frontmatter`, () => {
