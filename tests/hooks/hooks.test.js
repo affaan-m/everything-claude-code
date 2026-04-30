@@ -448,6 +448,91 @@ async function runTests() {
   else failed++;
 
   if (
+    await asyncTest('caps very large session-start context by default', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-large-start-${Date.now()}`);
+      const sessionsDir = getLegacySessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-11-large000-session.tmp');
+      fs.writeFileSync(sessionFile, `# Large Session\n\nSTART_MARKER\n${'A'.repeat(20000)}\nEND_MARKER\n`);
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome
+        });
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(additionalContext.length <= 8200, `context should stay near the 8000-char default cap, got ${additionalContext.length}`);
+        assert.ok(additionalContext.includes('START_MARKER'), 'Should keep the start of the selected session summary');
+        assert.ok(additionalContext.includes('[SessionStart truncated'), 'Should explain that context was truncated');
+        assert.ok(!additionalContext.includes('END_MARKER'), 'Should not inject the full oversized session summary');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('honors ECC_SESSION_START_MAX_CHARS for injected context', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-max-start-${Date.now()}`);
+      const sessionsDir = getLegacySessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-11-max0000-session.tmp');
+      fs.writeFileSync(sessionFile, `# Sized Session\n\n${'B'.repeat(1200)}\n`);
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome,
+          ECC_SESSION_START_MAX_CHARS: '700'
+        });
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(additionalContext.length <= 700, `context should respect configured cap, got ${additionalContext.length}`);
+        assert.ok(additionalContext.includes('[SessionStart truncated'), 'Should include a truncation marker');
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('disables session-start additional context when requested', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-disabled-start-${Date.now()}`);
+      const sessionsDir = getLegacySessionsDir(isoHome);
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+
+      const sessionFile = path.join(sessionsDir, '2026-02-11-disabled-session.tmp');
+      fs.writeFileSync(sessionFile, '# Disabled Session\n\nDO_NOT_INJECT_THIS\n');
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome,
+          ECC_SESSION_START_CONTEXT: 'off'
+        });
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.strictEqual(additionalContext, '', 'Should emit no additional context when disabled');
+        assert.ok(result.stderr.includes('Additional context injection disabled'), `Should log disabled mode, stderr: ${result.stderr}`);
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
     await asyncTest('prefers canonical session-data content over legacy duplicates', async () => {
       const isoHome = path.join(os.tmpdir(), `ecc-canonical-start-${Date.now()}`);
       const canonicalDir = getCanonicalSessionsDir(isoHome);
