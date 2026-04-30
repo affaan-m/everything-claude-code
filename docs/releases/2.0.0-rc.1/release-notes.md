@@ -47,8 +47,9 @@ What stays local:
 
 ## Upgrade Motion
 
-1. Read the [Hermes setup guide](../../HERMES-SETUP.md).
-2. Review the [cross-harness architecture](../../architecture/cross-harness.md).
-3. Start with one workflow lane: engineering, research, content, or outreach.
-4. Import only sanitized operator patterns into ECC skills.
-5. Treat `ecc2/` as an alpha control plane until release packaging and installer behavior are finalized.
+1. Follow the [rc.1 quickstart](quickstart.md).
+2. Read the [Hermes setup guide](../../HERMES-SETUP.md).
+3. Review the [cross-harness architecture](../../architecture/cross-harness.md).
+4. Start with one workflow lane: engineering, research, content, or outreach.
+5. Import only sanitized operator patterns into ECC skills.
+6. Treat `ecc2/` as an alpha control plane until release packaging and installer behavior are finalized.

@@ -49,6 +49,7 @@ const expectedReleaseFiles = [
   'launch-checklist.md',
   'telegram-handoff.md',
   'demo-prompts.md',
+  'quickstart.md',
 ];
 
 test('release candidate directory includes the public launch pack', () => {
@@ -118,6 +119,29 @@ test('release docs preserve the ECC/Hermes boundary', () => {
   const releaseNotes = read('docs/releases/2.0.0-rc.1/release-notes.md');
   assert.ok(releaseNotes.includes('ECC is the reusable substrate'));
   assert.ok(releaseNotes.includes('Hermes as the operator shell'));
+});
+
+test('release notes route new contributors through the rc.1 quickstart', () => {
+  const releaseNotes = read('docs/releases/2.0.0-rc.1/release-notes.md');
+  assert.ok(releaseNotes.includes('[rc.1 quickstart](quickstart.md)'));
+});
+
+test('rc.1 quickstart gives a clone-to-cross-harness path', () => {
+  const quickstart = read('docs/releases/2.0.0-rc.1/quickstart.md');
+  for (const heading of ['Clone', 'Install', 'Verify', 'First Skill', 'Switch Harness']) {
+    assert.ok(quickstart.includes(`## ${heading}`), `Missing ${heading} section`);
+  }
+  assert.ok(quickstart.includes('node tests/run-all.js'));
+  assert.ok(quickstart.includes('skills/hermes-imports/SKILL.md'));
+});
+
+test('cross-harness doc includes a worked skill portability example', () => {
+  const source = read('docs/architecture/cross-harness.md');
+  assert.ok(source.includes('## Worked Example'));
+  assert.ok(source.includes('same skill source'));
+  for (const harness of ['Claude Code', 'Codex', 'OpenCode']) {
+    assert.ok(source.includes(harness), `Expected worked example to mention ${harness}`);
+  }
 });
 
 test('release docs use release-candidate wording consistently', () => {

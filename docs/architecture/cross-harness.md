@@ -78,6 +78,25 @@ Do not ship:
 - private datasets
 - local-only automation packs that have not been reviewed
 
+## Worked Example
+
+Use `skills/hermes-imports/SKILL.md` as the same skill source across harnesses.
+
+The workflow is:
+
+1. Author the durable behavior once in `skills/hermes-imports/SKILL.md`.
+2. Keep secrets, local paths, and raw operator memory out of the skill.
+3. Let each harness adapt how the skill is loaded.
+4. Test the source skill and the harness-facing metadata separately.
+
+Claude Code gets the skill through the Claude plugin surface and can enforce related hooks natively.
+
+Codex reads the repo instructions, `.codex-plugin/plugin.json`, and the MCP reference config. The same skill source still describes the workflow, but hook parity is instruction-backed unless Codex adds a native hook surface.
+
+OpenCode gets the skill through the OpenCode package/plugin surface. Event handling can reuse ECC hook logic through the adapter layer, while the skill text stays unchanged.
+
+If a change requires editing three harness copies of the same workflow, the shared source is in the wrong place. Put the workflow back in `skills/`, then adapt only loading, event shape, or command routing at the harness edge.
+
 ## Today vs Later
 
 Supported today:
