@@ -133,6 +133,12 @@ module.exports = createInstallTargetAdapter({
         destinationPath: path.join(targetRoot, 'mcp.json'),
       });
 
+      if (sourceRelativePath === 'AGENTS.md') {
+        // Cursor treats nested AGENTS.md files as directory context; do not
+        // install ECC's root project identity into a host project's .cursor/.
+        return [];
+      }
+
       if (sourceRelativePath === 'rules') {
         return takeUniqueOperations(createFlatRuleOperations({
           moduleId: module.id,
