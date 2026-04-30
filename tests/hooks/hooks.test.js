@@ -545,6 +545,65 @@ async function runTests() {
     passed++;
   else failed++;
 
+  if (
+    await asyncTest('injects learned skills into session-start additional context', async () => {
+      const isoHome = path.join(os.tmpdir(), `ecc-skills-context-${Date.now()}`);
+      const learnedDir = path.join(isoHome, '.claude', 'skills', 'learned');
+      fs.mkdirSync(learnedDir, { recursive: true });
+      fs.mkdirSync(getCanonicalSessionsDir(isoHome), { recursive: true });
+
+      fs.writeFileSync(
+        path.join(learnedDir, 'testing-patterns.md'),
+        [
+          '# Testing Patterns',
+          '',
+          '## When to Use',
+          'Use for recurring flaky integration tests that need deterministic setup checks.',
+          '',
+          '## Solution',
+          'Verify service readiness before running the test body.',
+        ].join('\n'),
+      );
+      fs.mkdirSync(path.join(learnedDir, 'debugging-pattern'), { recursive: true });
+      fs.writeFileSync(
+        path.join(learnedDir, 'debugging-pattern', 'SKILL.md'),
+        [
+          '# Debugging Pattern',
+          '',
+          '## Trigger',
+          'Use when a CLI tool silently exits without a result payload.',
+        ].join('\n'),
+      );
+
+      try {
+        const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
+          HOME: isoHome,
+          USERPROFILE: isoHome
+        });
+        assert.strictEqual(result.code, 0);
+        const additionalContext = getSessionStartAdditionalContext(result.stdout);
+        assert.ok(
+          additionalContext.includes('Available learned skills'),
+          `Should inject learned skills into additionalContext, got: ${additionalContext}`
+        );
+        assert.ok(additionalContext.includes('testing-patterns'), 'Should include the learned skill slug');
+        assert.ok(
+          additionalContext.includes('Use for recurring flaky integration tests'),
+          'Should include the learned skill trigger text'
+        );
+        assert.ok(additionalContext.includes('debugging-pattern'), 'Should include directory-style learned skills');
+        assert.ok(
+          additionalContext.includes('CLI tool silently exits'),
+          'Should summarize directory-style learned skill trigger text'
+        );
+      } finally {
+        fs.rmSync(isoHome, { recursive: true, force: true });
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
   // check-console-log.js tests
   console.log('\ncheck-console-log.js:');
 

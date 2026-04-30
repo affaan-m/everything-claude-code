@@ -30,6 +30,8 @@ const fs = require('fs');
 
 const INSTINCT_CONFIDENCE_THRESHOLD = 0.7;
 const MAX_INJECTED_INSTINCTS = 6;
+const MAX_INJECTED_LEARNED_SKILLS = 6;
+const MAX_LEARNED_SKILL_SUMMARY_CHARS = 220;
 const DEFAULT_SESSION_RETENTION_DAYS = 30;
 
 /**
@@ -347,6 +349,119 @@ function summarizeActiveInstincts(observerContext) {
   return `Active instincts:\n${lines.join('\n')}`;
 }
 
+function stripMarkdownInline(value) {
+  return String(value || '')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .trim();
+}
+
+function collapseWhitespace(value) {
+  return String(value || '').replace(/\s+/g, ' ').trim();
+}
+
+function truncateSummary(value, maxLength = MAX_LEARNED_SKILL_SUMMARY_CHARS) {
+  const normalized = collapseWhitespace(stripMarkdownInline(value));
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
+  return `${normalized.slice(0, Math.max(0, maxLength - 3)).trimEnd()}...`;
+}
+
+function extractMarkdownHeading(content) {
+  const match = String(content || '').match(/^#\s+(.+)$/m);
+  return match ? stripMarkdownInline(match[1]) : '';
+}
+
+function extractSection(content, headingPattern) {
+  const source = String(content || '');
+  const match = source.match(new RegExp(`^##\\s+${headingPattern}\\s*\\n+([\\s\\S]+?)(?:\\n##\\s+|$)`, 'im'));
+  return match ? match[1].trim() : '';
+}
+
+function extractFirstParagraph(content) {
+  const withoutHeading = String(content || '').replace(/^#\s+.+$/m, '').trim();
+  return withoutHeading
+    .split(/\n\s*\n/)
+    .map(paragraph => paragraph.trim())
+    .find(Boolean) || '';
+}
+
+function summarizeLearnedSkillFile(filePath, learnedRoot) {
+  const content = readFile(filePath);
+  if (!content) return null;
+
+  const isDirectorySkill = path.basename(filePath).toLowerCase() === 'skill.md';
+  const slug = isDirectorySkill
+    ? path.basename(path.dirname(filePath))
+    : path.basename(filePath, path.extname(filePath));
+  const title = extractMarkdownHeading(content) || slug;
+  const summary = truncateSummary(
+    extractSection(content, 'When to Use')
+      || extractSection(content, 'Trigger')
+      || extractSection(content, 'Problem')
+      || extractFirstParagraph(content)
+      || title
+  );
+
+  if (!summary) return null;
+
+  let mtime = 0;
+  try {
+    mtime = fs.statSync(filePath).mtimeMs;
+  } catch {
+    // Keep unreadable/deleted files out of recency priority without failing the hook.
+  }
+
+  const relativePath = path.relative(learnedRoot, filePath);
+  return {
+    slug,
+    title: truncateSummary(title, 80),
+    summary,
+    relativePath,
+    mtime,
+  };
+}
+
+function collectLearnedSkillFiles(learnedDir) {
+  const flatMarkdownFiles = findFiles(learnedDir, '*.md');
+  const directorySkillFiles = findFiles(learnedDir, 'SKILL.md', { recursive: true });
+  const byPath = new Map();
+
+  for (const match of [...flatMarkdownFiles, ...directorySkillFiles]) {
+    byPath.set(match.path, match);
+  }
+
+  return Array.from(byPath.values())
+    .sort((left, right) => right.mtime - left.mtime || left.path.localeCompare(right.path));
+}
+
+function summarizeLearnedSkills(learnedDir, learnedSkillFiles = collectLearnedSkillFiles(learnedDir)) {
+  const summaries = learnedSkillFiles
+    .map(match => summarizeLearnedSkillFile(match.path, learnedDir))
+    .filter(Boolean)
+    .slice(0, MAX_INJECTED_LEARNED_SKILLS);
+
+  if (summaries.length === 0) {
+    return '';
+  }
+
+  log(`[SessionStart] Injecting ${summaries.length} learned skill(s) into session context`);
+
+  const lines = summaries.map(skill => {
+    const titleSuffix = skill.title && skill.title !== skill.slug ? ` (${skill.title})` : '';
+    return `- ${skill.slug}${titleSuffix}: ${skill.summary}`;
+  });
+
+  return [
+    'Available learned skills:',
+    'Reference only; apply a learned skill only when it is relevant to the current user request.',
+    ...lines,
+  ].join('\n');
+}
+
 async function main() {
   const sessionsDir = getSessionsDir();
   const sessionSearchDirs = getSessionSearchDirs();
@@ -428,10 +543,15 @@ async function main() {
   }
 
   // Check for learned skills
-  const learnedSkills = findFiles(learnedDir, '*.md');
+  const learnedSkills = collectLearnedSkillFiles(learnedDir);
 
   if (learnedSkills.length > 0) {
     log(`[SessionStart] ${learnedSkills.length} learned skill(s) available in ${learnedDir}`);
+  }
+
+  const learnedSkillSummary = summarizeLearnedSkills(learnedDir, learnedSkills);
+  if (learnedSkillSummary) {
+    additionalContextParts.push(learnedSkillSummary);
   }
 
   // Check for available session aliases
