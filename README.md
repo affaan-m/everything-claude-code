@@ -859,7 +859,9 @@ Windows note: the Claude config directory is `%USERPROFILE%\\.claude`, not `~/cl
 
 Claude plugin installs intentionally do not auto-enable ECC's bundled MCP server definitions. This avoids overlong plugin MCP tool names on strict third-party gateways while keeping manual MCP setup available.
 
-Copy desired MCP server definitions from `mcp-configs/mcp-servers.json` into your official Claude Code config in `~/.claude/settings.json`, or into a project-scoped `.mcp.json` if you want repo-local MCP access.
+Use Claude Code's `/mcp` command or CLI-managed MCP setup for live Claude Code server changes. Use `/mcp` for Claude Code runtime disables; Claude Code persists those choices in `~/.claude.json`.
+
+For repo-local MCP access, copy desired MCP server definitions from `mcp-configs/mcp-servers.json` into a project-scoped `.mcp.json`.
 
 If you already run your own copies of ECC-bundled MCPs, set:
 
@@ -867,7 +869,7 @@ If you already run your own copies of ECC-bundled MCPs, set:
 export ECC_DISABLED_MCPS="github,context7,exa,playwright,sequential-thinking,memory"
 ```
 
-ECC-managed install and Codex sync flows will skip or remove those bundled servers instead of re-adding duplicates.
+ECC-managed install and Codex sync flows will skip or remove those bundled servers instead of re-adding duplicates. `ECC_DISABLED_MCPS` is an ECC install/sync filter, not a live Claude Code toggle.
 
 **Important:** Replace `YOUR_*_HERE` placeholders with your actual API keys.
 
@@ -1032,13 +1034,7 @@ Official references:
 
 Too many MCP servers eat your context. Each MCP tool description consumes tokens from your 200k window, potentially reducing it to ~70k.
 
-**Fix:** Disable unused MCPs per project:
-```json
-// In your project's .claude/settings.json
-{
-  "disabledMcpServers": ["supabase", "railway", "vercel"]
-}
-```
+**Fix:** Disable unused MCPs from Claude Code with `/mcp`. Claude Code writes those runtime choices to `~/.claude.json`; `.claude/settings.json` and `.claude/settings.local.json` are not reliable toggles for already-loaded MCP servers.
 
 Keep under 10 MCPs enabled and under 80 tools active.
 </details>
@@ -1516,7 +1512,8 @@ The `strategic-compact` skill (included in this plugin) suggests `/compact` at l
 
 - Keep under 10 MCPs enabled per project
 - Keep under 80 tools active
-- Use `disabledMcpServers` in project config to disable unused ones
+- Use `/mcp` to disable unused Claude Code MCP servers; those runtime choices persist in `~/.claude.json`
+- Use `ECC_DISABLED_MCPS` only to filter ECC-generated MCP configs during install/sync flows
 
 ### Agent Teams Cost Warning
 

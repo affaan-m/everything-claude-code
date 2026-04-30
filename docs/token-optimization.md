@@ -98,8 +98,10 @@ Each enabled MCP server adds tool definitions to your context window. The README
 
 Tips:
 - Run `/mcp` to see active servers and their context cost
+- Use `/mcp` to disable Claude Code MCP servers when you want a live runtime change. Claude Code persists those runtime disables in `~/.claude.json`.
 - Prefer CLI tools when available (`gh` instead of GitHub MCP, `aws` instead of AWS MCP)
-- Use `disabledMcpServers` in project config to disable servers per-project
+- Do not rely on `.claude/settings.json` or `.claude/settings.local.json` to disable already-loaded Claude Code MCP servers; use `/mcp` for that.
+- `ECC_DISABLED_MCPS` only affects ECC-generated MCP config output during install/sync flows, such as `install.sh`, `npx ecc-install`, and Codex MCP merging. It is not a live Claude Code toggle.
 - The `memory` MCP server is configured by default but not used by any skill, agent, or hook — consider disabling it
 
 ---
