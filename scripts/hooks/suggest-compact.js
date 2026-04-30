@@ -18,14 +18,33 @@ const path = require('path');
 const {
   getTempDir,
   writeFile,
+  readStdinJson,
   log
 } = require('../lib/utils');
 
+async function resolveSessionId() {
+  // Claude Code passes hook input via stdin JSON; session_id is the canonical
+  // field (verified against observations from continuous-learning-v2/observe.sh
+  // which reads the same channel). Fall back to legacy env var, then 'default'.
+  // The stdin read is bounded so the hook stays fast even when invoked outside
+  // a real Claude Code session (e.g. from CI tests).
+  try {
+    const input = await readStdinJson({ timeoutMs: 1000 });
+    if (input && typeof input.session_id === 'string' && input.session_id) {
+      return input.session_id;
+    }
+  } catch {
+    /* fall through to env */
+  }
+  return process.env.CLAUDE_SESSION_ID || 'default';
+}
+
 async function main() {
   // Track tool call count (increment in a temp file)
-  // Use a session-specific counter file based on session ID from environment
-  // or parent PID as fallback
-  const sessionId = (process.env.CLAUDE_SESSION_ID || 'default').replace(/[^a-zA-Z0-9_-]/g, '') || 'default';
+  // Use a session-specific counter file based on session ID from stdin JSON,
+  // legacy env var, or 'default' as fallback
+  const rawSessionId = await resolveSessionId();
+  const sessionId = rawSessionId.replace(/[^a-zA-Z0-9_-]/g, '') || 'default';
   const counterFile = path.join(getTempDir(), `claude-tool-count-${sessionId}`);
   const rawThreshold = parseInt(process.env.COMPACT_THRESHOLD || '50', 10);
   const threshold = Number.isFinite(rawThreshold) && rawThreshold > 0 && rawThreshold <= 10000
