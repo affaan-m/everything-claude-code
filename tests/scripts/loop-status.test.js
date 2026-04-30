@@ -313,6 +313,17 @@ function runTests() {
     assert.strictEqual(payload.errors[0].transcriptPath, missingTranscript);
   })) passed++; else failed++;
 
+  if (test('text output distinguishes explicit transcript read failures from empty discovery', () => {
+    const missingTranscript = path.join(os.tmpdir(), `missing-loop-status-text-${Date.now()}.jsonl`);
+
+    const result = run(['--transcript', missingTranscript, '--now', NOW]);
+
+    assert.strictEqual(result.code, 0, result.stderr);
+    assert.match(result.stdout, /No readable Claude transcript JSONL files were found/);
+    assert.match(result.stdout, /Skipped transcript errors/);
+    assert.ok(!result.stdout.includes('No Claude transcript JSONL files found under'));
+  })) passed++; else failed++;
+
   if (test('continues when one transcript directory cannot be read', () => {
     const homeDir = createTempHome();
     const blockedDir = path.join(homeDir, '.claude', 'projects', '-blocked-project');

@@ -551,7 +551,9 @@ function formatText(payload) {
   if (payload.sessions.length === 0) {
     const lines = [
       `ECC loop status (${payload.generatedAt})`,
-      `No Claude transcript JSONL files found under ${payload.source.transcriptRoot}.`,
+      skippedLines.length > 0
+        ? 'No readable Claude transcript JSONL files were found.'
+        : `No Claude transcript JSONL files found under ${payload.source.transcriptRoot}.`,
     ];
     if (skippedLines.length > 0) {
       lines.push('Skipped transcript errors:');
