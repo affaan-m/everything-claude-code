@@ -178,6 +178,14 @@ test('README.zh-CN.md latest release heading matches package.json', () => {
   );
 });
 
+test('docs/zh-CN/README.md latest release heading matches package.json', () => {
+  const source = fs.readFileSync(zhCnReadmePath, 'utf8');
+  assert.ok(
+    source.includes(`### v${expectedVersion} `),
+    'Expected docs/zh-CN/README.md to advertise the current release heading',
+  );
+});
+
 // ── Claude plugin manifest ────────────────────────────────────────────────────
 console.log('\n=== .claude-plugin/plugin.json ===\n');
 
