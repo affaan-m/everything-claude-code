@@ -12,7 +12,7 @@ This directory contains the **Codex plugin manifest** for Everything Claude Code
 
 ## What This Provides
 
-- **156 skills** from `./skills/` — reusable Codex workflows for TDD, security,
+- **182 skills** from `./skills/` — reusable Codex workflows for TDD, security,
   code review, architecture, and more
 - **6 MCP servers** — GitHub, Context7, Exa, Memory, Playwright, Sequential Thinking
 

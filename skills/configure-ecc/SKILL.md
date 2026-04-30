@@ -158,13 +158,14 @@ For each selected category, print the full list of skills below and ask the user
 | `investor-materials` | Pitch decks, one-pagers, investor memos, and financial models |
 | `investor-outreach` | Personalized investor cold emails, warm intros, and follow-ups |
 
-**Category: Research & APIs (3 skills)**
+**Category: Research & APIs (2 skills)**
 
 | Skill | Description |
 |-------|-------------|
 | `deep-research` | Multi-source deep research using firecrawl and exa MCPs with cited reports |
 | `exa-search` | Neural search via Exa MCP for web, code, company, and people research |
-| `claude-api` | Anthropic Claude API patterns: Messages, streaming, tool use, vision, batches, Agent SDK |
+
+`claude-api` is an Anthropic canonical skill. Install it from [`anthropics/skills`](https://github.com/anthropics/skills) when you want the official Claude API workflow instead of an ECC-bundled copy.
 
 **Category: Social & Content Distribution (2 skills)**
 

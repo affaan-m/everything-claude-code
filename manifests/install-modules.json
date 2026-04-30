@@ -125,7 +125,6 @@
         "skills/django-tdd",
         "skills/django-verification",
         "skills/dotnet-patterns",
-        "skills/frontend-design",
         "skills/frontend-patterns",
         "skills/frontend-slides",
         "skills/golang-patterns",
@@ -273,7 +272,6 @@
       "kind": "skills",
       "description": "Research and API integration skills for deep investigations and model integrations.",
       "paths": [
-        "skills/claude-api",
         "skills/deep-research",
         "skills/exa-search",
         "skills/research-ops"

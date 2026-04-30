@@ -141,6 +141,6 @@ Switch(
 ## Related Skills
 
 - `frontend-patterns`
-- `frontend-design`
+- `design-system`
 - `liquid-glass-design`
 - `swiftui-patterns`

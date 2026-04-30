@@ -1,7 +1,0 @@
-interface:
-  display_name: "Claude API"
-  short_description: "Claude API patterns for Python and TypeScript"
-  brand_color: "#D97706"
-  default_prompt: "Use $claude-api to build with Claude API and Anthropic SDK patterns."
-policy:
-  allow_implicit_invocation: true
