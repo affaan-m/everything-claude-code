@@ -179,6 +179,34 @@ Most Claude Code users should use exactly one install path:
 
 If you already layered multiple installs and things look duplicated, skip straight to [Reset / Uninstall ECC](#reset--uninstall-ecc).
 
+### Low-context / no-hooks path
+
+If hooks feel too global or you only want ECC's rules, agents, commands, and core workflow skills, skip the plugin and use the minimal manual profile:
+
+```bash
+./install.sh --profile minimal --target claude
+```
+
+```powershell
+.\install.ps1 --profile minimal --target claude
+# or
+npx ecc-install --profile minimal --target claude
+```
+
+This profile intentionally excludes `hooks-runtime`.
+
+If you want the normal core profile but need hooks off, use:
+
+```bash
+./install.sh --profile core --without baseline:hooks --target claude
+```
+
+Add hooks later only if you want runtime enforcement:
+
+```bash
+./install.sh --target claude --modules hooks-runtime
+```
+
 ### Step 1: Install the Plugin (Recommended)
 
 > NOTE: The plugin is convenient, but the OSS installer below is still the most reliable path if your Claude Code build has trouble resolving self-hosted marketplace entries.

@@ -79,6 +79,7 @@ function runTests() {
 
   if (test('lists install profiles from the real project', () => {
     const profiles = listInstallProfiles();
+    assert.ok(profiles.some(profile => profile.id === 'minimal'), 'Should include minimal profile');
     assert.ok(profiles.some(profile => profile.id === 'core'), 'Should include core profile');
     assert.ok(profiles.some(profile => profile.id === 'full'), 'Should include full profile');
   })) passed++; else failed++;
@@ -210,6 +211,22 @@ function runTests() {
     assert.ok(!plan.skippedModuleIds.includes('workflow-quality'));
     assert.strictEqual(plan.targetAdapterId, 'antigravity-project');
     assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.agent'));
+  })) passed++; else failed++;
+
+  if (test('resolves minimal profile without the hook runtime', () => {
+    const plan = resolveInstallPlan({
+      profileId: 'minimal',
+      target: 'claude',
+      projectRoot: '/workspace/app',
+    });
+
+    assert.deepStrictEqual(
+      plan.selectedModuleIds,
+      ['rules-core', 'agents-core', 'commands-core', 'platform-configs', 'workflow-quality']
+    );
+    assert.ok(!plan.selectedModuleIds.includes('hooks-runtime'),
+      'minimal profile should not install hooks-runtime');
+    assert.ok(plan.operations.length > 0, 'Should include install operations');
   })) passed++; else failed++;
 
   if (test('resolves explicit modules with dependency expansion', () => {

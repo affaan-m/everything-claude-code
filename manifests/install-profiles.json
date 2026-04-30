@@ -1,6 +1,16 @@
 {
   "version": 1,
   "profiles": {
+    "minimal": {
+      "description": "Low-context Claude Code setup with rules, agents, commands, platform configs, and quality workflow support, but no hook runtime.",
+      "modules": [
+        "rules-core",
+        "agents-core",
+        "commands-core",
+        "platform-configs",
+        "workflow-quality"
+      ]
+    },
     "core": {
       "description": "Minimal harness baseline with commands, hooks, platform configs, and quality workflow support.",
       "modules": [
