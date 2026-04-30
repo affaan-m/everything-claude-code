@@ -135,21 +135,32 @@ function getNow(options = {}) {
   return now;
 }
 
-function walkJsonlFiles(dir, files = []) {
+function walkJsonlFiles(dir, result = { errors: [], files: [] }) {
   if (!fs.existsSync(dir)) {
-    return files;
+    return result;
   }
 
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  let entries;
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch (error) {
+    result.errors.push({
+      code: error.code || null,
+      message: error.message,
+      transcriptPath: dir,
+    });
+    return result;
+  }
+
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      walkJsonlFiles(fullPath, files);
+      walkJsonlFiles(fullPath, result);
     } else if (entry.isFile() && entry.name.endsWith('.jsonl')) {
-      files.push(fullPath);
+      result.files.push(fullPath);
     }
   }
-  return files;
+  return result;
 }
 
 function findTranscriptPaths(options = {}) {
@@ -164,10 +175,11 @@ function findTranscriptPaths(options = {}) {
 
   const homeDir = getHomeDir(normalizedOptions);
   const transcriptRoot = path.join(homeDir, '.claude', 'projects');
-  const errors = [];
+  const walkResult = walkJsonlFiles(transcriptRoot);
+  const errors = [...walkResult.errors];
   const transcriptEntries = [];
 
-  for (const transcriptPath of walkJsonlFiles(transcriptRoot)) {
+  for (const transcriptPath of walkResult.files) {
     try {
       transcriptEntries.push({
         transcriptPath,
@@ -345,6 +357,10 @@ function buildRecommendation(signals) {
     return 'Open the transcript or interrupt the parked session; the scheduled wake is overdue.';
   }
 
+  if (signals.some(signal => signal.type === 'transcript_parse_errors')) {
+    return 'Inspect the transcript; some JSONL lines could not be parsed.';
+  }
+
   return 'No stale ScheduleWakeup or Bash waits detected.';
 }
 
@@ -452,6 +468,13 @@ function analyzeTranscript(transcriptPath, options = {}) {
         type: 'pending_bash_tool_result',
       });
     }
+  }
+
+  if (parseErrors > 0) {
+    signals.push({
+      count: parseErrors,
+      type: 'transcript_parse_errors',
+    });
   }
 
   return {

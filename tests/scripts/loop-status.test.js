@@ -9,7 +9,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'loop-status.js');
-const { analyzeTranscript } = require('../../scripts/loop-status');
+const { analyzeTranscript, buildStatus } = require('../../scripts/loop-status');
 const NOW = '2026-04-30T10:00:00.000Z';
 
 function run(args = [], options = {}) {
@@ -311,6 +311,71 @@ function runTests() {
     assert.deepStrictEqual(payload.sessions, []);
     assert.strictEqual(payload.errors.length, 1);
     assert.strictEqual(payload.errors[0].transcriptPath, missingTranscript);
+  })) passed++; else failed++;
+
+  if (test('continues when one transcript directory cannot be read', () => {
+    const homeDir = createTempHome();
+    const blockedDir = path.join(homeDir, '.claude', 'projects', '-blocked-project');
+    const originalReaddirSync = fs.readdirSync;
+
+    try {
+      writeTranscript(homeDir, '-Users-affoon-project-readable', 'session-readable.jsonl', [
+        toolResult('2026-04-30T09:41:00.000Z', 'session-readable', 'toolu_done', 'done'),
+      ]);
+      fs.mkdirSync(blockedDir, { recursive: true });
+      fs.readdirSync = (dir, options) => {
+        if (path.resolve(dir) === path.resolve(blockedDir)) {
+          const error = new Error('permission denied');
+          error.code = 'EACCES';
+          throw error;
+        }
+        return originalReaddirSync(dir, options);
+      };
+
+      const payload = buildStatus({ home: homeDir, now: NOW });
+
+      assert.strictEqual(payload.sessions.length, 1);
+      assert.strictEqual(payload.sessions[0].sessionId, 'session-readable');
+      assert.strictEqual(payload.errors.length, 1);
+      assert.strictEqual(payload.errors[0].code, 'EACCES');
+      assert.strictEqual(payload.errors[0].transcriptPath, blockedDir);
+    } finally {
+      fs.readdirSync = originalReaddirSync;
+      fs.rmSync(homeDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
+  if (test('reports malformed JSONL lines as an attention signal', () => {
+    const homeDir = createTempHome();
+
+    try {
+      const transcriptDir = path.join(homeDir, '.claude', 'projects', '-Users-affoon-project-malformed');
+      fs.mkdirSync(transcriptDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(transcriptDir, 'session-malformed.jsonl'),
+        [
+          JSON.stringify({
+            timestamp: '2026-04-30T09:55:00.000Z',
+            sessionId: 'session-malformed',
+            message: { role: 'assistant', content: [{ type: 'text', text: 'partial log' }] },
+          }),
+          '{"timestamp":',
+        ].join('\n') + '\n',
+        'utf8'
+      );
+
+      const result = run(['--home', homeDir, '--now', NOW, '--json']);
+
+      assert.strictEqual(result.code, 0, result.stderr);
+      const payload = parsePayload(result.stdout);
+      assert.strictEqual(payload.sessions[0].state, 'attention');
+      assert.ok(payload.sessions[0].signals.some(signal => (
+        signal.type === 'transcript_parse_errors'
+        && signal.count === 1
+      )));
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+    }
   })) passed++; else failed++;
 
   if (test('rejects non-integer limit values', () => {
