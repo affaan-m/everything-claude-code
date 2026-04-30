@@ -116,6 +116,10 @@ function parseArgs(argv) {
     }
   }
 
+  if (options.exitCode && options.watch && options.watchCount === null) {
+    throw new Error('--exit-code with --watch requires --watch-count so the process can exit');
+  }
+
   return options;
 }
 
