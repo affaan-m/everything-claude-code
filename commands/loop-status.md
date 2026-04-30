@@ -43,6 +43,8 @@ tool calls that have no matching `tool_result`.
 - `ecc loop-status --exit-code` exits `2` when stale loop or tool signals are
   found, or `1` when transcripts cannot be scanned.
 - `ecc loop-status --watch` refreshes status until interrupted.
+- `ecc loop-status --watch --watch-count 3 --exit-code` refreshes a bounded
+  number of times, then exits with the highest status seen.
 - `ecc loop-status --watch --watch-count 3` emits a bounded watch stream for
   scripts and handoffs.
 

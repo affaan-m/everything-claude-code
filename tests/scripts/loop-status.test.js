@@ -444,6 +444,13 @@ function runTests() {
     assert.strictEqual(payload.errors.length, 1);
   })) passed++; else failed++;
 
+  if (test('exit-code mode rejects unbounded watch mode', () => {
+    const result = run(['--watch', '--exit-code']);
+
+    assert.strictEqual(result.code, 1);
+    assert.match(result.stderr, /--exit-code with --watch requires --watch-count/);
+  })) passed++; else failed++;
+
   if (test('getStatusExitCode prioritizes attention signals over scan errors', () => {
     const payload = {
       errors: [{ message: 'unreadable' }],
