@@ -9,7 +9,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'loop-status.js');
-const { analyzeTranscript, buildStatus } = require('../../scripts/loop-status');
+const { analyzeTranscript, buildStatus, parseArgs } = require('../../scripts/loop-status');
 const NOW = '2026-04-30T10:00:00.000Z';
 
 function run(args = [], options = {}) {
@@ -394,6 +394,58 @@ function runTests() {
 
     assert.strictEqual(result.code, 1);
     assert.match(result.stderr, /--limit must be a positive integer/);
+  })) passed++; else failed++;
+
+  if (test('parses watch mode controls', () => {
+    const options = parseArgs([
+      'node',
+      'scripts/loop-status.js',
+      '--watch',
+      '--watch-count',
+      '2',
+      '--watch-interval-seconds',
+      '0.01',
+    ]);
+
+    assert.strictEqual(options.watch, true);
+    assert.strictEqual(options.watchCount, 2);
+    assert.strictEqual(options.watchIntervalSeconds, 0.01);
+  })) passed++; else failed++;
+
+  if (test('watch mode emits repeated JSON status frames', () => {
+    const homeDir = createTempHome();
+
+    try {
+      writeTranscript(homeDir, '-Users-affoon-project-watch', 'session-watch.jsonl', [
+        toolUse('2026-04-30T09:00:00.000Z', 'session-watch', 'toolu_watch', 'ScheduleWakeup', {
+          delaySeconds: 300,
+          reason: 'Loop checkpoint',
+        }),
+      ]);
+
+      const result = run([
+        '--home',
+        homeDir,
+        '--now',
+        NOW,
+        '--json',
+        '--watch',
+        '--watch-count',
+        '2',
+        '--watch-interval-seconds',
+        '0.01',
+      ]);
+
+      assert.strictEqual(result.code, 0, result.stderr);
+      const frames = result.stdout.trim().split(/\r?\n/).map(line => JSON.parse(line));
+      assert.strictEqual(frames.length, 2);
+      assert.strictEqual(frames[0].schemaVersion, 'ecc.loop-status.v1');
+      assert.strictEqual(frames[1].schemaVersion, 'ecc.loop-status.v1');
+      assert.strictEqual(frames[0].sessions[0].sessionId, 'session-watch');
+      assert.strictEqual(frames[1].sessions[0].sessionId, 'session-watch');
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+    }
   })) passed++; else failed++;
 
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);

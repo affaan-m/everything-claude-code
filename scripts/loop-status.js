@@ -8,12 +8,13 @@ const path = require('path');
 const DEFAULT_BASH_TIMEOUT_SECONDS = 30 * 60;
 const DEFAULT_LIMIT = 10;
 const DEFAULT_WAKE_GRACE_MULTIPLIER = 2;
+const DEFAULT_WATCH_INTERVAL_SECONDS = 5;
 
 function usage() {
   console.log([
     'Usage:',
-    '  node scripts/loop-status.js [--json] [--home <dir>] [--limit <n>]',
-    '  node scripts/loop-status.js --transcript <session.jsonl> [--json]',
+    '  node scripts/loop-status.js [--json] [--home <dir>] [--limit <n>] [--watch]',
+    '  node scripts/loop-status.js --transcript <session.jsonl> [--json] [--watch]',
     '',
     'Options:',
     '  --json                         Emit machine-readable status JSON',
@@ -23,6 +24,9 @@ function usage() {
     '  --bash-timeout-seconds <n>     Age before a pending Bash call is stale (default: 1800)',
     '  --wake-grace-multiplier <n>    ScheduleWakeup grace multiplier (default: 2)',
     '  --now <time>                   Override current time (ISO, epoch ms, or "now")',
+    '  --watch                        Refresh status until interrupted',
+    '  --watch-count <n>              Stop after n watch refreshes',
+    '  --watch-interval-seconds <n>   Seconds between watch refreshes (default: 5)',
     '',
     'Examples:',
     '  node scripts/loop-status.js --json',
@@ -64,7 +68,10 @@ function parseArgs(argv) {
     now: null,
     showHelp: false,
     transcriptPaths: [],
+    watch: false,
+    watchCount: null,
     wakeGraceMultiplier: DEFAULT_WAKE_GRACE_MULTIPLIER,
+    watchIntervalSeconds: DEFAULT_WATCH_INTERVAL_SECONDS,
   };
 
   for (let index = 0; index < args.length; index += 1) {
@@ -92,6 +99,14 @@ function parseArgs(argv) {
     } else if (arg === '--now') {
       options.now = readValue(args, index, arg);
       index += 1;
+    } else if (arg === '--watch') {
+      options.watch = true;
+    } else if (arg === '--watch-count') {
+      options.watchCount = readPositiveInteger(readValue(args, index, arg), arg);
+      index += 1;
+    } else if (arg === '--watch-interval-seconds') {
+      options.watchIntervalSeconds = readPositiveNumber(readValue(args, index, arg), arg);
+      index += 1;
     } else {
       throw new Error(`Unknown option: ${arg}`);
     }
@@ -106,7 +121,10 @@ function normalizeOptions(options = {}) {
     bashTimeoutSeconds: options.bashTimeoutSeconds ?? DEFAULT_BASH_TIMEOUT_SECONDS,
     limit: options.limit ?? DEFAULT_LIMIT,
     transcriptPaths: options.transcriptPaths || [],
+    watch: Boolean(options.watch),
+    watchCount: options.watchCount ?? null,
     wakeGraceMultiplier: options.wakeGraceMultiplier ?? DEFAULT_WAKE_GRACE_MULTIPLIER,
+    watchIntervalSeconds: options.watchIntervalSeconds ?? DEFAULT_WATCH_INTERVAL_SECONDS,
   };
 }
 
@@ -576,28 +594,57 @@ function formatText(payload) {
   return lines.join('\n');
 }
 
-function main() {
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function writeStatus(payload, options) {
+  if (options.json) {
+    console.log(options.watch ? JSON.stringify(payload) : JSON.stringify(payload, null, 2));
+  } else {
+    console.log(formatText(payload));
+  }
+}
+
+async function runWatch(options) {
+  const normalizedOptions = normalizeOptions(options);
+  let iteration = 0;
+
+  while (normalizedOptions.watchCount === null || iteration < normalizedOptions.watchCount) {
+    if (iteration > 0 && !normalizedOptions.json) {
+      console.log('');
+    }
+    writeStatus(buildStatus(normalizedOptions), normalizedOptions);
+    iteration += 1;
+
+    if (normalizedOptions.watchCount !== null && iteration >= normalizedOptions.watchCount) {
+      break;
+    }
+
+    await sleep(normalizedOptions.watchIntervalSeconds * 1000);
+  }
+}
+
+async function main() {
   const options = parseArgs(process.argv);
   if (options.showHelp) {
     usage();
     return;
   }
 
-  const payload = buildStatus(options);
-  if (options.json) {
-    console.log(JSON.stringify(payload, null, 2));
-  } else {
-    console.log(formatText(payload));
+  if (options.watch) {
+    await runWatch(options);
+    return;
   }
+
+  writeStatus(buildStatus(options), options);
 }
 
 if (require.main === module) {
-  try {
-    main();
-  } catch (error) {
+  main().catch(error => {
     console.error(`[loop-status] ${error.message}`);
     process.exit(1);
-  }
+  });
 }
 
 module.exports = {
@@ -606,4 +653,5 @@ module.exports = {
   extractToolResultIds,
   extractToolUses,
   parseArgs,
+  runWatch,
 };
