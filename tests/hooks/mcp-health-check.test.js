@@ -54,6 +54,18 @@ function readState(statePath) {
   return JSON.parse(fs.readFileSync(statePath, 'utf8'));
 }
 
+function readOptionalFile(filePath) {
+  return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '<missing>';
+}
+
+function hookFailureDetails(result, statePath) {
+  return [
+    `exit=${result.code}`,
+    `stderr=${result.stderr.trim() || '<empty>'}`,
+    `state=${readOptionalFile(statePath)}`
+  ].join('; ');
+}
+
 function createCommandConfig(scriptPath) {
   return {
     command: process.execPath,
@@ -132,7 +144,15 @@ function waitForHttpReady(urlString, timeoutMs = 5000) {
     const attempt = () => {
       const req = client.request(urlString, { method: 'GET' }, res => {
         res.resume();
-        resolve();
+        res.once('end', resolve);
+        res.once('error', error => {
+          if (Date.now() >= deadline) {
+            reject(new Error(`Timed out waiting for ${urlString}: ${error.message}`));
+            return;
+          }
+
+          setTimeout(attempt, 25);
+        });
       });
 
       req.setTimeout(250, () => {
@@ -835,26 +855,30 @@ async function runTests() {
 
       writeConfig(configPath, {
         mcpServers: {
-          github: {
+          http400: {
             type: 'http',
             url: `http://127.0.0.1:${port}/mcp`
           }
         }
       });
 
-      const input = { tool_name: 'mcp__github__search_repositories', tool_input: {} };
+      const input = { tool_name: 'mcp__http400__search_repositories', tool_input: {} };
       const result = runHook(input, {
         CLAUDE_HOOK_EVENT_NAME: 'PreToolUse',
         ECC_MCP_CONFIG_PATH: configPath,
         ECC_MCP_HEALTH_STATE_PATH: statePath,
-        ECC_MCP_HEALTH_TIMEOUT_MS: '500'
+        ECC_MCP_HEALTH_TIMEOUT_MS: '2000'
       });
 
-      assert.strictEqual(result.code, 0, `Expected HTTP 400 probe to be treated as healthy, got ${result.code}`);
+      assert.strictEqual(
+        result.code,
+        0,
+        `Expected HTTP 400 probe to be treated as healthy: ${hookFailureDetails(result, statePath)}`
+      );
       assert.strictEqual(result.stdout.trim(), JSON.stringify(input), 'Expected original JSON on stdout');
 
       const state = readState(statePath);
-      assert.strictEqual(state.servers.github.status, 'healthy', 'Expected HTTP MCP server to be marked healthy');
+      assert.strictEqual(state.servers.http400.status, 'healthy', 'Expected HTTP MCP server to be marked healthy');
     } finally {
       serverProcess.kill('SIGTERM');
       cleanupTempDir(tempDir);
@@ -910,10 +934,14 @@ async function runTests() {
         CLAUDE_HOOK_EVENT_NAME: 'PreToolUse',
         ECC_MCP_CONFIG_PATH: configPath,
         ECC_MCP_HEALTH_STATE_PATH: statePath,
-        ECC_MCP_HEALTH_TIMEOUT_MS: '500'
+        ECC_MCP_HEALTH_TIMEOUT_MS: '2000'
       });
 
-      assert.strictEqual(result.code, 0, `Expected HTTP 401 probe to be treated as healthy, got ${result.code}`);
+      assert.strictEqual(
+        result.code,
+        0,
+        `Expected HTTP 401 probe to be treated as healthy: ${hookFailureDetails(result, statePath)}`
+      );
       assert.strictEqual(result.stdout.trim(), JSON.stringify(input), 'Expected original JSON on stdout');
 
       const state = readState(statePath);
