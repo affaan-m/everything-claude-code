@@ -43,6 +43,14 @@ export const ECCHooksPlugin: ECCHooksPluginFn = async ({
     return path.join(worktreePath, p)
   }
 
+  function hasProjectFile(relativePath: string): boolean {
+    try {
+      return fs.existsSync(resolvePath(relativePath))
+    } catch {
+      return false
+    }
+  }
+
   const pendingToolChanges = new Map<string, { path: string; type: "added" | "modified" }>()
   let writeCounter = 0
 
@@ -275,13 +283,8 @@ export const ECCHooksPlugin: ECCHooksPluginFn = async ({
       log("info", `[ECC] Session started - profile=${currentProfile}`)
 
       // Check for project-specific context files
-      try {
-        const hasClaudeMd = await $`test -f ${worktree}/CLAUDE.md && echo "yes"`.text()
-        if (hasClaudeMd.trim() === "yes") {
-          log("info", "[ECC] Found CLAUDE.md - loading project context")
-        }
-      } catch {
-        // No CLAUDE.md found
+      if (hasProjectFile("CLAUDE.md")) {
+        log("info", "[ECC] Found CLAUDE.md - loading project context")
       }
     },
 
@@ -400,7 +403,7 @@ export const ECCHooksPlugin: ECCHooksPluginFn = async ({
         ECC_PLUGIN: "true",
         ECC_HOOK_PROFILE: currentProfile,
         ECC_DISABLED_HOOKS: process.env.ECC_DISABLED_HOOKS || "",
-        PROJECT_ROOT: worktree || directory,
+        PROJECT_ROOT: worktreePath,
       }
 
       // Detect package manager
@@ -411,12 +414,9 @@ export const ECCHooksPlugin: ECCHooksPluginFn = async ({
         "package-lock.json": "npm",
       }
       for (const [lockfile, pm] of Object.entries(lockfiles)) {
-        try {
-          await $`test -f ${worktree}/${lockfile}`
+        if (hasProjectFile(lockfile)) {
           env.PACKAGE_MANAGER = pm
           break
-        } catch {
-          // Not found, try next
         }
       }
 
@@ -430,11 +430,8 @@ export const ECCHooksPlugin: ECCHooksPluginFn = async ({
       }
       const detected: string[] = []
       for (const [file, lang] of Object.entries(langDetectors)) {
-        try {
-          await $`test -f ${worktree}/${file}`
+        if (hasProjectFile(file)) {
           detected.push(lang)
-        } catch {
-          // Not found
         }
       }
       if (detected.length > 0) {
