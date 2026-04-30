@@ -89,10 +89,13 @@ set "LANG=!LANG:/=!"
 if "!LANG!"=="" set "LANG=auto"
 
 :: Strict allowlist validation for language token
-echo(!LANG!| findstr /R /I /C:"^[a-z0-9_-][a-z0-9_-]*$" >nul
-if errorlevel 1 (
+set "VALID_LANG=0"
+for %%L in (all auto common-only typescript python golang rust cpp java csharp swift php web kotlin) do (
+    if /I "!LANG!"=="%%L" set "VALID_LANG=1"
+)
+if "!VALID_LANG!"=="0" (
     color 0C
-    echo [ERROR] Invalid language value: "!LANG!"
+    echo [ERROR] Unsupported language value: "!LANG!"
     pause
     exit /b 1
 )
@@ -148,11 +151,11 @@ if exist "%SOURCE_DIR%\skills\search-first" (
 echo [4/4] Copying Agents ^& Commands...
 if exist "%SOURCE_DIR%\agents" (
     xcopy "%SOURCE_DIR%\agents\*.md" "%CLAUDE_DIR%\agents\" /Y /Q >nul
-    if errorlevel 1 set "COPY_FAILED=1"
+    if errorlevel 2 set "COPY_FAILED=1"
 )
 if exist "%SOURCE_DIR%\commands" (
     xcopy "%SOURCE_DIR%\commands\*.md" "%CLAUDE_DIR%\commands\" /Y /Q >nul
-    if errorlevel 1 set "COPY_FAILED=1"
+    if errorlevel 2 set "COPY_FAILED=1"
 )
 
 echo.
