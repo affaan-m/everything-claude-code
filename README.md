@@ -330,8 +330,8 @@ If you stacked methods, clean up in this order:
 # Skills are the primary workflow surface.
 # Existing slash-style command names still work while ECC migrates off commands/.
 
-# Plugin install uses the namespaced form
-/ecc:plan "Add user authentication"
+# Plugin install uses the canonical namespaced form
+/everything-claude-code:plan "Add user authentication"
 
 # Manual install keeps the shorter slash form:
 # /plan "Add user authentication"
@@ -942,8 +942,8 @@ Not sure where to start? Use this quick reference. Skills are the canonical work
 
 | I want to... | Use this surface | Agent used |
 |--------------|-----------------|------------|
-| Plan a new feature | `/ecc:plan "Add auth"` | planner |
-| Design system architecture | `/ecc:plan` + architect agent | architect |
+| Plan a new feature | `/everything-claude-code:plan "Add auth"` | planner |
+| Design system architecture | `/everything-claude-code:plan` + architect agent | architect |
 | Write code with tests first | `tdd-workflow` skill | tdd-guide |
 | Review code I just wrote | `/code-review` | code-reviewer |
 | Fix a failing build | `/build-fix` | build-error-resolver |
@@ -962,7 +962,7 @@ Slash forms below are shown where they remain part of the maintained command sur
 
 **Starting a new feature:**
 ```
-/ecc:plan "Add user authentication with OAuth"
+/everything-claude-code:plan "Add user authentication with OAuth"
                                               → planner creates implementation blueprint
 tdd-workflow skill                            → tdd-guide enforces write-tests-first
 /code-review                                  → code-reviewer checks your work

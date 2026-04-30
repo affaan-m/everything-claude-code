@@ -206,7 +206,7 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 
 ```bash
 # Try a command (plugin install uses namespaced form)
-/ecc:plan "Add user authentication"
+/everything-claude-code:plan "Add user authentication"
 
 # Manual install (Option 2) uses the shorter form:
 # /plan "Add user authentication"
@@ -755,8 +755,8 @@ rules/
 
 | 我想要... | 使用此表面 | 使用的智能体 |
 |--------------|-----------------|------------|
-| 规划新功能 | `/ecc:plan "Add auth"` | planner |
-| 设计系统架构 | `/ecc:plan` + architect agent | architect |
+| 规划新功能 | `/everything-claude-code:plan "Add auth"` | planner |
+| 设计系统架构 | `/everything-claude-code:plan` + architect agent | architect |
 | 先写测试再写代码 | `tdd-workflow` 技能 | tdd-guide |
 | 评审我刚写的代码 | `/code-review` | code-reviewer |
 | 修复失败的构建 | `/build-fix` | build-error-resolver |
@@ -774,7 +774,7 @@ rules/
 **开始新功能：**
 
 ```
-/ecc:plan "使用 OAuth 添加用户身份验证"
+/everything-claude-code:plan "使用 OAuth 添加用户身份验证"
                                               → 规划器创建实现蓝图
 tdd-workflow 技能                             → tdd-guide 强制执行先写测试
 /code-review                                  → 代码审查员检查你的工作

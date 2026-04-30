@@ -141,7 +141,7 @@ cd everything-claude-code
 
 ```bash
 # 커맨드 실행 (플러그인 설치 시 네임스페이스 형태 사용)
-/ecc:plan "사용자 인증 추가"
+/everything-claude-code:plan "사용자 인증 추가"
 
 # 수동 설치(옵션 2) 시에는 짧은 형태를 사용:
 # /plan "사용자 인증 추가"
@@ -489,8 +489,8 @@ rules/
 
 | 하고 싶은 것 | 사용할 커맨드 | 사용되는 에이전트 |
 |-------------|-------------|-----------------|
-| 새 기능 계획하기 | `/ecc:plan "인증 추가"` | planner |
-| 시스템 아키텍처 설계 | `/ecc:plan` + architect 에이전트 | architect |
+| 새 기능 계획하기 | `/everything-claude-code:plan "인증 추가"` | planner |
+| 시스템 아키텍처 설계 | `/everything-claude-code:plan` + architect 에이전트 | architect |
 | 테스트를 먼저 작성하며 코딩 | `/tdd` | tdd-guide |
 | 방금 작성한 코드 리뷰 | `/code-review` | code-reviewer |
 | 빌드 실패 수정 | `/build-fix` | build-error-resolver |
@@ -507,7 +507,7 @@ rules/
 
 **새로운 기능 시작:**
 ```
-/ecc:plan "OAuth를 사용한 사용자 인증 추가"
+/everything-claude-code:plan "OAuth를 사용한 사용자 인증 추가"
                                               → planner가 구현 청사진 작성
 /tdd                                          → tdd-guide가 테스트 먼저 작성 강제
 /code-review                                  → code-reviewer가 코드 검토

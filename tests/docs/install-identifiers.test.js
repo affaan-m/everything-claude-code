@@ -50,6 +50,17 @@ const pluginAndManualInstallDocs = [
   'docs/zh-CN/README.md',
 ];
 
+const publicCommandNamespaceDocs = [
+  'README.md',
+  'README.zh-CN.md',
+  'docs/pt-BR/README.md',
+  'docs/tr/README.md',
+  'docs/ko-KR/README.md',
+  'docs/ja-JP/README.md',
+  'docs/zh-CN/README.md',
+  'docs/zh-TW/README.md',
+];
+
 for (const relativePath of pluginAndManualInstallDocs) {
   const content = fs.readFileSync(path.join(repoRoot, relativePath), 'utf8');
 
@@ -66,6 +77,21 @@ for (const relativePath of pluginAndManualInstallDocs) {
       content.includes('不要再运行')
       || content.includes('do not run'),
       'Expected docs to warn that plugin install and full install are not sequential'
+    );
+  });
+}
+
+for (const relativePath of publicCommandNamespaceDocs) {
+  const content = fs.readFileSync(path.join(repoRoot, relativePath), 'utf8');
+
+  test(`${relativePath} uses the canonical plugin command namespace`, () => {
+    assert.ok(
+      !content.includes('/ecc:'),
+      'Expected docs not to advertise the unsupported /ecc: plugin alias'
+    );
+    assert.ok(
+      content.includes('/everything-claude-code:plan'),
+      'Expected docs to show the canonical plugin command namespace'
     );
   });
 }

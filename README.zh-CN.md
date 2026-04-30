@@ -151,7 +151,7 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 
 ```bash
 # 尝试一个命令（插件安装使用命名空间形式）
-/ecc:plan "添加用户认证"
+/everything-claude-code:plan "添加用户认证"
 
 # 手动安装（选项2）使用简短形式：
 # /plan "添加用户认证"

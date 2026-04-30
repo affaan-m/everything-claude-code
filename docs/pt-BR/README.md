@@ -161,7 +161,7 @@ npx ecc-install typescript
 
 ```bash
 # Experimente um comando (a instalação do plugin usa forma com namespace)
-/ecc:plan "Adicionar autenticação de usuário"
+/everything-claude-code:plan "Adicionar autenticação de usuário"
 
 # Instalação manual (Opção 2) usa a forma mais curta:
 # /plan "Adicionar autenticação de usuário"
@@ -408,8 +408,8 @@ Regras são diretrizes sempre seguidas, organizadas em `common/` (agnóstico à 
 
 | Quero... | Use este comando | Agente usado |
 |----------|-----------------|--------------|
-| Planejar um novo recurso | `/ecc:plan "Adicionar auth"` | planner |
-| Projetar arquitetura de sistema | `/ecc:plan` + agente architect | architect |
+| Planejar um novo recurso | `/everything-claude-code:plan "Adicionar auth"` | planner |
+| Projetar arquitetura de sistema | `/everything-claude-code:plan` + agente architect | architect |
 | Escrever código com testes primeiro | `/tdd` | tdd-guide |
 | Revisar código que acabei de escrever | `/code-review` | code-reviewer |
 | Corrigir build com falha | `/build-fix` | build-error-resolver |
@@ -424,7 +424,7 @@ Regras são diretrizes sempre seguidas, organizadas em `common/` (agnóstico à 
 
 **Começando um novo recurso:**
 ```
-/ecc:plan "Adicionar autenticação de usuário com OAuth"
+/everything-claude-code:plan "Adicionar autenticação de usuário com OAuth"
                                               → planner cria blueprint de implementação
 /tdd                                          → tdd-guide aplica escrita de testes primeiro
 /code-review                                  → code-reviewer verifica seu trabalho

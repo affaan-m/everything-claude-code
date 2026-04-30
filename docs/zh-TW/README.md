@@ -89,7 +89,7 @@ cp -r everything-claude-code/rules/* ~/.claude/rules/
 
 ```bash
 # 嘗試一個指令（外掛安裝使用命名空間形式）
-/ecc:plan "新增使用者認證"
+/everything-claude-code:plan "新增使用者認證"
 
 # 手動安裝（選項2）使用簡短形式：
 # /plan "新增使用者認證"
