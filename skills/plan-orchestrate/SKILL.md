@@ -143,7 +143,7 @@ Chain composition rules:
 7. **Zero-tag steps**: if no trigger word matches, set chain to `code-reviewer` and write `no tag matched; default review-only chain` under "Chain rationale".
 8. Chain length ≤ 4 after deduplication. If exceeded, drop weakest tag (`lookup` and `docs` first).
 9. Do not pair `planner` and `architect` in an `impl` chain (token waste). Pair them only on `design` steps.
-10. Steps tagged `impl`, `refactor`, or `migration` end with a reviewer (`<lang>-reviewer` or `code-reviewer`). `test` and `build` steps are gated by their own validators (`e2e-runner` and the build resolver respectively) and do not require an additional reviewer.
+10. Steps tagged `impl`, `refactor`, or `migration` end with a **reviewer-class** agent — any of `<lang>-reviewer`, `code-reviewer`, `security-reviewer`, or `database-reviewer`. The most domain-specific reviewer wins the tail position (e.g. rule 2's `impl+security` ends with `security-reviewer`; rule 3's `impl+db` ends with `<lang>-reviewer` because `database-reviewer` already gates the migration earlier in the chain). `test` and `build` steps are gated by their own validators (`e2e-runner` and the build resolver respectively) and do not require an additional reviewer.
 
 ### Phase 3 — Compress task description
 
@@ -210,7 +210,7 @@ Append a final "Batch execution" block aggregating every step's command in order
 - [ ] Each task description begins with `[Plan: <path>#step-<id>]` and includes Acceptance (1–3 items). The `Out of scope:` clause is present only when inherited from the plan.
 - [ ] No duplicate agent in any chain after Phase 2 dedup.
 - [ ] Chain length ≤ 4.
-- [ ] Steps tagged `impl`/`refactor`/`migration` end with a reviewer (`test` and `build` are exempt — see Phase 2 rule 10).
+- [ ] Steps tagged `impl`/`refactor`/`migration` end with a reviewer-class agent (`<lang>-reviewer`, `code-reviewer`, `security-reviewer`, or `database-reviewer`). `test` and `build` are exempt — see Phase 2 rule 10.
 - [ ] Zero-tag steps emit `code-reviewer` with the rationale `no tag matched; default review-only chain`.
 - [ ] Overview table lists every step in the plan, regardless of `--scope`.
 - [ ] Per-step detail block count matches the resolved `--scope` (full plan when `--scope=all`; one block for `step:n`; range size for `range:a-b`). In overview-only mode, no per-step blocks and no Batch block are emitted.
