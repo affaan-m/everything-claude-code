@@ -132,6 +132,10 @@ function runTests() {
       readme.includes('Start with `rules/common` plus one language or framework pack you actually use.'),
       'README should steer users away from copying every rules directory'
     );
+    assert.ok(
+      readme.includes('~/.claude/rules/ecc/'),
+      'README should steer plugin-path rules into an ECC-owned namespace'
+    );
   })) passed++; else failed++;
 
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);

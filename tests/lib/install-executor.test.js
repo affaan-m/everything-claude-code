@@ -79,9 +79,11 @@ function writeManifestSourceFixture(root) {
         kind: 'fixture',
         description: 'Fixture module',
         paths: [
+          'rules',
           'src',
           'standalone.txt',
           'missing.txt',
+          'skills/demo',
           path.join('runtime', 'ecc', 'install-state.json'),
           '.claude-plugin',
         ],
@@ -107,6 +109,8 @@ function writeManifestSourceFixture(root) {
   writeFile(root, path.join('src', 'node_modules', 'ignored.js'), 'console.log("ignored");\n');
   writeFile(root, path.join('src', '.git', 'ignored.js'), 'console.log("ignored");\n');
   writeFile(root, path.join('src', 'nested', 'ecc-install-state.json'), '{}\n');
+  writeFile(root, path.join('rules', 'common', 'coding-style.md'), '# Common\n');
+  writeFile(root, path.join('skills', 'demo', 'SKILL.md'), '# Demo\n');
   writeFile(root, 'standalone.txt', 'standalone\n');
   writeFile(root, path.join('runtime', 'ecc', 'install-state.json'), '{}\n');
   writeJson(root, path.join('.claude-plugin', 'plugin.json'), { name: 'fixture' });
@@ -187,6 +191,35 @@ function runTests() {
       assert.strictEqual(plan.statePreview.request.legacyMode, true);
       assert.strictEqual(plan.statePreview.source.repoVersion, '9.8.7');
       assert.strictEqual(plan.statePreview.source.manifestVersion, 1);
+    } finally {
+      cleanup(sourceRoot);
+      cleanup(homeDir);
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('plans Claude legacy rules under the default ECC-managed rules directory', () => {
+    const sourceRoot = createTempDir('install-executor-source-');
+    const homeDir = createTempDir('install-executor-home-');
+    const projectRoot = createTempDir('install-executor-project-');
+    try {
+      writeLegacySourceFixture(sourceRoot);
+      writeFile(homeDir, path.join('.claude', 'rules', 'common', 'coding-style.md'), '# User custom rule\n');
+
+      const plan = createLegacyInstallPlan({
+        sourceRoot,
+        homeDir,
+        projectRoot,
+        target: 'claude',
+        languages: ['typescript'],
+      });
+
+      const managedRulesDir = path.join(homeDir, '.claude', 'rules', 'ecc');
+      assert.strictEqual(plan.installRoot, managedRulesDir);
+      assert.ok(operationFor(plan, path.join('.claude', 'rules', 'ecc', 'common', 'coding-style.md')));
+      assert.ok(operationFor(plan, path.join('.claude', 'rules', 'ecc', 'typescript', 'testing.md')));
+      assert.ok(!operationFor(plan, path.join('.claude', 'rules', 'common', 'coding-style.md')));
+      assert.ok(!plan.warnings.some(warning => warning.includes('files may be overwritten')));
     } finally {
       cleanup(sourceRoot);
       cleanup(homeDir);
@@ -307,6 +340,8 @@ function runTests() {
       ));
       assert.ok(normalizedSources.includes('src/app.js'));
       assert.ok(normalizedSources.includes('src/nested/feature.js'));
+      assert.ok(normalizedSources.includes('rules/common/coding-style.md'));
+      assert.ok(normalizedSources.includes('skills/demo/SKILL.md'));
       assert.ok(normalizedSources.includes('standalone.txt'));
       assert.ok(normalizedSources.includes('.claude-plugin/plugin.json'));
       assert.ok(!normalizedSources.includes('missing.txt'));
@@ -317,6 +352,14 @@ function runTests() {
       assert.ok(plan.operations.some(operation => (
         operation.sourceRelativePath === path.join('.claude-plugin', 'plugin.json')
         && operation.destinationPath === path.join(homeDir, '.claude', 'plugin.json')
+      )));
+      assert.ok(plan.operations.some(operation => (
+        operation.sourceRelativePath === path.join('rules', 'common', 'coding-style.md')
+        && operation.destinationPath === path.join(homeDir, '.claude', 'rules', 'ecc', 'common', 'coding-style.md')
+      )));
+      assert.ok(plan.operations.some(operation => (
+        operation.sourceRelativePath === path.join('skills', 'demo', 'SKILL.md')
+        && operation.destinationPath === path.join(homeDir, '.claude', 'skills', 'ecc', 'demo', 'SKILL.md')
       )));
       assert.deepStrictEqual(plan.warnings, ['fixture warning']);
       assert.strictEqual(plan.statePreview.request.profile, 'minimal');
@@ -369,6 +412,8 @@ function runTests() {
       const applied = applyInstallPlan(plan);
 
       assert.strictEqual(applied.applied, true);
+      assert.ok(fs.existsSync(path.join(homeDir, '.claude', 'rules', 'ecc', 'common', 'coding-style.md')));
+      assert.ok(fs.existsSync(path.join(homeDir, '.claude', 'skills', 'ecc', 'demo', 'SKILL.md')));
       assert.ok(fs.existsSync(path.join(homeDir, '.claude', 'src', 'app.js')));
       assert.ok(fs.existsSync(path.join(homeDir, '.claude', 'standalone.txt')));
       assert.ok(fs.existsSync(path.join(homeDir, '.claude', 'plugin.json')));

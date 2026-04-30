@@ -245,7 +245,7 @@ This is intentional. Anthropic marketplace/plugin installs are keyed by a canoni
 >
 > If you already installed ECC via `/plugin install`, **do not run `./install.sh --profile full`, `.\install.ps1 --profile full`, or `npx ecc-install --profile full` afterward**. The plugin already loads ECC skills, commands, and hooks. Running the full installer after a plugin install copies those same surfaces into your user directories and can create duplicate skills plus duplicate runtime behavior.
 >
-> For plugin installs, manually copy only the `rules/` directories you want. Start with `rules/common` plus one language or framework pack you actually use. Do not copy every rules directory unless you explicitly want all of that context in Claude.
+> For plugin installs, manually copy only the `rules/` directories you want under `~/.claude/rules/ecc/`. Start with `rules/common` plus one language or framework pack you actually use. Do not copy every rules directory unless you explicitly want all of that context in Claude.
 >
 > Use the full installer only when you are doing a fully manual ECC install instead of the plugin path.
 >
@@ -259,10 +259,10 @@ cd everything-claude-code
 # Install dependencies (pick your package manager)
 npm install        # or: pnpm install | yarn install | bun install
 
-# Plugin install path: copy only rules
-mkdir -p ~/.claude/rules
-cp -R rules/common ~/.claude/rules/
-cp -R rules/typescript ~/.claude/rules/
+# Plugin install path: copy only ECC rules into an ECC-owned namespace
+mkdir -p ~/.claude/rules/ecc
+cp -R rules/common ~/.claude/rules/ecc/
+cp -R rules/typescript ~/.claude/rules/ecc/
 
 # Fully manual ECC install path (use this instead of /plugin install)
 # ./install.sh --profile full
@@ -271,10 +271,10 @@ cp -R rules/typescript ~/.claude/rules/
 ```powershell
 # Windows PowerShell
 
-# Plugin install path: copy only rules
-New-Item -ItemType Directory -Force -Path "$HOME/.claude/rules" | Out-Null
-Copy-Item -Recurse rules/common "$HOME/.claude/rules/"
-Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
+# Plugin install path: copy only ECC rules into an ECC-owned namespace
+New-Item -ItemType Directory -Force -Path "$HOME/.claude/rules/ecc" | Out-Null
+Copy-Item -Recurse rules/common "$HOME/.claude/rules/ecc/"
+Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/ecc/"
 
 # Fully manual ECC install path (use this instead of /plugin install)
 # .\install.ps1 --profile full
@@ -303,7 +303,7 @@ If you choose this path, stop there. Do not also run `/plugin install`.
 
 If ECC feels duplicated, intrusive, or broken, do not keep reinstalling it on top of itself.
 
-- **Plugin path:** remove the plugin from Claude Code, then delete the specific rule folders you manually copied under `~/.claude/rules/`.
+- **Plugin path:** remove the plugin from Claude Code, then delete the specific rule folders you manually copied under `~/.claude/rules/ecc/`.
 - **Manual installer / CLI path:** from the repo root, preview removal first:
 
 ```bash
@@ -574,7 +574,7 @@ everything-claude-code/
 |   |-- verify.md           # /verify - Prefer the verification-loop skill
 |   |-- orchestrate.md      # /orchestrate - Prefer dmux-workflows or multi-workflow
 |
-|-- rules/            # Always-follow guidelines (copy to ~/.claude/rules/)
+|-- rules/            # Always-follow guidelines (copy to ~/.claude/rules/ecc/)
 |   |-- README.md            # Structure overview and installation guide
 |   |-- common/              # Language-agnostic principles
 |   |   |-- coding-style.md    # Immutability, file organization
@@ -791,17 +791,17 @@ This gives you instant access to all commands, agents, skills, and hooks.
 > git clone https://github.com/affaan-m/everything-claude-code.git
 >
 > # Option A: User-level rules (applies to all projects)
-> mkdir -p ~/.claude/rules
-> cp -r everything-claude-code/rules/common ~/.claude/rules/
-> cp -r everything-claude-code/rules/typescript ~/.claude/rules/   # pick your stack
-> cp -r everything-claude-code/rules/python ~/.claude/rules/
-> cp -r everything-claude-code/rules/golang ~/.claude/rules/
-> cp -r everything-claude-code/rules/php ~/.claude/rules/
+> mkdir -p ~/.claude/rules/ecc
+> cp -r everything-claude-code/rules/common ~/.claude/rules/ecc/
+> cp -r everything-claude-code/rules/typescript ~/.claude/rules/ecc/   # pick your stack
+> cp -r everything-claude-code/rules/python ~/.claude/rules/ecc/
+> cp -r everything-claude-code/rules/golang ~/.claude/rules/ecc/
+> cp -r everything-claude-code/rules/php ~/.claude/rules/ecc/
 >
 > # Option B: Project-level rules (applies to current project only)
-> mkdir -p .claude/rules
-> cp -r everything-claude-code/rules/common .claude/rules/
-> cp -r everything-claude-code/rules/typescript .claude/rules/     # pick your stack
+> mkdir -p .claude/rules/ecc
+> cp -r everything-claude-code/rules/common .claude/rules/ecc/
+> cp -r everything-claude-code/rules/typescript .claude/rules/ecc/     # pick your stack
 > ```
 
 ---
@@ -818,21 +818,22 @@ git clone https://github.com/affaan-m/everything-claude-code.git
 cp everything-claude-code/agents/*.md ~/.claude/agents/
 
 # Copy rules directories (common + language-specific)
-mkdir -p ~/.claude/rules
-cp -r everything-claude-code/rules/common ~/.claude/rules/
-cp -r everything-claude-code/rules/typescript ~/.claude/rules/   # pick your stack
-cp -r everything-claude-code/rules/python ~/.claude/rules/
-cp -r everything-claude-code/rules/golang ~/.claude/rules/
-cp -r everything-claude-code/rules/php ~/.claude/rules/
+mkdir -p ~/.claude/rules/ecc
+cp -r everything-claude-code/rules/common ~/.claude/rules/ecc/
+cp -r everything-claude-code/rules/typescript ~/.claude/rules/ecc/   # pick your stack
+cp -r everything-claude-code/rules/python ~/.claude/rules/ecc/
+cp -r everything-claude-code/rules/golang ~/.claude/rules/ecc/
+cp -r everything-claude-code/rules/php ~/.claude/rules/ecc/
 
 # Copy skills first (primary workflow surface)
 # Recommended (new users): core/general skills only
-cp -r everything-claude-code/.agents/skills/* ~/.claude/skills/
-cp -r everything-claude-code/skills/search-first ~/.claude/skills/
+mkdir -p ~/.claude/skills/ecc
+cp -r everything-claude-code/.agents/skills/* ~/.claude/skills/ecc/
+cp -r everything-claude-code/skills/search-first ~/.claude/skills/ecc/
 
 # Optional: add niche/framework-specific skills only when needed
 # for s in django-patterns django-tdd laravel-patterns springboot-patterns; do
-# cp -r everything-claude-code/skills/$s ~/.claude/skills/
+# cp -r everything-claude-code/skills/$s ~/.claude/skills/ecc/
 # done
 
 # Optional: keep maintained slash-command compatibility during migration
@@ -1059,8 +1060,8 @@ Yes. Use Option 2 (manual installation) and copy only what you need:
 cp everything-claude-code/agents/*.md ~/.claude/agents/
 
 # Just rules
-mkdir -p ~/.claude/rules/
-cp -r everything-claude-code/rules/common ~/.claude/rules/
+mkdir -p ~/.claude/rules/ecc/
+cp -r everything-claude-code/rules/common ~/.claude/rules/ecc/
 ```
 
 Each component is fully independent.

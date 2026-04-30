@@ -14,6 +14,7 @@ const {
 const { getInstallTargetAdapter } = require('./install-targets/registry');
 
 const LANGUAGE_NAME_PATTERN = /^[a-zA-Z0-9_-]+$/;
+const CLAUDE_ECC_NAMESPACE = 'ecc';
 const EXCLUDED_GENERATED_SOURCE_SUFFIXES = [
   '/ecc-install-state.json',
   '/ecc/install-state.json',
@@ -264,7 +265,7 @@ function isDirectoryNonEmpty(dirPath) {
 function planClaudeLegacyInstall(context) {
   const adapter = getInstallTargetAdapter('claude');
   const targetRoot = adapter.resolveRoot({ homeDir: context.homeDir });
-  const rulesDir = context.claudeRulesDir || path.join(targetRoot, 'rules');
+  const rulesDir = context.claudeRulesDir || path.join(targetRoot, 'rules', CLAUDE_ECC_NAMESPACE);
   const installStatePath = adapter.getInstallStatePath({ homeDir: context.homeDir });
   const operations = [];
   const warnings = [];
