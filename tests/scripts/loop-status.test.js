@@ -9,7 +9,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'loop-status.js');
-const { analyzeTranscript, buildStatus, parseArgs } = require('../../scripts/loop-status');
+const { analyzeTranscript, buildStatus, getStatusExitCode, parseArgs } = require('../../scripts/loop-status');
 const NOW = '2026-04-30T10:00:00.000Z';
 
 function run(args = [], options = {}) {
@@ -400,6 +400,7 @@ function runTests() {
     const options = parseArgs([
       'node',
       'scripts/loop-status.js',
+      '--exit-code',
       '--watch',
       '--watch-count',
       '2',
@@ -407,9 +408,49 @@ function runTests() {
       '0.01',
     ]);
 
+    assert.strictEqual(options.exitCode, true);
     assert.strictEqual(options.watch, true);
     assert.strictEqual(options.watchCount, 2);
     assert.strictEqual(options.watchIntervalSeconds, 0.01);
+  })) passed++; else failed++;
+
+  if (test('exit-code mode returns 2 when attention signals are present', () => {
+    const homeDir = createTempHome();
+
+    try {
+      writeTranscript(homeDir, '-Users-affoon-project-exit-code', 'session-exit-code.jsonl', [
+        toolUse('2026-04-30T09:10:00.000Z', 'session-exit-code', 'toolu_exit_bash', 'Bash', {
+          command: 'pytest tests/integration/test_pipeline.py',
+        }),
+      ]);
+
+      const result = run(['--home', homeDir, '--now', NOW, '--json', '--exit-code']);
+
+      assert.strictEqual(result.code, 2, result.stderr);
+      const payload = parsePayload(result.stdout);
+      assert.strictEqual(payload.sessions[0].state, 'attention');
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
+  if (test('exit-code mode returns 1 for scan errors without attention signals', () => {
+    const missingTranscript = path.join(os.tmpdir(), 'ecc-loop-status-missing.jsonl');
+    const result = run(['--transcript', missingTranscript, '--now', NOW, '--json', '--exit-code']);
+
+    assert.strictEqual(result.code, 1, result.stderr);
+    const payload = parsePayload(result.stdout);
+    assert.strictEqual(payload.sessions.length, 0);
+    assert.strictEqual(payload.errors.length, 1);
+  })) passed++; else failed++;
+
+  if (test('getStatusExitCode prioritizes attention signals over scan errors', () => {
+    const payload = {
+      errors: [{ message: 'unreadable' }],
+      sessions: [{ state: 'attention' }],
+    };
+
+    assert.strictEqual(getStatusExitCode(payload), 2);
   })) passed++; else failed++;
 
   if (test('watch mode emits repeated JSON status frames', () => {
@@ -443,6 +484,39 @@ function runTests() {
       assert.strictEqual(frames[1].schemaVersion, 'ecc.loop-status.v1');
       assert.strictEqual(frames[0].sessions[0].sessionId, 'session-watch');
       assert.strictEqual(frames[1].sessions[0].sessionId, 'session-watch');
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
+  if (test('watch mode honors exit-code after bounded refreshes', () => {
+    const homeDir = createTempHome();
+
+    try {
+      writeTranscript(homeDir, '-Users-affoon-project-watch-exit', 'session-watch-exit.jsonl', [
+        toolUse('2026-04-30T09:00:00.000Z', 'session-watch-exit', 'toolu_watch_exit', 'ScheduleWakeup', {
+          delaySeconds: 300,
+          reason: 'Loop checkpoint',
+        }),
+      ]);
+
+      const result = run([
+        '--home',
+        homeDir,
+        '--now',
+        NOW,
+        '--json',
+        '--watch',
+        '--watch-count',
+        '1',
+        '--watch-interval-seconds',
+        '0.01',
+        '--exit-code',
+      ]);
+
+      assert.strictEqual(result.code, 2, result.stderr);
+      const frame = JSON.parse(result.stdout.trim());
+      assert.strictEqual(frame.sessions[0].state, 'attention');
     } finally {
       fs.rmSync(homeDir, { recursive: true, force: true });
     }

@@ -24,6 +24,7 @@ function usage() {
     '  --bash-timeout-seconds <n>     Age before a pending Bash call is stale (default: 1800)',
     '  --wake-grace-multiplier <n>    ScheduleWakeup grace multiplier (default: 2)',
     '  --now <time>                   Override current time (ISO, epoch ms, or "now")',
+    '  --exit-code                    Exit 2 on attention signals, 1 on scan errors',
     '  --watch                        Refresh status until interrupted',
     '  --watch-count <n>              Stop after n watch refreshes',
     '  --watch-interval-seconds <n>   Seconds between watch refreshes (default: 5)',
@@ -62,6 +63,7 @@ function parseArgs(argv) {
   const args = argv.slice(2);
   const options = {
     bashTimeoutSeconds: DEFAULT_BASH_TIMEOUT_SECONDS,
+    exitCode: false,
     home: null,
     json: false,
     limit: DEFAULT_LIMIT,
@@ -99,6 +101,8 @@ function parseArgs(argv) {
     } else if (arg === '--now') {
       options.now = readValue(args, index, arg);
       index += 1;
+    } else if (arg === '--exit-code') {
+      options.exitCode = true;
     } else if (arg === '--watch') {
       options.watch = true;
     } else if (arg === '--watch-count') {
@@ -119,6 +123,7 @@ function normalizeOptions(options = {}) {
   return {
     ...options,
     bashTimeoutSeconds: options.bashTimeoutSeconds ?? DEFAULT_BASH_TIMEOUT_SECONDS,
+    exitCode: Boolean(options.exitCode),
     limit: options.limit ?? DEFAULT_LIMIT,
     transcriptPaths: options.transcriptPaths || [],
     watch: Boolean(options.watch),
@@ -606,15 +611,28 @@ function writeStatus(payload, options) {
   }
 }
 
+function getStatusExitCode(payload) {
+  if (payload.sessions.some(session => session.state === 'attention')) {
+    return 2;
+  }
+  if (payload.errors.length > 0) {
+    return 1;
+  }
+  return 0;
+}
+
 async function runWatch(options) {
   const normalizedOptions = normalizeOptions(options);
   let iteration = 0;
+  let exitCode = 0;
 
   while (normalizedOptions.watchCount === null || iteration < normalizedOptions.watchCount) {
     if (iteration > 0 && !normalizedOptions.json) {
       console.log('');
     }
-    writeStatus(buildStatus(normalizedOptions), normalizedOptions);
+    const payload = buildStatus(normalizedOptions);
+    writeStatus(payload, normalizedOptions);
+    exitCode = Math.max(exitCode, getStatusExitCode(payload));
     iteration += 1;
 
     if (normalizedOptions.watchCount !== null && iteration >= normalizedOptions.watchCount) {
@@ -623,6 +641,8 @@ async function runWatch(options) {
 
     await sleep(normalizedOptions.watchIntervalSeconds * 1000);
   }
+
+  return exitCode;
 }
 
 async function main() {
@@ -633,11 +653,18 @@ async function main() {
   }
 
   if (options.watch) {
-    await runWatch(options);
+    const exitCode = await runWatch(options);
+    if (options.exitCode) {
+      process.exitCode = exitCode;
+    }
     return;
   }
 
-  writeStatus(buildStatus(options), options);
+  const payload = buildStatus(options);
+  writeStatus(payload, options);
+  if (options.exitCode) {
+    process.exitCode = getStatusExitCode(payload);
+  }
 }
 
 if (require.main === module) {
@@ -652,6 +679,7 @@ module.exports = {
   buildStatus,
   extractToolResultIds,
   extractToolUses,
+  getStatusExitCode,
   parseArgs,
   runWatch,
 };
