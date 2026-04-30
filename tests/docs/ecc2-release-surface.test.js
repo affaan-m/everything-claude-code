@@ -108,7 +108,9 @@ test('business launch copy stays aligned with the rc.1 public surface', () => {
     'business launch copy should include the public repo URL'
   );
   assert.ok(
-    source.includes('docs/releases/2.0.0-rc.1/release-notes.md'),
+    source.includes(
+      'https://github.com/affaan-m/everything-claude-code/blob/main/docs/releases/2.0.0-rc.1/release-notes.md'
+    ),
     'business launch copy should link to the rc.1 release notes'
   );
   assert.ok(!source.includes('<repo-link>'), 'business launch copy should not contain repo placeholders');
