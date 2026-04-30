@@ -133,10 +133,10 @@ Options:
 選択された各スキルについて、正しいソースルートからスキルディレクトリ全体をコピーします：
 
 ```bash
-# ステップ 2a で選択したコアスキルは .agents/skills/ 配下にあります
+# コアスキルは .agents/skills/ 配下にあります
 cp -R "$ECC_ROOT/.agents/skills/<skill-name>" "$TARGET/skills/"
 
-# ステップ 2b/2c で選択したニッチスキルは skills/ 配下にあります
+# ニッチスキルは skills/ 配下にあります
 cp -R "$ECC_ROOT/skills/<skill-name>" "$TARGET/skills/"
 ```
 

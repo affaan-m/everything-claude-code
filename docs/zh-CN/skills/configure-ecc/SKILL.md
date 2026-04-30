@@ -202,10 +202,10 @@ mkdir -p $TARGET/skills $TARGET/rules
 对于每个选定的技能，请从正确的源目录复制整个技能目录：
 
 ```bash
-# 步骤 2a 选中的核心技能位于 .agents/skills/
+# 核心技能位于 .agents/skills/
 cp -R "$ECC_ROOT/.agents/skills/<skill-name>" "$TARGET/skills/"
 
-# 步骤 2b/2c 选中的细分技能位于 skills/
+# 细分技能位于 skills/
 cp -R "$ECC_ROOT/skills/<skill-name>" "$TARGET/skills/"
 ```
 

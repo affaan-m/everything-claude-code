@@ -198,10 +198,10 @@ For each selected category, print the full list of skills below and ask the user
 For each selected skill, copy the entire skill directory from the correct source root:
 
 ```bash
-# Core skills selected from Step 2a live under .agents/skills/
+# Core skills live under .agents/skills/
 cp -R "$ECC_ROOT/.agents/skills/<skill-name>" "$TARGET/skills/"
 
-# Niche skills selected from Step 2b/2c live under skills/
+# Niche skills live under skills/
 cp -R "$ECC_ROOT/skills/<skill-name>" "$TARGET/skills/"
 ```
 

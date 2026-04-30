@@ -27,12 +27,16 @@ function test(name, fn) {
   }
 }
 
+function readConfigureEccDoc(relativePath) {
+  return fs.readFileSync(path.join(repoRoot, relativePath), 'utf8');
+}
+
 console.log('\n=== Testing configure-ecc install path guidance ===\n');
 
 for (const relativePath of configureEccDocs) {
-  const content = fs.readFileSync(path.join(repoRoot, relativePath), 'utf8');
-
   test(`${relativePath} separates core and niche skill source roots`, () => {
+    const content = readConfigureEccDoc(relativePath);
+
     assert.ok(
       content.includes('$ECC_ROOT/.agents/skills/<skill-name>'),
       'Expected configure-ecc to document the core skill source root'
@@ -44,6 +48,8 @@ for (const relativePath of configureEccDocs) {
   });
 
   test(`${relativePath} documents defensive copy form for trailing slash sources`, () => {
+    const content = readConfigureEccDoc(relativePath);
+
     assert.ok(
       content.includes('${src%/}'),
       'Expected configure-ecc to strip trailing slash before copying'
