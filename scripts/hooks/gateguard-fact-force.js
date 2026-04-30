@@ -38,7 +38,6 @@ const READ_HEARTBEAT_MS = 60 * 1000;
 const MAX_CHECKED_ENTRIES = 500;
 const MAX_SESSION_KEYS = 50;
 const ROUTINE_BASH_SESSION_KEY = '__bash_session__';
-const LEGACY_DISABLE_VALUES = new Set(['1', 'true', 'yes', 'on']);
 const ECC_DISABLE_VALUES = new Set(['0', 'false', 'off', 'disabled', 'disable']);
 
 const DESTRUCTIVE_BASH = /\b(rm\s+-rf|git\s+reset\s+--hard|git\s+checkout\s+--|git\s+clean\s+-f|drop\s+table|delete\s+from|truncate|git\s+push\s+--force(?!-with-lease)|git\s+commit\s+--amend|dd\s+if=)\b/i;
@@ -50,7 +49,7 @@ function normalizeEnvValue(value) {
 }
 
 function isGateGuardDisabled() {
-  if (LEGACY_DISABLE_VALUES.has(normalizeEnvValue(process.env.GATEGUARD_DISABLED))) {
+  if (normalizeEnvValue(process.env.GATEGUARD_DISABLED) === '1') {
     return true;
   }
 
@@ -376,13 +375,14 @@ function withRecoveryHint(message) {
 
 // --- Deny helper ---
 
-function denyResult(reason) {
+function denyResult(reason, options = {}) {
+  const includeRecoveryHint = options.includeRecoveryHint !== false;
   return {
     stdout: JSON.stringify({
       hookSpecificOutput: {
         hookEventName: 'PreToolUse',
         permissionDecision: 'deny',
-        permissionDecisionReason: withRecoveryHint(reason)
+        permissionDecisionReason: includeRecoveryHint ? withRecoveryHint(reason) : reason
       }
     }),
     exitCode: 0
@@ -462,7 +462,7 @@ function run(rawInput) {
         if (!markChecked(key)) {
           return allowWithStateWarning();
         }
-        return denyResult(destructiveBashMsg());
+        return denyResult(destructiveBashMsg(), { includeRecoveryHint: false });
       }
       return rawInput; // allow retry after facts presented
     }

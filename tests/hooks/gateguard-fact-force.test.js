@@ -440,7 +440,21 @@ function runTests() {
     assert.ok(!fs.existsSync(stateFile), 'disabled gate should not create or mutate gate state');
   })) passed++; else failed++;
 
-  // --- Test 12: denial messages show an escape hatch ---
+  // --- Test 12: legacy GATEGUARD_DISABLED compatibility is scoped to =1 ---
+  clearState();
+  if (test('does not treat GATEGUARD_DISABLED=true as a disable flag', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'npm test' }
+    };
+    const result = runBashHook(input, { GATEGUARD_DISABLED: 'true' });
+    const output = parseOutput(result.stdout);
+
+    assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny');
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('current user request'));
+  })) passed++; else failed++;
+
+  // --- Test 13: denial messages show an escape hatch ---
   clearState();
   if (test('denial messages include direct recovery escape hatch', () => {
     const input = {
@@ -457,7 +471,23 @@ function runTests() {
       'denial reason should mention the existing hook-id disable control');
   })) passed++; else failed++;
 
-  // --- Test 13: MultiEdit gates first unchecked file ---
+  // --- Test 14: destructive Bash denials do not advertise the recovery escape hatch ---
+  clearState();
+  if (test('destructive Bash denials omit recovery escape hatch', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'rm -rf /tmp/demo' }
+    };
+    const result = runBashHook(input);
+    const output = parseOutput(result.stdout);
+
+    assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny');
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('Destructive command detected'));
+    assert.ok(!output.hookSpecificOutput.permissionDecisionReason.includes('ECC_GATEGUARD=off'),
+      'destructive gate should not advertise disabling GateGuard');
+  })) passed++; else failed++;
+
+  // --- Test 15: MultiEdit gates first unchecked file ---
   clearState();
   if (test('denies first MultiEdit with unchecked file', () => {
     const input = {
