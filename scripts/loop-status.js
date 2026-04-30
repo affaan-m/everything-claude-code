@@ -634,12 +634,20 @@ function atomicWriteJson(filePath, payload) {
 
 function getSnapshotPath(outputDir, session, usedNames) {
   const baseName = sanitizeSnapshotName(session.sessionId);
-  let fileName = `${baseName}.json`;
-  if (usedNames.has(fileName)) {
-    fileName = `${baseName}-${hashString(session.transcriptPath || session.sessionId).slice(0, 8)}.json`;
+  const hashSuffix = hashString(session.transcriptPath || session.sessionId).slice(0, 8);
+  let attempt = 0;
+
+  while (attempt < 1000) {
+    const suffix = attempt === 0 ? '' : `-${hashSuffix}${attempt === 1 ? '' : `-${attempt}`}`;
+    const fileName = `${baseName}${suffix}.json`;
+    if (!usedNames.has(fileName)) {
+      usedNames.add(fileName);
+      return path.join(outputDir, fileName);
+    }
+    attempt += 1;
   }
-  usedNames.add(fileName);
-  return path.join(outputDir, fileName);
+
+  throw new Error(`Could not allocate a snapshot filename for session ${session.sessionId}`);
 }
 
 function writeStatusSnapshots(payload, writeDir) {
@@ -685,6 +693,19 @@ function writeStatusSnapshots(payload, writeDir) {
   };
 }
 
+function tryWriteStatusSnapshots(payload, options) {
+  if (!options.writeDir) {
+    return null;
+  }
+
+  try {
+    return writeStatusSnapshots(payload, options.writeDir);
+  } catch (error) {
+    console.error(`[loop-status] WARNING: could not write status snapshots: ${error.message}`);
+    return null;
+  }
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -717,7 +738,7 @@ async function runWatch(options) {
       console.log('');
     }
     const payload = buildStatus(normalizedOptions);
-    writeStatusSnapshots(payload, normalizedOptions.writeDir);
+    tryWriteStatusSnapshots(payload, normalizedOptions);
     writeStatus(payload, normalizedOptions);
     exitCode = Math.max(exitCode, getStatusExitCode(payload));
     iteration += 1;
@@ -748,7 +769,7 @@ async function main() {
   }
 
   const payload = buildStatus(options);
-  writeStatusSnapshots(payload, options.writeDir);
+  tryWriteStatusSnapshots(payload, options);
   writeStatus(payload, options);
   if (options.exitCode) {
     process.exitCode = getStatusExitCode(payload);
@@ -770,5 +791,6 @@ module.exports = {
   getStatusExitCode,
   parseArgs,
   runWatch,
+  tryWriteStatusSnapshots,
   writeStatusSnapshots,
 };

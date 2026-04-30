@@ -594,6 +594,35 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (test('write-dir failures do not suppress normal stdout', () => {
+    const homeDir = createTempHome();
+
+    try {
+      const blockedPath = path.join(homeDir, 'snapshot-target-is-a-file');
+      fs.writeFileSync(blockedPath, 'not a directory\n', 'utf8');
+      writeTranscript(homeDir, '-Users-affoon-project-write-error', 'session-write-error.jsonl', [
+        assistantMessage('2026-04-30T09:55:00.000Z', 'session-write-error', 'Loop checkpoint.'),
+      ]);
+
+      const result = run([
+        '--home',
+        homeDir,
+        '--now',
+        NOW,
+        '--json',
+        '--write-dir',
+        blockedPath,
+      ]);
+
+      assert.strictEqual(result.code, 0, result.stderr);
+      const payload = parsePayload(result.stdout);
+      assert.strictEqual(payload.schemaVersion, 'ecc.loop-status.v1');
+      assert.strictEqual(payload.sessions[0].sessionId, 'session-write-error');
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
 }
