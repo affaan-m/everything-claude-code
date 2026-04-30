@@ -158,15 +158,18 @@ function parseArgs(argv) {
     help: false,
   };
 
+  if (args.includes('--help') || args.includes('-h')) {
+    parsed.help = true;
+    return parsed;
+  }
+
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
 
-    if (arg === '--help' || arg === '-h') {
-      parsed.help = true;
-    } else if (arg === '--json') {
+    if (arg === '--json') {
       parsed.json = true;
     } else if (arg === '--target') {
-      if (!args[index + 1]) {
+      if (!args[index + 1] || args[index + 1].startsWith('-')) {
         throw new Error('Missing value for --target');
       }
       parsed.target = args[index + 1];

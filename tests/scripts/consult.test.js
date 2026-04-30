@@ -48,6 +48,13 @@ function runTests() {
     assert.match(result.stdout, /node scripts\/consult\.js "security reviews"/);
   })) passed++; else failed++;
 
+  if (test('shows help even when other flags would be invalid', () => {
+    const result = run(['--help', '--target', 'not-a-target']);
+
+    assert.strictEqual(result.status, 0, result.stderr);
+    assert.match(result.stdout, /Consult ECC install components/);
+  })) passed++; else failed++;
+
   if (test('recommends security components and profile for a natural language query', () => {
     const result = run(['security', 'reviews', '--json']);
 
@@ -106,6 +113,13 @@ function runTests() {
 
     assert.strictEqual(result.status, 1);
     assert.match(result.stderr, /Unknown install target/);
+  })) passed++; else failed++;
+
+  if (test('rejects flag-like target values as missing target names', () => {
+    const result = run(['security', '--target', '--json']);
+
+    assert.strictEqual(result.status, 1);
+    assert.match(result.stderr, /Missing value for --target/);
   })) passed++; else failed++;
 
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
