@@ -199,10 +199,20 @@ mkdir -p $TARGET/skills $TARGET/rules
 
 ### 2d: 执行安装
 
-对于每个选定的技能，复制整个技能目录：
+对于每个选定的技能，请从正确的源目录复制整个技能目录：
 
 ```bash
-cp -r $ECC_ROOT/skills/<skill-name> $TARGET/skills/
+# 步骤 2a 选中的核心技能位于 .agents/skills/
+cp -R "$ECC_ROOT/.agents/skills/<skill-name>" "$TARGET/skills/"
+
+# 步骤 2b/2c 选中的细分技能位于 skills/
+cp -R "$ECC_ROOT/skills/<skill-name>" "$TARGET/skills/"
+```
+
+遍历 glob 得到的源目录时，不要把带 trailing slash 的源路径直接传给 `cp`。显式使用目录名作为目标名：
+
+```bash
+cp -R "${src%/}" "$TARGET/skills/$(basename "${src%/}")"
 ```
 
 注意：`continuous-learning` 和 `continuous-learning-v2` 有额外的文件（config.json、钩子、脚本）——确保复制整个目录，而不仅仅是 SKILL.md。

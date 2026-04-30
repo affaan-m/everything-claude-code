@@ -195,9 +195,20 @@ For each selected category, print the full list of skills below and ask the user
 
 ### 2d: Execute Installation
 
-For each selected skill, copy the entire skill directory:
+For each selected skill, copy the entire skill directory from the correct source root:
+
 ```bash
-cp -r $ECC_ROOT/skills/<skill-name> $TARGET/skills/
+# Core skills selected from Step 2a live under .agents/skills/
+cp -R "$ECC_ROOT/.agents/skills/<skill-name>" "$TARGET/skills/"
+
+# Niche skills selected from Step 2b/2c live under skills/
+cp -R "$ECC_ROOT/skills/<skill-name>" "$TARGET/skills/"
+```
+
+When iterating over globbed source directories, never pass a trailing-slash source directly to `cp`. Use the directory path as the destination name explicitly:
+
+```bash
+cp -R "${src%/}" "$TARGET/skills/$(basename "${src%/}")"
 ```
 
 Note: `continuous-learning` and `continuous-learning-v2` have extra files (config.json, hooks, scripts) — ensure the entire directory is copied, not just SKILL.md.

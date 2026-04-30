@@ -130,9 +130,20 @@ Options:
 
 ### 2c: インストールの実行
 
-選択された各スキルについて、スキルディレクトリ全体をコピーします：
+選択された各スキルについて、正しいソースルートからスキルディレクトリ全体をコピーします：
+
 ```bash
-cp -r $ECC_ROOT/skills/<skill-name> $TARGET/skills/
+# ステップ 2a で選択したコアスキルは .agents/skills/ 配下にあります
+cp -R "$ECC_ROOT/.agents/skills/<skill-name>" "$TARGET/skills/"
+
+# ステップ 2b/2c で選択したニッチスキルは skills/ 配下にあります
+cp -R "$ECC_ROOT/skills/<skill-name>" "$TARGET/skills/"
+```
+
+glob で取得したソースディレクトリを処理するときは、trailing slash 付きのソースをそのまま `cp` に渡さないでください。宛先名にディレクトリ名を明示します：
+
+```bash
+cp -R "${src%/}" "$TARGET/skills/$(basename "${src%/}")"
 ```
 
 注: `continuous-learning` と `continuous-learning-v2` には追加ファイル（config.json、フック、スクリプト）があります — SKILL.md だけでなく、ディレクトリ全体がコピーされることを確認してください。
