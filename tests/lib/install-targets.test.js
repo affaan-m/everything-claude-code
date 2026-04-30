@@ -172,6 +172,36 @@ function runTests() {
     );
   })) passed++; else failed++;
 
+  if (test('does not install root AGENTS.md into Cursor nested context', () => {
+    const repoRoot = path.join(__dirname, '..', '..');
+    const projectRoot = '/workspace/app';
+
+    const plan = planInstallTargetScaffold({
+      target: 'cursor',
+      repoRoot,
+      projectRoot,
+      modules: [
+        {
+          id: 'agents-core',
+          paths: ['.agents', 'agents', 'AGENTS.md'],
+        },
+      ],
+    });
+
+    assert.ok(
+      !plan.operations.some(operation => (
+        normalizedRelativePath(operation.sourceRelativePath) === 'AGENTS.md'
+      )),
+      'Cursor installs should not copy ECC root AGENTS.md into host project context'
+    );
+    assert.ok(
+      !plan.operations.some(operation => (
+        operation.destinationPath === path.join(projectRoot, '.cursor', 'AGENTS.md')
+      )),
+      'Cursor installs should not create .cursor/AGENTS.md'
+    );
+  })) passed++; else failed++;
+
   if (test('plans cursor platform rule files as .mdc and excludes rule README docs', () => {
     const repoRoot = path.join(__dirname, '..', '..');
     const projectRoot = '/workspace/app';
