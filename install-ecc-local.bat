@@ -33,7 +33,7 @@ color 0A
 echo ========================================================
 echo    INSTALL EVERYTHING CLAUDE CODE (PROJECT-LEVEL)
 echo ========================================================
-echo TARGET PROJECT: %TARGET_DIR%
+echo TARGET PROJECT: "%TARGET_DIR%"
 echo.
 
 :: Auto-update ECC source if it's a git repository
@@ -88,14 +88,24 @@ set "LANG=!LANG:/=!"
 
 if "!LANG!"=="" set "LANG=auto"
 
-:: Strict allowlist validation for language token
+:: Dynamic validation: Ensure the language is safe and exists
 set "VALID_LANG=0"
-for %%L in (all auto common-only typescript python golang rust cpp java csharp swift php web kotlin) do (
-    if /I "!LANG!"=="%%L" set "VALID_LANG=1"
+if /I "!LANG!"=="auto" set "VALID_LANG=1"
+if /I "!LANG!"=="all" set "VALID_LANG=1"
+if /I "!LANG!"=="common-only" set "VALID_LANG=1"
+
+if "!VALID_LANG!"=="0" (
+    :: First check safety against path traversal
+    echo(!LANG!| findstr /R /I /C:"^[a-z0-9_-][a-z0-9_-]*$" >nul
+    if not errorlevel 1 (
+        :: Then check if it actually exists in rules folder
+        if exist "%SOURCE_DIR%\rules\!LANG!\" set "VALID_LANG=1"
+    )
 )
+
 if "!VALID_LANG!"=="0" (
     color 0C
-    echo [ERROR] Unsupported language value: "!LANG!"
+    echo [ERROR] Unsupported or invalid language value: "!LANG!"
     pause
     exit /b 1
 )
@@ -172,7 +182,7 @@ if "!COPY_FAILED!"=="1" (
 echo ========================================================
 echo DONE! INSTALLATION SUCCESSFUL.
 echo ECC configuration has been copied to:
-echo %CLAUDE_DIR%
+echo "%CLAUDE_DIR%"
 echo ========================================================
 pause
 exit /b 0
