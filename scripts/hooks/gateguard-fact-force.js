@@ -39,7 +39,7 @@ const MAX_CHECKED_ENTRIES = 500;
 const MAX_SESSION_KEYS = 50;
 const ROUTINE_BASH_SESSION_KEY = '__bash_session__';
 
-const DESTRUCTIVE_BASH = /\b(rm\s+-rf|git\s+reset\s+--hard|git\s+checkout\s+--|git\s+clean\s+-f|drop\s+table|delete\s+from|truncate|git\s+push\s+--force|dd\s+if=)\b/i;
+const DESTRUCTIVE_BASH = /\b(rm\s+-rf|git\s+reset\s+--hard|git\s+checkout\s+--|git\s+clean\s+-f|drop\s+table|delete\s+from|truncate|git\s+push\s+--force(?!-with-lease)|git\s+commit\s+--amend|dd\s+if=)\b/i;
 
 // --- State management (per-session, atomic writes, bounded) ---
 

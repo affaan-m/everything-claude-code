@@ -223,6 +223,62 @@ function runTests() {
 
   // --- Test 5: denies first routine Bash, allows second ---
   clearState();
+  if (test('allows safe git push --force-with-lease without destructive gate', () => {
+    writeState({
+      checked: ['__bash_session__'],
+      last_active: Date.now()
+    });
+
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'git push --force-with-lease origin feature-branch' }
+    };
+    const result = runBashHook(input);
+    assert.strictEqual(result.code, 0, 'exit code should be 0');
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'should produce valid JSON output');
+    if (output.hookSpecificOutput) {
+      assert.notStrictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
+        'safe lease-protected force push should not be denied');
+    } else {
+      assert.strictEqual(output.tool_name, 'Bash', 'pass-through should preserve input');
+    }
+  })) passed++; else failed++;
+
+  // --- Test 6: gates amend as destructive Bash ---
+  clearState();
+  if (test('denies git commit --amend as destructive Bash', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'git commit --amend --no-edit' }
+    };
+    const result = runBashHook(input);
+    assert.strictEqual(result.code, 0, 'exit code should be 0');
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'should produce JSON output');
+    assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny');
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('Destructive'));
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('rollback'));
+  })) passed++; else failed++;
+
+  // --- Test 7: still gates plain force push as destructive Bash ---
+  clearState();
+  if (test('denies plain git push --force as destructive Bash', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'git push --force origin feature-branch' }
+    };
+    const result = runBashHook(input);
+    assert.strictEqual(result.code, 0, 'exit code should be 0');
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'should produce JSON output');
+    assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny');
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('Destructive'));
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('rollback'));
+  })) passed++; else failed++;
+
+  // --- Test 8: denies first routine Bash, allows second ---
+  clearState();
   if (test('denies first routine Bash, allows second', () => {
     const input = {
       tool_name: 'Bash',
