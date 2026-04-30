@@ -1,3 +1,7 @@
+---
+description: Run a backend-focused multi-model workflow for APIs, algorithms, data, and business logic.
+---
+
 # Backend - Backend-Focused Development
 
 Backend-focused workflow (Research → Ideation → Plan → Execute → Optimize → Review), Codex-led.

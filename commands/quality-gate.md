@@ -1,3 +1,7 @@
+---
+description: Run the ECC quality pipeline for a file or project scope and report remediation steps.
+---
+
 # Quality Gate Command
 
 Run the ECC quality pipeline on demand for a file or project scope.
