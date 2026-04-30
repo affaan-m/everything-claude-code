@@ -22,6 +22,7 @@
     "automation",
     "best-practices"
   ],
+  "mcpServers": {},
   "skills": ["./skills/"],
   "commands": ["./commands/"]
 }

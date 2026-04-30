@@ -132,6 +132,26 @@ The test `plugin.json does NOT have explicit hooks declaration` in `tests/hooks/
 
 ---
 
+## The `mcpServers` Field: Keep the Empty Opt-Out
+
+ECC keeps `.mcp.json` at the repository root for Codex plugin installs and manual MCP setup.
+Claude Code also auto-discovers plugin-root `.mcp.json` files by convention, which would bundle the same MCP servers into Claude plugin installs.
+
+Keep this field in `.claude-plugin/plugin.json`:
+
+```json
+{
+  "mcpServers": {}
+}
+```
+
+This explicit empty object prevents Claude plugin installs from auto-loading ECC's root MCP definitions.
+Without the opt-out, strict OpenAI-compatible gateways can reject plugin MCP tool names such as `mcp__plugin_everything-claude-code_github__create_pull_request_review` because they exceed 64 characters.
+
+Users who want the bundled MCP servers should configure them manually from `.mcp.json` or `mcp-configs/mcp-servers.json`.
+
+---
+
 ## Known Anti-Patterns
 
 These look correct but are rejected:
@@ -142,6 +162,7 @@ These look correct but are rejected:
 * Relying on inferred paths
 * Assuming marketplace behavior matches local validation
 * **Adding `"hooks": "./hooks/hooks.json"`** - auto-loaded by convention, causes duplicate error
+* Removing `"mcpServers": {}` - re-enables root `.mcp.json` auto-discovery for Claude plugin installs and can produce overlong MCP tool names
 
 Avoid cleverness. Be explicit.
 
@@ -170,7 +191,8 @@ Before submitting changes that touch `plugin.json`:
 1. Ensure all component fields are arrays
 2. Include a `version`
 3. Do NOT add `agents` or `hooks` fields (both are auto-loaded by convention)
-4. Run:
+4. Preserve `"mcpServers": {}` unless you are intentionally changing Claude plugin MCP bundling behavior
+5. Run:
 
 ```bash
 claude plugin validate .claude-plugin/plugin.json

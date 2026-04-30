@@ -829,6 +829,8 @@ Windows note: the Claude config directory is `%USERPROFILE%\\.claude`, not `~/cl
 
 #### Configure MCPs
 
+Claude plugin installs intentionally do not auto-enable ECC's bundled MCP server definitions. This avoids overlong plugin MCP tool names on strict third-party gateways while keeping manual MCP setup available.
+
 Copy desired MCP server definitions from `mcp-configs/mcp-servers.json` into your official Claude Code config in `~/.claude/settings.json`, or into a project-scoped `.mcp.json` if you want repo-local MCP access.
 
 If you already run your own copies of ECC-bundled MCPs, set:
