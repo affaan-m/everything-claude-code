@@ -642,6 +642,9 @@ function runTests() {
       writeTranscript(homeDir, '-Users-affoon-project-windows-name', 'con.jsonl', [
         assistantMessage('2026-04-30T09:55:00.000Z', 'con', 'Loop checkpoint.'),
       ]);
+      writeTranscript(homeDir, '-Users-affoon-project-windows-name', 'con-txt.jsonl', [
+        assistantMessage('2026-04-30T09:56:00.000Z', 'con.txt', 'Loop checkpoint.'),
+      ]);
 
       const result = run([
         '--home',
@@ -657,13 +660,17 @@ function runTests() {
 
       const indexPath = path.join(snapshotDir, 'index.json');
       const indexPayload = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
-      const snapshotName = path.basename(indexPayload.sessions[0].snapshotPath);
-      assert.strictEqual(indexPayload.sessions[0].sessionId, 'con');
-      assert.notStrictEqual(snapshotName.toLowerCase(), 'con.json');
+      assert.strictEqual(indexPayload.sessions.length, 2);
 
-      const snapshotPayload = JSON.parse(fs.readFileSync(indexPayload.sessions[0].snapshotPath, 'utf8'));
-      assert.strictEqual(snapshotPayload.schemaVersion, 'ecc.loop-status.session.v1');
-      assert.strictEqual(snapshotPayload.session.sessionId, 'con');
+      for (const sessionIndex of indexPayload.sessions) {
+        const snapshotName = path.basename(sessionIndex.snapshotPath);
+        assert.notStrictEqual(snapshotName.toLowerCase(), `${sessionIndex.sessionId}.json`);
+        assert.ok(!/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(snapshotName.split('.')[0]));
+
+        const snapshotPayload = JSON.parse(fs.readFileSync(sessionIndex.snapshotPath, 'utf8'));
+        assert.strictEqual(snapshotPayload.schemaVersion, 'ecc.loop-status.session.v1');
+        assert.strictEqual(snapshotPayload.session.sessionId, sessionIndex.sessionId);
+      }
     } finally {
       fs.rmSync(homeDir, { recursive: true, force: true });
       fs.rmSync(snapshotDir, { recursive: true, force: true });

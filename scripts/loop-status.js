@@ -626,7 +626,12 @@ function sanitizeSnapshotName(value, fallback = 'session') {
     return sanitized;
   }
   if (sanitized && isWindowsReservedBasename(sanitized)) {
-    return `${sanitized}-${hashString(raw).slice(0, 8)}`;
+    const firstDotIndex = sanitized.indexOf('.');
+    const hashSuffix = hashString(raw).slice(0, 8);
+    if (firstDotIndex === -1) {
+      return `${sanitized}-${hashSuffix}`;
+    }
+    return `${sanitized.slice(0, firstDotIndex)}-${hashSuffix}${sanitized.slice(firstDotIndex)}`;
   }
 
   const prefix = sanitized ? sanitized.slice(0, 48).replace(/[._-]+$/g, '') : fallback;
