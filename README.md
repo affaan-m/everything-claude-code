@@ -1133,7 +1133,7 @@ These are not bundled with ECC and are not audited by this repo, but they are wo
 
 ## Cursor IDE Support
 
-ECC provides **full Cursor IDE support** with hooks, rules, agents, skills, commands, and MCP configs adapted for Cursor's native format.
+ECC provides Cursor IDE support with hooks, rules, agents, skills, commands, and MCP configs adapted for Cursor's project layout.
 
 ### Quick Start (Cursor)
 
@@ -1156,10 +1156,16 @@ ECC provides **full Cursor IDE support** with hooks, rules, agents, skills, comm
 | Hook Events | 15 | sessionStart, beforeShellExecution, afterFileEdit, beforeMCPExecution, beforeSubmitPrompt, and 10 more |
 | Hook Scripts | 16 | Thin Node.js scripts delegating to `scripts/hooks/` via shared adapter |
 | Rules | 34 | 9 common (alwaysApply) + 25 language-specific (TypeScript, Python, Go, Swift, PHP) |
-| Agents | Shared | Via AGENTS.md at root (read by Cursor natively) |
-| Skills | Shared + Bundled | Via AGENTS.md at root and `.cursor/skills/` for translated additions |
+| Agents | 48 | `.cursor/agents/ecc-*.md` when installed; prefixed to avoid collisions with user or marketplace agents |
+| Skills | Shared + Bundled | `.cursor/skills/` for translated additions |
 | Commands | Shared | `.cursor/commands/` if installed |
 | MCP Config | Shared | `.cursor/mcp.json` if installed |
+
+### Cursor Loading Notes
+
+ECC does not install root `AGENTS.md` into `.cursor/`. Cursor treats nested `AGENTS.md` files as directory context, so copying ECC's repo identity into a host project would pollute that project.
+
+Cursor-native loading behavior can vary by Cursor build. ECC installs agents as `.cursor/agents/ecc-*.md`; if your Cursor build does not expose project agents, those files still work as explicit reference definitions instead of hidden global prompt context.
 
 ### Hook Architecture (DRY Adapter Pattern)
 

@@ -136,7 +136,8 @@ function runTests() {
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'rules', 'common-agents.mdc')));
       assert.ok(!fs.existsSync(path.join(projectDir, '.cursor', 'rules', 'common-agents.md')));
       assert.ok(!fs.existsSync(path.join(projectDir, '.cursor', 'rules', 'README.mdc')));
-      assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'agents', 'architect.md')));
+      assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'agents', 'ecc-architect.md')));
+      assert.ok(!fs.existsSync(path.join(projectDir, '.cursor', 'agents', 'architect.md')));
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'commands', 'plan.md')));
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'hooks.json')));
       assert.ok(fs.existsSync(path.join(projectDir, '.cursor', 'mcp.json')));

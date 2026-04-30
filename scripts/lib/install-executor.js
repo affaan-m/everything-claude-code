@@ -3,6 +3,7 @@ const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
+const { toCursorAgentRelativePath } = require('./cursor-agent-names');
 const { LEGACY_INSTALL_TARGETS, parseInstallArgs } = require('./install/request');
 const {
   SUPPORTED_INSTALL_TARGETS,
@@ -154,7 +155,13 @@ function addRecursiveCopyOperations(operations, options) {
   for (const relativeFile of relativeFiles) {
     const sourceRelativePath = path.join(options.sourceRelativeDir, relativeFile);
     const sourcePath = path.join(options.sourceRoot, sourceRelativePath);
-    const destinationPath = path.join(options.destinationDir, relativeFile);
+    const destinationRelativePath = typeof options.destinationRelativePathTransform === 'function'
+      ? options.destinationRelativePathTransform(relativeFile, sourceRelativePath)
+      : relativeFile;
+    if (!destinationRelativePath) {
+      continue;
+    }
+    const destinationPath = path.join(options.destinationDir, destinationRelativePath);
     operations.push(buildCopyFileOperation({
       moduleId: options.moduleId,
       sourcePath,
@@ -351,6 +358,7 @@ function planCursorLegacyInstall(context) {
     sourceRoot: context.sourceRoot,
     sourceRelativeDir: path.join('.cursor', 'agents'),
     destinationDir: path.join(targetRoot, 'agents'),
+    destinationRelativePathTransform: toCursorAgentRelativePath,
   });
   addRecursiveCopyOperations(operations, {
     moduleId: 'legacy-cursor-install',

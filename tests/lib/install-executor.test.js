@@ -213,7 +213,10 @@ function runTests() {
       assert.strictEqual(plan.installRoot, targetRoot);
       assert.ok(operationFor(plan, path.join('.cursor', 'rules', 'common-style.md')));
       assert.ok(operationFor(plan, path.join('.cursor', 'rules', 'typescript-style.md')));
-      assert.ok(operationFor(plan, path.join('.cursor', 'agents', 'planner.md')));
+      assert.ok(operationFor(plan, path.join('.cursor', 'agents', 'ecc-planner.md')));
+      assert.ok(!plan.operations.some(operation => (
+        operation.destinationPath.endsWith(path.join('.cursor', 'agents', 'planner.md'))
+      )));
       assert.ok(operationFor(plan, path.join('.cursor', 'skills', 'demo', 'SKILL.md')));
       assert.ok(operationFor(plan, path.join('.cursor', 'commands', 'plan.md')));
       assert.ok(operationFor(plan, path.join('.cursor', 'hooks', 'hook.js')));

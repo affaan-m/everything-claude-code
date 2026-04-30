@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
+const { toCursorAgentFileName } = require('../cursor-agent-names');
 const {
+  createFlatFileOperations,
   createFlatRuleOperations,
   createInstallTargetAdapter,
   createManagedOperation,
@@ -146,6 +148,16 @@ module.exports = createInstallTargetAdapter({
           sourceRelativePath,
           destinationDir: path.join(targetRoot, 'rules'),
           destinationNameTransform: toCursorRuleFileName,
+        }));
+      }
+
+      if (sourceRelativePath === 'agents') {
+        return takeUniqueOperations(createFlatFileOperations({
+          moduleId: module.id,
+          repoRoot,
+          sourceRelativePath,
+          destinationDir: path.join(targetRoot, 'agents'),
+          destinationNameTransform: toCursorAgentFileName,
         }));
       }
 

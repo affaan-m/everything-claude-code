@@ -93,6 +93,21 @@ function runTests() {
     );
   })) passed++; else failed++;
 
+  if (test('README documents Cursor agent namespace and loading caveat', () => {
+    assert.ok(
+      readme.includes('`.cursor/agents/ecc-*.md`'),
+      'README should document the Cursor agent namespace'
+    );
+    assert.ok(
+      readme.includes('Cursor-native loading behavior can vary by Cursor build.'),
+      'README should avoid overclaiming Cursor agent loading semantics'
+    );
+    assert.ok(
+      readme.includes('ECC does not install root `AGENTS.md` into `.cursor/`.'),
+      'README should explain why root AGENTS.md is not copied into Cursor context'
+    );
+  })) passed++; else failed++;
+
   if (test('README explains plugin-path cleanup and rules scoping', () => {
     assert.ok(
       readme.includes('remove the plugin from Claude Code'),

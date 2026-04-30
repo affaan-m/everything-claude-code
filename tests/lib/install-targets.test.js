@@ -202,6 +202,44 @@ function runTests() {
     );
   })) passed++; else failed++;
 
+  if (test('plans cursor agents with ecc-prefixed filenames to avoid agent collisions', () => {
+    const repoRoot = path.join(__dirname, '..', '..');
+    const projectRoot = '/workspace/app';
+
+    const plan = planInstallTargetScaffold({
+      target: 'cursor',
+      repoRoot,
+      projectRoot,
+      modules: [
+        {
+          id: 'agents-core',
+          paths: ['agents'],
+        },
+      ],
+    });
+
+    assert.ok(
+      plan.operations.some(operation => (
+        normalizedRelativePath(operation.sourceRelativePath) === 'agents/architect.md'
+        && operation.destinationPath === path.join(projectRoot, '.cursor', 'agents', 'ecc-architect.md')
+      )),
+      'Should prefix Cursor agent files with ecc-'
+    );
+    assert.ok(
+      !plan.operations.some(operation => (
+        operation.destinationPath === path.join(projectRoot, '.cursor', 'agents', 'architect.md')
+      )),
+      'Should not write bare Cursor agent filenames'
+    );
+    assert.ok(
+      !plan.operations.some(operation => (
+        normalizedRelativePath(operation.sourceRelativePath) === 'agents'
+        && operation.destinationPath === path.join(projectRoot, '.cursor', 'agents')
+      )),
+      'Should not plan a whole-directory Cursor agent copy'
+    );
+  })) passed++; else failed++;
+
   if (test('plans cursor platform rule files as .mdc and excludes rule README docs', () => {
     const repoRoot = path.join(__dirname, '..', '..');
     const projectRoot = '/workspace/app';
