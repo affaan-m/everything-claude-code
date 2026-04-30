@@ -235,9 +235,15 @@ main().catch((err) => {
 ## Production Reference
 
 - **npm**: [agentwallet-sdk](https://www.npmjs.com/package/agentwallet-sdk) — multi-chain MCP provider
-- **npm**: [@okxweb3/x402-core](https://www.npmjs.com/package/@okxweb3/x402-core), [@okxweb3/x402-evm](https://www.npmjs.com/package/@okxweb3/x402-evm), [@okxweb3/x402-express](https://www.npmjs.com/package/@okxweb3/x402-express), [@okxweb3/x402-hono](https://www.npmjs.com/package/@okxweb3/x402-hono), [@okxweb3/x402-fastify](https://www.npmjs.com/package/@okxweb3/x402-fastify), [@okxweb3/x402-next](https://www.npmjs.com/package/@okxweb3/x402-next) — OKX Payments x402 TypeScript SDK
+- **npm**: OKX Payments x402 TypeScript SDK
+  - [@okxweb3/x402-core](https://www.npmjs.com/package/@okxweb3/x402-core)
+  - [@okxweb3/x402-evm](https://www.npmjs.com/package/@okxweb3/x402-evm)
+  - [@okxweb3/x402-express](https://www.npmjs.com/package/@okxweb3/x402-express)
+  - [@okxweb3/x402-hono](https://www.npmjs.com/package/@okxweb3/x402-hono)
+  - [@okxweb3/x402-fastify](https://www.npmjs.com/package/@okxweb3/x402-fastify)
+  - [@okxweb3/x402-next](https://www.npmjs.com/package/@okxweb3/x402-next)
 - **GitHub**: [okx/payments](https://github.com/okx/payments) — OKX Payments x402 SDK (Go, Rust)
 - **Merged into NVIDIA NeMo Agent Toolkit**: [PR #17](https://github.com/NVIDIA/NeMo-Agent-Toolkit-Examples/pull/17) — x402 payment tool for NVIDIA's agent examples
 - **Protocol spec**: [x402.org](https://x402.org)
-- **OKX Payments x402 docs**: [web3.okx.com — x402 Introduction](https://web3.okx.com/zh-hans/onchainos/dev-docs/payments/x402-introduction)
+- **OKX Payments x402 docs**: [web3.okx.com — Payments Overview](https://web3.okx.com/onchainos/dev-docs/payments/overview)
 
