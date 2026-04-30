@@ -93,6 +93,21 @@ function runTests() {
     );
   })) passed++; else failed++;
 
+  if (test('README documents consult-based component discovery', () => {
+    assert.ok(
+      readme.includes('### Find the right components first'),
+      'README should surface component discovery before install steps'
+    );
+    assert.ok(
+      readme.includes('npx ecc consult "security reviews" --target claude'),
+      'README should document the packaged consult command'
+    );
+    assert.ok(
+      readme.includes('It returns matching components, related profiles, and preview/install commands.'),
+      'README should explain what consult returns'
+    );
+  })) passed++; else failed++;
+
   if (test('README documents Cursor agent namespace and loading caveat', () => {
     assert.ok(
       readme.includes('`.cursor/agents/ecc-*.md`'),

@@ -62,6 +62,7 @@
     "rules/",
     "schemas/",
     "scripts/catalog.js",
+    "scripts/consult.js",
     "scripts/auto-update.js",
     "scripts/claw.js",
     "scripts/codex/merge-codex-config.js",

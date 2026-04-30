@@ -207,6 +207,16 @@ Add hooks later only if you want runtime enforcement:
 ./install.sh --target claude --modules hooks-runtime
 ```
 
+### Find the right components first
+
+If you are not sure which ECC profile or component to install, ask the packaged advisor from any project:
+
+```bash
+npx ecc consult "security reviews" --target claude
+```
+
+It returns matching components, related profiles, and preview/install commands. Use the preview command before installing if you want to inspect the exact file plan.
+
 ### Step 1: Install the Plugin (Recommended)
 
 > NOTE: The plugin is convenient, but the OSS installer below is still the most reliable path if your Claude Code build has trouble resolving self-hosted marketplace entries.

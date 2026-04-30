@@ -69,6 +69,7 @@ function main() {
       assert.match(result.stdout, /list-installed/);
       assert.match(result.stdout, /doctor/);
       assert.match(result.stdout, /auto-update/);
+      assert.match(result.stdout, /consult/);
       assert.match(result.stdout, /loop-status/);
     }],
     ['delegates explicit install command', () => {
@@ -102,6 +103,13 @@ function main() {
       const payload = parseJson(result.stdout);
       assert.strictEqual(payload.id, 'framework:nextjs');
       assert.deepStrictEqual(payload.moduleIds, ['framework-language']);
+    }],
+    ['delegates consult command', () => {
+      const result = runCli(['consult', 'security', 'reviews', '--json']);
+      assert.strictEqual(result.status, 0, result.stderr);
+      const payload = parseJson(result.stdout);
+      assert.strictEqual(payload.schemaVersion, 'ecc.consult.v1');
+      assert.strictEqual(payload.matches[0].componentId, 'capability:security');
     }],
     ['delegates lifecycle commands', () => {
       const homeDir = createTempDir('ecc-cli-home-');
@@ -187,6 +195,11 @@ function main() {
       const result = runCli(['help', 'catalog']);
       assert.strictEqual(result.status, 0, result.stderr);
       assert.match(result.stdout, /node scripts\/catalog\.js show <component-id>/);
+    }],
+    ['supports help for the consult subcommand', () => {
+      const result = runCli(['help', 'consult']);
+      assert.strictEqual(result.status, 0, result.stderr);
+      assert.match(result.stdout, /node scripts\/consult\.js "security reviews"/);
     }],
     ['fails on unknown commands instead of treating them as installs', () => {
       const result = runCli(['bogus']);

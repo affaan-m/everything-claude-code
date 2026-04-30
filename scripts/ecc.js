@@ -17,6 +17,10 @@ const COMMANDS = {
     script: 'catalog.js',
     description: 'Discover install profiles and component IDs',
   },
+  consult: {
+    script: 'consult.js',
+    description: 'Recommend ECC components and profiles from a natural language query',
+  },
   'install-plan': {
     script: 'install-plan.js',
     description: 'Alias for plan',
@@ -63,6 +67,7 @@ const PRIMARY_COMMANDS = [
   'install',
   'plan',
   'catalog',
+  'consult',
   'list-installed',
   'doctor',
   'repair',
@@ -97,6 +102,7 @@ Examples:
   ecc catalog profiles
   ecc catalog components --family language
   ecc catalog show framework:nextjs
+  ecc consult "security reviews"
   ecc list-installed --json
   ecc doctor --target cursor
   ecc repair --dry-run
