@@ -79,15 +79,15 @@ function run() {
   let passed = 0;
   let failed = 0;
 
-  if (test('flagged instruction artifacts keep scoped safety sections', () => {
-    for (const guardrail of guardrails) {
+  for (const guardrail of guardrails) {
+    if (test(`${guardrail.path} keeps scoped safety guardrails`, () => {
       const source = read(guardrail.path);
       assert.ok(source.includes(guardrail.heading), `${guardrail.path} missing ${guardrail.heading}`);
       for (const pattern of guardrail.requiredPatterns) {
         assert.ok(pattern.test(source), `${guardrail.path} missing ${pattern}`);
       }
-    }
-  })) passed++; else failed++;
+    })) passed++; else failed++;
+  }
 
   console.log(`\nPassed: ${passed}`);
   console.log(`Failed: ${failed}`);
