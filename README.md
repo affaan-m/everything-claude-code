@@ -89,7 +89,7 @@ This repo is the raw code only. The guides explain everything.
 ### v2.0.0-rc.1 — Surface Refresh, Operator Workflows, and ECC 2.0 Alpha (Apr 2026)
 
 - **Dashboard GUI** — New Tkinter-based desktop application (`ecc_dashboard.py` or `npm run dashboard`) with dark/light theme toggle, font customization, and project logo in header and taskbar.
-- **Public surface synced to the live repo** — metadata, catalog counts, plugin manifests, and install-facing docs now match the actual OSS surface: 38 agents, 156 skills, and 72 legacy command shims.
+- **Public surface synced to the live repo** — metadata, catalog counts, plugin manifests, and install-facing docs now match the actual OSS surface: 48 agents, 184 skills, and 68 legacy command shims.
 - **Operator and outbound workflow expansion** — `brand-voice`, `social-graph-ranker`, `connections-optimizer`, `customer-billing-ops`, `ecc-tools-cost-audit`, `google-workspace-ops`, `project-flow-ops`, and `workspace-surface-audit` round out the operator lane.
 - **Media and launch tooling** — `manim-video`, `remotion-video-creation`, and upgraded social publishing surfaces make technical explainers and launch content part of the same system.
 - **Framework and product surface growth** — `nestjs-patterns`, richer Codex/OpenCode install surfaces, and expanded cross-harness packaging keep the repo usable beyond Claude Code alone.
@@ -312,7 +312,7 @@ If you stacked methods, clean up in this order:
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**That's it!** You now have access to 48 agents, 184 skills, and 80 legacy command shims.
+**That's it!** You now have access to 48 agents, 184 skills, and 68 legacy command shims.
 
 ### Dashboard GUI
 
@@ -499,17 +499,15 @@ everything-claude-code/
 |   |-- autonomous-loops/           # Autonomous loop patterns: sequential pipelines, PR loops, DAG orchestration (NEW)
 |   |-- plankton-code-quality/      # Write-time code quality enforcement with Plankton hooks (NEW)
 |
-|-- commands/         # Legacy slash-entry shims; prefer skills/
-|   |-- tdd.md              # /tdd - Test-driven development
+|-- commands/         # Maintained slash-entry compatibility; prefer skills/
 |   |-- plan.md             # /plan - Implementation planning
-|   |-- e2e.md              # /e2e - E2E test generation
 |   |-- code-review.md      # /code-review - Quality review
 |   |-- build-fix.md        # /build-fix - Fix build errors
 |   |-- refactor-clean.md   # /refactor-clean - Dead code removal
+|   |-- quality-gate.md     # /quality-gate - Verification gate
 |   |-- learn.md            # /learn - Extract patterns mid-session (Longform Guide)
 |   |-- learn-eval.md       # /learn-eval - Extract, evaluate, and save patterns (NEW)
 |   |-- checkpoint.md       # /checkpoint - Save verification state (Longform Guide)
-|   |-- verify.md           # /verify - Run verification loop (Longform Guide)
 |   |-- setup-pm.md         # /setup-pm - Configure package manager
 |   |-- go-review.md        # /go-review - Go code review (NEW)
 |   |-- go-test.md          # /go-test - Go TDD workflow (NEW)
@@ -526,13 +524,17 @@ everything-claude-code/
 |   |-- multi-backend.md    # /multi-backend - Backend multi-service orchestration (NEW)
 |   |-- multi-frontend.md   # /multi-frontend - Frontend multi-service orchestration (NEW)
 |   |-- multi-workflow.md   # /multi-workflow - General multi-service workflows (NEW)
-|   |-- orchestrate.md      # /orchestrate - Multi-agent coordination
 |   |-- sessions.md         # /sessions - Session history management
-|   |-- eval.md             # /eval - Evaluate against criteria
 |   |-- test-coverage.md    # /test-coverage - Test coverage analysis
 |   |-- update-docs.md      # /update-docs - Update documentation
 |   |-- update-codemaps.md  # /update-codemaps - Update codemaps
 |   |-- python-review.md    # /python-review - Python code review (NEW)
+|-- legacy-command-shims/   # Opt-in archive for retired shims such as /tdd and /eval
+|   |-- tdd.md              # /tdd - Prefer the tdd-workflow skill
+|   |-- e2e.md              # /e2e - Prefer the e2e-testing skill
+|   |-- eval.md             # /eval - Prefer the eval-harness skill
+|   |-- verify.md           # /verify - Prefer the verification-loop skill
+|   |-- orchestrate.md      # /orchestrate - Prefer dmux-workflows or multi-workflow
 |
 |-- rules/            # Always-follow guidelines (copy to ~/.claude/rules/)
 |   |-- README.md            # Structure overview and installation guide
@@ -795,9 +797,12 @@ cp -r everything-claude-code/skills/search-first ~/.claude/skills/
 # cp -r everything-claude-code/skills/$s ~/.claude/skills/
 # done
 
-# Optional: keep legacy slash-command compatibility during migration
+# Optional: keep maintained slash-command compatibility during migration
 mkdir -p ~/.claude/commands
 cp everything-claude-code/commands/*.md ~/.claude/commands/
+
+# Retired shims live in legacy-command-shims/commands/.
+# Copy individual files from there only if you still need old names such as /tdd.
 ```
 
 #### Install hooks
@@ -857,7 +862,7 @@ You are a senior code reviewer...
 
 ### Skills
 
-Skills are the primary workflow surface. They can be invoked directly, suggested automatically, and reused by agents. ECC still ships `commands/` during migration, but new workflow development should land in `skills/` first.
+Skills are the primary workflow surface. They can be invoked directly, suggested automatically, and reused by agents. ECC still ships maintained `commands/` during migration, while retired short-name shims live under `legacy-command-shims/` for explicit opt-in only. New workflow development should land in `skills/` first.
 
 ```markdown
 # TDD Workflow
@@ -903,16 +908,16 @@ See [`rules/README.md`](rules/README.md) for installation and structure details.
 
 ## Which Agent Should I Use?
 
-Not sure where to start? Use this quick reference. Skills are the canonical workflow surface; slash entries below are the compatibility form most users already know.
+Not sure where to start? Use this quick reference. Skills are the canonical workflow surface; maintained slash entries stay available for command-first workflows.
 
-| I want to... | Use this command | Agent used |
+| I want to... | Use this surface | Agent used |
 |--------------|-----------------|------------|
 | Plan a new feature | `/ecc:plan "Add auth"` | planner |
 | Design system architecture | `/ecc:plan` + architect agent | architect |
-| Write code with tests first | `/tdd` | tdd-guide |
+| Write code with tests first | `tdd-workflow` skill | tdd-guide |
 | Review code I just wrote | `/code-review` | code-reviewer |
 | Fix a failing build | `/build-fix` | build-error-resolver |
-| Run end-to-end tests | `/e2e` | e2e-runner |
+| Run end-to-end tests | `e2e-testing` skill | e2e-runner |
 | Find security vulnerabilities | `/security-scan` | security-reviewer |
 | Remove dead code | `/refactor-clean` | refactor-cleaner |
 | Update documentation | `/update-docs` | doc-updater |
@@ -923,19 +928,19 @@ Not sure where to start? Use this quick reference. Skills are the canonical work
 
 ### Common Workflows
 
-Slash forms below are shown because they are still the fastest familiar entrypoint. Under the hood, ECC is shifting these workflows toward skills-first definitions.
+Slash forms below are shown where they remain part of the maintained command surface. Retired short-name shims such as `/tdd` and `/eval` live in `legacy-command-shims/` for explicit opt-in only.
 
 **Starting a new feature:**
 ```
 /ecc:plan "Add user authentication with OAuth"
                                               → planner creates implementation blueprint
-/tdd                                          → tdd-guide enforces write-tests-first
+tdd-workflow skill                            → tdd-guide enforces write-tests-first
 /code-review                                  → code-reviewer checks your work
 ```
 
 **Fixing a bug:**
 ```
-/tdd                                          → tdd-guide: write a failing test that reproduces it
+tdd-workflow skill                            → tdd-guide: write a failing test that reproduces it
                                               → implement the fix, verify test passes
 /code-review                                  → code-reviewer: catch regressions
 ```
@@ -943,7 +948,7 @@ Slash forms below are shown because they are still the fastest familiar entrypoi
 **Preparing for production:**
 ```
 /security-scan                                → security-reviewer: OWASP Top 10 audit
-/e2e                                          → e2e-runner: critical user flow tests
+e2e-testing skill                             → e2e-runner: critical user flow tests
 /test-coverage                                → verify 80%+ coverage
 ```
 
@@ -1279,7 +1284,7 @@ The configuration is automatically detected from `.opencode/opencode.json`.
 | Feature | Claude Code | OpenCode | Status |
 |---------|-------------|----------|--------|
 | Agents | PASS: 48 agents | PASS: 12 agents | **Claude Code leads** |
-| Commands | PASS: 80 commands | PASS: 31 commands | **Claude Code leads** |
+| Commands | PASS: 68 commands | PASS: 31 commands | **Claude Code leads** |
 | Skills | PASS: 184 skills | PASS: 37 skills | **Claude Code leads** |
 | Hooks | PASS: 8 event types | PASS: 11 events | **OpenCode has more!** |
 | Rules | PASS: 29 rules | PASS: 13 instructions | **Claude Code leads** |
@@ -1300,21 +1305,17 @@ OpenCode's plugin system is MORE sophisticated than Claude Code with 20+ event t
 
 **Additional OpenCode events**: `file.edited`, `file.watcher.updated`, `message.updated`, `lsp.client.diagnostics`, `tui.toast.show`, and more.
 
-### Available Slash Entry Shims (31+)
+### Maintained Slash Entries
 
 | Command | Description |
 |---------|-------------|
 | `/plan` | Create implementation plan |
-| `/tdd` | Enforce TDD workflow |
 | `/code-review` | Review code changes |
 | `/build-fix` | Fix build errors |
-| `/e2e` | Generate E2E tests |
 | `/refactor-clean` | Remove dead code |
-| `/orchestrate` | Multi-agent workflow |
 | `/learn` | Extract patterns from session |
 | `/checkpoint` | Save verification state |
-| `/verify` | Run verification loop |
-| `/eval` | Evaluate against criteria |
+| `/quality-gate` | Run the maintained verification gate |
 | `/update-docs` | Update documentation |
 | `/update-codemaps` | Update codemaps |
 | `/test-coverage` | Analyze coverage |
@@ -1388,7 +1389,7 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 | Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |
 |---------|------------|------------|-----------|----------|
 | **Agents** | 48 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
-| **Commands** | 80 | Shared | Instruction-based | 31 |
+| **Commands** | 68 | Shared | Instruction-based | 31 |
 | **Skills** | 184 | Shared | 10 (native format) | 37 |
 | **Hook Events** | 8 types | 15 types | None yet | 11 types |
 | **Hook Scripts** | 20+ scripts | 16 scripts (DRY adapter) | N/A | Plugin hooks |

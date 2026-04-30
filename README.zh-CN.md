@@ -160,7 +160,7 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**完成！** 你现在可以使用 48 个代理、184 个技能和 80 个命令。
+**完成！** 你现在可以使用 48 个代理、184 个技能和 68 个命令。
 
 ### multi-* 命令需要额外配置
 
@@ -330,17 +330,15 @@ everything-claude-code/
 |   |-- autonomous-loops/           # 自主循环模式：顺序流水线、PR 循环、DAG 编排（新增）
 |   |-- plankton-code-quality/      # 基于 Plankton 钩子的实时代码质量管控（新增）
 |
-|-- commands/         # 传统斜杠命令兼容层；优先使用 skills/
-|   |-- tdd.md              # /tdd - 测试驱动开发
+|-- commands/         # 维护中的斜杠命令兼容层；优先使用 skills/
 |   |-- plan.md             # /plan - 实现规划
-|   |-- e2e.md              # /e2e - 生成端到端测试
 |   |-- code-review.md      # /code-review - 代码质量审查
 |   |-- build-fix.md        # /build-fix - 修复构建错误
+|   |-- quality-gate.md     # /quality-gate - 验证门禁
 |   |-- refactor-clean.md   # /refactor-clean - 清理无效代码
 |   |-- learn.md            # /learn - 会话中提取模式（长文本指南）
 |   |-- learn-eval.md       # /learn-eval - 提取、评估并保存模式（新增）
 |   |-- checkpoint.md       # /checkpoint - 保存验证状态（长文本指南）
-|   |-- verify.md           # /verify - 运行验证循环（长文本指南）
 |   |-- setup-pm.md         # /setup-pm - 配置包管理器
 |   |-- go-review.md        # /go-review - Go 代码审查（新增）
 |   |-- go-test.md          # /go-test - Go TDD 工作流（新增）
@@ -357,13 +355,17 @@ everything-claude-code/
 |   |-- multi-backend.md    # /multi-backend - 后端多服务编排（新增）
 |   |-- multi-frontend.md   # /multi-frontend - 前端多服务编排（新增）
 |   |-- multi-workflow.md   # /multi-workflow - 通用多服务工作流（新增）
-|   |-- orchestrate.md      # /orchestrate - 多智能体协同调度
 |   |-- sessions.md         # /sessions - 会话历史管理
-|   |-- eval.md             # /eval - 按标准评估
 |   |-- test-coverage.md    # /test-coverage - 测试覆盖率分析
 |   |-- update-docs.md      # /update-docs - 更新文档
 |   |-- update-codemaps.md  # /update-codemaps - 更新代码映射
 |   |-- python-review.md    # /python-review - Python 代码审查（新增）
+|-- legacy-command-shims/   # 已退役短命令的按需归档，例如 /tdd 和 /eval
+|   |-- tdd.md              # /tdd - 优先使用 tdd-workflow 技能
+|   |-- e2e.md              # /e2e - 优先使用 e2e-testing 技能
+|   |-- eval.md             # /eval - 优先使用 eval-harness 技能
+|   |-- verify.md           # /verify - 优先使用 verification-loop 技能
+|   |-- orchestrate.md      # /orchestrate - 优先使用 dmux-workflows 或 multi-workflow
 |
 |-- rules/            # 必须遵守的规范（复制到 ~/.claude/rules/）
 |   |-- README.md            # 结构概览与安装指南
@@ -618,9 +620,12 @@ cp -r everything-claude-code/skills/search-first ~/.claude/skills/
 # cp -r everything-claude-code/skills/$s ~/.claude/skills/
 # done
 
-# 可选：迁移期间保留传统斜杠命令兼容
+# 可选：迁移期间保留维护中的斜杠命令兼容
 mkdir -p ~/.claude/commands
 cp everything-claude-code/commands/*.md ~/.claude/commands/
+
+# 已退役短命令位于 legacy-command-shims/commands/。
+# 仅在仍需要 /tdd 等旧名称时，单独复制对应文件。
 ```
 
 #### 将钩子配置添加到 settings.json

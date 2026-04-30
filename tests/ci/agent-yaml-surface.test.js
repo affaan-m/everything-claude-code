@@ -10,6 +10,22 @@ const path = require('path');
 const REPO_ROOT = path.join(__dirname, '..', '..');
 const AGENT_YAML_PATH = path.join(REPO_ROOT, 'agent.yaml');
 const COMMANDS_DIR = path.join(REPO_ROOT, 'commands');
+const LEGACY_COMMANDS_DIR = path.join(REPO_ROOT, 'legacy-command-shims', 'commands');
+
+const RETIRED_LEGACY_SHIMS = [
+  'agent-sort',
+  'claw',
+  'context-budget',
+  'devfleet',
+  'docs',
+  'e2e',
+  'eval',
+  'orchestrate',
+  'prompt-optimize',
+  'rules-distill',
+  'tdd',
+  'verify',
+];
 
 function extractTopLevelList(yamlSource, key) {
   const lines = yamlSource.replace(/^\uFEFF/, '').split(/\r?\n/);
@@ -68,6 +84,22 @@ function run() {
 
   if (test('agent.yaml commands stay in sync with commands/ directory', () => {
     assert.deepStrictEqual(declaredCommands, actualCommands);
+  })) passed++; else failed++;
+
+  if (test('retired legacy slash-entry shims are not in the default commands export', () => {
+    const defaultShimCommands = RETIRED_LEGACY_SHIMS
+      .filter(command => actualCommands.includes(command));
+
+    assert.deepStrictEqual(defaultShimCommands, []);
+  })) passed++; else failed++;
+
+  if (test('retired legacy slash-entry shims remain available from the opt-in archive', () => {
+    const archivedCommands = fs.readdirSync(LEGACY_COMMANDS_DIR)
+      .filter(file => file.endsWith('.md'))
+      .map(file => path.basename(file, '.md'))
+      .sort();
+
+    assert.deepStrictEqual(archivedCommands, RETIRED_LEGACY_SHIMS);
   })) passed++; else failed++;
 
   console.log(`\nPassed: ${passed}`);

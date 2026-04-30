@@ -105,7 +105,7 @@ If you want changes, respond with:
 ## Integration with Other Commands
 
 After planning:
-- Use `/tdd` to implement with test-driven development
+- Use the `tdd-workflow` skill to implement with test-driven development
 - Use `/build-fix` if build errors occur
 - Use `/code-review` to review completed implementation
 

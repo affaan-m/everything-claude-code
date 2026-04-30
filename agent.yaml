@@ -144,21 +144,14 @@ skills:
   - visa-doc-translate
   - x-api
 commands:
-  - agent-sort
   - aside
   - auto-update
   - build-fix
   - checkpoint
-  - claw
   - code-review
-  - context-budget
   - cpp-build
   - cpp-review
   - cpp-test
-  - devfleet
-  - docs
-  - e2e
-  - eval
   - evolve
   - feature-dev
   - flutter-build
@@ -192,12 +185,10 @@ commands:
   - multi-frontend
   - multi-plan
   - multi-workflow
-  - orchestrate
   - plan
   - pm2
   - projects
   - promote
-  - prompt-optimize
   - prp-commit
   - prp-implement
   - prp-plan
@@ -209,7 +200,6 @@ commands:
   - refactor-clean
   - resume-session
   - review-pr
-  - rules-distill
   - rust-build
   - rust-review
   - rust-test
@@ -219,11 +209,9 @@ commands:
   - setup-pm
   - skill-create
   - skill-health
-  - tdd
   - test-coverage
   - update-codemaps
   - update-docs
-  - verify
 tags:
   - agent-harness
   - developer-tools

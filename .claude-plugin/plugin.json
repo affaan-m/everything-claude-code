@@ -1,7 +1,7 @@
 {
   "name": "everything-claude-code",
   "version": "2.0.0-rc.1",
-  "description": "Battle-tested Claude Code plugin for engineering teams — 48 agents, 184 skills, 79 legacy command shims, production-ready hooks, and selective install workflows evolved through continuous real-world use",
+  "description": "Battle-tested Claude Code plugin for engineering teams — 48 agents, 184 skills, 68 legacy command shims, production-ready hooks, and selective install workflows evolved through continuous real-world use",
   "author": {
     "name": "Affaan Mustafa",
     "url": "https://x.com/affaanmustafa"
