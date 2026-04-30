@@ -658,7 +658,7 @@ function writeStatusSnapshots(payload, writeDir) {
   const outputDir = path.resolve(writeDir);
   fs.mkdirSync(outputDir, { recursive: true });
 
-  const usedNames = new Set();
+  const usedNames = new Set(['index.json']);
   const sessions = payload.sessions.map(session => {
     const snapshotPath = getSnapshotPath(outputDir, session, usedNames);
     atomicWriteJson(snapshotPath, {

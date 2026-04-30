@@ -594,6 +594,43 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (test('keeps index.json reserved when session id sanitizes to index', () => {
+    const homeDir = createTempHome();
+    const snapshotDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-loop-status-index-collision-'));
+
+    try {
+      writeTranscript(homeDir, '-Users-affoon-project-index-collision', 'index.jsonl', [
+        assistantMessage('2026-04-30T09:55:00.000Z', 'index', 'Loop checkpoint.'),
+      ]);
+
+      const result = run([
+        '--home',
+        homeDir,
+        '--now',
+        NOW,
+        '--json',
+        '--write-dir',
+        snapshotDir,
+      ]);
+
+      assert.strictEqual(result.code, 0, result.stderr);
+
+      const indexPath = path.join(snapshotDir, 'index.json');
+      const indexPayload = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+      assert.strictEqual(indexPayload.schemaVersion, 'ecc.loop-status.index.v1');
+      assert.strictEqual(indexPayload.sessions.length, 1);
+      assert.strictEqual(indexPayload.sessions[0].sessionId, 'index');
+      assert.notStrictEqual(indexPayload.sessions[0].snapshotPath, indexPath);
+
+      const snapshotPayload = JSON.parse(fs.readFileSync(indexPayload.sessions[0].snapshotPath, 'utf8'));
+      assert.strictEqual(snapshotPayload.schemaVersion, 'ecc.loop-status.session.v1');
+      assert.strictEqual(snapshotPayload.session.sessionId, 'index');
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+      fs.rmSync(snapshotDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
   if (test('write-dir failures do not suppress normal stdout', () => {
     const homeDir = createTempHome();
 
