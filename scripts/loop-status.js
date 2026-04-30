@@ -614,11 +614,19 @@ function hashString(value) {
   return crypto.createHash('sha256').update(String(value)).digest('hex');
 }
 
+function isWindowsReservedBasename(value) {
+  const basename = String(value).split('.')[0];
+  return /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(basename);
+}
+
 function sanitizeSnapshotName(value, fallback = 'session') {
   const raw = String(value || '').trim() || fallback;
   const sanitized = raw.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/^_+|_+$/g, '');
-  if (sanitized && sanitized.length <= 96) {
+  if (sanitized && sanitized.length <= 96 && !isWindowsReservedBasename(sanitized)) {
     return sanitized;
+  }
+  if (sanitized && isWindowsReservedBasename(sanitized)) {
+    return `${sanitized}-${hashString(raw).slice(0, 8)}`;
   }
 
   const prefix = sanitized ? sanitized.slice(0, 48).replace(/[._-]+$/g, '') : fallback;
@@ -629,7 +637,18 @@ function atomicWriteJson(filePath, payload) {
   const data = JSON.stringify(payload, null, 2) + '\n';
   const tempPath = `${filePath}.${process.pid}.${Date.now()}.${Math.random().toString(16).slice(2)}.tmp`;
   fs.writeFileSync(tempPath, data, 'utf8');
-  fs.renameSync(tempPath, filePath);
+  try {
+    fs.renameSync(tempPath, filePath);
+  } catch (error) {
+    try {
+      fs.unlinkSync(tempPath);
+    } catch (cleanupError) {
+      if (cleanupError.code !== 'ENOENT') {
+        console.error(`[loop-status] WARNING: could not remove temporary snapshot file ${tempPath}: ${cleanupError.message}`);
+      }
+    }
+    throw error;
+  }
 }
 
 function getSnapshotPath(outputDir, session, usedNames) {

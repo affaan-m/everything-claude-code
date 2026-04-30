@@ -6,10 +6,16 @@ const assert = require('assert');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { execFileSync } = require('child_process');
+const { spawnSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'loop-status.js');
-const { analyzeTranscript, buildStatus, getStatusExitCode, parseArgs } = require('../../scripts/loop-status');
+const {
+  analyzeTranscript,
+  buildStatus,
+  getStatusExitCode,
+  parseArgs,
+  writeStatusSnapshots,
+} = require('../../scripts/loop-status');
 const NOW = '2026-04-30T10:00:00.000Z';
 
 function run(args = [], options = {}) {
@@ -25,25 +31,22 @@ function run(args = [], options = {}) {
     envOverrides.HOME = envOverrides.USERPROFILE;
   }
 
-  try {
-    const stdout = execFileSync('node', [SCRIPT, ...args], {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-      timeout: 10000,
-      cwd: options.cwd || process.cwd(),
-      env: {
-        ...process.env,
-        ...envOverrides,
-      },
-    });
-    return { code: 0, stdout, stderr: '' };
-  } catch (error) {
-    return {
-      code: error.status || 1,
-      stdout: error.stdout || '',
-      stderr: error.stderr || '',
-    };
-  }
+  const result = spawnSync('node', [SCRIPT, ...args], {
+    encoding: 'utf8',
+    stdio: ['pipe', 'pipe', 'pipe'],
+    timeout: 10000,
+    cwd: options.cwd || process.cwd(),
+    env: {
+      ...process.env,
+      ...envOverrides,
+    },
+  });
+
+  return {
+    code: result.status || (result.signal ? 1 : 0),
+    stdout: result.stdout || '',
+    stderr: result.stderr || '',
+  };
 }
 
 function createTempHome() {
@@ -631,6 +634,77 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (test('avoids Windows reserved basenames for session snapshots', () => {
+    const homeDir = createTempHome();
+    const snapshotDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-loop-status-windows-name-'));
+
+    try {
+      writeTranscript(homeDir, '-Users-affoon-project-windows-name', 'con.jsonl', [
+        assistantMessage('2026-04-30T09:55:00.000Z', 'con', 'Loop checkpoint.'),
+      ]);
+
+      const result = run([
+        '--home',
+        homeDir,
+        '--now',
+        NOW,
+        '--json',
+        '--write-dir',
+        snapshotDir,
+      ]);
+
+      assert.strictEqual(result.code, 0, result.stderr);
+
+      const indexPath = path.join(snapshotDir, 'index.json');
+      const indexPayload = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+      const snapshotName = path.basename(indexPayload.sessions[0].snapshotPath);
+      assert.strictEqual(indexPayload.sessions[0].sessionId, 'con');
+      assert.notStrictEqual(snapshotName.toLowerCase(), 'con.json');
+
+      const snapshotPayload = JSON.parse(fs.readFileSync(indexPayload.sessions[0].snapshotPath, 'utf8'));
+      assert.strictEqual(snapshotPayload.schemaVersion, 'ecc.loop-status.session.v1');
+      assert.strictEqual(snapshotPayload.session.sessionId, 'con');
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+      fs.rmSync(snapshotDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
+  if (test('cleans temporary snapshot files when atomic rename fails', () => {
+    const snapshotDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-loop-status-rename-failure-'));
+    const originalRenameSync = fs.renameSync;
+
+    try {
+      fs.renameSync = () => {
+        throw new Error('simulated rename failure');
+      };
+
+      assert.throws(() => writeStatusSnapshots({
+        errors: [],
+        generatedAt: NOW,
+        sessions: [
+          {
+            eventCount: 1,
+            lastEventAt: NOW,
+            pendingTools: [],
+            recommendedAction: 'No action needed.',
+            sessionId: 'rename-failure',
+            signals: [],
+            state: 'ok',
+            transcriptPath: path.join(snapshotDir, 'rename-failure.jsonl'),
+          },
+        ],
+        source: {},
+      }, snapshotDir), /simulated rename failure/);
+
+      const tempFiles = fs.readdirSync(snapshotDir).filter(fileName => fileName.endsWith('.tmp'));
+      assert.deepStrictEqual(tempFiles, []);
+    } finally {
+      fs.renameSync = originalRenameSync;
+      fs.rmSync(snapshotDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
   if (test('write-dir failures do not suppress normal stdout', () => {
     const homeDir = createTempHome();
 
@@ -655,6 +729,7 @@ function runTests() {
       const payload = parsePayload(result.stdout);
       assert.strictEqual(payload.schemaVersion, 'ecc.loop-status.v1');
       assert.strictEqual(payload.sessions[0].sessionId, 'session-write-error');
+      assert.match(result.stderr, /\[loop-status\] WARNING: could not write status snapshots:/);
     } finally {
       fs.rmSync(homeDir, { recursive: true, force: true });
     }
