@@ -435,13 +435,18 @@ function runTests() {
   })) passed++; else failed++;
 
   if (test('exit-code mode returns 1 for scan errors without attention signals', () => {
-    const missingTranscript = path.join(os.tmpdir(), 'ecc-loop-status-missing.jsonl');
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-loop-status-missing-'));
+    const missingTranscript = path.join(tempDir, 'missing.jsonl');
     const result = run(['--transcript', missingTranscript, '--now', NOW, '--json', '--exit-code']);
 
-    assert.strictEqual(result.code, 1, result.stderr);
-    const payload = parsePayload(result.stdout);
-    assert.strictEqual(payload.sessions.length, 0);
-    assert.strictEqual(payload.errors.length, 1);
+    try {
+      assert.strictEqual(result.code, 1, result.stderr);
+      const payload = parsePayload(result.stdout);
+      assert.strictEqual(payload.sessions.length, 0);
+      assert.strictEqual(payload.errors.length, 1);
+    } finally {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
   })) passed++; else failed++;
 
   if (test('exit-code mode rejects unbounded watch mode', () => {
