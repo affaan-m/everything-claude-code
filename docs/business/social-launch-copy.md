@@ -1,29 +1,34 @@
 # Social Launch Copy (X + LinkedIn)
 
-Use these templates as launch-ready starting points. Replace placeholders before posting.
+Use these templates as launch-ready starting points. Review channel tone before posting.
 
 ## X Post: Release Announcement
 
 ```text
-ECC v1.8.0 is live.
+ECC v2.0.0-rc.1 is live.
 
-We moved from “config pack” to an agent harness performance system:
-- hook reliability fixes
-- new harness commands
-- cross-tool parity (Claude Code, Cursor, OpenCode, Codex)
+The repo is moving from a Claude Code config pack into a cross-harness operating system for agentic work.
 
-Start here: <repo-link>
+What ships:
+- Hermes setup guide
+- release notes and launch collateral
+- cross-harness architecture docs
+- Hermes import guidance for turning local operator workflows into public ECC skills
+
+Start here: https://github.com/affaan-m/everything-claude-code
+Release notes: https://github.com/affaan-m/everything-claude-code/blob/main/docs/releases/2.0.0-rc.1/release-notes.md
 ```
 
 ## X Post: Proof + Metrics
 
 ```text
-If you evaluate agent tooling, use blended distribution metrics:
-- npm installs (`ecc-universal`, `ecc-agentshield`)
-- GitHub App installs
-- repo adoption (stars/forks/contributors)
+ECC v2.0.0-rc.1 keeps the public surface honest:
+- reusable ECC substrate in repo
+- Hermes documented as the operator shell
+- private workspace state left out
+- release metadata and docs covered by tests
 
-We now track this monthly in-repo for sponsor transparency.
+This is the release-candidate line: public system shape now, deeper local integrations only after sanitization.
 ```
 
 ## X Quote Tweet: Eval Skills Article
@@ -36,7 +41,7 @@ In ECC we turned this into production checks via:
 - /quality-gate
 - Stop-phase session summaries
 
-This is where harness performance compounds over time.
+In v2.0.0-rc.1, that discipline extends to the release surface: docs, manifests, launch copy, and public/private boundaries are test-backed.
 ```
 
 ## X Quote Tweet: Plankton / deslop workflow
@@ -44,19 +49,24 @@ This is where harness performance compounds over time.
 ```text
 This workflow direction is right: optimize the harness, not just prompts.
 
-Our v1.8.0 focus was reliability + parity + measurable quality gates across toolchains.
+ECC v2.0.0-rc.1 pushes that further: reusable skills, thin harness adapters, and Hermes as the operator shell on top.
 ```
 
 ## LinkedIn Post: Partner-Friendly Summary
 
 ```text
-We shipped ECC v1.8.0 with one objective: improve agent harness performance in production.
+ECC v2.0.0-rc.1 is live.
 
-Highlights:
-- more reliable hook lifecycle behavior
-- new harness-level quality commands
-- parity across Claude Code, Cursor, OpenCode, and Codex
-- stronger sponsor-facing metrics tracking
+The practical shift: ECC is no longer just a Claude Code config pack. It is becoming a cross-harness operating system for agentic work.
 
-If your team runs AI coding agents daily, this is designed for operational use.
+This release-candidate surface includes:
+- sanitized Hermes setup documentation
+- release notes and launch collateral
+- cross-harness architecture notes
+- Hermes import guidance for turning local operator patterns into public ECC skills
+
+It does not include private workspace state, credentials, raw local exports, or personal datasets.
+
+Repo: https://github.com/affaan-m/everything-claude-code
+Release notes: https://github.com/affaan-m/everything-claude-code/blob/main/docs/releases/2.0.0-rc.1/release-notes.md
 ```
