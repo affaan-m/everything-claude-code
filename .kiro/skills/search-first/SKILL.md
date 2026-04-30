@@ -51,9 +51,9 @@ When a candidate requires credentials, paid services, network writes, or project
 │     │ as-is   │  │  /Wrap   │  │  Custom  │  │
 │     └─────────┘  └──────────┘  └─────────┘  │
 ├─────────────────────────────────────────────┤
-│  5. IMPLEMENT                               │
-│     Install package / Configure MCP /       │
-│     Write minimal custom code               │
+│  5. APPROVAL CHECKPOINT / IMPLEMENT         │
+│     Recommend package / MCP / custom code   │
+│     Apply only after explicit approval      │
 └─────────────────────────────────────────────┘
 ```
 
@@ -61,10 +61,10 @@ When a candidate requires credentials, paid services, network writes, or project
 
 | Signal | Action |
 |--------|--------|
-| Exact match, well-maintained, MIT/Apache | **Adopt** — install and use directly |
-| Partial match, good foundation | **Extend** — install + write thin wrapper |
-| Multiple weak matches | **Compose** — combine 2-3 small packages |
-| Nothing suitable found | **Build** — write custom, but informed by research |
+| Exact match, well-maintained, MIT/Apache | **Adopt** — recommend the package and request approval before install or config changes |
+| Partial match, good foundation | **Extend** — recommend the package plus a thin wrapper, then wait for approval before applying |
+| Multiple weak matches | **Compose** — propose 2-3 small packages and the integration plan before installing anything |
+| Nothing suitable found | **Build** — explain why custom code is warranted, then implement only within the approved task scope |
 
 ## How to Use
 
@@ -141,8 +141,8 @@ Combine for progressive discovery:
 Need: Check markdown files for broken links
 Search: npm "markdown dead link checker"
 Found: textlint-rule-no-dead-link (score: 9/10)
-Action: ADOPT — npm install textlint-rule-no-dead-link
-Result: Zero custom code, battle-tested solution
+Action: ADOPT — recommend `textlint-rule-no-dead-link` and ask before installing it
+Result: Zero custom code if approved, battle-tested solution
 ```
 
 ### Example 2: "Add HTTP client wrapper"
@@ -150,8 +150,8 @@ Result: Zero custom code, battle-tested solution
 Need: Resilient HTTP client with retries and timeout handling
 Search: npm "http client retry", PyPI "httpx retry"
 Found: got (Node) with retry plugin, httpx (Python) with built-in retry
-Action: ADOPT — use got/httpx directly with retry config
-Result: Zero custom code, production-proven libraries
+Action: ADOPT — recommend `got`/`httpx` directly with retry config and ask before changing dependencies
+Result: Zero custom code if approved, production-proven libraries
 ```
 
 ### Example 3: "Add config file linter"
@@ -159,8 +159,8 @@ Result: Zero custom code, production-proven libraries
 Need: Validate project config files against a schema
 Search: npm "config linter schema", "json schema validator cli"
 Found: ajv-cli (score: 8/10)
-Action: ADOPT + EXTEND — install ajv-cli, write project-specific schema
-Result: 1 package + 1 schema file, no custom validation logic
+Action: ADOPT + EXTEND — recommend `ajv-cli` plus a project-specific schema, then wait for approval before install/write
+Result: 1 package + 1 schema file if approved, no custom validation logic
 ```
 
 ## Anti-Patterns
