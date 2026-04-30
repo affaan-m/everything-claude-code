@@ -471,7 +471,25 @@ function runTests() {
       'denial reason should mention the existing hook-id disable control');
   })) passed++; else failed++;
 
-  // --- Test 14: destructive Bash denials do not advertise the recovery escape hatch ---
+  // --- Test 14: routine Bash denial messages show the Bash hook escape hatch ---
+  clearState();
+  if (test('routine Bash denials include Bash hook disable id', () => {
+    const input = {
+      tool_name: 'Bash',
+      tool_input: { command: 'npm test' }
+    };
+    const result = runBashHook(input);
+    const output = parseOutput(result.stdout);
+    const reason = output.hookSpecificOutput.permissionDecisionReason;
+
+    assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny');
+    assert.ok(reason.includes('pre:bash:gateguard-fact-force'),
+      'routine Bash denial should show the Bash hook ID');
+    assert.ok(!reason.includes('pre:edit-write:gateguard-fact-force'),
+      'routine Bash denial should not show the Edit/Write hook ID as the targeted disable');
+  })) passed++; else failed++;
+
+  // --- Test 15: destructive Bash denials do not advertise the recovery escape hatch ---
   clearState();
   if (test('destructive Bash denials omit recovery escape hatch', () => {
     const input = {
@@ -487,7 +505,7 @@ function runTests() {
       'destructive gate should not advertise disabling GateGuard');
   })) passed++; else failed++;
 
-  // --- Test 15: MultiEdit gates first unchecked file ---
+  // --- Test 16: MultiEdit gates first unchecked file ---
   clearState();
   if (test('denies first MultiEdit with unchecked file', () => {
     const input = {
