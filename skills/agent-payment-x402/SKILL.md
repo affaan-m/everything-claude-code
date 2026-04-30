@@ -27,9 +27,9 @@ Are you paying for a resource, or charging for one?
 │
 └─ SELLER (charging for your API)
    │
-   ├─ TypeScript? → WebFetch typescript/SELLER.md (Express, Hono, Fastify, Next.js)
-   ├─ Go?         → WebFetch go/x402/SELLER.md (Gin, Echo, net/http)
-   ├─ Rust?       → WebFetch rust/x402/SELLER.md (Axum)
+   ├─ TypeScript? → WebFetch https://raw.githubusercontent.com/okx/payments/main/typescript/SELLER.md  (Express, Hono, Fastify, Next.js)
+   ├─ Go?         → WebFetch https://raw.githubusercontent.com/okx/payments/main/go/x402/SELLER.md     (Gin, Echo, net/http)
+   ├─ Rust?       → WebFetch https://raw.githubusercontent.com/okx/payments/main/rust/x402/SELLER.md   (Axum)
    └─ Python/Java? → Not yet supported, check okx/payments for updates
 ```
 
