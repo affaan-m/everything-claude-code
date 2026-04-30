@@ -22,6 +22,7 @@ function usage() {
     '  --limit <n>                    Maximum recent transcripts to inspect (default: 10)',
     '  --bash-timeout-seconds <n>     Age before a pending Bash call is stale (default: 1800)',
     '  --wake-grace-multiplier <n>    ScheduleWakeup grace multiplier (default: 2)',
+    '  --now <time>                   Override current time (ISO, epoch ms, or "now")',
     '',
     'Examples:',
     '  node scripts/loop-status.js --json',
@@ -41,6 +42,14 @@ function readPositiveNumber(value, flagName) {
   const number = Number(value);
   if (!Number.isFinite(number) || number <= 0) {
     throw new Error(`${flagName} must be a positive number`);
+  }
+  return number;
+}
+
+function readPositiveInteger(value, flagName) {
+  const number = readPositiveNumber(value, flagName);
+  if (!Number.isInteger(number)) {
+    throw new Error(`${flagName} must be a positive integer`);
   }
   return number;
 }
@@ -72,7 +81,7 @@ function parseArgs(argv) {
       options.transcriptPaths.push(readValue(args, index, arg));
       index += 1;
     } else if (arg === '--limit') {
-      options.limit = readPositiveNumber(readValue(args, index, arg), arg);
+      options.limit = readPositiveInteger(readValue(args, index, arg), arg);
       index += 1;
     } else if (arg === '--bash-timeout-seconds') {
       options.bashTimeoutSeconds = readPositiveNumber(readValue(args, index, arg), arg);
@@ -91,6 +100,16 @@ function parseArgs(argv) {
   return options;
 }
 
+function normalizeOptions(options = {}) {
+  return {
+    ...options,
+    bashTimeoutSeconds: options.bashTimeoutSeconds ?? DEFAULT_BASH_TIMEOUT_SECONDS,
+    limit: options.limit ?? DEFAULT_LIMIT,
+    transcriptPaths: options.transcriptPaths || [],
+    wakeGraceMultiplier: options.wakeGraceMultiplier ?? DEFAULT_WAKE_GRACE_MULTIPLIER,
+  };
+}
+
 function getHomeDir(options = {}) {
   if (options.home) {
     return path.resolve(options.home);
@@ -103,7 +122,13 @@ function getNow(options = {}) {
     return new Date();
   }
 
-  const now = new Date(options.now);
+  if (options.now === 'now') {
+    return new Date();
+  }
+
+  const now = /^\d+$/.test(String(options.now))
+    ? new Date(Number(options.now))
+    : new Date(options.now);
   if (Number.isNaN(now.getTime())) {
     throw new Error('--now must be a valid timestamp');
   }
@@ -128,20 +153,42 @@ function walkJsonlFiles(dir, files = []) {
 }
 
 function findTranscriptPaths(options = {}) {
+  const normalizedOptions = normalizeOptions(options);
+
   if (options.transcriptPaths && options.transcriptPaths.length > 0) {
-    return options.transcriptPaths.map(transcriptPath => path.resolve(transcriptPath));
+    return {
+      errors: [],
+      transcriptPaths: normalizedOptions.transcriptPaths.map(transcriptPath => path.resolve(transcriptPath)),
+    };
   }
 
-  const homeDir = getHomeDir(options);
+  const homeDir = getHomeDir(normalizedOptions);
   const transcriptRoot = path.join(homeDir, '.claude', 'projects');
-  return walkJsonlFiles(transcriptRoot)
-    .map(transcriptPath => ({
-      transcriptPath,
-      mtimeMs: fs.statSync(transcriptPath).mtimeMs,
-    }))
+  const errors = [];
+  const transcriptEntries = [];
+
+  for (const transcriptPath of walkJsonlFiles(transcriptRoot)) {
+    try {
+      transcriptEntries.push({
+        transcriptPath,
+        mtimeMs: fs.statSync(transcriptPath).mtimeMs,
+      });
+    } catch (error) {
+      errors.push({
+        code: error.code || null,
+        message: error.message,
+        transcriptPath,
+      });
+    }
+  }
+
+  return {
+    errors,
+    transcriptPaths: transcriptEntries
     .sort((left, right) => right.mtimeMs - left.mtimeMs)
-    .slice(0, options.limit)
-    .map(entry => entry.transcriptPath);
+    .slice(0, normalizedOptions.limit)
+    .map(entry => entry.transcriptPath),
+  };
 }
 
 function parseTimestamp(value) {
@@ -302,8 +349,9 @@ function buildRecommendation(signals) {
 }
 
 function analyzeTranscript(transcriptPath, options = {}) {
+  const normalizedOptions = normalizeOptions(options);
   const absoluteTranscriptPath = path.resolve(transcriptPath);
-  const now = options.nowDate || getNow(options);
+  const now = normalizedOptions.nowDate || getNow(normalizedOptions);
   const nowMs = now.getTime();
   const { entries, parseErrors } = readJsonlEntries(absoluteTranscriptPath);
   const pendingTools = new Map();
@@ -369,12 +417,12 @@ function analyzeTranscript(transcriptPath, options = {}) {
     const scheduledAt = parseTimestamp(latestWake.scheduledAt);
     const dueAt = parseTimestamp(latestWake.dueAt);
     const thresholdMs = scheduledAt
-      ? scheduledAt.getTime() + latestWake.delaySeconds * options.wakeGraceMultiplier * 1000
+      ? scheduledAt.getTime() + latestWake.delaySeconds * normalizedOptions.wakeGraceMultiplier * 1000
       : null;
     const hasAssistantProgressAfterDue = Boolean(
       dueAt
       && latestAssistantProgressAt
-      && latestAssistantProgressAt.getTime() > dueAt.getTime()
+      && latestAssistantProgressAt.getTime() >= dueAt.getTime()
     );
 
     if (thresholdMs && nowMs >= thresholdMs && !hasAssistantProgressAfterDue) {
@@ -390,12 +438,16 @@ function analyzeTranscript(transcriptPath, options = {}) {
   }
 
   for (const tool of pendingToolList) {
-    if (tool.name === 'Bash' && tool.ageSeconds !== null && tool.ageSeconds >= options.bashTimeoutSeconds) {
+    if (
+      tool.name === 'Bash'
+      && tool.ageSeconds !== null
+      && tool.ageSeconds >= normalizedOptions.bashTimeoutSeconds
+    ) {
       signals.push({
         ageSeconds: tool.ageSeconds,
         command: tool.command,
         startedAt: tool.startedAt,
-        thresholdSeconds: options.bashTimeoutSeconds,
+        thresholdSeconds: normalizedOptions.bashTimeoutSeconds,
         toolUseId: tool.toolUseId,
         type: 'pending_bash_tool_result',
       });
@@ -418,14 +470,28 @@ function analyzeTranscript(transcriptPath, options = {}) {
 }
 
 function buildStatus(options = {}) {
-  const nowDate = getNow(options);
+  const normalizedOptions = normalizeOptions(options);
+  const nowDate = getNow(normalizedOptions);
   const mergedOptions = {
-    ...options,
+    ...normalizedOptions,
     nowDate,
   };
-  const homeDir = getHomeDir(options);
-  const transcriptPaths = findTranscriptPaths(options);
-  const sessions = transcriptPaths.map(transcriptPath => analyzeTranscript(transcriptPath, mergedOptions));
+  const homeDir = getHomeDir(normalizedOptions);
+  const { errors, transcriptPaths } = findTranscriptPaths(normalizedOptions);
+  const sessions = [];
+
+  for (const transcriptPath of transcriptPaths) {
+    try {
+      sessions.push(analyzeTranscript(transcriptPath, mergedOptions));
+    } catch (error) {
+      errors.push({
+        code: error.code || null,
+        message: error.message,
+        transcriptPath,
+      });
+    }
+  }
+
   sessions.sort((left, right) => {
     if (left.state !== right.state) {
       return left.state === 'attention' ? -1 : 1;
@@ -435,15 +501,16 @@ function buildStatus(options = {}) {
 
   return {
     generatedAt: nowDate.toISOString(),
+    errors,
     schemaVersion: 'ecc.loop-status.v1',
     sessions,
     source: {
-      bashTimeoutSeconds: options.bashTimeoutSeconds,
+      bashTimeoutSeconds: normalizedOptions.bashTimeoutSeconds,
       homeDir,
-      limit: options.limit,
+      limit: normalizedOptions.limit,
       transcriptCount: transcriptPaths.length,
       transcriptRoot: path.join(homeDir, '.claude', 'projects'),
-      wakeGraceMultiplier: options.wakeGraceMultiplier,
+      wakeGraceMultiplier: normalizedOptions.wakeGraceMultiplier,
     },
   };
 }
@@ -456,11 +523,18 @@ function formatSignals(signals) {
 }
 
 function formatText(payload) {
+  const skippedLines = payload.errors.map(error => `  - ${error.transcriptPath}: ${error.message}`);
+
   if (payload.sessions.length === 0) {
-    return [
+    const lines = [
       `ECC loop status (${payload.generatedAt})`,
       `No Claude transcript JSONL files found under ${payload.source.transcriptRoot}.`,
-    ].join('\n');
+    ];
+    if (skippedLines.length > 0) {
+      lines.push('Skipped transcript errors:');
+      lines.push(...skippedLines);
+    }
+    return lines.join('\n');
   }
 
   const lines = [`ECC loop status (${payload.generatedAt})`];
@@ -469,6 +543,10 @@ function formatText(payload) {
     lines.push(`  last event: ${session.lastEventAt || 'unknown'}; events: ${session.eventCount}`);
     lines.push(`  signals: ${formatSignals(session.signals)}`);
     lines.push(`  action: ${session.recommendedAction}`);
+  }
+  if (skippedLines.length > 0) {
+    lines.push('Skipped transcript errors:');
+    lines.push(...skippedLines);
   }
   return lines.join('\n');
 }

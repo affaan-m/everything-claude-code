@@ -9,6 +9,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'loop-status.js');
+const { analyzeTranscript } = require('../../scripts/loop-status');
 const NOW = '2026-04-30T10:00:00.000Z';
 
 function run(args = [], options = {}) {
@@ -164,6 +165,26 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (test('analyzeTranscript applies default thresholds when called directly', () => {
+    const homeDir = createTempHome();
+
+    try {
+      const transcriptPath = writeTranscript(homeDir, '-Users-affoon-project-direct', 'session-direct.jsonl', [
+        toolUse('2026-04-30T09:00:00.000Z', 'session-direct', 'toolu_direct_wake', 'ScheduleWakeup', {
+          delaySeconds: 300,
+          reason: 'Direct API default threshold check',
+        }),
+      ]);
+
+      const session = analyzeTranscript(transcriptPath, { now: NOW });
+
+      assert.strictEqual(session.state, 'attention');
+      assert.ok(session.signals.some(signal => signal.type === 'schedule_wakeup_overdue'));
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
   if (test('reports stale Bash tool_use entries without matching tool_result', () => {
     const homeDir = createTempHome();
 
@@ -278,6 +299,25 @@ function runTests() {
     } finally {
       fs.rmSync(homeDir, { recursive: true, force: true });
     }
+  })) passed++; else failed++;
+
+  if (test('continues when an explicit transcript path cannot be read', () => {
+    const missingTranscript = path.join(os.tmpdir(), `missing-loop-status-${Date.now()}.jsonl`);
+
+    const result = run(['--transcript', missingTranscript, '--now', NOW, '--json']);
+
+    assert.strictEqual(result.code, 0, result.stderr);
+    const payload = parsePayload(result.stdout);
+    assert.deepStrictEqual(payload.sessions, []);
+    assert.strictEqual(payload.errors.length, 1);
+    assert.strictEqual(payload.errors[0].transcriptPath, missingTranscript);
+  })) passed++; else failed++;
+
+  if (test('rejects non-integer limit values', () => {
+    const result = run(['--limit', '1.5']);
+
+    assert.strictEqual(result.code, 1);
+    assert.match(result.stderr, /--limit must be a positive integer/);
   })) passed++; else failed++;
 
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);

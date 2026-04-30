@@ -34,6 +34,8 @@ tool calls that have no matching `tool_result`.
 
 - `ecc loop-status --json` emits machine-readable status for recent local
   Claude transcripts.
+- `ecc loop-status --home <dir>` scans a different home directory when
+  inspecting another local profile or mounted workspace.
 - `ecc loop-status --transcript <session.jsonl>` inspects one transcript
   directly.
 - `ecc loop-status --bash-timeout-seconds 1800` adjusts the stale Bash
