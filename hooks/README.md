@@ -99,6 +99,9 @@ export ECC_HOOK_PROFILE=standard
 # Disable specific hook IDs (comma-separated)
 export ECC_DISABLED_HOOKS="pre:bash:tmux-reminder,post:edit:typecheck"
 
+# Disable only GateGuard during setup or recovery
+export ECC_GATEGUARD=off
+
 # Cap SessionStart additional context (default: 8000 chars)
 export ECC_SESSION_START_MAX_CHARS=4000
 
