@@ -414,6 +414,17 @@ function runTests() {
     assert.strictEqual(options.watchIntervalSeconds, 0.01);
   })) passed++; else failed++;
 
+  if (test('parses write-dir snapshot option', () => {
+    const options = parseArgs([
+      'node',
+      'scripts/loop-status.js',
+      '--write-dir',
+      '/tmp/ecc-loop-snapshots',
+    ]);
+
+    assert.strictEqual(options.writeDir, '/tmp/ecc-loop-snapshots');
+  })) passed++; else failed++;
+
   if (test('exit-code mode returns 2 when attention signals are present', () => {
     const homeDir = createTempHome();
 
@@ -531,6 +542,55 @@ function runTests() {
       assert.strictEqual(frame.sessions[0].state, 'attention');
     } finally {
       fs.rmSync(homeDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
+  if (test('writes per-session status snapshots and index when write-dir is set', () => {
+    const homeDir = createTempHome();
+    const snapshotDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-loop-status-snapshots-'));
+
+    try {
+      writeTranscript(homeDir, '-Users-affoon-project-snapshot', 'session-snapshot.jsonl', [
+        toolUse('2026-04-30T09:00:00.000Z', 'session-snapshot', 'toolu_snapshot', 'ScheduleWakeup', {
+          delaySeconds: 300,
+          reason: 'Loop checkpoint',
+        }),
+      ]);
+
+      const result = run([
+        '--home',
+        homeDir,
+        '--now',
+        NOW,
+        '--json',
+        '--write-dir',
+        snapshotDir,
+      ]);
+
+      assert.strictEqual(result.code, 0, result.stderr);
+      const stdoutPayload = parsePayload(result.stdout);
+      assert.strictEqual(stdoutPayload.schemaVersion, 'ecc.loop-status.v1');
+
+      const indexPath = path.join(snapshotDir, 'index.json');
+      const snapshotPath = path.join(snapshotDir, 'session-snapshot.json');
+      assert.ok(fs.existsSync(indexPath), 'write-dir should include an index.json file');
+      assert.ok(fs.existsSync(snapshotPath), 'write-dir should include a per-session snapshot');
+
+      const indexPayload = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+      assert.strictEqual(indexPayload.schemaVersion, 'ecc.loop-status.index.v1');
+      assert.strictEqual(indexPayload.sessions.length, 1);
+      assert.strictEqual(indexPayload.sessions[0].sessionId, 'session-snapshot');
+      assert.strictEqual(indexPayload.sessions[0].state, 'attention');
+      assert.strictEqual(indexPayload.sessions[0].snapshotPath, snapshotPath);
+
+      const snapshotPayload = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
+      assert.strictEqual(snapshotPayload.schemaVersion, 'ecc.loop-status.session.v1');
+      assert.strictEqual(snapshotPayload.generatedAt, NOW);
+      assert.strictEqual(snapshotPayload.session.sessionId, 'session-snapshot');
+      assert.ok(snapshotPayload.session.signals.some(signal => signal.type === 'schedule_wakeup_overdue'));
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+      fs.rmSync(snapshotDir, { recursive: true, force: true });
     }
   })) passed++; else failed++;
 

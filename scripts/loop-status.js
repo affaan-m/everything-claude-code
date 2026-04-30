@@ -4,6 +4,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const crypto = require('crypto');
 
 const DEFAULT_BASH_TIMEOUT_SECONDS = 30 * 60;
 const DEFAULT_LIMIT = 10;
@@ -28,6 +29,7 @@ function usage() {
     '  --watch                        Refresh status until interrupted',
     '  --watch-count <n>              Stop after n watch refreshes',
     '  --watch-interval-seconds <n>   Seconds between watch refreshes (default: 5)',
+    '  --write-dir <dir>              Write index.json and per-session status snapshots',
     '',
     'Examples:',
     '  node scripts/loop-status.js --json',
@@ -74,6 +76,7 @@ function parseArgs(argv) {
     watchCount: null,
     wakeGraceMultiplier: DEFAULT_WAKE_GRACE_MULTIPLIER,
     watchIntervalSeconds: DEFAULT_WATCH_INTERVAL_SECONDS,
+    writeDir: null,
   };
 
   for (let index = 0; index < args.length; index += 1) {
@@ -111,6 +114,9 @@ function parseArgs(argv) {
     } else if (arg === '--watch-interval-seconds') {
       options.watchIntervalSeconds = readPositiveNumber(readValue(args, index, arg), arg);
       index += 1;
+    } else if (arg === '--write-dir') {
+      options.writeDir = readValue(args, index, arg);
+      index += 1;
     } else {
       throw new Error(`Unknown option: ${arg}`);
     }
@@ -134,6 +140,7 @@ function normalizeOptions(options = {}) {
     watchCount: options.watchCount ?? null,
     wakeGraceMultiplier: options.wakeGraceMultiplier ?? DEFAULT_WAKE_GRACE_MULTIPLIER,
     watchIntervalSeconds: options.watchIntervalSeconds ?? DEFAULT_WATCH_INTERVAL_SECONDS,
+    writeDir: options.writeDir || null,
   };
 }
 
@@ -603,6 +610,81 @@ function formatText(payload) {
   return lines.join('\n');
 }
 
+function hashString(value) {
+  return crypto.createHash('sha256').update(String(value)).digest('hex');
+}
+
+function sanitizeSnapshotName(value, fallback = 'session') {
+  const raw = String(value || '').trim() || fallback;
+  const sanitized = raw.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/^_+|_+$/g, '');
+  if (sanitized && sanitized.length <= 96) {
+    return sanitized;
+  }
+
+  const prefix = sanitized ? sanitized.slice(0, 48).replace(/[._-]+$/g, '') : fallback;
+  return `${prefix || fallback}-${hashString(raw).slice(0, 12)}`;
+}
+
+function atomicWriteJson(filePath, payload) {
+  const data = JSON.stringify(payload, null, 2) + '\n';
+  const tempPath = `${filePath}.${process.pid}.${Date.now()}.${Math.random().toString(16).slice(2)}.tmp`;
+  fs.writeFileSync(tempPath, data, 'utf8');
+  fs.renameSync(tempPath, filePath);
+}
+
+function getSnapshotPath(outputDir, session, usedNames) {
+  const baseName = sanitizeSnapshotName(session.sessionId);
+  let fileName = `${baseName}.json`;
+  if (usedNames.has(fileName)) {
+    fileName = `${baseName}-${hashString(session.transcriptPath || session.sessionId).slice(0, 8)}.json`;
+  }
+  usedNames.add(fileName);
+  return path.join(outputDir, fileName);
+}
+
+function writeStatusSnapshots(payload, writeDir) {
+  if (!writeDir) {
+    return null;
+  }
+
+  const outputDir = path.resolve(writeDir);
+  fs.mkdirSync(outputDir, { recursive: true });
+
+  const usedNames = new Set();
+  const sessions = payload.sessions.map(session => {
+    const snapshotPath = getSnapshotPath(outputDir, session, usedNames);
+    atomicWriteJson(snapshotPath, {
+      generatedAt: payload.generatedAt,
+      schemaVersion: 'ecc.loop-status.session.v1',
+      session,
+    });
+
+    return {
+      lastEventAt: session.lastEventAt,
+      sessionId: session.sessionId,
+      signalTypes: session.signals.map(signal => signal.type),
+      snapshotPath,
+      state: session.state,
+      transcriptPath: session.transcriptPath,
+    };
+  });
+
+  const indexPath = path.join(outputDir, 'index.json');
+  atomicWriteJson(indexPath, {
+    errors: payload.errors,
+    generatedAt: payload.generatedAt,
+    schemaVersion: 'ecc.loop-status.index.v1',
+    sessionCount: payload.sessions.length,
+    sessions,
+    source: payload.source,
+  });
+
+  return {
+    indexPath,
+    sessionCount: payload.sessions.length,
+  };
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -635,6 +717,7 @@ async function runWatch(options) {
       console.log('');
     }
     const payload = buildStatus(normalizedOptions);
+    writeStatusSnapshots(payload, normalizedOptions.writeDir);
     writeStatus(payload, normalizedOptions);
     exitCode = Math.max(exitCode, getStatusExitCode(payload));
     iteration += 1;
@@ -665,6 +748,7 @@ async function main() {
   }
 
   const payload = buildStatus(options);
+  writeStatusSnapshots(payload, options.writeDir);
   writeStatus(payload, options);
   if (options.exitCode) {
     process.exitCode = getStatusExitCode(payload);
@@ -686,4 +770,5 @@ module.exports = {
   getStatusExitCode,
   parseArgs,
   runWatch,
+  writeStatusSnapshots,
 };
