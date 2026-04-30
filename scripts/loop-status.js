@@ -1,0 +1,506 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
+const DEFAULT_BASH_TIMEOUT_SECONDS = 30 * 60;
+const DEFAULT_LIMIT = 10;
+const DEFAULT_WAKE_GRACE_MULTIPLIER = 2;
+
+function usage() {
+  console.log([
+    'Usage:',
+    '  node scripts/loop-status.js [--json] [--home <dir>] [--limit <n>]',
+    '  node scripts/loop-status.js --transcript <session.jsonl> [--json]',
+    '',
+    'Options:',
+    '  --json                         Emit machine-readable status JSON',
+    '  --home <dir>                   Override the home directory to scan',
+    '  --transcript <session.jsonl>    Inspect one transcript directly',
+    '  --limit <n>                    Maximum recent transcripts to inspect (default: 10)',
+    '  --bash-timeout-seconds <n>     Age before a pending Bash call is stale (default: 1800)',
+    '  --wake-grace-multiplier <n>    ScheduleWakeup grace multiplier (default: 2)',
+    '',
+    'Examples:',
+    '  node scripts/loop-status.js --json',
+    '  node scripts/loop-status.js --transcript ~/.claude/projects/-repo/session.jsonl'
+  ].join('\n'));
+}
+
+function readValue(args, index, flagName) {
+  const value = args[index + 1];
+  if (!value || value.startsWith('--')) {
+    throw new Error(`${flagName} requires a value`);
+  }
+  return value;
+}
+
+function readPositiveNumber(value, flagName) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number <= 0) {
+    throw new Error(`${flagName} must be a positive number`);
+  }
+  return number;
+}
+
+function parseArgs(argv) {
+  const args = argv.slice(2);
+  const options = {
+    bashTimeoutSeconds: DEFAULT_BASH_TIMEOUT_SECONDS,
+    home: null,
+    json: false,
+    limit: DEFAULT_LIMIT,
+    now: null,
+    showHelp: false,
+    transcriptPaths: [],
+    wakeGraceMultiplier: DEFAULT_WAKE_GRACE_MULTIPLIER,
+  };
+
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+
+    if (arg === '--help' || arg === '-h') {
+      options.showHelp = true;
+    } else if (arg === '--json') {
+      options.json = true;
+    } else if (arg === '--home') {
+      options.home = readValue(args, index, arg);
+      index += 1;
+    } else if (arg === '--transcript') {
+      options.transcriptPaths.push(readValue(args, index, arg));
+      index += 1;
+    } else if (arg === '--limit') {
+      options.limit = readPositiveNumber(readValue(args, index, arg), arg);
+      index += 1;
+    } else if (arg === '--bash-timeout-seconds') {
+      options.bashTimeoutSeconds = readPositiveNumber(readValue(args, index, arg), arg);
+      index += 1;
+    } else if (arg === '--wake-grace-multiplier') {
+      options.wakeGraceMultiplier = readPositiveNumber(readValue(args, index, arg), arg);
+      index += 1;
+    } else if (arg === '--now') {
+      options.now = readValue(args, index, arg);
+      index += 1;
+    } else {
+      throw new Error(`Unknown option: ${arg}`);
+    }
+  }
+
+  return options;
+}
+
+function getHomeDir(options = {}) {
+  if (options.home) {
+    return path.resolve(options.home);
+  }
+  return process.env.HOME || process.env.USERPROFILE || os.homedir();
+}
+
+function getNow(options = {}) {
+  if (!options.now) {
+    return new Date();
+  }
+
+  const now = new Date(options.now);
+  if (Number.isNaN(now.getTime())) {
+    throw new Error('--now must be a valid timestamp');
+  }
+  return now;
+}
+
+function walkJsonlFiles(dir, files = []) {
+  if (!fs.existsSync(dir)) {
+    return files;
+  }
+
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      walkJsonlFiles(fullPath, files);
+    } else if (entry.isFile() && entry.name.endsWith('.jsonl')) {
+      files.push(fullPath);
+    }
+  }
+  return files;
+}
+
+function findTranscriptPaths(options = {}) {
+  if (options.transcriptPaths && options.transcriptPaths.length > 0) {
+    return options.transcriptPaths.map(transcriptPath => path.resolve(transcriptPath));
+  }
+
+  const homeDir = getHomeDir(options);
+  const transcriptRoot = path.join(homeDir, '.claude', 'projects');
+  return walkJsonlFiles(transcriptRoot)
+    .map(transcriptPath => ({
+      transcriptPath,
+      mtimeMs: fs.statSync(transcriptPath).mtimeMs,
+    }))
+    .sort((left, right) => right.mtimeMs - left.mtimeMs)
+    .slice(0, options.limit)
+    .map(entry => entry.transcriptPath);
+}
+
+function parseTimestamp(value) {
+  if (typeof value !== 'string' && typeof value !== 'number') {
+    return null;
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+  return date;
+}
+
+function getEntryTimestamp(entry) {
+  return parseTimestamp(entry.timestamp)
+    || parseTimestamp(entry.createdAt)
+    || parseTimestamp(entry.created_at)
+    || parseTimestamp(entry.message && entry.message.timestamp);
+}
+
+function getSessionId(entry, transcriptPath) {
+  return entry.sessionId
+    || entry.session_id
+    || (entry.session && entry.session.id)
+    || (entry.message && entry.message.sessionId)
+    || path.basename(transcriptPath, '.jsonl');
+}
+
+function getContentBlocks(entry) {
+  const blocks = [];
+  if (entry.message && Array.isArray(entry.message.content)) {
+    blocks.push(...entry.message.content);
+  }
+  if (Array.isArray(entry.content)) {
+    blocks.push(...entry.content);
+  }
+  return blocks;
+}
+
+function extractToolUses(entry) {
+  const uses = [];
+
+  for (const block of getContentBlocks(entry)) {
+    if (block && block.type === 'tool_use' && block.id) {
+      uses.push({
+        id: block.id,
+        input: block.input || {},
+        name: block.name || 'unknown',
+      });
+    }
+  }
+
+  const topLevelUse = entry.tool_use || entry.toolUse;
+  if (topLevelUse && topLevelUse.id) {
+    uses.push({
+      id: topLevelUse.id,
+      input: topLevelUse.input || {},
+      name: topLevelUse.name || 'unknown',
+    });
+  }
+
+  if (entry.type === 'tool_use' && entry.id) {
+    uses.push({
+      id: entry.id,
+      input: entry.input || {},
+      name: entry.name || 'unknown',
+    });
+  }
+
+  return uses;
+}
+
+function extractToolResultIds(entry) {
+  const resultIds = [];
+
+  for (const block of getContentBlocks(entry)) {
+    if (block && block.type === 'tool_result') {
+      const toolUseId = block.tool_use_id || block.toolUseId || block.id;
+      if (toolUseId) {
+        resultIds.push(toolUseId);
+      }
+    }
+  }
+
+  const topLevelResult = entry.tool_result || entry.toolResult || entry.toolUseResult;
+  if (topLevelResult) {
+    const toolUseId = topLevelResult.tool_use_id || topLevelResult.toolUseId || topLevelResult.id;
+    if (toolUseId) {
+      resultIds.push(toolUseId);
+    }
+  }
+
+  if (entry.type === 'tool_result') {
+    const toolUseId = entry.tool_use_id || entry.toolUseId || entry.id;
+    if (toolUseId) {
+      resultIds.push(toolUseId);
+    }
+  }
+
+  return resultIds;
+}
+
+function isAssistantProgressEntry(entry) {
+  return entry.type === 'assistant'
+    || (entry.message && entry.message.role === 'assistant')
+    || extractToolUses(entry).length > 0;
+}
+
+function readJsonlEntries(transcriptPath) {
+  const raw = fs.readFileSync(transcriptPath, 'utf8');
+  const entries = [];
+  let parseErrors = 0;
+
+  for (const line of raw.split(/\r?\n/)) {
+    if (!line.trim()) {
+      continue;
+    }
+
+    try {
+      entries.push(JSON.parse(line));
+    } catch (_error) {
+      parseErrors += 1;
+    }
+  }
+
+  return { entries, parseErrors };
+}
+
+function readDelaySeconds(input) {
+  const delay = input && (
+    input.delaySeconds
+    || input.delay_seconds
+    || input.seconds
+    || input.delay
+  );
+  const number = Number(delay);
+  if (!Number.isFinite(number) || number <= 0) {
+    return null;
+  }
+  return number;
+}
+
+function toIso(date) {
+  return date ? date.toISOString() : null;
+}
+
+function buildRecommendation(signals) {
+  if (signals.some(signal => signal.type === 'pending_bash_tool_result')) {
+    return 'Open the transcript or interrupt the parked session; the Bash result appears stale.';
+  }
+
+  if (signals.some(signal => signal.type === 'schedule_wakeup_overdue')) {
+    return 'Open the transcript or interrupt the parked session; the scheduled wake is overdue.';
+  }
+
+  return 'No stale ScheduleWakeup or Bash waits detected.';
+}
+
+function analyzeTranscript(transcriptPath, options = {}) {
+  const absoluteTranscriptPath = path.resolve(transcriptPath);
+  const now = options.nowDate || getNow(options);
+  const nowMs = now.getTime();
+  const { entries, parseErrors } = readJsonlEntries(absoluteTranscriptPath);
+  const pendingTools = new Map();
+  let latestAssistantProgressAt = null;
+  let lastEventAt = null;
+  let latestWake = null;
+  let sessionId = path.basename(absoluteTranscriptPath, '.jsonl');
+
+  for (const entry of entries) {
+    sessionId = getSessionId(entry, absoluteTranscriptPath) || sessionId;
+    const timestamp = getEntryTimestamp(entry);
+    if (timestamp && (!lastEventAt || timestamp.getTime() > lastEventAt.getTime())) {
+      lastEventAt = timestamp;
+    }
+    if (
+      timestamp
+      && isAssistantProgressEntry(entry)
+      && (!latestAssistantProgressAt || timestamp.getTime() > latestAssistantProgressAt.getTime())
+    ) {
+      latestAssistantProgressAt = timestamp;
+    }
+
+    for (const toolUse of extractToolUses(entry)) {
+      const startedAt = timestamp || lastEventAt;
+      pendingTools.set(toolUse.id, {
+        command: toolUse.input && toolUse.input.command ? String(toolUse.input.command) : null,
+        input: toolUse.input || {},
+        name: toolUse.name,
+        startedAt: toIso(startedAt),
+        toolUseId: toolUse.id,
+      });
+
+      if (toolUse.name === 'ScheduleWakeup') {
+        const delaySeconds = readDelaySeconds(toolUse.input);
+        if (delaySeconds && startedAt) {
+          const dueAt = new Date(startedAt.getTime() + delaySeconds * 1000);
+          latestWake = {
+            delaySeconds,
+            dueAt: dueAt.toISOString(),
+            reason: toolUse.input && toolUse.input.reason ? String(toolUse.input.reason) : null,
+            scheduledAt: startedAt.toISOString(),
+            toolUseId: toolUse.id,
+          };
+        }
+      }
+    }
+
+    for (const toolUseId of extractToolResultIds(entry)) {
+      pendingTools.delete(toolUseId);
+    }
+  }
+
+  const pendingToolList = Array.from(pendingTools.values()).map(tool => {
+    const startedAt = parseTimestamp(tool.startedAt);
+    return {
+      ...tool,
+      ageSeconds: startedAt ? Math.max(0, Math.floor((nowMs - startedAt.getTime()) / 1000)) : null,
+    };
+  });
+
+  const signals = [];
+  if (latestWake) {
+    const scheduledAt = parseTimestamp(latestWake.scheduledAt);
+    const dueAt = parseTimestamp(latestWake.dueAt);
+    const thresholdMs = scheduledAt
+      ? scheduledAt.getTime() + latestWake.delaySeconds * options.wakeGraceMultiplier * 1000
+      : null;
+    const hasAssistantProgressAfterDue = Boolean(
+      dueAt
+      && latestAssistantProgressAt
+      && latestAssistantProgressAt.getTime() > dueAt.getTime()
+    );
+
+    if (thresholdMs && nowMs >= thresholdMs && !hasAssistantProgressAfterDue) {
+      signals.push({
+        delaySeconds: latestWake.delaySeconds,
+        dueAt: latestWake.dueAt,
+        overdueSeconds: dueAt ? Math.max(0, Math.floor((nowMs - dueAt.getTime()) / 1000)) : null,
+        scheduledAt: latestWake.scheduledAt,
+        toolUseId: latestWake.toolUseId,
+        type: 'schedule_wakeup_overdue',
+      });
+    }
+  }
+
+  for (const tool of pendingToolList) {
+    if (tool.name === 'Bash' && tool.ageSeconds !== null && tool.ageSeconds >= options.bashTimeoutSeconds) {
+      signals.push({
+        ageSeconds: tool.ageSeconds,
+        command: tool.command,
+        startedAt: tool.startedAt,
+        thresholdSeconds: options.bashTimeoutSeconds,
+        toolUseId: tool.toolUseId,
+        type: 'pending_bash_tool_result',
+      });
+    }
+  }
+
+  return {
+    eventCount: entries.length,
+    lastEventAt: toIso(lastEventAt),
+    latestWake,
+    parseErrors,
+    pendingTools: pendingToolList,
+    projectSlug: path.basename(path.dirname(absoluteTranscriptPath)),
+    recommendedAction: buildRecommendation(signals),
+    sessionId,
+    signals,
+    state: signals.length > 0 ? 'attention' : 'ok',
+    transcriptPath: absoluteTranscriptPath,
+  };
+}
+
+function buildStatus(options = {}) {
+  const nowDate = getNow(options);
+  const mergedOptions = {
+    ...options,
+    nowDate,
+  };
+  const homeDir = getHomeDir(options);
+  const transcriptPaths = findTranscriptPaths(options);
+  const sessions = transcriptPaths.map(transcriptPath => analyzeTranscript(transcriptPath, mergedOptions));
+  sessions.sort((left, right) => {
+    if (left.state !== right.state) {
+      return left.state === 'attention' ? -1 : 1;
+    }
+    return String(right.lastEventAt || '').localeCompare(String(left.lastEventAt || ''));
+  });
+
+  return {
+    generatedAt: nowDate.toISOString(),
+    schemaVersion: 'ecc.loop-status.v1',
+    sessions,
+    source: {
+      bashTimeoutSeconds: options.bashTimeoutSeconds,
+      homeDir,
+      limit: options.limit,
+      transcriptCount: transcriptPaths.length,
+      transcriptRoot: path.join(homeDir, '.claude', 'projects'),
+      wakeGraceMultiplier: options.wakeGraceMultiplier,
+    },
+  };
+}
+
+function formatSignals(signals) {
+  if (signals.length === 0) {
+    return 'none';
+  }
+  return signals.map(signal => signal.type).join(', ');
+}
+
+function formatText(payload) {
+  if (payload.sessions.length === 0) {
+    return [
+      `ECC loop status (${payload.generatedAt})`,
+      `No Claude transcript JSONL files found under ${payload.source.transcriptRoot}.`,
+    ].join('\n');
+  }
+
+  const lines = [`ECC loop status (${payload.generatedAt})`];
+  for (const session of payload.sessions) {
+    lines.push(`- ${session.sessionId} [${session.state}] ${session.transcriptPath}`);
+    lines.push(`  last event: ${session.lastEventAt || 'unknown'}; events: ${session.eventCount}`);
+    lines.push(`  signals: ${formatSignals(session.signals)}`);
+    lines.push(`  action: ${session.recommendedAction}`);
+  }
+  return lines.join('\n');
+}
+
+function main() {
+  const options = parseArgs(process.argv);
+  if (options.showHelp) {
+    usage();
+    return;
+  }
+
+  const payload = buildStatus(options);
+  if (options.json) {
+    console.log(JSON.stringify(payload, null, 2));
+  } else {
+    console.log(formatText(payload));
+  }
+}
+
+if (require.main === module) {
+  try {
+    main();
+  } catch (error) {
+    console.error(`[loop-status] ${error.message}`);
+    process.exit(1);
+  }
+}
+
+module.exports = {
+  analyzeTranscript,
+  buildStatus,
+  extractToolResultIds,
+  extractToolUses,
+  parseArgs,
+};

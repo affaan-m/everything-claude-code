@@ -49,6 +49,10 @@ const COMMANDS = {
     script: 'session-inspect.js',
     description: 'Emit canonical ECC session snapshots from dmux or Claude history targets',
   },
+  'loop-status': {
+    script: 'loop-status.js',
+    description: 'Inspect Claude transcripts for stale loop wakeups and pending tool results',
+  },
   uninstall: {
     script: 'uninstall.js',
     description: 'Remove ECC-managed files recorded in install-state',
@@ -66,6 +70,7 @@ const PRIMARY_COMMANDS = [
   'status',
   'sessions',
   'session-inspect',
+  'loop-status',
   'uninstall',
 ];
 
@@ -100,6 +105,7 @@ Examples:
   ecc sessions
   ecc sessions session-active --json
   ecc session-inspect claude:latest
+  ecc loop-status --json
   ecc uninstall --target antigravity --dry-run
 `);
 

@@ -75,6 +75,7 @@
     "scripts/install-plan.js",
     "scripts/lib/",
     "scripts/list-installed.js",
+    "scripts/loop-status.js",
     "scripts/orchestration-status.js",
     "scripts/orchestrate-codex-worker.sh",
     "scripts/orchestrate-worktrees.js",
