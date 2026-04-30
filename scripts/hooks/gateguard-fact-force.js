@@ -171,6 +171,7 @@ function saveState(state) {
       }
     }
     tmpFile = null;
+    return true;
   } catch (_) {
     if (tmpFile) {
       try {
@@ -179,6 +180,7 @@ function saveState(state) {
         /* ignore */
       }
     }
+    return false;
   }
 }
 
@@ -186,8 +188,9 @@ function markChecked(key) {
   const state = loadState();
   if (!state.checked.includes(key)) {
     state.checked.push(key);
-    saveState(state);
+    return saveState(state);
   }
+  return true;
 }
 
 function isChecked(key) {
@@ -364,6 +367,13 @@ function denyResult(reason) {
   };
 }
 
+function allowWithStateWarning() {
+  return {
+    stderr: '[Fact-Forcing Gate] GateGuard state could not be persisted; allowing this operation to avoid a permanent retry loop. Check GATEGUARD_STATE_DIR or filesystem permissions.',
+    exitCode: 0
+  };
+}
+
 // --- Core logic (exported for run-with-flags.js) ---
 
 function run(rawInput) {
@@ -389,7 +399,9 @@ function run(rawInput) {
     }
 
     if (!isChecked(filePath)) {
-      markChecked(filePath);
+      if (!markChecked(filePath)) {
+        return allowWithStateWarning();
+      }
       return denyResult(toolName === 'Edit' ? editGateMsg(filePath) : writeGateMsg(filePath));
     }
 
@@ -401,7 +413,9 @@ function run(rawInput) {
     for (const edit of edits) {
       const filePath = edit.file_path || '';
       if (filePath && !isClaudeSettingsPath(filePath) && !isChecked(filePath)) {
-        markChecked(filePath);
+        if (!markChecked(filePath)) {
+          return allowWithStateWarning();
+        }
         return denyResult(editGateMsg(filePath));
       }
     }
@@ -418,14 +432,18 @@ function run(rawInput) {
       // Gate destructive commands on first attempt; allow retry after facts presented
       const key = '__destructive__' + crypto.createHash('sha256').update(command).digest('hex').slice(0, 16);
       if (!isChecked(key)) {
-        markChecked(key);
+        if (!markChecked(key)) {
+          return allowWithStateWarning();
+        }
         return denyResult(destructiveBashMsg());
       }
       return rawInput; // allow retry after facts presented
     }
 
     if (!isChecked(ROUTINE_BASH_SESSION_KEY)) {
-      markChecked(ROUTINE_BASH_SESSION_KEY);
+      if (!markChecked(ROUTINE_BASH_SESSION_KEY)) {
+        return allowWithStateWarning();
+      }
       return denyResult(routineBashMsg());
     }
 

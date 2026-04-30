@@ -191,6 +191,30 @@ function runTests() {
     assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('call this new file'));
   })) passed++; else failed++;
 
+  // --- Test 3b: fails open when retry state cannot be persisted ---
+  clearState();
+  if (test('fails open with warning when state path cannot be persisted', () => {
+    const invalidStateDir = path.join(stateDir, 'not-a-directory');
+    fs.writeFileSync(invalidStateDir, 'not a directory', 'utf8');
+
+    const input = {
+      tool_name: 'Write',
+      tool_input: { file_path: '/src/state-failure.js', content: 'module.exports = {};' }
+    };
+    const result = runHook(input, { GATEGUARD_STATE_DIR: invalidStateDir });
+    assert.strictEqual(result.code, 0, 'exit code should be 0');
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'should produce valid JSON output');
+    if (output.hookSpecificOutput) {
+      assert.notStrictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
+        'unpersistable state must not deny a retry that can never be recorded');
+    } else {
+      assert.strictEqual(output.tool_name, 'Write', 'pass-through should preserve input');
+    }
+    assert.ok(result.stderr.includes('GateGuard state could not be persisted'),
+      'should warn that state persistence failed');
+  })) passed++; else failed++;
+
   // --- Test 4: denies destructive Bash, allows retry ---
   clearState();
   if (test('denies destructive Bash commands, allows retry after facts presented', () => {
