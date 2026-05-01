@@ -25,10 +25,12 @@ const requiredHeadings = [
 ];
 
 const requiredPatterns = [
-  // Pre-report gate must force the reviewer to cite lines and describe
-  // concrete failure modes before writing a finding.
+  // Pre-report gate must force the reviewer to cite lines, describe
+  // concrete failure modes, and check surrounding context before writing a
+  // finding. All four gate questions must stay locked in.
   /Can I cite the exact line/i,
   /concrete failure mode/i,
+  /Have I read the surrounding context/i,
   /Severity inflation/i,
 
   // HIGH/CRITICAL must carry proof.
@@ -63,10 +65,12 @@ function test(name, fn) {
   }
 }
 
+function read() {
+  return fs.readFileSync(reviewerPath, 'utf8');
+}
+
 function run() {
   console.log('\n=== Testing code-reviewer false-positive guardrails ===\n');
-
-  const source = fs.readFileSync(reviewerPath, 'utf8');
 
   let passed = 0;
   let failed = 0;
@@ -74,6 +78,7 @@ function run() {
   for (const heading of requiredHeadings) {
     if (
       test(`code-reviewer.md contains heading: ${heading}`, () => {
+        const source = read();
         assert.ok(source.includes(heading), `code-reviewer.md missing required heading "${heading}"`);
       })
     )
@@ -84,6 +89,7 @@ function run() {
   for (const pattern of requiredPatterns) {
     if (
       test(`code-reviewer.md matches ${pattern}`, () => {
+        const source = read();
         assert.ok(pattern.test(source), `code-reviewer.md missing required pattern ${pattern}`);
       })
     )
@@ -95,6 +101,7 @@ function run() {
   // quantitative bar, not just prose heuristics.
   if (
     test('code-reviewer.md retains the >80% confidence threshold', () => {
+      const source = read();
       assert.ok(/>\s*80%\s*confident/i.test(source), 'code-reviewer.md missing >80% confidence threshold');
     })
   )
