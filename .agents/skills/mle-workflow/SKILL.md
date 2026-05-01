@@ -51,6 +51,23 @@ Do not treat MLE as separate from software engineering. Most ECC SWE workflows a
 | `git-workflow` / `github-ops` / `opensource-pipeline` | Package MLE changes for review with crisp scope, generated artifacts excluded, and reproducible test evidence |
 | `strategic-compact` / `dmux-workflows` | Split long ML work into parallel tracks: data contract, eval harness, serving path, monitoring, and docs |
 
+## Ten MLE Task Simulations
+
+Use these simulations as coverage checks when planning or reviewing MLE work. A strong MLE workflow should reduce each task to explicit contracts, reusable SWE surfaces, automated evidence, and a reviewable artifact.
+
+| ID | Common MLE task | Streamlined ECC path | Required output | Pipeline lanes covered |
+|----|-----------------|----------------------|-----------------|------------------------|
+| MLE-01 | Scope a new prediction, ranking, recommender, classifier, embedding, or forecast capability | `product-capability`, `plan`, `architecture-decision-records`, `mle-workflow` | Prediction contract with owner, target, inputs, outputs, latency, fallback, privacy, and acceptance gates | product contract, risk, rollout |
+| MLE-02 | Audit source data, labels, feature freshness, and leakage risk | `repo-scan`, `database-reviewer`, `database-migrations`, `postgres-patterns`, `clickhouse-io` | Data contract with entity grain, label timing, feature timing, point-in-time join rules, split policy, and dataset snapshot | data contract, leakage, reproducibility |
+| MLE-03 | Build or change feature transforms shared by training and serving | `tdd-workflow`, `python-testing`, `python-patterns`, `code-reviewer` | Tested transform module with schema checks, null/range handling, immutable config, and train/serve equivalence tests | feature pipeline, testing, serving parity |
+| MLE-04 | Convert notebook or prototype code into a repeatable training job | `python-patterns`, `pytorch-patterns`, `docker-patterns`, `deployment-patterns` | Reproducible training entrypoint with typed config, seeds, pinned dependencies, dataset version, code SHA, and artifact URI | training, artifacts, environment |
+| MLE-05 | Run experiments and decide whether a model is promotable | `eval-harness`, `ai-regression-testing`, `quality-gate`, `test-coverage` | Promotion report comparing baseline and production model with primary metric, guardrails, slice metrics, confidence, and fail-closed gates | evaluation, promotion, regression |
+| MLE-06 | Package a model artifact for batch or online inference | `api-design`, `backend-patterns`, `security-review`, `security-scan` | Versioned artifact bundle with preprocessing, config, dependency constraints, schema validation, safe loading, and PII-safe logs | artifact, security, inference contract |
+| MLE-07 | Ship an online prediction API or model service | `api-design`, `backend-patterns`, `e2e-testing`, `browser-qa`, `accessibility` | Prediction endpoint with response envelope, timeout, batching behavior, fallback path, model version, confidence, and product-flow tests | serving, fallback, user workflow |
+| MLE-08 | Ship a batch scoring, embedding, or backfill pipeline | `deployment-patterns`, `docker-patterns`, `build-fix`, `pr-test-analyzer` | Idempotent batch job with checkpointing, retry behavior, output schema, cost estimate, and CI/environment diagnostics | batch inference, reliability, cost |
+| MLE-09 | Roll out a model with shadow traffic, canary, A/B test, or rollback | `canary-watch`, `dashboard-builder`, `verification-loop`, `performance-optimizer` | Rollout plan naming traffic split, dashboards, p95 latency, cost, quality guardrails, rollback artifact, and rollback trigger | deployment, canary, rollback |
+| MLE-10 | Operate, debug, and refresh a production model after launch | `silent-failure-hunter`, `dashboard-builder`, `mle-reviewer`, `doc-updater`, `github-ops` | Incident or refresh plan with drift checks, delayed-label health, alert owners, runbook updates, retrain criteria, and PR evidence | monitoring, incident response, retraining |
+
 ## Core Workflow
 
 ### 1. Define the Prediction Contract
