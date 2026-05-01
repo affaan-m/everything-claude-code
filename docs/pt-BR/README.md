@@ -170,7 +170,7 @@ npx ecc-install typescript
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**Pronto!** Você agora tem acesso a 28 agentes, 116 skills e 59 comandos.
+**Pronto!** Você agora tem acesso a 49 agentes, 183 skills e 68 comandos.
 
 ---
 

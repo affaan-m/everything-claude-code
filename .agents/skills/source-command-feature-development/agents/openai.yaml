@@ -1,0 +1,7 @@
+interface:
+  display_name: "Feature Development"
+  short_description: "Scaffold feature implementation workflow"
+  brand_color: "#7C3AED"
+  default_prompt: "Use $source-command-feature-development to structure a feature implementation."
+policy:
+  allow_implicit_invocation: true

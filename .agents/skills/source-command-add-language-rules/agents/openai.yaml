@@ -1,0 +1,7 @@
+interface:
+  display_name: "Add Language Rules"
+  short_description: "Scaffold a new language rule pack"
+  brand_color: "#0EA5E9"
+  default_prompt: "Use $source-command-add-language-rules to add a new language rule pack."
+policy:
+  allow_implicit_invocation: true

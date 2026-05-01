@@ -1,6 +1,6 @@
 # Everything Claude Code (ECC) — Agent Talimatları
 
-Bu, yazılım geliştirme için 28 özel agent, 116 skill, 59 command ve otomatik hook iş akışları sağlayan **üretime hazır bir AI kodlama eklentisidir**.
+Bu, yazılım geliştirme için 49 özel agent, 183 skill, 68 command ve otomatik hook iş akışları sağlayan **üretime hazır bir AI kodlama eklentisidir**.
 
 **Sürüm:** 2.0.0-rc.1
 
@@ -42,6 +42,7 @@ Bu, yazılım geliştirme için 28 özel agent, 116 skill, 59 command ve otomati
 | rust-reviewer | Rust kod incelemesi | Rust projeleri |
 | rust-build-resolver | Rust build hataları | Rust build başarısızlıkları |
 | pytorch-build-resolver | PyTorch runtime/CUDA/eğitim hataları | PyTorch build/eğitim başarısızlıkları |
+| mle-reviewer | Production ML pipeline incelemesi | ML pipeline, eval, serving, monitoring, rollback |
 | typescript-reviewer | TypeScript/JavaScript kod incelemesi | TypeScript/JavaScript projeleri |
 
 ## Agent Orkestrasyonu
@@ -141,9 +142,9 @@ Başarısızlık sorunlarını giderin: test izolasyonunu kontrol edin → mockl
 ## Proje Yapısı
 
 ```
-agents/          — 28 özel subagent
-skills/          — 115 iş akışı skillleri ve alan bilgisi
-commands/        — 59 slash command
+agents/          — 49 özel subagent
+skills/          — 183 iş akışı skillleri ve alan bilgisi
+commands/        — 68 slash command
 hooks/           — Tetikleyici tabanlı otomasyonlar
 rules/           — Her zaman uyulması gereken kurallar (ortak + dile özel)
 scripts/         — Platformlar arası Node.js yardımcı programları

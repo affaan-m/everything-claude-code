@@ -83,6 +83,18 @@ function runTests() {
     assert.match(result.stdout, /npx ecc plan --profile minimal --target claude --with capability:security/);
   })) passed++; else failed++;
 
+  if (test('recommends machine-learning component and mle profile', () => {
+    const result = run(['mlops', 'training', 'model', 'deployment', '--json']);
+
+    assert.strictEqual(result.status, 0, result.stderr);
+    const payload = parseJson(result.stdout);
+    assert.strictEqual(payload.matches[0].componentId, 'capability:machine-learning');
+    assert.ok(payload.matches[0].installCommand.includes('--with capability:machine-learning'));
+    assert.ok(payload.matches.some(match => match.componentId === 'agent:mle-reviewer'));
+    assert.ok(payload.profiles.some(profile => profile.id === 'mle'));
+    assert.ok(payload.profiles.find(profile => profile.id === 'mle').installCommand.includes('--profile mle'));
+  })) passed++; else failed++;
+
   if (test('works from outside the ECC repository', () => {
     const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-consult-project-'));
     try {

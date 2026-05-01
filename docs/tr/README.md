@@ -173,7 +173,7 @@ Manuel kurulum talimatları için `rules/` klasöründeki README'ye bakın.
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**Bu kadar!** Artık 28 agent, 116 skill ve 59 command'a erişiminiz var.
+**Bu kadar!** Artık 49 agent, 183 skill ve 68 command'a erişiminiz var.
 
 ---
 
@@ -234,7 +234,7 @@ everything-claude-code/
 |   |-- plugin.json         # Plugin metadata ve component path'leri
 |   |-- marketplace.json    # /plugin marketplace add için marketplace kataloğu
 |
-|-- agents/           # Delegation için 28 özel subagent
+|-- agents/           # Delegation için 49 özel subagent
 |   |-- planner.md           # Feature implementasyon planlama
 |   |-- architect.md         # Sistem tasarım kararları
 |   |-- tdd-guide.md         # Test-driven development

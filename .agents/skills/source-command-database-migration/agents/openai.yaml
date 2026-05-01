@@ -1,0 +1,7 @@
+interface:
+  display_name: "Database Migration"
+  short_description: "Scaffold safe database migration work"
+  brand_color: "#16A34A"
+  default_prompt: "Use $source-command-database-migration to plan a database migration."
+policy:
+  allow_implicit_invocation: true

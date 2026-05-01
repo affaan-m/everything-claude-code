@@ -36,6 +36,22 @@
         "orchestration"
       ]
     },
+    "mle": {
+      "description": "Machine-learning engineering profile for production ML pipelines, evals, deployment, monitoring, and rollback.",
+      "modules": [
+        "rules-core",
+        "agents-core",
+        "commands-core",
+        "hooks-runtime",
+        "platform-configs",
+        "workflow-quality",
+        "framework-language",
+        "database",
+        "devops-infra",
+        "security",
+        "machine-learning"
+      ]
+    },
     "security": {
       "description": "Security-heavy setup with baseline runtime support and security-specific guidance.",
       "modules": [
@@ -83,6 +99,7 @@
         "swift-apple",
         "agentic-patterns",
         "devops-infra",
+        "machine-learning",
         "supply-chain-domain",
         "document-processing"
       ]
