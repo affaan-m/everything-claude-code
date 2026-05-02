@@ -801,6 +801,129 @@ function runTests() {
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
+  // Run validate-skills.js against a fixture dir, optionally passing
+  // extra argv (e.g. '--strict') so the frontmatter finding suite can
+  // exercise both warn and strict modes.
+  //
+  // Captures stderr on both success and failure (the shared
+  // runSourceViaTempFile helper only surfaces stderr when the child
+  // exits non-zero, which hides WARN lines in the default mode).
+  function runSkillsValidator(testDir, argv = []) {
+    const { spawnSync } = require('child_process');
+    const validatorPath = path.join(validatorsDir, 'validate-skills.js');
+    let source = fs.readFileSync(validatorPath, 'utf8');
+    source = stripShebang(source);
+    source = source.replace(
+      /const SKILLS_DIR = .*?;/,
+      `const SKILLS_DIR = ${JSON.stringify(testDir)};`,
+    );
+    if (argv.length > 0) {
+      const argvPreamble = argv
+        .map(arg => `process.argv.push(${JSON.stringify(arg)});`)
+        .join('\n');
+      source = `${argvPreamble}\n${source}`;
+    }
+    const tmpFile = path.join(repoRoot,
+      `.tmp-validator-${Date.now()}-${Math.random().toString(36).slice(2)}.js`);
+    try {
+      fs.writeFileSync(tmpFile, source, 'utf8');
+      const r = spawnSync('node', [tmpFile], {
+        encoding: 'utf8',
+        timeout: 10000,
+        cwd: repoRoot,
+      });
+      return {
+        code: typeof r.status === 'number' ? r.status : 1,
+        stdout: r.stdout || '',
+        stderr: r.stderr || '',
+      };
+    } finally {
+      try { fs.unlinkSync(tmpFile); } catch (_) { /* ignore */ }
+    }
+  }
+
+  if (test('warns when frontmatter is missing name (default mode)', () => {
+    const testDir = createTestDir();
+    const skillDir = path.join(testDir, 'no-name-skill');
+    fs.mkdirSync(skillDir);
+    fs.writeFileSync(path.join(skillDir, 'SKILL.md'),
+      '---\ndescription: "X"\norigin: ECC\n---\n# Skill');
+
+    const result = runSkillsValidator(testDir);
+    assert.strictEqual(result.code, 0,
+      `Default mode must not fail CI; got stderr: ${result.stderr}`);
+    assert.ok(
+      result.stderr.includes('WARN') && result.stderr.includes('missing required field: name'),
+      `Should warn on missing name; got stderr: ${result.stderr}`);
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('errors when frontmatter is missing name (strict mode)', () => {
+    const testDir = createTestDir();
+    const skillDir = path.join(testDir, 'no-name-skill');
+    fs.mkdirSync(skillDir);
+    fs.writeFileSync(path.join(skillDir, 'SKILL.md'),
+      '---\ndescription: "X"\norigin: ECC\n---\n# Skill');
+
+    const result = runSkillsValidator(testDir, ['--strict']);
+    assert.strictEqual(result.code, 1, '--strict must fail CI on missing name');
+    assert.ok(result.stderr.includes('missing required field: name'),
+      'Should report missing name');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('warns on literal block-scalar description (|-)', () => {
+    const testDir = createTestDir();
+    const skillDir = path.join(testDir, 'block-desc-skill');
+    fs.mkdirSync(skillDir);
+    fs.writeFileSync(path.join(skillDir, 'SKILL.md'),
+      '---\nname: block-desc-skill\ndescription: |-\n  line one\n  line two\norigin: ECC\n---\n# Skill');
+
+    const result = runSkillsValidator(testDir);
+    assert.strictEqual(result.code, 0, 'Default mode should not fail CI');
+    assert.ok(
+      result.stderr.includes('WARN') && result.stderr.includes('literal block scalar'),
+      `Should warn on |- description; got stderr: ${result.stderr}`);
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('accepts folded (>) and inline descriptions', () => {
+    const testDir = createTestDir();
+    const folded = path.join(testDir, 'folded-skill');
+    fs.mkdirSync(folded);
+    fs.writeFileSync(path.join(folded, 'SKILL.md'),
+      '---\nname: folded-skill\ndescription: >\n  joined\n  on spaces\norigin: ECC\n---\n# Skill');
+    const inline = path.join(testDir, 'inline-skill');
+    fs.mkdirSync(inline);
+    fs.writeFileSync(path.join(inline, 'SKILL.md'),
+      '---\nname: inline-skill\ndescription: "single line"\norigin: ECC\n---\n# Skill');
+
+    const result = runSkillsValidator(testDir, ['--strict']);
+    assert.strictEqual(result.code, 0,
+      `Folded and inline should pass strict; got stderr: ${result.stderr}`);
+    assert.ok(result.stdout.includes('Validated 2'),
+      `Should count both skills; got stdout: ${result.stdout}`);
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('skips hidden directories under skills/', () => {
+    const testDir = createTestDir();
+    // A dot-prefixed directory (e.g. .DS_Store-adjacent junk or legacy
+    // cache) must not count as a skill and must not error.
+    fs.mkdirSync(path.join(testDir, '.cache'));
+    fs.writeFileSync(path.join(testDir, '.cache', 'SKILL.md'), '# ignored');
+    const real = path.join(testDir, 'real-skill');
+    fs.mkdirSync(real);
+    fs.writeFileSync(path.join(real, 'SKILL.md'),
+      '---\nname: real-skill\ndescription: "x"\norigin: ECC\n---\n# Skill');
+
+    const result = runSkillsValidator(testDir, ['--strict']);
+    assert.strictEqual(result.code, 0, 'Hidden dirs should be skipped');
+    assert.ok(result.stdout.includes('Validated 1'),
+      `Should only count the non-hidden skill; got stdout: ${result.stdout}`);
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
   // ==========================================
   // validate-commands.js
   // ==========================================
