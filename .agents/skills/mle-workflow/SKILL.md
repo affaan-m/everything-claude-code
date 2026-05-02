@@ -57,16 +57,122 @@ Use these simulations as coverage checks when planning or reviewing MLE work. A 
 
 | ID | Common MLE task | Streamlined ECC path | Required output | Pipeline lanes covered |
 |----|-----------------|----------------------|-----------------|------------------------|
-| MLE-01 | Scope a new prediction, ranking, recommender, classifier, embedding, or forecast capability | `product-capability`, `plan`, `architecture-decision-records`, `mle-workflow` | Prediction contract with owner, target, inputs, outputs, latency, fallback, privacy, and acceptance gates | product contract, risk, rollout |
-| MLE-02 | Audit source data, labels, feature freshness, and leakage risk | `repo-scan`, `database-reviewer`, `database-migrations`, `postgres-patterns`, `clickhouse-io` | Data contract with entity grain, label timing, feature timing, point-in-time join rules, split policy, and dataset snapshot | data contract, leakage, reproducibility |
-| MLE-03 | Build or change feature transforms shared by training and serving | `tdd-workflow`, `python-testing`, `python-patterns`, `code-reviewer` | Tested transform module with schema checks, null/range handling, immutable config, and train/serve equivalence tests | feature pipeline, testing, serving parity |
-| MLE-04 | Convert notebook or prototype code into a repeatable training job | `python-patterns`, `pytorch-patterns`, `docker-patterns`, `deployment-patterns` | Reproducible training entrypoint with typed config, seeds, pinned dependencies, dataset version, code SHA, and artifact URI | training, artifacts, environment |
-| MLE-05 | Run experiments and decide whether a model is promotable | `eval-harness`, `ai-regression-testing`, `quality-gate`, `test-coverage` | Promotion report comparing baseline and production model with primary metric, guardrails, slice metrics, confidence, and fail-closed gates | evaluation, promotion, regression |
-| MLE-06 | Package a model artifact for batch or online inference | `api-design`, `backend-patterns`, `security-review`, `security-scan` | Versioned artifact bundle with preprocessing, config, dependency constraints, schema validation, safe loading, and PII-safe logs | artifact, security, inference contract |
-| MLE-07 | Ship an online prediction API or model service | `api-design`, `backend-patterns`, `e2e-testing`, `browser-qa`, `accessibility` | Prediction endpoint with response envelope, timeout, batching behavior, fallback path, model version, confidence, and product-flow tests | serving, fallback, user workflow |
-| MLE-08 | Ship a batch scoring, embedding, or backfill pipeline | `deployment-patterns`, `docker-patterns`, `build-fix`, `pr-test-analyzer` | Idempotent batch job with checkpointing, retry behavior, output schema, cost estimate, and CI/environment diagnostics | batch inference, reliability, cost |
+| MLE-01 | Frame an ambiguous prediction, ranking, recommender, classifier, embedding, or forecast capability | `product-capability`, `plan`, `architecture-decision-records`, `mle-workflow` | Iteration Compact naming who cares, decision owner, success metric, unacceptable mistakes, assumptions, constraints, and first experiment | product contract, stakeholder loss, risk, rollout |
+| MLE-02 | Define metric goals, labels, data sources, and the mistake budget | `repo-scan`, `database-reviewer`, `database-migrations`, `postgres-patterns`, `clickhouse-io` | Data and metric contract with entity grain, label timing, label confidence, feature timing, point-in-time joins, split policy, and dataset snapshot | data contract, metric design, leakage, reproducibility |
+| MLE-03 | Build a baseline model and scoring path before adding complexity | `tdd-workflow`, `python-testing`, `python-patterns`, `code-reviewer` | Baseline scorer with confusion matrix, calibration notes, latency/cost estimate, known weaknesses, and tests for score shape and determinism | baseline, scoring, testing, serving parity |
+| MLE-04 | Generate features from hypotheses about what separates outcomes | `python-patterns`, `pytorch-patterns`, `docker-patterns`, `deployment-patterns` | Feature plan and transform module covering signal source, missing values, outliers, correlations, leakage checks, and train/serve equivalence | feature pipeline, leakage, training, artifacts |
+| MLE-05 | Tune thresholds, configs, and model complexity under tradeoffs | `eval-harness`, `ai-regression-testing`, `quality-gate`, `test-coverage` | Threshold/config report comparing precision, recall, F1, AUC, calibration, group slices, latency, cost, complexity, and acceptable error classes | evaluation, threshold, promotion, regression |
+| MLE-06 | Run error analysis and turn mistakes into the next experiment | `eval-harness`, `ai-regression-testing`, `mle-reviewer`, `silent-failure-hunter` | Error cluster report for false positives, false negatives, ambiguous labels, stale features, missing signals, and bug traces with lessons captured | error analysis, bug trace, iteration, regression |
+| MLE-07 | Package a model artifact for batch or online inference | `api-design`, `backend-patterns`, `security-review`, `security-scan` | Versioned artifact bundle with preprocessing, config, dependency constraints, schema validation, safe loading, and PII-safe logs | artifact, security, inference contract |
+| MLE-08 | Ship online serving or batch scoring with feedback capture | `api-design`, `backend-patterns`, `e2e-testing`, `browser-qa`, `accessibility` | Prediction endpoint or batch job with response envelope, timeout, batching, fallback, model version, confidence, feedback logging, and product-flow tests | serving, batch inference, fallback, user workflow |
 | MLE-09 | Roll out a model with shadow traffic, canary, A/B test, or rollback | `canary-watch`, `dashboard-builder`, `verification-loop`, `performance-optimizer` | Rollout plan naming traffic split, dashboards, p95 latency, cost, quality guardrails, rollback artifact, and rollback trigger | deployment, canary, rollback |
-| MLE-10 | Operate, debug, and refresh a production model after launch | `silent-failure-hunter`, `dashboard-builder`, `mle-reviewer`, `doc-updater`, `github-ops` | Incident or refresh plan with drift checks, delayed-label health, alert owners, runbook updates, retrain criteria, and PR evidence | monitoring, incident response, retraining |
+| MLE-10 | Operate, debug, and refresh a production model after launch | `silent-failure-hunter`, `dashboard-builder`, `mle-reviewer`, `doc-updater`, `github-ops` | Observation ledger and refresh plan with drift checks, delayed-label health, alert owners, runbook updates, retrain criteria, and PR evidence | monitoring, incident response, retraining |
+
+## Iteration Compact
+
+Before touching model code, compress the work into one reviewable artifact. This should be short enough to fit in a PR description and precise enough that another engineer can challenge the tradeoffs.
+
+```text
+Goal:
+Who cares:
+Decision owner:
+User or system action changed by the model:
+Success metric:
+Guardrail metrics:
+Mistake budget:
+Unacceptable mistakes:
+Acceptable mistakes:
+Assumptions:
+Constraints:
+Labels and data snapshot:
+Baseline:
+Candidate signals:
+Threshold or config plan:
+Eval slices:
+Known risks:
+Next experiment:
+Rollback or fallback:
+```
+
+This compact is the MLE equivalent of a strong SWE design note. It keeps the team from optimizing a metric no one trusts, adding features that do not address the real error mode, or shipping complexity without a rollback.
+
+## Decision Brain
+
+Use this loop whenever the task is ambiguous, high-impact, or metric-heavy:
+
+1. Start from the decision, not the model. Name the action that changes downstream behavior.
+2. Name who cares and why. Different stakeholders pay different costs for false positives, false negatives, latency, compute spend, opacity, or missed opportunities.
+3. Convert ambiguity into hypotheses. Ask what signal would separate outcomes, what evidence would disprove it, and what simple baseline should be hard to beat.
+4. Research prior art or a nearby known problem before inventing a bespoke system.
+5. Score choices with `(probability, confidence) x (cost, severity, importance, impact)`.
+6. Consider adversarial behavior, incentives, selective disclosure, distribution shift, and feedback loops.
+7. Prefer the simplest change that reduces the most important mistake. Simplicity is not laziness; it is a way to minimize blunders while preserving iteration speed.
+8. Capture the decision, evidence, counterargument, and next reversible step.
+
+## Metric and Mistake Economics
+
+Choose metrics from failure costs, not habit:
+
+- Use a confusion matrix early so the team can discuss concrete false positives and false negatives instead of abstract accuracy.
+- Favor precision when the cost of an incorrect positive decision dominates.
+- Favor recall when the cost of a missed positive dominates.
+- Use F1 only when the precision/recall tradeoff is genuinely balanced and explainable.
+- Use AUC or ranking metrics when ordering quality matters more than a single threshold.
+- Track latency, throughput, memory, and cost as first-class metrics because they shape feasible model complexity.
+- Compare against a baseline and the current production model before celebrating an offline gain.
+- Treat real-world feedback signals as delayed labels with bias, lag, and coverage gaps; do not treat them as ground truth without analysis.
+
+Every metric choice should state which mistake it makes cheaper, which mistake it makes more likely, and who absorbs that cost.
+
+## Data and Feature Hypotheses
+
+Features should come from a theory of separation:
+
+- Text, categorical fields, numeric histories, graph relationships, recency, frequency, and aggregates are candidate signal families, not automatic features.
+- For every feature family, state why it should separate outcomes and how it could leak future information.
+- For noisy labels, consider adjudication, label confidence, soft targets, or confidence weighting.
+- For class imbalance, compare weighted loss, resampling, threshold movement, and calibrated decision rules.
+- For missing values, decide whether absence is informative, imputable, or a reason to abstain.
+- For outliers, decide whether to clip, bucket, investigate, or preserve them as rare but important signal.
+- For correlated features, check whether they are redundant, unstable, or proxies for unavailable future state.
+
+Do not add model complexity until error analysis shows that the baseline is failing for a reason additional signal or capacity can plausibly fix.
+
+## Error Analysis Loop
+
+After each baseline, training run, threshold change, or config change:
+
+1. Split mistakes into false positives, false negatives, abstentions, low-confidence cases, and system failures.
+2. Cluster errors by shared traits: language, entity type, source, time, geography, device, sparsity, recency, feature freshness, label source, or model version.
+3. Separate model mistakes from data bugs, label ambiguity, product ambiguity, instrumentation gaps, and serving mismatches.
+4. Trace each major cluster to one of four moves: better labels, better features, better threshold/config, or better product fallback.
+5. Preserve every important mistake as a regression test, eval slice, dashboard panel, or runbook entry.
+6. Write the next iteration as a falsifiable experiment, not a vague "improve model" task.
+
+The strongest MLE loop is not train -> metric -> ship. It is mistake -> cluster -> hypothesis -> experiment -> evidence -> simpler system.
+
+## Observation Ledger
+
+Keep a compact decision and evidence trail beside the code, PR, experiment report, or runbook:
+
+```text
+Iteration:
+Change:
+Why this mattered:
+Metric movement:
+Slice movement:
+False positives:
+False negatives:
+Unexpected errors:
+Decision:
+Tradeoff accepted:
+Lesson captured:
+Regression added:
+Debt created:
+Next iteration:
+```
+
+Use the ledger to make model work cumulative. The goal is for each iteration to make the next decision easier, not merely to produce another artifact.
 
 ## Core Workflow
 

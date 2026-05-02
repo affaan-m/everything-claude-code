@@ -21,14 +21,22 @@ const EXPECTED_TASKS = [
 
 const PIPELINE_LANES = [
   'product contract',
+  'stakeholder loss',
   'data contract',
+  'metric design',
   'leakage',
   'feature pipeline',
+  'baseline',
+  'scoring',
   'serving parity',
   'training',
   'artifacts',
   'evaluation',
+  'threshold',
   'promotion',
+  'error analysis',
+  'bug trace',
+  'iteration',
   'inference contract',
   'serving',
   'batch inference',
@@ -68,6 +76,47 @@ const SWE_SURFACES = [
   'silent-failure-hunter',
   'doc-updater',
   'github-ops',
+];
+
+const JUDGMENT_PRIMITIVES = [
+  'Iteration Compact',
+  'Who cares',
+  'Decision owner',
+  'Mistake budget',
+  'Unacceptable mistakes',
+  'Acceptable mistakes',
+  'Decision Brain',
+  'adversarial behavior',
+  'selective disclosure',
+  '(probability, confidence) x (cost, severity, importance, impact)',
+  'Metric and Mistake Economics',
+  'confusion matrix',
+  'false positives',
+  'false negatives',
+  'precision',
+  'recall',
+  'F1',
+  'AUC',
+  'latency',
+  'cost',
+  'Data and Feature Hypotheses',
+  'label confidence',
+  'class imbalance',
+  'missing values',
+  'outliers',
+  'correlated features',
+  'Error Analysis Loop',
+  'Observation Ledger',
+  'Lesson captured',
+  'Regression added',
+  'Next iteration',
+];
+
+const FORBIDDEN_DOMAIN_EXAMPLES = [
+  'reddit',
+  'subreddit',
+  'moderation',
+  'moderator',
 ];
 
 function stripFrontmatter(content) {
@@ -127,6 +176,19 @@ function run() {
   if (test('simulations reuse the existing SWE workflow surface', () => {
     for (const surface of SWE_SURFACES) {
       assert.ok(canonical.includes(`\`${surface}\``), `Missing SWE surface: ${surface}`);
+    }
+  })) passed++; else failed++;
+
+  if (test('workflow captures MLE judgment primitives beyond a checklist', () => {
+    for (const primitive of JUDGMENT_PRIMITIVES) {
+      assert.ok(canonical.includes(primitive), `Missing judgment primitive: ${primitive}`);
+    }
+  })) passed++; else failed++;
+
+  if (test('workflow stays general and avoids narrow domain examples', () => {
+    const normalized = canonical.toLowerCase();
+    for (const forbidden of FORBIDDEN_DOMAIN_EXAMPLES) {
+      assert.ok(!normalized.includes(forbidden), `Found narrow domain example: ${forbidden}`);
     }
   })) passed++; else failed++;
 
