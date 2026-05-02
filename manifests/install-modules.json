@@ -575,6 +575,32 @@
       "stability": "stable"
     },
     {
+      "id": "machine-learning",
+      "kind": "skills",
+      "description": "Production machine-learning engineering workflows for data contracts, reproducible training, evaluation, deployment, monitoring, and rollback.",
+      "paths": [
+        "skills/mle-workflow"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode",
+        "codebuddy"
+      ],
+      "dependencies": [
+        "framework-language",
+        "workflow-quality",
+        "database",
+        "devops-infra",
+        "security"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "beta"
+    },
+    {
       "id": "supply-chain-domain",
       "kind": "skills",
       "description": "Supply chain, logistics, procurement, and manufacturing domain skills.",

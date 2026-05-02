@@ -77,6 +77,10 @@ function run() {
     assert.ok(skillDirs.length > 0, 'Expected at least one .agents/skills entry');
   })) passed++; else failed++;
 
+  if (test('Codex skill surface includes the MLE workflow', () => {
+    assert.ok(skillDirs.includes('mle-workflow'), 'Expected .agents/skills/mle-workflow');
+  })) passed++; else failed++;
+
   if (test('SKILL.md frontmatter matches Codex validator expectations', () => {
     for (const skillDir of skillDirs) {
       const frontmatter = parseFrontmatter(skillDir);
