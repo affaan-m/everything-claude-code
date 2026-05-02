@@ -81,6 +81,7 @@ function runTests() {
     const profiles = listInstallProfiles();
     assert.ok(profiles.some(profile => profile.id === 'minimal'), 'Should include minimal profile');
     assert.ok(profiles.some(profile => profile.id === 'core'), 'Should include core profile');
+    assert.ok(profiles.some(profile => profile.id === 'mle'), 'Should include mle profile');
     assert.ok(profiles.some(profile => profile.id === 'full'), 'Should include full profile');
   })) passed++; else failed++;
 
@@ -98,6 +99,12 @@ function runTests() {
       'Should include lang:c');
     assert.ok(components.some(component => component.id === 'capability:security'),
       'Should include capability:security');
+    assert.ok(components.some(component => component.id === 'capability:machine-learning'),
+      'Should include capability:machine-learning');
+    assert.ok(components.some(component => component.id === 'agent:mle-reviewer'),
+      'Should include agent:mle-reviewer');
+    assert.ok(components.some(component => component.id === 'skill:mle-workflow'),
+      'Should include skill:mle-workflow');
   })) passed++; else failed++;
 
   if (test('gets install component details and validates component IDs', () => {
@@ -227,6 +234,28 @@ function runTests() {
     assert.ok(!plan.selectedModuleIds.includes('hooks-runtime'),
       'minimal profile should not install hooks-runtime');
     assert.ok(plan.operations.length > 0, 'Should include install operations');
+  })) passed++; else failed++;
+
+  if (test('resolves mle profile with machine-learning workflow dependencies', () => {
+    const plan = resolveInstallPlan({
+      profileId: 'mle',
+      target: 'claude',
+      projectRoot: '/workspace/ml-app',
+    });
+
+    assert.ok(plan.selectedModuleIds.includes('machine-learning'),
+      'Should include machine-learning module');
+    assert.ok(plan.selectedModuleIds.includes('framework-language'),
+      'Should include Python and framework-language support');
+    assert.ok(plan.selectedModuleIds.includes('workflow-quality'),
+      'Should include eval and verification workflows');
+    assert.ok(plan.selectedModuleIds.includes('database'),
+      'Should include database/data persistence support');
+    assert.ok(plan.selectedModuleIds.includes('devops-infra'),
+      'Should include deployment and container support');
+    assert.ok(plan.operations.some(operation => (
+      operation.sourceRelativePath === 'skills/mle-workflow'
+    )), 'Should install the MLE workflow skill');
   })) passed++; else failed++;
 
   if (test('resolves explicit modules with dependency expansion', () => {

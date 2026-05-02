@@ -217,6 +217,18 @@ npx ecc consult "security reviews" --target claude
 
 It returns matching components, related profiles, and preview/install commands. Use the preview command before installing if you want to inspect the exact file plan.
 
+For a production ML/MLOps setup, use the MLE profile:
+
+```bash
+./install.sh --profile mle --target claude
+```
+
+```powershell
+.\install.ps1 --profile mle --target claude
+# or
+npx ecc-install --profile mle --target claude
+```
+
 ### Step 1: Install the Plugin (Recommended)
 
 > NOTE: The plugin is convenient, but the OSS installer below is still the most reliable path if your Claude Code build has trouble resolving self-hosted marketplace entries.
@@ -350,7 +362,7 @@ If you stacked methods, clean up in this order:
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**That's it!** You now have access to 48 agents, 182 skills, and 68 legacy command shims.
+**That's it!** You now have access to 49 agents, 183 skills, and 68 legacy command shims.
 
 ### Dashboard GUI
 
@@ -476,6 +488,7 @@ everything-claude-code/
 |   |-- rust-reviewer.md     # Rust code review
 |   |-- rust-build-resolver.md # Rust build error resolution
 |   |-- pytorch-build-resolver.md # PyTorch/CUDA training errors
+|   |-- mle-reviewer.md      # Production ML pipeline, eval, serving, and monitoring review
 |
 |-- skills/           # Workflow definitions and domain knowledge
 |   |-- coding-standards/           # Language best practices
@@ -511,6 +524,7 @@ everything-claude-code/
 |   |-- laravel-verification/       # Laravel verification loops (NEW)
 |   |-- python-patterns/            # Python idioms and best practices (NEW)
 |   |-- python-testing/             # Python testing with pytest (NEW)
+|   |-- mle-workflow/               # Production ML data contracts, evals, deployment, monitoring (NEW)
 |   |-- springboot-patterns/        # Java Spring Boot patterns (NEW)
 |   |-- springboot-security/        # Spring Boot security (NEW)
 |   |-- springboot-tdd/             # Spring Boot TDD (NEW)
@@ -974,6 +988,7 @@ Not sure where to start? Use this quick reference. Skills are the canonical work
 | Review Python code | `/python-review` | python-reviewer |
 | Review TypeScript/JavaScript code | *(invoke `typescript-reviewer` directly)* | typescript-reviewer |
 | Audit database queries | *(auto-delegated)* | database-reviewer |
+| Review production ML changes | `mle-workflow` skill + `mle-reviewer` agent | mle-reviewer |
 
 ### Common Workflows
 
@@ -1169,7 +1184,7 @@ ECC provides Cursor IDE support with hooks, rules, agents, skills, commands, and
 | Hook Events | 15 | sessionStart, beforeShellExecution, afterFileEdit, beforeMCPExecution, beforeSubmitPrompt, and 10 more |
 | Hook Scripts | 16 | Thin Node.js scripts delegating to `scripts/hooks/` via shared adapter |
 | Rules | 34 | 9 common (alwaysApply) + 25 language-specific (TypeScript, Python, Go, Swift, PHP) |
-| Agents | 48 | `.cursor/agents/ecc-*.md` when installed; prefixed to avoid collisions with user or marketplace agents |
+| Agents | 49 | `.cursor/agents/ecc-*.md` when installed; prefixed to avoid collisions with user or marketplace agents |
 | Skills | Shared + Bundled | `.cursor/skills/` for translated additions |
 | Commands | Shared | `.cursor/commands/` if installed |
 | MCP Config | Shared | `.cursor/mcp.json` if installed |
@@ -1247,7 +1262,7 @@ Codex macOS app:
 |-----------|-------|---------|
 | Config | 1 | `.codex/config.toml` — top-level approvals/sandbox/web_search, MCP servers, notifications, profiles |
 | AGENTS.md | 2 | Root (universal) + `.codex/AGENTS.md` (Codex-specific supplement) |
-| Skills | 32 | `.agents/skills/` — SKILL.md + agents/openai.yaml per skill |
+| Skills | 33 | `.agents/skills/` — SKILL.md + agents/openai.yaml per skill |
 | MCP Servers | 6 | GitHub, Context7, Exa, Memory, Playwright, Sequential Thinking (7 with Supabase via `--update-mcp` sync) |
 | Profiles | 2 | `strict` (read-only sandbox) and `yolo` (full auto-approve) |
 | Agent Roles | 3 | `.codex/agents/` — explorer, reviewer, docs-researcher |
@@ -1284,6 +1299,7 @@ Canonical Anthropic skills such as `claude-api`, `frontend-design`, and `skill-c
 | investor-outreach | Personalized outreach, follow-ups, and intro blurbs |
 | market-research | Source-attributed market and competitor research |
 | mcp-server-patterns | Build MCP servers with Node/TypeScript SDK |
+| mle-workflow | Production ML data contracts, evals, deployment, monitoring |
 | nextjs-turbopack | Next.js 16+ and Turbopack incremental bundling |
 | product-capability | Translate product goals into scoped capability maps |
 | security-review | Comprehensive security checklist |
@@ -1336,9 +1352,9 @@ The configuration is automatically detected from `.opencode/opencode.json`.
 
 | Feature | Claude Code | OpenCode | Status |
 |---------|-------------|----------|--------|
-| Agents | PASS: 48 agents | PASS: 12 agents | **Claude Code leads** |
+| Agents | PASS: 49 agents | PASS: 12 agents | **Claude Code leads** |
 | Commands | PASS: 68 commands | PASS: 31 commands | **Claude Code leads** |
-| Skills | PASS: 182 skills | PASS: 37 skills | **Claude Code leads** |
+| Skills | PASS: 183 skills | PASS: 37 skills | **Claude Code leads** |
 | Hooks | PASS: 8 event types | PASS: 11 events | **OpenCode has more!** |
 | Rules | PASS: 29 rules | PASS: 13 instructions | **Claude Code leads** |
 | MCP Servers | PASS: 14 servers | PASS: Full | **Full parity** |
@@ -1441,9 +1457,9 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 
 | Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |
 |---------|------------|------------|-----------|----------|
-| **Agents** | 48 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
+| **Agents** | 49 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
 | **Commands** | 68 | Shared | Instruction-based | 31 |
-| **Skills** | 182 | Shared | 10 (native format) | 37 |
+| **Skills** | 183 | Shared | 10 (native format) | 37 |
 | **Hook Events** | 8 types | 15 types | None yet | 11 types |
 | **Hook Scripts** | 20+ scripts | 16 scripts (DRY adapter) | N/A | Plugin hooks |
 | **Rules** | 34 (common + lang) | 34 (YAML frontmatter) | Instruction-based | 13 instructions |
