@@ -11,7 +11,7 @@ const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const { execFileSync } = require('child_process');
+const { execFileSync, spawnSync } = require('child_process');
 
 const validatorsDir = path.join(__dirname, '..', '..', 'scripts', 'ci');
 const repoRoot = path.join(__dirname, '..', '..');
@@ -178,6 +178,48 @@ function runCatalogValidator(overrides = {}) {
   }
 
   return runSourceViaTempFile(source);
+}
+
+// Run validate-skills.js against a fixture dir, optionally passing
+// extra argv (e.g. '--strict') and env overrides (e.g.
+// CI_STRICT_SKILLS=1) so the frontmatter finding suite can exercise
+// both warn and strict modes via argv and env code paths.
+//
+// Captures stderr on both success and failure (the shared
+// runSourceViaTempFile helper only surfaces stderr when the child
+// exits non-zero, which hides WARN lines in the default mode).
+function runSkillsValidator(testDir, argv = [], envOverrides = {}) {
+  const validatorPath = path.join(validatorsDir, 'validate-skills.js');
+  let source = fs.readFileSync(validatorPath, 'utf8');
+  source = stripShebang(source);
+  source = source.replace(
+    /const SKILLS_DIR = .*?;/,
+    `const SKILLS_DIR = ${JSON.stringify(testDir)};`,
+  );
+  if (argv.length > 0) {
+    const argvPreamble = argv
+      .map(arg => `process.argv.push(${JSON.stringify(arg)});`)
+      .join('\n');
+    source = `${argvPreamble}\n${source}`;
+  }
+  const tmpFile = path.join(repoRoot,
+    `.tmp-validator-${Date.now()}-${Math.random().toString(36).slice(2)}.js`);
+  try {
+    fs.writeFileSync(tmpFile, source, 'utf8');
+    const r = spawnSync('node', [tmpFile], {
+      encoding: 'utf8',
+      timeout: 10000,
+      cwd: repoRoot,
+      env: { ...process.env, ...envOverrides },
+    });
+    return {
+      code: typeof r.status === 'number' ? r.status : 1,
+      stdout: r.stdout || '',
+      stderr: r.stderr || '',
+    };
+  } finally {
+    try { fs.unlinkSync(tmpFile); } catch (_) { /* ignore */ }
+  }
 }
 
 function writeCatalogFixture(testDir, options = {}) {
@@ -801,48 +843,6 @@ function runTests() {
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
-  // Run validate-skills.js against a fixture dir, optionally passing
-  // extra argv (e.g. '--strict') so the frontmatter finding suite can
-  // exercise both warn and strict modes.
-  //
-  // Captures stderr on both success and failure (the shared
-  // runSourceViaTempFile helper only surfaces stderr when the child
-  // exits non-zero, which hides WARN lines in the default mode).
-  function runSkillsValidator(testDir, argv = [], envOverrides = {}) {
-    const { spawnSync } = require('child_process');
-    const validatorPath = path.join(validatorsDir, 'validate-skills.js');
-    let source = fs.readFileSync(validatorPath, 'utf8');
-    source = stripShebang(source);
-    source = source.replace(
-      /const SKILLS_DIR = .*?;/,
-      `const SKILLS_DIR = ${JSON.stringify(testDir)};`,
-    );
-    if (argv.length > 0) {
-      const argvPreamble = argv
-        .map(arg => `process.argv.push(${JSON.stringify(arg)});`)
-        .join('\n');
-      source = `${argvPreamble}\n${source}`;
-    }
-    const tmpFile = path.join(repoRoot,
-      `.tmp-validator-${Date.now()}-${Math.random().toString(36).slice(2)}.js`);
-    try {
-      fs.writeFileSync(tmpFile, source, 'utf8');
-      const r = spawnSync('node', [tmpFile], {
-        encoding: 'utf8',
-        timeout: 10000,
-        cwd: repoRoot,
-        env: { ...process.env, ...envOverrides },
-      });
-      return {
-        code: typeof r.status === 'number' ? r.status : 1,
-        stdout: r.stdout || '',
-        stderr: r.stderr || '',
-      };
-    } finally {
-      try { fs.unlinkSync(tmpFile); } catch (_) { /* ignore */ }
-    }
-  }
-
   if (test('warns when frontmatter is missing name (default mode)', () => {
     const testDir = createTestDir();
     const skillDir = path.join(testDir, 'no-name-skill');
@@ -982,6 +982,39 @@ function runTests() {
     assert.strictEqual(result.code, 1, 'CI_STRICT_SKILLS=1 must fail CI on missing name');
     assert.ok(result.stderr.includes('missing required field: name'),
       'Should report missing name');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('flags comment-only name value as empty (strict)', () => {
+    const testDir = createTestDir();
+    const skillDir = path.join(testDir, 'comment-only-name');
+    fs.mkdirSync(skillDir);
+    fs.writeFileSync(path.join(skillDir, 'SKILL.md'),
+      '---\nname: # todo\ndescription: "X"\norigin: ECC\n---\n# Skill');
+
+    const result = runSkillsValidator(testDir, ['--strict']);
+    assert.strictEqual(result.code, 1, 'Strict mode must fail CI on empty name');
+    assert.ok(result.stderr.includes("'name' is empty"),
+      `Should report empty name; got stderr: ${result.stderr}`);
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('tolerates ---trailing text outside frontmatter block', () => {
+    // A SKILL.md whose body contains a line starting with '---text'
+    // must not be parsed as frontmatter. Regression guard for
+    // closing-delimiter tightening: the old regex would greedily
+    // match '---trailing'.
+    const testDir = createTestDir();
+    const skillDir = path.join(testDir, 'no-frontmatter-dashes');
+    fs.mkdirSync(skillDir);
+    fs.writeFileSync(path.join(skillDir, 'SKILL.md'),
+      '# Skill\n\nSome body text.\n\n---trailing content\nmore body\n');
+
+    const result = runSkillsValidator(testDir, ['--strict']);
+    assert.strictEqual(result.code, 0,
+      `Should not flag frontmatter findings when no valid frontmatter exists; got stderr: ${result.stderr}`);
+    assert.ok(!result.stderr.includes('missing required field: name'),
+      'Must not treat ---trailing as a frontmatter closer');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 

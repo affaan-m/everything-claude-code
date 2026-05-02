@@ -43,7 +43,7 @@ const STRICT = process.argv.includes('--strict') || process.env.CI_STRICT_SKILLS
 function extractFrontmatter(content) {
   // Strip BOM if present (UTF-8 BOM: U+FEFF).
   const clean = content.replace(/^\uFEFF/, '');
-  const match = clean.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  const match = clean.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
   if (!match) return { present: false, lines: [] };
   return {
     present: true,
@@ -87,8 +87,13 @@ function inspectFrontmatter(lines) {
 
     const key = match[1];
     const rawValue = match[2];
-    // Strip unquoted trailing comment for value/indicator inspection.
-    const valueNoComment = rawValue.replace(/\s+#.*$/, '').trim();
+    // Strip unquoted comments for value/indicator inspection. Handles both
+    // trailing comments (`foo: bar # note`) and comment-only values
+    // (`foo: # todo`) so the latter is treated as empty.
+    const valueNoComment = rawValue
+      .replace(/^\s*#.*$/, '')
+      .replace(/\s+#.*$/, '')
+      .trim();
     values[key] = valueNoComment;
 
     // Detect literal / folded block-scalar indicators. Accept chomp
@@ -104,6 +109,59 @@ function inspectFrontmatter(lines) {
   }
 
   return { values, descriptionIndicator };
+}
+
+/**
+ * Validate a single skill directory.
+ *
+ * Returns `{ fatal }` where `fatal` indicates a structural error that
+ * should be surfaced via `console.error` and abort CI (missing/empty
+ * SKILL.md). Frontmatter findings are routed through
+ * `reportFrontmatterFinding`, which owns the WARN/ERROR decision based
+ * on strict mode.
+ *
+ * @param {string} dir
+ * @param {string} skillsDir
+ * @param {(msg: string) => void} reportFrontmatterFinding
+ * @returns {{fatal: boolean}}
+ */
+function validateSkillDir(dir, skillsDir, reportFrontmatterFinding) {
+  const skillMd = path.join(skillsDir, dir, 'SKILL.md');
+  if (!fs.existsSync(skillMd)) {
+    console.error(`ERROR: ${dir}/ - Missing SKILL.md`);
+    return { fatal: true };
+  }
+
+  let content;
+  try {
+    content = fs.readFileSync(skillMd, 'utf-8');
+  } catch (err) {
+    console.error(`ERROR: ${dir}/SKILL.md - ${err.message}`);
+    return { fatal: true };
+  }
+  if (content.trim().length === 0) {
+    console.error(`ERROR: ${dir}/SKILL.md - Empty file`);
+    return { fatal: true };
+  }
+
+  const fm = extractFrontmatter(content);
+  if (fm.present) {
+    const { values, descriptionIndicator } = inspectFrontmatter(fm.lines);
+
+    if (!Object.prototype.hasOwnProperty.call(values, 'name')) {
+      reportFrontmatterFinding(`${dir}/SKILL.md - frontmatter missing required field: name`);
+    } else if (values.name === '') {
+      reportFrontmatterFinding(`${dir}/SKILL.md - frontmatter 'name' is empty`);
+    }
+
+    if (descriptionIndicator && descriptionIndicator.startsWith('|')) {
+      reportFrontmatterFinding(
+        `${dir}/SKILL.md - frontmatter description uses literal block scalar ` + `'${descriptionIndicator}' which preserves internal newlines; ` + `use an inline string or folded '>' scalar instead`
+      );
+    }
+  }
+
+  return { fatal: false };
 }
 
 function validateSkills() {
@@ -130,44 +188,11 @@ function validateSkills() {
   };
 
   for (const dir of dirs) {
-    const skillMd = path.join(SKILLS_DIR, dir, 'SKILL.md');
-    if (!fs.existsSync(skillMd)) {
-      console.error(`ERROR: ${dir}/ - Missing SKILL.md`);
+    const { fatal } = validateSkillDir(dir, SKILLS_DIR, reportFrontmatterFinding);
+    if (fatal) {
       hasErrors = true;
       continue;
     }
-
-    let content;
-    try {
-      content = fs.readFileSync(skillMd, 'utf-8');
-    } catch (err) {
-      console.error(`ERROR: ${dir}/SKILL.md - ${err.message}`);
-      hasErrors = true;
-      continue;
-    }
-    if (content.trim().length === 0) {
-      console.error(`ERROR: ${dir}/SKILL.md - Empty file`);
-      hasErrors = true;
-      continue;
-    }
-
-    const fm = extractFrontmatter(content);
-    if (fm.present) {
-      const { values, descriptionIndicator } = inspectFrontmatter(fm.lines);
-
-      if (!Object.prototype.hasOwnProperty.call(values, 'name')) {
-        reportFrontmatterFinding(`${dir}/SKILL.md - frontmatter missing required field: name`);
-      } else if (values.name === '') {
-        reportFrontmatterFinding(`${dir}/SKILL.md - frontmatter 'name' is empty`);
-      }
-
-      if (descriptionIndicator && descriptionIndicator.startsWith('|')) {
-        reportFrontmatterFinding(
-          `${dir}/SKILL.md - frontmatter description uses literal block scalar ` + `'${descriptionIndicator}' which preserves internal newlines; ` + `use an inline string or folded '>' scalar instead`
-        );
-      }
-    }
-
     validCount++;
   }
 
