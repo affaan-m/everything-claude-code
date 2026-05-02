@@ -26,8 +26,7 @@ const path = require('path');
 
 const SKILLS_DIR = path.join(__dirname, '../../skills');
 
-const STRICT = process.argv.includes('--strict')
-  || process.env.CI_STRICT_SKILLS === '1';
+const STRICT = process.argv.includes('--strict') || process.env.CI_STRICT_SKILLS === '1';
 
 /**
  * Parse the leading YAML frontmatter of a markdown document.
@@ -43,27 +42,30 @@ const STRICT = process.argv.includes('--strict')
  */
 function extractFrontmatter(content) {
   // Strip BOM if present (UTF-8 BOM: U+FEFF).
-  const clean = content.replace(/^\uFEFF/, "");
+  const clean = content.replace(/^\uFEFF/, '');
   const match = clean.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return { present: false, lines: [] };
   return {
     present: true,
-    lines: match[1].split(/\r?\n/),
+    lines: match[1].split(/\r?\n/)
   };
 }
 
 /**
- * Extract top-level keys and flag block-scalar `description:` values.
+ * Extract top-level keys (with trimmed values) and flag block-scalar
+ * `description:` values.
  *
  * Lines that continue a block scalar (`|` or `>`) are skipped — we only
  * care about the top-level key set and the raw indicator on the
- * `description:` line.
+ * `description:` line. Block-scalar indicators accept YAML chomp and
+ * indent modifiers and trailing comments, e.g. `|`, `|-`, `|+`, `|2`,
+ * `|-2`, `>-  # note`.
  *
  * @param {string[]} lines
- * @returns {{keys: Set<string>, descriptionIndicator: string|null}}
+ * @returns {{values: Record<string,string>, descriptionIndicator: string|null}}
  */
 function inspectFrontmatter(lines) {
-  const keys = new Set();
+  const values = Object.create(null);
   let descriptionIndicator = null;
   let inBlockScalar = false;
   let blockScalarIndent = -1;
@@ -85,19 +87,23 @@ function inspectFrontmatter(lines) {
 
     const key = match[1];
     const rawValue = match[2];
-    keys.add(key);
+    // Strip unquoted trailing comment for value/indicator inspection.
+    const valueNoComment = rawValue.replace(/\s+#.*$/, '').trim();
+    values[key] = valueNoComment;
 
-    // Detect literal / folded block scalar indicators.
-    if (/^[|>][+-]?\s*$/.test(rawValue.trim())) {
+    // Detect literal / folded block-scalar indicators. Accept chomp
+    // modifiers (`-` / `+`) and optional indent-indicator digits in
+    // either order, per YAML 1.2.
+    if (/^[|>](?:[+-]?\d+|\d+[+-]?|[+-])?$/.test(valueNoComment)) {
       if (key === 'description') {
-        descriptionIndicator = rawValue.trim();
+        descriptionIndicator = valueNoComment;
       }
       inBlockScalar = true;
       blockScalarIndent = rawLine.match(/^(\s*)/)[1].length;
     }
   }
 
-  return { keys, descriptionIndicator };
+  return { values, descriptionIndicator };
 }
 
 function validateSkills() {
@@ -107,15 +113,13 @@ function validateSkills() {
   }
 
   const entries = fs.readdirSync(SKILLS_DIR, { withFileTypes: true });
-  const dirs = entries
-    .filter(e => e.isDirectory() && !e.name.startsWith('.'))
-    .map(e => e.name);
+  const dirs = entries.filter(e => e.isDirectory() && !e.name.startsWith('.')).map(e => e.name);
 
   let hasErrors = false;
   let warnCount = 0;
   let validCount = 0;
 
-  const reportFrontmatterFinding = (msg) => {
+  const reportFrontmatterFinding = msg => {
     if (STRICT) {
       console.error(`ERROR: ${msg}`);
       hasErrors = true;
@@ -149,19 +153,17 @@ function validateSkills() {
 
     const fm = extractFrontmatter(content);
     if (fm.present) {
-      const { keys, descriptionIndicator } = inspectFrontmatter(fm.lines);
+      const { values, descriptionIndicator } = inspectFrontmatter(fm.lines);
 
-      if (!keys.has('name')) {
-        reportFrontmatterFinding(
-          `${dir}/SKILL.md - frontmatter missing required field: name`,
-        );
+      if (!Object.prototype.hasOwnProperty.call(values, 'name')) {
+        reportFrontmatterFinding(`${dir}/SKILL.md - frontmatter missing required field: name`);
+      } else if (values.name === '') {
+        reportFrontmatterFinding(`${dir}/SKILL.md - frontmatter 'name' is empty`);
       }
 
       if (descriptionIndicator && descriptionIndicator.startsWith('|')) {
         reportFrontmatterFinding(
-          `${dir}/SKILL.md - frontmatter description uses literal block scalar ` +
-            `'${descriptionIndicator}' which preserves internal newlines; ` +
-            `use an inline string or folded '>' scalar instead`,
+          `${dir}/SKILL.md - frontmatter description uses literal block scalar ` + `'${descriptionIndicator}' which preserves internal newlines; ` + `use an inline string or folded '>' scalar instead`
         );
       }
     }

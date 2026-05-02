@@ -168,7 +168,7 @@ Short version:
 - [ ] Links to related skills
 - [ ] No sensitive data (API keys, tokens, paths)
 - [ ] Frontmatter declares `name:` matching the directory name
-- [ ] Frontmatter `description:` is an inline string or folded (`>`) scalar — not a literal block (`|` / `|-`), which preserves internal newlines and breaks flat-table renderers
+- [ ] Frontmatter `description:` is an inline string or folded (`>`) scalar — not a literal block (`|`, `|-`, or `|+`), which preserves internal newlines and breaks flat-table renderers
 
 ### Example Skills
 

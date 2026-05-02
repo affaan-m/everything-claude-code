@@ -808,7 +808,7 @@ function runTests() {
   // Captures stderr on both success and failure (the shared
   // runSourceViaTempFile helper only surfaces stderr when the child
   // exits non-zero, which hides WARN lines in the default mode).
-  function runSkillsValidator(testDir, argv = []) {
+  function runSkillsValidator(testDir, argv = [], envOverrides = {}) {
     const { spawnSync } = require('child_process');
     const validatorPath = path.join(validatorsDir, 'validate-skills.js');
     let source = fs.readFileSync(validatorPath, 'utf8');
@@ -831,6 +831,7 @@ function runTests() {
         encoding: 'utf8',
         timeout: 10000,
         cwd: repoRoot,
+        env: { ...process.env, ...envOverrides },
       });
       return {
         code: typeof r.status === 'number' ? r.status : 1,
@@ -921,6 +922,66 @@ function runTests() {
     assert.strictEqual(result.code, 0, 'Hidden dirs should be skipped');
     assert.ok(result.stdout.includes('Validated 1'),
       `Should only count the non-hidden skill; got stdout: ${result.stdout}`);
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('warns when name: value is empty or whitespace', () => {
+    const testDir = createTestDir();
+    const skillDir = path.join(testDir, 'empty-name-skill');
+    fs.mkdirSync(skillDir);
+    // `name:` key present but value is blank.
+    fs.writeFileSync(path.join(skillDir, 'SKILL.md'),
+      '---\nname:    \ndescription: "X"\norigin: ECC\n---\n# Skill');
+
+    const result = runSkillsValidator(testDir);
+    assert.strictEqual(result.code, 0,
+      `Default mode must not fail CI; got stderr: ${result.stderr}`);
+    assert.ok(
+      result.stderr.includes('WARN') && result.stderr.includes("'name' is empty"),
+      `Should warn on empty name; got stderr: ${result.stderr}`);
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('warns on literal block-scalar description with |+ chomp', () => {
+    const testDir = createTestDir();
+    const skillDir = path.join(testDir, 'keep-desc-skill');
+    fs.mkdirSync(skillDir);
+    fs.writeFileSync(path.join(skillDir, 'SKILL.md'),
+      '---\nname: keep-desc-skill\ndescription: |+\n  line one\n  line two\norigin: ECC\n---\n# Skill');
+
+    const result = runSkillsValidator(testDir);
+    assert.strictEqual(result.code, 0, 'Default mode should not fail CI');
+    assert.ok(result.stderr.includes('literal block scalar'),
+      `Should warn on |+ description; got stderr: ${result.stderr}`);
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('warns on block-scalar description with indent indicator and trailing comment', () => {
+    const testDir = createTestDir();
+    const skillDir = path.join(testDir, 'indent-desc-skill');
+    fs.mkdirSync(skillDir);
+    // `|-2  # note` is still a literal block scalar in YAML 1.2.
+    fs.writeFileSync(path.join(skillDir, 'SKILL.md'),
+      '---\nname: indent-desc-skill\ndescription: |-2  # trimmed two-space indent\n    line one\n    line two\norigin: ECC\n---\n# Skill');
+
+    const result = runSkillsValidator(testDir);
+    assert.strictEqual(result.code, 0, 'Default mode should not fail CI');
+    assert.ok(result.stderr.includes('literal block scalar'),
+      `Should warn on |-2 description; got stderr: ${result.stderr}`);
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('honors CI_STRICT_SKILLS=1 env flag', () => {
+    const testDir = createTestDir();
+    const skillDir = path.join(testDir, 'no-name-skill-env');
+    fs.mkdirSync(skillDir);
+    fs.writeFileSync(path.join(skillDir, 'SKILL.md'),
+      '---\ndescription: "X"\norigin: ECC\n---\n# Skill');
+
+    const result = runSkillsValidator(testDir, [], { CI_STRICT_SKILLS: '1' });
+    assert.strictEqual(result.code, 1, 'CI_STRICT_SKILLS=1 must fail CI on missing name');
+    assert.ok(result.stderr.includes('missing required field: name'),
+      'Should report missing name');
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
