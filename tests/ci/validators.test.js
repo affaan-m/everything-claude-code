@@ -210,7 +210,7 @@ function runSkillsValidator(testDir, argv = [], envOverrides = {}) {
       encoding: 'utf8',
       timeout: 10000,
       cwd: repoRoot,
-      env: { ...process.env, ...envOverrides },
+      env: { ...process.env, CI_STRICT_SKILLS: '', ...envOverrides },
     });
     return {
       code: typeof r.status === 'number' ? r.status : 1,
