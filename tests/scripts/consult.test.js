@@ -95,6 +95,17 @@ function runTests() {
     assert.ok(payload.profiles.find(profile => profile.id === 'mle').installCommand.includes('--profile mle'));
   })) passed++; else failed++;
 
+  if (test('strongly matches tokenized model review queries to the MLE reviewer', () => {
+    const result = run(['model', 'review', '--json']);
+
+    assert.strictEqual(result.status, 0, result.stderr);
+    const payload = parseJson(result.stdout);
+    const reviewer = payload.matches.find(match => match.componentId === 'agent:mle-reviewer');
+    assert.ok(reviewer, 'Should include agent:mle-reviewer');
+    assert.ok(reviewer.reasons.includes('matched "model"'));
+    assert.ok(reviewer.reasons.includes('matched "review"'));
+  })) passed++; else failed++;
+
   if (test('works from outside the ECC repository', () => {
     const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-consult-project-'));
     try {

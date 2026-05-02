@@ -5,6 +5,7 @@ const path = require('path');
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const CANONICAL_SKILL = path.join(REPO_ROOT, 'skills', 'mle-workflow', 'SKILL.md');
 const CODEX_SKILL = path.join(REPO_ROOT, '.agents', 'skills', 'mle-workflow', 'SKILL.md');
+const CODEX_PLUGIN = path.join(REPO_ROOT, '.codex-plugin', 'plugin.json');
 
 const EXPECTED_TASKS = [
   'MLE-01',
@@ -120,7 +121,7 @@ const FORBIDDEN_DOMAIN_EXAMPLES = [
 ];
 
 function stripFrontmatter(content) {
-  return content.replace(/^---[\s\S]*?---\n/, '');
+  return content.replace(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/, '');
 }
 
 function readSkill(filePath) {
@@ -159,6 +160,11 @@ function run() {
     assert.strictEqual(stripFrontmatter(codex), stripFrontmatter(canonical));
   })) passed++; else failed++;
 
+  if (test('frontmatter stripping tolerates CRLF and EOF delimiters', () => {
+    assert.strictEqual(stripFrontmatter('---\r\nname: mle\r\n---\r\n# Body'), '# Body');
+    assert.strictEqual(stripFrontmatter('---\nname: mle\n---'), '');
+  })) passed++; else failed++;
+
   if (test('MLE workflow simulates ten common MLE tasks', () => {
     assert.strictEqual(canonicalRows.length, 10, 'Expected exactly ten MLE simulation rows');
     for (const taskId of EXPECTED_TASKS) {
@@ -190,6 +196,13 @@ function run() {
     for (const forbidden of FORBIDDEN_DOMAIN_EXAMPLES) {
       assert.ok(!normalized.includes(forbidden), `Found narrow domain example: ${forbidden}`);
     }
+  })) passed++; else failed++;
+
+  if (test('Codex plugin metadata advertises the added MLE skill count', () => {
+    const plugin = JSON.parse(fs.readFileSync(CODEX_PLUGIN, 'utf8'));
+
+    assert.match(plugin.description, /183 shared ECC skills/);
+    assert.match(plugin.interface.shortDescription, /183 battle-tested ECC skills/);
   })) passed++; else failed++;
 
   console.log(`\nPassed: ${passed}`);

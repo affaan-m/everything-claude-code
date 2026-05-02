@@ -1466,6 +1466,8 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 | **Custom Tools** | Via hooks | Via hooks | N/A | 6 native tools |
 | **MCP Servers** | 14 | Shared (mcp.json) | 7 (auto-merged via TOML parser) | Full |
 | **Config Format** | settings.json | hooks.json + rules/ | config.toml | opencode.json |
+
+The Codex parity row counts native-format skills; the Codex support section above lists the broader `.agents/skills/` surface available to Codex.
 | **Context File** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | AGENTS.md |
 | **Secret Detection** | Hook-based | beforeSubmitPrompt hook | Sandbox-based | Hook-based |
 | **Auto-Format** | PostToolUse hook | afterFileEdit hook | N/A | file.edited hook |

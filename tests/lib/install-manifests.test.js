@@ -237,14 +237,24 @@ function runTests() {
   })) passed++; else failed++;
 
   if (test('resolves mle profile with machine-learning workflow dependencies', () => {
+    const manifests = loadInstallManifests();
+    const mleProfile = manifests.profiles.mle;
+    const machineLearningModule = manifests.modulesById.get('machine-learning');
     const plan = resolveInstallPlan({
       profileId: 'mle',
       target: 'claude',
       projectRoot: '/workspace/ml-app',
     });
 
+    assert.match(mleProfile.description, /beta/i);
+    assert.ok(!mleProfile.modules.includes('security'),
+      'mle profile should rely on machine-learning dependency expansion for security');
+    assert.ok(machineLearningModule.dependencies.includes('security'),
+      'machine-learning module should depend on security');
     assert.ok(plan.selectedModuleIds.includes('machine-learning'),
       'Should include machine-learning module');
+    assert.ok(plan.selectedModuleIds.includes('security'),
+      'Should include security through machine-learning dependencies');
     assert.ok(plan.selectedModuleIds.includes('framework-language'),
       'Should include Python and framework-language support');
     assert.ok(plan.selectedModuleIds.includes('workflow-quality'),

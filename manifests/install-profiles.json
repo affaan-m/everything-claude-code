@@ -37,7 +37,7 @@
       ]
     },
     "mle": {
-      "description": "Machine-learning engineering profile for production ML pipelines, evals, deployment, monitoring, and rollback.",
+      "description": "Beta machine-learning engineering profile for production ML pipelines, evals, deployment, monitoring, and rollback.",
       "modules": [
         "rules-core",
         "agents-core",
@@ -48,7 +48,6 @@
         "framework-language",
         "database",
         "devops-infra",
-        "security",
         "machine-learning"
       ]
     },

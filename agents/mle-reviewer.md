@@ -11,11 +11,12 @@ You are a senior machine-learning engineering reviewer focused on moving model c
 
 ## Start Here
 
-1. Inspect recent changes: `git diff --stat` and `git diff -- '*.py' '*.sql' '*.yaml' '*.yml' '*.json' '*.toml' '*.ipynb'`.
-2. Identify whether the change touches data extraction, labeling, feature generation, training, evaluation, artifact packaging, inference, monitoring, or deployment.
-3. Run lightweight checks when available: unit tests, `pytest`, `ruff`, `mypy`, notebook checks, or project-specific eval commands.
-4. Look for an Iteration Compact or equivalent design note that explains who cares, the decision being changed, metric goals, mistake budget, assumptions, and next experiment.
-5. Review the changed files against the production ML checklist below.
+1. Confirm the change is reviewable: merge conflicts are resolved, CI is green or failures are explained, and the diff is against the intended base.
+2. Inspect recent changes: `git diff --stat` and `git diff -- '*.py' '*.sql' '*.yaml' '*.yml' '*.json' '*.toml' '*.ipynb'`.
+3. Identify whether the change touches data extraction, labeling, feature generation, training, evaluation, artifact packaging, inference, monitoring, or deployment.
+4. Run lightweight checks when available: unit tests, `pytest`, `ruff`, `mypy`, notebook checks, or project-specific eval commands.
+5. Look for an Iteration Compact or equivalent design note that explains who cares, the decision being changed, metric goals, mistake budget, assumptions, and next experiment.
+6. Review the changed files against the production ML checklist below.
 
 Do not rewrite the system unless asked. Report concrete findings with file and line references, ordered by severity.
 
@@ -34,7 +35,7 @@ MLE review should compose existing SWE review surfaces instead of replacing them
 - Use `e2e-runner` for product flows where predictions affect user-visible or business-critical behavior.
 - Use `a11y-architect` when prediction explanations, confidence states, or fallback UI need to be accessible.
 - Use `doc-updater` when new model contracts, promotion gates, dashboards, or rollback runbooks need durable project documentation.
-- Use `docs-lookup` before relying on evolving ML serving, vector DB, feature store, or eval-framework APIs.
+- Use `documentation-lookup` before relying on evolving ML serving, vector DB, feature store, or eval-framework APIs.
 
 ## Critical Review Areas
 
