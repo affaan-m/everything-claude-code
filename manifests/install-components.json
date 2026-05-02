@@ -260,6 +260,14 @@
       ]
     },
     {
+      "id": "capability:machine-learning",
+      "family": "capability",
+      "description": "Production machine-learning engineering workflows for data contracts, reproducible training, evaluation, deployment, monitoring, and rollback.",
+      "modules": [
+        "machine-learning"
+      ]
+    },
+    {
       "id": "capability:supply-chain",
       "family": "capability",
       "description": "Supply chain, logistics, procurement, and manufacturing domain skills.",
@@ -348,6 +356,14 @@
       ]
     },
     {
+      "id": "agent:mle-reviewer",
+      "family": "agent",
+      "description": "Production machine-learning engineering reviewer for ML pipelines, evals, serving, monitoring, and rollback.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
       "id": "skill:tdd-workflow",
       "family": "skill",
       "description": "Test-driven development workflow skill.",
@@ -425,6 +441,14 @@
       "description": "Deep research and investigation workflows.",
       "modules": [
         "research-apis"
+      ]
+    },
+    {
+      "id": "skill:mle-workflow",
+      "family": "skill",
+      "description": "Production machine-learning engineering workflow for data contracts, reproducible training, evaluation, deployment, monitoring, and rollback.",
+      "modules": [
+        "machine-learning"
       ]
     }
   ]
