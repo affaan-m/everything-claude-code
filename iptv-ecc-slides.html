@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everything Claude Code — IPTV 개발팀 소개</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0f0f13;
+    color: #e8e8f0;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  .slide-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ─── Slide navigation ─── */
+  .slides-wrapper {
+    display: flex;
+    width: 200vw;
+    height: 100vh;
+    transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 48px 64px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ─── Background decorations ─── */
+  .bg-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.18;
+    pointer-events: none;
+  }
+  .slide-1 .bg-glow-1 { width: 600px; height: 600px; background: #6c3fff; top: -200px; right: -100px; }
+  .slide-1 .bg-glow-2 { width: 400px; height: 400px; background: #00c9a7; bottom: -150px; left: -100px; }
+  .slide-2 .bg-glow-1 { width: 500px; height: 500px; background: #ff6b35; top: -150px; left: -100px; }
+  .slide-2 .bg-glow-2 { width: 450px; height: 450px; background: #4361ee; bottom: -150px; right: -100px; }
+
+  /* ─── Common header ─── */
+  .slide-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+  .slide-badge {
+    background: linear-gradient(135deg, #6c3fff, #4361ee);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+  .slide-num {
+    font-size: 12px;
+    color: #666;
+    letter-spacing: 1px;
+  }
+  h1 {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: #8888aa;
+    margin-bottom: 28px;
+  }
+  .accent { color: #9d72ff; }
+  .accent2 { color: #00c9a7; }
+  .accent3 { color: #ff6b35; }
+
+  /* ─── Divider ─── */
+  hr.divider {
+    border: none;
+    border-top: 1px solid #2a2a3a;
+    margin-bottom: 28px;
+  }
+
+  /* ═══════════════════════════
+     SLIDE 1 — Structure
+  ═══════════════════════════ */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 24px;
+    flex: 1;
+  }
+
+  /* Left: layer stack */
+  .layer-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .layer {
+    border-radius: 12px;
+    padding: 14px 18px;
+    border: 1px solid;
+    position: relative;
+    cursor: default;
+    transition: transform 0.2s;
+  }
+  .layer:hover { transform: translateX(4px); }
+  .layer-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .layer-desc {
+    font-size: 11.5px;
+    opacity: 0.7;
+    line-height: 1.4;
+  }
+  .layer-tag {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: 0.55;
+    text-transform: uppercase;
+  }
+
+  .layer-agents    { background: #1a1030; border-color: #6c3fff44; }
+  .layer-agents .layer-title { color: #9d72ff; }
+  .layer-agents .layer-tag { color: #9d72ff; }
+
+  .layer-skills    { background: #0e1e1a; border-color: #00c9a744; }
+  .layer-skills .layer-title { color: #00c9a7; }
+  .layer-skills .layer-tag { color: #00c9a7; }
+
+  .layer-commands  { background: #1a1010; border-color: #ff6b3544; }
+  .layer-commands .layer-title { color: #ff6b35; }
+  .layer-commands .layer-tag { color: #ff6b35; }
+
+  .layer-hooks     { background: #101520; border-color: #4361ee44; }
+  .layer-hooks .layer-title { color: #4ca3ff; }
+  .layer-hooks .layer-tag { color: #4ca3ff; }
+
+  .layer-rules     { background: #181820; border-color: #ffffff22; }
+  .layer-rules .layer-title { color: #aaaacc; }
+  .layer-rules .layer-tag { color: #aaaacc; }
+
+  /* Right: component map */
+  .component-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .comp-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #555577;
+    margin-bottom: 2px;
+  }
+  .comp-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    font-size: 11.5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+  }
+  .chip-purple { background: #2a1a5e; color: #c4a8ff; }
+  .chip-teal   { background: #0b2520; color: #4dd9c0; }
+  .chip-orange { background: #2b1505; color: #ff9868; }
+  .chip-blue   { background: #0d1b3a; color: #6ea8ff; }
+  .chip-gray   { background: #1e1e2e; color: #9999bb; }
+
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .flow-step {
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .flow-arrow { color: #444466; font-size: 18px; }
+
+  /* ═══════════════════════════
+     SLIDE 2 — Usage
+  ═══════════════════════════ */
+  .usage-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    flex: 1;
+  }
+  .phase-card {
+    border-radius: 14px;
+    border: 1px solid;
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .phase-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .phase-plan { background: #110d22; border-color: #6c3fff33; }
+  .phase-plan::before { background: linear-gradient(90deg, #6c3fff, #9d72ff); }
+  .phase-dev  { background: #0a1e1a; border-color: #00c9a733; }
+  .phase-dev::before  { background: linear-gradient(90deg, #00c9a7, #4dd9c0); }
+  .phase-val  { background: #1a0f08; border-color: #ff6b3533; }
+  .phase-val::before  { background: linear-gradient(90deg, #ff6b35, #ffaa80); }
+
+  .phase-icon { font-size: 26px; margin-bottom: 2px; }
+  .phase-title {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+  .phase-plan .phase-title { color: #9d72ff; }
+  .phase-dev  .phase-title { color: #00c9a7; }
+  .phase-val  .phase-title { color: #ff6b35; }
+
+  .cmd-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+  }
+  .cmd-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 12.5px;
+  }
+  .cmd-name {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .phase-plan .cmd-name { background: #2a1a5e; color: #c4a8ff; }
+  .phase-dev  .cmd-name { background: #0b2520; color: #4dd9c0; }
+  .phase-val  .cmd-name { background: #2b1505; color: #ff9868; }
+
+  .cmd-desc { color: #7777aa; font-size: 11.5px; line-height: 1.3; }
+
+  .phase-iptv {
+    margin-top: auto;
+    background: #ffffff08;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 11px;
+    color: #8888aa;
+    line-height: 1.5;
+    border: 1px solid #ffffff0d;
+  }
+  .phase-iptv strong {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 3px;
+    opacity: 0.7;
+  }
+
+  /* ─── Scenario bar ─── */
+  .scenario-bar {
+    margin-top: 16px;
+    background: #13131f;
+    border: 1px solid #2a2a40;
+    border-radius: 12px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow: hidden;
+  }
+  .scenario-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #555577;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    margin-right: 20px;
+    flex-shrink: 0;
+  }
+  .scenario-steps {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+  .sc-step {
+    font-family: 'Courier New', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .sc-1 { background: #2a1a5e; color: #c4a8ff; }
+  .sc-2 { background: #2a1a5e; color: #c4a8ff; }
+  .sc-3 { background: #0b2520; color: #4dd9c0; }
+  .sc-4 { background: #0b2520; color: #4dd9c0; }
+  .sc-5 { background: #2b1505; color: #ff9868; }
+  .sc-6 { background: #2b1505; color: #ff9868; }
+  .sc-arrow { color: #333355; font-size: 16px; }
+  .sc-desc {
+    font-size: 11px;
+    color: #556688;
+    margin-left: 12px;
+    white-space: nowrap;
+  }
+
+  /* ─── Nav dots ─── */
+  .nav {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #333355;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .dot.active { background: #9d72ff; width: 24px; border-radius: 4px; }
+
+  /* ─── Slide arrows ─── */
+  .nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1a1a2e;
+    border: 1px solid #2a2a40;
+    color: #8888aa;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    z-index: 100;
+    user-select: none;
+  }
+  .nav-btn:hover { background: #2a2a40; color: #e8e8f0; }
+  .nav-btn.prev { left: 16px; }
+  .nav-btn.next { right: 16px; }
+  .nav-btn:disabled { opacity: 0.2; cursor: default; }
+</style>
+</head>
+<body>
+
+<div class="slide-container">
+  <div class="slides-wrapper" id="slider">
+
+    <!-- ════════════════════════════════════════
+         SLIDE 1 — 구조
+    ════════════════════════════════════════ -->
+    <div class="slide slide-1">
+      <div class="bg-glow bg-glow-1"></div>
+      <div class="bg-glow bg-glow-2"></div>
+
+      <div class="slide-header">
+        <span class="slide-badge">Everything Claude Code</span>
+        <span class="slide-num">01 / 02</span>
+      </div>
+
+      <h1>Claude Code 위에 얹는<br><span class="accent">개발 워크플로우 레이어</span></h1>
+      <p class="subtitle">단순 AI 어시스턴트가 아닌 — 기획부터 배포까지 사이클을 커버하는 에이전트 생태계</p>
+      <hr class="divider">
+
+      <div class="arch-grid">
+
+        <!-- Left: 계층 구조 -->
+        <div class="layer-stack">
+
+          <div class="layer layer-agents">
+            <div class="layer-title">Agents</div>
+            <div class="layer-desc">특정 역할에 특화된 AI 서브에이전트<br>위임·병렬 실행 가능</div>
+            <div class="layer-tag">48개</div>
+          </div>
+
+          <div class="layer layer-skills">
+            <div class="layer-title">Skills</div>
+            <div class="layer-desc">도메인 지식 + 워크플로우 정의<br>슬래시 커맨드로 호출</div>
+            <div class="layer-tag">180개+</div>
+          </div>
+
+          <div class="layer layer-commands">
+            <div class="layer-title">Commands</div>
+            <div class="layer-desc">사용자가 직접 실행하는 슬래시 명령<br>/plan, /tdd, /code-review 등</div>
+            <div class="layer-tag">65개</div>
+          </div>
+
+          <div class="layer layer-hooks">
+            <div class="layer-title">Hooks</div>
+            <div class="layer-desc">툴 실행 전·후 자동 트리거<br>품질 게이트, 포맷, 로깅</div>
+            <div class="layer-tag">자동화</div>
+          </div>
+
+          <div class="layer layer-rules">
+            <div class="layer-title">Rules / MCP Configs</div>
+            <div class="layer-desc">항상 적용되는 코딩 가이드라인<br>외부 도구 연동 설정</div>
+            <div class="layer-tag">항상 적용</div>
+          </div>
+
+        </div>
+
+        <!-- Right: 구성요소 상세 -->
+        <div class="component-panel">
+
+          <div>
+            <div class="comp-section-title">주요 에이전트</div>
+            <div class="comp-chips">
+              <span class="chip chip-purple">planner</span>
+              <span class="chip chip-purple">architect</span>
+              <span class="chip chip-purple">code-reviewer</span>
+              <span class="chip chip-purple">security-reviewer</span>
+              <span class="chip chip-purple">performance-optimizer</span>
+              <span class="chip chip-purple">tdd-guide</span>
+              <span class="chip chip-purple">database-reviewer</span>
+              <span class="chip chip-purple">e2e-runner</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="comp-section-title">IPTV 도메인 관련 스킬</div>
+            <div class="comp-chips">
+              <span class="chip chip-teal">api-design</span>
+              <span class="chip chip-teal">backend-patterns</span>
+              <span class="chip chip-teal">frontend-patterns</span>
+              <span class="chip chip-teal">database-migrations</span>
+              <span class="chip chip-teal">deployment-patterns</span>
+              <span class="chip chip-teal">security-review</span>
+              <span class="chip chip-teal">docker-patterns</span>
+              <span class="chip chip-teal">e2e-testing</span>
+              <span class="chip chip-teal">tdd-workflow</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="comp-section-title">핵심 슬래시 커맨드</div>
+            <div class="comp-chips">
+              <span class="chip chip-orange">/prp-prd</span>
+              <span class="chip chip-orange">/prp-plan</span>
+              <span class="chip chip-orange">/multi-backend</span>
+              <span class="chip chip-orange">/multi-frontend</span>
+              <span class="chip chip-orange">/tdd</span>
+              <span class="chip chip-orange">/quality-gate</span>
+              <span class="chip chip-orange">/code-review</span>
+              <span class="chip chip-orange">/e2e</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="comp-section-title">전체 개발 흐름</div>
+            <div class="flow-row">
+              <span class="flow-step" style="background:#1a1030;color:#9d72ff;">기획 PRD</span>
+              <span class="flow-arrow">→</span>
+              <span class="flow-step" style="background:#1a1030;color:#9d72ff;">구현 계획</span>
+              <span class="flow-arrow">→</span>
+              <span class="flow-step" style="background:#0e1e1a;color:#00c9a7;">BE 개발</span>
+              <span class="flow-arrow">+</span>
+              <span class="flow-step" style="background:#0e1e1a;color:#00c9a7;">FE 개발</span>
+              <span class="flow-arrow">→</span>
+              <span class="flow-step" style="background:#1a1010;color:#ff6b35;">TDD · E2E</span>
+              <span class="flow-arrow">→</span>
+              <span class="flow-step" style="background:#101520;color:#4ca3ff;">PR · 배포</span>
+            </div>
+          </div>
+
+          <div style="background:#ffffff06; border:1px solid #ffffff0d; border-radius:10px; padding:12px 14px; margin-top:auto;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555577;margin-bottom:6px;">커스터마이징 포인트</div>
+            <div style="font-size:12px;color:#8888aa;line-height:1.7;">
+              📄 <strong style="color:#aaaacc;">CLAUDE.md</strong> — IPTV 도메인 컨텍스트 추가<br>
+              🔧 <strong style="color:#aaaacc;">skills/</strong> — 전용 스킬 추가 (EPG, 스트리밍, DRM)<br>
+              🤖 <strong style="color:#aaaacc;">agents/</strong> — IPTV 도메인 리뷰어 추가<br>
+              ⚡ <strong style="color:#aaaacc;">hooks/</strong> — 커밋 전 API 계약 검증 훅
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         SLIDE 2 — 활용방법
+    ════════════════════════════════════════ -->
+    <div class="slide slide-2">
+      <div class="bg-glow bg-glow-1"></div>
+      <div class="bg-glow bg-glow-2"></div>
+
+      <div class="slide-header">
+        <span class="slide-badge">IPTV 개발 적용</span>
+        <span class="slide-num">02 / 02</span>
+      </div>
+
+      <h1>기획 → 개발 → 검증<br><span class="accent3">전 사이클 커버 방법</span></h1>
+      <p class="subtitle">각 단계에 맞는 커맨드·에이전트를 조합해 반복 가능한 워크플로우를 구성한다</p>
+      <hr class="divider">
+
+      <div class="usage-grid">
+
+        <!-- Phase 1: Planning -->
+        <div class="phase-card phase-plan">
+          <div class="phase-icon">📋</div>
+          <div class="phase-title">기획 · 설계</div>
+
+          <div class="cmd-list">
+            <div class="cmd-item">
+              <span class="cmd-name">/prp-prd</span>
+              <span class="cmd-desc">요구사항 → PRD 자동 작성</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">/prp-plan</span>
+              <span class="cmd-desc">BE/FE/DB 작업으로 분해</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">/plan</span>
+              <span class="cmd-desc">구현 전략 수립 · 검토</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">planner agent</span>
+              <span class="cmd-desc">복잡한 기능 아키텍처 설계</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">architect agent</span>
+              <span class="cmd-desc">시스템 구조 결정 지원</span>
+            </div>
+          </div>
+
+          <div class="phase-iptv">
+            <strong>IPTV 예시</strong>
+            "VOD 재생 이력 기능" 요청<br>
+            → PRD 작성 → API 스펙 · DB 스키마 · UI 컴포넌트로 자동 분해
+          </div>
+        </div>
+
+        <!-- Phase 2: Development -->
+        <div class="phase-card phase-dev">
+          <div class="phase-icon">⚡</div>
+          <div class="phase-title">개발 · 구현</div>
+
+          <div class="cmd-list">
+            <div class="cmd-item">
+              <span class="cmd-name">/multi-backend</span>
+              <span class="cmd-desc">스트리밍 API · EPG · 과금 병렬 개발</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">/multi-frontend</span>
+              <span class="cmd-desc">플레이어 UI · 채널 가이드 병렬 개발</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">/prp-implement</span>
+              <span class="cmd-desc">계획을 실제 코드로 구현</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">/build-fix</span>
+              <span class="cmd-desc">빌드 오류 자동 진단·수정</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">skill-create</span>
+              <span class="cmd-desc">기존 코드에서 팀 스킬 자동 추출</span>
+            </div>
+          </div>
+
+          <div class="phase-iptv">
+            <strong>IPTV 예시</strong>
+            HLS 스트림 API (BE) +<br>
+            비디오 플레이어 컴포넌트 (FE)<br>
+            → 병렬 개발로 리드타임 단축
+          </div>
+        </div>
+
+        <!-- Phase 3: Validation -->
+        <div class="phase-card phase-val">
+          <div class="phase-icon">🛡️</div>
+          <div class="phase-title">검증 · 배포</div>
+
+          <div class="cmd-list">
+            <div class="cmd-item">
+              <span class="cmd-name">/tdd</span>
+              <span class="cmd-desc">TDD 워크플로우 · 단위 테스트</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">/e2e</span>
+              <span class="cmd-desc">E2E 테스트 생성 · 실행</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">/quality-gate</span>
+              <span class="cmd-desc">커밋 전 품질·보안 체크</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">/code-review</span>
+              <span class="cmd-desc">보안·성능·DB 전문 에이전트 리뷰</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">/prp-pr</span>
+              <span class="cmd-desc">PR 자동 생성 · 제출</span>
+            </div>
+          </div>
+
+          <div class="phase-iptv">
+            <strong>IPTV 예시</strong>
+            DRM 인증 로직 보안 리뷰 →<br>
+            재생 흐름 E2E 테스트 →<br>
+            구독 API 성능 최적화 검토
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Scenario bar -->
+      <div class="scenario-bar">
+        <div class="scenario-label">실제 시나리오</div>
+        <div class="scenario-steps">
+          <span class="sc-step sc-1">/prp-prd</span>
+          <span class="sc-arrow">→</span>
+          <span class="sc-step sc-2">/prp-plan</span>
+          <span class="sc-arrow">→</span>
+          <span class="sc-step sc-3">/multi-backend</span>
+          <span class="sc-arrow">+</span>
+          <span class="sc-step sc-3">/multi-frontend</span>
+          <span class="sc-arrow">→</span>
+          <span class="sc-step sc-5">/tdd</span>
+          <span class="sc-arrow">→</span>
+          <span class="sc-step sc-5">/quality-gate</span>
+          <span class="sc-arrow">→</span>
+          <span class="sc-step sc-6">/prp-pr</span>
+        </div>
+        <div class="sc-desc">「EPG 채널 편성표 신규 개발」 전체 흐름</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Navigation -->
+<button class="nav-btn prev" id="prevBtn" onclick="goTo(current-1)" disabled>‹</button>
+<button class="nav-btn next" id="nextBtn" onclick="goTo(current+1)">›</button>
+
+<div class="nav">
+  <div class="dot active" onclick="goTo(0)" id="dot0"></div>
+  <div class="dot"        onclick="goTo(1)" id="dot1"></div>
+</div>
+
+<script>
+  let current = 0;
+  const total = 2;
+
+  function goTo(n) {
+    if (n < 0 || n >= total) return;
+    current = n;
+    document.getElementById('slider').style.transform = `translateX(-${n * 100}vw)`;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === n));
+    document.getElementById('prevBtn').disabled = n === 0;
+    document.getElementById('nextBtn').disabled = n === total - 1;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+  });
+</script>
+</body>
+</html>
