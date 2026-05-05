@@ -313,13 +313,17 @@ function probeCommandServer(serverName, config) {
     // extension or path separator. Absolute/relative paths keep
     // single-candidate ENOENT semantics so existing failure-reason
     // contracts (and stderr signals like "spawn ... ENOENT") survive.
-    const isPathLike = command && (
+    // Guard against non-string command values so misconfigured input
+    // surfaces through finish(...) instead of throwing in path.extname
+    // before spawn's try/catch can catch it.
+    const commandIsString = typeof command === 'string' && command.length > 0;
+    const isPathLike = commandIsString && (
       path.isAbsolute(command)
       || command.includes('/')
       || command.includes('\\')
     );
     const candidates = process.platform === 'win32'
-      && command
+      && commandIsString
       && !path.extname(command)
       && !isPathLike
         ? [command, command + '.cmd', command + '.exe', command + '.bat']
@@ -361,7 +365,12 @@ function probeCommandServer(serverName, config) {
       // Node 18.20+/20.12+ refuse to spawn .cmd/.bat without `shell: true`
       // (CVE-2024-27980 mitigation, raises EINVAL). For those candidates
       // route through the shell so PATH lookup and the cmd interpreter run.
+      // Caveat: under shell mode args are joined and forwarded through
+      // `cmd.exe /d /s /c`; values containing %, ^, &, |, <, >, ", ) may
+      // be subject to Windows quoting heuristics. MCP server configs
+      // should keep args free of unescaped shell metacharacters.
       const useShell = process.platform === 'win32'
+        && typeof tryCommand === 'string'
         && /\.(cmd|bat)$/i.test(tryCommand);
 
       let child;
@@ -425,10 +434,25 @@ function probeCommandServer(serverName, config) {
           return;
         }
 
-        try {
-          child.kill('SIGTERM');
-        } catch {
-          // ignore
+        if (useShell && child.pid) {
+          // shell: true wraps the candidate in cmd.exe; child.kill()
+          // terminates cmd but leaves grandchildren (e.g. node spawned
+          // from a .cmd shim) orphaned. taskkill /T /F walks the
+          // process tree so health probes do not leak processes.
+          try {
+            spawnSync('taskkill', ['/T', '/F', '/PID', String(child.pid)], {
+              stdio: 'ignore',
+              windowsHide: true
+            });
+          } catch {
+            // ignore; SIGKILL safety net below still runs
+          }
+        } else {
+          try {
+            child.kill('SIGTERM');
+          } catch {
+            // ignore
+          }
         }
 
         setTimeout(() => {
