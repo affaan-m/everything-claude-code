@@ -306,96 +306,152 @@ function probeCommandServer(serverName, config) {
       ...(config.env && typeof config.env === 'object' && !Array.isArray(config.env) ? config.env : {})
     };
 
-    let stderr = '';
-    let done = false;
-    let timer = null;
+    // Windows: child_process.spawn does not auto-resolve .cmd/.bat/.exe
+    // shims, so npm-style PATH commands like `npx` (installed as
+    // `npx.cmd`) raise ENOENT under non-shell spawn. Probe candidate
+    // suffixes only on Windows for bare command names without an
+    // extension or path separator. Absolute/relative paths keep
+    // single-candidate ENOENT semantics so existing failure-reason
+    // contracts (and stderr signals like "spawn ... ENOENT") survive.
+    const isPathLike = command && (
+      path.isAbsolute(command)
+      || command.includes('/')
+      || command.includes('\\')
+    );
+    const candidates = process.platform === 'win32'
+      && command
+      && !path.extname(command)
+      && !isPathLike
+        ? [command, command + '.cmd', command + '.exe', command + '.bat']
+        : [command];
 
+    let done = false;
     function finish(result) {
       if (done) return;
       done = true;
-      if (timer) {
-        clearTimeout(timer);
-        timer = null;
-      }
       resolve(result);
     }
 
-    let child;
-    try {
-      child = spawn(command, args, {
-        env: mergedEnv,
-        cwd: process.cwd(),
-        stdio: ['pipe', 'ignore', 'pipe']
-      });
-    } catch (error) {
-      finish({
-        ok: false,
-        statusCode: null,
-        reason: error.message
-      });
-      return;
-    }
+    function attempt(idx) {
+      const tryCommand = candidates[idx];
+      const isLast = idx + 1 >= candidates.length;
+      let stderr = '';
+      let attemptDone = false;
+      let timer = null;
 
-    child.stderr.on('data', chunk => {
-      if (stderr.length < 4000) {
-        const remaining = 4000 - stderr.length;
-        stderr += String(chunk).slice(0, remaining);
+      function attemptFinish(result) {
+        if (attemptDone) return;
+        attemptDone = true;
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        finish(result);
       }
-    });
 
-    child.on('error', error => {
-      finish({
-        ok: false,
-        statusCode: null,
-        reason: error.message
-      });
-    });
+      function handleEnoent() {
+        attemptDone = true;
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        attempt(idx + 1);
+      }
 
-    child.on('exit', (code, signal) => {
-      finish({
-        ok: false,
-        statusCode: code,
-        reason: stderr.trim() || `process exited before handshake (${signal || code || 'unknown'})`
-      });
-    });
+      // Node 18.20+/20.12+ refuse to spawn .cmd/.bat without `shell: true`
+      // (CVE-2024-27980 mitigation, raises EINVAL). For those candidates
+      // route through the shell so PATH lookup and the cmd interpreter run.
+      const useShell = process.platform === 'win32'
+        && /\.(cmd|bat)$/i.test(tryCommand);
 
-    timer = setTimeout(() => {
-      // A fast-crashing stdio server can finish before the timer callback runs
-      // on a loaded machine. Check the process state again before classifying it
-      // as healthy on timeout.
-      if (child.exitCode !== null || child.signalCode !== null) {
-        finish({
+      let child;
+      try {
+        child = spawn(tryCommand, args, {
+          env: mergedEnv,
+          cwd: process.cwd(),
+          stdio: ['pipe', 'ignore', 'pipe'],
+          shell: useShell
+        });
+      } catch (error) {
+        if ((error.code === 'ENOENT' || error.code === 'EINVAL') && !isLast) {
+          handleEnoent();
+          return;
+        }
+        attemptFinish({
           ok: false,
-          statusCode: child.exitCode,
-          reason: stderr.trim() || `process exited before handshake (${child.signalCode || child.exitCode || 'unknown'})`
+          statusCode: null,
+          reason: error.message
         });
         return;
       }
 
-      try {
-        child.kill('SIGTERM');
-      } catch {
-        // ignore
-      }
+      child.stderr.on('data', chunk => {
+        if (stderr.length < 4000) {
+          const remaining = 4000 - stderr.length;
+          stderr += String(chunk).slice(0, remaining);
+        }
+      });
 
-      setTimeout(() => {
+      child.on('error', error => {
+        if ((error.code === 'ENOENT' || error.code === 'EINVAL') && !isLast) {
+          handleEnoent();
+          return;
+        }
+        attemptFinish({
+          ok: false,
+          statusCode: null,
+          reason: error.message
+        });
+      });
+
+      child.on('exit', (code, signal) => {
+        attemptFinish({
+          ok: false,
+          statusCode: code,
+          reason: stderr.trim() || `process exited before handshake (${signal || code || 'unknown'})`
+        });
+      });
+
+      timer = setTimeout(() => {
+        // A fast-crashing stdio server can finish before the timer callback runs
+        // on a loaded machine. Check the process state again before classifying it
+        // as healthy on timeout.
+        if (child.exitCode !== null || child.signalCode !== null) {
+          attemptFinish({
+            ok: false,
+            statusCode: child.exitCode,
+            reason: stderr.trim() || `process exited before handshake (${child.signalCode || child.exitCode || 'unknown'})`
+          });
+          return;
+        }
+
         try {
-          child.kill('SIGKILL');
+          child.kill('SIGTERM');
         } catch {
           // ignore
         }
-      }, 200).unref?.();
 
-      finish({
-        ok: true,
-        statusCode: null,
-        reason: `${serverName} accepted a new stdio process`
-      });
-    }, timeoutMs);
+        setTimeout(() => {
+          try {
+            child.kill('SIGKILL');
+          } catch {
+            // ignore
+          }
+        }, 200).unref?.();
 
-    if (typeof timer.unref === 'function') {
-      timer.unref();
+        attemptFinish({
+          ok: true,
+          statusCode: null,
+          reason: `${serverName} accepted a new stdio process`
+        });
+      }, timeoutMs);
+
+      if (typeof timer.unref === 'function') {
+        timer.unref();
+      }
     }
+
+    attempt(0);
   });
 }
 
