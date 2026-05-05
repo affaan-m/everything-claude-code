@@ -1141,7 +1141,7 @@ These are not bundled with ECC and are not audited by this repo, but they are wo
 - [claude-seo](https://github.com/AgriciDaniel/claude-seo) — SEO-focused skill and agent collection
 - [claude-ads](https://github.com/AgriciDaniel/claude-ads) — Ad-audit and paid-growth workflow collection
 - [claude-cybersecurity](https://github.com/AgriciDaniel/claude-cybersecurity) — Security-oriented skill and agent collection
-- [Bring Your AI](https://bringyour.ai/claude-code-to-codex) — Local-first Claude Code to Codex migration tool with Codex import audit and AGENTS.md vs. CLAUDE.md guides.
+- [Bring Your AI](https://bringyour.ai/claude-code-to-codex) — Local-first Claude Code to Codex migration tool with [Codex import auditing checklist](https://bringyour.ai/codex-import-checklist) and [AGENTS.md vs. CLAUDE.md behavior comparison](https://bringyour.ai/agents-md-claude-md)
 
 ---
 
