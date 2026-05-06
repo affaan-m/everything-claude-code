@@ -56,10 +56,26 @@ export CLV2_OBSERVER_PROMPT_PATTERN
 #   https://user:token@github.com/owner/repo → github.com/owner/repo
 #   ssh://git@github.com/owner/repo.git     → github.com/owner/repo
 #   http://gitea.local:3000/u/r.git         → gitea.local:3000/u/r
+#   /home/user/Repos/MyProject              → /home/user/Repos/MyProject (case preserved)
+#   file:///home/user/Repos/MyProject       → /home/user/Repos/MyProject (case preserved)
 # Empty input → empty output (caller falls back to project_root).
 _clv2_normalize_remote_url() {
   local url="$1"
   [ -z "$url" ] && return 0
+
+  # Decide up-front whether this looks like a network URL or a local
+  # filesystem path. Local paths must keep their original case because
+  # case-sensitive filesystems treat /home/u/Repos and /home/u/repos as
+  # distinct directories — lowercasing them would collide unrelated repos.
+  # `file://` URIs point at local paths too, so they are treated as local.
+  local is_network=0
+  case "$url" in
+    file://*) is_network=0 ;;
+    *://*)    is_network=1 ;;   # http://, https://, ssh://, git://, ...
+    *@*:*)    is_network=1 ;;   # SCP-like:  user@host:path
+    *)        is_network=0 ;;   # bare local path (absolute or relative)
+  esac
+
   # Strip embedded credentials: scheme://user[:pass]@host/... → scheme://host/...
   # Match the same pattern used by the credential-strip step in
   # _clv2_detect_project ([^@]+, not [^@/]+) so this function is safe to call
@@ -68,17 +84,26 @@ _clv2_normalize_remote_url() {
   # is not allowed by RFC 3986, but being tolerant keeps the function usable
   # in isolation without depending on the caller having pre-stripped.
   url=$(printf '%s' "$url" | sed -E 's|://[^@]+@|://|')
-  # Strip URL scheme (https://, http://, ssh://, git://, ...)
+  # Strip URL scheme (https://, http://, ssh://, git://, file://, ...)
   url=$(printf '%s' "$url" | sed -E 's|^[A-Za-z][A-Za-z0-9+.-]*://||')
   # SCP-like form (after scheme strip this only matches pure SCP URLs):
   #   git@host:path → host/path
   url=$(printf '%s' "$url" | sed -E 's|^[^@/:]+@([^:/]+):|\1/|')
   # Drop trailing .git (and an optional trailing slash)
   url=$(printf '%s' "$url" | sed -E 's|\.git/?$||; s|/+$||')
-  # Lowercase: hostnames are DNS-insensitive and the major Git hosts route
-  # repository paths case-insensitively. Doing this here keeps two clones of
-  # the same repo from drifting into separate hashes due to capitalization.
-  printf '%s' "$url" | tr '[:upper:]' '[:lower:]'
+
+  if [ "$is_network" = "1" ]; then
+    # Lowercase network URLs only. DNS hostnames are case-insensitive, and
+    # the major Git hosts (GitHub, GitLab, Gitea, Bitbucket Cloud) route
+    # repository paths case-insensitively. Lowercasing here keeps two
+    # clones of the same repo from drifting into separate hashes due to
+    # casing differences in the hostname or path.
+    printf '%s' "$url" | tr '[:upper:]' '[:lower:]'
+  else
+    # Local-path / file:// remotes: preserve original case so that
+    # case-sensitive filesystems keep distinct paths distinct.
+    printf '%s' "$url"
+  fi
 }
 
 _clv2_detect_project() {
