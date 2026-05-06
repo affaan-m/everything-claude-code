@@ -265,8 +265,8 @@ go test -race -cover ./...
 ## 相关命令
 
 * `/go-build` - 修复构建错误
-* `/go-review` - 在实现后审查代码
-* `/verify` - 运行完整的验证循环
+* `/go-review` - 实现后审查代码
+* `verification-loop` 技能 - 运行完整验证循环
 
 ## 相关
 

@@ -43,11 +43,12 @@ node tests/hooks/hooks.test.js
 
 ## 开发说明
 
-* 包管理器检测：npm、pnpm、yarn、bun（可通过 `CLAUDE_PACKAGE_MANAGER` 环境变量或项目配置设置）
+* 包管理器检测：npm、pnpm、yarn、bun（可通过 `CLAUDE_PACKAGE_MANAGER` 环境变量或项目配置）
 * 跨平台：通过 Node.js 脚本支持 Windows、macOS、Linux
-* 代理格式：带有 YAML 前言的 Markdown（名称、描述、工具、模型）
-* 技能格式：带有清晰章节的 Markdown（何时使用、如何工作、示例）
-* 钩子格式：带有匹配器条件和命令/通知钩子的 JSON
+* 代理格式：带 YAML 前置元数据（名称、描述、工具、模型）的 Markdown
+* 技能格式：包含使用时机、工作原理、示例等清晰章节的 Markdown
+* 技能存放：精选技能存放于 skills/；生成/导入的技能存放于 ~/.claude/skills/。详见 docs/SKILL-PLACEMENT-POLICY.md
+* 钩子格式：包含匹配条件与命令/通知钩子的 JSON
 
 ## 贡献
 
@@ -59,3 +60,14 @@ node tests/hooks/hooks.test.js
 * 钩子：带有匹配器和钩子数组的 JSON
 
 文件命名：小写字母并用连字符连接（例如 `python-reviewer.md`, `tdd-workflow.md`）
+
+## 技能
+
+处理相关文件时请使用以下技能：
+
+| 文件 | 技能 |
+|---------|-------|
+| `README.md` | `/readme` |
+| `.github/workflows/*.yml` | `/ci-workflow` |
+
+当生成子代理时，始终将对应技能中的约定传递给代理的提示词。

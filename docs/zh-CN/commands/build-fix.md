@@ -1,3 +1,7 @@
+---
+description: 检测项目构建系统，并通过最小安全更改逐步修复构建/类型错误。
+---
+
 # 构建与修复
 
 以最小、安全的更改逐步修复构建和类型错误。
@@ -6,15 +10,15 @@
 
 识别项目的构建工具并运行构建：
 
-| 指示器 | 构建命令 |
+| 指标 | 构建命令 |
 |-----------|---------------|
-| `package.json` 包含 `build` 脚本 | `npm run build` 或 `pnpm build` |
+| `package.json` 配合 `build` 脚本 | `npm run build` 或 `pnpm build` |
 | `tsconfig.json`（仅限 TypeScript） | `npx tsc --noEmit` |
 | `Cargo.toml` | `cargo build 2>&1` |
 | `pom.xml` | `mvn compile` |
 | `build.gradle` | `./gradlew compileJava` |
 | `go.mod` | `go build ./...` |
-| `pyproject.toml` | `python -m py_compile` 或 `mypy .` |
+| `pyproject.toml` | `python -m compileall -q .` 或 `mypy .` |
 
 ## 步骤 2：解析并分组错误
 

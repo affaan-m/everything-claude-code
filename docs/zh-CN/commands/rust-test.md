@@ -302,8 +302,8 @@ cargo test --no-fail-fast
 ## 相关命令
 
 * `/rust-build` - 修复构建错误
-* `/rust-review` - 在实现后审查代码
-* `/verify` - 运行完整的验证循环
+* `/rust-review` - 实现后审查代码
+* `verification-loop` 技能 - 运行完整验证循环
 
 ## 相关
 

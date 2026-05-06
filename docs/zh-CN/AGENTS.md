@@ -1,8 +1,8 @@
 # Everything Claude Code (ECC) — 智能体指令
 
-这是一个**生产就绪的 AI 编码插件**，提供 48 个专业代理、182 项技能、68 条命令以及自动化钩子工作流，用于软件开发。
+这是一个**生产级AI编程插件**，提供48个专业智能体、182项技能、68条命令以及自动化钩子工作流，用于软件开发。
 
-**版本:** 2.0.0-rc.1
+**版本：** 2.0.0-rc.1
 
 ## 核心原则
 
@@ -14,35 +14,34 @@
 
 ## 可用智能体
 
-| 代理 | 用途 | 使用时机 |
+| 智能体 | 用途 | 使用时机 |
 |-------|---------|-------------|
 | planner | 实现规划 | 复杂功能、重构 |
 | architect | 系统设计与可扩展性 | 架构决策 |
-| tdd-guide | 测试驱动开发 | 新功能、错误修复 |
+| tdd-guide | 测试驱动开发 | 新功能、缺陷修复 |
 | code-reviewer | 代码质量与可维护性 | 编写/修改代码后 |
 | security-reviewer | 漏洞检测 | 提交前、敏感代码 |
 | build-error-resolver | 修复构建/类型错误 | 构建失败时 |
-| e2e-runner | 端到端 Playwright 测试 | 关键用户流程 |
+| e2e-runner | 端到端Playwright测试 | 关键用户流程 |
 | refactor-cleaner | 死代码清理 | 代码维护 |
-| doc-updater | 文档和代码地图更新 | 更新文档时 |
-| docs-lookup | 文档和 API 参考研究 | 库/API 文档问题 |
-| cpp-reviewer | C++ 代码审查 | C++ 项目 |
-| cpp-build-resolver | C++ 构建错误 | C++ 构建失败 |
-| go-reviewer | Go 代码审查 | Go 项目 |
-| go-build-resolver | Go 构建错误 | Go 构建失败 |
-| kotlin-reviewer | Kotlin 代码审查 | Kotlin/Android/KMP 项目 |
-| kotlin-build-resolver | Kotlin/Gradle 构建错误 | Kotlin 构建失败 |
-| database-reviewer | PostgreSQL/Supabase 专家 | 模式设计、查询优化 |
-| python-reviewer | Python 代码审查 | Python 项目 |
-| java-reviewer | Java 和 Spring Boot 代码审查 | Java/Spring Boot 项目 |
-| java-build-resolver | Java/Maven/Gradle 构建错误 | Java 构建失败 |
-| chief-of-staff | 沟通分类与草拟 | 多渠道邮件、Slack、LINE、Messenger |
+| doc-updater | 文档与代码地图 | 更新文档 |
+| cpp-reviewer | C/C++代码审查 | C和C++项目 |
+| cpp-build-resolver | C/C++构建错误 | C和C++构建失败 |
+| docs-lookup | 通过Context7查询文档 | API/文档问题 |
+| go-reviewer | Go代码审查 | Go项目 |
+| go-build-resolver | Go构建错误 | Go构建失败 |
+| kotlin-reviewer | Kotlin代码审查 | Kotlin/Android/KMP项目 |
+| kotlin-build-resolver | Kotlin/Gradle构建错误 | Kotlin构建失败 |
+| database-reviewer | PostgreSQL/Supabase专家 | 模式设计、查询优化 |
+| python-reviewer | Python代码审查 | Python项目 |
+| java-reviewer | Java和Spring Boot代码审查 | Java/Spring Boot项目 |
+| java-build-resolver | Java/Maven/Gradle构建错误 | Java构建失败 |
 | loop-operator | 自主循环执行 | 安全运行循环、监控停滞、干预 |
-| harness-optimizer | Harness 配置调优 | 可靠性、成本、吞吐量 |
-| rust-reviewer | Rust 代码审查 | Rust 项目 |
-| rust-build-resolver | Rust 构建错误 | Rust 构建失败 |
-| pytorch-build-resolver | PyTorch 运行时/CUDA/训练错误 | PyTorch 构建/训练失败 |
-| typescript-reviewer | TypeScript/JavaScript 代码审查 | TypeScript/JavaScript 项目 |
+| harness-optimizer | Harness配置调优 | 可靠性、成本、吞吐量 |
+| rust-reviewer | Rust代码审查 | Rust项目 |
+| rust-build-resolver | Rust构建错误 | Rust构建失败 |
+| pytorch-build-resolver | PyTorch运行时/CUDA/训练错误 | PyTorch构建/训练失败 |
+| typescript-reviewer | TypeScript/JavaScript代码审查 | TypeScript/JavaScript项目 |
 
 ## 智能体编排
 
@@ -50,12 +49,11 @@
 
 * 复杂功能请求 → **planner**
 * 刚编写/修改的代码 → **code-reviewer**
-* 错误修复或新功能 → **tdd-guide**
+* 缺陷修复或新功能 → **tdd-guide**
 * 架构决策 → **architect**
 * 安全敏感代码 → **security-reviewer**
-* 多渠道沟通分流 → **chief-of-staff**
-* 自主循环 / 循环监控 → **loop-operator**
-* 线束配置可靠性及成本 → **harness-optimizer**
+* 自主循环/循环监控 → **loop-operator**
+* Harness配置可靠性与成本 → **harness-optimizer**
 
 对于独立操作使用并行执行 — 同时启动多个智能体。
 
@@ -123,6 +121,12 @@
    * 如果没有明显的项目文档位置，在创建新的顶层文件前先询问
 5. **提交** — 采用约定式提交格式，提供全面的 PR 摘要
 
+## 工作流表面策略
+
+* `skills/` 是规范的工作流表面。
+* 新的工作流贡献应首先落地到 `skills/`。
+* `commands/` 是传统的斜杠入口兼容表面，仅在迁移或跨Harness对等仍需垫片时添加或更新。
+
 ## Git 工作流
 
 **提交格式：** `<type>: <description>` — 类型：feat, fix, refactor, docs, test, chore, perf, ci
@@ -149,12 +153,14 @@
 agents/          — 48 个专业子代理
 skills/          — 182 个工作流技能和领域知识
 commands/        — 68 个斜杠命令
-hooks/           — 基于触发的自动化
-rules/           — 始终遵循的指导方针（通用 + 每种语言）
+hooks/           — 基于触发器的自动化
+rules/           — 始终遵循的指南（通用 + 按语言）
 scripts/         — 跨平台 Node.js 实用工具
 mcp-configs/     — 14 个 MCP 服务器配置
 tests/           — 测试套件
 ```
+
+`commands/` 保留在仓库中以保持兼容性，但长期方向是以技能为先。
 
 ## 成功指标
 

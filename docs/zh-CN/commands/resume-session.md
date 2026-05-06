@@ -1,5 +1,5 @@
 ---
-description: 从 ~/.claude/session-data/ 加载最新的会话文件，并从上次会话结束的地方恢复工作，保留完整上下文。
+description: 从 ~/.claude/session-data/ 加载最近的会话文件，并从上次会话结束的位置恢复工作，保留完整上下文。
 ---
 
 # 恢复会话命令
@@ -17,10 +17,10 @@ description: 从 ~/.claude/session-data/ 加载最新的会话文件，并从上
 ## 用法
 
 ```
-/resume-session                                                      # 加载 ~/.claude/session-data/ 目录下最新的文件
-/resume-session 2024-01-15                                           # 加载该日期最新的会话
-/resume-session ~/.claude/sessions/2024-01-15-session.tmp           # 加载特定的旧格式文件
-/resume-session ~/.claude/session-data/2024-01-15-abc123de-session.tmp  # 加载当前短ID格式的会话文件
+/resume-session                                                      # 加载 ~/.claude/session-data/ 中最近的文件
+/resume-session 2024-01-15                                           # 加载该日期最近的会话
+/resume-session ~/.claude/session-data/2024-01-15-abc123de-session.tmp  # 加载当前的短ID会话文件
+/resume-session ~/.claude/sessions/2024-01-15-session.tmp               # 加载特定的旧格式文件
 ```
 
 ## 流程
@@ -30,20 +30,21 @@ description: 从 ~/.claude/session-data/ 加载最新的会话文件，并从上
 如果未提供参数：
 
 1. 检查 `~/.claude/session-data/`
-2. 选择最近修改的 `*-session.tmp` 文件
+2. 选取最近修改的 `*-session.tmp` 文件
 3. 如果文件夹不存在或没有匹配的文件，告知用户：
    ```
-   在 ~/.claude/session-data/ 中未找到会话文件。
+   在 ~/.claude/session-data/ 中未找到会话文件
    请在会话结束时运行 /save-session 来创建一个。
    ```
    然后停止。
 
 如果提供了参数：
 
-* 如果看起来像日期 (`YYYY-MM-DD`)，则先在 `~/.claude/session-data/` 中搜索，再回退到旧的 `~/.claude/sessions/`，匹配
-  `YYYY-MM-DD-session.tmp`（旧格式）或 `YYYY-MM-DD-<shortid>-session.tmp`（当前格式）的文件，
-  并加载该日期最近修改的版本
-* 如果看起来像文件路径，则直接读取该文件
+* 如果看起来像日期（`YYYY-MM-DD`），先搜索 `~/.claude/session-data/`，再搜索旧版
+  `~/.claude/sessions/`，查找匹配 `YYYY-MM-DD-session.tmp`（旧版格式）或
+  `YYYY-MM-DD-<shortid>-session.tmp`（当前格式）的文件
+  并加载该日期下最近修改的变体
+* 如果看起来像文件路径，直接读取该文件
 * 如果未找到，清晰报告并停止
 
 ### 步骤 2：读取整个会话文件
@@ -60,26 +61,26 @@ description: 从 ~/.claude/session-data/ 加载最新的会话文件，并从上
 
 项目：[文件中的项目名称/主题]
 
-我们正在构建什么：
-[用你自己的话总结 2-3 句话]
+我们正在构建的内容：
+[用你自己的话总结2-3句话]
 
 当前状态：
-PASS: 已完成：[数量] 项已确认
- 进行中：[列出进行中的文件]
- 未开始：[列出计划但未开始的文件]
+通过：工作中：[已确认的项目数量]
+ 进行中：[列出正在进行的文件]
+ 未开始：[列出已计划但尚未触及的文件]
 
-不应重试的内容：
-[列出每个失败的方法及其原因——此部分至关重要]
+不要重试的内容：
+[列出每种失败的方法及其原因——这一点至关重要]
 
-待解决问题/阻碍：
+未解决的问题/阻碍：
 [列出任何阻碍或未解答的问题]
 
 下一步：
-[如果文件中已定义，则列出确切下一步]
-[如果未定义："未定义下一步——建议在开始前共同回顾'尚未尝试的方法'"]
+[如果文件中定义了确切的下一步]
+[如果未定义："未定义下一步——建议在开始前一起审查'尚未尝试的内容'"]
 
 ════════════════════════════════════════════════
-准备就绪。您希望做什么？
+准备继续。你想做什么？
 ```
 
 ### 步骤 4：等待用户
@@ -98,10 +99,10 @@ PASS: 已完成：[数量] 项已确认
 加载该日期最近修改的匹配文件，无论其使用的是旧的无ID格式还是当前的短ID格式。
 
 **会话文件引用了已不存在的文件：**
-在简报中注明 — "WARNING: 会话中引用了 `path/to/file.ts`，但在磁盘上未找到。"
+在简报中注明此情况 — "警告：会话中引用的 `path/to/file.ts` 在磁盘上未找到。"
 
-**会话文件来自超过7天前：**
-注明时间间隔 — "WARNING: 此会话来自 N 天前（阈值：7天）。情况可能已发生变化。" — 然后正常继续。
+**会话文件距今超过 7 天：**
+注明时间间隔 — "警告：此会话来自 N 天前（阈值：7 天）。情况可能已发生变化。" — 然后正常继续。
 
 **用户直接提供了文件路径（例如，从队友处转发而来）：**
 读取它并遵循相同的简报流程 — 无论来源如何，格式都是相同的。
@@ -117,31 +118,33 @@ PASS: 已完成：[数量] 项已确认
 SESSION LOADED: /Users/you/.claude/session-data/2024-01-15-abc123de-session.tmp
 ════════════════════════════════════════════════
 
-项目：my-app — JWT 认证
+PROJECT: my-app — JWT 认证
 
-构建目标：
-使用存储在 httpOnly cookie 中的 JWT 令牌实现用户认证。
-注册和登录端点已部分完成。通过中间件进行路由保护尚未开始。
+WHAT WE'RE BUILDING:
+使用存储在 httpOnly cookie 中的 JWT 令牌进行用户认证。
+注册和登录端点已部分完成。路由保护
+通过中间件尚未开始。
 
-当前状态：
-PASS: 已完成：3 项（注册端点、JWT 生成、密码哈希）
- 进行中：app/api/auth/login/route.ts（令牌有效，但 cookie 尚未设置）
- 未开始：middleware.ts、app/login/page.tsx
+CURRENT STATE:
+PASS: 工作中: 3 项 (注册端点, JWT 生成, 密码哈希)
+ 进行中: app/api/auth/login/route.ts (令牌可用, cookie 尚未设置)
+ 未开始: middleware.ts, app/login/page.tsx
 
-需避免的事项：
-FAIL: Next-Auth — 与自定义 Prisma 适配器冲突，每次请求均抛出适配器错误
-FAIL: localStorage 存储 JWT — 导致 SSR 水合不匹配，与 Next.js 不兼容
+WHAT NOT TO RETRY:
+FAIL: Next-Auth — 与自定义 Prisma 适配器冲突, 每次请求都抛出适配器错误
+FAIL: 用于 JWT 的 localStorage — 导致 SSR 水合不匹配, 与 Next.js 不兼容
 
-待解决问题 / 阻碍：
-- cookies().set() 在路由处理器中是否有效，还是仅适用于服务器操作？
+OPEN QUESTIONS / BLOCKERS:
+- cookies().set() 在路由处理器中有效还是仅在服务器操作中有效？
 
-下一步：
-在 app/api/auth/login/route.ts 中 — 使用以下方式将 JWT 设置为 httpOnly cookie：
+NEXT STEP:
+在 app/api/auth/login/route.ts 中 — 使用
 cookies().set('token', jwt, { httpOnly: true, secure: true, sameSite: 'strict' })
-随后使用 Postman 测试响应中是否包含 Set-Cookie 标头。
+将 JWT 设置为 httpOnly cookie
+然后使用 Postman 测试响应中的 Set-Cookie 标头。
 
 ════════════════════════════════════════════════
-准备继续。您希望做什么？
+准备继续。您想做什么？
 ```
 
 ***

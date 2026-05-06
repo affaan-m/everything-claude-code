@@ -15,11 +15,12 @@ rules/
 │   ├── hooks.md
 │   ├── agents.md
 │   └── security.md
-├── typescript/      # TypeScript/JavaScript 特定
-├── python/          # Python 特定
-├── golang/          # Go 特定
-├── swift/           # Swift 特定
-└── php/             # PHP 特定
+├── typescript/      # TypeScript/JavaScript 专用
+├── python/          # Python 专用
+├── golang/          # Go 专用
+├── web/             # Web 和前端专用
+├── swift/           # Swift 专用
+└── php/             # PHP 专用
 ```
 
 * **common/** 包含通用原则 —— 没有语言特定的代码示例。
@@ -34,6 +35,7 @@ rules/
 ./install.sh typescript
 ./install.sh python
 ./install.sh golang
+./install.sh web
 ./install.sh swift
 ./install.sh php
 
@@ -55,6 +57,7 @@ cp -r rules/common ~/.claude/rules/common
 cp -r rules/typescript ~/.claude/rules/typescript
 cp -r rules/python ~/.claude/rules/python
 cp -r rules/golang ~/.claude/rules/golang
+cp -r rules/web ~/.claude/rules/web
 cp -r rules/swift ~/.claude/rules/swift
 cp -r rules/php ~/.claude/rules/php
 
@@ -84,6 +87,8 @@ cp -r rules/php ~/.claude/rules/php
    > 此文件通过 <语言> 特定内容扩展了 [common/xxx.md](../common/xxx.md)。
    ```
 4. 如果现有技能可用，则引用它们，或者在 `skills/` 下创建新的技能。
+
+对于像 `web/` 这样的非语言领域，当存在足够可复用的领域特定指导来支撑独立规则集时，也应遵循相同的分层模式。
 
 ## 规则优先级
 

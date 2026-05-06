@@ -19,7 +19,7 @@ origin: ECC
 
 此技能必须在激活前对 Claude Code 可访问。有两种引导方式：
 
-1. **通过插件**: `/plugin install everything-claude-code@everything-claude-code` — 插件会自动加载此技能
+1. **通过插件**: `/plugin install everything-claude-code` — 插件会自动加载此技能
 2. **手动**: 仅将此技能复制到 `~/.claude/skills/configure-ecc/SKILL.md`，然后通过说 "configure ecc" 激活
 
 ***
@@ -143,14 +143,14 @@ mkdir -p $TARGET/skills $TARGET/rules
 
 | 技能 | 描述 |
 |-------|-------------|
-| `continuous-learning` | 从会话中自动提取可重用模式作为习得技能 |
-| `continuous-learning-v2` | 基于本能的学习，带有置信度评分，演变为技能/命令/代理 |
-| `eval-harness` | 用于评估驱动开发 (EDD) 的正式评估框架 |
-| `iterative-retrieval` | 用于子代理上下文问题的渐进式上下文优化 |
-| `security-review` | 安全检查清单：身份验证、输入、密钥、API、支付功能 |
-| `strategic-compact` | 在逻辑间隔处建议手动上下文压缩 |
-| `tdd-workflow` | 强制要求 TDD，覆盖率 80% 以上：单元测试、集成测试、端到端测试 |
-| `verification-loop` | 验证和质量循环模式 |
+| `continuous-learning` | 旧版 v1 停止钩子会话模式提取；新安装建议使用 `continuous-learning-v2` |
+| `continuous-learning-v2` | 基于直觉的学习与置信度评分，可演化为技能、智能体及可选的旧版命令适配层 |
+| `eval-harness` | 面向评估驱动开发（EDD）的正式评估框架 |
+| `iterative-retrieval` | 针对子智能体上下文问题的渐进式上下文优化 |
+| `security-review` | 安全清单：认证、输入、密钥、API、支付功能 |
+| `strategic-compact` | 建议在逻辑间隔处进行手动上下文压缩 |
+| `tdd-workflow` | 强制实施 TDD 并保持 80%+ 覆盖率：单元测试、集成测试、端到端测试 |
+| `verification-loop` | 验证与质量循环模式 |
 
 **类别：业务与内容（5 项技能）**
 
@@ -162,14 +162,14 @@ mkdir -p $TARGET/skills $TARGET/rules
 | `investor-materials` | 宣传文稿、一页简介、投资者备忘录和财务模型 |
 | `investor-outreach` | 个性化的投资者冷邮件、熟人介绍和后续跟进 |
 
-**类别：研究与API（2项技能）**
+**类别：研究与 API（2 项技能）**
 
 | 技能 | 描述 |
 |-------|-------------|
-| `deep-research` | 使用 firecrawl 和 exa MCP 进行多源深度研究，并生成带引用的报告 |
-| `exa-search` | 通过 Exa MCP 进行网络、代码、公司和人员的神经搜索 |
+| `deep-research` | 使用 firecrawl 和 exa MCP 的多源深度研究，附带引用报告 |
+| `exa-search` | 通过 Exa MCP 实现的神经搜索，用于网络、代码、公司及人物研究 |
 
-`claude-api` 是 Anthropic 官方技能；需要时请从 [`anthropics/skills`](https://github.com/anthropics/skills) 安装官方版本，而不是通过 ECC 重复打包。
+`claude-api` 是 Anthropic 的规范技能。如需使用官方 Claude API 工作流而非 ECC 捆绑副本，请从 [`anthropics/skills`](https://github.com/anthropics/skills) 安装。
 
 **类别：社交与内容分发（2项技能）**
 
@@ -195,21 +195,21 @@ mkdir -p $TARGET/skills $TARGET/rules
 
 | 技能 | 描述 |
 |-------|-------------|
-| `docs/examples/project-guidelines-template.md` | 用于创建项目特定技能的模板 |
+| `docs/examples/project-guidelines-template.md` | 创建项目特定技能的模板 |
 
 ### 2d: 执行安装
 
-对于每个选定的技能，请从正确的源目录复制整个技能目录：
+对于每个选定的技能，从正确的源根目录复制整个技能目录：
 
 ```bash
-# 核心技能位于 .agents/skills/
+# Core skills live under .agents/skills/
 cp -R "$ECC_ROOT/.agents/skills/<skill-name>" "$TARGET/skills/"
 
-# 细分技能位于 skills/
+# Niche skills live under skills/
 cp -R "$ECC_ROOT/skills/<skill-name>" "$TARGET/skills/"
 ```
 
-遍历 glob 得到的源目录时，不要把带 trailing slash 的源路径直接传给 `cp`。显式使用目录名作为目标名：
+在遍历通配符源目录时，切勿将带尾部斜杠的源路径直接传递给 `cp`。应显式使用目录路径作为目标名称：
 
 ```bash
 cp -R "${src%/}" "$TARGET/skills/$(basename "${src%/}")"

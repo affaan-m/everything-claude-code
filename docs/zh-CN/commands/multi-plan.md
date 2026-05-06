@@ -1,3 +1,7 @@
+---
+description: 制定多模型实施计划，不修改生产代码。
+---
+
 # 计划 - 多模型协同规划
 
 多模型协同规划 - 上下文检索 + 双模型分析 → 生成分步实施计划。
@@ -203,30 +207,28 @@ mcp__ace-tool__search_context({
 
 **`/ccg:plan` 的职责到此结束，必须执行以下操作**：
 
-1. 向用户呈现完整的实施计划（包括伪代码）
-
-2. 将计划保存到 `.claude/plan/<feature-name>.md`（从需求中提取功能名称，例如 `user-auth`，`payment-module`）
-
-3. 以 **粗体文本** 输出提示（必须使用实际保存的文件路径）：
+1. 向用户展示完整的实现计划（包括伪代码）
+2. 将计划保存到 `.claude/plan/<feature-name>.md`（从需求中提取功能名称，例如 `user-auth`、`payment-module`）
+3. 用**粗体文本**输出提示（必须使用实际保存的文件路径）：
 
 ***
 
-**计划已生成并保存至 `.claude/plan/actual-feature-name.md`**
+**计划已生成并保存到 `.claude/plan/actual-feature-name.md`**
 
 **请审阅以上计划。您可以：**
 
-* **修改计划**：告诉我需要调整的内容，我会更新计划
-* **执行计划**：复制以下命令到新会话
+* **修改计划**：告诉我需要调整的内容，我将更新计划
+* **执行计划**：将以下命令复制到新会话中
 
-   ```
-   /ccg:execute .claude/plan/actual-feature-name.md
-   ```
+```
+/ccg:execute .claude/plan/actual-feature-name.md
+```
 
 ***
 
-**注意**：上面的 `actual-feature-name.md` 必须替换为实际保存的文件名！
+**注意**：上述 `actual-feature-name.md` 必须替换为实际保存的文件名！
 
-4. **立即终止当前响应**（在此停止。不再进行工具调用。）
+4. **立即终止当前响应**（在此处停止。不再进行工具调用。）
 
 **绝对禁止**：
 

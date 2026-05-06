@@ -46,25 +46,27 @@ tweets = resp.json()
 
 ### OAuth 1.0a（用户上下文）
 
-必需用于：发布推文、管理账户、私信。
+用于：发布推文、管理账户、私信以及任何写入流程。
 
 ```bash
 # Environment setup — source before use
-export X_API_KEY="your-api-key"
-export X_API_SECRET="your-api-secret"
+export X_CONSUMER_KEY="your-consumer-key"
+export X_CONSUMER_SECRET="your-consumer-secret"
 export X_ACCESS_TOKEN="your-access-token"
-export X_ACCESS_SECRET="your-access-secret"
+export X_ACCESS_TOKEN_SECRET="your-access-token-secret"
 ```
+
+旧版配置中可能存在 `X_API_KEY`、`X_API_SECRET` 和 `X_ACCESS_SECRET` 等旧别名。在记录或配置新流程时，建议优先使用 `X_CONSUMER_*` 和 `X_ACCESS_TOKEN_SECRET` 名称。
 
 ```python
 import os
 from requests_oauthlib import OAuth1Session
 
 oauth = OAuth1Session(
-    os.environ["X_API_KEY"],
-    client_secret=os.environ["X_API_SECRET"],
+    os.environ["X_CONSUMER_KEY"],
+    client_secret=os.environ["X_CONSUMER_SECRET"],
     resource_owner_key=os.environ["X_ACCESS_TOKEN"],
-    resource_owner_secret=os.environ["X_ACCESS_SECRET"],
+    resource_owner_secret=os.environ["X_ACCESS_TOKEN_SECRET"],
 )
 ```
 
@@ -123,6 +125,21 @@ resp = requests.get(
         "tweet.fields": "public_metrics,created_at",
     }
 )
+```
+
+### 拉取近期原创帖子用于语音建模
+
+```python
+resp = requests.get(
+    "https://api.x.com/2/tweets/search/recent",
+    headers=headers,
+    params={
+        "query": "from:affaanmustafa -is:retweet -is:reply",
+        "max_results": 25,
+        "tweet.fields": "created_at,public_metrics",
+    }
+)
+voice_samples = resp.json()
 ```
 
 ### 通过用户名获取用户
@@ -197,14 +214,19 @@ else:
 
 ## 与内容引擎集成
 
-使用 `content-engine` 技能生成平台原生内容，然后通过 X API 发布：
+使用 `brand-voice` 配合 `content-engine` 生成平台原生内容，然后通过 X API 发布：
 
-1. 使用内容引擎生成内容（X 平台格式）
-2. 验证长度（单条推文 280 字符）
-3. 使用上述模式通过 X API 发布
-4. 通过 public\_metrics 跟踪参与度
+1. 当语音匹配重要时，拉取近期原创帖子
+2. 构建或复用 `VOICE PROFILE`
+3. 使用 `content-engine` 以 X 原生格式生成内容
+4. 验证长度和线程结构
+5. 返回草稿等待批准，除非用户明确要求立即发布
+6. 仅在批准后通过 X API 发布
+7. 通过 public\_metrics 追踪互动情况
 
 ## 相关技能
 
+* `brand-voice` — 从真实的 X 和网站/来源素材构建可复用的语音档案
 * `content-engine` — 为 X 生成平台原生内容
-* `crosspost` — 在 X、LinkedIn 和其他平台分发内容
+* `crosspost` — 将内容分发至 X、LinkedIn 及其他平台
+* `connections-optimizer` — 在起草网络驱动型外联前重新组织 X 关系图谱

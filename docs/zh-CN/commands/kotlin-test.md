@@ -306,8 +306,8 @@ open build/reports/kover/html/index.html
 ## 相关命令
 
 * `/kotlin-build` - 修复构建错误
-* `/kotlin-review` - 在实现后审查代码
-* `/verify` - 运行完整的验证循环
+* `/kotlin-review` - 实现后审查代码
+* `verification-loop` 技能 - 运行完整验证循环
 
 ## 相关
 

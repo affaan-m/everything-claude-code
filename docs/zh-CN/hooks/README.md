@@ -16,37 +16,56 @@
 
 ## 本插件中的钩子
 
+## 手动安装这些钩子
+
+对于 Claude Code 的手动安装，请勿将原始仓库的 `hooks.json` 粘贴到 `~/.claude/settings.json` 中，也不要直接复制到 `~/.claude/hooks/hooks.json`。已检入的文件是面向插件/仓库的，应通过 ECC 安装程序安装或作为插件加载。
+
+请改用安装程序，以便钩子命令根据您的实际 Claude 根目录进行重写：
+
+```bash
+bash ./install.sh --target claude --modules hooks-runtime
+```
+
+```powershell
+pwsh -File .\install.ps1 --target claude --modules hooks-runtime
+```
+
+这会将解析后的钩子安装到 `~/.claude/hooks/hooks.json`。在 Windows 上，Claude 配置根目录为 `%USERPROFILE%\\.claude`。
+
 ### PreToolUse 钩子
 
 | 钩子 | 匹配器 | 行为 | 退出码 |
-|------|---------|----------|-----------|
-| **开发服务器拦截器** | `Bash` | 在 tmux 外阻止 `npm run dev` 等命令 — 确保日志可访问 | 2 (拦截) |
-| **Tmux 提醒器** | `Bash` | 对长时间运行命令（npm test、cargo build、docker）建议使用 tmux | 0 (警告) |
-| **Git 推送提醒器** | `Bash` | 在 `git push` 前提醒检查变更 | 0 (警告) |
-| **文档文件警告器** | `Write` | 对非标准 `.md`/`.txt` 文件发出警告（允许 README、CLAUDE、CONTRIBUTING、CHANGELOG、LICENSE、SKILL、docs/、skills/）；跨平台路径处理 | 0 (警告) |
-| **策略性压缩提醒器** | `Edit\|Write` | 建议在逻辑间隔（约每 50 次工具调用）手动执行 `/compact` | 0 (警告) |
+|------|--------|------|--------|
+| **开发服务器拦截器** | `Bash` | 在 tmux 外拦截 `npm run dev` 等命令 — 确保日志可访问 | 2（拦截） |
+| **Tmux 提醒** | `Bash` | 建议在 tmux 中运行长时间命令（npm test、cargo build、docker） | 0（警告） |
+| **Git 推送提醒** | `Bash` | 在 `git push` 前提醒审查更改 | 0（警告） |
+| **提交前质量检查** | `Bash` | 在 `git commit` 前运行质量检查：对暂存文件进行 lint 检查，当通过 `-m/--message` 提供时验证提交信息格式，检测 console.log/debugger/密钥 | 2（拦截严重）/ 0（警告） |
+| **文档文件警告** | `Write` | 警告非标准 `.md`/`.txt` 文件（允许 README、CLAUDE、CONTRIBUTING、CHANGELOG、LICENSE、SKILL、docs/、skills/）；跨平台路径处理 | 0（警告） |
+| **策略性压缩** | `Edit\|Write` | 建议在逻辑间隔（约每 50 次工具调用）手动执行 `/compact` | 0（警告） |
 
 ### PostToolUse 钩子
 
 | 钩子 | 匹配器 | 功能 |
-|------|---------|-------------|
-| **PR 记录器** | `Bash` | 在 `gh pr create` 后记录 PR URL 和审查命令 |
-| **构建分析** | `Bash` | 构建命令后的后台分析（异步，非阻塞） |
-| **质量门** | `Edit\|Write\|MultiEdit` | 在编辑后运行快速质量检查 |
-| **Prettier 格式化** | `Edit` | 编辑后使用 Prettier 自动格式化 JS/TS 文件 |
+|------|--------|------|
+| **PR 日志记录器** | `Bash` | 在 `gh pr create` 后记录 PR URL 和审查命令 |
+| **构建分析** | `Bash` | 在构建命令后进行后台分析（异步、非阻塞） |
+| **质量门禁** | `Edit\|Write\|MultiEdit` | 在编辑后运行快速质量检查 |
+| **设计质量检查** | `Edit\|Write\|MultiEdit` | 当前端编辑趋向通用模板化 UI 时发出警告 |
+| **Prettier 格式化** | `Edit` | 在编辑后使用 Prettier 自动格式化 JS/TS 文件 |
 | **TypeScript 检查** | `Edit` | 在编辑 `.ts`/`.tsx` 文件后运行 `tsc --noEmit` |
-| **console.log 警告** | `Edit` | 警告编辑的文件中存在 `console.log` 语句 |
+| **console.log 警告** | `Edit` | 警告编辑文件中的 `console.log` 语句 |
 
 ### 生命周期钩子
 
 | 钩子 | 事件 | 功能 |
-|------|-------|-------------|
+|------|------|------|
 | **会话开始** | `SessionStart` | 加载先前上下文并检测包管理器 |
-| **预压缩** | `PreCompact` | 在上下文压缩前保存状态 |
-| **Console.log 审计** | `Stop` | 每次响应后检查所有修改的文件是否有 `console.log` |
+| **压缩前** | `PreCompact` | 在上下文压缩前保存状态 |
+| **Console.log 审计** | `Stop` | 每次响应后检查所有修改文件中的 `console.log` |
 | **会话摘要** | `Stop` | 当转录路径可用时持久化会话状态 |
-| **模式提取** | `Stop` | 评估会话以提取可抽取的模式（持续学习） |
-| **成本追踪器** | `Stop` | 发出轻量级的运行成本遥测标记 |
+| **模式提取** | `Stop` | 评估会话以提取可提取的模式（持续学习） |
+| **成本追踪器** | `Stop` | 发出轻量级运行成本遥测标记 |
+| **桌面通知** | `Stop` | 发送 macOS 桌面通知及任务摘要（标准+） |
 | **会话结束标记** | `SessionEnd` | 生命周期标记和清理日志 |
 
 ## 自定义钩子
@@ -79,6 +98,15 @@ export ECC_HOOK_PROFILE=standard
 
 # Disable specific hook IDs (comma-separated)
 export ECC_DISABLED_HOOKS="pre:bash:tmux-reminder,post:edit:typecheck"
+
+# Disable only GateGuard during setup or recovery
+export ECC_GATEGUARD=off
+
+# Cap SessionStart additional context (default: 8000 chars)
+export ECC_SESSION_START_MAX_CHARS=4000
+
+# Disable SessionStart additional context entirely
+export ECC_SESSION_START_CONTEXT=off
 ```
 
 配置文件：
@@ -211,7 +239,7 @@ interface HookInput {
 
 ## 跨平台注意事项
 
-钩子逻辑在 Node.js 脚本中实现，以便在 Windows、macOS 和 Linux 上具有跨平台行为。保留了少量 shell 包装器用于持续学习的观察者钩子；这些包装器受配置文件控制，并具有 Windows 安全的回退行为。
+钩子逻辑通过 Node.js 脚本实现，以确保在 Windows、macOS 和 Linux 上的跨平台行为。持续学习观察器作为 Node 模式钩子暴露，并通过配置文件门控运行器委托给其现有的 `observe.sh` 实现，并带有 Windows 安全的回退行为。
 
 ## 相关
 

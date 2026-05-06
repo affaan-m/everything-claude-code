@@ -181,7 +181,7 @@ Build Status: SUCCESS
 
 * `/rust-test` - 构建成功后运行测试
 * `/rust-review` - 审查代码质量
-* `/verify` - 完整验证循环
+* `verification-loop` 技能 - 完整验证循环
 
 ## 相关
 

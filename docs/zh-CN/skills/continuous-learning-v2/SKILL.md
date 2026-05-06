@@ -140,15 +140,13 @@ Use functional patterns over classes when appropriate.
 
 ### 1. 启用观察钩子
 
-添加到你的 `~/.claude/settings.json` 中。
-
 **如果作为插件安装**（推荐）：
 
-不需要在 `~/.claude/settings.json` 中额外添加 hooks。Claude Code v2.1+ 会自动加载插件的 `hooks/hooks.json`，其中已经注册了 `observe.sh`。
+无需额外的 `settings.json` 钩子块。Claude Code v2.1+ 会自动加载插件 `hooks/hooks.json`，且 `observe.sh` 已在该处注册。
 
-如果您之前把 `observe.sh` 复制到了 `~/.claude/settings.json`，请删除重复的 `PreToolUse` / `PostToolUse` 配置。重复注册会导致重复执行，并触发 `${CLAUDE_PLUGIN_ROOT}` 解析错误，因为该变量只会在插件自己的 `hooks/hooks.json` 中展开。
+如果您之前将 `observe.sh` 复制到了 `~/.claude/settings.json`，请移除重复的 `PreToolUse` / `PostToolUse` 块。重复插件钩子会导致双重执行和 `${CLAUDE_PLUGIN_ROOT}` 解析错误，因为该变量仅在插件管理的 `hooks/hooks.json` 条目中可用。
 
-**如果手动安装**到 `~/.claude/skills`，请将以下内容添加到 `~/.claude/settings.json`：
+**如果手动安装**到 `~/.claude/skills`，请将其添加到您的 `~/.claude/settings.json` 中：
 
 ```json
 {
@@ -346,8 +344,8 @@ v2.1 与 v2.0 和 v1 完全兼容：
 
 ## 相关链接
 
-* [技能创建器](https://skill-creator.app) - 从仓库历史生成本能
-* Homunculus - 启发了 v2 基于本能的架构的社区项目（原子观察、置信度评分、本能进化管道）
+* [ECC-Tools GitHub 应用](https://github.com/apps/ecc-tools) - 从仓库历史生成直觉
+* Homunculus - 社区项目，启发了基于直觉的 v2 架构（原子观察、置信度评分、直觉演化流水线）
 * [长篇指南](https://x.com/affaanmustafa/status/2014040193557471352) - 持续学习部分
 
 ***

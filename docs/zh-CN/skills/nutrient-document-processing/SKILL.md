@@ -6,6 +6,8 @@ origin: ECC
 
 # 文档处理
 
+> **注意：** 此技能集成了 Nutrient 商业 API。使用前请查阅其条款。
+
 使用 [Nutrient DWS Processor API](https://www.nutrient.io/api/) 处理文档。转换格式、提取文本和表格、对扫描文档进行 OCR、编辑 PII、添加水印、数字签名以及填写 PDF 表单。
 
 ## 设置

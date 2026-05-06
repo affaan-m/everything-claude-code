@@ -4,41 +4,55 @@
 
 ### 亮点
 
-* 为 Hermes 操作员叙事新增公开的 ECC 2.0 release candidate 表面。
-* 将 ECC 明确记录为跨 Claude Code、Codex、Cursor、OpenCode 和 Gemini 的可复用 cross-harness 基础层。
-* 新增经过清理的 Hermes import 技能表面，而不是发布私有操作员状态。
+* 为 Hermes 操作符故事线添加了公共 ECC 2.0 发布候选版本表面。
+* 将 ECC 记录为跨 Claude Code、Codex、Cursor、OpenCode 和 Gemini 的可复用跨框架基础。
+* 添加了经过清理的 Hermes 导入技能表面，而非发布私有操作符状态。
 
 ### 发布表面
 
-* 将 package、plugin、marketplace、OpenCode、agent 和 README 元数据更新为 `2.0.0-rc.1`。
-* 在 `docs/releases/2.0.0-rc.1/` 下集中发布说明、社交草稿、发布清单、交接说明和演示提示词。
-* 新增 `docs/architecture/cross-harness.md`，并补充 ECC/Hermes 边界的回归覆盖。
-* `ecc2/` 版本保持独立；除非 release engineering 另有决定，它仍是 alpha control-plane scaffold。
+* 将包、插件、市场、OpenCode、代理和 README 元数据更新为 `2.0.0-rc.1`。
+* 添加了 `docs/releases/2.0.0-rc.1/`，包含发布说明、社交媒体草稿、启动清单、交接说明和演示提示。
+* 添加了 `docs/architecture/cross-harness.md` 以及针对 ECC/Hermes 边界的回归覆盖。
+* 暂时保持 `ecc2/` 版本控制独立；除非发布工程另有决定，它仍是一个 alpha 控制平面脚手架。
 
 ### 备注
 
-* 这是 release candidate，不是完整 ECC 2.0 control-plane 路线图的 GA 声明。
-* 预发布 npm 发布应使用 `next` dist-tag，除非 release engineering 明确选择其他策略。
+* 这是一个发布候选版本，并非对完整 ECC 2.0 控制平面路线图的 GA 声明。
+* 预发布 npm 发布应使用 `next` 分发标签，除非发布工程明确选择其他方式。
 
 ## 1.10.0 - 2026-04-05
 
 ### 亮点
 
-* 在数周 OSS 增长和 backlog 合并后，公开发布表面已同步到当前仓库状态。
-* 操作员工作流扩展了 voice、graph-ranking、billing、workspace 和 outbound 技能。
-* 媒体生成工作流扩展了 Manim 和 Remotion 优先的发布工具。
-* ECC 2.0 alpha control-plane binary 现在可从 `ecc2/` 本地构建，并提供首个可用的 CLI/TUI 表面。
+* 经过数周的 OSS 增长和积压合并后，公共发布表面与实时仓库同步。
+* 操作符工作流通道扩展了语音、图排名、计费、工作区和外发技能。
+* 媒体生成通道扩展了 Manim 和 Remotion 优先的启动工具。
+* ECC 2.0 alpha 控制平面二进制文件现在可从 `ecc2/` 本地构建，并暴露了第一个可用的 CLI/TUI 表面。
 
 ### 发布表面
 
-* 将 plugin、marketplace、Codex、OpenCode 和 agent 元数据更新为 `1.10.0`。
-* 将公开计数同步到当前 OSS 表面：38 个代理、156 个技能、72 个命令。
-* 刷新顶层安装文档和 marketplace 描述，使其匹配当前仓库状态。
+* 将插件、市场、Codex、OpenCode 和代理元数据更新为 `1.10.0`。
+* 将发布计数与实时 OSS 表面同步：38 个代理、156 个技能、72 个命令。
+* 刷新了顶级面向安装的文档和市场描述，以匹配当前仓库状态。
+
+### 新工作流通道
+
+* `brand-voice` — 规范的源衍生写作风格系统。
+* `social-graph-ranker` — 加权暖启动图排名原语。
+* `connections-optimizer` — 基于图排名的网络修剪/添加工作流。
+* `customer-billing-ops`、`google-workspace-ops`、`project-flow-ops`、`workspace-surface-audit`。
+* `manim-video`、`remotion-video-creation`、`nestjs-patterns`。
+
+### ECC 2.0 Alpha
+
+* `cargo build --manifest-path ecc2/Cargo.toml` 通过仓库基线。
+* `ecc-tui` 当前暴露了 `dashboard`、`start`、`sessions`、`status`、`stop`、`resume` 和 `daemon`。
+* alpha 版本是真实的，可用于本地实验，但更广泛的控制平面路线图仍不完整，不应视为 GA。
 
 ### 备注
 
-* Claude plugin 仍受平台级 rules 分发限制影响；selective install / OSS 路径仍是最可靠的完整安装方式。
-* 这是仓库表面校正和生态同步版本，不表示完整 ECC 2.0 路线图已经完成。
+* Claude 插件仍受平台级规则分发约束的限制；选择性安装/OSS 路径仍然是最可靠的完整安装方式。
+* 此版本是仓库表面修正和生态系统同步，并非声称完整 ECC 2.0 路线图已完成。
 
 ## 1.9.0 - 2026-03-20
 

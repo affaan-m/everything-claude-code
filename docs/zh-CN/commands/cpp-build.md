@@ -128,46 +128,48 @@ All tests passed.
 | 已修改的文件 | 2 |
 | 剩余问题 | 0 |
 
-构建状态：PASS: 成功
+构建状态：通过：成功
 
 ```
+
 ## 常见错误修复
 
 | 错误 | 典型修复方法 |
 |-------|-------------|
-| `undeclared identifier` | 添加 `#include` 或修正拼写错误 |
-| `no matching function` | 修正参数类型或添加重载函数 |
-| `undefined reference` | 链接库或添加实现 |
-| `multiple definition` | 使用 `inline` 或移至 .cpp 文件 |
-| `incomplete type` | 将前向声明替换为 `#include` |
-| `no member named X` | 修正成员名称或包含头文件 |
-| `cannot convert X to Y` | 添加适当的类型转换 |
-| `CMake Error` | 修正 CMakeLists.txt 配置 |
+| `未声明的标识符` | 添加 `#include` 或修正拼写错误 |
+| `无匹配函数` | 修正参数类型或添加重载 |
+| `未定义的引用` | 链接库或添加实现 |
+| `多重定义` | 使用 `inline` 或移至 .cpp 文件 |
+| `不完整类型` | 将前置声明替换为 `#include` |
+| `无名为 X 的成员` | 修正成员名称或包含头文件 |
+| `无法将 X 转换为 Y` | 添加适当的类型转换 |
+| `CMake 错误` | 修正 CMakeLists.txt 配置 |
 
 ## 修复策略
 
-1. **优先处理编译错误** - 代码必须能够编译
-2. **其次处理链接器错误** - 解决未定义引用
-3. **第三处理警告** - 使用 `-Wall -Wextra` 进行修复
-4. **一次只修复一个问题** - 验证每个更改
-5. **最小化改动** - 仅修复问题，不重构代码
+1. **先处理编译错误** - 代码必须能编译通过
+2. **再处理链接错误** - 解决未定义的引用
+3. **最后处理警告** - 使用 `-Wall -Wextra` 进行修复
+4. **每次只修复一个错误** - 验证每个更改
+5. **最小化更改** - 只修复问题，不重构代码
 
 ## 停止条件
 
-在以下情况下，代理将停止并报告：
-- 同一错误经过 3 次尝试后仍然存在
+代理将在以下情况停止并报告：
+- 同一错误在 3 次尝试后仍然存在
 - 修复引入了更多错误
 - 需要架构性更改
-- 缺少外部依赖项
+- 缺少外部依赖
 
 ## 相关命令
 
 - `/cpp-test` - 构建成功后运行测试
 - `/cpp-review` - 审查代码质量
-- `/verify` - 完整验证循环
+- `verification-loop` 技能 - 完整验证循环
 
-## 相关
+## 相关链接
 
-- 代理: `agents/cpp-build-resolver.md`
-- 技能: `skills/cpp-coding-standards/`
+- 代理：`agents/cpp-build-resolver.md`
+- 技能：`skills/cpp-coding-standards/`
+
 ```

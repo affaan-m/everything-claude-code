@@ -115,26 +115,27 @@ void processUser(const User& user) {
 * 高：1
 * 中：0
 
-建议：FAIL: 在严重问题修复前阻止合并
+建议：失败：在关键问题修复前，阻止合并
 
 ```
-## 批准标准
+
+## 审批标准
 
 | 状态 | 条件 |
 |--------|-----------|
-| PASS: 批准 | 没有 CRITICAL 或 HIGH 级别的问题 |
-| WARNING: 警告 | 仅有 MEDIUM 级别的问题（谨慎合并） |
-| FAIL: 阻止 | 发现 CRITICAL 或 HIGH 级别的问题 |
+| 通过：批准 | 无严重或高优先级问题 |
+| 警告：提醒 | 仅存在中等优先级问题（谨慎合并） |
+| 失败：阻止 | 发现严重或高优先级问题 |
 
 ## 与其他命令的集成
 
 - 首先使用 `/cpp-test` 确保测试通过
-- 如果出现构建错误，请使用 `/cpp-build`
+- 如果出现构建错误，使用 `/cpp-build`
 - 在提交前使用 `/cpp-review`
-- 对于非 C++ 特定的问题，请使用 `/code-review`
+- 对于非 C++ 特定问题，使用 `/code-review`
 
 ## 相关
 
-- 代理：`agents/cpp-reviewer.md`
-- 技能：`skills/cpp-coding-standards/`, `skills/cpp-testing/`
+- 智能体：`agents/cpp-reviewer.md`
+- 技能：`skills/cpp-coding-standards/`、`skills/cpp-testing/`
 ```
