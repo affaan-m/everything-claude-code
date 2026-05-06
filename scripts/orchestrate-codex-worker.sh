@@ -55,6 +55,12 @@ cleanup() {
 }
 trap cleanup EXIT
 
+codex_args=(exec -p yolo -m gpt-5.4 --color never -C "$(pwd)" -o "$output_file")
+
+if [[ "${CODEX_DANGEROUS_BYPASS:-0}" == "1" || "${CODEX_DANGEROUS_BYPASS:-}" == "true" ]]; then
+  codex_args+=(--dangerously-bypass-approvals-and-sandbox)
+fi
+
 cat > "$prompt_file" <<EOF
 You are one worker in an ECC tmux/worktree swarm.
 
@@ -77,7 +83,7 @@ Task file: $task_file
 $(cat "$task_file")
 EOF
 
-if codex exec -p yolo -m gpt-5.4 --color never -C "$(pwd)" -o "$output_file" - < "$prompt_file"; then
+if codex "${codex_args[@]}" - < "$prompt_file"; then
   {
     echo "# Handoff"
     echo

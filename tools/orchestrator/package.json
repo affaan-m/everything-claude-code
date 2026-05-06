@@ -1,0 +1,15 @@
+{
+  "name": "@ecc/orchestrator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node ../../node_modules/typescript/bin/tsc -p tsconfig.json",
+    "clean": "rm -rf dist .task .orchestrator",
+    "orchestrator": "npm run build --silent && node dist/index.js",
+    "plan": "npm run orchestrator -- plan",
+    "run": "npm run orchestrator -- run",
+    "status": "npm run orchestrator -- status",
+    "resume": "npm run orchestrator -- resume"
+  }
+}

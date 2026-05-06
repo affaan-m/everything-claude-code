@@ -15,6 +15,8 @@ const ignoredDirs = new Set([
   '.dmux',
   '.next',
   'coverage',
+  '.task',
+  '.orchestrator',
 ]);
 
 const textExtensions = new Set([

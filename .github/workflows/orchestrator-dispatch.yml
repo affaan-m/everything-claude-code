@@ -1,0 +1,67 @@
+name: Orchestrator Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      jira_key:
+        description: Jira issue key to execute
+        required: true
+        type: string
+      command:
+        description: Orchestrator command
+        required: true
+        default: run
+        type: choice
+        options:
+          - plan
+          - run
+          - status
+          - resume
+
+concurrency:
+  group: orchestrator-${{ github.event.inputs.jira_key }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  orchestrate:
+    name: Orchestrate ${{ github.event.inputs.jira_key }}
+    runs-on:
+      - self-hosted
+      - linux
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: "20.x"
+
+      - name: Enable Corepack
+        shell: bash
+        run: corepack enable
+
+      - name: Install dependencies
+        shell: bash
+        env:
+          COREPACK_ENABLE_STRICT: "0"
+        run: yarn install
+
+      - name: Run orchestrator
+        shell: bash
+        env:
+          AGENT_RUNNER: ${{ vars.ORCHESTRATOR_AGENT_RUNNER || 'codex' }}
+          ORCHESTRATOR_ENV_FILE: ${{ vars.ORCHESTRATOR_ENV_FILE }}
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run orchestrator -- ${{ github.event.inputs.command }} ${{ github.event.inputs.jira_key }}
