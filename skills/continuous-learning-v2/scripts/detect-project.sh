@@ -61,7 +61,13 @@ _clv2_normalize_remote_url() {
   local url="$1"
   [ -z "$url" ] && return 0
   # Strip embedded credentials: scheme://user[:pass]@host/... → scheme://host/...
-  url=$(printf '%s' "$url" | sed -E 's|://[^@/]+@|://|')
+  # Match the same pattern used by the credential-strip step in
+  # _clv2_detect_project ([^@]+, not [^@/]+) so this function is safe to call
+  # on a raw URL whose credential portion contains URL-encoded characters or
+  # any other byte that happens to not be '@'. A literal '/' in the userinfo
+  # is not allowed by RFC 3986, but being tolerant keeps the function usable
+  # in isolation without depending on the caller having pre-stripped.
+  url=$(printf '%s' "$url" | sed -E 's|://[^@]+@|://|')
   # Strip URL scheme (https://, http://, ssh://, git://, ...)
   url=$(printf '%s' "$url" | sed -E 's|^[A-Za-z][A-Za-z0-9+.-]*://||')
   # SCP-like form (after scheme strip this only matches pure SCP URLs):
