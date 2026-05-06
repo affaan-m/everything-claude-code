@@ -49,6 +49,32 @@ export CLV2_PYTHON_CMD
 CLV2_OBSERVER_PROMPT_PATTERN='Can you confirm|requires permission|Awaiting (user confirmation|confirmation|approval|permission)|confirm I should proceed|once granted access|grant.*access'
 export CLV2_OBSERVER_PROMPT_PATTERN
 
+# Normalize a git remote URL to a transport-independent canonical form.
+# Examples:
+#   git@github.com:owner/repo.git           → github.com/owner/repo
+#   https://github.com/owner/repo.git       → github.com/owner/repo
+#   https://user:token@github.com/owner/repo → github.com/owner/repo
+#   ssh://git@github.com/owner/repo.git     → github.com/owner/repo
+#   http://gitea.local:3000/u/r.git         → gitea.local:3000/u/r
+# Empty input → empty output (caller falls back to project_root).
+_clv2_normalize_remote_url() {
+  local url="$1"
+  [ -z "$url" ] && return 0
+  # Strip embedded credentials: scheme://user[:pass]@host/... → scheme://host/...
+  url=$(printf '%s' "$url" | sed -E 's|://[^@/]+@|://|')
+  # Strip URL scheme (https://, http://, ssh://, git://, ...)
+  url=$(printf '%s' "$url" | sed -E 's|^[A-Za-z][A-Za-z0-9+.-]*://||')
+  # SCP-like form (after scheme strip this only matches pure SCP URLs):
+  #   git@host:path → host/path
+  url=$(printf '%s' "$url" | sed -E 's|^[^@/:]+@([^:/]+):|\1/|')
+  # Drop trailing .git (and an optional trailing slash)
+  url=$(printf '%s' "$url" | sed -E 's|\.git/?$||; s|/+$||')
+  # Lowercase: hostnames are DNS-insensitive and the major Git hosts route
+  # repository paths case-insensitively. Doing this here keeps two clones of
+  # the same repo from drifting into separate hashes due to capitalization.
+  printf '%s' "$url" | tr '[:upper:]' '[:lower:]'
+}
+
 _clv2_detect_project() {
   local project_root=""
   local project_name=""
@@ -94,15 +120,32 @@ _clv2_detect_project() {
     fi
   fi
 
-  # Compute hash from the original remote URL (legacy, for backward compatibility)
-  local legacy_hash_input="${remote_url:-$project_root}"
+  # Track the original (untouched) remote URL — used as one of the legacy
+  # hash inputs when migrating directories from older versions of this script.
+  local raw_remote_url="$remote_url"
 
   # Strip embedded credentials from remote URL (e.g., https://ghp_xxxx@github.com/...)
   if [ -n "$remote_url" ]; then
     remote_url=$(printf '%s' "$remote_url" | sed -E 's|://[^@]+@|://|')
   fi
 
-  local hash_input="${remote_url:-$project_root}"
+  # Hash input used by the previous version of this script — pre-normalization
+  # but post-credential-stripping. Kept so existing project directories can be
+  # migrated to the normalized hash on first run after this change.
+  local legacy_hash_input="${remote_url:-$project_root}"
+
+  # Normalize the remote URL so transport variants for the same repository
+  # collapse to a single project ID. Without this, a clone over SSH and a
+  # clone over HTTPS of the same repo end up under two different hashes:
+  #   git@github.com:owner/repo.git    → github.com/owner/repo
+  #   https://github.com/owner/repo.git → github.com/owner/repo
+  #   ssh://git@github.com/owner/repo  → github.com/owner/repo
+  local normalized_remote=""
+  if [ -n "$remote_url" ]; then
+    normalized_remote=$(_clv2_normalize_remote_url "$remote_url")
+  fi
+
+  local hash_input="${normalized_remote:-${remote_url:-$project_root}}"
   # Prefer Python for consistent SHA256 behavior across shells/platforms.
   # Pass the value via env var and encode as UTF-8 inside Python so the hash
   # is locale-independent (shells vary between UTF-8 / CP932 / CP1252, which
@@ -122,19 +165,40 @@ print(hashlib.sha256(s.encode("utf-8")).hexdigest()[:12])
                  echo "fallback")
   fi
 
-  # Backward compatibility: if credentials were stripped and the hash changed,
-  # check if a project dir exists under the legacy hash and reuse it
-  if [ "$legacy_hash_input" != "$hash_input" ] && [ -n "$_CLV2_PYTHON_CMD" ]; then
-    local legacy_id=""
-    legacy_id=$(_CLV2_HASH_INPUT="$legacy_hash_input" "$_CLV2_PYTHON_CMD" -c '
+  # Backward compatibility: if a project directory exists under any legacy
+  # hash input but not under the current (normalized) hash, migrate it.
+  # The candidates are tried in order of preference:
+  #   1. credential-stripped, un-normalized URL  (post-credential-strip change)
+  #   2. raw URL                                  (pre-credential-strip)
+  # If two of these collapse to the same hash they are still both attempted —
+  # only the first one whose directory exists wins.
+  if [ -n "$_CLV2_PYTHON_CMD" ] && [ ! -d "${_CLV2_PROJECTS_DIR}/${project_id}" ]; then
+    local legacy_inputs=()
+    [ -n "$legacy_hash_input" ] && [ "$legacy_hash_input" != "$hash_input" ] \
+      && legacy_inputs+=("$legacy_hash_input")
+    [ -n "$raw_remote_url" ] && [ "$raw_remote_url" != "$hash_input" ] \
+      && [ "$raw_remote_url" != "$legacy_hash_input" ] \
+      && legacy_inputs+=("$raw_remote_url")
+
+    local legacy_input legacy_id
+    for legacy_input in "${legacy_inputs[@]}"; do
+      legacy_id=$(_CLV2_HASH_INPUT="$legacy_input" "$_CLV2_PYTHON_CMD" -c '
 import os, hashlib
 s = os.environ["_CLV2_HASH_INPUT"]
 print(hashlib.sha256(s.encode("utf-8")).hexdigest()[:12])
 ' 2>/dev/null)
-    if [ -n "$legacy_id" ] && [ -d "${_CLV2_PROJECTS_DIR}/${legacy_id}" ] && [ ! -d "${_CLV2_PROJECTS_DIR}/${project_id}" ]; then
-      # Migrate legacy directory to new hash
-      mv "${_CLV2_PROJECTS_DIR}/${legacy_id}" "${_CLV2_PROJECTS_DIR}/${project_id}" 2>/dev/null || project_id="$legacy_id"
-    fi
+      if [ -n "$legacy_id" ] && [ "$legacy_id" != "$project_id" ] \
+         && [ -d "${_CLV2_PROJECTS_DIR}/${legacy_id}" ]; then
+        if mv "${_CLV2_PROJECTS_DIR}/${legacy_id}" "${_CLV2_PROJECTS_DIR}/${project_id}" 2>/dev/null; then
+          break
+        else
+          # Migration failed (e.g. permissions) — keep using the legacy id
+          # so we don't lose access to existing data.
+          project_id="$legacy_id"
+          break
+        fi
+      fi
+    done
   fi
 
   # Export results
