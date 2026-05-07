@@ -8,6 +8,16 @@ origin: ECC
 
 Programmatic interaction with X (Twitter) for posting, reading, searching, and analytics.
 
+> ⚠️ **Drift-prone skill.** The X / Twitter API has changed access
+> tier and pricing structure repeatedly since 2023; specific
+> endpoints, rate limits, and OAuth scopes cited in this skill may
+> be outdated. Before recommending an endpoint or quota, verify
+> against X's current developer docs (`developer.x.com`) and the
+> currently active access tier for the user's app. If the user
+> hasn't confirmed which tier their app is on, ask first — capacity
+> assumptions silently break paid integrations. See
+> [`~/.claude/rules/drift-proof.md`](~/.claude/rules/drift-proof.md).
+
 ## When to Activate
 
 - User wants to post tweets or threads programmatically

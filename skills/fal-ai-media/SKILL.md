@@ -8,6 +8,15 @@ origin: ECC
 
 Generate images, videos, and audio using fal.ai models via MCP.
 
+> ⚠️ **Drift-prone skill.** fal.ai's model catalog rotates quickly:
+> the specific model IDs cited below (Nano Banana, Seedance, Kling,
+> Veo 3, CSM-1B, ThinkSound) may have new versions, been deprecated,
+> or been replaced by newer entrants. Before quoting a model ID or
+> price, verify against fal.ai's current catalog (`mcp__fal__list_*`
+> tool, the fal.ai dashboard, or `WebFetch` of the model page).
+> Verify the fal MCP is connected before invoking. See
+> [`~/.claude/rules/drift-proof.md`](~/.claude/rules/drift-proof.md).
+
 ## When to Activate
 
 - User wants to generate images from text prompts

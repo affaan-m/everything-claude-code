@@ -256,79 +256,10 @@ setCount(count + 1)  // Can be stale in async scenarios
 
 ## API Design Standards
 
-### REST API Conventions
-
-```
-GET    /api/markets              # List all markets
-GET    /api/markets/:id          # Get specific market
-POST   /api/markets              # Create new market
-PUT    /api/markets/:id          # Update market (full)
-PATCH  /api/markets/:id          # Update market (partial)
-DELETE /api/markets/:id          # Delete market
-
-# Query parameters for filtering
-GET /api/markets?status=active&limit=10&offset=0
-```
-
-### Response Format
-
-```typescript
-// PASS: GOOD: Consistent response structure
-interface ApiResponse<T> {
-  success: boolean
-  data?: T
-  error?: string
-  meta?: {
-    total: number
-    page: number
-    limit: number
-  }
-}
-
-// Success response
-return NextResponse.json({
-  success: true,
-  data: markets,
-  meta: { total: 100, page: 1, limit: 10 }
-})
-
-// Error response
-return NextResponse.json({
-  success: false,
-  error: 'Invalid request'
-}, { status: 400 })
-```
-
-### Input Validation
-
-```typescript
-import { z } from 'zod'
-
-// PASS: GOOD: Schema validation
-const CreateMarketSchema = z.object({
-  name: z.string().min(1).max(200),
-  description: z.string().min(1).max(2000),
-  endDate: z.string().datetime(),
-  categories: z.array(z.string()).min(1)
-})
-
-export async function POST(request: Request) {
-  const body = await request.json()
-
-  try {
-    const validated = CreateMarketSchema.parse(body)
-    // Proceed with validated data
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        success: false,
-        error: 'Validation failed',
-        details: error.errors
-      }, { status: 400 })
-    }
-  }
-}
-```
+> Moved out — HTTP contract concerns (REST conventions, response
+> envelopes, status codes, input validation at the boundary,
+> versioning, pagination, rate limiting) belong to **`/api-design`**.
+> Use that skill when designing or reviewing an HTTP surface.
 
 ## File Organization
 
@@ -459,34 +390,11 @@ const { data } = await supabase
 
 ## Testing Standards
 
-### Test Structure (AAA Pattern)
-
-```typescript
-test('calculates similarity correctly', () => {
-  // Arrange
-  const vector1 = [1, 0, 0]
-  const vector2 = [0, 1, 0]
-
-  // Act
-  const similarity = calculateCosineSimilarity(vector1, vector2)
-
-  // Assert
-  expect(similarity).toBe(0)
-})
-```
-
-### Test Naming
-
-```typescript
-// PASS: GOOD: Descriptive test names
-test('returns empty array when no markets match query', () => { })
-test('throws error when OpenAI API key is missing', () => { })
-test('falls back to substring search when Redis unavailable', () => { })
-
-// FAIL: BAD: Vague test names
-test('works', () => { })
-test('test search', () => { })
-```
+> Moved out — TDD discipline (RED/GREEN/REFACTOR), test structure,
+> coverage gates, and per-language test patterns belong to
+> **`/tdd-workflow`** plus the per-language testing skills
+> (`python-testing`, `golang-testing`, `kotlin-testing`,
+> `rust-testing`, `cpp-testing`, `perl-testing`).
 
 ## Code Smell Detection
 

@@ -18,22 +18,12 @@ Backend architecture patterns and best practices for scalable server-side applic
 - Structuring error handling and validation for APIs
 - Building middleware (auth, logging, rate limiting)
 
-## API Design Patterns
+## Server Architecture Patterns
 
-### RESTful API Structure
-
-```typescript
-// PASS: Resource-based URLs
-GET    /api/markets                 # List resources
-GET    /api/markets/:id             # Get single resource
-POST   /api/markets                 # Create resource
-PUT    /api/markets/:id             # Replace resource
-PATCH  /api/markets/:id             # Update resource
-DELETE /api/markets/:id             # Delete resource
-
-// PASS: Query parameters for filtering, sorting, pagination
-GET /api/markets?status=active&sort=volume&limit=20&offset=0
-```
+> HTTP contract design (URLs, status codes, response envelopes,
+> pagination, versioning) lives in **`/api-design`**. This skill
+> covers the layers behind the contract: data access, business
+> logic, and request-pipeline plumbing.
 
 ### Repository Pattern
 
@@ -345,136 +335,23 @@ const data = await fetchWithRetry(() => fetchFromAPI())
 
 ## Authentication & Authorization
 
-### JWT Token Validation
-
-```typescript
-import jwt from 'jsonwebtoken'
-
-interface JWTPayload {
-  userId: string
-  email: string
-  role: 'admin' | 'user'
-}
-
-export function verifyToken(token: string): JWTPayload {
-  try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload
-    return payload
-  } catch (error) {
-    throw new ApiError(401, 'Invalid token')
-  }
-}
-
-export async function requireAuth(request: Request) {
-  const token = request.headers.get('authorization')?.replace('Bearer ', '')
-
-  if (!token) {
-    throw new ApiError(401, 'Missing authorization token')
-  }
-
-  return verifyToken(token)
-}
-
-// Usage in API route
-export async function GET(request: Request) {
-  const user = await requireAuth(request)
-
-  const data = await getDataForUser(user.userId)
-
-  return NextResponse.json({ success: true, data })
-}
-```
-
-### Role-Based Access Control
-
-```typescript
-type Permission = 'read' | 'write' | 'delete' | 'admin'
-
-interface User {
-  id: string
-  role: 'admin' | 'moderator' | 'user'
-}
-
-const rolePermissions: Record<User['role'], Permission[]> = {
-  admin: ['read', 'write', 'delete', 'admin'],
-  moderator: ['read', 'write', 'delete'],
-  user: ['read', 'write']
-}
-
-export function hasPermission(user: User, permission: Permission): boolean {
-  return rolePermissions[user.role].includes(permission)
-}
-
-export function requirePermission(permission: Permission) {
-  return (handler: (request: Request, user: User) => Promise<Response>) => {
-    return async (request: Request) => {
-      const user = await requireAuth(request)
-
-      if (!hasPermission(user, permission)) {
-        throw new ApiError(403, 'Insufficient permissions')
-      }
-
-      return handler(request, user)
-    }
-  }
-}
-
-// Usage - HOF wraps the handler
-export const DELETE = requirePermission('delete')(
-  async (request: Request, user: User) => {
-    // Handler receives authenticated user with verified permission
-    return new Response('Deleted', { status: 200 })
-  }
-)
-```
+> Moved out — token validation, RBAC / scope checks, session
+> management, and the security threat model live in
+> **`/security-review`** plus the per-stack security skills
+> (`django-security`, `springboot-security`, `laravel-security`,
+> `perl-security`).
 
 ## Rate Limiting
 
-### Simple In-Memory Rate Limiter
-
-```typescript
-class RateLimiter {
-  private requests = new Map<string, number[]>()
-
-  async checkLimit(
-    identifier: string,
-    maxRequests: number,
-    windowMs: number
-  ): Promise<boolean> {
-    const now = Date.now()
-    const requests = this.requests.get(identifier) || []
-
-    // Remove old requests outside window
-    const recentRequests = requests.filter(time => now - time < windowMs)
-
-    if (recentRequests.length >= maxRequests) {
-      return false  // Rate limit exceeded
-    }
-
-    // Add current request
-    recentRequests.push(now)
-    this.requests.set(identifier, recentRequests)
-
-    return true
-  }
-}
-
-const limiter = new RateLimiter()
-
-export async function GET(request: Request) {
-  const ip = request.headers.get('x-forwarded-for') || 'unknown'
-
-  const allowed = await limiter.checkLimit(ip, 100, 60000)  // 100 req/min
-
-  if (!allowed) {
-    return NextResponse.json({
-      error: 'Rate limit exceeded'
-    }, { status: 429 })
-  }
-
-  // Continue with request
-}
-```
+> Moved out — rate-limiter design (sliding window, token bucket,
+> shared store on serverless) is part of the HTTP contract and lives
+> in **`/api-design`**. The same skill covers `Retry-After` headers,
+> user-id-vs-IP keying, and `trust proxy` configuration behind a
+> load balancer.
+>
+> The naïve in-memory limiter previously shown here was unsafe in
+> any multi-instance deployment and has been removed to avoid
+> copy-paste regressions.
 
 ## Background Jobs & Queues
 

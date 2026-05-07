@@ -8,6 +8,15 @@ origin: ECC
 
 Neural search for web content, code, companies, and people via the Exa MCP server.
 
+> ⚠️ **Drift-prone skill.** This skill depends on the Exa MCP server
+> being installed and the specific tool names it exposes (`mcp__exa__*`).
+> Before invoking, verify the MCP is connected (the session's
+> available-tools list shows the Exa entries) and the requested tool
+> name still matches Exa's current surface. If the MCP is
+> unavailable, ask the user to install it rather than silently
+> falling through to generic web search. See
+> [`~/.claude/rules/drift-proof.md`](~/.claude/rules/drift-proof.md).
+
 ## When to Activate
 
 - User needs current web information or news

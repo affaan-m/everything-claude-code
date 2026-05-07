@@ -8,6 +8,14 @@ origin: ECC
 
 Produce thorough, cited research reports from multiple web sources using firecrawl and exa MCP tools.
 
+> ⚠️ **Drift-prone skill.** Depends on TWO external MCPs (firecrawl
+> + exa) plus their evolving tool surfaces. Before invoking, verify
+> both MCPs are connected (the session's available-tools list shows
+> their entries) and the specific tool names still match. If either
+> is missing, ask the user to install it — do not silently degrade
+> to single-source research and present it as multi-source. See
+> [`~/.claude/rules/drift-proof.md`](~/.claude/rules/drift-proof.md).
+
 ## When to Activate
 
 - User asks to research any topic in depth
