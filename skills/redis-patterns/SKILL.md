@@ -8,6 +8,10 @@ origin: ECC
 
 Quick reference for Redis best practices across common backend use cases.
 
+## How It Works
+
+Redis is an in-memory data structure store that supports strings, hashes, lists, sets, sorted sets, streams, and more. All operations are single-threaded and atomic, making it safe for counters and locks without application-level synchronization. Data is optionally persisted via RDB snapshots or AOF logs. Clients communicate over TCP using the RESP protocol; connection pools are essential to avoid per-request handshake overhead.
+
 ## When to Activate
 
 - Adding caching to an application
@@ -72,7 +76,10 @@ def cache_product(product_id: int, category_id: int, data: dict):
     key = f"product:{product_id}"
     tag = f"tag:category:{category_id}"
     r.setex(key, 3600, json.dumps(data))
-    r.sadd(tag, key)
+    pipe = r.pipeline(transaction=True)
+    pipe.sadd(tag, key)
+    pipe.expire(tag, 3600)
+    pipe.execute()
 
 def invalidate_category(category_id: int):
     tag = f"tag:category:{category_id}"
@@ -85,6 +92,7 @@ def invalidate_category(category_id: int):
 ### Session Storage
 
 ```python
+import time
 import uuid
 
 def create_session(user_id: int, ttl: int = 86400) -> str:
@@ -114,7 +122,7 @@ def delete_session(session_id: str):
 ```python
 def is_rate_limited(user_id: int, limit: int = 100, window: int = 60) -> bool:
     key = f"ratelimit:{user_id}:{int(time.time()) // window}"
-    pipe = r.pipeline()
+    pipe = r.pipeline(transaction=True)
     pipe.incr(key)
     pipe.expire(key, window)
     count, _ = pipe.execute()
@@ -135,7 +143,9 @@ local count = redis.call('ZCARD', key)
 
 if count < limit then
     -- Use unique member (now + sequence) to avoid collisions within the same millisecond
-    local seq = redis.call('INCR', key .. ':seq')
+    local seq_key = key .. ':seq'
+    local seq = redis.call('INCR', seq_key)
+    redis.call('EXPIRE', seq_key, math.ceil(window / 1000))
     redis.call('ZADD', key, now, now .. '-' .. seq)
     redis.call('EXPIRE', key, math.ceil(window / 1000))
     return 1
@@ -213,7 +223,10 @@ def emit(stream: str, event: dict):
     r.xadd(stream, event, maxlen=10000)  # Cap stream length
 
 # Consumer group — guarantees at-least-once delivery
-r.xgroup_create('events:orders', 'processor', id='0', mkstream=True)
+try:
+    r.xgroup_create('events:orders', 'processor', id='0', mkstream=True)
+except Exception:
+    pass  # Group already exists
 
 def consume(stream: str, group: str, consumer: str):
     while True:
@@ -330,9 +343,8 @@ Set via `redis.conf`: `maxmemory-policy allkeys-lru`
 
 ```python
 import threading
-from weakref import WeakValueDictionary
 
-_locks: WeakValueDictionary[str, threading.Lock] = WeakValueDictionary()
+_locks: dict[str, threading.Lock] = {}
 _locks_mutex = threading.Lock()
 
 def get_with_lock(key: str, fetch_fn, ttl: int = 300):
@@ -341,10 +353,9 @@ def get_with_lock(key: str, fetch_fn, ttl: int = 300):
         return json.loads(cached)
 
     with _locks_mutex:
-        lock = _locks.get(key)
-        if lock is None:
-            lock = threading.Lock()
-            _locks[key] = lock
+        if key not in _locks:
+            _locks[key] = threading.Lock()
+        lock = _locks[key]
     with lock:
         cached = r.get(key)  # Re-check after acquiring lock
         if cached:
@@ -353,6 +364,22 @@ def get_with_lock(key: str, fetch_fn, ttl: int = 300):
         r.setex(key, ttl, json.dumps(value))
         return value
 ```
+
+> Note: for multi-process deployments, replace the in-process lock with `acquire_lock`/`release_lock` from the Distributed Locks section above.
+
+## Examples
+
+**Add caching to a Django/Flask API endpoint:**
+Use cache-aside with `setex` and a 5-minute TTL on the response. Key on the request parameters.
+
+**Rate-limit an API by user:**
+Use fixed-window with `pipeline(transaction=True)` for low-traffic endpoints; use sliding-window Lua for accurate per-user throttling.
+
+**Coordinate a background job across workers:**
+Use `acquire_lock` with a TTL that exceeds the expected job duration. Always release in a `finally` block.
+
+**Fan-out notifications to multiple subscribers:**
+Use Pub/Sub for fire-and-forget. Switch to Streams if you need guaranteed delivery or replay for late consumers.
 
 ## Quick Reference
 
