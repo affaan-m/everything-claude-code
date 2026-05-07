@@ -51,8 +51,12 @@ def _resolve_provider_type(provider_type: ProviderType | str | None) -> Provider
     if provider_type is not None:
         return provider_type
 
+    env_provider = os.environ.get("LLM_PROVIDER")
+    if env_provider:
+        return env_provider.lower()
+
     saved_config = _read_saved_llm_config()
-    return os.environ.get("LLM_PROVIDER") or saved_config.get("LLM_PROVIDER", "claude").lower()
+    return saved_config.get("LLM_PROVIDER", "claude").lower()
 
 
 def get_provider(provider_type: ProviderType | str | None = None, **kwargs: str) -> LLMProvider:

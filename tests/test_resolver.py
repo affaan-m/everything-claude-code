@@ -50,3 +50,23 @@ class TestGetProvider:
         provider = get_provider()
 
         assert isinstance(provider, OllamaProvider)
+
+    def test_uppercase_environment_provider_is_normalized(self, monkeypatch, tmp_path):
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setenv("LLM_PROVIDER", "OLLAMA")
+
+        provider = get_provider()
+
+        assert isinstance(provider, OllamaProvider)
+
+    def test_explicit_provider_type_overrides_saved_llm_env(self, monkeypatch, tmp_path):
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.delenv("LLM_PROVIDER", raising=False)
+        tmp_path.joinpath(".llm.env").write_text(
+            "LLM_PROVIDER=openai\nLLM_MODEL=gpt-4o-mini\n",
+            encoding="utf-8",
+        )
+
+        provider = get_provider("ollama")
+
+        assert isinstance(provider, OllamaProvider)
