@@ -30,6 +30,11 @@ Use this skill when:
 
 ## Step 0 — Tool availability preflight
 
+> Guidance for the agent to follow inline at the top of the workflow,
+> not an executable pre-script. Skip a row if the tool is obviously
+> unneeded for the current task (e.g. don't shell out to `npm` if the
+> project is pure Python).
+
 Don't assume — check first. Each search channel has its own
 prerequisites; degrading gracefully is better than silently skipping.
 
