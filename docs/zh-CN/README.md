@@ -243,7 +243,7 @@ ECC 现在有三个公共标识符，它们不可互换：
 
 > 警告：**重要提示：** Claude Code 插件无法自动分发 `rules`。
 >
-> 如果你已经通过 `/plugin install` 安装了 ECC，**之后不要运行 `./install.sh --profile full`、`.\install.ps1 --profile full` 或 `npx ecc-install --profile full`**。该插件已经加载了 ECC 技能、命令和钩子。在插件安装后运行完整安装程序会将这些相同的界面复制到你的用户目录中，并可能导致重复的技能和重复的运行时行为。
+> 如果你已经通过 `/plugin install` 安装了 ECC，**不要再运行 `./install.sh --profile full`、`.\install.ps1 --profile full` 或 `npx ecc-install --profile full`**。该插件已经加载了 ECC 技能、命令和钩子。在插件安装后运行完整安装程序会将这些相同的界面复制到你的用户目录中，并可能导致重复的技能和重复的运行时行为。
 >
 > 对于插件安装，请仅在 `~/.claude/rules/ecc/` 下手动复制你想要的 `rules/` 目录。从 `rules/common` 加上一个你实际使用的语言或框架包开始。除非你明确希望 Claude 拥有所有这些上下文，否则不要复制每个规则目录。
 >
