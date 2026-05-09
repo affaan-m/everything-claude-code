@@ -1,8 +1,7 @@
 ---
-
 name: motion-ui
 description: "Production-ready UI motion system for React/Next.js. Use when implementing animations, transitions, or motion patterns."
---------------------------------------------------------------------------------------------------------------------------------------
+---
 
 # Motion System v4.1
 
@@ -10,7 +9,7 @@ Production-ready UI motion system for React / Next.js.
 
 Focused on **performance, accessibility, and usability** — not decoration.
 
----
+**by Jatan**
 
 ## When to Use
 
