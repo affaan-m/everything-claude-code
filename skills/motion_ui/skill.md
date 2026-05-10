@@ -334,6 +334,7 @@ function Modal({ open, closeModal }: { open: boolean; closeModal: () => void }) 
         <motion.div
           role="dialog"
           aria-modal="true"
+          aria-labelledby="modal-title"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -348,6 +349,7 @@ function Modal({ open, closeModal }: { open: boolean; closeModal: () => void }) 
             transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="bg-white p-6 rounded"
           >
+            <h2 id="modal-title">Dialog Title</h2>
             <button onClick={closeModal}>Close</button>
           </motion.div>
         </motion.div>
