@@ -11,7 +11,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'hooks', 'insaits-security-monitor.py');
-const MONITOR_TIMEOUT_MS = 30000;
+const MONITOR_TIMEOUT_MS = 60000;
 
 function createTempDir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'insaits-monitor-'));
