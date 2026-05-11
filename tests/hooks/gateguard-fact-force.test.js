@@ -981,6 +981,168 @@ function runTests() {
     assert.ok(fs.existsSync(freshState), 'fresh state file should remain');
   })) passed++; else failed++;
 
+  function runFreshSessionEdit(filePath, extra = {}) {
+    return runHook({
+      tool_name: 'Edit',
+      tool_input: { file_path: filePath, old_string: 'a', new_string: 'b' },
+      session_id: 'subagent-fresh-session',
+      ...extra
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+  }
+
+  function runFreshSessionBash(command, extra = {}) {
+    return runBashHook({
+      tool_name: 'Bash',
+      tool_input: { command },
+      session_id: 'subagent-fresh-session',
+      ...extra
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+  }
+
+  // --- Test 30: top-level Edit denies; subagent Edit allows ---
+  clearState();
+  if (test('A/B: same Edit denies at top level and allows with agent_id', () => {
+    const topLevel = runFreshSessionEdit('/src/subagent-edit.js');
+    const topOut = parseOutput(topLevel.stdout);
+    assert.ok(topOut, 'top-level edit should produce JSON output');
+    assert.strictEqual(topOut.hookSpecificOutput.permissionDecision, 'deny');
+
+    clearState();
+    const subagent = runFreshSessionEdit('/src/subagent-edit.js', { agent_id: 'agent-abc-123' });
+    const subOut = parseOutput(subagent.stdout);
+    assert.ok(subOut, 'subagent edit should produce JSON output');
+    assert.ok(!subOut.hookSpecificOutput || subOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'subagent edit should bypass the first-touch file gate');
+  })) passed++; else failed++;
+
+  // --- Test 31: top-level Write denies; subagent Write allows ---
+  clearState();
+  if (test('A/B: same Write denies at top level and allows with agent_id', () => {
+    const topLevel = runHook({
+      tool_name: 'Write',
+      tool_input: { file_path: '/src/subagent-write.js', content: 'module.exports = {};' },
+      session_id: 'subagent-fresh-session'
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+    const topOut = parseOutput(topLevel.stdout);
+    assert.ok(topOut, 'top-level write should produce JSON output');
+    assert.strictEqual(topOut.hookSpecificOutput.permissionDecision, 'deny');
+
+    clearState();
+    const subagent = runHook({
+      tool_name: 'Write',
+      tool_input: { file_path: '/src/subagent-write.js', content: 'module.exports = {};' },
+      session_id: 'subagent-fresh-session',
+      agent_id: 'agent-abc-123'
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+    const subOut = parseOutput(subagent.stdout);
+    assert.ok(subOut, 'subagent write should produce JSON output');
+    assert.ok(!subOut.hookSpecificOutput || subOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'subagent write should bypass the first-touch file gate');
+  })) passed++; else failed++;
+
+  // --- Test 32: top-level MultiEdit denies; subagent MultiEdit allows ---
+  clearState();
+  if (test('A/B: same MultiEdit denies at top level and allows with agent_id', () => {
+    const edits = [
+      { file_path: '/src/subagent-multi-a.js', old_string: 'a', new_string: 'b' },
+      { file_path: '/src/subagent-multi-b.js', old_string: 'c', new_string: 'd' }
+    ];
+
+    const topLevel = runHook({
+      tool_name: 'MultiEdit',
+      tool_input: { edits },
+      session_id: 'subagent-fresh-session'
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+    const topOut = parseOutput(topLevel.stdout);
+    assert.ok(topOut, 'top-level MultiEdit should produce JSON output');
+    assert.strictEqual(topOut.hookSpecificOutput.permissionDecision, 'deny');
+
+    clearState();
+    const subagent = runHook({
+      tool_name: 'MultiEdit',
+      tool_input: { edits },
+      session_id: 'subagent-fresh-session',
+      agent_id: 'agent-abc-123'
+    }, { CLAUDE_SESSION_ID: '', ECC_SESSION_ID: '' });
+    const subOut = parseOutput(subagent.stdout);
+    assert.ok(subOut, 'subagent MultiEdit should produce JSON output');
+    assert.ok(!subOut.hookSpecificOutput || subOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'subagent MultiEdit should bypass the first-touch file gate');
+  })) passed++; else failed++;
+
+  // --- Test 33: Bash stays gated inside subagents ---
+  clearState();
+  if (test('routine Bash remains gated in subagent context', () => {
+    const result = runFreshSessionBash('pwd', { agent_id: 'agent-abc-123' });
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'subagent Bash should produce JSON output');
+    assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny');
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('current user request'));
+  })) passed++; else failed++;
+
+  // --- Test 34: destructive Bash stays gated inside subagents ---
+  clearState();
+  if (test('destructive Bash remains gated in subagent context', () => {
+    const result = runFreshSessionBash('rm -rf /tmp/demo-path', { agent_id: 'agent-abc-123' });
+    const output = parseOutput(result.stdout);
+    assert.ok(output, 'subagent destructive Bash should produce JSON output');
+    assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny');
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('Destructive command detected'));
+  })) passed++; else failed++;
+
+  // --- Test 35: parent tool IDs also mark subagent context ---
+  clearState();
+  if (test('parent_tool_use_id and parentToolUseId mark subagent file edits', () => {
+    const snake = runFreshSessionEdit('/src/subagent-parent-snake.js', { parent_tool_use_id: 'toolu_parent_01' });
+    const snakeOut = parseOutput(snake.stdout);
+    assert.ok(snakeOut, 'snake-case parent marker should produce JSON output');
+    assert.ok(!snakeOut.hookSpecificOutput || snakeOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'parent_tool_use_id should bypass the first-touch file gate');
+
+    clearState();
+    const camel = runFreshSessionEdit('/src/subagent-parent-camel.js', { parentToolUseId: 'toolu_parent_02' });
+    const camelOut = parseOutput(camel.stdout);
+    assert.ok(camelOut, 'camel-case parent marker should produce JSON output');
+    assert.ok(!camelOut.hookSpecificOutput || camelOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'parentToolUseId should bypass the first-touch file gate');
+  })) passed++; else failed++;
+
+  // --- Test 36: only non-empty string markers count ---
+  clearState();
+  if (test('empty and non-string subagent markers do not bypass file gates', () => {
+    const cases = [
+      ['empty', { agent_id: '' }],
+      ['whitespace', { agent_id: '   ' }],
+      ['numeric', { agent_id: 12345 }],
+      ['null', { agent_id: null }]
+    ];
+
+    for (const [name, extra] of cases) {
+      clearState();
+      const result = runFreshSessionEdit(`/src/subagent-marker-${name}.js`, extra);
+      const output = parseOutput(result.stdout);
+      assert.ok(output, `${name} marker should produce JSON output`);
+      assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny',
+        `${name} marker should not bypass the first-touch file gate`);
+    }
+  })) passed++; else failed++;
+
+  // --- Test 37: two sequential subagent Edits on different files pass ---
+  clearState();
+  if (test('two sequential subagent Edits on different files both pass', () => {
+    const first = runFreshSessionEdit('/src/subagent-seq-a.js', { agent_id: 'agent-seq' });
+    const firstOut = parseOutput(first.stdout);
+    assert.ok(firstOut, 'first subagent edit should produce JSON output');
+    assert.ok(!firstOut.hookSpecificOutput || firstOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'first subagent edit should pass');
+
+    const second = runFreshSessionEdit('/src/subagent-seq-b.js', { agent_id: 'agent-seq' });
+    const secondOut = parseOutput(second.stdout);
+    assert.ok(secondOut, 'second subagent edit should produce JSON output');
+    assert.ok(!secondOut.hookSpecificOutput || secondOut.hookSpecificOutput.permissionDecision !== 'deny',
+      'second subagent edit should pass even on a new file');
+  })) passed++; else failed++;
+
   // Cleanup only the temp directory created by this test file.
   try {
     if (fs.existsSync(stateDir)) {

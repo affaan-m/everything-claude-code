@@ -131,7 +131,7 @@ Options: `--size <pt>` (default: 68), `--color <hex>` (default: 8E8E93), `--weig
 | `carbon` | Carbon | 2400+ | IBM design language |
 | `heroicons` | HeroIcons | 1200+ | Tailwind CSS companion |
 
-Browse all: https://icon-sets.iconify.design/
+Browse all: <https://icon-sets.iconify.design/>
 
 ## Scripts Reference
 

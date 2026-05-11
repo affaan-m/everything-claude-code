@@ -6,7 +6,7 @@ Use the testing patterns described here when writing units tests for your tinyst
 
 ## How It Works
 
-Testing tinystruct applications requires a specific setup to ensure framework-level features like annotation processing and configuration management are active. By creating a new instance of your application and passing it a `Settings` object in the `setUp()` method, you trigger the `init()` lifecycle. This ensures all `@Action` methods are discovered and registered. 
+Testing tinystruct applications requires a specific setup to ensure framework-level features like annotation processing and configuration management are active. By creating a new instance of your application and passing it a `Settings` object in the `setUp()` method, you trigger the `init()` lifecycle. This ensures all `@Action` methods are discovered and registered.
 
 Because the `ActionRegistry` is a singleton, it is critical to maintain isolation between tests by properly initializing your application state before each test execution, preventing side effects from leaking across the test suite.
 
