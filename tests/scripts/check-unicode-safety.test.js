@@ -109,6 +109,27 @@ if (
   passed++;
 else failed++;
 
+if (
+  test('skips Python virtual environments', () => {
+    const root = makeTempRoot('ecc-unicode-venv-');
+    fs.mkdirSync(path.join(root, '.venv', 'lib', 'python3.12', 'site-packages'), { recursive: true });
+    fs.mkdirSync(path.join(root, 'venv', 'lib', 'python3.12', 'site-packages'), { recursive: true });
+    fs.writeFileSync(
+      path.join(root, '.venv', 'lib', 'python3.12', 'site-packages', 'package.py'),
+      `message = "hello ${rocketEmoji}"\n`
+    );
+    fs.writeFileSync(
+      path.join(root, 'venv', 'lib', 'python3.12', 'site-packages', 'package.py'),
+      `message = "hello ${rocketEmoji}"\n`
+    );
+
+    const result = runCheck(root);
+    assert.strictEqual(result.status, 0, result.stdout + result.stderr);
+  })
+)
+  passed++;
+else failed++;
+
 console.log(`\nPassed: ${passed}`);
 console.log(`Failed: ${failed}`);
 process.exit(failed > 0 ? 1 : 0);

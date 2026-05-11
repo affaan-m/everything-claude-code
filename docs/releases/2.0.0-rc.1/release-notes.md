@@ -13,6 +13,7 @@ Claude Code remains a core target. Codex, OpenCode, Cursor, Gemini, and other ha
 - Clarified the split between ECC as the reusable substrate and Hermes as the operator shell.
 - Documented the cross-harness portability model for skills, hooks, MCPs, rules, and instructions.
 - Added a Hermes import playbook for turning local operator patterns into publishable ECC skills.
+- Added a local [observability readiness gate](../../architecture/observability-readiness.md) for loop status, session traces, harness audit, and ECC2 tool-risk logs.
 
 ## Why This Matters
 
@@ -50,6 +51,7 @@ What stays local:
 1. Follow the [rc.1 quickstart](quickstart.md).
 2. Read the [Hermes setup guide](../../HERMES-SETUP.md).
 3. Review the [cross-harness architecture](../../architecture/cross-harness.md).
-4. Start with one workflow lane: engineering, research, content, or outreach.
-5. Import only sanitized operator patterns into ECC skills.
-6. Treat `ecc2/` as an alpha control plane until release packaging and installer behavior are finalized.
+4. Run the [observability readiness gate](../../architecture/observability-readiness.md).
+5. Start with one workflow lane: engineering, research, content, or outreach.
+6. Import only sanitized operator patterns into ECC skills.
+7. Treat `ecc2/` as an alpha control plane until release packaging and installer behavior are finalized.

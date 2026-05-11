@@ -14,7 +14,9 @@ const ignoredDirs = new Set([
   'node_modules',
   '.dmux',
   '.next',
+  '.venv',
   'coverage',
+  'venv',
 ]);
 
 const textExtensions = new Set([

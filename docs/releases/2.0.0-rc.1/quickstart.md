@@ -31,6 +31,15 @@ Expected result: every test passes with zero failures. For release-specific drif
 node tests/docs/ecc2-release-surface.test.js
 ```
 
+Then check the local observability surface:
+
+```bash
+npm run observability:ready
+```
+
+This runs the [observability readiness gate](../../architecture/observability-readiness.md)
+for loop status, session traces, harness audit, and ECC2 tool-risk logs.
+
 ## First Skill
 
 Read `skills/hermes-imports/SKILL.md` first.
