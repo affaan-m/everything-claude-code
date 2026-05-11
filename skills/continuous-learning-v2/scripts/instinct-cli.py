@@ -28,6 +28,13 @@ from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 from typing import Optional
 
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 try:
     import fcntl
     _HAS_FCNTL = True

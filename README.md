@@ -1590,6 +1590,7 @@ Projects built on or inspired by Everything Claude Code:
 | Project | Description |
 |---------|-------------|
 | [EVC](https://github.com/SaigonXIII/evc) | Marketing agent workspace — 42 commands for content operators, brand governance, and multi-channel publishing. [Visual overview](https://saigonxiii.github.io/evc). |
+| [trading-skills](https://github.com/VictorVVedtion/trading-skills) | 68 trading-themed Claude Code skills with pre-trade review prompts and risk gates inspired by market operators. |
 
 Built something with ECC? Open a PR to add it here.
 

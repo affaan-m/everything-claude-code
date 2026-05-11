@@ -9,7 +9,7 @@ const path = require('path');
 const { execFileSync, spawnSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'harness-audit.js');
-const { parseArgs } = require(SCRIPT);
+const { parseArgs, findPluginInstall, compareVersionDesc } = require(SCRIPT);
 
 function createTempDir(prefix) {
   return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
@@ -387,6 +387,87 @@ function runTests() {
       cleanup(homeDir);
       cleanup(projectRoot);
     }
+  })) passed++; else failed++;
+
+  if (test('detects Claude plugin installs from installed_plugins.json', () => {
+    const homeDir = createTempDir('harness-audit-manifest-home-');
+    const projectRoot = createTempDir('harness-audit-manifest-project-');
+    const pluginsDir = path.join(homeDir, '.claude', 'plugins');
+    const installRoot = path.join(pluginsDir, 'cache', 'everything-claude-code', 'ecc', '2.0.0');
+
+    try {
+      fs.mkdirSync(path.join(installRoot, '.claude-plugin'), { recursive: true });
+      fs.writeFileSync(
+        path.join(installRoot, '.claude-plugin', 'plugin.json'),
+        JSON.stringify({ name: 'ecc', version: '2.0.0' }, null, 2)
+      );
+      fs.writeFileSync(
+        path.join(pluginsDir, 'installed_plugins.json'),
+        JSON.stringify({
+          plugins: {
+            'ecc@everything-claude-code': [
+              { installPath: path.join('cache', 'everything-claude-code', 'ecc', '2.0.0') },
+            ],
+          },
+        }, null, 2)
+      );
+
+      const originalHome = process.env.HOME;
+      process.env.HOME = homeDir;
+      try {
+        const found = findPluginInstall(projectRoot);
+        assert.ok(found);
+        assert.ok(found.includes(`${path.sep}cache${path.sep}everything-claude-code${path.sep}ecc${path.sep}2.0.0${path.sep}`));
+      } finally {
+        if (originalHome === undefined) {
+          delete process.env.HOME;
+        } else {
+          process.env.HOME = originalHome;
+        }
+      }
+    } finally {
+      cleanup(homeDir);
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('detects newest Claude plugin install from cache marketplace layout', () => {
+    const homeDir = createTempDir('harness-audit-cache-home-');
+    const projectRoot = createTempDir('harness-audit-cache-project-');
+    const pluginRoot = path.join(homeDir, '.claude', 'plugins', 'cache', 'everything-claude-code', 'ecc');
+
+    try {
+      for (const version of ['1.8.0', '1.10.0']) {
+        fs.mkdirSync(path.join(pluginRoot, version, '.claude-plugin'), { recursive: true });
+        fs.writeFileSync(
+          path.join(pluginRoot, version, '.claude-plugin', 'plugin.json'),
+          JSON.stringify({ name: 'ecc', version }, null, 2)
+        );
+      }
+
+      const originalHome = process.env.HOME;
+      process.env.HOME = homeDir;
+      try {
+        const found = findPluginInstall(projectRoot);
+        assert.ok(found);
+        assert.ok(found.includes(`${path.sep}1.10.0${path.sep}`), `expected newest version, got ${found}`);
+      } finally {
+        if (originalHome === undefined) {
+          delete process.env.HOME;
+        } else {
+          process.env.HOME = originalHome;
+        }
+      }
+    } finally {
+      cleanup(homeDir);
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('compareVersionDesc orders numeric version components', () => {
+    const versions = ['1.8.0', '1.10.0', '1.9.0', '2.0.0'].sort(compareVersionDesc);
+    assert.deepStrictEqual(versions, ['2.0.0', '1.10.0', '1.9.0', '1.8.0']);
+    assert.doesNotThrow(() => compareVersionDesc('1.0.0-rc.1', '1.0.0'));
   })) passed++; else failed++;
 
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);

@@ -187,28 +187,157 @@ function detectTargetMode(rootDir) {
   return 'consumer';
 }
 
-function findPluginInstall(rootDir) {
-  const homeDir = process.env.HOME || process.env.USERPROFILE || os.homedir() || '';
-  const pluginDirs = [
-    'ecc',
-    'ecc@ecc',
-    'everything-claude-code',
-    'everything-claude-code@everything-claude-code',
-  ];
-  const candidateRoots = [
-    path.join(rootDir, '.claude', 'plugins'),
-    path.join(rootDir, '.claude', 'plugins', 'marketplaces'),
-    homeDir && path.join(homeDir, '.claude', 'plugins'),
-    homeDir && path.join(homeDir, '.claude', 'plugins', 'marketplaces'),
-  ].filter(Boolean);
-  const candidates = candidateRoots.flatMap((pluginsDir) =>
-    pluginDirs.flatMap((pluginDir) => [
-      path.join(pluginsDir, pluginDir, '.claude-plugin', 'plugin.json'),
-      path.join(pluginsDir, pluginDir, 'plugin.json'),
-    ])
-  );
+const ECC_PLUGIN_KEY_PATTERNS = [
+  /^ecc@/i,
+  /^everything-claude-code@/i,
+];
 
-  return candidates.find(candidate => fs.existsSync(candidate)) || null;
+const ECC_LEGACY_PLUGIN_DIRS = [
+  'ecc',
+  'ecc@ecc',
+  'everything-claude-code',
+  'everything-claude-code@everything-claude-code',
+];
+
+const ECC_CACHE_MARKETPLACES = ['everything-claude-code', 'ecc'];
+const ECC_CACHE_PLUGIN_NAMES = ['ecc', 'everything-claude-code'];
+
+function uniquePaths(paths) {
+  return [...new Set(paths.filter(Boolean))];
+}
+
+function compareVersionDesc(a, b) {
+  const partsA = String(a).split('.').map(part => parseInt(part, 10) || 0);
+  const partsB = String(b).split('.').map(part => parseInt(part, 10) || 0);
+  const length = Math.max(partsA.length, partsB.length);
+
+  for (let index = 0; index < length; index += 1) {
+    const valueA = partsA[index] || 0;
+    const valueB = partsB[index] || 0;
+    if (valueA !== valueB) {
+      return valueB - valueA;
+    }
+  }
+
+  return 0;
+}
+
+function findPluginJsonUnder(installRoot) {
+  const pluginJson = path.join(installRoot, '.claude-plugin', 'plugin.json');
+  if (fs.existsSync(pluginJson)) {
+    return pluginJson;
+  }
+
+  const fallback = path.join(installRoot, 'plugin.json');
+  return fs.existsSync(fallback) ? fallback : null;
+}
+
+function findPluginInstallFromManifest(installedPluginsPaths) {
+  for (const installedPath of installedPluginsPaths) {
+    if (!fs.existsSync(installedPath)) {
+      continue;
+    }
+
+    const manifest = safeParseJson(safeRead(path.dirname(installedPath), path.basename(installedPath)));
+    if (!manifest || !manifest.plugins) {
+      continue;
+    }
+
+    for (const [key, value] of Object.entries(manifest.plugins)) {
+      if (!ECC_PLUGIN_KEY_PATTERNS.some(pattern => pattern.test(key))) {
+        continue;
+      }
+
+      const entries = Array.isArray(value) ? value : [];
+      for (const entry of entries) {
+        if (!entry || typeof entry.installPath !== 'string' || !entry.installPath.trim()) {
+          continue;
+        }
+
+        const installRoot = path.isAbsolute(entry.installPath)
+          ? entry.installPath
+          : path.resolve(path.dirname(installedPath), entry.installPath);
+        const hit = findPluginJsonUnder(installRoot);
+        if (hit) {
+          return hit;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+function findPluginInstallFlatLayout(candidateRoots) {
+  for (const pluginsDir of candidateRoots) {
+    for (const pluginDir of ECC_LEGACY_PLUGIN_DIRS) {
+      const hit = findPluginJsonUnder(path.join(pluginsDir, pluginDir));
+      if (hit) {
+        return hit;
+      }
+    }
+  }
+
+  return null;
+}
+
+function findPluginInstallMarketplaceCache(candidateRoots) {
+  for (const pluginsDir of candidateRoots) {
+    for (const marketplace of ECC_CACHE_MARKETPLACES) {
+      for (const pluginName of ECC_CACHE_PLUGIN_NAMES) {
+        const pluginRoot = path.join(pluginsDir, 'cache', marketplace, pluginName);
+        if (!fs.existsSync(pluginRoot)) {
+          continue;
+        }
+
+        let versions = [];
+        try {
+          versions = fs
+            .readdirSync(pluginRoot, { withFileTypes: true })
+            .filter(entry => entry.isDirectory())
+            .map(entry => entry.name)
+            .sort(compareVersionDesc);
+        } catch {
+          continue;
+        }
+
+        for (const version of versions) {
+          const hit = findPluginJsonUnder(path.join(pluginRoot, version));
+          if (hit) {
+            return hit;
+          }
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+function findPluginInstall(rootDir) {
+  const homeDirs = uniquePaths([
+    process.env.HOME,
+    process.env.USERPROFILE,
+    os.homedir(),
+  ]);
+  const pluginRoots = uniquePaths([
+    path.join(rootDir, '.claude', 'plugins'),
+    ...homeDirs.map(homeDir => path.join(homeDir, '.claude', 'plugins')),
+  ]);
+  const installedPluginsPaths = uniquePaths([
+    path.join(rootDir, '.claude', 'plugins', 'installed_plugins.json'),
+    ...homeDirs.map(homeDir => path.join(homeDir, '.claude', 'plugins', 'installed_plugins.json')),
+  ]);
+  const flatRoots = uniquePaths([
+    ...pluginRoots,
+    ...pluginRoots.map(pluginsDir => path.join(pluginsDir, 'marketplaces')),
+  ]);
+
+  return (
+    findPluginInstallFromManifest(installedPluginsPaths)
+    || findPluginInstallFlatLayout(flatRoots)
+    || findPluginInstallMarketplaceCache(pluginRoots)
+  );
 }
 
 function getRepoChecks(rootDir) {
@@ -735,4 +864,6 @@ if (require.main === module) {
 module.exports = {
   buildReport,
   parseArgs,
+  findPluginInstall,
+  compareVersionDesc,
 };
