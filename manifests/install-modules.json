@@ -512,9 +512,12 @@
       "kind": "skills",
       "description": "Deployment workflows, Docker patterns, and infrastructure skills.",
       "paths": [
+        "skills/cisco-ios-patterns",
         "skills/deployment-patterns",
         "skills/docker-patterns",
         "skills/homelab-network-setup",
+        "skills/netmiko-ssh-automation",
+        "skills/network-bgp-diagnostics",
         "skills/network-config-validation",
         "skills/network-interface-health"
       ],
