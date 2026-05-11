@@ -576,6 +576,31 @@ async function runTests() {
     }
   })) passed += 1; else failed += 1;
 
+  if (await test('status CLI can emit and write markdown operator snapshots', async () => {
+    const testDir = createTempDir('ecc-state-cli-');
+    const dbPath = path.join(testDir, 'state.db');
+    const outputPath = path.join(testDir, 'status.md');
+
+    try {
+      await seedStore(dbPath);
+
+      const result = runNode(STATUS_SCRIPT, ['--db', dbPath, '--markdown', '--write', outputPath]);
+      assert.strictEqual(result.status, 0, result.stderr);
+      assert.ok(fs.existsSync(outputPath));
+
+      const written = fs.readFileSync(outputPath, 'utf8');
+      assert.strictEqual(result.stdout, written);
+      assert.match(written, /^# ECC Status/m);
+      assert.match(written, /Database: `[^`]+state\.db`/);
+      assert.match(written, /- `session-active` \[claude\/dmux-tmux\] active/);
+      assert.match(written, /Success rate: 66\.7%/);
+      assert.match(written, /Install health: healthy/);
+      assert.match(written, /Pending governance events: 1/);
+    } finally {
+      cleanupTempDir(testDir);
+    }
+  })) passed += 1; else failed += 1;
+
   if (await test('sessions CLI supports list and detail views in human-readable and --json output', async () => {
     const testDir = createTempDir('ecc-state-cli-');
     const dbPath = path.join(testDir, 'state.db');

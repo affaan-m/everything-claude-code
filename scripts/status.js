@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 'use strict';
 
+const fs = require('fs');
 const os = require('os');
+const path = require('path');
 const { createStateStore } = require('./lib/state-store');
 
 function showHelp(exitCode = 0) {
   console.log(`
-Usage: node scripts/status.js [--db <path>] [--json] [--limit <n>]
+Usage: node scripts/status.js [--db <path>] [--json|--markdown] [--write <path>] [--limit <n>]
 
 Query the ECC SQLite state store for active sessions, recent skill runs,
 install health, and pending governance events.
@@ -19,6 +21,8 @@ function parseArgs(argv) {
   const parsed = {
     dbPath: null,
     json: false,
+    markdown: false,
+    writePath: null,
     help: false,
     limit: 5,
   };
@@ -31,6 +35,11 @@ function parseArgs(argv) {
       index += 1;
     } else if (arg === '--json') {
       parsed.json = true;
+    } else if (arg === '--markdown') {
+      parsed.markdown = true;
+    } else if (arg === '--write') {
+      parsed.writePath = args[index + 1] || null;
+      index += 1;
     } else if (arg === '--limit') {
       parsed.limit = args[index + 1] || null;
       index += 1;
@@ -39,6 +48,22 @@ function parseArgs(argv) {
     } else {
       throw new Error(`Unknown argument: ${arg}`);
     }
+  }
+
+  if (parsed.json && parsed.markdown) {
+    throw new Error('Choose only one output format: --json or --markdown');
+  }
+
+  if (args.includes('--db') && !parsed.dbPath) {
+    throw new Error('Missing value for --db');
+  }
+
+  if (args.includes('--write') && !parsed.writePath) {
+    throw new Error('Missing value for --write');
+  }
+
+  if (args.includes('--limit') && !parsed.limit) {
+    throw new Error('Missing value for --limit');
   }
 
   return parsed;
@@ -129,6 +154,108 @@ function printHuman(payload) {
   printGovernance(payload.governance);
 }
 
+function formatPercent(value) {
+  return value === null ? 'n/a' : `${value}%`;
+}
+
+function formatCode(value) {
+  return `\`${String(value || '').replace(/`/g, '\\`')}\``;
+}
+
+function renderMarkdown(payload) {
+  const lines = [
+    '# ECC Status',
+    '',
+    `Generated: ${payload.generatedAt}`,
+    `Database: ${formatCode(payload.dbPath)}`,
+    '',
+    '## Active Sessions',
+    '',
+    `Active sessions: ${payload.activeSessions.activeCount}`,
+  ];
+
+  if (payload.activeSessions.sessions.length === 0) {
+    lines.push('- none');
+  } else {
+    for (const session of payload.activeSessions.sessions) {
+      lines.push(`- ${formatCode(session.id)} [${session.harness}/${session.adapterId}] ${session.state}`);
+      lines.push(`  - Repo: ${session.repoRoot || '(unknown)'}`);
+      lines.push(`  - Started: ${session.startedAt || '(unknown)'}`);
+      lines.push(`  - Workers: ${session.workerCount}`);
+    }
+  }
+
+  const skillSummary = payload.skillRuns.summary;
+  lines.push(
+    '',
+    '## Skill Runs',
+    '',
+    `Window size: ${payload.skillRuns.windowSize}`,
+    `Success: ${skillSummary.successCount}`,
+    `Failure: ${skillSummary.failureCount}`,
+    `Unknown: ${skillSummary.unknownCount}`,
+    `Success rate: ${formatPercent(skillSummary.successRate)}`,
+    `Failure rate: ${formatPercent(skillSummary.failureRate)}`
+  );
+
+  if (payload.skillRuns.recent.length === 0) {
+    lines.push('', 'Recent runs: none');
+  } else {
+    lines.push('', 'Recent runs:');
+    for (const skillRun of payload.skillRuns.recent.slice(0, 5)) {
+      lines.push(`- ${formatCode(skillRun.id)} ${skillRun.outcome} ${skillRun.skillId}@${skillRun.skillVersion}`);
+    }
+  }
+
+  lines.push(
+    '',
+    '## Install Health',
+    '',
+    `Install health: ${payload.installHealth.status}`,
+    `Targets recorded: ${payload.installHealth.totalCount}`,
+    `Healthy: ${payload.installHealth.healthyCount}`,
+    `Warning: ${payload.installHealth.warningCount}`
+  );
+
+  if (payload.installHealth.installations.length === 0) {
+    lines.push('', 'Installations: none');
+  } else {
+    lines.push('', 'Installations:');
+    for (const installation of payload.installHealth.installations.slice(0, 5)) {
+      lines.push(`- ${formatCode(installation.targetId)} ${installation.status}`);
+      lines.push(`  - Root: ${installation.targetRoot}`);
+      lines.push(`  - Profile: ${installation.profile || '(custom)'}`);
+      lines.push(`  - Modules: ${installation.moduleCount}`);
+      lines.push(`  - Source version: ${installation.sourceVersion || '(unknown)'}`);
+    }
+  }
+
+  lines.push(
+    '',
+    '## Governance',
+    '',
+    `Pending governance events: ${payload.governance.pendingCount}`
+  );
+
+  if (payload.governance.events.length === 0) {
+    lines.push('- none');
+  } else {
+    for (const event of payload.governance.events) {
+      lines.push(`- ${formatCode(event.id)} ${event.eventType}`);
+      lines.push(`  - Session: ${event.sessionId || '(none)'}`);
+      lines.push(`  - Created: ${event.createdAt}`);
+    }
+  }
+
+  return `${lines.join('\n')}\n`;
+}
+
+function writeOutput(writePath, output) {
+  const absolutePath = path.resolve(writePath);
+  fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
+  fs.writeFileSync(absolutePath, output, 'utf8');
+}
+
 async function main() {
   let store = null;
 
@@ -153,8 +280,21 @@ async function main() {
     };
 
     if (options.json) {
-      console.log(JSON.stringify(payload, null, 2));
+      const output = `${JSON.stringify(payload, null, 2)}\n`;
+      if (options.writePath) {
+        writeOutput(options.writePath, output);
+      }
+      process.stdout.write(output);
+    } else if (options.markdown) {
+      const output = renderMarkdown(payload);
+      if (options.writePath) {
+        writeOutput(options.writePath, output);
+      }
+      process.stdout.write(output);
     } else {
+      if (options.writePath) {
+        throw new Error('--write requires --json or --markdown');
+      }
       printHuman(payload);
     }
   } catch (error) {
@@ -174,4 +314,5 @@ if (require.main === module) {
 module.exports = {
   main,
   parseArgs,
+  renderMarkdown,
 };
