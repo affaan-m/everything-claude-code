@@ -276,7 +276,10 @@
       "paths": [
         "skills/deep-research",
         "skills/exa-search",
-        "skills/research-ops"
+        "skills/research-ops",
+        "skills/scientific-db-pubmed-database",
+        "skills/scientific-thinking-literature-review",
+        "skills/scientific-thinking-scholar-evaluation"
       ],
       "targets": [
         "claude",
