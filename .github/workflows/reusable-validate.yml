@@ -50,3 +50,6 @@ jobs:
 
       - name: Check unicode safety
         run: node scripts/ci/check-unicode-safety.js
+
+      - name: Validate no personal paths
+        run: node scripts/ci/validate-no-personal-paths.js
