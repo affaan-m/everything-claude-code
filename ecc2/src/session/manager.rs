@@ -908,11 +908,10 @@ pub async fn drain_inbox(
     use_worktree: bool,
     limit: usize,
 ) -> Result<Vec<InboxDrainOutcome>> {
-    let repo_root =
-        std::env::current_dir().context("Failed to resolve current working directory")?;
     let runner_program =
         std::env::current_exe().context("Failed to resolve ECC executable path")?;
     let lead = resolve_session(db, lead_id)?;
+    let repo_root = lead.working_dir.clone();
     let messages = db.unread_task_handoffs_for_session(&lead.id, limit)?;
     let mut outcomes = Vec::new();
 
@@ -1057,11 +1056,10 @@ pub async fn rebalance_team_backlog(
     use_worktree: bool,
     limit: usize,
 ) -> Result<Vec<RebalanceOutcome>> {
-    let repo_root =
-        std::env::current_dir().context("Failed to resolve current working directory")?;
     let runner_program =
         std::env::current_exe().context("Failed to resolve ECC executable path")?;
     let lead = resolve_session(db, lead_id)?;
+    let repo_root = lead.working_dir.clone();
     let mut outcomes = Vec::new();
 
     if limit == 0 {
