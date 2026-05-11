@@ -350,7 +350,7 @@ If you stacked methods, clean up in this order:
 /plugin list ecc@ecc
 ```
 
-**That's it!** You now have access to 51 agents, 189 skills, and 69 legacy command shims.
+**That's it!** You now have access to 53 agents, 192 skills, and 69 legacy command shims.
 
 ### Dashboard GUI
 
@@ -448,7 +448,7 @@ everything-claude-code/
 |   |-- plugin.json         # Plugin metadata and component paths
 |   |-- marketplace.json    # Marketplace catalog for /plugin marketplace add
 |
-|-- agents/           # 51 specialized subagents for delegation
+|-- agents/           # 53 specialized subagents for delegation
 |   |-- planner.md           # Feature implementation planning
 |   |-- architect.md         # System design decisions
 |   |-- tdd-guide.md         # Test-driven development
@@ -1336,9 +1336,9 @@ The configuration is automatically detected from `.opencode/opencode.json`.
 
 | Feature | Claude Code | OpenCode | Status |
 |---------|-------------|----------|--------|
-| Agents | PASS: 51 agents | PASS: 12 agents | **Claude Code leads** |
+| Agents | PASS: 53 agents | PASS: 12 agents | **Claude Code leads** |
 | Commands | PASS: 69 commands | PASS: 31 commands | **Claude Code leads** |
-| Skills | PASS: 189 skills | PASS: 37 skills | **Claude Code leads** |
+| Skills | PASS: 192 skills | PASS: 37 skills | **Claude Code leads** |
 | Hooks | PASS: 8 event types | PASS: 11 events | **OpenCode has more!** |
 | Rules | PASS: 29 rules | PASS: 13 instructions | **Claude Code leads** |
 | MCP Servers | PASS: 14 servers | PASS: Full | **Full parity** |
@@ -1441,9 +1441,9 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 
 | Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |
 |---------|------------|------------|-----------|----------|
-| **Agents** | 51 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
+| **Agents** | 53 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
 | **Commands** | 69 | Shared | Instruction-based | 31 |
-| **Skills** | 189 | Shared | 10 (native format) | 37 |
+| **Skills** | 192 | Shared | 10 (native format) | 37 |
 | **Hook Events** | 8 types | 15 types | None yet | 11 types |
 | **Hook Scripts** | 20+ scripts | 16 scripts (DRY adapter) | N/A | Plugin hooks |
 | **Rules** | 34 (common + lang) | 34 (YAML frontmatter) | Instruction-based | 13 instructions |

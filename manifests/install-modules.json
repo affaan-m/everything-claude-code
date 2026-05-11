@@ -510,7 +510,10 @@
       "description": "Deployment workflows, Docker patterns, and infrastructure skills.",
       "paths": [
         "skills/deployment-patterns",
-        "skills/docker-patterns"
+        "skills/docker-patterns",
+        "skills/homelab-network-setup",
+        "skills/network-config-validation",
+        "skills/network-interface-health"
       ],
       "targets": [
         "claude",
