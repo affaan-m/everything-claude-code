@@ -179,6 +179,7 @@
         "skills/clickhouse-io",
         "skills/database-migrations",
         "skills/jpa-patterns",
+        "skills/mysql-patterns",
         "skills/postgres-patterns"
       ],
       "targets": [
