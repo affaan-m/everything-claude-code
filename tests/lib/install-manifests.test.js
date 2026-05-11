@@ -301,6 +301,43 @@ function runTests() {
     )), 'Should install the MLE workflow skill');
   })) passed++; else failed++;
 
+  if (test('resolves machine-learning component on JoyCode and Qwen targets', () => {
+    for (const target of ['joycode', 'qwen']) {
+      const plan = resolveInstallPlan({
+        includeComponentIds: ['capability:machine-learning'],
+        target,
+        projectRoot: '/workspace/ml-app',
+        homeDir: '/Users/example',
+      });
+
+      assert.ok(plan.selectedModuleIds.includes('machine-learning'),
+        `Should include machine-learning module for ${target}`);
+      assert.ok(!plan.skippedModuleIds.includes('machine-learning'),
+        `Should not skip machine-learning module for ${target}`);
+      assert.ok(plan.operations.some(operation => (
+        operation.sourceRelativePath === 'skills/mle-workflow'
+      )), `Should install the MLE workflow skill for ${target}`);
+    }
+  })) passed++; else failed++;
+
+  if (test('minimal machine-learning install includes MLE reviewer agent surface', () => {
+    const plan = resolveInstallPlan({
+      profileId: 'minimal',
+      includeComponentIds: ['capability:machine-learning'],
+      target: 'claude',
+      projectRoot: '/workspace/ml-app',
+    });
+
+    assert.ok(plan.selectedModuleIds.includes('agents-core'),
+      'Minimal install should keep the agent surface available');
+    assert.ok(plan.operations.some(operation => (
+      operation.sourceRelativePath === 'agents'
+    )), 'Should install the agent directory that contains mle-reviewer.md');
+    assert.ok(plan.operations.some(operation => (
+      operation.sourceRelativePath === 'skills/mle-workflow'
+    )), 'Should install the MLE workflow skill');
+  })) passed++; else failed++;
+
   if (test('resolves explicit modules with dependency expansion', () => {
     const plan = resolveInstallPlan({ moduleIds: ['security'] });
     assert.ok(plan.selectedModuleIds.includes('security'), 'Should include requested module');

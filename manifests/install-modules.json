@@ -587,7 +587,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "framework-language",
