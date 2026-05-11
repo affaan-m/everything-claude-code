@@ -8,6 +8,12 @@ function dedupeStrings(values) {
   return [...new Set((Array.isArray(values) ? values : []).map(value => String(value).trim()).filter(Boolean))];
 }
 
+function normalizeSkillComponentIds(rawValue) {
+  return dedupeStrings(String(rawValue || '').split(',')).map(value => (
+    value.startsWith('skill:') ? value : `skill:${value}`
+  ));
+}
+
 function parseInstallArgs(argv) {
   const args = argv.slice(2);
   const parsed = {
@@ -44,6 +50,9 @@ function parseInstallArgs(argv) {
       if (componentId.trim()) {
         parsed.includeComponentIds.push(componentId.trim());
       }
+      index += 1;
+    } else if (arg === '--skill' || arg === '--skills') {
+      parsed.includeComponentIds.push(...normalizeSkillComponentIds(args[index + 1] || ''));
       index += 1;
     } else if (arg === '--without') {
       const componentId = args[index + 1] || '';

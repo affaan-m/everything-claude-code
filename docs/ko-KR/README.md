@@ -115,7 +115,7 @@
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # 플러그인 설치
-/plugin install everything-claude-code
+/plugin install ecc@ecc
 ```
 
 ### 2단계: 룰 설치 (필수)
@@ -141,13 +141,13 @@ cd everything-claude-code
 
 ```bash
 # 커맨드 실행 (플러그인 설치 시 네임스페이스 형태 사용)
-/everything-claude-code:plan "사용자 인증 추가"
+/ecc:plan "사용자 인증 추가"
 
 # 수동 설치(옵션 2) 시에는 짧은 형태를 사용:
 # /plan "사용자 인증 추가"
 
 # 사용 가능한 커맨드 확인
-/plugin list everything-claude-code@everything-claude-code
+/plugin list ecc@ecc
 ```
 
 **끝!** 이제 16개 에이전트, 65개 스킬, 40개 커맨드를 사용할 수 있습니다.
@@ -359,7 +359,7 @@ Claude Code v2.1+는 설치된 플러그인의 `hooks/hooks.json`을 **자동으
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # 플러그인 설치
-/plugin install everything-claude-code
+/plugin install ecc@ecc
 ```
 
 또는 `~/.claude/settings.json`에 직접 추가:
@@ -375,7 +375,7 @@ Claude Code v2.1+는 설치된 플러그인의 `hooks/hooks.json`을 **자동으
     }
   },
   "enabledPlugins": {
-    "everything-claude-code@everything-claude-code": true
+    "ecc@ecc": true
   }
 }
 ```
@@ -489,8 +489,8 @@ rules/
 
 | 하고 싶은 것 | 사용할 커맨드 | 사용되는 에이전트 |
 |-------------|-------------|-----------------|
-| 새 기능 계획하기 | `/everything-claude-code:plan "인증 추가"` | planner |
-| 시스템 아키텍처 설계 | `/everything-claude-code:plan` + architect 에이전트 | architect |
+| 새 기능 계획하기 | `/ecc:plan "인증 추가"` | planner |
+| 시스템 아키텍처 설계 | `/ecc:plan` + architect 에이전트 | architect |
 | 테스트를 먼저 작성하며 코딩 | `/tdd` | tdd-guide |
 | 방금 작성한 코드 리뷰 | `/code-review` | code-reviewer |
 | 빌드 실패 수정 | `/build-fix` | build-error-resolver |
@@ -507,7 +507,7 @@ rules/
 
 **새로운 기능 시작:**
 ```
-/everything-claude-code:plan "OAuth를 사용한 사용자 인증 추가"
+/ecc:plan "OAuth를 사용한 사용자 인증 추가"
                                               → planner가 구현 청사진 작성
 /tdd                                          → tdd-guide가 테스트 먼저 작성 강제
 /code-review                                  → code-reviewer가 코드 검토
@@ -535,7 +535,7 @@ rules/
 <summary><b>설치된 에이전트/커맨드 확인은 어떻게 하나요?</b></summary>
 
 ```bash
-/plugin list everything-claude-code@everything-claude-code
+/plugin list ecc@ecc
 ```
 
 플러그인에서 사용할 수 있는 모든 에이전트, 커맨드, 스킬을 보여줍니다.

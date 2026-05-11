@@ -206,8 +206,8 @@ test('claude plugin.json version matches package.json', () => {
   assert.strictEqual(claudePlugin.version, expectedVersion);
 });
 
-test('claude plugin.json uses published plugin name', () => {
-  assert.strictEqual(claudePlugin.name, 'everything-claude-code');
+test('claude plugin.json uses short plugin slug', () => {
+  assert.strictEqual(claudePlugin.name, 'ecc');
 });
 
 test('claude plugin.json does NOT have agents field (unsupported by Claude Code validator)', () => {
@@ -226,7 +226,8 @@ test('claude plugin.json commands is an array', () => {
 });
 
 test('claude plugin.json disables bundled MCP servers for provider tool-name compatibility', () => {
-  const reportedOverlongToolName = `mcp__plugin_${claudePlugin.name}_github__create_pull_request_review`;
+  const legacyPluginName = 'everything-claude-code';
+  const reportedOverlongToolName = `mcp__plugin_${legacyPluginName}_github__create_pull_request_review`;
 
   assert.ok(
     reportedOverlongToolName.length > 64,
@@ -270,8 +271,8 @@ test('claude marketplace.json keeps only Claude-supported top-level keys', () =>
 
 test('claude marketplace.json has plugins array with the published plugin entry', () => {
   assert.ok(Array.isArray(claudeMarketplace.plugins) && claudeMarketplace.plugins.length > 0, 'Expected plugins array');
-  assert.strictEqual(claudeMarketplace.name, 'everything-claude-code');
-  assert.strictEqual(claudeMarketplace.plugins[0].name, 'everything-claude-code');
+  assert.strictEqual(claudeMarketplace.name, 'ecc');
+  assert.strictEqual(claudeMarketplace.plugins[0].name, 'ecc');
 });
 
 test('claude marketplace.json plugin version matches package.json', () => {
@@ -466,18 +467,18 @@ test('README version row matches package.json', () => {
   assert.strictEqual(match[1], expectedVersion);
 });
 
-test('user-facing docs do not use deprecated ecc@ecc install commands', () => {
+test('user-facing docs do not use overlong legacy marketplace install commands', () => {
   const markdownFiles = [
     path.join(repoRoot, 'README.md'),
     path.join(repoRoot, 'README.zh-CN.md'),
     path.join(repoRoot, 'skills', 'configure-ecc', 'SKILL.md'),
     ...collectMarkdownFiles(path.join(repoRoot, 'docs')),
-  ];
+  ].filter(filePath => !path.relative(repoRoot, filePath).startsWith(`docs${path.sep}drafts${path.sep}`));
 
   const offenders = [];
   for (const filePath of markdownFiles) {
     const source = fs.readFileSync(filePath, 'utf8');
-    if (/\/plugin\s+(install|list)\s+ecc@ecc\b/.test(source)) {
+    if (/\/plugin\s+(install|list)\s+everything-claude-code(?:@everything-claude-code)?\b/.test(source)) {
       offenders.push(path.relative(repoRoot, filePath));
     }
   }
@@ -485,7 +486,7 @@ test('user-facing docs do not use deprecated ecc@ecc install commands', () => {
   assert.deepStrictEqual(
     offenders,
     [],
-    `Deprecated ecc@ecc install commands must not appear in user-facing docs: ${offenders.join(', ')}`,
+    `Overlong legacy install commands must not appear in user-facing docs: ${offenders.join(', ')}`,
   );
 });
 

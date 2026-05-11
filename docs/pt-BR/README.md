@@ -124,7 +124,7 @@ Comece em menos de 2 minutos:
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # Instalar plugin
-/plugin install everything-claude-code@everything-claude-code
+/plugin install ecc@ecc
 ```
 
 ### Passo 2: Instalar as Regras (Obrigatório)
@@ -161,13 +161,13 @@ npx ecc-install typescript
 
 ```bash
 # Experimente um comando (a instalação do plugin usa forma com namespace)
-/everything-claude-code:plan "Adicionar autenticação de usuário"
+/ecc:plan "Adicionar autenticação de usuário"
 
 # Instalação manual (Opção 2) usa a forma mais curta:
 # /plan "Adicionar autenticação de usuário"
 
 # Verificar comandos disponíveis
-/plugin list everything-claude-code@everything-claude-code
+/plugin list ecc@ecc
 ```
 
 **Pronto!** Você agora tem acesso a 28 agentes, 116 skills e 59 comandos.
@@ -313,7 +313,7 @@ claude --version
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # Instalar o plugin
-/plugin install everything-claude-code@everything-claude-code
+/plugin install ecc@ecc
 ```
 
 Ou adicione diretamente ao seu `~/.claude/settings.json`:
@@ -329,7 +329,7 @@ Ou adicione diretamente ao seu `~/.claude/settings.json`:
     }
   },
   "enabledPlugins": {
-    "everything-claude-code@everything-claude-code": true
+    "ecc@ecc": true
   }
 }
 ```
@@ -408,8 +408,8 @@ Regras são diretrizes sempre seguidas, organizadas em `common/` (agnóstico à 
 
 | Quero... | Use este comando | Agente usado |
 |----------|-----------------|--------------|
-| Planejar um novo recurso | `/everything-claude-code:plan "Adicionar auth"` | planner |
-| Projetar arquitetura de sistema | `/everything-claude-code:plan` + agente architect | architect |
+| Planejar um novo recurso | `/ecc:plan "Adicionar auth"` | planner |
+| Projetar arquitetura de sistema | `/ecc:plan` + agente architect | architect |
 | Escrever código com testes primeiro | `/tdd` | tdd-guide |
 | Revisar código que acabei de escrever | `/code-review` | code-reviewer |
 | Corrigir build com falha | `/build-fix` | build-error-resolver |
@@ -424,7 +424,7 @@ Regras são diretrizes sempre seguidas, organizadas em `common/` (agnóstico à 
 
 **Começando um novo recurso:**
 ```
-/everything-claude-code:plan "Adicionar autenticação de usuário com OAuth"
+/ecc:plan "Adicionar autenticação de usuário com OAuth"
                                               → planner cria blueprint de implementação
 /tdd                                          → tdd-guide aplica escrita de testes primeiro
 /code-review                                  → code-reviewer verifica seu trabalho
@@ -452,7 +452,7 @@ Regras são diretrizes sempre seguidas, organizadas em `common/` (agnóstico à 
 <summary><b>Como verificar quais agentes/comandos estão instalados?</b></summary>
 
 ```bash
-/plugin list everything-claude-code@everything-claude-code
+/plugin list ecc@ecc
 ```
 </details>
 

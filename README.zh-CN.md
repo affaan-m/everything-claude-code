@@ -102,12 +102,12 @@
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # 安装插件
-/plugin install everything-claude-code@everything-claude-code
+/plugin install ecc@ecc
 ```
 
-> 安装名称说明：较早的帖子里可能还会出现旧的短别名。那个旧缩写现在已经废弃。Anthropic 的 marketplace/plugin 安装是按规范化插件标识符寻址的，因此 ECC 统一为 `everything-claude-code@everything-claude-code`，这样市场条目、安装命令、`/plugin list` 输出和仓库文档都使用同一个公开名称，不再出现两个名字指向同一插件的混乱。
+> 安装名称说明：较早的帖子里可能还会出现较长的旧标识符。Anthropic 的 marketplace/plugin 安装是按规范化插件标识符寻址的，因此 ECC 现在统一为 `ecc@ecc`，让工具名和 slash command 命名空间保持简短。
 
-### 第二步：安装规则（必需）
+### 第二步：仅在需要时安装规则
 
 > WARNING: **重要提示：** Claude Code 插件无法自动分发 `rules`。
 >
@@ -151,13 +151,13 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 
 ```bash
 # 尝试一个命令（插件安装使用命名空间形式）
-/everything-claude-code:plan "添加用户认证"
+/ecc:plan "添加用户认证"
 
 # 手动安装（选项2）使用简短形式：
 # /plan "添加用户认证"
 
 # 查看可用命令
-/plugin list everything-claude-code@everything-claude-code
+/plugin list ecc@ecc
 ```
 
 **完成！** 你现在可以使用 48 个代理、185 个技能和 68 个命令。
@@ -546,7 +546,7 @@ Claude Code v2.1+ 会**按照约定自动加载**已安装插件中的 `hooks/ho
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # 安装插件
-/plugin install everything-claude-code@everything-claude-code
+/plugin install ecc@ecc
 ```
 
 或直接添加到你的 `~/.claude/settings.json`：
@@ -562,7 +562,7 @@ Claude Code v2.1+ 会**按照约定自动加载**已安装插件中的 `hooks/ho
     }
   },
   "enabledPlugins": {
-    "everything-claude-code@everything-claude-code": true
+    "ecc@ecc": true
   }
 }
 ```
