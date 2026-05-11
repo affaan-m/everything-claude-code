@@ -89,7 +89,7 @@ This repo is the raw code only. The guides explain everything.
 ### v2.0.0-rc.1 — Surface Refresh, Operator Workflows, and ECC 2.0 Alpha (Apr 2026)
 
 - **Dashboard GUI** — New Tkinter-based desktop application (`ecc_dashboard.py` or `npm run dashboard`) with dark/light theme toggle, font customization, and project logo in header and taskbar.
-- **Public surface synced to the live repo** — metadata, catalog counts, plugin manifests, and install-facing docs now match the actual OSS surface: 48 agents, 185 skills, and 68 legacy command shims.
+- **Public surface synced to the live repo** — metadata, catalog counts, plugin manifests, and install-facing docs now match the actual OSS surface: 53 agents, 200 skills, and 69 legacy command shims.
 - **Operator and outbound workflow expansion** — `brand-voice`, `social-graph-ranker`, `connections-optimizer`, `customer-billing-ops`, `ecc-tools-cost-audit`, `google-workspace-ops`, `project-flow-ops`, and `workspace-surface-audit` round out the operator lane.
 - **Media and launch tooling** — `manim-video`, `remotion-video-creation`, and upgraded social publishing surfaces make technical explainers and launch content part of the same system.
 - **Framework and product surface growth** — `nestjs-patterns`, richer Codex/OpenCode install surfaces, and expanded cross-harness packaging keep the repo usable beyond Claude Code alone.
