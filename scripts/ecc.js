@@ -113,6 +113,7 @@ Examples:
   ecc repair --dry-run
   ecc auto-update --dry-run
   ecc status --json
+  ecc status --exit-code
   ecc status --markdown --write status.md
   ecc sessions
   ecc sessions session-active --json

@@ -8,10 +8,12 @@ const { createStateStore } = require('./lib/state-store');
 
 function showHelp(exitCode = 0) {
   console.log(`
-Usage: node scripts/status.js [--db <path>] [--json|--markdown] [--write <path>] [--limit <n>]
+Usage: node scripts/status.js [--db <path>] [--json|--markdown] [--write <path>] [--limit <n>] [--exit-code]
 
 Query the ECC SQLite state store for active sessions, recent skill runs,
 install health, pending governance events, and linked work items.
+
+Use --exit-code to return 2 when readiness needs attention.
 `);
   process.exit(exitCode);
 }
@@ -23,6 +25,7 @@ function parseArgs(argv) {
     json: false,
     markdown: false,
     writePath: null,
+    exitCode: false,
     help: false,
     limit: 5,
   };
@@ -37,6 +40,8 @@ function parseArgs(argv) {
       parsed.json = true;
     } else if (arg === '--markdown') {
       parsed.markdown = true;
+    } else if (arg === '--exit-code') {
+      parsed.exitCode = true;
     } else if (arg === '--write') {
       parsed.writePath = args[index + 1] || null;
       index += 1;
@@ -363,6 +368,10 @@ async function main() {
         throw new Error('--write requires --json or --markdown');
       }
       printHuman(payload);
+    }
+
+    if (options.exitCode && payload.readiness.status !== 'ok') {
+      process.exitCode = 2;
     }
   } catch (error) {
     console.error(`Error: ${error.message}`);

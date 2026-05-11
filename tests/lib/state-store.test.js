@@ -667,6 +667,34 @@ async function runTests() {
     }
   })) passed += 1; else failed += 1;
 
+  if (await test('status CLI --exit-code reports attention without suppressing output', async () => {
+    const attentionDir = createTempDir('ecc-state-attention-');
+    const okDir = createTempDir('ecc-state-ok-');
+    const attentionDbPath = path.join(attentionDir, 'state.db');
+    const okDbPath = path.join(okDir, 'state.db');
+
+    try {
+      await seedStore(attentionDbPath);
+
+      const attentionResult = runNode(STATUS_SCRIPT, ['--db', attentionDbPath, '--json', '--exit-code']);
+      assert.strictEqual(attentionResult.status, 2, attentionResult.stderr);
+      const attentionPayload = parseJson(attentionResult.stdout);
+      assert.strictEqual(attentionPayload.readiness.status, 'attention');
+      assert.strictEqual(attentionPayload.readiness.attentionCount, 2);
+
+      const okStore = await createStateStore({ dbPath: okDbPath });
+      okStore.close();
+
+      const okResult = runNode(STATUS_SCRIPT, ['--db', okDbPath, '--json', '--exit-code']);
+      assert.strictEqual(okResult.status, 0, okResult.stderr);
+      const okPayload = parseJson(okResult.stdout);
+      assert.strictEqual(okPayload.readiness.status, 'ok');
+    } finally {
+      cleanupTempDir(attentionDir);
+      cleanupTempDir(okDir);
+    }
+  })) passed += 1; else failed += 1;
+
   if (await test('status CLI can emit and write markdown operator snapshots', async () => {
     const testDir = createTempDir('ecc-state-cli-');
     const dbPath = path.join(testDir, 'state.db');
