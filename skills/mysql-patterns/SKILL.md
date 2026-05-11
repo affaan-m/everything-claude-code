@@ -57,7 +57,8 @@ VALUES (123, 'theme', 'dark')
 ON DUPLICATE KEY UPDATE value = VALUES(value);
 ```
 
-> For MariaDB 10.3+ and MySQL 8.0.20+ prefer the row alias syntax: declare `AS new` after the `VALUES` list, then reference `new.value` in the `ON DUPLICATE KEY UPDATE` clause. The `VALUES()` function is deprecated in MySQL 8.0.20+. Example: `INSERT INTO user_settings (user_id, \`key\`, value) VALUES (123, 'theme', 'dark') AS new ON DUPLICATE KEY UPDATE value = new.value;`
+> **MySQL 8.0.20+:** `VALUES()` is deprecated — use the row alias syntax instead: `INSERT INTO user_settings (user_id, \`key\`, value) VALUES (123, 'theme', 'dark') AS new ON DUPLICATE KEY UPDATE value = new.value;`
+> **MariaDB:** `VALUES()` is supported and remains the correct approach — the row alias syntax (`AS new`) is a MySQL-only feature and will cause a syntax error on MariaDB.
 
 ### Cursor Pagination (Keyset)
 
