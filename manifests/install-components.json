@@ -82,6 +82,14 @@
       ]
     },
     {
+      "id": "framework:angular",
+      "family": "framework",
+      "description": "Angular-focused engineering guidance and rules. Currently resolves through the shared framework-language module.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
       "id": "framework:react",
       "family": "framework",
       "description": "React-focused engineering guidance. Currently resolves through the shared framework-language module.",

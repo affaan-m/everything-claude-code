@@ -122,6 +122,7 @@
       "description": "Core framework, language, and application-engineering skills.",
       "paths": [
         "skills/android-clean-architecture",
+        "skills/angular-developer",
         "skills/api-design",
         "skills/backend-patterns",
         "skills/coding-standards",

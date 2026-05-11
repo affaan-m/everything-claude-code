@@ -15,6 +15,7 @@ rules/
 │   ├── agents.md
 │   └── security.md
 ├── typescript/      # TypeScript/JavaScript specific
+├── angular/         # Angular specific
 ├── python/          # Python specific
 ├── golang/          # Go specific
 ├── web/             # Web and frontend specific
@@ -32,6 +33,7 @@ rules/
 ```bash
 # Install common + one or more language-specific rule sets
 ./install.sh typescript
+./install.sh angular
 ./install.sh python
 ./install.sh golang
 ./install.sh web
@@ -56,6 +58,7 @@ cp -r rules/common ~/.claude/rules/common
 
 # Install language-specific rules based on your project's tech stack
 cp -r rules/typescript ~/.claude/rules/typescript
+cp -r rules/angular ~/.claude/rules/angular
 cp -r rules/python ~/.claude/rules/python
 cp -r rules/golang ~/.claude/rules/golang
 cp -r rules/web ~/.claude/rules/web
