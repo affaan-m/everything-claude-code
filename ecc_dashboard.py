@@ -24,31 +24,44 @@ def get_project_path() -> str:
 
 
 def load_agents(project_path: str) -> List[Dict]:
-    """Load agents from AGENTS.md"""
-    agents_file = os.path.join(project_path, "AGENTS.md")
-    agents = []
-    
-    if os.path.exists(agents_file):
-        with open(agents_file, 'r', encoding='utf-8') as f:
-            content = f.read()
-            
-        # Parse agent table from AGENTS.md
-        lines = content.split('\n')
-        in_table = False
-        for line in lines:
-            if '| Agent | Purpose | When to Use |' in line:
-                in_table = True
+    """Load agents by scanning the agents/ directory.
+
+    Parses YAML frontmatter (name, description) from each agent file.
+    The directory is the source of truth; AGENTS.md is hand-maintained
+    and drifts out of sync.
+    """
+    agents_dir = os.path.join(project_path, "agents")
+    agents: List[Dict] = []
+
+    if os.path.isdir(agents_dir):
+        for item in sorted(os.listdir(agents_dir)):
+            if not item.endswith('.md'):
                 continue
-            if in_table and line.startswith('|'):
-                parts = [p.strip() for p in line.split('|')]
-                if len(parts) >= 4 and parts[1] and parts[1] != 'Agent':
-                    agents.append({
-                        'name': parts[1],
-                        'purpose': parts[2],
-                        'when_to_use': parts[3]
-                    })
-    
-    # Fallback default agents if file not found
+            agent_path = os.path.join(agents_dir, item)
+            name = os.path.splitext(item)[0]
+            description = ''
+            try:
+                with open(agent_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+            except OSError:
+                content = ''
+            if content.startswith('---'):
+                end = content.find('\n---', 3)
+                if end != -1:
+                    for fm_line in content[3:end].splitlines():
+                        stripped = fm_line.strip()
+                        if stripped.startswith('name:'):
+                            name = stripped.split(':', 1)[1].strip().strip('"\'')
+                        elif stripped.startswith('description:'):
+                            description = stripped.split(':', 1)[1].strip().strip('"\'')
+            agents.append({
+                'name': name,
+                'purpose': description,
+                'when_to_use': description,
+                'path': agent_path,
+            })
+
+    # Fallback default agents if directory not found
     if not agents:
         agents = [
             {'name': 'planner', 'purpose': 'Implementation planning', 'when_to_use': 'Complex features, refactoring'},
