@@ -64,20 +64,32 @@ class ClaudeProvider(LLMProvider):
 
             response = self.client.messages.create(**params)
 
-            tool_calls = None
-            if response.content and hasattr(response.content[0], "type"):
-                if response.content[0].type == "tool_use":
-                    tool_calls = [
+            text_parts: list[str] = []
+            tool_calls: list[ToolCall] = []
+            for block in response.content or []:
+                block_type = getattr(block, "type", None)
+                if block_type == "text":
+                    text = getattr(block, "text", "")
+                    if text:
+                        text_parts.append(text)
+                elif block_type == "tool_use":
+                    raw_arguments = getattr(block, "input", {})
+                    arguments = (
+                        raw_arguments.copy()
+                        if isinstance(raw_arguments, dict)
+                        else getattr(raw_arguments, "__dict__", {}).copy()
+                    )
+                    tool_calls.append(
                         ToolCall(
-                            id=getattr(response.content[0], "id", ""),
-                            name=getattr(response.content[0], "name", ""),
-                            arguments=getattr(response.content[0].input, "__dict__", {}),
+                            id=getattr(block, "id", ""),
+                            name=getattr(block, "name", ""),
+                            arguments=arguments,
                         )
-                    ]
+                    )
 
             return LLMOutput(
-                content=response.content[0].text if response.content else "",
-                tool_calls=tool_calls,
+                content="".join(text_parts),
+                tool_calls=tool_calls or None,
                 model=response.model,
                 usage={
                     "input_tokens": response.usage.input_tokens,

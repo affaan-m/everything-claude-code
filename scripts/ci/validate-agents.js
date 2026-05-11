@@ -18,15 +18,25 @@ function extractFrontmatter(content) {
   if (!match) return null;
 
   const frontmatter = {};
+  const duplicates = [];
   const lines = match[1].split(/\r?\n/);
   for (const line of lines) {
+    // Only top-level keys are unique. Indented YAML belongs to nested values.
+    if (/^\s/.test(line)) continue;
     const colonIdx = line.indexOf(':');
     if (colonIdx > 0) {
       const key = line.slice(0, colonIdx).trim();
       const value = line.slice(colonIdx + 1).trim();
+      if (Object.prototype.hasOwnProperty.call(frontmatter, key)) {
+        duplicates.push(key);
+      }
       frontmatter[key] = value;
     }
   }
+  Object.defineProperty(frontmatter, '__duplicates__', {
+    value: duplicates,
+    enumerable: false,
+  });
   return frontmatter;
 }
 
@@ -55,6 +65,11 @@ function validateAgents() {
       console.error(`ERROR: ${file} - Missing frontmatter`);
       hasErrors = true;
       continue;
+    }
+
+    if (frontmatter.__duplicates__.length > 0) {
+      console.error(`ERROR: ${file} - Duplicate frontmatter keys: ${[...new Set(frontmatter.__duplicates__)].join(', ')}`);
+      hasErrors = true;
     }
 
     for (const field of REQUIRED_FIELDS) {

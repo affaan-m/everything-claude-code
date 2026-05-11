@@ -2002,6 +2002,28 @@ function runTests() {
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
+  if (test('rejects agent with duplicate top-level frontmatter keys', () => {
+    const testDir = createTestDir();
+    fs.writeFileSync(path.join(testDir, 'dup-model.md'),
+      '---\nname: dup\nmodel: sonnet\ntools: Read, Write\ndescription: test\nmodel: opus\n---\n# Agent');
+
+    const result = runValidatorWithDir('validate-agents', 'AGENTS_DIR', testDir);
+    assert.strictEqual(result.code, 1, 'Should reject duplicate top-level YAML keys');
+    assert.ok(result.stderr.includes('Duplicate frontmatter keys'), 'Should report duplicate keys');
+    assert.ok(result.stderr.includes('model'), 'Should name the duplicated key');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('allows duplicate-looking nested frontmatter keys', () => {
+    const testDir = createTestDir();
+    fs.writeFileSync(path.join(testDir, 'nested.md'),
+      '---\nmodel: sonnet\ntools: Read\nmetadata:\n  model: display-only\n---\n# Agent');
+
+    const result = runValidatorWithDir('validate-agents', 'AGENTS_DIR', testDir);
+    assert.strictEqual(result.code, 0, 'Indented nested keys should not count as top-level duplicates');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
   // ── Round 32: empty frontmatter & edge cases ──
   console.log('\nRound 32: validate-agents (empty frontmatter):');
 
