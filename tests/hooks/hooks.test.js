@@ -1178,6 +1178,47 @@ async function runTests() {
     passed++;
   else failed++;
 
+  if (
+    await asyncTest('reads session_id from stdin JSON (Claude Code wire format)', async () => {
+      const sessionId = 'test-stdin-' + Date.now();
+      const stdinJson = JSON.stringify({ session_id: sessionId, tool_name: 'Edit' });
+
+      const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), stdinJson, {});
+      assert.strictEqual(result.code, 0, `Exit code should be 0, got ${result.code}`);
+
+      const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+      assert.ok(fs.existsSync(counterFile), `Counter file should be created from stdin session_id at ${counterFile}`);
+      const count = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
+      assert.strictEqual(count, 1, `Counter should be 1, got ${count}`);
+
+      fs.unlinkSync(counterFile);
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('stdin session_id takes precedence over env CLAUDE_SESSION_ID', async () => {
+      const stdinSession = 'stdin-wins-' + Date.now();
+      const envSession = 'env-loses-' + Date.now();
+      const stdinJson = JSON.stringify({ session_id: stdinSession });
+
+      const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), stdinJson, {
+        CLAUDE_SESSION_ID: envSession
+      });
+      assert.strictEqual(result.code, 0);
+
+      const stdinCounter = path.join(os.tmpdir(), `claude-tool-count-${stdinSession}`);
+      const envCounter = path.join(os.tmpdir(), `claude-tool-count-${envSession}`);
+      assert.ok(fs.existsSync(stdinCounter), 'Stdin session counter must exist');
+      assert.ok(!fs.existsSync(envCounter), 'Env session counter must NOT exist when stdin provides session_id');
+
+      fs.unlinkSync(stdinCounter);
+    })
+  )
+    passed++;
+  else failed++;
+
   // evaluate-session.js tests
   console.log('\nevaluate-session.js:');
 
