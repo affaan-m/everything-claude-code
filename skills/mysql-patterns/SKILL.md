@@ -41,7 +41,7 @@ MySQL and MariaDB are relational databases using the InnoDB storage engine by de
 | Surrogate PK (auto-increment) | `BIGINT UNSIGNED AUTO_INCREMENT` | `INT` (overflows at ~2B rows) |
 | UUIDs stored as PK | `BINARY(16)` + `UUID_TO_BIN()` | `VARCHAR(36)` (wastes index space) |
 | Short strings | `VARCHAR(n)` | `CHAR` for variable-length data |
-| Timestamps (timezone-aware) | `DATETIME` + store UTC | `TIMESTAMP` (Y2038 limit; auto-converts TZ) |
+| Timestamps (store in UTC) | `DATETIME` + store UTC in app | `TIMESTAMP` (Y2038 limit; auto-converts based on server TZ setting) |
 | Exact decimals (money) | `DECIMAL(15,2)` | `FLOAT`, `DOUBLE` |
 | Boolean flags | `TINYINT(1)` or `BIT(1)` | `ENUM('Y','N')` |
 | Large text | `TEXT` / `MEDIUMTEXT` | `BLOB` for character data |
@@ -377,9 +377,9 @@ CREATE USER 'app'@'%' IDENTIFIED BY 'strong-random-password';
 GRANT SELECT, INSERT, UPDATE, DELETE ON myapp.* TO 'app'@'%';
 -- Never GRANT ALL or GRANT ON *.* to the application account
 
--- Revoke anonymous access
-DELETE FROM mysql.user WHERE User = '';
-FLUSH PRIVILEGES;
+-- Revoke anonymous access (use DROP USER, not direct DML on mysql.user)
+DROP USER IF EXISTS ''@'localhost';
+DROP USER IF EXISTS ''@'%';
 
 -- Require TLS for the app user
 ALTER USER 'app'@'%' REQUIRE SSL;
