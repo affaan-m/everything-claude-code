@@ -26,3 +26,37 @@ class TestGetProvider:
     def test_invalid_provider_raises(self):
         with pytest.raises(ValueError, match="Unknown provider type"):
             get_provider("invalid")
+
+    def test_saved_llm_env_selects_provider(self, monkeypatch, tmp_path):
+        monkeypatch.delenv("LLM_PROVIDER", raising=False)
+        monkeypatch.chdir(tmp_path)
+        tmp_path.joinpath(".llm.env").write_text("LLM_PROVIDER=ollama\nLLM_MODEL=llama3.2\n")
+
+        provider = get_provider()
+
+        assert isinstance(provider, OllamaProvider)
+
+    def test_env_provider_overrides_saved_llm_env(self, monkeypatch, tmp_path):
+        monkeypatch.setenv("LLM_PROVIDER", "ollama")
+        monkeypatch.chdir(tmp_path)
+        tmp_path.joinpath(".llm.env").write_text("LLM_PROVIDER=openai\n")
+
+        provider = get_provider()
+
+        assert isinstance(provider, OllamaProvider)
+
+    def test_env_provider_is_normalized(self, monkeypatch):
+        monkeypatch.setenv("LLM_PROVIDER", "OLLAMA")
+
+        provider = get_provider()
+
+        assert isinstance(provider, OllamaProvider)
+
+    def test_explicit_provider_overrides_saved_llm_env(self, monkeypatch, tmp_path):
+        monkeypatch.delenv("LLM_PROVIDER", raising=False)
+        monkeypatch.chdir(tmp_path)
+        tmp_path.joinpath(".llm.env").write_text("LLM_PROVIDER=openai\n")
+
+        provider = get_provider("ollama")
+
+        assert isinstance(provider, OllamaProvider)

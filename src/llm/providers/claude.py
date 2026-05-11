@@ -60,7 +60,7 @@ class ClaudeProvider(LLMProvider):
             else:
                 params["max_tokens"] = 8192  # required by Anthropic API
             if input.tools:
-                params["tools"] = [tool.to_dict() for tool in input.tools]
+                params["tools"] = [tool.to_anthropic_tool() for tool in input.tools]
 
             response = self.client.messages.create(**params)
 
