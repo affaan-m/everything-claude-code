@@ -2733,6 +2733,68 @@ async function runTests() {
   else failed++;
 
   if (
+    await asyncTest('blocks Windows shell metacharacters before shell:true formatter execution', async () => {
+      const hookPath = path.join(scriptsDir, 'post-edit-format.js');
+      const resolverPath = path.join(scriptsDir, '..', 'lib', 'resolve-formatter.js');
+      const childProcess = require('child_process');
+      const originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform');
+      const originalSpawnSync = childProcess.spawnSync;
+      const originalExecFileSync = childProcess.execFileSync;
+      const resolvedResolverPath = require.resolve(resolverPath);
+      const resolvedHookPath = require.resolve(hookPath);
+      const originalResolverCache = require.cache[resolvedResolverPath];
+      const originalHookCache = require.cache[resolvedHookPath];
+      const blockedPaths = ['semicolon;test.js', 'backtick`test.js', 'subshell$(test).js', 'group(test).js'];
+
+      try {
+        Object.defineProperty(process, 'platform', { value: 'win32', configurable: true });
+
+        let spawnCalls = [];
+        childProcess.spawnSync = (...args) => {
+          spawnCalls.push(args);
+          return { status: 0, stderr: Buffer.from('') };
+        };
+        childProcess.execFileSync = () => {
+          throw new Error('execFileSync should not run for Windows .cmd formatter shims');
+        };
+
+        require.cache[resolvedResolverPath] = {
+          id: resolvedResolverPath,
+          filename: resolvedResolverPath,
+          loaded: true,
+          exports: {
+            findProjectRoot: () => process.cwd(),
+            detectFormatter: () => 'prettier',
+            resolveFormatterBin: () => ({ bin: 'formatter.cmd', prefix: [] })
+          }
+        };
+        delete require.cache[resolvedHookPath];
+
+        const { run } = require(hookPath);
+
+        for (const filePath of blockedPaths) {
+          spawnCalls = [];
+          const stdinJson = JSON.stringify({ tool_input: { file_path: filePath } });
+          assert.strictEqual(run(stdinJson), stdinJson, 'Should pass through original stdin JSON');
+          assert.strictEqual(spawnCalls.length, 0, `Should reject ${filePath} before spawnSync`);
+        }
+      } finally {
+        if (originalPlatform) {
+          Object.defineProperty(process, 'platform', originalPlatform);
+        }
+        childProcess.spawnSync = originalSpawnSync;
+        childProcess.execFileSync = originalExecFileSync;
+        if (originalResolverCache) require.cache[resolvedResolverPath] = originalResolverCache;
+        else delete require.cache[resolvedResolverPath];
+        if (originalHookCache) require.cache[resolvedHookPath] = originalHookCache;
+        else delete require.cache[resolvedHookPath];
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
     await asyncTest('matches .tsx extension for formatting', async () => {
       const stdinJson = JSON.stringify({ tool_input: { file_path: '/nonexistent/component.tsx' } });
       const result = await runScript(path.join(scriptsDir, 'post-edit-format.js'), stdinJson);
