@@ -111,6 +111,7 @@ function main() {
         "scripts/catalog.js",
         "scripts/consult.js",
         ".gemini/GEMINI.md",
+        ".qwen/QWEN.md",
         ".claude-plugin/plugin.json",
         ".codex-plugin/plugin.json",
         "schemas/install-state.schema.json",

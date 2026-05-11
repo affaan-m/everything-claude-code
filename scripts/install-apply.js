@@ -36,6 +36,7 @@ Targets:
   opencode     - Install shared commands/hooks/config into ~/.opencode/
   codebuddy    - Install commands, agents, skills, and flattened rules into ./.codebuddy/
   joycode      - Install commands, agents, skills, and flattened rules into ./.joycode/
+  qwen         - Install commands, agents, skills, rules, and Qwen config into ~/.qwen/
 
 Options:
   --profile <name>    Resolve and install a manifest profile

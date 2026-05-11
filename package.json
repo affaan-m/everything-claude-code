@@ -48,6 +48,7 @@
     ".cursor/",
     ".gemini/",
     ".opencode/",
+    ".qwen/",
     ".mcp.json",
     "AGENTS.md",
     "VERSION",

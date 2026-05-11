@@ -246,6 +246,31 @@ function runTests() {
     assert.ok(plan.operations.length > 0, 'Should include install operations');
   })) passed++; else failed++;
 
+  if (test('resolves Qwen minimal profile while leaving hooks out', () => {
+    const homeDir = '/Users/example';
+    const plan = resolveInstallPlan({
+      profileId: 'minimal',
+      target: 'qwen',
+      homeDir,
+    });
+
+    assert.deepStrictEqual(
+      plan.selectedModuleIds,
+      ['rules-core', 'agents-core', 'commands-core', 'platform-configs', 'workflow-quality']
+    );
+    assert.deepStrictEqual(plan.skippedModuleIds, []);
+    assert.strictEqual(plan.targetAdapterId, 'qwen-home');
+    assert.strictEqual(plan.targetRoot, path.join(homeDir, '.qwen'));
+    assert.ok(
+      plan.operations.some(operation => operation.sourceRelativePath === '.qwen'),
+      'Should install Qwen native config'
+    );
+    assert.ok(
+      !plan.operations.some(operation => operation.destinationPath.includes(`${path.sep}hooks`)),
+      'Qwen minimal profile should not install hook runtime files'
+    );
+  })) passed++; else failed++;
+
   if (test('resolves explicit modules with dependency expansion', () => {
     const plan = resolveInstallPlan({ moduleIds: ['security'] });
     assert.ok(plan.selectedModuleIds.includes('security'), 'Should include requested module');
