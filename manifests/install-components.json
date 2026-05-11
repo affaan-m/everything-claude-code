@@ -396,6 +396,14 @@
       ]
     },
     {
+      "id": "skill:windows-desktop-e2e",
+      "family": "skill",
+      "description": "E2E testing for Windows native desktop apps with pywinauto and Windows UI Automation.",
+      "modules": [
+        "workflow-quality"
+      ]
+    },
+    {
       "id": "skill:strategic-compact",
       "family": "skill",
       "description": "Strategic context compaction for long sessions.",

@@ -232,7 +232,8 @@
         "skills/skill-stocktake",
         "skills/strategic-compact",
         "skills/tdd-workflow",
-        "skills/verification-loop"
+        "skills/verification-loop",
+        "skills/windows-desktop-e2e"
       ],
       "targets": [
         "claude",
