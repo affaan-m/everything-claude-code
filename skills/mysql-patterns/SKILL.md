@@ -57,7 +57,7 @@ VALUES (123, 'theme', 'dark')
 ON DUPLICATE KEY UPDATE value = VALUES(value);
 ```
 
-> For MariaDB 10.3+ and MySQL 8.0.20+ prefer `INSERT ... ON DUPLICATE KEY UPDATE value = new.value` (the `VALUES()` function is deprecated in MySQL 8.0.20+).
+> For MariaDB 10.3+ and MySQL 8.0.20+ prefer the row alias syntax: declare `AS new` after the `VALUES` list, then reference `new.value` in the `ON DUPLICATE KEY UPDATE` clause. The `VALUES()` function is deprecated in MySQL 8.0.20+. Example: `INSERT INTO user_settings (user_id, \`key\`, value) VALUES (123, 'theme', 'dark') AS new ON DUPLICATE KEY UPDATE value = new.value;`
 
 ### Cursor Pagination (Keyset)
 
@@ -183,7 +183,7 @@ SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;
 
 - Always lock rows in the same order across transactions.
 - Keep transactions short — acquire locks late, release early.
-- Use `SELECT ... FOR UPDATE SKIP LOCKED` for queue-style workloads:
+- Use `SELECT ... FOR UPDATE SKIP LOCKED` for queue-style workloads (MySQL 8.0+ / MariaDB 10.6+):
 
 ```sql
 START TRANSACTION;
@@ -201,7 +201,7 @@ COMMIT;
 
 ## Connection Management
 
-### Connection Pooling (Python — mysql-connector-ng / SQLAlchemy)
+### Connection Pooling (Python — mysql-connector-python / SQLAlchemy)
 
 ```python
 from sqlalchemy import create_engine
@@ -468,4 +468,4 @@ Add the column as `NULL` first, back-fill in batches using `UPDATE ... LIMIT 100
 - Skill: `database-migrations` — schema versioning and migration workflows
 - Skill: `backend-patterns` — API and service layer patterns
 - Skill: `django-patterns` — Django ORM and MySQL integration
-- Agent: `database-reviewer` — full database review workflow
+- Agent: `database-reviewer` — database review workflow (primarily PostgreSQL/Supabase; some patterns apply)
