@@ -2,7 +2,7 @@
 
 ## Working Title
 
-Turning ECC Into a Cross-Harness Operator System
+Turning ECC Into a Cross-Harness Operating System
 
 ## Core Argument
 
@@ -58,4 +58,4 @@ The leverage comes from treating the harness, reusable workflow layer, and opera
 
 The goal is not to copy one exact stack.
 
-The goal is to build an operator system that turns repeated work into reusable, measurable surfaces.
+The goal is to build an operating system around the agent that turns repeated work into reusable, measurable surfaces.
