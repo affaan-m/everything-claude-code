@@ -110,7 +110,7 @@
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # プラグインをインストール
-/plugin install everything-claude-code
+/plugin install ecc@ecc
 ```
 
 ### ステップ2：ルールをインストール（必須）
@@ -134,13 +134,13 @@ cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
 
 ```bash
 # コマンドを試す（プラグインはネームスペース形式）
-/everything-claude-code:plan "ユーザー認証を追加"
+/ecc:plan "ユーザー認証を追加"
 
 # 手動インストール（オプション2）は短縮形式：
 # /plan "ユーザー認証を追加"
 
 # 利用可能なコマンドを確認
-/plugin list everything-claude-code@everything-claude-code
+/plugin list ecc@ecc
 ```
 
 **完了です！** これで13のエージェント、43のスキル、31のコマンドにアクセスできます。
@@ -427,7 +427,7 @@ Duplicate hook file detected: ./hooks/hooks.json is already resolved to a loaded
 /plugin marketplace add https://github.com/affaan-m/everything-claude-code
 
 # プラグインをインストール
-/plugin install everything-claude-code
+/plugin install ecc@ecc
 ```
 
 または、`~/.claude/settings.json` に直接追加：
@@ -443,7 +443,7 @@ Duplicate hook file detected: ./hooks/hooks.json is already resolved to a loaded
     }
   },
   "enabledPlugins": {
-    "everything-claude-code@everything-claude-code": true
+    "ecc@ecc": true
   }
 }
 ```

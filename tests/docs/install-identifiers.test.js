@@ -35,12 +35,12 @@ console.log('\n=== Testing public install identifiers ===\n');
 for (const relativePath of publicInstallDocs) {
   const content = fs.readFileSync(path.join(repoRoot, relativePath), 'utf8');
 
-  test(`${relativePath} does not use the stale ecc@ecc plugin identifier`, () => {
-    assert.ok(!content.includes('ecc@ecc'));
+  test(`${relativePath} does not use the overlong legacy marketplace plugin identifier`, () => {
+    assert.ok(!content.includes('everything-claude-code@everything-claude-code'));
   });
 
-  test(`${relativePath} documents the canonical marketplace plugin identifier`, () => {
-    assert.ok(content.includes('everything-claude-code@everything-claude-code'));
+  test(`${relativePath} documents the short marketplace plugin identifier`, () => {
+    assert.ok(content.includes('ecc@ecc'));
   });
 }
 
@@ -86,12 +86,12 @@ for (const relativePath of publicCommandNamespaceDocs) {
 
   test(`${relativePath} uses the canonical plugin command namespace`, () => {
     assert.ok(
-      !content.includes('/ecc:'),
-      'Expected docs not to advertise the unsupported /ecc: plugin alias'
+      !content.includes('/everything-claude-code:'),
+      'Expected docs not to advertise the overlong legacy plugin command namespace'
     );
     assert.ok(
-      content.includes('/everything-claude-code:plan'),
-      'Expected docs to show the canonical plugin command namespace'
+      content.includes('/ecc:plan'),
+      'Expected docs to show the short plugin command namespace'
     );
   });
 }

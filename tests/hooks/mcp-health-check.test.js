@@ -952,6 +952,103 @@ async function runTests() {
     }
   })) passed++; else failed++;
 
+  // Windows-only: child_process.spawn cannot resolve .cmd/.bat shims for
+  // bare PATH commands without an extension, and Node 18.20+/20.12+ refuse
+  // to spawn .cmd targets without `shell: true` (CVE-2024-27980). The probe
+  // must retry bare command names with platform extensions and route .cmd/.bat
+  // through the shell, otherwise tools like `npx` are misclassified as
+  // unhealthy on first use. Path-like commands keep single-candidate ENOENT
+  // semantics.
+  if (process.platform === 'win32') {
+    if (await asyncTest('windows: probes bare PATH commands via .cmd fallback', async () => {
+      const tempDir = createTempDir();
+      const binDir = path.join(tempDir, 'bin');
+      const configPath = path.join(tempDir, 'claude.json');
+      const statePath = path.join(tempDir, 'mcp-health.json');
+
+      fs.mkdirSync(binDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(binDir, 'winfallback.cmd'),
+        ['@echo off', 'node -e "setInterval(()=>{},1000)"', ''].join('\r\n')
+      );
+
+      try {
+        writeConfig(configPath, {
+          mcpServers: {
+            winfallback: {
+              command: 'winfallback',
+              args: []
+            }
+          }
+        });
+
+        const input = { tool_name: 'mcp__winfallback__list', tool_input: {} };
+        const result = runHook(input, {
+          CLAUDE_HOOK_EVENT_NAME: 'PreToolUse',
+          ECC_MCP_CONFIG_PATH: configPath,
+          ECC_MCP_HEALTH_STATE_PATH: statePath,
+          ECC_MCP_HEALTH_TIMEOUT_MS: '500',
+          PATH: `${binDir}${path.delimiter}${process.env.PATH || ''}`
+        });
+
+        assert.strictEqual(
+          result.code,
+          0,
+          `Expected bare command to be probed via .cmd fallback: ${hookFailureDetails(result, statePath)}`
+        );
+
+        const state = readState(statePath);
+        assert.strictEqual(
+          state.servers.winfallback.status,
+          'healthy',
+          'Expected bare command to be marked healthy via .cmd fallback'
+        );
+      } finally {
+        cleanupTempDir(tempDir);
+      }
+    })) passed++; else failed++;
+  } else {
+    console.log('  - skipped: windows: probes bare PATH commands via .cmd fallback (non-Windows)');
+  }
+
+  if (await asyncTest('probes command servers using non-absolute commands (e.g. npx) via PATH resolution', async () => {
+    const tempDir = createTempDir();
+    const configPath = path.join(tempDir, 'claude.json');
+    const statePath = path.join(tempDir, 'mcp-health.json');
+    const serverScript = path.join(tempDir, 'shell-server.js');
+
+    try {
+      // Create a server script that stays alive
+      fs.writeFileSync(serverScript, "setInterval(() => {}, 1000);\n");
+
+      // Use 'node' (non-absolute) as the command to exercise PATH-based
+      // resolution without depending on npx being available in the environment.
+      writeConfig(configPath, {
+        mcpServers: {
+          shelltest: {
+            command: 'node',
+            args: [serverScript]
+          }
+        }
+      });
+
+      const input = { tool_name: 'mcp__shelltest__ping', tool_input: {} };
+      const result = runHook(input, {
+        CLAUDE_HOOK_EVENT_NAME: 'PreToolUse',
+        ECC_MCP_CONFIG_PATH: configPath,
+        ECC_MCP_HEALTH_STATE_PATH: statePath,
+        ECC_MCP_HEALTH_TIMEOUT_MS: '100'
+      });
+
+      assert.strictEqual(result.code, 0, `Expected non-absolute command to resolve via PATH, got ${result.code}`);
+
+      const state = readState(statePath);
+      assert.strictEqual(state.servers.shelltest.status, 'healthy', 'Expected PATH-resolved server to be marked healthy');
+    } finally {
+      cleanupTempDir(tempDir);
+    }
+  })) passed++; else failed++;
+
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
 }

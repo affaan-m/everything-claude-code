@@ -10,6 +10,7 @@ unset CLAUDECODE
 
 SLEEP_PID=""
 USR1_FIRED=0
+PENDING_ANALYSIS=0
 ANALYZING=0
 LAST_ANALYSIS_EPOCH=0
 # Minimum seconds between analyses (prevents rapid re-triggering)
@@ -258,13 +259,16 @@ PROMPT
 on_usr1() {
   [ -n "$SLEEP_PID" ] && kill "$SLEEP_PID" 2>/dev/null
   SLEEP_PID=""
-  USR1_FIRED=1
 
-  # Re-entrancy guard: skip if analysis is already running (#521)
+  # Re-entrancy guard: defer the nudge so the main loop runs a follow-up
+  # analysis immediately after the current analysis finishes.
   if [ "$ANALYZING" -eq 1 ]; then
-    echo "[$(date)] Analysis already in progress, skipping signal" >> "$LOG_FILE"
+    PENDING_ANALYSIS=1
+    echo "[$(date)] Analysis already in progress, deferring signal" >> "$LOG_FILE"
     return
   fi
+
+  USR1_FIRED=1
 
   # Cooldown: skip if last analysis was too recent (#521)
   now_epoch=$(date +%s)
@@ -290,6 +294,17 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 while true; do
   exit_if_idle_without_sessions
+
+  if [ "$PENDING_ANALYSIS" -eq 1 ]; then
+    PENDING_ANALYSIS=0
+    USR1_FIRED=0
+    ANALYZING=1
+    analyze_observations
+    LAST_ANALYSIS_EPOCH=$(date +%s)
+    ANALYZING=0
+    continue
+  fi
+
   sleep "$OBSERVER_INTERVAL_SECONDS" &
   SLEEP_PID=$!
   wait "$SLEEP_PID" 2>/dev/null
@@ -299,6 +314,9 @@ while true; do
   if [ "$USR1_FIRED" -eq 1 ]; then
     USR1_FIRED=0
   else
+    ANALYZING=1
     analyze_observations
+    LAST_ANALYSIS_EPOCH=$(date +%s)
+    ANALYZING=0
   fi
 done

@@ -136,6 +136,7 @@ The test `plugin.json does NOT have explicit hooks declaration` in `tests/hooks/
 
 ECC keeps `.mcp.json` at the repository root for Codex plugin installs and manual MCP setup.
 Claude Code also auto-discovers plugin-root `.mcp.json` files by convention, which would bundle the same MCP servers into Claude plugin installs.
+The Claude plugin slug is intentionally short (`ecc`), but this opt-out is still required because legacy installs and strict provider gateways have failed on generated names from longer plugin identifiers.
 
 Keep this field in `.claude-plugin/plugin.json`:
 

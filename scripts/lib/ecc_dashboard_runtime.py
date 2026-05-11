@@ -45,7 +45,7 @@ def build_terminal_launch(
     if resolved_os_name == 'nt':
         creationflags = getattr(subprocess, 'CREATE_NEW_CONSOLE', 0)
         return (
-            ['cmd.exe', '/k', 'cd', '/d', path],
+            ['cmd.exe'],
             {
                 'cwd': path,
                 'creationflags': creationflags,
@@ -59,3 +59,12 @@ def build_terminal_launch(
         ['x-terminal-emulator', '-e', 'bash', '-lc', 'cd -- "$1"; exec bash', 'bash', path],
         {},
     )
+
+
+def launch_terminal(path: str) -> None:
+    """Open a terminal at the given path after validating the target directory."""
+    canonical = os.path.realpath(path)
+    if not os.path.isdir(canonical):
+        raise ValueError(f"Path is not a valid directory: {canonical!r}")
+    argv, kwargs = build_terminal_launch(canonical)
+    subprocess.Popen(argv, **kwargs)  # noqa: S603 - list argv, no shell=True, path validated above

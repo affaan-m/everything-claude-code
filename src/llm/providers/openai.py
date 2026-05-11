@@ -67,7 +67,7 @@ class OpenAIProvider(LLMProvider):
             if input.max_tokens:
                 params["max_tokens"] = input.max_tokens
             if input.tools:
-                params["tools"] = [tool.to_dict() for tool in input.tools]
+                params["tools"] = [tool.to_openai_tool() for tool in input.tools]
 
             response = self.client.chat.completions.create(**params)
             choice = response.choices[0]

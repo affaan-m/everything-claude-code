@@ -45,7 +45,7 @@ jobs:
       # Package manager setup
       - name: Setup pnpm
         if: matrix.pm == 'pnpm' && matrix.node != '18.x'
-        uses: pnpm/action-setup@08c4be7e2e672a47d11bd04269e27e5f3e8529cb # v6.0.0
+        uses: pnpm/action-setup@91ab88e2619ed1f46221f0ba42d1492c02baf788 # v6.0.6
         with:
           # Keep an explicit pnpm major because this repo's packageManager is Yarn.
           version: 10
@@ -77,7 +77,7 @@ jobs:
 
       - name: Cache npm
         if: matrix.pm == 'npm'
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ${{ steps.npm-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-node-${{ matrix.node }}-npm-${{ hashFiles('**/package-lock.json') }}
@@ -94,7 +94,7 @@ jobs:
 
       - name: Cache pnpm
         if: matrix.pm == 'pnpm'
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ${{ steps.pnpm-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-node-${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -115,7 +115,7 @@ jobs:
 
       - name: Cache yarn
         if: matrix.pm == 'yarn'
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ${{ steps.yarn-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-node-${{ matrix.node }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -124,7 +124,7 @@ jobs:
 
       - name: Cache bun
         if: matrix.pm == 'bun'
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
@@ -218,6 +218,10 @@ jobs:
 
       - name: Check unicode safety
         run: node scripts/ci/check-unicode-safety.js
+        continue-on-error: false
+
+      - name: Validate no personal paths
+        run: node scripts/ci/validate-no-personal-paths.js
         continue-on-error: false
 
   security:

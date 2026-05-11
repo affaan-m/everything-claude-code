@@ -376,6 +376,21 @@ function withRecoveryHint(message, hookIds = [EDIT_WRITE_HOOK_ID]) {
   ].join('\n');
 }
 
+function isSubagentInvocation(data) {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
+
+  const candidates = [
+    data.agent_id,
+    data.agentId,
+    data.parent_tool_use_id,
+    data.parentToolUseId
+  ];
+
+  return candidates.some(candidate => typeof candidate === 'string' && candidate.trim());
+}
+
 // --- Deny helper ---
 
 function denyResult(reason, options = {}) {
@@ -422,11 +437,16 @@ function run(rawInput) {
   // Normalize: case-insensitive matching via lookup map
   const TOOL_MAP = { edit: 'Edit', write: 'Write', multiedit: 'MultiEdit', bash: 'Bash' };
   const toolName = TOOL_MAP[rawToolName.toLowerCase()] || rawToolName;
+  const inSubagent = isSubagentInvocation(data);
 
   if (toolName === 'Edit' || toolName === 'Write') {
     const filePath = toolInput.file_path || '';
     if (!filePath || isClaudeSettingsPath(filePath)) {
       return rawInput; // allow
+    }
+
+    if (inSubagent) {
+      return rawInput; // parent session already passed the first-touch file gate
     }
 
     if (!isChecked(filePath)) {
@@ -440,6 +460,10 @@ function run(rawInput) {
   }
 
   if (toolName === 'MultiEdit') {
+    if (inSubagent) {
+      return rawInput; // parent session already passed the first-touch file gate
+    }
+
     const edits = toolInput.edits || [];
     for (const edit of edits) {
       const filePath = edit.file_path || '';

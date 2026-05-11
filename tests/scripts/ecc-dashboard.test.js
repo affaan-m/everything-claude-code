@@ -79,11 +79,25 @@ argv, kwargs = module.build_terminal_launch(r'C:\\\\Users\\\\user\\\\proj & del 
 print(json.dumps({'argv': argv, 'kwargs': kwargs}))
 `);
     const parsed = JSON.parse(output);
-    assert.deepStrictEqual(parsed.argv.slice(0, 4), ['cmd.exe', '/k', 'cd', '/d']);
-    assert.strictEqual(parsed.argv[4], parsed.kwargs.cwd);
-    assert.ok(parsed.argv[4].includes('proj & del'), 'path should remain a literal argv entry');
-    assert.ok(parsed.argv[4].includes('C:'), 'windows drive prefix should be preserved');
+    assert.deepStrictEqual(parsed.argv, ['cmd.exe']);
+    assert.ok(parsed.kwargs.cwd.includes('proj & del'), 'path should remain a literal cwd value');
+    assert.ok(parsed.kwargs.cwd.includes('C:'), 'windows drive prefix should be preserved');
     assert.ok(Object.prototype.hasOwnProperty.call(parsed.kwargs, 'creationflags'));
+  })) passed++; else failed++;
+
+  if (test('launch_terminal rejects missing or non-directory paths', () => {
+    const output = runPython(`
+import importlib.util, json
+spec = importlib.util.spec_from_file_location("ecc_dashboard_runtime", r"""${runtimeHelpersPath}""")
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+try:
+    module.launch_terminal('/definitely/not/a/real/ecc/path')
+except ValueError as exc:
+    print(json.dumps({'error': str(exc)}))
+`);
+    const parsed = JSON.parse(output);
+    assert.ok(parsed.error.includes('Path is not a valid directory'));
   })) passed++; else failed++;
 
   if (test('maximize_window falls back to Linux zoom attribute when zoomed state is unsupported', () => {

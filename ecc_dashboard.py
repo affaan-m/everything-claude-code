@@ -8,10 +8,11 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
 import os
 import json
-import subprocess
+from pathlib import Path
 from typing import Dict, List, Optional
+import webbrowser
 
-from scripts.lib.ecc_dashboard_runtime import build_terminal_launch, maximize_window
+from scripts.lib.ecc_dashboard_runtime import launch_terminal, maximize_window
 
 # ============================================================================
 # DATA LOADERS - Load ECC data from the project
@@ -793,27 +794,31 @@ Project: github.com/affaan-m/everything-claude-code"""
     
     def open_terminal(self):
         """Open terminal at project path"""
-        path = self.path_entry.get()
-        argv, kwargs = build_terminal_launch(path)
-        subprocess.Popen(argv, **kwargs)
-    
+        path = os.path.realpath(self.path_entry.get())
+        try:
+            launch_terminal(path)
+        except Exception as exc:
+            messagebox.showerror("Error", f"Could not open terminal: {exc}")
+
+    def _open_project_doc(self, filename: str) -> None:
+        """Open a project document safely, constrained to the project directory."""
+        base = os.path.realpath(self.path_entry.get())
+        target = os.path.realpath(os.path.join(base, filename))
+        if os.path.commonpath([base, target]) != base:
+            messagebox.showerror("Error", "Access denied: path is outside the project directory")
+            return
+        if os.path.exists(target):
+            webbrowser.open(Path(target).as_uri())
+        else:
+            messagebox.showerror("Error", f"{filename} not found")
+
     def open_readme(self):
         """Open README in default browser/reader"""
-        import subprocess
-        path = os.path.join(self.path_entry.get(), 'README.md')
-        if os.path.exists(path):
-            subprocess.Popen(['xdg-open' if os.name != 'nt' else 'start', path])
-        else:
-            messagebox.showerror("Error", "README.md not found")
+        self._open_project_doc('README.md')
     
     def open_agents(self):
         """Open AGENTS.md"""
-        import subprocess
-        path = os.path.join(self.path_entry.get(), 'AGENTS.md')
-        if os.path.exists(path):
-            subprocess.Popen(['xdg-open' if os.name != 'nt' else 'start', path])
-        else:
-            messagebox.showerror("Error", "AGENTS.md not found")
+        self._open_project_doc('AGENTS.md')
     
     def refresh_data(self):
         """Refresh all data"""

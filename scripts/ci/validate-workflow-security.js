@@ -75,7 +75,7 @@ function extractCheckoutSteps(source) {
       startLine: block.startLine,
       text: block.lines.join('\n'),
     }))
-    .filter(block => /uses:\s*actions\/checkout@/m.test(block.text));
+    .filter(block => /uses:\s*['"]?actions\/checkout@/m.test(block.text));
 }
 
 function findViolations(filePath, source) {

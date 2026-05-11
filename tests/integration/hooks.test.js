@@ -226,6 +226,15 @@ function cleanupTestDir(testDir) {
   fs.rmSync(testDir, { recursive: true, force: true });
 }
 
+function getTestHomunculusEnv(testDir) {
+  const xdgDataHome = path.join(testDir, '.local', 'share');
+  return {
+    HOME: testDir,
+    XDG_DATA_HOME: xdgDataHome,
+    homunculusDir: path.join(xdgDataHome, 'ecc-homunculus'),
+  };
+}
+
 function writeInstinctFile(filePath, entries) {
   const body = entries.map(entry => `---
 id: ${entry.id}
@@ -380,19 +389,20 @@ async function runTests() {
 
     try {
       const sessionId = `session-${Date.now()}`;
+      const homunculusEnv = getTestHomunculusEnv(testDir);
       const result = await runHookWithInput(
         path.join(scriptsDir, 'session-start.js'),
         {},
         {
-          HOME: testDir,
+          HOME: homunculusEnv.HOME,
+          XDG_DATA_HOME: homunculusEnv.XDG_DATA_HOME,
           CLAUDE_PROJECT_DIR: projectDir,
           CLAUDE_SESSION_ID: sessionId
         }
       );
 
       assert.strictEqual(result.code, 0, 'SessionStart should exit 0');
-      const homunculusDir = path.join(testDir, '.claude', 'homunculus');
-      const projectsDir = path.join(homunculusDir, 'projects');
+      const projectsDir = path.join(homunculusEnv.homunculusDir, 'projects');
       const projectEntries = fs.existsSync(projectsDir) ? fs.readdirSync(projectsDir) : [];
       assert.ok(projectEntries.length > 0, 'SessionStart should create a homunculus project directory');
       const leaseDir = path.join(projectsDir, projectEntries[0], '.observer-sessions');
@@ -410,7 +420,8 @@ async function runTests() {
 
     try {
       const projectId = crypto.createHash('sha256').update(projectDir).digest('hex').slice(0, 12);
-      const homunculusDir = path.join(testDir, '.claude', 'homunculus');
+      const homunculusEnv = getTestHomunculusEnv(testDir);
+      const homunculusDir = homunculusEnv.homunculusDir;
       const projectInstinctDir = path.join(homunculusDir, 'projects', projectId, 'instincts', 'personal');
       const globalInstinctDir = path.join(homunculusDir, 'instincts', 'inherited');
 
@@ -445,7 +456,8 @@ async function runTests() {
         path.join(scriptsDir, 'session-start.js'),
         {},
         {
-          HOME: testDir,
+          HOME: homunculusEnv.HOME,
+          XDG_DATA_HOME: homunculusEnv.XDG_DATA_HOME,
           CLAUDE_PROJECT_DIR: projectDir,
         }
       );
@@ -474,18 +486,19 @@ async function runTests() {
     });
 
     try {
+      const homunculusEnv = getTestHomunculusEnv(testDir);
       await runHookWithInput(
         path.join(scriptsDir, 'session-start.js'),
         {},
         {
-          HOME: testDir,
+          HOME: homunculusEnv.HOME,
+          XDG_DATA_HOME: homunculusEnv.XDG_DATA_HOME,
           CLAUDE_PROJECT_DIR: projectDir,
           CLAUDE_SESSION_ID: sessionId
         }
       );
 
-      const homunculusDir = path.join(testDir, '.claude', 'homunculus');
-      const projectsDir = path.join(homunculusDir, 'projects');
+      const projectsDir = path.join(homunculusEnv.homunculusDir, 'projects');
       const projectEntries = fs.existsSync(projectsDir) ? fs.readdirSync(projectsDir) : [];
       assert.ok(projectEntries.length > 0, 'Expected SessionStart to create a homunculus project directory');
       const projectStorageDir = path.join(projectsDir, projectEntries[0]);
@@ -497,7 +510,8 @@ async function runTests() {
         path.join(scriptsDir, 'session-end-marker.js'),
         markerInput,
         {
-          HOME: testDir,
+          HOME: homunculusEnv.HOME,
+          XDG_DATA_HOME: homunculusEnv.XDG_DATA_HOME,
           CLAUDE_PROJECT_DIR: projectDir,
           CLAUDE_SESSION_ID: sessionId
         }

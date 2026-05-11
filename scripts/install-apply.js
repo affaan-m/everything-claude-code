@@ -24,6 +24,7 @@ function getHelpText() {
 Usage: install.sh [--target <${LEGACY_INSTALL_TARGETS.join('|')}>] [--dry-run] [--json] <language> [<language> ...]
        install.sh [--target <${SUPPORTED_INSTALL_TARGETS.join('|')}>] [--dry-run] [--json] --profile <name> [--with <component>]... [--without <component>]...
        install.sh [--target <${SUPPORTED_INSTALL_TARGETS.join('|')}>] [--dry-run] [--json] --modules <id,id,...> [--with <component>]... [--without <component>]...
+       install.sh [--target <${SUPPORTED_INSTALL_TARGETS.join('|')}>] [--dry-run] [--json] --skills <skill-id[,skill-id...]>
        install.sh [--dry-run] [--json] --config <path>
 
 Targets:
@@ -35,6 +36,7 @@ Options:
   --profile <name>    Resolve and install a manifest profile
   --modules <ids>     Resolve and install explicit module IDs
   --with <component>  Include a user-facing install component
+  --skills <ids>      Install one or more skill directories by ID, e.g. continuous-learning-v2
   --without <component>
                       Exclude a user-facing install component
   --config <path>     Load install intent from ecc-install.json

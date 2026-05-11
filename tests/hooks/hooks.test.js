@@ -248,7 +248,7 @@ function withPrependedPath(binDir, env = {}) {
 }
 
 function assertNoProjectDetectionSideEffects(homeDir, testName) {
-  const homunculusDir = path.join(homeDir, '.claude', 'homunculus');
+  const homunculusDir = path.join(homeDir, '.local', 'share', 'ecc-homunculus');
   const registryPath = path.join(homunculusDir, 'projects.json');
   const projectsDir = path.join(homunculusDir, 'projects');
 
@@ -1173,6 +1173,47 @@ async function runTests() {
       assert.ok(result.stderr.includes('50 tool calls'), 'Should use default threshold (50) for invalid value');
 
       fs.unlinkSync(counterFile);
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('reads session_id from stdin JSON (Claude Code wire format)', async () => {
+      const sessionId = 'test-stdin-' + Date.now();
+      const stdinJson = JSON.stringify({ session_id: sessionId, tool_name: 'Edit' });
+
+      const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), stdinJson, {});
+      assert.strictEqual(result.code, 0, `Exit code should be 0, got ${result.code}`);
+
+      const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+      assert.ok(fs.existsSync(counterFile), `Counter file should be created from stdin session_id at ${counterFile}`);
+      const count = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
+      assert.strictEqual(count, 1, `Counter should be 1, got ${count}`);
+
+      fs.unlinkSync(counterFile);
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
+    await asyncTest('stdin session_id takes precedence over env CLAUDE_SESSION_ID', async () => {
+      const stdinSession = 'stdin-wins-' + Date.now();
+      const envSession = 'env-loses-' + Date.now();
+      const stdinJson = JSON.stringify({ session_id: stdinSession });
+
+      const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), stdinJson, {
+        CLAUDE_SESSION_ID: envSession
+      });
+      assert.strictEqual(result.code, 0);
+
+      const stdinCounter = path.join(os.tmpdir(), `claude-tool-count-${stdinSession}`);
+      const envCounter = path.join(os.tmpdir(), `claude-tool-count-${envSession}`);
+      assert.ok(fs.existsSync(stdinCounter), 'Stdin session counter must exist');
+      assert.ok(!fs.existsSync(envCounter), 'Env session counter must NOT exist when stdin provides session_id');
+
+      fs.unlinkSync(stdinCounter);
     })
   )
     passed++;
@@ -2692,6 +2733,68 @@ async function runTests() {
   else failed++;
 
   if (
+    await asyncTest('blocks Windows shell metacharacters before shell:true formatter execution', async () => {
+      const hookPath = path.join(scriptsDir, 'post-edit-format.js');
+      const resolverPath = path.join(scriptsDir, '..', 'lib', 'resolve-formatter.js');
+      const childProcess = require('child_process');
+      const originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform');
+      const originalSpawnSync = childProcess.spawnSync;
+      const originalExecFileSync = childProcess.execFileSync;
+      const resolvedResolverPath = require.resolve(resolverPath);
+      const resolvedHookPath = require.resolve(hookPath);
+      const originalResolverCache = require.cache[resolvedResolverPath];
+      const originalHookCache = require.cache[resolvedHookPath];
+      const blockedPaths = ['semicolon;test.js', 'backtick`test.js', 'subshell$(test).js', 'group(test).js'];
+
+      try {
+        Object.defineProperty(process, 'platform', { value: 'win32', configurable: true });
+
+        let spawnCalls = [];
+        childProcess.spawnSync = (...args) => {
+          spawnCalls.push(args);
+          return { status: 0, stderr: Buffer.from('') };
+        };
+        childProcess.execFileSync = () => {
+          throw new Error('execFileSync should not run for Windows .cmd formatter shims');
+        };
+
+        require.cache[resolvedResolverPath] = {
+          id: resolvedResolverPath,
+          filename: resolvedResolverPath,
+          loaded: true,
+          exports: {
+            findProjectRoot: () => process.cwd(),
+            detectFormatter: () => 'prettier',
+            resolveFormatterBin: () => ({ bin: 'formatter.cmd', prefix: [] })
+          }
+        };
+        delete require.cache[resolvedHookPath];
+
+        const { run } = require(hookPath);
+
+        for (const filePath of blockedPaths) {
+          spawnCalls = [];
+          const stdinJson = JSON.stringify({ tool_input: { file_path: filePath } });
+          assert.strictEqual(run(stdinJson), stdinJson, 'Should pass through original stdin JSON');
+          assert.strictEqual(spawnCalls.length, 0, `Should reject ${filePath} before spawnSync`);
+        }
+      } finally {
+        if (originalPlatform) {
+          Object.defineProperty(process, 'platform', originalPlatform);
+        }
+        childProcess.spawnSync = originalSpawnSync;
+        childProcess.execFileSync = originalExecFileSync;
+        if (originalResolverCache) require.cache[resolvedResolverPath] = originalResolverCache;
+        else delete require.cache[resolvedResolverPath];
+        if (originalHookCache) require.cache[resolvedHookPath] = originalHookCache;
+        else delete require.cache[resolvedHookPath];
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
     await asyncTest('matches .tsx extension for formatting', async () => {
       const stdinJson = JSON.stringify({ tool_input: { file_path: '/nonexistent/component.tsx' } });
       const result = await runScript(path.join(scriptsDir, 'post-edit-format.js'), stdinJson);
@@ -2844,11 +2947,12 @@ async function runTests() {
         assert.strictEqual(code, 0, `detect-project should source cleanly, stderr: ${stderr}`);
 
         const [projectId, projectDir] = stdout.trim().split(/\r?\n/);
-        const registryPath = path.join(homeDir, '.claude', 'homunculus', 'projects.json');
+        const registryPath = path.join(homeDir, '.local', 'share', 'ecc-homunculus', 'projects.json');
         const expectedProjectDir = path.join(
           homeDir,
-          '.claude',
-          'homunculus',
+          '.local',
+          'share',
+          'ecc-homunculus',
           'projects',
           projectId
         );
@@ -2922,7 +3026,7 @@ async function runTests() {
 
         assert.strictEqual(result.code, 0, `observe.sh should exit successfully, stderr: ${result.stderr}`);
 
-        const projectsDir = path.join(homeDir, '.claude', 'homunculus', 'projects');
+        const projectsDir = path.join(homeDir, '.local', 'share', 'ecc-homunculus', 'projects');
         const projectIds = fs.readdirSync(projectsDir);
         assert.strictEqual(projectIds.length, 1, 'observe.sh should create one project-scoped observation directory');
 

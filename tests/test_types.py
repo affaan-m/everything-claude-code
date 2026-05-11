@@ -63,6 +63,37 @@ class TestToolDefinition:
         assert result["name"] == "search"
         assert result["strict"] is True
 
+    def test_tool_to_openai_tool(self):
+        tool = ToolDefinition(
+            name="search",
+            description="Search",
+            parameters={"type": "object"},
+            strict=False,
+        )
+
+        assert tool.to_openai_tool() == {
+            "type": "function",
+            "function": {
+                "name": "search",
+                "description": "Search",
+                "parameters": {"type": "object"},
+                "strict": False,
+            },
+        }
+
+    def test_tool_to_anthropic_tool(self):
+        tool = ToolDefinition(
+            name="search",
+            description="Search",
+            parameters={"type": "object"},
+        )
+
+        assert tool.to_anthropic_tool() == {
+            "name": "search",
+            "description": "Search",
+            "input_schema": {"type": "object"},
+        }
+
 
 class TestToolCall:
     def test_create_tool_call(self):
