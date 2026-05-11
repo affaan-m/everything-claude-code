@@ -160,7 +160,7 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**完成！** 你现在可以使用 48 个代理、185 个技能和 68 个命令。
+**完成！** 你现在可以使用 50 个代理、185 个技能和 68 个命令。
 
 ### multi-* 命令需要额外配置
 
@@ -235,7 +235,7 @@ everything-claude-code/
 |   |-- plugin.json         # 插件元数据与组件路径
 |   |-- marketplace.json    # 用于 /plugin marketplace add 的自托管应用商店目录
 |
-|-- agents/           # 36 个专用子智能体，用于任务委派
+|-- agents/           # 50 个专用子智能体，用于任务委派
 |   |-- planner.md           # 功能实现规划
 |   |-- architect.md         # 系统架构设计决策
 |   |-- tdd-guide.md         # 测试驱动开发

@@ -350,7 +350,7 @@ If you stacked methods, clean up in this order:
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-**That's it!** You now have access to 48 agents, 185 skills, and 68 legacy command shims.
+**That's it!** You now have access to 50 agents, 185 skills, and 68 legacy command shims.
 
 ### Dashboard GUI
 
@@ -448,7 +448,7 @@ everything-claude-code/
 |   |-- plugin.json         # Plugin metadata and component paths
 |   |-- marketplace.json    # Marketplace catalog for /plugin marketplace add
 |
-|-- agents/           # 36 specialized subagents for delegation
+|-- agents/           # 50 specialized subagents for delegation
 |   |-- planner.md           # Feature implementation planning
 |   |-- architect.md         # System design decisions
 |   |-- tdd-guide.md         # Test-driven development
@@ -1169,7 +1169,7 @@ ECC provides Cursor IDE support with hooks, rules, agents, skills, commands, and
 | Hook Events | 15 | sessionStart, beforeShellExecution, afterFileEdit, beforeMCPExecution, beforeSubmitPrompt, and 10 more |
 | Hook Scripts | 16 | Thin Node.js scripts delegating to `scripts/hooks/` via shared adapter |
 | Rules | 34 | 9 common (alwaysApply) + 25 language-specific (TypeScript, Python, Go, Swift, PHP) |
-| Agents | 48 | `.cursor/agents/ecc-*.md` when installed; prefixed to avoid collisions with user or marketplace agents |
+| Agents | 50 | `.cursor/agents/ecc-*.md` when installed; prefixed to avoid collisions with user or marketplace agents |
 | Skills | Shared + Bundled | `.cursor/skills/` for translated additions |
 | Commands | Shared | `.cursor/commands/` if installed |
 | MCP Config | Shared | `.cursor/mcp.json` if installed |
@@ -1336,7 +1336,7 @@ The configuration is automatically detected from `.opencode/opencode.json`.
 
 | Feature | Claude Code | OpenCode | Status |
 |---------|-------------|----------|--------|
-| Agents | PASS: 48 agents | PASS: 12 agents | **Claude Code leads** |
+| Agents | PASS: 50 agents | PASS: 12 agents | **Claude Code leads** |
 | Commands | PASS: 68 commands | PASS: 31 commands | **Claude Code leads** |
 | Skills | PASS: 185 skills | PASS: 37 skills | **Claude Code leads** |
 | Hooks | PASS: 8 event types | PASS: 11 events | **OpenCode has more!** |
@@ -1441,7 +1441,7 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 
 | Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |
 |---------|------------|------------|-----------|----------|
-| **Agents** | 48 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
+| **Agents** | 50 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
 | **Commands** | 68 | Shared | Instruction-based | 31 |
 | **Skills** | 185 | Shared | 10 (native format) | 37 |
 | **Hook Events** | 8 types | 15 types | None yet | 11 types |
