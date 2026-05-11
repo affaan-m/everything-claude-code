@@ -20,7 +20,7 @@ Architecture and implementation patterns for building modules with the **tinystr
 
 ## How It Works
 
-The tinystruct framework treats any method annotated with `@Action` as a routable endpoint for both terminal and web environments. Applications are created by extending `AbstractApplication`, which provides core lifecycle hooks like `init()` and access to the request `Context`. 
+The tinystruct framework treats any method annotated with `@Action` as a routable endpoint for both terminal and web environments. Applications are created by extending `AbstractApplication`, which provides core lifecycle hooks like `init()` and access to the request `Context`.
 
 Routing is handled by the `ActionRegistry`, which automatically maps path segments to method arguments and injects dependencies. For data-only services, the native `Builder` component should be used for JSON serialization to maintain a zero-dependency footprint. The framework also includes a utility in `ApplicationManager` to bootstrap the project's execution environment by generating the `bin/dispatcher` script.
 

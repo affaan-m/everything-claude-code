@@ -32,7 +32,6 @@ Flox environments are defined in `.flox/env/manifest.toml` and activated with `f
 - `$FLOX_ENV_CACHE` — Persistent local storage for caches, venvs, data (survives rebuilds)
 - `$FLOX_ENV_PROJECT` — Project root directory (where `.flox/` lives)
 
-
 ## Essential Commands
 
 ```bash
