@@ -49,6 +49,59 @@ function runNode(scriptPath, args = [], options = {}) {
   });
 }
 
+function createGhShim(binDir) {
+  fs.mkdirSync(binDir, { recursive: true });
+  const shimJs = path.join(binDir, 'gh.js');
+  fs.writeFileSync(shimJs, `
+const mode = process.env.ECC_FAKE_GH_MODE || 'open';
+const args = process.argv.slice(2);
+function write(payload) {
+  process.stdout.write(JSON.stringify(payload));
+}
+if (args[0] === 'pr' && args[1] === 'list') {
+  if (mode === 'empty') write([]);
+  else write([
+    {
+      number: 3,
+      title: 'Conflicting queue cleanup',
+      author: { login: 'contributor-a' },
+      url: 'https://github.com/affaan-m/everything-claude-code/pull/3',
+      updatedAt: '2026-05-11T10:00:00Z',
+      mergeStateStatus: 'DIRTY',
+      isDraft: false,
+      headRefName: 'fix/conflict'
+    },
+    {
+      number: 4,
+      title: 'Clean docs update',
+      author: { login: 'contributor-b' },
+      url: 'https://github.com/affaan-m/everything-claude-code/pull/4',
+      updatedAt: '2026-05-11T11:00:00Z',
+      mergeStateStatus: 'CLEAN',
+      isDraft: false,
+      headRefName: 'docs/clean'
+    }
+  ]);
+} else if (args[0] === 'issue' && args[1] === 'list') {
+  if (mode === 'empty') write([]);
+  else write([
+    {
+      number: 9,
+      title: 'Track release blocker',
+      author: { login: 'reporter' },
+      url: 'https://github.com/affaan-m/everything-claude-code/issues/9',
+      updatedAt: '2026-05-11T12:00:00Z',
+      labels: [{ name: 'release' }]
+    }
+  ]);
+} else {
+  process.stderr.write('unexpected gh args: ' + args.join(' '));
+  process.exit(2);
+}
+`, 'utf8');
+  return shimJs;
+}
+
 function parseJson(stdout) {
   return JSON.parse(stdout.trim());
 }
@@ -791,6 +844,75 @@ async function runTests() {
       const closePayload = parseJson(closeResult.stdout);
       assert.strictEqual(closePayload.status, 'done');
       assert.strictEqual(closePayload.title, 'Ship work item CLI');
+    } finally {
+      cleanupTempDir(testDir);
+    }
+  })) passed += 1; else failed += 1;
+
+  if (await test('work-items CLI syncs GitHub PRs and issues into readiness', async () => {
+    const testDir = createTempDir('ecc-work-items-github-');
+    const dbPath = path.join(testDir, 'state.db');
+    const binDir = path.join(testDir, 'bin');
+    const repo = 'affaan-m/everything-claude-code';
+
+    try {
+      const env = {
+        ECC_GH_SHIM: createGhShim(binDir),
+      };
+
+      const syncResult = runNode(WORK_ITEMS_SCRIPT, [
+        'sync-github',
+        '--repo',
+        repo,
+        '--db',
+        dbPath,
+        '--limit',
+        '10',
+        '--json',
+      ], { cwd: testDir, env });
+      assert.strictEqual(syncResult.status, 0, syncResult.stderr);
+      const syncPayload = parseJson(syncResult.stdout);
+      assert.strictEqual(syncPayload.repo, repo);
+      assert.strictEqual(syncPayload.prCount, 2);
+      assert.strictEqual(syncPayload.issueCount, 1);
+      assert.strictEqual(syncPayload.closedCount, 0);
+      assert.strictEqual(syncPayload.items.length, 3);
+      assert.strictEqual(syncPayload.items[0].id, 'github-affaan-m-everything-claude-code-pr-3');
+      assert.strictEqual(syncPayload.items[0].status, 'blocked');
+      assert.strictEqual(syncPayload.items[1].status, 'needs-review');
+      assert.strictEqual(syncPayload.items[2].metadata.labels[0], 'release');
+
+      const statusResult = runNode(STATUS_SCRIPT, ['--db', dbPath, '--json', '--exit-code']);
+      assert.strictEqual(statusResult.status, 2, statusResult.stderr);
+      const statusPayload = parseJson(statusResult.stdout);
+      assert.strictEqual(statusPayload.readiness.blockedWorkItems, 3);
+
+      const closeResult = runNode(WORK_ITEMS_SCRIPT, [
+        'sync-github',
+        '--repo',
+        repo,
+        '--db',
+        dbPath,
+        '--json',
+      ], {
+        cwd: testDir,
+        env: {
+          ...env,
+          ECC_FAKE_GH_MODE: 'empty',
+        },
+      });
+      assert.strictEqual(closeResult.status, 0, closeResult.stderr);
+      const closePayload = parseJson(closeResult.stdout);
+      assert.strictEqual(closePayload.prCount, 0);
+      assert.strictEqual(closePayload.issueCount, 0);
+      assert.strictEqual(closePayload.closedCount, 3);
+      assert.ok(closePayload.closedItems.every(item => item.status === 'closed'));
+
+      const cleanStatusResult = runNode(STATUS_SCRIPT, ['--db', dbPath, '--json', '--exit-code']);
+      assert.strictEqual(cleanStatusResult.status, 0, cleanStatusResult.stderr);
+      const cleanStatusPayload = parseJson(cleanStatusResult.stdout);
+      assert.strictEqual(cleanStatusPayload.readiness.blockedWorkItems, 0);
+      assert.strictEqual(cleanStatusPayload.workItems.closedCount, 3);
     } finally {
       cleanupTempDir(testDir);
     }

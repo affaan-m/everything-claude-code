@@ -2,10 +2,12 @@
 'use strict';
 
 const os = require('os');
+const { spawnSync } = require('child_process');
 const { createStateStore } = require('./lib/state-store');
 
 const VALUE_FLAGS = new Set([
   '--db',
+  '--github-repo',
   '--id',
   '--limit',
   '--metadata-json',
@@ -29,6 +31,7 @@ Usage:
   node scripts/work-items.js show <id> [--db <path>] [--json]
   node scripts/work-items.js upsert [<id>] --title <title> [options] [--json]
   node scripts/work-items.js close <id> [--status done] [--db <path>] [--json]
+  node scripts/work-items.js sync-github --repo <owner/repo> [--db <path>] [--json]
 
 Track Linear, GitHub, handoff, and manual roadmap items in the ECC SQLite state
 store so "ecc status" can include linked work and blocked operator follow-up.
@@ -42,7 +45,8 @@ Options:
   --url <url>               Optional source URL
   --owner <owner>           Optional owner label
   --repo-root <path>        Optional repo root to associate with this item
-  --repo <path>             Alias for --repo-root
+  --repo <path>             GitHub repo for sync-github, otherwise alias for --repo-root
+  --github-repo <owner/repo> Explicit GitHub repo for sync-github
   --session-id <id>         Optional ECC session id
   --session <id>            Alias for --session-id
   --metadata-json <json>    Optional JSON metadata payload
@@ -54,11 +58,13 @@ Options:
 
 function assignOption(options, flag, value) {
   if (flag === '--db') options.dbPath = value;
+  else if (flag === '--github-repo') options.githubRepo = value;
   else if (flag === '--id') options.id = value;
   else if (flag === '--limit') options.limit = value;
   else if (flag === '--metadata-json') options.metadataJson = value;
   else if (flag === '--owner') options.owner = value;
   else if (flag === '--priority') options.priority = value;
+  else if (flag === '--repo' && options.command === 'sync-github') options.githubRepo = value;
   else if (flag === '--repo' || flag === '--repo-root') options.repoRoot = value;
   else if (flag === '--session' || flag === '--session-id') options.sessionId = value;
   else if (flag === '--source') options.source = value;
@@ -131,6 +137,192 @@ function normalizeLimit(value) {
   return parsed;
 }
 
+function runGhJson(args) {
+  const shimPath = process.env.ECC_GH_SHIM;
+  const command = shimPath ? process.execPath : 'gh';
+  const commandArgs = shimPath ? [shimPath, ...args] : args;
+  const displayCommand = shimPath ? `node ${shimPath} ${args.join(' ')}` : `gh ${args.join(' ')}`;
+  const result = spawnSync(command, commandArgs, {
+    encoding: 'utf8',
+    maxBuffer: 10 * 1024 * 1024,
+  });
+
+  if (result.error) {
+    throw new Error(`Failed to run gh: ${result.error.message}`);
+  }
+
+  if (result.status !== 0) {
+    throw new Error(`${displayCommand} failed: ${(result.stderr || result.stdout || '').trim()}`);
+  }
+
+  try {
+    return JSON.parse(result.stdout || '[]');
+  } catch (error) {
+    throw new Error(`${displayCommand} returned invalid JSON: ${error.message}`);
+  }
+}
+
+function slugifyWorkItemSegment(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'unknown';
+}
+
+function githubWorkItemId(repo, type, number) {
+  return `github-${slugifyWorkItemSegment(repo)}-${type}-${number}`;
+}
+
+function githubPrStatus(pr) {
+  if (pr.isDraft || pr.mergeStateStatus === 'DIRTY') {
+    return 'blocked';
+  }
+
+  return 'needs-review';
+}
+
+function githubAuthorLogin(item) {
+  return item && item.author && item.author.login ? item.author.login : null;
+}
+
+function buildGithubPrWorkItem(repo, pr, options = {}) {
+  return {
+    id: githubWorkItemId(repo, 'pr', pr.number),
+    source: 'github-pr',
+    sourceId: String(pr.number),
+    title: `PR #${pr.number}: ${pr.title}`,
+    status: githubPrStatus(pr),
+    priority: pr.isDraft || pr.mergeStateStatus === 'DIRTY' ? 'high' : 'normal',
+    url: pr.url || null,
+    owner: githubAuthorLogin(pr),
+    repoRoot: options.repoRoot || process.cwd(),
+    sessionId: options.sessionId || null,
+    metadata: {
+      repo,
+      type: 'pull_request',
+      mergeStateStatus: pr.mergeStateStatus || null,
+      isDraft: Boolean(pr.isDraft),
+      headRefName: pr.headRefName || null,
+      sourceUpdatedAt: pr.updatedAt || null,
+      syncedBy: 'ecc-work-items-sync-github',
+    },
+  };
+}
+
+function buildGithubIssueWorkItem(repo, issue, options = {}) {
+  return {
+    id: githubWorkItemId(repo, 'issue', issue.number),
+    source: 'github-issue',
+    sourceId: String(issue.number),
+    title: `Issue #${issue.number}: ${issue.title}`,
+    status: 'needs-review',
+    priority: 'normal',
+    url: issue.url || null,
+    owner: githubAuthorLogin(issue),
+    repoRoot: options.repoRoot || process.cwd(),
+    sessionId: options.sessionId || null,
+    metadata: {
+      repo,
+      type: 'issue',
+      labels: Array.isArray(issue.labels) ? issue.labels.map(label => label.name || label).filter(Boolean) : [],
+      sourceUpdatedAt: issue.updatedAt || null,
+      syncedBy: 'ecc-work-items-sync-github',
+    },
+  };
+}
+
+function closeStaleGithubItems(store, repo, activeIds, options = {}) {
+  const payload = store.listWorkItems({ limit: options.limit || 10000 });
+  const closed = [];
+  for (const item of payload.items) {
+    if (!item.metadata || item.metadata.syncedBy !== 'ecc-work-items-sync-github') {
+      continue;
+    }
+    if (item.metadata.repo !== repo || activeIds.has(item.id)) {
+      continue;
+    }
+    if (item.status === 'closed' || item.status === 'done') {
+      continue;
+    }
+    closed.push(store.upsertWorkItem({
+      ...item,
+      status: 'closed',
+      updatedAt: new Date().toISOString(),
+      metadata: {
+        ...item.metadata,
+        sourceClosedAt: new Date().toISOString(),
+      },
+    }));
+  }
+  return closed;
+}
+
+function syncGithubWorkItems(store, options) {
+  const repo = options.githubRepo;
+  if (!repo) {
+    throw new Error('Missing GitHub repo. Pass --repo <owner/repo>.');
+  }
+
+  const limit = normalizeLimit(options.limit);
+  const prs = runGhJson([
+    'pr',
+    'list',
+    '--repo',
+    repo,
+    '--state',
+    'open',
+    '--limit',
+    String(limit),
+    '--json',
+    'number,title,author,url,updatedAt,mergeStateStatus,isDraft,headRefName',
+  ]);
+  const issues = runGhJson([
+    'issue',
+    'list',
+    '--repo',
+    repo,
+    '--state',
+    'open',
+    '--limit',
+    String(limit),
+    '--json',
+    'number,title,author,url,updatedAt,labels',
+  ]);
+
+  const syncedAt = new Date().toISOString();
+  const activeIds = new Set();
+  const items = [];
+  for (const pr of prs) {
+    const payload = buildGithubPrWorkItem(repo, pr, options);
+    activeIds.add(payload.id);
+    items.push(store.upsertWorkItem({
+      ...payload,
+      createdAt: undefined,
+      updatedAt: syncedAt,
+    }));
+  }
+  for (const issue of issues) {
+    const payload = buildGithubIssueWorkItem(repo, issue, options);
+    activeIds.add(payload.id);
+    items.push(store.upsertWorkItem({
+      ...payload,
+      createdAt: undefined,
+      updatedAt: syncedAt,
+    }));
+  }
+
+  const closedItems = closeStaleGithubItems(store, repo, activeIds, { limit: Math.max(limit * 4, 1000) });
+  return {
+    repo,
+    syncedAt,
+    prCount: prs.length,
+    issueCount: issues.length,
+    closedCount: closedItems.length,
+    items,
+    closedItems,
+  };
+}
+
 function buildUpsertPayload(options, existing = null) {
   const id = resolveWorkItemId(options);
   if (!id) {
@@ -191,6 +383,20 @@ function printWorkItemList(payload) {
     if (item.url) {
       console.log(`    URL: ${item.url}`);
     }
+  }
+}
+
+function printGithubSyncResult(payload) {
+  console.log(`GitHub sync: ${payload.repo}`);
+  console.log(`  Open PRs: ${payload.prCount}`);
+  console.log(`  Open issues: ${payload.issueCount}`);
+  console.log(`  Closed stale items: ${payload.closedCount}`);
+  if (payload.items.length === 0 && payload.closedItems.length === 0) {
+    console.log('  Work items changed: none');
+    return;
+  }
+  for (const item of [...payload.items, ...payload.closedItems]) {
+    console.log(`  - ${item.id} ${item.status}: ${item.title}`);
   }
 }
 
@@ -269,6 +475,16 @@ async function main() {
       return;
     }
 
+    if (options.command === 'sync-github') {
+      const payload = syncGithubWorkItems(store, options);
+      if (options.json) {
+        console.log(JSON.stringify(payload, null, 2));
+      } else {
+        printGithubSyncResult(payload);
+      }
+      return;
+    }
+
     throw new Error(`Unknown command: ${options.command}`);
   } catch (error) {
     console.error(`Error: ${error.message}`);
@@ -286,6 +502,9 @@ if (require.main === module) {
 
 module.exports = {
   buildUpsertPayload,
+  buildGithubIssueWorkItem,
+  buildGithubPrWorkItem,
   main,
   parseArgs,
+  syncGithubWorkItems,
 };
