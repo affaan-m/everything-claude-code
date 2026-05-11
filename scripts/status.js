@@ -142,9 +142,20 @@ function printGovernance(section) {
   }
 }
 
+function printReadiness(section) {
+  console.log(`Readiness: ${section.status}`);
+  console.log(`  Attention items: ${section.attentionCount}`);
+  console.log(`  Active sessions: ${section.activeSessions}`);
+  console.log(`  Failed skill runs: ${section.failedSkillRuns}`);
+  console.log(`  Warning installs: ${section.warningInstallations}`);
+  console.log(`  Pending governance: ${section.pendingGovernanceEvents}`);
+}
+
 function printHuman(payload) {
   console.log('ECC status\n');
   console.log(`Database: ${payload.dbPath}\n`);
+  printReadiness(payload.readiness);
+  console.log();
   printActiveSessions(payload.activeSessions);
   console.log();
   printSkillRuns(payload.skillRuns);
@@ -168,6 +179,15 @@ function renderMarkdown(payload) {
     '',
     `Generated: ${payload.generatedAt}`,
     `Database: ${formatCode(payload.dbPath)}`,
+    '',
+    '## Readiness',
+    '',
+    `Status: ${payload.readiness.status}`,
+    `Attention items: ${payload.readiness.attentionCount}`,
+    `Active sessions: ${payload.readiness.activeSessions}`,
+    `Failed skill runs: ${payload.readiness.failedSkillRuns}`,
+    `Warning installs: ${payload.readiness.warningInstallations}`,
+    `Pending governance: ${payload.readiness.pendingGovernanceEvents}`,
     '',
     '## Active Sessions',
     '',

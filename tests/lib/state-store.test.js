@@ -339,6 +339,12 @@ async function runTests() {
       const status = store.getStatus();
       store.close();
 
+      assert.strictEqual(status.readiness.status, 'attention');
+      assert.strictEqual(status.readiness.attentionCount, 2);
+      assert.strictEqual(status.readiness.activeSessions, 1);
+      assert.strictEqual(status.readiness.failedSkillRuns, 1);
+      assert.strictEqual(status.readiness.warningInstallations, 0);
+      assert.strictEqual(status.readiness.pendingGovernanceEvents, 1);
       assert.strictEqual(status.activeSessions.activeCount, 1);
       assert.strictEqual(status.activeSessions.sessions[0].id, 'session-active');
       assert.strictEqual(status.skillRuns.summary.totalCount, 4);
@@ -365,6 +371,9 @@ async function runTests() {
       store.close();
 
       assert.strictEqual(missingDetail, null);
+      assert.strictEqual(status.readiness.status, 'ok');
+      assert.strictEqual(status.readiness.attentionCount, 0);
+      assert.strictEqual(status.readiness.activeSessions, 0);
       assert.strictEqual(status.activeSessions.activeCount, 0);
       assert.deepStrictEqual(status.activeSessions.sessions, []);
       assert.strictEqual(status.skillRuns.summary.totalCount, 0);
@@ -562,11 +571,15 @@ async function runTests() {
       const jsonResult = runNode(STATUS_SCRIPT, ['--db', dbPath, '--json']);
       assert.strictEqual(jsonResult.status, 0, jsonResult.stderr);
       const jsonPayload = parseJson(jsonResult.stdout);
+      assert.strictEqual(jsonPayload.readiness.status, 'attention');
+      assert.strictEqual(jsonPayload.readiness.attentionCount, 2);
       assert.strictEqual(jsonPayload.activeSessions.activeCount, 1);
       assert.strictEqual(jsonPayload.governance.pendingCount, 1);
 
       const humanResult = runNode(STATUS_SCRIPT, ['--db', dbPath]);
       assert.strictEqual(humanResult.status, 0, humanResult.stderr);
+      assert.match(humanResult.stdout, /Readiness: attention/);
+      assert.match(humanResult.stdout, /Attention items: 2/);
       assert.match(humanResult.stdout, /Active sessions: 1/);
       assert.match(humanResult.stdout, /Skill runs \(last 20\):/);
       assert.match(humanResult.stdout, /Install health: healthy/);
@@ -592,6 +605,9 @@ async function runTests() {
       assert.strictEqual(result.stdout, written);
       assert.match(written, /^# ECC Status/m);
       assert.match(written, /Database: `[^`]+state\.db`/);
+      assert.match(written, /## Readiness/);
+      assert.match(written, /Status: attention/);
+      assert.match(written, /Attention items: 2/);
       assert.match(written, /- `session-active` \[claude\/dmux-tmux\] active/);
       assert.match(written, /Success rate: 66\.7%/);
       assert.match(written, /Install health: healthy/);

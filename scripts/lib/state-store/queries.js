@@ -202,6 +202,22 @@ function summarizeInstallHealth(installations) {
   };
 }
 
+function summarizeReadiness({ activeSessionCount, skillRuns, installHealth, pendingGovernanceCount }) {
+  const failedSkillRuns = skillRuns.summary.failureCount;
+  const warningInstallations = installHealth.warningCount;
+  const pendingGovernanceEvents = pendingGovernanceCount;
+  const attentionCount = failedSkillRuns + warningInstallations + pendingGovernanceEvents;
+
+  return {
+    status: attentionCount > 0 ? 'attention' : 'ok',
+    attentionCount,
+    activeSessions: activeSessionCount,
+    failedSkillRuns,
+    warningInstallations,
+    pendingGovernanceEvents,
+  };
+}
+
 function normalizeSessionInput(session) {
   return {
     id: session.id,
@@ -568,24 +584,34 @@ function createQueryApi(db) {
     const pendingLimit = normalizeLimit(options.pendingLimit, 5);
 
     const activeSessions = listActiveSessionsStatement.all(activeLimit).map(mapSessionRow);
+    const activeSessionCount = countActiveSessionsStatement.get().total_count;
     const recentSkillRuns = listRecentSkillRunsStatement.all(recentSkillRunLimit).map(mapSkillRunRow);
     const installations = listInstallStateStatement.all().map(mapInstallStateRow);
     const pendingGovernanceEvents = listPendingGovernanceStatement.all(pendingLimit).map(mapGovernanceEventRow);
+    const skillRuns = {
+      windowSize: recentSkillRunLimit,
+      summary: summarizeSkillRuns(recentSkillRuns),
+      recent: recentSkillRuns,
+    };
+    const installHealth = summarizeInstallHealth(installations);
+    const pendingGovernanceCount = countPendingGovernanceStatement.get().total_count;
 
     return {
       generatedAt: new Date().toISOString(),
+      readiness: summarizeReadiness({
+        activeSessionCount,
+        skillRuns,
+        installHealth,
+        pendingGovernanceCount,
+      }),
       activeSessions: {
-        activeCount: countActiveSessionsStatement.get().total_count,
+        activeCount: activeSessionCount,
         sessions: activeSessions,
       },
-      skillRuns: {
-        windowSize: recentSkillRunLimit,
-        summary: summarizeSkillRuns(recentSkillRuns),
-        recent: recentSkillRuns,
-      },
-      installHealth: summarizeInstallHealth(installations),
+      skillRuns,
+      installHealth,
       governance: {
-        pendingCount: countPendingGovernanceStatement.get().total_count,
+        pendingCount: pendingGovernanceCount,
         events: pendingGovernanceEvents,
       },
     };
