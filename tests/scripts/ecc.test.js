@@ -71,6 +71,7 @@ function main() {
       assert.match(result.stdout, /auto-update/);
       assert.match(result.stdout, /consult/);
       assert.match(result.stdout, /loop-status/);
+      assert.match(result.stdout, /work-items/);
     }],
     ['delegates explicit install command', () => {
       const result = runCli(['install', '--dry-run', '--json', 'typescript']);
@@ -200,6 +201,11 @@ function main() {
       const result = runCli(['help', 'consult']);
       assert.strictEqual(result.status, 0, result.stderr);
       assert.match(result.stdout, /node scripts\/consult\.js "security reviews"/);
+    }],
+    ['supports help for the work-items subcommand', () => {
+      const result = runCli(['help', 'work-items']);
+      assert.strictEqual(result.status, 0, result.stderr);
+      assert.match(result.stdout, /node scripts\/work-items\.js upsert/);
     }],
     ['fails on unknown commands instead of treating them as installs', () => {
       const result = runCli(['bogus']);

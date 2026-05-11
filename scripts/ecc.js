@@ -49,6 +49,10 @@ const COMMANDS = {
     script: 'sessions-cli.js',
     description: 'List or inspect ECC sessions from the SQLite state store',
   },
+  'work-items': {
+    script: 'work-items.js',
+    description: 'Track linked Linear, GitHub, handoff, and manual work items',
+  },
   'session-inspect': {
     script: 'session-inspect.js',
     description: 'Emit canonical ECC session snapshots from dmux or Claude history targets',
@@ -74,6 +78,7 @@ const PRIMARY_COMMANDS = [
   'auto-update',
   'status',
   'sessions',
+  'work-items',
   'session-inspect',
   'loop-status',
   'uninstall',
@@ -111,6 +116,7 @@ Examples:
   ecc status --markdown --write status.md
   ecc sessions
   ecc sessions session-active --json
+  ecc work-items upsert linear-ecc-20 --source linear --source-id ECC-20 --title "Review control-plane contract" --status blocked
   ecc session-inspect claude:latest
   ecc loop-status --json
   ecc uninstall --target antigravity --dry-run

@@ -87,6 +87,7 @@
     "scripts/setup-package-manager.js",
     "scripts/skill-create-output.js",
     "scripts/status.js",
+    "scripts/work-items.js",
     "scripts/uninstall.js",
     "skills/agent-harness-construction/",
     "skills/agent-introspection-debugging/",

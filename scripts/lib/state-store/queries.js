@@ -450,6 +450,10 @@ function createQueryApi(db) {
     ORDER BY updated_at DESC, id DESC
     LIMIT ?
   `);
+  const countWorkItemsStatement = db.prepare(`
+    SELECT COUNT(*) AS total_count
+    FROM work_items
+  `);
   const listAllWorkItemsStatement = db.prepare(`
     SELECT *
     FROM work_items
@@ -690,6 +694,11 @@ function createQueryApi(db) {
     return row ? mapSessionRow(row) : null;
   }
 
+  function getWorkItemById(id) {
+    const row = getWorkItemStatement.get(id);
+    return row ? mapWorkItemRow(row) : null;
+  }
+
   function listRecentSessions(options = {}) {
     const limit = normalizeLimit(options.limit, 10);
     return {
@@ -713,6 +722,14 @@ function createQueryApi(db) {
       workers,
       skillRuns: getSessionSkillRunsStatement.all(id).map(mapSkillRunRow),
       decisions: getSessionDecisionsStatement.all(id).map(mapDecisionRow),
+    };
+  }
+
+  function listWorkItems(options = {}) {
+    const limit = normalizeLimit(options.limit, 20);
+    return {
+      totalCount: countWorkItemsStatement.get().total_count,
+      items: listWorkItemsStatement.all(limit).map(mapWorkItemRow),
     };
   }
 
@@ -763,6 +780,7 @@ function createQueryApi(db) {
   return {
     getSessionById,
     getSessionDetail,
+    getWorkItemById,
     getStatus,
     insertDecision(decision) {
       const normalized = normalizeDecisionInput(decision);
@@ -812,6 +830,7 @@ function createQueryApi(db) {
       return normalized;
     },
     listRecentSessions,
+    listWorkItems,
     upsertInstallState(installState) {
       const normalized = normalizeInstallStateInput(installState);
       assertValidEntity('installState', normalized);
