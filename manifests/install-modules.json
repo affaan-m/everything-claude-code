@@ -149,7 +149,8 @@
         "skills/rust-testing",
         "skills/springboot-patterns",
         "skills/springboot-tdd",
-        "skills/springboot-verification"
+        "skills/springboot-verification",
+        "skills/ui-to-vue"
       ],
       "targets": [
         "claude",
