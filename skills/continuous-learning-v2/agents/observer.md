@@ -17,8 +17,8 @@ A background agent that analyzes observations from Claude Code sessions to detec
 ## Input
 
 Reads observations from the **project-scoped** observations file:
-- Project: `~/.claude/homunculus/projects/<project-hash>/observations.jsonl`
-- Global fallback: `~/.claude/homunculus/observations.jsonl`
+- Project: `${XDG_DATA_HOME:-~/.local/share}/ecc-homunculus/projects/<project-hash>/observations.jsonl`
+- Global fallback: `${XDG_DATA_HOME:-~/.local/share}/ecc-homunculus/observations.jsonl`
 
 ```jsonl
 {"timestamp":"2025-01-22T10:30:00Z","event":"tool_start","session":"abc123","tool":"Edit","input":"...","project_id":"a1b2c3d4e5f6","project_name":"my-react-app"}
@@ -66,8 +66,8 @@ When certain tools are consistently preferred:
 ## Output
 
 Creates/updates instincts in the **project-scoped** instincts directory:
-- Project: `~/.claude/homunculus/projects/<project-hash>/instincts/personal/`
-- Global: `~/.claude/homunculus/instincts/personal/` (for universal patterns)
+- Project: `${XDG_DATA_HOME:-~/.local/share}/ecc-homunculus/projects/<project-hash>/instincts/personal/`
+- Global: `${XDG_DATA_HOME:-~/.local/share}/ecc-homunculus/instincts/personal/` (for universal patterns)
 
 ### Project-Scoped Instinct (default)
 

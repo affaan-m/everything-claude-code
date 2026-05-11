@@ -248,7 +248,7 @@ function withPrependedPath(binDir, env = {}) {
 }
 
 function assertNoProjectDetectionSideEffects(homeDir, testName) {
-  const homunculusDir = path.join(homeDir, '.claude', 'homunculus');
+  const homunculusDir = path.join(homeDir, '.local', 'share', 'ecc-homunculus');
   const registryPath = path.join(homunculusDir, 'projects.json');
   const projectsDir = path.join(homunculusDir, 'projects');
 
@@ -2885,11 +2885,12 @@ async function runTests() {
         assert.strictEqual(code, 0, `detect-project should source cleanly, stderr: ${stderr}`);
 
         const [projectId, projectDir] = stdout.trim().split(/\r?\n/);
-        const registryPath = path.join(homeDir, '.claude', 'homunculus', 'projects.json');
+        const registryPath = path.join(homeDir, '.local', 'share', 'ecc-homunculus', 'projects.json');
         const expectedProjectDir = path.join(
           homeDir,
-          '.claude',
-          'homunculus',
+          '.local',
+          'share',
+          'ecc-homunculus',
           'projects',
           projectId
         );
@@ -2963,7 +2964,7 @@ async function runTests() {
 
         assert.strictEqual(result.code, 0, `observe.sh should exit successfully, stderr: ${result.stderr}`);
 
-        const projectsDir = path.join(homeDir, '.claude', 'homunculus', 'projects');
+        const projectsDir = path.join(homeDir, '.local', 'share', 'ecc-homunculus', 'projects');
         const projectIds = fs.readdirSync(projectsDir);
         assert.strictEqual(projectIds.length, 1, 'observe.sh should create one project-scoped observation directory');
 
