@@ -11,7 +11,7 @@ function showHelp(exitCode = 0) {
 Usage: node scripts/status.js [--db <path>] [--json|--markdown] [--write <path>] [--limit <n>]
 
 Query the ECC SQLite state store for active sessions, recent skill runs,
-install health, and pending governance events.
+install health, pending governance events, and linked work items.
 `);
   process.exit(exitCode);
 }
@@ -142,6 +142,24 @@ function printGovernance(section) {
   }
 }
 
+function printWorkItems(section) {
+  console.log(`Work items: ${section.openCount} open, ${section.blockedCount} blocked, ${section.closedCount} closed`);
+  if (section.items.length === 0) {
+    console.log('  - none');
+    return;
+  }
+
+  for (const item of section.items.slice(0, 10)) {
+    const sourceId = item.sourceId ? `#${item.sourceId}` : item.id;
+    console.log(`  - ${item.source}/${sourceId} ${item.status}: ${item.title}`);
+    console.log(`    Owner: ${item.owner || '(unassigned)'}`);
+    console.log(`    Updated: ${item.updatedAt}`);
+    if (item.url) {
+      console.log(`    URL: ${item.url}`);
+    }
+  }
+}
+
 function printReadiness(section) {
   console.log(`Readiness: ${section.status}`);
   console.log(`  Attention items: ${section.attentionCount}`);
@@ -149,6 +167,7 @@ function printReadiness(section) {
   console.log(`  Failed skill runs: ${section.failedSkillRuns}`);
   console.log(`  Warning installs: ${section.warningInstallations}`);
   console.log(`  Pending governance: ${section.pendingGovernanceEvents}`);
+  console.log(`  Blocked work items: ${section.blockedWorkItems}`);
 }
 
 function printHuman(payload) {
@@ -163,6 +182,8 @@ function printHuman(payload) {
   printInstallHealth(payload.installHealth);
   console.log();
   printGovernance(payload.governance);
+  console.log();
+  printWorkItems(payload.workItems);
 }
 
 function formatPercent(value) {
@@ -188,6 +209,7 @@ function renderMarkdown(payload) {
     `Failed skill runs: ${payload.readiness.failedSkillRuns}`,
     `Warning installs: ${payload.readiness.warningInstallations}`,
     `Pending governance: ${payload.readiness.pendingGovernanceEvents}`,
+    `Blocked work items: ${payload.readiness.blockedWorkItems}`,
     '',
     '## Active Sessions',
     '',
@@ -267,6 +289,30 @@ function renderMarkdown(payload) {
     }
   }
 
+  lines.push(
+    '',
+    '## Work Items',
+    '',
+    `Open: ${payload.workItems.openCount}`,
+    `Blocked: ${payload.workItems.blockedCount}`,
+    `Closed: ${payload.workItems.closedCount}`
+  );
+
+  if (payload.workItems.items.length === 0) {
+    lines.push('', '- none');
+  } else {
+    lines.push('', 'Recent work items:');
+    for (const item of payload.workItems.items.slice(0, 10)) {
+      const sourceId = item.sourceId ? `#${item.sourceId}` : item.id;
+      lines.push(`- ${formatCode(item.source)} ${formatCode(sourceId)} ${item.status}: ${item.title}`);
+      lines.push(`  - Owner: ${item.owner || '(unassigned)'}`);
+      lines.push(`  - Updated: ${item.updatedAt}`);
+      if (item.url) {
+        lines.push(`  - URL: ${item.url}`);
+      }
+    }
+  }
+
   return `${lines.join('\n')}\n`;
 }
 
@@ -296,6 +342,7 @@ async function main() {
         activeLimit: options.limit,
         recentSkillRunLimit: 20,
         pendingLimit: options.limit,
+        workItemLimit: options.limit,
       }),
     };
 

@@ -269,15 +269,16 @@ async function runTests() {
       const firstMigrations = firstStore.getAppliedMigrations();
       firstStore.close();
 
-      assert.strictEqual(firstMigrations.length, 1);
+      assert.strictEqual(firstMigrations.length, 2);
       assert.strictEqual(firstMigrations[0].version, 1);
+      assert.strictEqual(firstMigrations[1].version, 2);
       assert.ok(fs.existsSync(expectedPath));
 
       const secondStore = await createStateStore({ homeDir });
       const secondMigrations = secondStore.getAppliedMigrations();
       secondStore.close();
 
-      assert.strictEqual(secondMigrations.length, 1);
+      assert.strictEqual(secondMigrations.length, 2);
       assert.strictEqual(secondMigrations[0].version, 1);
     } finally {
       cleanupTempDir(homeDir);
@@ -294,7 +295,7 @@ async function runTests() {
 
       const store = await createStateStore({ dbPath: ':memory:' });
       assert.strictEqual(store.dbPath, ':memory:');
-      assert.strictEqual(store.getAppliedMigrations().length, 1);
+      assert.strictEqual(store.getAppliedMigrations().length, 2);
       store.close();
 
       assert.ok(!fs.existsSync(path.join(tempDir, ':memory:')));
@@ -345,6 +346,7 @@ async function runTests() {
       assert.strictEqual(status.readiness.failedSkillRuns, 1);
       assert.strictEqual(status.readiness.warningInstallations, 0);
       assert.strictEqual(status.readiness.pendingGovernanceEvents, 1);
+      assert.strictEqual(status.readiness.blockedWorkItems, 0);
       assert.strictEqual(status.activeSessions.activeCount, 1);
       assert.strictEqual(status.activeSessions.sessions[0].id, 'session-active');
       assert.strictEqual(status.skillRuns.summary.totalCount, 4);
@@ -355,6 +357,7 @@ async function runTests() {
       assert.strictEqual(status.installHealth.totalCount, 1);
       assert.strictEqual(status.governance.pendingCount, 1);
       assert.strictEqual(status.governance.events[0].id, 'gov-1');
+      assert.strictEqual(status.workItems.openCount, 0);
     } finally {
       cleanupTempDir(testDir);
     }
@@ -385,6 +388,80 @@ async function runTests() {
       assert.deepStrictEqual(status.installHealth.installations, []);
       assert.strictEqual(status.governance.pendingCount, 0);
       assert.deepStrictEqual(status.governance.events, []);
+      assert.strictEqual(status.workItems.totalCount, 0);
+      assert.deepStrictEqual(status.workItems.items, []);
+    } finally {
+      cleanupTempDir(testDir);
+    }
+  })) passed += 1; else failed += 1;
+
+  if (await test('tracks linked work items for Linear, GitHub, and handoff progress', async () => {
+    const testDir = createTempDir('ecc-state-work-items-');
+    const dbPath = path.join(testDir, 'state.db');
+
+    try {
+      await seedStore(dbPath);
+
+      const store = await createStateStore({ dbPath });
+      const linearItem = store.upsertWorkItem({
+        id: 'linear-ecc-20-control-plane',
+        source: 'linear',
+        sourceId: 'ECC-20',
+        title: 'Define harness-neutral session/worktree contract',
+        status: 'in-progress',
+        priority: 'high',
+        url: 'https://linear.app/ecctools/issue/ECC-20',
+        owner: 'control-plane',
+        repoRoot: '/tmp/ecc-repo',
+        sessionId: 'session-active',
+        metadata: {
+          project: 'ECC 2.0: Control Plane',
+        },
+        createdAt: '2026-03-15T08:12:00.000Z',
+        updatedAt: '2026-03-15T08:15:00.000Z',
+      });
+
+      store.upsertWorkItem({
+        id: 'handoff-release-gate',
+        source: 'handoff',
+        sourceId: 'ecc-rc1-release-decision-20260511.md',
+        title: 'Rerun rc.1 release gate before tag',
+        status: 'blocked',
+        priority: 'high',
+        owner: 'release',
+        repoRoot: '/tmp/ecc-repo',
+        metadata: {
+          blocker: 'tag decision pending',
+        },
+        createdAt: '2026-03-15T08:13:00.000Z',
+        updatedAt: '2026-03-15T08:16:00.000Z',
+      });
+
+      store.upsertWorkItem({
+        id: 'github-pr-1738',
+        source: 'github',
+        sourceId: '1738',
+        title: 'Add Qwen install target',
+        status: 'merged',
+        priority: 'normal',
+        url: 'https://github.com/affaan-m/everything-claude-code/pull/1738',
+        owner: 'maintainer',
+        createdAt: '2026-03-15T08:14:00.000Z',
+        updatedAt: '2026-03-15T08:17:00.000Z',
+      });
+
+      const status = store.getStatus();
+      store.close();
+
+      assert.strictEqual(linearItem.id, 'linear-ecc-20-control-plane');
+      assert.strictEqual(linearItem.metadata.project, 'ECC 2.0: Control Plane');
+      assert.strictEqual(status.workItems.totalCount, 3);
+      assert.strictEqual(status.workItems.openCount, 2);
+      assert.strictEqual(status.workItems.blockedCount, 1);
+      assert.strictEqual(status.workItems.closedCount, 1);
+      assert.strictEqual(status.readiness.blockedWorkItems, 1);
+      assert.strictEqual(status.readiness.attentionCount, 3);
+      assert.strictEqual(status.workItems.items[0].id, 'github-pr-1738');
     } finally {
       cleanupTempDir(testDir);
     }
@@ -608,10 +685,13 @@ async function runTests() {
       assert.match(written, /## Readiness/);
       assert.match(written, /Status: attention/);
       assert.match(written, /Attention items: 2/);
+      assert.match(written, /Blocked work items: 0/);
       assert.match(written, /- `session-active` \[claude\/dmux-tmux\] active/);
       assert.match(written, /Success rate: 66\.7%/);
       assert.match(written, /Install health: healthy/);
       assert.match(written, /Pending governance events: 1/);
+      assert.match(written, /## Work Items/);
+      assert.match(written, /Open: 0/);
     } finally {
       cleanupTempDir(testDir);
     }
