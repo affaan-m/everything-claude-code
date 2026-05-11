@@ -31,6 +31,11 @@ Targets:
   claude       (default) - Install ECC into ~/.claude/ with managed rules/skills under rules/ecc and skills/ecc
   cursor       - Install rules, hooks, and bundled Cursor configs to ./.cursor/
   antigravity  - Install rules, workflows, skills, and agents to ./.agent/
+  codex        - Install shared agents/config into ~/.codex/
+  gemini       - Install project-local Gemini config into ./.gemini/
+  opencode     - Install shared commands/hooks/config into ~/.opencode/
+  codebuddy    - Install commands, agents, skills, and flattened rules into ./.codebuddy/
+  joycode      - Install commands, agents, skills, and flattened rules into ./.joycode/
 
 Options:
   --profile <name>    Resolve and install a manifest profile

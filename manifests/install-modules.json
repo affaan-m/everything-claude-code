@@ -12,7 +12,8 @@
         "claude",
         "cursor",
         "antigravity",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -33,7 +34,8 @@
         "cursor",
         "antigravity",
         "codex",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -52,7 +54,8 @@
         "cursor",
         "antigravity",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -100,7 +103,8 @@
         "codex",
         "gemini",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -159,7 +163,8 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "rules-core",
@@ -188,7 +193,8 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -227,7 +233,8 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -262,7 +269,8 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "workflow-quality"
@@ -289,7 +297,8 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -320,7 +329,8 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -358,7 +368,8 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -381,7 +392,8 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "business-content"
@@ -407,7 +419,8 @@
         "cursor",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -461,7 +474,8 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -500,7 +514,8 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -529,7 +544,8 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -558,7 +574,8 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -581,7 +598,8 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
