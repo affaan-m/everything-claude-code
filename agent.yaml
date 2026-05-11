@@ -152,6 +152,7 @@ commands:
   - cpp-review
   - cpp-test
   - evolve
+  - fastapi-review
   - feature-dev
   - flutter-build
   - flutter-review

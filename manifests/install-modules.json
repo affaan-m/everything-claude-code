@@ -125,6 +125,7 @@
         "skills/django-tdd",
         "skills/django-verification",
         "skills/dotnet-patterns",
+        "skills/fastapi-patterns",
         "skills/frontend-patterns",
         "skills/frontend-slides",
         "skills/golang-patterns",
