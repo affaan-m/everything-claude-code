@@ -163,9 +163,6 @@
         "skills/quarkus-verification",
         "skills/rust-patterns",
         "skills/rust-testing",
-        "skills/quarkus-patterns",
-        "skills/quarkus-tdd",
-        "skills/quarkus-verification",
         "skills/springboot-patterns",
         "skills/springboot-tdd",
         "skills/springboot-verification",
@@ -279,7 +276,6 @@
         "skills/security-review",
         "skills/security-scan",
         "skills/security-bounty-hunter",
-        "skills/quarkus-security",
         "skills/springboot-security",
         "skills/evm-token-decimals",
         "the-security-guide.md"
