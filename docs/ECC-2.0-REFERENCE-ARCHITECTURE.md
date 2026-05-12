@@ -136,6 +136,13 @@ Repo work:
 - `agentshield`: feed prompt-injection and config-risk findings into regression
   suites.
 
+Current prototype:
+
+- `docs/architecture/evaluator-rag-prototype.md` defines the read-only
+  evaluator/RAG artifact contract.
+- `examples/evaluator-rag-prototype/` records the first scenario spec, trace,
+  report, candidate playbook, and verifier result for stale-PR salvage.
+
 Verification:
 
 - read-only prototype that emits a trace, report, candidate playbook, and

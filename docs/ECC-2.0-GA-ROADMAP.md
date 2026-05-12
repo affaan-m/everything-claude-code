@@ -54,6 +54,11 @@ As of 2026-05-12:
   dry-run without `--force`, local marketplace discovery, temp-home local
   install, enabled plugin listing, and clean uninstall for `ecc@ecc`
   `2.0.0-rc.1`.
+- `docs/architecture/evaluator-rag-prototype.md` and
+  `examples/evaluator-rag-prototype/` define the first read-only
+  self-improving harness prototype: scenario spec, trace, report, candidate
+  playbook, verifier result, accepted maintainer-salvage candidate, and
+  rejected blind-translation candidate.
 - The npm package surface now excludes Python bytecode/cache artifacts through
   package `files` negation rules and a publish-surface regression test.
 - `docs/legacy-artifact-inventory.md` records that no `_legacy-documents-*`
@@ -194,7 +199,7 @@ is not complete unless the evidence column exists and has been freshly verified.
 | AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports, exception lifecycle audit | PRs #53, #55-#62 landed with test evidence | Needs PDF/export decision or next enterprise signal |
 | ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog | PRs #26-#39 landed with test evidence | Needs capacity-backed Linear rollout / broader evaluator corpus |
 | GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy and deterministic follow-up checks | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, Analyzer Corpus Evidence, RAG/Evaluator Evidence, and PR Review/Salvage Evidence | Partially complete |
-| Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates exist | Needs evaluation/RAG prototype |
+| Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates plus `docs/architecture/evaluator-rag-prototype.md` and `examples/evaluator-rag-prototype/` define the first read-only scenario, trace, report, playbook, and verifier result | Needs broader evaluator corpus |
 | Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation was retried on 2026-05-12 and remains blocked by the workspace free issue limit | Needs recurring status updates after each merge batch |
 | Flow separation and progress tracking | Flow lanes with owner artifacts and update cadence | This roadmap defines lanes below | Active |
 | Realtime Linear sync | Project updates while issue limit is blocked; issues later | ECC-Tools #39 implements opt-in Linear API sync for deferred follow-up backlog items | Needs workspace capacity/config rollout |
@@ -213,7 +218,7 @@ back to the repo evidence and merge commits.
 | Queue hygiene and salvage | GitHub PR/issue state, salvage ledger | Append ledger entries for any future stale closures | Every cleanup batch |
 | Release and publication | rc.1 release docs, publication readiness doc | Naming matrix and plugin submission/contact checklist | Before any tag |
 | Harness OS core | Audit, adapter matrix, observability docs, `ecc2/` | HUD/session-control acceptance spec | Weekly until GA |
-| Evaluation and RAG | Reference-set validation, harness audit, traces | Read-only evaluator/RAG prototype design | Before deep analyzer expansion |
+| Evaluation and RAG | Reference-set validation, harness audit, traces | Read-only evaluator/RAG prototype plus fixture contract | Expand to CI, billing, harness-config, and AgentShield scenarios |
 | AgentShield enterprise | AgentShield PR evidence and roadmap notes | PDF-export decision or next enterprise signal | After value decision |
 | ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy | Capacity-backed Linear rollout or broader evaluator/RAG corpus slice | Next implementation batch |
 | Linear progress | Linear project status updates and this mirror | Status update with queue/evidence/missing gates | Every significant merge batch |
@@ -407,5 +412,6 @@ Acceptance:
    executive report, corpus benchmark output, and exception lifecycle audit.
 2. Enable/configure the merged Linear backlog sync path after workspace issue
    capacity clears or the Linear workspace is upgraded.
-3. Expand the evaluator/RAG corpus with real cleanup-batch cases as future
-   maintainer-owned examples land.
+3. Expand the evaluator/RAG corpus beyond the first stale-salvage prototype to
+   CI failure diagnosis, harness-config drift, billing readiness, and
+   AgentShield policy exception scenarios.
