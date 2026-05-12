@@ -314,11 +314,10 @@ export function ExpandingCard({ title, body }: { title: string; body: string }) 
 
 ```tsx
 <motion.div
-  animate={{
-    height: open ? "auto" : 0,
-    overflow: "hidden",
-  }}
-  transition={{
+  initial={false}
+  animate={{ opacity: open ? 1 : 0, scaleY: open ? 1 : 0 }}
+  style={{ transformOrigin: "top", overflow: "hidden" }}
+ transition={{
     duration: motionTokens.duration.normal,
     ease: motionTokens.easing.smooth,
   }}
