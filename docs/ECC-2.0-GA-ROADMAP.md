@@ -56,9 +56,10 @@ As of 2026-05-12:
   `2.0.0-rc.1`.
 - `docs/architecture/evaluator-rag-prototype.md` and
   `examples/evaluator-rag-prototype/` define the first read-only
-  self-improving harness prototype: scenario spec, trace, report, candidate
-  playbook, verifier result, accepted maintainer-salvage candidate, and
-  rejected blind-translation candidate.
+  self-improving harness prototype: scenario specs, traces, reports,
+  candidate playbooks, verifier results, accepted maintainer-salvage,
+  billing-readiness, and CI-failure-diagnosis candidates, plus rejected
+  unsafe candidates.
 - The npm package surface now excludes Python bytecode/cache artifacts through
   package `files` negation rules and a publish-surface regression test.
 - `docs/legacy-artifact-inventory.md` records that no `_legacy-documents-*`
@@ -199,7 +200,7 @@ is not complete unless the evidence column exists and has been freshly verified.
 | AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports, exception lifecycle audit | PRs #53, #55-#62 landed with test evidence | Needs PDF/export decision or next enterprise signal |
 | ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog | PRs #26-#39 landed with test evidence | Needs capacity-backed Linear rollout / broader evaluator corpus |
 | GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy and deterministic follow-up checks | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, Analyzer Corpus Evidence, RAG/Evaluator Evidence, and PR Review/Salvage Evidence | Partially complete |
-| Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates plus `docs/architecture/evaluator-rag-prototype.md` and `examples/evaluator-rag-prototype/` define read-only stale-salvage and billing-readiness scenarios with trace, report, playbook, and verifier result artifacts | Needs broader evaluator corpus |
+| Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates plus `docs/architecture/evaluator-rag-prototype.md` and `examples/evaluator-rag-prototype/` define read-only stale-salvage, billing-readiness, and CI-failure-diagnosis scenarios with trace, report, playbook, and verifier result artifacts | Needs broader evaluator corpus |
 | Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation was retried on 2026-05-12 and remains blocked by the workspace free issue limit | Needs recurring status updates after each merge batch |
 | Flow separation and progress tracking | Flow lanes with owner artifacts and update cadence | This roadmap defines lanes below | Active |
 | Realtime Linear sync | Project updates while issue limit is blocked; issues later | ECC-Tools #39 implements opt-in Linear API sync for deferred follow-up backlog items | Needs workspace capacity/config rollout |

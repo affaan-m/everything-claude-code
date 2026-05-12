@@ -10,7 +10,9 @@ The fixture set lives in
 It started with the May 2026 stale-PR cleanup and salvage lane because that
 lane has real inputs, real accepted work, and real rejected work. The corpus now
 also includes a billing/Marketplace readiness scenario so launch copy cannot
-treat dry-run release evidence or roadmap intent as live billing state.
+treat dry-run release evidence or roadmap intent as live billing state. A
+CI-failure diagnosis scenario adds the log-first workflow needed before an
+agent proposes fixes for red checks.
 
 ## Reference Pressure
 
@@ -96,6 +98,8 @@ Current corpus:
   maintainer-owned branches with attribution and validation.
 - `billing-marketplace-readiness`: verifies billing, App, and Marketplace
   launch claims before public copy says they are live.
+- `ci-failure-diagnosis`: requires failed-job logs, changed-file scope, and a
+  named regression command before a CI fix playbook can be promoted.
 
 ## ECC Tools Mapping
 
@@ -129,6 +133,5 @@ A candidate can be promoted only when:
 
 The next evaluator/RAG corpus should add:
 
-- a CI-failure diagnosis scenario with captured logs and a known fix;
 - a harness-config quality scenario covering MCP/plugin/hook drift;
 - an AgentShield policy exception scenario with SARIF and report evidence.

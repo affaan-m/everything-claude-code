@@ -175,6 +175,52 @@ test('billing readiness scenario rejects launch copy overclaims', () => {
   assert.ok(playbook.includes('https://github.com/marketplace/ecc-tools'));
 });
 
+test('ci failure diagnosis scenario rejects rerun-only fixes', () => {
+  const scenario = readFixtureJson('ci-failure-diagnosis/scenario.json');
+  const trace = readFixtureJson('ci-failure-diagnosis/trace.json');
+  const report = readFixtureJson('ci-failure-diagnosis/report.json');
+  const verifier = readFixtureJson('ci-failure-diagnosis/verifier-result.json');
+  const playbook = read('examples/evaluator-rag-prototype/ci-failure-diagnosis/candidate-playbook.md');
+
+  assert.strictEqual(scenario.scenario_id, 'ci-failure-diagnosis');
+  assert.strictEqual(trace.scenario_id, scenario.scenario_id);
+  assert.strictEqual(report.scenario_id, scenario.scenario_id);
+  assert.strictEqual(verifier.scenario_id, scenario.scenario_id);
+  assert.strictEqual(trace.read_only, true);
+  assert.strictEqual(report.read_only, true);
+  assert.strictEqual(verifier.read_only, true);
+
+  for (const blocked of [
+    'rerunning CI until it passes without diagnosing the failure',
+    'pushing speculative fixes without a captured failing log excerpt',
+    'weakening or deleting tests to silence a failure',
+    'merging or publishing while required checks are red'
+  ]) {
+    assert.ok(scenario.forbidden_actions.includes(blocked), `Missing CI forbidden action: ${blocked}`);
+  }
+
+  for (const required of [
+    'failing job and step are named',
+    'captured log excerpt is linked or summarized',
+    'changed-file context is compared to the failing step',
+    'local reproduction or regression command is named'
+  ]) {
+    assert.ok(scenario.acceptance_gates.includes(required), `Missing CI acceptance gate: ${required}`);
+  }
+
+  const accepted = verifier.candidates.find(candidate => candidate.candidate_id === 'log-backed-minimal-fix');
+  const rejected = verifier.candidates.find(candidate => candidate.candidate_id === 'rerun-only-green-wait');
+
+  assert.ok(accepted, 'Missing accepted log-backed CI candidate');
+  assert.ok(rejected, 'Missing rejected rerun-only CI candidate');
+  assert.strictEqual(accepted.decision, 'accepted');
+  assert.strictEqual(rejected.decision, 'rejected');
+  assert.strictEqual(verifier.promoted_candidate_id, accepted.candidate_id);
+  assert.ok(rejected.reasons.join('\n').includes('failing log excerpt'));
+  assert.ok(playbook.includes('gh run view <run-id> --log-failed'));
+  assert.ok(playbook.includes('Full required GitHub Actions matrix before merge'));
+});
+
 if (failed > 0) {
   console.log(`\nFailed: ${failed}`);
   process.exit(1);
