@@ -49,6 +49,11 @@ As of 2026-05-12:
   dry-run publication evidence pass: npm pack/publish dry-runs, temp install
   smoke, Claude plugin validation/tag preflight, Codex marketplace CLI shape,
   OpenCode build, and the remaining approval-gated release blockers.
+- A detached clean worktree at
+  `bfacf37715b39655cbc2c48f12f2a35c67cb0253` verified Claude plugin tag
+  dry-run without `--force`, local marketplace discovery, temp-home local
+  install, enabled plugin listing, and clean uninstall for `ecc@ecc`
+  `2.0.0-rc.1`.
 - The npm package surface now excludes Python bytecode/cache artifacts through
   package `files` negation rules and a publish-surface regression test.
 - `docs/legacy-artifact-inventory.md` records that no `_legacy-documents-*`
@@ -184,7 +189,7 @@ is not complete unless the evidence column exists and has been freshly verified.
 | ECC 2.0 preview pack ready | Release docs, quickstart, publication readiness, release notes | `docs/releases/2.0.0-rc.1/` and readiness docs are in-tree | Needs final release evidence |
 | Hermes specialized skills included safely | Hermes setup/import docs and sanitized skill surface | Hermes setup and import playbook are public; secrets stay local | Needs final release review |
 | Naming and rename readiness | Naming matrix across package/plugin/docs/social surfaces | `docs/releases/2.0.0-rc.1/naming-and-publication-matrix.md` records current package, repo, Claude plugin, Codex plugin, OpenCode, and npm availability evidence | Complete for rc.1; post-rc rename remains future work |
-| Claude and Codex plugin publication | Contact/submission path with required artifacts and status | Publication readiness, naming matrix, and May 12 dry-run evidence document plugin validation, Claude tag preflight, and Codex marketplace CLI shape | Needs clean-checkout release tag/install evidence and explicit approval |
+| Claude and Codex plugin publication | Contact/submission path with required artifacts and status | Publication readiness, naming matrix, and May 12 dry-run evidence document plugin validation, clean-checkout Claude tag/install smoke, and Codex marketplace CLI shape | Needs explicit approval for real tag/push and marketplace submission |
 | Articles, tweets, and announcements | X thread, LinkedIn copy, GitHub release copy, push checklist | Draft launch collateral exists under rc.1 release docs | Needs URL-backed refresh |
 | AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports, exception lifecycle audit | PRs #53, #55-#62 landed with test evidence | Needs PDF/export decision or next enterprise signal |
 | ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog | PRs #26-#39 landed with test evidence | Needs capacity-backed Linear rollout / broader evaluator corpus |

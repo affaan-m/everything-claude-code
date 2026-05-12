@@ -32,7 +32,7 @@ For the May 12 dry-run evidence pass, see
 | --- | --- | --- | --- | --- | --- |
 | GitHub release | Tag exists, release notes use final URLs, assets attached if needed | `gh release view v2.0.0-rc.1 --json tagName,url,isPrerelease` | `Blocker: release not found on 2026-05-12` | Release owner | Pending approval |
 | npm package | `npm pack --dry-run` has expected files, version matches, rc goes to `next` | `npm pack --dry-run` and `npm publish --tag next --dry-run` where supported | `Blocker: actual publish requires approval; dry run passed with next tag` | Package owner | Dry-run passed |
-| Claude plugin | Manifest validates, marketplace JSON points to public repo, install docs match slug | `claude plugin validate .claude-plugin/plugin.json` | `Blocker: real tag must run from clean checkout and requires approval` | Plugin owner | Dry-run preflight recorded |
+| Claude plugin | Manifest validates, marketplace JSON points to public repo, install docs match slug | `claude plugin validate .claude-plugin/plugin.json`; `claude plugin tag .claude-plugin --dry-run`; isolated temp-home install smoke | `Blocker: real tag creation/push requires approval` | Plugin owner | Clean-checkout dry-run and install smoke recorded |
 | Codex plugin | Manifest version matches package and docs, hook limitations are explicit | `node tests/docs/ecc2-release-surface.test.js` | `Blocker: marketplace submission path still manual/owner-gated` | Plugin owner | Evidence recorded |
 | OpenCode package | Build output is regenerated from source and package metadata is current | `npm run build:opencode` | `Blocker: none for local build; public distribution still follows npm/plugin release` | Package owner | Evidence recorded |
 | ECC Tools billing reference | Any billing claim links to verified Marketplace/App state | `gh api repos/ECC-Tools/ECC-Tools` plus app/marketplace URL check | `Blocker:` | ECC Tools owner | Pending |
@@ -58,8 +58,8 @@ Record the exact commit SHA and command output before any publication action:
 
 - `main` has unreviewed release-surface changes after the evidence was recorded.
 - `npm view ecc-universal dist-tags --json` contradicts the intended rc/GA tag.
-- Claude plugin validation is unavailable and no manual install smoke test is
-  recorded.
+- Claude plugin validation is unavailable or no clean-checkout install smoke
+  test is recorded for the intended release commit.
 - Release notes or announcement drafts still contain placeholder URLs,
   `TODO`, `TBD`, private workspace paths, or personal operator references.
 - Billing, Marketplace, or plugin-submission copy claims a live surface before

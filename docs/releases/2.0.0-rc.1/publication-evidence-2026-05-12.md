@@ -62,6 +62,27 @@ Temporary install smoke:
 | Agent/catalog metadata | `node tests/scripts/catalog.test.js` | Passed `7/7` |
 | Observability gate | `npm run observability:ready` | Passed `16/16` |
 
+## Clean-Checkout Claude Plugin Smoke
+
+This follow-up pass used a detached clean worktree at
+`/tmp/ecc-clean-plugin-evidence` from commit
+`bfacf37715b39655cbc2c48f12f2a35c67cb0253`. It used an isolated temp home
+(`HOME=/tmp/ecc-clean-plugin-home`) and a temp local project
+(`/tmp/ecc-plugin-install-smoke`), so it did not write to the user's real Claude
+plugin config.
+
+| Command | Result |
+| --- | --- |
+| `git -C /tmp/ecc-clean-plugin-evidence status --short --branch` | `## HEAD (no branch)` with no dirty or untracked files |
+| `claude plugin validate .claude-plugin/plugin.json` | Passed |
+| `claude plugin validate .claude-plugin/marketplace.json` | Passed |
+| `claude plugin tag .claude-plugin --dry-run` | Passed without `--force`; would create `ecc--v2.0.0-rc.1` at HEAD and push `refs/tags/ecc--v2.0.0-rc.1` |
+| `claude plugin marketplace add /tmp/ecc-clean-plugin-evidence --scope local` with temp `HOME` | Added marketplace `ecc` in local settings |
+| `claude plugin list --available --json` with temp `HOME` | Listed `ecc@ecc`, version `2.0.0-rc.1`, source `./` |
+| `claude plugin install ecc@ecc --scope local` with temp `HOME` | Installed `ecc@ecc` in local scope |
+| `claude plugin list --json` with temp `HOME` | Listed `ecc@ecc`, version `2.0.0-rc.1`, enabled, local scope, install path under `/tmp/ecc-clean-plugin-home/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1` |
+| `claude plugin uninstall ecc@ecc --scope local` with temp `HOME` | Uninstalled successfully; final plugin list was `[]` |
+
 ## Announcement Placeholder Check
 
 The forbidden-placeholder scan only returned the publication-readiness checklist
@@ -72,8 +93,8 @@ instances were found.
 
 - Create or verify GitHub prerelease `v2.0.0-rc.1`.
 - Publish `ecc-universal@2.0.0-rc.1` with npm dist-tag `next`.
-- Re-run `claude plugin tag .claude-plugin --dry-run` from a clean checkout,
-  then create and push the plugin tag only after explicit approval.
+- Create and push the Claude plugin tag only after explicit approval. The clean
+  checkout dry run and temp install smoke now pass.
 - Confirm the live Claude/Codex/OpenCode marketplace submission path or record
   the manual submission owner and status.
 - Verify ECC Tools billing/App/Marketplace claims before using them in launch
