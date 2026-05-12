@@ -16,8 +16,12 @@ so the live execution truth is split across:
 
 As of 2026-05-12:
 
-- Public GitHub queues are clean across `everything-claude-code`,
-  `agentshield`, `JARVIS`, `ECC-Tools`, and `ECC-website`.
+- Public GitHub queues are clean across `affaan-m/everything-claude-code`,
+  `affaan-m/agentshield`, `affaan-m/JARVIS`, `ECC-Tools/ECC-Tools`, and
+  `ECC-Tools/ECC-website`.
+- Public GitHub discussions are also clean across those tracked repos:
+  `states: OPEN` returned zero discussions for every accessible discussion
+  surface on 2026-05-12.
 - The final open public GitHub issue, #1314, was closed as a non-actionable
   external badge/listing notification with a courtesy comment.
 - Linear issue creation for this project was re-tested after GitHub cleanup and
@@ -129,6 +133,17 @@ As of 2026-05-12:
 - ECC PR #1813 expanded the stale PR salvage ledger with source-to-salvage
   mappings for #1325, #1414, #1478, #1504, and #1603, confirming those useful
   stale contributions were already preserved through later maintainer PRs.
+- ECC PR #1815 salvaged the useful stale #1304 cost-tracking and #1232
+  skill-scout work into current command/skill conventions with current catalog
+  sync and full local/remote validation.
+- ECC PR #1816 salvaged the useful stale #1659 frontend design guidance into
+  canonical ECC skill layout while preserving the guardrail that the official
+  Anthropic `frontend-design` skill remains externally sourced.
+- ECC PR #1817 salvaged the useful stale #1658 code-reviewer false-positive
+  guardrails, adding proof gates for HIGH/CRITICAL findings, common
+  false-positive exclusions, and a regression test.
+- ECC PR #1818 recorded the May 12 stale-salvage gap pass, classifying already
+  present work, skipped work, and translator/manual-review leftovers.
 
 ## Operating Rules
 
@@ -153,8 +168,9 @@ is not complete unless the evidence column exists and has been freshly verified.
 | --- | --- | --- | --- |
 | Keep public PRs below 20 | Repo-family PR recheck | 0 open PRs across the tracked public repos on 2026-05-12 | Complete for this checkpoint |
 | Keep public issues below 20 | Repo-family issue recheck | 0 open issues across the tracked public repos on 2026-05-12 after closing #1314 as non-actionable badge/listing noise | Complete for this checkpoint |
+| Manage repository discussions | Repo-family discussion recheck | 0 open discussions across the tracked public repos on 2026-05-12 via GraphQL `states: OPEN` checks | Complete for this checkpoint |
 | Manage PR discussions | PR review/comment closure plus merge/close state | #1803 was maintainer-edited and merged; no open PRs remain | Complete for this checkpoint |
-| Salvage useful stale work | `docs/stale-pr-salvage-ledger.md` | Ledger records salvaged, superseded, skipped, and manual-review tails | Complete except #1687 manual review |
+| Salvage useful stale work | `docs/stale-pr-salvage-ledger.md` | Ledger records salvaged, superseded, skipped, and manual-review tails; #1815-#1818 added cost tracking, skill scout, frontend design guidance, code-reviewer false-positive guardrails, and the May 12 gap pass | Complete except translation/manual review tail |
 | ECC 2.0 preview pack ready | Release docs, quickstart, publication readiness, release notes | `docs/releases/2.0.0-rc.1/` and readiness docs are in-tree | Needs final release evidence |
 | Hermes specialized skills included safely | Hermes setup/import docs and sanitized skill surface | Hermes setup and import playbook are public; secrets stay local | Needs final release review |
 | Naming and rename readiness | Naming matrix across package/plugin/docs/social surfaces | Milestone 1 defines the needed matrix | Not complete |
@@ -164,7 +180,7 @@ is not complete unless the evidence column exists and has been freshly verified.
 | ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog | PRs #26-#39 landed with test evidence | Needs capacity-backed Linear rollout / broader evaluator corpus |
 | GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy and deterministic follow-up checks | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, Analyzer Corpus Evidence, RAG/Evaluator Evidence, and PR Review/Salvage Evidence | Partially complete |
 | Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates exist | Needs evaluation/RAG prototype |
-| Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation was retried on 2026-05-12 and remains blocked by the workspace free issue limit | Needs recurring status updates |
+| Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation was retried on 2026-05-12 and remains blocked by the workspace free issue limit | Needs recurring status updates after each merge batch |
 | Flow separation and progress tracking | Flow lanes with owner artifacts and update cadence | This roadmap defines lanes below | Active |
 | Realtime Linear sync | Project updates while issue limit is blocked; issues later | ECC-Tools #39 implements opt-in Linear API sync for deferred follow-up backlog items | Needs workspace capacity/config rollout |
 | Observability for self-use | Local readiness gate, traces, status snapshots, risk ledger | `npm run observability:ready` reports 14/14 | Complete for local gate |
