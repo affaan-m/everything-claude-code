@@ -58,6 +58,14 @@ As of 2026-05-12:
 - AgentShield PR #60 added category-level built-in corpus benchmark output,
   a `readyForRegressionGate` signal, terminal `--corpus` category coverage,
   README/API docs, built-CLI smoke validation, and 1,705-test coverage.
+- AgentShield PR #61 cleared the remaining Dependabot security/bugfix PR with
+  a lockfile-only `postcss` 8.5.6 -> 8.5.14 bump after local typecheck, full
+  tests, lint, build, and remote self-scan/action verification.
+- AgentShield PR #62 added organization-policy exception lifecycle audit
+  evidence: active, expiring-soon, and expired exception counts; owner, ticket,
+  scope, expiry, and days-until-expiry reporting; terminal output and GitHub
+  Action job-summary evidence; README docs; rebuilt action bundles; and
+  1,708-test validation.
 - ECC PR #1778 recovered the useful stale #1413 network/homelab architect-agent
   concepts.
 - ECC-Tools PR #26 added cost/token-risk predictive follow-ups for AI routing,
@@ -135,7 +143,7 @@ is not complete unless the evidence column exists and has been freshly verified.
 | Naming and rename readiness | Naming matrix across package/plugin/docs/social surfaces | Milestone 1 defines the needed matrix | Not complete |
 | Claude and Codex plugin publication | Contact/submission path with required artifacts and status | Publication readiness gate exists | Not complete |
 | Articles, tweets, and announcements | X thread, LinkedIn copy, GitHub release copy, push checklist | Draft launch collateral exists under rc.1 release docs | Needs URL-backed refresh |
-| AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports | PRs #53, #55-#60 landed with test evidence | Needs next value decision |
+| AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports, exception lifecycle audit | PRs #53, #55-#62 landed with test evidence | Needs PDF/export decision or next enterprise signal |
 | ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog | PRs #26-#38 landed with test evidence | Needs native Linear API sync / broader evaluator corpus |
 | GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy and deterministic follow-up checks | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, Analyzer Corpus Evidence, RAG/Evaluator Evidence, and PR Review/Salvage Evidence | Partially complete |
 | Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates exist | Needs evaluation/RAG prototype |
@@ -259,8 +267,9 @@ Target: 2026-06-14
 
 Acceptance:
 
-- Formal policy schema exists for org baselines, exceptions, owners,
-  expiration, severity, and audit trails.
+- Formal policy schema and evaluation output exist for org baselines,
+  exceptions, owners, expiration, severity, audit trails, expiring-soon
+  visibility, and expired-exception enforcement.
 - SARIF/code-scanning output is implemented and tested.
 - GitHub Action policy gates expose organization policy status and violation
   counts for branch-protection and CI evidence.
@@ -271,7 +280,8 @@ Acceptance:
 - Prompt-injection corpus and regression benchmark are ready for continuous
   rule hardening with category-level coverage and regression-gate output.
 - Enterprise reports include JSON plus self-contained HTML executive output
-  with risk posture, priority findings, and category exposure.
+  with risk posture, priority findings, category exposure, and policy-exception
+  lifecycle evidence in terminal/CI summaries.
 
 ### 6. ECC Tools Billing, Deep Analysis, PR Checks, And Linear Sync
 
@@ -345,7 +355,7 @@ Acceptance:
 ## Next Engineering Slices
 
 1. Decide whether AgentShield PDF export adds value beyond the merged HTML
-   executive report and corpus benchmark output.
+   executive report, corpus benchmark output, and exception lifecycle audit.
 2. Add native Linear API sync for ECC Tools backlog items after workspace issue
    capacity clears.
 3. Expand the evaluator/RAG corpus with real cleanup-batch cases as future
