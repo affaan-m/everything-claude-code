@@ -8,7 +8,7 @@ origin: ECC
 
 Apache Camel ile bulut-native, event-driven servisler için Quarkus 3.x mimari ve API desenleri.
 
-## Ne Zaman Aktif Edilir
+## When to Use
 
 - JAX-RS veya RESTEasy Reactive ile REST API'leri oluşturma
 - Resource → service → repository katmanlarını yapılandırma
@@ -21,7 +21,17 @@ Apache Camel ile bulut-native, event-driven servisler için Quarkus 3.x mimari v
 - Koşullu akış işleme uygulama
 - GraalVM native derleme ile çalışma
 
-## Birden Fazla Bağımlılıklı Service Katmanı (Lombok)
+## How It Works
+
+Quarkus servislerinde Resource -> service -> repository akışını CDI scope'ları,
+`@Transactional` sınırları, Panache/Hibernate veri erişimi ve Camel/RabbitMQ
+entegrasyonlarıyla birlikte uygulayın. Aşağıdaki örnekler event üretimi,
+dosya işleme, özel logging context ve async yayınlama için kopyalanabilir
+başlangıç noktaları sağlar.
+
+## Examples
+
+### Birden Fazla Bağımlılıklı Service Katmanı (Lombok)
 
 ```java
 @Slf4j
@@ -79,6 +89,7 @@ public class As2ProcessingService {
                 
                 this.eventService.createSuccessEvent(documentInfo, "PERSISTENCE_BLOB_EVENT_TYPE");
                 
+                String originalFileName = documentInfo.getOriginalFileName();
                 BusinessRulesPayload payload = this.documentJobService.createDocumentAndJobEntities(
                     documentInfo, originalFileName, structureIdPartner, 
                     flowProfile, invoiceValidationResult.getDocumentHash());
@@ -147,9 +158,10 @@ public class ProcessingService {
 </configuration>
 ```
 
-## Event Service Deseni
+### Event Service Deseni
 
 ```java
+@Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
 public class EventService {

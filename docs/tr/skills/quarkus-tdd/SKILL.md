@@ -8,7 +8,7 @@ origin: ECC
 
 80%+ kapsam (unit + integration) ile Quarkus 3.x servisleri için TDD rehberi. Apache Camel ile event-driven mimariler için optimize edilmiştir.
 
-## Ne Zaman Kullanılır
+## When to Use
 
 - Yeni özellikler veya REST endpoint'leri
 - Bug düzeltmeleri veya refactoring'ler
@@ -19,14 +19,16 @@ origin: ECC
 - CompletableFuture async işlemlerini doğrulama
 - LogContext yayılımını test etme
 
-## İş Akışı
+## How It Works
 
 1. Önce testleri yazın (başarısız olmalılar)
 2. Geçmek için minimal kod uygulayın
 3. Testleri yeşil tutarken refactor edin
 4. JaCoCo ile kapsamı zorlayın (%80+ hedef)
 
-## @Nested Organizasyonlu Unit Testler
+## Examples
+
+### @Nested Organizasyonlu Unit Testler
 
 Kapsamlı ve okunabilir testler için bu yapılandırılmış yaklaşımı izleyin:
 
@@ -370,8 +372,10 @@ class BusinessRulesRouteTest {
       });
       camelContext.getRouteController().startRoute("document-processing");
       
-      // Validator'ı exception fırlatacak şekilde mock'la
-      when(eventService.validate(any())).thenThrow(new ValidationException("Invalid document"));
+      // Error event oluşturma hatasını gerçek EventService API'si üzerinden simüle et
+      doThrow(new ValidationException("Invalid document"))
+          .when(eventService)
+          .createErrorEvent(any(), eq("VALIDATION_ERROR"), anyString());
       
       // ACT
       producerTemplate.sendBody("direct:process-document", testPayload);
