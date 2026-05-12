@@ -54,6 +54,9 @@ As of 2026-05-12:
 - ECC-Tools PR #26 added cost/token-risk predictive follow-ups for AI routing,
   Claude/model calls, usage limits, quota, and analysis-budget changes that lack
   budget, quota, rate-limit, or cost validation evidence.
+- ECC-Tools PR #27 added the non-blocking `ECC Tools / PR Risk Taxonomy`
+  check-run for Security Evidence, Harness Drift, Install Manifest Integrity,
+  CI/CD Recommendation, Cost/Token Risk, and Agent Config Review buckets.
 
 ## Operating Rules
 
@@ -214,5 +217,5 @@ Acceptance:
 
 1. Continue AgentShield enterprise supply-chain intelligence and reporting in
    the AgentShield repo.
-2. Audit ECC Tools billing and check-run surfaces before any native GitHub
-   payments announcement.
+2. Audit ECC Tools billing, entitlement, and marketplace surfaces before any
+   native GitHub payments announcement.
