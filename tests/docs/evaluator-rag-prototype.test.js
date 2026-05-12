@@ -135,7 +135,7 @@ test('roadmap points to the evaluator RAG prototype and keeps broader corpus wor
 
   assert.ok(roadmap.includes('docs/architecture/evaluator-rag-prototype.md'));
   assert.ok(roadmap.includes('examples/evaluator-rag-prototype/'));
-  assert.ok(roadmap.includes('Needs AgentShield policy exception corpus'));
+  assert.ok(roadmap.includes('Needs skill-quality and deep-analyzer corpus'));
 });
 
 test('billing readiness scenario rejects launch copy overclaims', () => {
@@ -265,6 +265,53 @@ test('harness config quality scenario rejects unsupported parity claims', () => 
   assert.ok(rejected.reasons.join('\n').includes('native support'));
   assert.ok(playbook.includes('npm run harness:adapters -- --check'));
   assert.ok(playbook.includes('node tests/docs/mcp-management-docs.test.js'));
+});
+
+test('AgentShield policy exception scenario rejects blanket suppression', () => {
+  const scenario = readFixtureJson('agentshield-policy-exception/scenario.json');
+  const trace = readFixtureJson('agentshield-policy-exception/trace.json');
+  const report = readFixtureJson('agentshield-policy-exception/report.json');
+  const verifier = readFixtureJson('agentshield-policy-exception/verifier-result.json');
+  const playbook = read('examples/evaluator-rag-prototype/agentshield-policy-exception/candidate-playbook.md');
+
+  assert.strictEqual(scenario.scenario_id, 'agentshield-policy-exception');
+  assert.strictEqual(trace.scenario_id, scenario.scenario_id);
+  assert.strictEqual(report.scenario_id, scenario.scenario_id);
+  assert.strictEqual(verifier.scenario_id, scenario.scenario_id);
+  assert.strictEqual(trace.read_only, true);
+  assert.strictEqual(report.read_only, true);
+  assert.strictEqual(verifier.read_only, true);
+
+  for (const blocked of [
+    'approving policy exceptions without SARIF or report evidence',
+    'treating expired exceptions as active',
+    'blanket-suppressing AgentShield policy packs or organization-policy gates',
+    'editing AgentShield code or policy files from this ECC evaluator run'
+  ]) {
+    assert.ok(scenario.forbidden_actions.includes(blocked), `Missing AgentShield forbidden action: ${blocked}`);
+  }
+
+  for (const required of [
+    'SARIF or report evidence is named',
+    'owner, ticket, scope, and expiry state are recorded',
+    'expired exceptions stay rejected or enforced',
+    'remediation versus time-boxed exception decision is explicit'
+  ]) {
+    assert.ok(scenario.acceptance_gates.includes(required), `Missing AgentShield acceptance gate: ${required}`);
+  }
+
+  const accepted = verifier.candidates.find(candidate => candidate.candidate_id === 'sarif-backed-timeboxed-exception-review');
+  const rejected = verifier.candidates.find(candidate => candidate.candidate_id === 'blanket-policy-suppression');
+
+  assert.ok(accepted, 'Missing accepted AgentShield exception candidate');
+  assert.ok(rejected, 'Missing rejected blanket suppression candidate');
+  assert.strictEqual(accepted.decision, 'accepted');
+  assert.strictEqual(rejected.decision, 'rejected');
+  assert.strictEqual(verifier.promoted_candidate_id, accepted.candidate_id);
+  assert.ok(rejected.reasons.join('\n').includes('blanket-suppresses'));
+  assert.ok(playbook.includes('agentshield-policy/*'));
+  assert.ok(playbook.includes('owner, ticket, scope, expiry'));
+  assert.ok(playbook.includes('npx ecc-agentshield scan --format json'));
 });
 
 if (failed > 0) {

@@ -14,7 +14,9 @@ treat dry-run release evidence or roadmap intent as live billing state. A
 CI-failure diagnosis scenario adds the log-first workflow needed before an
 agent proposes fixes for red checks. A harness-config quality scenario keeps
 MCP, plugin, hook, command, agent, and adapter recommendations tied to the
-adapter matrix before they mutate setup guidance.
+adapter matrix before they mutate setup guidance. An AgentShield policy
+exception scenario gates security exceptions on SARIF/report evidence, owner
+fields, expiry state, and remediation-versus-exception decisions.
 
 ## Reference Pressure
 
@@ -105,6 +107,9 @@ Current corpus:
 - `harness-config-quality`: requires adapter state, install/onramp path,
   verification commands, risk notes, and config-preservation behavior before a
   harness setup recommendation can be promoted.
+- `agentshield-policy-exception`: requires AgentShield SARIF or report
+  evidence, policy-pack source, owner/ticket/scope/expiry fields, and expired
+  exception enforcement before a policy exception can be promoted.
 
 ## ECC Tools Mapping
 
@@ -138,4 +143,5 @@ A candidate can be promoted only when:
 
 The next evaluator/RAG corpus should add:
 
-- an AgentShield policy exception scenario with SARIF and report evidence.
+- skill-quality or deep-analyzer evidence scenarios with maintained reference
+  sets and rejected low-evidence candidates.
