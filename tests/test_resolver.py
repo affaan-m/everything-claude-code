@@ -1,6 +1,6 @@
 import pytest
 from llm.core.types import ProviderType
-from llm.providers import ClaudeProvider, OpenAIProvider, OllamaProvider, get_provider
+from llm.providers import AstraflowCNProvider, AstraflowProvider, ClaudeProvider, OpenAIProvider, OllamaProvider, get_provider
 
 
 class TestGetProvider:
@@ -18,6 +18,16 @@ class TestGetProvider:
         provider = get_provider("ollama")
         assert isinstance(provider, OllamaProvider)
         assert provider.provider_type == ProviderType.OLLAMA
+
+    def test_get_astraflow_provider(self):
+        provider = get_provider("astraflow")
+        assert isinstance(provider, AstraflowProvider)
+        assert provider.provider_type == ProviderType.ASTRAFLOW
+
+    def test_get_astraflow_cn_provider(self):
+        provider = get_provider("astraflow_cn")
+        assert isinstance(provider, AstraflowCNProvider)
+        assert provider.provider_type == ProviderType.ASTRAFLOW_CN
 
     def test_get_provider_by_enum(self):
         provider = get_provider(ProviderType.CLAUDE)
@@ -52,6 +62,13 @@ class TestGetProvider:
 
         assert isinstance(provider, OllamaProvider)
 
+    def test_astraflow_env_provider_is_normalized(self, monkeypatch):
+        monkeypatch.setenv("LLM_PROVIDER", "ASTRAFLOW")
+
+        provider = get_provider()
+
+        assert isinstance(provider, AstraflowProvider)
+
     def test_explicit_provider_overrides_saved_llm_env(self, monkeypatch, tmp_path):
         monkeypatch.delenv("LLM_PROVIDER", raising=False)
         monkeypatch.chdir(tmp_path)
@@ -60,3 +77,12 @@ class TestGetProvider:
         provider = get_provider("ollama")
 
         assert isinstance(provider, OllamaProvider)
+
+    def test_saved_llm_env_selects_astraflow_cn_provider(self, monkeypatch, tmp_path):
+        monkeypatch.delenv("LLM_PROVIDER", raising=False)
+        monkeypatch.chdir(tmp_path)
+        tmp_path.joinpath(".llm.env").write_text("LLM_PROVIDER=astraflow_cn\n")
+
+        provider = get_provider()
+
+        assert isinstance(provider, AstraflowCNProvider)
