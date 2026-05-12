@@ -19,7 +19,9 @@ exception scenario gates security exceptions on SARIF/report evidence, owner
 fields, expiry state, and remediation-versus-exception decisions. A
 skill-quality evidence scenario requires observed failure or feedback evidence,
 working examples, reference-set gaps, and validation commands before a skill
-amendment can be promoted.
+amendment can be promoted. A deep-analyzer evidence scenario requires analyzer
+corpus cases, expected-output comparisons, and risk-taxonomy proof before
+repository or commit-analysis behavior can change.
 
 ## Reference Pressure
 
@@ -116,6 +118,9 @@ Current corpus:
 - `skill-quality-evidence`: requires focused skill scope, observed failure or
   user-feedback evidence, examples/reference-set coverage, validation commands,
   and publication safety before a skill amendment can be promoted.
+- `deep-analyzer-evidence`: requires maintained analyzer corpus cases,
+  expected-output comparisons, representative repository/commit histories, and
+  regression commands before deep-analysis behavior can be promoted.
 
 ## ECC Tools Mapping
 
@@ -147,7 +152,7 @@ A candidate can be promoted only when:
 
 ## Next Expansion
 
-The next evaluator/RAG corpus should add:
-
-- a deep-analyzer evidence scenario with maintained reference sets and rejected
-  low-evidence candidates.
+The local evaluator/RAG corpus now covers the current evidence buckets. Future
+work should consume these fixtures from ECC Tools before adding hosted
+retrieval, vector storage, model-backed judging, or automated check-run
+promotion.

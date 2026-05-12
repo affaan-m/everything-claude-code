@@ -130,12 +130,12 @@ test('candidate playbook preserves stale-salvage operating rules', () => {
   }
 });
 
-test('roadmap points to the evaluator RAG prototype and keeps broader corpus work open', () => {
+test('roadmap points to the evaluator RAG prototype and keeps hosted integration open', () => {
   const roadmap = read('docs/ECC-2.0-GA-ROADMAP.md');
 
   assert.ok(roadmap.includes('docs/architecture/evaluator-rag-prototype.md'));
   assert.ok(roadmap.includes('examples/evaluator-rag-prototype/'));
-  assert.ok(roadmap.includes('Needs deep-analyzer corpus'));
+  assert.ok(roadmap.includes('Local corpus complete; hosted integration remains future'));
 });
 
 test('billing readiness scenario rejects launch copy overclaims', () => {
@@ -359,6 +359,54 @@ test('skill quality evidence scenario rejects vague rewrites', () => {
   assert.ok(playbook.includes('docs/SKILL-DEVELOPMENT-GUIDE.md'));
   assert.ok(playbook.includes('node scripts/ci/validate-skills.js'));
   assert.ok(playbook.includes('observed skill-run failure'));
+});
+
+test('deep analyzer evidence scenario rejects no-corpus analyzer changes', () => {
+  const scenario = readFixtureJson('deep-analyzer-evidence/scenario.json');
+  const trace = readFixtureJson('deep-analyzer-evidence/trace.json');
+  const report = readFixtureJson('deep-analyzer-evidence/report.json');
+  const verifier = readFixtureJson('deep-analyzer-evidence/verifier-result.json');
+  const playbook = read('examples/evaluator-rag-prototype/deep-analyzer-evidence/candidate-playbook.md');
+
+  assert.strictEqual(scenario.scenario_id, 'deep-analyzer-evidence');
+  assert.strictEqual(trace.scenario_id, scenario.scenario_id);
+  assert.strictEqual(report.scenario_id, scenario.scenario_id);
+  assert.strictEqual(verifier.scenario_id, scenario.scenario_id);
+  assert.strictEqual(trace.read_only, true);
+  assert.strictEqual(report.read_only, true);
+  assert.strictEqual(verifier.read_only, true);
+
+  for (const blocked of [
+    'promoting repository, commit, architecture, or deep-analysis changes without analyzer corpus evidence',
+    'suppressing the Deep Analyzer Evidence risk bucket without co-located corpus, snapshot, fixture, or benchmark evidence',
+    'changing analyzer thresholds or classifications without expected-output comparison',
+    'posting PR comments, check runs, or Linear sync updates from this read-only evaluator run'
+  ]) {
+    assert.ok(scenario.forbidden_actions.includes(blocked), `Missing deep-analyzer forbidden action: ${blocked}`);
+  }
+
+  for (const required of [
+    'changed analyzer surface is named',
+    'maintained corpus or reference-set path is included',
+    'expected analyzer outputs are compared',
+    'representative repository shape or commit history is described',
+    'regression command is named'
+  ]) {
+    assert.ok(scenario.acceptance_gates.includes(required), `Missing deep-analyzer acceptance gate: ${required}`);
+  }
+
+  const accepted = verifier.candidates.find(candidate => candidate.candidate_id === 'corpus-backed-analyzer-change');
+  const rejected = verifier.candidates.find(candidate => candidate.candidate_id === 'threshold-only-analyzer-rewrite');
+
+  assert.ok(accepted, 'Missing accepted deep-analyzer candidate');
+  assert.ok(rejected, 'Missing rejected threshold-only analyzer candidate');
+  assert.strictEqual(accepted.decision, 'accepted');
+  assert.strictEqual(rejected.decision, 'rejected');
+  assert.strictEqual(verifier.promoted_candidate_id, accepted.candidate_id);
+  assert.ok(rejected.reasons.join('\n').includes('does not compare expected outputs'));
+  assert.ok(playbook.includes('../ECC-Tools/src/analyzers/fixtures/deep-analyzer-corpus.ts'));
+  assert.ok(playbook.includes('npm test -- src/analyzers/deep-analyzer-corpus.test.ts src/lib/analyzer.compare.test.ts'));
+  assert.ok(playbook.includes('Deep Analyzer Evidence'));
 });
 
 if (failed > 0) {
