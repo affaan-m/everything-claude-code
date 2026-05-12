@@ -113,6 +113,10 @@ skills:
   - python-testing
   - pytorch-patterns
   - quality-nonconformance
+  - quarkus-patterns
+  - quarkus-security
+  - quarkus-tdd
+  - quarkus-verification
   - ralphinho-rfc-pipeline
   - regex-vs-llm-structured-text
   - repo-scan

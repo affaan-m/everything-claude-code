@@ -122,6 +122,15 @@
       ]
     },
     {
+      "id": "framework:quarkus",
+      "family": "framework",
+      "description": "Quarkus-focused engineering guidance for REST, Panache, security, testing, and verification.",
+      "modules": [
+        "framework-language",
+        "security"
+      ]
+    },
+    {
       "id": "capability:database",
       "family": "capability",
       "description": "Database and persistence-oriented skills.",

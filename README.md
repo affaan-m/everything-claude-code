@@ -358,7 +358,7 @@ If you stacked methods, clean up in this order:
 /plugin list ecc@ecc
 ```
 
-**That's it!** You now have access to 56 agents, 209 skills, and 72 legacy command shims.
+**That's it!** You now have access to 56 agents, 213 skills, and 72 legacy command shims.
 
 ### Dashboard GUI
 
@@ -526,6 +526,10 @@ everything-claude-code/
 |   |-- springboot-security/        # Spring Boot security (NEW)
 |   |-- springboot-tdd/             # Spring Boot TDD (NEW)
 |   |-- springboot-verification/    # Spring Boot verification (NEW)
+|   |-- quarkus-patterns/           # Quarkus REST, Panache, and messaging patterns (NEW)
+|   |-- quarkus-security/           # Quarkus JWT/OIDC and RBAC security (NEW)
+|   |-- quarkus-tdd/                # Quarkus testing with JUnit, REST Assured, and Dev Services (NEW)
+|   |-- quarkus-verification/       # Quarkus build, test, security, and native verification (NEW)
 |   |-- configure-ecc/              # Interactive installation wizard (NEW)
 |   |-- security-scan/              # AgentShield security auditor integration (NEW)
 |   |-- java-coding-standards/     # Java coding standards (NEW)
@@ -1358,7 +1362,7 @@ The configuration is automatically detected from `.opencode/opencode.json`.
 |---------|-------------|----------|--------|
 | Agents | PASS: 56 agents | PASS: 12 agents | **Claude Code leads** |
 | Commands | PASS: 72 commands | PASS: 35 commands | **Claude Code leads** |
-| Skills | PASS: 209 skills | PASS: 37 skills | **Claude Code leads** |
+| Skills | PASS: 213 skills | PASS: 37 skills | **Claude Code leads** |
 | Hooks | PASS: 8 event types | PASS: 11 events | **OpenCode has more!** |
 | Rules | PASS: 29 rules | PASS: 13 instructions | **Claude Code leads** |
 | MCP Servers | PASS: 14 servers | PASS: Full | **Full parity** |
@@ -1463,7 +1467,7 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 |---------|------------|------------|-----------|----------|
 | **Agents** | 56 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
 | **Commands** | 72 | Shared | Instruction-based | 35 |
-| **Skills** | 209 | Shared | 10 (native format) | 37 |
+| **Skills** | 213 | Shared | 10 (native format) | 37 |
 | **Hook Events** | 8 types | 15 types | None yet | 11 types |
 | **Hook Scripts** | 20+ scripts | 16 scripts (DRY adapter) | N/A | Plugin hooks |
 | **Rules** | 34 (common + lang) | 34 (YAML frontmatter) | Instruction-based | 13 instructions |
