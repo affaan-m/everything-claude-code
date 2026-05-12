@@ -75,6 +75,9 @@ As of 2026-05-12:
 - ECC-Tools PR #30 capped follow-up generation to three new GitHub issues and
   one draft PR per run, then emits the remaining deterministic findings as a
   project sync backlog for Linear/status tracking without flooding trackers.
+- ECC-Tools PR #31 added review follow-up signals to analysis completion
+  comments for outstanding change requests, unresolved or outdated review
+  threads, and review activity without an explicit approval.
 
 ## Operating Rules
 
@@ -215,6 +218,8 @@ Acceptance:
 - Reference-set validation follow-ups flag analyzer, skill, agent, command, and
   harness-guidance changes that lack eval, golden trace, benchmark, or
   maintained reference-set evidence.
+- PR analysis comments summarize review follow-up signals for requested
+  changes, unresolved or outdated review threads, and missing approvals.
 - Linear sync design maps findings to issues/status without flooding the
   workspace.
 - Follow-up generation caps automatic GitHub object creation and keeps overflow
