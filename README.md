@@ -89,7 +89,7 @@ This repo is the raw code only. The guides explain everything.
 ### v2.0.0-rc.1 — Surface Refresh, Operator Workflows, and ECC 2.0 Alpha (Apr 2026)
 
 - **Dashboard GUI** — New Tkinter-based desktop application (`ecc_dashboard.py` or `npm run dashboard`) with dark/light theme toggle, font customization, and project logo in header and taskbar.
-- **Public surface synced to the live repo** — metadata, catalog counts, plugin manifests, and install-facing docs now match the actual OSS surface: 54 agents, 208 skills, and 72 legacy command shims.
+- **Public surface synced to the live repo** — metadata, catalog counts, plugin manifests, and install-facing docs now match the actual OSS surface: 55 agents, 208 skills, and 72 legacy command shims.
 - **Operator and outbound workflow expansion** — `brand-voice`, `social-graph-ranker`, `connections-optimizer`, `customer-billing-ops`, `ecc-tools-cost-audit`, `google-workspace-ops`, `project-flow-ops`, and `workspace-surface-audit` round out the operator lane.
 - **Media and launch tooling** — `manim-video`, `remotion-video-creation`, and upgraded social publishing surfaces make technical explainers and launch content part of the same system.
 - **Framework and product surface growth** — `nestjs-patterns`, richer Codex/OpenCode install surfaces, and expanded cross-harness packaging keep the repo usable beyond Claude Code alone.
@@ -358,7 +358,7 @@ If you stacked methods, clean up in this order:
 /plugin list ecc@ecc
 ```
 
-**That's it!** You now have access to 54 agents, 208 skills, and 72 legacy command shims.
+**That's it!** You now have access to 55 agents, 208 skills, and 72 legacy command shims.
 
 ### Dashboard GUI
 
@@ -456,7 +456,7 @@ everything-claude-code/
 |   |-- plugin.json         # Plugin metadata and component paths
 |   |-- marketplace.json    # Marketplace catalog for /plugin marketplace add
 |
-|-- agents/           # 54 specialized subagents for delegation
+|-- agents/           # 55 specialized subagents for delegation
 |   |-- planner.md           # Feature implementation planning
 |   |-- architect.md         # System design decisions
 |   |-- tdd-guide.md         # Test-driven development
@@ -481,6 +481,7 @@ everything-claude-code/
 |   |-- java-build-resolver.md # Java/Maven/Gradle build errors
 |   |-- kotlin-reviewer.md   # Kotlin/Android/KMP code review
 |   |-- kotlin-build-resolver.md # Kotlin/Gradle build errors
+|   |-- harmonyos-app-resolver.md # HarmonyOS/ArkTS app development
 |   |-- rust-reviewer.md     # Rust code review
 |   |-- rust-build-resolver.md # Rust build error resolution
 |   |-- pytorch-build-resolver.md # PyTorch/CUDA training errors
@@ -606,6 +607,7 @@ everything-claude-code/
 |   |-- golang/              # Go specific
 |   |-- swift/               # Swift specific
 |   |-- php/                 # PHP specific (NEW)
+|   |-- arkts/               # HarmonyOS / ArkTS specific
 |
 |-- hooks/            # Trigger-based automations
 |   |-- README.md                 # Hook documentation, recipes, and customization guide
@@ -840,6 +842,7 @@ cp -r everything-claude-code/rules/typescript ~/.claude/rules/ecc/   # pick your
 cp -r everything-claude-code/rules/python ~/.claude/rules/ecc/
 cp -r everything-claude-code/rules/golang ~/.claude/rules/ecc/
 cp -r everything-claude-code/rules/php ~/.claude/rules/ecc/
+cp -r everything-claude-code/rules/arkts ~/.claude/rules/ecc/
 
 # Copy skills first (primary workflow surface)
 # Recommended (new users): core/general skills only
@@ -959,6 +962,7 @@ rules/
   golang/          # Go specific patterns and tools
   swift/           # Swift specific patterns and tools
   php/             # PHP specific patterns and tools
+  arkts/           # HarmonyOS / ArkTS patterns and constraints
 ```
 
 See [`rules/README.md`](rules/README.md) for installation and structure details.
@@ -983,6 +987,7 @@ Not sure where to start? Use this quick reference. Skills are the canonical work
 | Review Go code | `/go-review` | go-reviewer |
 | Review Python code | `/python-review` | python-reviewer |
 | Review TypeScript/JavaScript code | *(invoke `typescript-reviewer` directly)* | typescript-reviewer |
+| Develop HarmonyOS apps | *(invoke `harmonyos-app-resolver` directly)* | harmonyos-app-resolver |
 | Audit database queries | *(auto-delegated)* | database-reviewer |
 | Review production ML changes | `mle-workflow` skill + `mle-reviewer` agent | mle-reviewer |
 
@@ -1141,7 +1146,7 @@ Please contribute! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ### Ideas for Contributions
 
-- Language-specific skills (Rust, C#, Kotlin, Java) — Go, Python, Perl, Swift, and TypeScript already included
+- Language-specific skills (Rust, C#, Kotlin, Java) — Go, Python, Perl, Swift, TypeScript, and HarmonyOS/ArkTS already included
 - Framework-specific configs (Rails, FastAPI) — Django, NestJS, Spring Boot, and Laravel already included
 - DevOps agents (Kubernetes, Terraform, AWS, Docker)
 - Testing strategies (different frameworks, visual regression)
@@ -1349,7 +1354,7 @@ The configuration is automatically detected from `.opencode/opencode.json`.
 
 | Feature | Claude Code | OpenCode | Status |
 |---------|-------------|----------|--------|
-| Agents | PASS: 54 agents | PASS: 12 agents | **Claude Code leads** |
+| Agents | PASS: 55 agents | PASS: 12 agents | **Claude Code leads** |
 | Commands | PASS: 72 commands | PASS: 35 commands | **Claude Code leads** |
 | Skills | PASS: 208 skills | PASS: 37 skills | **Claude Code leads** |
 | Hooks | PASS: 8 event types | PASS: 11 events | **OpenCode has more!** |
@@ -1454,7 +1459,7 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 
 | Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |
 |---------|------------|------------|-----------|----------|
-| **Agents** | 54 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
+| **Agents** | 55 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
 | **Commands** | 72 | Shared | Instruction-based | 35 |
 | **Skills** | 208 | Shared | 10 (native format) | 37 |
 | **Hook Events** | 8 types | 15 types | None yet | 11 types |

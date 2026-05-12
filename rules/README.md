@@ -20,7 +20,8 @@ rules/
 ├── golang/          # Go specific
 ├── web/             # Web and frontend specific
 ├── swift/           # Swift specific
-└── php/             # PHP specific
+├── php/             # PHP specific
+└── arkts/           # HarmonyOS / ArkTS specific
 ```
 
 - **common/** contains universal principles — no language-specific code examples.
@@ -39,6 +40,7 @@ rules/
 ./install.sh web
 ./install.sh swift
 ./install.sh php
+./install.sh arkts
 
 # Install multiple languages at once
 ./install.sh typescript python
@@ -64,6 +66,7 @@ cp -r rules/golang ~/.claude/rules/golang
 cp -r rules/web ~/.claude/rules/web
 cp -r rules/swift ~/.claude/rules/swift
 cp -r rules/php ~/.claude/rules/php
+cp -r rules/arkts ~/.claude/rules/arkts
 
 # Attention ! ! ! Configure according to your actual project requirements; the configuration here is for reference only.
 ```

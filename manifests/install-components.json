@@ -218,6 +218,14 @@
       ]
     },
     {
+      "id": "lang:arkts",
+      "family": "language",
+      "description": "HarmonyOS, ArkTS, and ArkUI development guidance including V2 state management, Navigation routing, and HarmonyOS API best practices.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
       "id": "lang:perl",
       "family": "language",
       "description": "Modern Perl patterns, testing, and security guidance. Currently resolves through framework-language and security modules.",
@@ -343,6 +351,14 @@
       "id": "agent:e2e-runner",
       "family": "agent",
       "description": "Playwright E2E testing agent.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
+      "id": "agent:harmonyos-app-resolver",
+      "family": "agent",
+      "description": "HarmonyOS application development expert agent.",
       "modules": [
         "agents-core"
       ]
