@@ -81,6 +81,25 @@ function runTests() {
     ]);
   })) passed++; else failed++;
 
+  if (test('parses --skills as skill component selections', () => {
+    const parsed = parseInstallArgs([
+      'node', 'install-apply.js',
+      '--skills', 'continuous-learning-v2,security-review',
+    ]);
+    assert.deepStrictEqual(parsed.includeComponentIds, [
+      'skill:continuous-learning-v2',
+      'skill:security-review',
+    ]);
+  })) passed++; else failed++;
+
+  if (test('parses --skill when caller already includes the skill: prefix', () => {
+    const parsed = parseInstallArgs([
+      'node', 'install-apply.js',
+      '--skill', 'skill:continuous-learning-v2',
+    ]);
+    assert.deepStrictEqual(parsed.includeComponentIds, ['skill:continuous-learning-v2']);
+  })) passed++; else failed++;
+
   if (test('parses multiple --without flags', () => {
     const parsed = parseInstallArgs([
       'node', 'install-apply.js',
@@ -244,6 +263,7 @@ function runTests() {
     const components = listInstallComponents({ family: 'skill' });
     assert.ok(components.length > 0, 'Should have at least one skill component');
     assert.ok(components.some(c => c.id === 'skill:continuous-learning'), 'Should have skill:continuous-learning');
+    assert.ok(components.some(c => c.id === 'skill:continuous-learning-v2'), 'Should have skill:continuous-learning-v2');
   })) passed++; else failed++;
 
   // ─── Install Plan Resolution with --with ───
@@ -430,6 +450,22 @@ function runTests() {
       'Should include workflow-quality module from skill:continuous-learning');
   })) passed++; else failed++;
 
+  if (test('--with skill:continuous-learning-v2 installs only that skill module', () => {
+    const plan = resolveInstallPlan({
+      includeComponentIds: ['skill:continuous-learning-v2'],
+      target: 'claude',
+    });
+    assert.deepStrictEqual(plan.selectedModuleIds, ['skill-continuous-learning-v2']);
+    assert.ok(
+      plan.operations.some(operation => operation.sourceRelativePath === 'skills/continuous-learning-v2'),
+      'Should install the continuous-learning-v2 skill directory'
+    );
+    assert.ok(
+      !plan.operations.some(operation => operation.sourceRelativePath === 'skills/tdd-workflow'),
+      'Should not install the whole workflow-quality skill module'
+    );
+  })) passed++; else failed++;
+
   // ─── Help Text ───
 
   if (test('help text documents --with and --without flags', () => {
@@ -576,10 +612,10 @@ function runTests() {
 
       const claudeRoot = path.join(homeDir, '.claude');
       // Security skill should be installed (from --with)
-      assert.ok(fs.existsSync(path.join(claudeRoot, 'skills', 'security-review', 'SKILL.md')),
+      assert.ok(fs.existsSync(path.join(claudeRoot, 'skills', 'ecc', 'security-review', 'SKILL.md')),
         'Should install security-review skill from --with');
       // Core profile modules should be installed
-      assert.ok(fs.existsSync(path.join(claudeRoot, 'rules', 'common', 'coding-style.md')),
+      assert.ok(fs.existsSync(path.join(claudeRoot, 'rules', 'ecc', 'common', 'coding-style.md')),
         'Should install core rules');
 
       // Install state should record include/exclude
@@ -615,12 +651,12 @@ function runTests() {
 
       const claudeRoot = path.join(homeDir, '.claude');
       // Orchestration skills should NOT be installed (from --without)
-      assert.ok(!fs.existsSync(path.join(claudeRoot, 'skills', 'dmux-workflows', 'SKILL.md')),
+      assert.ok(!fs.existsSync(path.join(claudeRoot, 'skills', 'ecc', 'dmux-workflows', 'SKILL.md')),
         'Should not install orchestration skills');
       // Developer profile base modules should be installed
-      assert.ok(fs.existsSync(path.join(claudeRoot, 'rules', 'common', 'coding-style.md')),
+      assert.ok(fs.existsSync(path.join(claudeRoot, 'rules', 'ecc', 'common', 'coding-style.md')),
         'Should install core rules');
-      assert.ok(fs.existsSync(path.join(claudeRoot, 'skills', 'tdd-workflow', 'SKILL.md')),
+      assert.ok(fs.existsSync(path.join(claudeRoot, 'skills', 'ecc', 'tdd-workflow', 'SKILL.md')),
         'Should install workflow skills');
 
       const statePath = path.join(claudeRoot, 'ecc', 'install-state.json');
@@ -653,10 +689,10 @@ function runTests() {
 
       const claudeRoot = path.join(homeDir, '.claude');
       // framework-language skill (from lang:typescript) should be installed
-      assert.ok(fs.existsSync(path.join(claudeRoot, 'skills', 'coding-standards', 'SKILL.md')),
+      assert.ok(fs.existsSync(path.join(claudeRoot, 'skills', 'ecc', 'coding-standards', 'SKILL.md')),
         'Should install framework-language skills');
       // Its dependencies should be installed
-      assert.ok(fs.existsSync(path.join(claudeRoot, 'rules', 'common', 'coding-style.md')),
+      assert.ok(fs.existsSync(path.join(claudeRoot, 'rules', 'ecc', 'common', 'coding-style.md')),
         'Should install dependency rules-core');
 
       const statePath = path.join(claudeRoot, 'ecc', 'install-state.json');
@@ -664,6 +700,43 @@ function runTests() {
       assert.strictEqual(state.request.profile, null);
       assert.deepStrictEqual(state.request.includeComponents, ['lang:typescript']);
       assert.ok(state.resolution.selectedModules.includes('framework-language'));
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+      fs.rmSync(projectDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
+  if (test('end-to-end: --skills continuous-learning-v2 installs only that skill', () => {
+    const { execFileSync } = require('child_process');
+    const scriptPath = path.join(__dirname, '..', '..', 'scripts', 'install-apply.js');
+    const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'selective-skill-install-'));
+    const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'selective-skill-install-project-'));
+
+    try {
+      execFileSync('node', [
+        scriptPath,
+        '--skills', 'continuous-learning-v2',
+      ], {
+        cwd: projectDir,
+        env: { ...process.env, HOME: homeDir },
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
+
+      const claudeRoot = path.join(homeDir, '.claude');
+      assert.ok(
+        fs.existsSync(path.join(claudeRoot, 'skills', 'ecc', 'continuous-learning-v2', 'SKILL.md')),
+        'Should install continuous-learning-v2'
+      );
+      assert.ok(
+        !fs.existsSync(path.join(claudeRoot, 'skills', 'ecc', 'tdd-workflow', 'SKILL.md')),
+        'Should not install unrelated workflow-quality skills'
+      );
+
+      const statePath = path.join(claudeRoot, 'ecc', 'install-state.json');
+      const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+      assert.deepStrictEqual(state.request.includeComponents, ['skill:continuous-learning-v2']);
+      assert.deepStrictEqual(state.resolution.selectedModules, ['skill-continuous-learning-v2']);
     } finally {
       fs.rmSync(homeDir, { recursive: true, force: true });
       fs.rmSync(projectDir, { recursive: true, force: true });

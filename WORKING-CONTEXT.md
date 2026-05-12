@@ -1,6 +1,6 @@
 # Working Context
 
-Last updated: 2026-04-05
+Last updated: 2026-04-08
 
 ## Purpose
 
@@ -10,7 +10,7 @@ Public ECC plugin repo for agents, skills, commands, hooks, rules, install surfa
 
 - Default branch: `main`
 - Public release surface is aligned at `v1.10.0`
-- Public catalog truth is `39` agents, `73` commands, and `179` skills
+- Public catalog truth is `47` agents, `79` commands, and `181` skills
 - Public plugin slug is now `ecc`; legacy `everything-claude-code` install paths remain supported for compatibility
 - Release discussion: `#1272`
 - ECC 2.0 exists in-tree and builds, but it is still alpha rather than GA
@@ -36,6 +36,7 @@ Public ECC plugin repo for agents, skills, commands, hooks, rules, install surfa
   - control plane primitives
   - operator surface
   - self-improving skills
+  - keep `agent.yaml` export parity with the shipped `commands/` and `skills/` directories so modern install surfaces do not silently lose command registration
 - Skill quality:
   - rewrite content-facing skills to use source-backed voice modeling
   - remove generic LLM rhetoric, canned CTA patterns, and forced platform stereotypes
@@ -175,3 +176,4 @@ Keep this file detailed for only the current sprint, blockers, and next actions.
   - `skills/oura-health` and `skills/pmx-guidelines` are user- or project-specific, not canonical ECC surfaces
   - `docs/releases/2.0.0-preview/*` is premature collateral and should be rebuilt from current product truth later
   - nested `skills/hermes-generated/*` is superseded by the top-level ECC-native operator skills already ported to `main`
+- 2026-04-08: Fixed the command-export regression reported in `#1327` by restoring a canonical `commands:` section in `agent.yaml` and adding `tests/ci/agent-yaml-surface.test.js` to enforce exact parity between the YAML export surface and the real `commands/` directory. Verified with the full repo test sweep: `1764/1764` passing.

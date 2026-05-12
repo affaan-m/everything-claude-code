@@ -292,7 +292,7 @@ This is also a viable choice and works well with Claude Code. You can use it in 
 
 ```markdown
 ralph-wiggum@claude-code-plugins       # Loop automation
-frontend-design@claude-code-plugins    # UI/UX patterns
+frontend-patterns@claude-code-plugins  # UI/UX patterns
 commit-commands@claude-code-plugins    # Git workflow
 security-guidance@claude-code-plugins  # Security checks
 pr-review-toolkit@claude-code-plugins  # PR automation

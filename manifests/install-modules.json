@@ -12,7 +12,9 @@
         "claude",
         "cursor",
         "antigravity",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -33,7 +35,9 @@
         "cursor",
         "antigravity",
         "codex",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -52,7 +56,9 @@
         "cursor",
         "antigravity",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -89,7 +95,9 @@
         ".cursor",
         ".gemini",
         ".opencode",
+        ".qwen",
         "mcp-configs",
+        "scripts/auto-update.js",
         "scripts/setup-package-manager.js"
       ],
       "targets": [
@@ -99,7 +107,9 @@
         "codex",
         "gemini",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -112,11 +122,13 @@
       "description": "Core framework, language, and application-engineering skills.",
       "paths": [
         "skills/android-clean-architecture",
+        "skills/angular-developer",
         "skills/api-design",
         "skills/backend-patterns",
         "skills/coding-standards",
         "skills/compose-multiplatform-patterns",
         "skills/csharp-testing",
+        "skills/fsharp-testing",
         "skills/cpp-coding-standards",
         "skills/cpp-testing",
         "skills/dart-flutter-patterns",
@@ -124,9 +136,10 @@
         "skills/django-tdd",
         "skills/django-verification",
         "skills/dotnet-patterns",
-        "skills/frontend-design",
+        "skills/fastapi-patterns",
         "skills/frontend-patterns",
         "skills/frontend-slides",
+        "skills/motion-ui",
         "skills/golang-patterns",
         "skills/golang-testing",
         "skills/java-coding-standards",
@@ -145,6 +158,9 @@
         "skills/perl-testing",
         "skills/python-patterns",
         "skills/python-testing",
+        "skills/quarkus-patterns",
+        "skills/quarkus-tdd",
+        "skills/quarkus-verification",
         "skills/rust-patterns",
         "skills/rust-testing",
         "skills/quarkus-patterns",
@@ -152,7 +168,8 @@
         "skills/quarkus-verification",
         "skills/springboot-patterns",
         "skills/springboot-tdd",
-        "skills/springboot-verification"
+        "skills/springboot-verification",
+        "skills/ui-to-vue"
       ],
       "targets": [
         "claude",
@@ -160,7 +177,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "rules-core",
@@ -180,6 +199,7 @@
         "skills/clickhouse-io",
         "skills/database-migrations",
         "skills/jpa-patterns",
+        "skills/mysql-patterns",
         "skills/postgres-patterns"
       ],
       "targets": [
@@ -188,7 +208,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "platform-configs"
@@ -200,7 +222,7 @@
     {
       "id": "workflow-quality",
       "kind": "skills",
-      "description": "Evaluation, TDD, verification, learning, and compaction skills.",
+      "description": "Evaluation, TDD, verification, compaction, and learning skills, including the legacy continuous-learning v1 path.",
       "paths": [
         "skills/agent-sort",
         "skills/agent-introspection-debugging",
@@ -211,14 +233,17 @@
         "skills/continuous-learning-v2",
         "skills/council",
         "skills/e2e-testing",
+        "skills/error-handling",
         "skills/eval-harness",
         "skills/hookify-rules",
         "skills/iterative-retrieval",
         "skills/plankton-code-quality",
+        "skills/production-audit",
         "skills/skill-stocktake",
         "skills/strategic-compact",
         "skills/tdd-workflow",
-        "skills/verification-loop"
+        "skills/verification-loop",
+        "skills/windows-desktop-e2e"
       ],
       "targets": [
         "claude",
@@ -226,7 +251,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "platform-configs"
@@ -248,6 +275,7 @@
         "skills/llm-trading-agent-security",
         "skills/nodejs-keccak256",
         "skills/perl-security",
+        "skills/quarkus-security",
         "skills/security-review",
         "skills/security-scan",
         "skills/security-bounty-hunter",
@@ -262,7 +290,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "workflow-quality"
@@ -276,10 +306,14 @@
       "kind": "skills",
       "description": "Research and API integration skills for deep investigations and model integrations.",
       "paths": [
-        "skills/claude-api",
         "skills/deep-research",
         "skills/exa-search",
-        "skills/research-ops"
+        "skills/research-ops",
+        "skills/scientific-db-pubmed-database",
+        "skills/scientific-db-uspto-database",
+        "skills/scientific-pkg-gget",
+        "skills/scientific-thinking-literature-review",
+        "skills/scientific-thinking-scholar-evaluation"
       ],
       "targets": [
         "claude",
@@ -287,7 +321,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "platform-configs"
@@ -318,7 +354,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "platform-configs"
@@ -356,7 +394,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "platform-configs"
@@ -379,7 +419,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "business-content"
@@ -405,7 +447,9 @@
         "cursor",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "platform-configs"
@@ -420,7 +464,6 @@
       "description": "Worktree/tmux orchestration runtime and workflow docs.",
       "paths": [
         "commands/multi-workflow.md",
-        "commands/orchestrate.md",
         "commands/sessions.md",
         "scripts/lib/orchestration-session.js",
         "scripts/lib/tmux-worktree-orchestrator.js",
@@ -460,7 +503,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "platform-configs"
@@ -474,8 +519,10 @@
       "kind": "skills",
       "description": "Agentic engineering, autonomous loops, agent harness construction, and LLM pipeline optimization skills.",
       "paths": [
+        "skills/agent-architecture-audit",
         "skills/agent-harness-construction",
         "skills/agentic-engineering",
+        "skills/agentic-os",
         "skills/ai-first-engineering",
         "skills/autonomous-loops",
         "skills/blueprint",
@@ -499,7 +546,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "platform-configs"
@@ -513,8 +562,15 @@
       "kind": "skills",
       "description": "Deployment workflows, Docker patterns, and infrastructure skills.",
       "paths": [
+        "skills/cisco-ios-patterns",
         "skills/deployment-patterns",
-        "skills/docker-patterns"
+        "skills/docker-patterns",
+        "skills/homelab-network-readiness",
+        "skills/homelab-network-setup",
+        "skills/netmiko-ssh-automation",
+        "skills/network-bgp-diagnostics",
+        "skills/network-config-validation",
+        "skills/network-interface-health"
       ],
       "targets": [
         "claude",
@@ -522,7 +578,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "platform-configs"
@@ -530,6 +588,34 @@
       "defaultInstall": false,
       "cost": "medium",
       "stability": "stable"
+    },
+    {
+      "id": "machine-learning",
+      "kind": "skills",
+      "description": "Production machine-learning engineering workflows for data contracts, reproducible training, evaluation, deployment, monitoring, and rollback.",
+      "paths": [
+        "skills/mle-workflow"
+      ],
+      "targets": [
+        "claude",
+        "cursor",
+        "antigravity",
+        "codex",
+        "opencode",
+        "codebuddy",
+        "joycode",
+        "qwen"
+      ],
+      "dependencies": [
+        "framework-language",
+        "workflow-quality",
+        "database",
+        "devops-infra",
+        "security"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "beta"
     },
     {
       "id": "supply-chain-domain",
@@ -551,7 +637,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "platform-configs"
@@ -574,7 +662,9 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ],
       "dependencies": [
         "platform-configs"

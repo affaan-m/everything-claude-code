@@ -106,4 +106,3 @@ Every panel should answer a real question. If it does not, remove it.
 - `research-ops`
 - `backend-patterns`
 - `terminal-ops`
-

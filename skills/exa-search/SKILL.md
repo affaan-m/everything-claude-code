@@ -6,6 +6,10 @@ origin: ECC
 
 # Exa Search
 
+> **Drift-prone skill.** Exa MCP tool names, parameters, and account limits can
+> change. Confirm the exposed tool surface and current Exa docs before relying
+> on a specific search mode, category, or livecrawl behavior.
+
 Neural search for web content, code, companies, and people via the Exa MCP server.
 
 ## When to Activate

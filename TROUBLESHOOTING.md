@@ -245,9 +245,17 @@ tmux attach -t dev
 - Marketplace cache not updated
 - Claude Code version incompatibility
 - Corrupted plugin files
+- Local Claude setup was wiped or reset
 
 **Solutions:**
 ```bash
+# First inspect what ECC still knows about this machine
+ecc list-installed
+ecc doctor
+ecc repair
+
+# Only reinstall if doctor/repair cannot restore the missing files
+
 # Inspect the plugin cache before changing it
 ls -la ~/.claude/plugins/cache/
 
@@ -258,6 +266,8 @@ mkdir -p ~/.claude/plugins/cache
 # Reinstall from marketplace
 # Claude Code → Extensions → Everything Claude Code → Uninstall
 # Then reinstall from marketplace
+
+# If the issue is marketplace/account access, use ECC Tools billing/account recovery separately; do not use reinstall as a proxy for account recovery
 
 # Check Claude Code version
 claude --version

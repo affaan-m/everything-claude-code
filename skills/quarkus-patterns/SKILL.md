@@ -21,75 +21,38 @@ Quarkus 3.x architecture and API patterns for cloud-native, event-driven service
 - Implementing conditional flow processing
 - Working with GraalVM native compilation
 
-## Service Layer with Multiple Dependencies (Lombok)
+## Service Layer with Multiple Dependencies
 
 ```java
 @Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
-public class As2ProcessingService {
+public class OrderProcessingService {
 
-    private final InvoiceFlowValidator invoiceFlowValidator;
+    private final OrderValidator orderValidator;
     private final EventService eventService;
-    private final DocumentJobService documentJobService;
-    private final BusinessRulesPublisher businessRulesPublisher;
-    private final FileStorageService fileStorageService;
+    private final OrderRepository orderRepository;
+    private final FulfillmentPublisher fulfillmentPublisher;
+    private final AuditPublisher auditPublisher;
 
-    public void processFile(Path filePath) throws Exception {
-        LogContext logContext = CustomLog.getCurrentContext();
-        try (SafeAutoCloseable ignored = CustomLog.startScope(logContext)) {
-            
-            String structureIdPartner = logContext.get(As2Constants.STRUCTURE_ID);
-            String originalFileName = logContext.get(As2Constants.FILE_NAME);
-
-            
-            // Conditional flow logic
-            boolean isChorusFlow = Boolean.parseBoolean(logContext.get(As2Constants.CHORUS_FLOW));
-            log.info("Is CHORUS_FLOW message: {}", isChorusFlow);
-            
-            ValidationFlowConfig validationFlowConfig = isChorusFlow
-                    ? ValidationFlowConfig.xsdOnly()
-                    : ValidationFlowConfig.allValidations();
-            
-            InvoiceValidationResult invoiceValidationResult = this.invoiceFlowValidator
-                    .validateFlowWithConfig(filePath, validationFlowConfig, 
-                        EInvoiceSyntaxFormat.UBL, logContext);
-            
-            FlowProfile flowProfile = isChorusFlow ?
-                    FlowProfile.EXTENDED_CTC_FR :
-                    this.invoiceFlowValidator.computeFlowProfile(invoiceValidationResult, 
-                        invoiceValidationResult.getInvoiceDetails().invoiceFormat().getProfile());
-            
-            log.info("Invoice validation completed. Message is valid");
-            
-            // CompletableFuture async operation
-            try(InputStream inputStream = Files.newInputStream(filePath)) {
-                CompletableFuture<StoredDocumentInfo> documentInfoCompletableFuture = 
-                    fileStorageService.uploadOriginalFile(inputStream, 
-                        invoiceValidationResult.getSize(), logContext, 
-                        invoiceValidationResult.getInvoiceFormat());
-                
-                StoredDocumentInfo documentInfo = documentInfoCompletableFuture.join();
-                log.info("File uploaded successfully: {}", documentInfo.getPath());
-                
-                if (StringUtils.isBlank(documentInfo.getPath())) {
-                    String errorMsg = "File path is empty after upload";
-                    log.error(errorMsg);
-                    this.eventService.createErrorEvent(documentInfo, "FILE_UPLOAD_FAILED", errorMsg);
-                    throw new As2ServerProcessingException(errorMsg);
-                }
-                
-                this.eventService.createSuccessEvent(documentInfo, "PERSISTENCE_BLOB_EVENT_TYPE");
-                
-                BusinessRulesPayload payload = this.documentJobService.createDocumentAndJobEntities(
-                    documentInfo, originalFileName, structureIdPartner, 
-                    flowProfile, invoiceValidationResult.getDocumentHash());
-                
-                // Async Camel publishing
-                businessRulesPublisher.publishAsync(payload);
-                this.eventService.createSuccessEvent(payload, "BUSINESS_RULES_MESSAGE_SENT");
-            }
+    @Transactional
+    public OrderReceipt process(CreateOrderCommand command) {
+        ValidationResult validation = orderValidator.validate(command);
+        if (!validation.valid()) {
+            eventService.createErrorEvent(command, "ORDER_REJECTED", validation.message());
+            throw new WebApplicationException(validation.message(), Response.Status.BAD_REQUEST);
         }
+
+        Order order = Order.from(command);
+        orderRepository.persist(order);
+
+        OrderReceipt receipt = OrderReceipt.from(order);
+        fulfillmentPublisher.publishAsync(receipt);
+        auditPublisher.publish("ORDER_ACCEPTED", receipt);
+        eventService.createSuccessEvent(receipt, "ORDER_ACCEPTED");
+
+        log.info("Processed order {}", order.id);
+        return receipt;
     }
 }
 ```
@@ -97,9 +60,8 @@ public class As2ProcessingService {
 **Key Patterns:**
 - `@RequiredArgsConstructor` for constructor injection via Lombok
 - `@Slf4j` for Logback logging
-- Scoped LogContext with try-with-resources
-- Conditional flow logic based on runtime parameters
-- CompletableFuture with `.join()` for async operations
+- `@Transactional` on service methods that write through Panache or repositories
+- Validate input before persistence or message publication
 - Event tracking for success/error scenarios
 - Async Camel message publishing
 
@@ -151,6 +113,7 @@ public class ProcessingService {
 
 ## Event Service Pattern
 
+```java
 @Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -198,6 +161,7 @@ public class EventService {
 
 ## Camel Message Publishing (RabbitMQ)
 
+```java
 @Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -211,6 +175,7 @@ public class BusinessRulesPublisher {
         );
     }
 }
+```
 
 **Camel Route Configuration:**
 
@@ -299,7 +264,7 @@ public class FileMonitoringRoute extends RouteBuilder {
             .to("direct:process-file");
         
         from("direct:process-file")
-            .bean(As2ProcessingService.class, "processFile")
+            .bean(OrderProcessingService.class, "processFile")
             .log("File processing completed");
     }
 }
@@ -544,7 +509,7 @@ public class DocumentCacheService {
       jdbc:
         url: jdbc:postgresql://localhost:5432/dev_db
       username: dev_user
-      password: dev_pass
+      password: ${DB_PASSWORD}
     hibernate-orm:
       database:
         generation: drop-and-create
@@ -552,8 +517,8 @@ public class DocumentCacheService {
   rabbitmq:
     host: localhost
     port: 5672
-    username: guest
-    password: guest
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
 
 "%test":
   quarkus:

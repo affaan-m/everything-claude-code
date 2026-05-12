@@ -12,6 +12,53 @@ const COMMANDS_DIR = path.join(ROOT_DIR, 'commands');
 const AGENTS_DIR = path.join(ROOT_DIR, 'agents');
 const SKILLS_DIR = path.join(ROOT_DIR, 'skills');
 
+function validateFrontmatter(file, content) {
+  if (!content.startsWith('---\n')) {
+    return [];
+  }
+
+  const endIndex = content.indexOf('\n---\n', 4);
+  if (endIndex === -1) {
+    return [`${file} - frontmatter block is missing a closing --- delimiter`];
+  }
+
+  const block = content.slice(4, endIndex);
+  const errors = [];
+
+  for (const rawLine of block.split('\n')) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('#')) {
+      continue;
+    }
+
+    const match = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+    if (!match) {
+      errors.push(`${file} - invalid frontmatter line: ${rawLine}`);
+      continue;
+    }
+
+    const value = match[2].trim();
+    const isQuoted = (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    );
+
+    if (!isQuoted && value.startsWith('[') && !value.endsWith(']')) {
+      errors.push(
+        `${file} - frontmatter value for "${match[1]}" starts with "[" but is not a closed YAML sequence; wrap it in quotes`,
+      );
+    }
+
+    if (!isQuoted && value.startsWith('{') && !value.endsWith('}')) {
+      errors.push(
+        `${file} - frontmatter value for "${match[1]}" starts with "{" but is not a closed YAML mapping; wrap it in quotes`,
+      );
+    }
+  }
+
+  return errors;
+}
+
 function validateCommands() {
   if (!fs.existsSync(COMMANDS_DIR)) {
     console.log('No commands directory found, skipping validation');
@@ -66,6 +113,11 @@ function validateCommands() {
       console.error(`ERROR: ${file} - Empty command file`);
       hasErrors = true;
       continue;
+    }
+
+    for (const error of validateFrontmatter(file, content)) {
+      console.error(`ERROR: ${error}`);
+      hasErrors = true;
     }
 
     // Strip fenced code blocks before checking cross-references.

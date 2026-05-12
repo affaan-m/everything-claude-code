@@ -6,6 +6,10 @@ origin: ECC
 
 # Deep Research
 
+> **Drift-prone skill.** Firecrawl/Exa MCP tool names, quotas, and result
+> shapes change. Verify the configured MCP tools and current API docs before
+> promising coverage or quoting live source counts.
+
 Produce thorough, cited research reports from multiple web sources using firecrawl and exa MCP tools.
 
 ## When to Activate

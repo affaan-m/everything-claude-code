@@ -24,7 +24,9 @@
         "codex",
         "gemini",
         "opencode",
-        "codebuddy"
+        "codebuddy",
+        "joycode",
+        "qwen"
       ]
     },
     "profile": {

@@ -137,7 +137,13 @@ async function main() {
 
   if (hookModule && typeof hookModule.run === 'function') {
     try {
-      const output = hookModule.run(raw, { truncated, maxStdin: MAX_STDIN });
+      const output = hookModule.run(raw, {
+        hookId,
+        pluginRoot,
+        scriptPath,
+        truncated,
+        maxStdin: MAX_STDIN
+      });
       process.exit(emitHookResult(raw, output));
     } catch (runErr) {
       process.stderr.write(`[Hook] run() error for ${hookId}: ${runErr.message}\n`);
@@ -152,6 +158,9 @@ async function main() {
     encoding: 'utf8',
     env: {
       ...process.env,
+      CLAUDE_PLUGIN_ROOT: pluginRoot,
+      ECC_PLUGIN_ROOT: pluginRoot,
+      ECC_HOOK_ID: hookId,
       ECC_HOOK_INPUT_TRUNCATED: truncated ? '1' : '0',
       ECC_HOOK_INPUT_MAX_BYTES: String(MAX_STDIN)
     },

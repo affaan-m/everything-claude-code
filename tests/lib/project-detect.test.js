@@ -220,6 +220,35 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  console.log('\nC Detection:');
+
+  if (test('detects c from top-level .c files', () => {
+    const dir = createTempDir();
+    try {
+      writeTestFile(dir, 'main.c', 'int main(void) { return 0; }\n');
+      const result = detectProjectType(dir);
+      assert.ok(result.languages.includes('c'));
+      assert.strictEqual(result.primary, 'c');
+    } finally {
+      cleanupDir(dir);
+    }
+  })) passed++; else failed++;
+
+  console.log('\nF# Detection:');
+
+  if (test('detects fsharp from project and source files', () => {
+    const dir = createTempDir();
+    try {
+      writeTestFile(dir, 'App.fsproj', '<Project Sdk="Microsoft.NET.Sdk"></Project>');
+      writeTestFile(dir, 'Program.fs', 'printfn "hello"\n');
+      const result = detectProjectType(dir);
+      assert.ok(result.languages.includes('fsharp'));
+      assert.strictEqual(result.primary, 'fsharp');
+    } finally {
+      cleanupDir(dir);
+    }
+  })) passed++; else failed++;
+
   // Go detection
   console.log('\nGo Detection:');
 

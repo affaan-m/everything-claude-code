@@ -4,7 +4,7 @@ description: Claude Code session geçmişini, aliasları ve session metadata'sı
 
 # Sessions Komutu
 
-Claude Code session geçmişini yönet - `~/.claude/sessions/` dizininde saklanan session'ları listele, yükle, alias ata ve düzenle.
+Claude Code session geçmişini yönet - `~/.claude/session-data/` dizininde saklanan session'ları listele, yükle, alias ata ve düzenle; eski `~/.claude/sessions/` dosyalarını da geriye dönük uyumluluk için okuyun.
 
 ## Kullanım
 
@@ -89,7 +89,7 @@ const size = sm.getSessionSize(session.sessionPath);
 const aliases = aa.getAliasesForSession(session.filename);
 
 console.log('Session: ' + session.filename);
-console.log('Path: ~/.claude/sessions/' + session.filename);
+console.log('Path: ' + session.sessionPath);
 console.log('');
 console.log('Statistics:');
 console.log('  Lines: ' + stats.lineCount);
@@ -287,7 +287,7 @@ $ARGUMENTS:
 
 ## Notlar
 
-- Session'lar `~/.claude/sessions/` dizininde markdown dosyaları olarak saklanır
+- Session'lar `~/.claude/session-data/` dizininde markdown dosyaları olarak saklanır; eski `~/.claude/sessions/` dosyaları da okunmaya devam eder
 - Aliaslar `~/.claude/session-aliases.json` dosyasında saklanır
 - Session ID'leri kısaltılabilir (ilk 4-8 karakter genellikle yeterince benzersizdir)
 - Sık referans verilen session'lar için aliasları kullanın

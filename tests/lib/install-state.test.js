@@ -6,6 +6,9 @@ const assert = require('assert');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const CURRENT_PACKAGE_VERSION = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', '..', 'package.json'), 'utf8')
+).version;
 
 const {
   createInstallState,
@@ -66,7 +69,7 @@ function runTests() {
         },
       ],
       source: {
-        repoVersion: '1.10.0',
+        repoVersion: CURRENT_PACKAGE_VERSION,
         repoCommit: 'abc123',
         manifestVersion: 1,
       },
@@ -100,7 +103,7 @@ function runTests() {
         },
         operations: [],
         source: {
-          repoVersion: '1.10.0',
+          repoVersion: CURRENT_PACKAGE_VERSION,
           repoCommit: 'abc123',
           manifestVersion: 1,
         },
@@ -154,7 +157,7 @@ function runTests() {
       },
       operations: [operation],
       source: {
-        repoVersion: '1.10.0',
+        repoVersion: CURRENT_PACKAGE_VERSION,
         repoCommit: 'abc123',
         manifestVersion: 1,
       },
@@ -208,7 +211,7 @@ function runTests() {
           skippedModules: [],
         },
         source: {
-          repoVersion: '1.10.0',
+          repoVersion: CURRENT_PACKAGE_VERSION,
           repoCommit: 'abc123',
           manifestVersion: 1,
         },

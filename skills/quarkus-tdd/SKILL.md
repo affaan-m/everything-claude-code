@@ -32,205 +32,101 @@ Follow this structured approach for comprehensive, readable tests:
 
 ```java
 @ExtendWith(MockitoExtension.class)
-@DisplayName("As2ProcessingService Unit Tests")
-class As2ProcessingServiceTest {
+@DisplayName("OrderService Unit Tests")
+class OrderServiceTest {
   
   @Mock
-  private InvoiceFlowValidator invoiceFlowValidator;
+  private OrderRepository orderRepository;
   
   @Mock
   private EventService eventService;
   
   @Mock
-  private DocumentJobService documentJobService;
-  
-  @Mock
-  private BusinessRulesPublisher businessRulesPublisher;
-  
-  @Mock
-  private FileStorageService fileStorageService;
+  private FulfillmentPublisher fulfillmentPublisher;
   
   @InjectMocks
-  private As2ProcessingService as2ProcessingService;
+  private OrderService orderService;
   
-  private Path testFilePath;
-  private LogContext testLogContext;
-  private InvoiceValidationResult validationResult;
-  private StoredDocumentInfo documentInfo;
+  private CreateOrderCommand validCommand;
 
   @BeforeEach
   void setUp() {
-    // ARRANGE - Common test data
-    testFilePath = Path.of("/tmp/test-invoice.xml");
-    
-    testLogContext = new LogContext();
-    testLogContext.put(As2Constants.STRUCTURE_ID, "STRUCT-001");
-    testLogContext.put(As2Constants.FILE_NAME, "invoice.xml");
-    testLogContext.put(As2Constants.AS2_FROM, "PARTNER-001");
-    
-    validationResult = new InvoiceValidationResult();
-    validationResult.setValid(true);
-    validationResult.setSize(1024L);
-    validationResult.setDocumentHash("abc123");
-    
-    documentInfo = new StoredDocumentInfo();
-    documentInfo.setPath("s3://bucket/path/invoice.xml");
-    documentInfo.setSize(1024L);
+    validCommand = new CreateOrderCommand(
+        "customer-123",
+        List.of(new OrderLine("sku-123", 2))
+    );
   }
 
   @Nested
-  @DisplayName("Tests for processFile")
-  class ProcessFile {
+  @DisplayName("Tests for createOrder")
+  class CreateOrder {
     
     @Test
-    @DisplayName("Should successfully process non-CHORUS file with all validations")
-    void givenNonChorusFile_whenProcessFile_thenAllValidationsApplied() throws Exception {
+    @DisplayName("Should persist order and publish fulfillment event")
+    void givenValidCommand_whenCreateOrder_thenPersistsAndPublishes() {
       // ARRANGE
-      testLogContext.put(As2Constants.CHORUS_FLOW, "false");
-      CustomLog.setCurrentContext(testLogContext);
-      
-      when(invoiceFlowValidator.validateFlowWithConfig(
-          eq(testFilePath), 
-          eq(ValidationFlowConfig.allValidations()),
-          eq(EInvoiceSyntaxFormat.UBL),
-          any(LogContext.class)))
-          .thenReturn(validationResult);
-      
-      when(invoiceFlowValidator.computeFlowProfile(any(), any()))
-          .thenReturn(FlowProfile.BASIC);
-      
-      when(fileStorageService.uploadOriginalFile(any(), anyLong(), any(), any()))
-          .thenReturn(CompletableFuture.completedFuture(documentInfo));
-      
-      when(documentJobService.createDocumentAndJobEntities(any(), any(), any(), any(), any()))
-          .thenReturn(new BusinessRulesPayload());
+      doNothing().when(orderRepository).persist(any(Order.class));
       
       // ACT
-      assertDoesNotThrow(() -> as2ProcessingService.processFile(testFilePath));
+      OrderReceipt receipt = orderService.createOrder(validCommand);
       
       // ASSERT
-      verify(invoiceFlowValidator).validateFlowWithConfig(
-          eq(testFilePath),
-          eq(ValidationFlowConfig.allValidations()),
-          eq(EInvoiceSyntaxFormat.UBL),
-          any(LogContext.class));
-      
-      verify(eventService).createSuccessEvent(any(StoredDocumentInfo.class), 
-          eq("PERSISTENCE_BLOB_EVENT_TYPE"));
-      verify(eventService).createSuccessEvent(any(BusinessRulesPayload.class), 
-          eq("BUSINESS_RULES_MESSAGE_SENT"));
-      verify(businessRulesPublisher).publishAsync(any(BusinessRulesPayload.class));
+      assertThat(receipt).isNotNull();
+      assertThat(receipt.customerId()).isEqualTo("customer-123");
+      verify(orderRepository).persist(any(Order.class));
+      verify(fulfillmentPublisher).publishAsync(receipt);
+      verify(eventService).createSuccessEvent(receipt, "ORDER_CREATED");
     }
 
     @Test
-    @DisplayName("Should bypass schematron validation for CHORUS_FLOW")
-    void givenChorusFlow_whenProcessFile_thenSchematronBypassed() throws Exception {
+    @DisplayName("Should reject missing customer id")
+    void givenMissingCustomerId_whenCreateOrder_thenThrowsBadRequest() {
       // ARRANGE
-      testLogContext.put(As2Constants.CHORUS_FLOW, "true");
-      CustomLog.setCurrentContext(testLogContext);
-      
-      when(invoiceFlowValidator.validateFlowWithConfig(
-          eq(testFilePath), 
-          eq(ValidationFlowConfig.xsdOnly()),
-          eq(EInvoiceSyntaxFormat.UBL),
-          any(LogContext.class)))
-          .thenReturn(validationResult);
-      
-      when(fileStorageService.uploadOriginalFile(any(), anyLong(), any(), any()))
-          .thenReturn(CompletableFuture.completedFuture(documentInfo));
-      
-      when(documentJobService.createDocumentAndJobEntities(any(), any(), any(), 
-          eq(FlowProfile.EXTENDED_CTC_FR), any()))
-          .thenReturn(new BusinessRulesPayload());
-      
-      // ACT
-      assertDoesNotThrow(() -> as2ProcessingService.processFile(testFilePath));
-      
-      // ASSERT
-      verify(invoiceFlowValidator).validateFlowWithConfig(
-          eq(testFilePath),
-          eq(ValidationFlowConfig.xsdOnly()),
-          eq(EInvoiceSyntaxFormat.UBL),
-          any(LogContext.class));
-      
-      verify(documentJobService).createDocumentAndJobEntities(
-          any(), any(), any(), 
-          eq(FlowProfile.EXTENDED_CTC_FR), 
-          any());
-    }
-
-    @Test
-    @DisplayName("Should create error event when file upload fails")
-    void givenUploadFailure_whenProcessFile_thenErrorEventCreated() throws Exception {
-      // ARRANGE
-      testLogContext.put(As2Constants.CHORUS_FLOW, "false");
-      CustomLog.setCurrentContext(testLogContext);
-      
-      when(invoiceFlowValidator.validateFlowWithConfig(any(), any(), any(), any()))
-          .thenReturn(validationResult);
-      
-      when(invoiceFlowValidator.computeFlowProfile(any(), any()))
-          .thenReturn(FlowProfile.BASIC);
-      
-      documentInfo.setPath(""); // Blank path triggers error
-      when(fileStorageService.uploadOriginalFile(any(), anyLong(), any(), any()))
-          .thenReturn(CompletableFuture.completedFuture(documentInfo));
+      CreateOrderCommand invalid = new CreateOrderCommand("", validCommand.lines());
       
       // ACT & ASSERT
-      As2ServerProcessingException exception = assertThrows(
-          As2ServerProcessingException.class,
-          () -> as2ProcessingService.processFile(testFilePath)
+      WebApplicationException exception = assertThrows(
+          WebApplicationException.class,
+          () -> orderService.createOrder(invalid)
       );
-      
-      assertThat(exception.getMessage())
-          .contains("File path is empty after upload");
-      
-      verify(eventService).createErrorEvent(
-          eq(documentInfo), 
-          eq("FILE_UPLOAD_FAILED"), 
-          contains("File path is empty"));
-      
-      verify(businessRulesPublisher, never()).publishAsync(any());
+
+      assertThat(exception.getResponse().getStatus()).isEqualTo(400);
+      verify(orderRepository, never()).persist(any(Order.class));
+      verify(fulfillmentPublisher, never()).publishAsync(any());
     }
 
     @Test
-    @DisplayName("Should handle CompletableFuture.join() failure")
-    void givenAsyncUploadFailure_whenProcessFile_thenExceptionThrown() throws Exception {
+    @DisplayName("Should record error event when persistence fails")
+    void givenPersistenceFailure_whenCreateOrder_thenRecordsErrorEvent() {
       // ARRANGE
-      testLogContext.put(As2Constants.CHORUS_FLOW, "false");
-      CustomLog.setCurrentContext(testLogContext);
+      doThrow(new PersistenceException("database unavailable"))
+          .when(orderRepository).persist(any(Order.class));
       
-      when(invoiceFlowValidator.validateFlowWithConfig(any(), any(), any(), any()))
-          .thenReturn(validationResult);
+      // ACT & ASSERT
+      PersistenceException exception = assertThrows(
+          PersistenceException.class,
+          () -> orderService.createOrder(validCommand)
+      );
       
-      when(invoiceFlowValidator.computeFlowProfile(any(), any()))
-          .thenReturn(FlowProfile.BASIC);
-      
-      CompletableFuture<StoredDocumentInfo> failedFuture = 
-          CompletableFuture.failedFuture(new StorageException("S3 connection failed"));
-      when(fileStorageService.uploadOriginalFile(any(), anyLong(), any(), any()))
-          .thenReturn(failedFuture);
-      
+      assertThat(exception.getMessage()).contains("database unavailable");
+      verify(eventService).createErrorEvent(
+          eq(validCommand),
+          eq("ORDER_CREATE_FAILED"),
+          contains("database unavailable")
+      );
+      verify(fulfillmentPublisher, never()).publishAsync(any());
+    }
+
+    @Test
+    @DisplayName("Should reject null commands")
+    void givenNullCommand_whenCreateOrder_thenThrowsNullPointerException() {
       // ACT & ASSERT
       assertThrows(
-          CompletionException.class,
-          () -> as2ProcessingService.processFile(testFilePath)
-      );
-    }
-
-    @Test
-    @DisplayName("Should throw exception when file path is null")
-    void givenNullFilePath_whenProcessFile_thenThrowsException() {
-      // ARRANGE
-      Path nullPath = null;
-      
-      // ACT & ASSERT
-      NullPointerException exception = assertThrows(
           NullPointerException.class,
-          () -> as2ProcessingService.processFile(nullPath)
+          () -> orderService.createOrder(null)
       );
       
-      verify(invoiceFlowValidator, never()).validateFlowWithConfig(any(), any(), any(), any());
+      verify(orderRepository, never()).persist(any(Order.class));
     }
   }
 }

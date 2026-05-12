@@ -21,7 +21,7 @@ description: Suggests manual context compaction at logical intervals to preserve
 
 ## 運作方式
 
-`suggest-compact.sh` 腳本在 PreToolUse（Edit/Write）執行並：
+`suggest-compact.js` 腳本在 PreToolUse（Edit/Write）執行並：
 
 1. **追蹤工具呼叫** - 計算工作階段中的工具呼叫次數
 2. **門檻偵測** - 在可設定門檻建議（預設：50 次呼叫）
@@ -34,13 +34,16 @@ description: Suggests manual context compaction at logical intervals to preserve
 ```json
 {
   "hooks": {
-    "PreToolUse": [{
-      "matcher": "tool == \"Edit\" || tool == \"Write\"",
-      "hooks": [{
-        "type": "command",
-        "command": "~/.claude/skills/strategic-compact/suggest-compact.sh"
-      }]
-    }]
+    "PreToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [{ "type": "command", "command": "node ~/.claude/scripts/hooks/suggest-compact.js" }]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [{ "type": "command", "command": "node ~/.claude/scripts/hooks/suggest-compact.js" }]
+      }
+    ]
   }
 }
 ```

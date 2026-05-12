@@ -32,6 +32,31 @@ impl OutputStream {
 pub struct OutputLine {
     pub stream: OutputStream,
     pub text: String,
+    pub timestamp: String,
+}
+
+impl OutputLine {
+    pub fn new(
+        stream: OutputStream,
+        text: impl Into<String>,
+        timestamp: impl Into<String>,
+    ) -> Self {
+        Self {
+            stream,
+            text: text.into(),
+            timestamp: timestamp.into(),
+        }
+    }
+
+    pub fn with_current_timestamp(stream: OutputStream, text: impl Into<String>) -> Self {
+        Self::new(stream, text, chrono::Utc::now().to_rfc3339())
+    }
+
+    pub fn occurred_at(&self) -> Option<chrono::DateTime<chrono::Utc>> {
+        chrono::DateTime::parse_from_rfc3339(&self.timestamp)
+            .ok()
+            .map(|timestamp| timestamp.with_timezone(&chrono::Utc))
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -70,10 +95,7 @@ impl SessionOutputStore {
     }
 
     pub fn push_line(&self, session_id: &str, stream: OutputStream, text: impl Into<String>) {
-        let line = OutputLine {
-            stream,
-            text: text.into(),
-        };
+        let line = OutputLine::with_current_timestamp(stream, text);
 
         {
             let mut buffers = self.lock_buffers();
@@ -145,5 +167,6 @@ mod tests {
         assert_eq!(event.session_id, "session-1");
         assert_eq!(event.line.stream, OutputStream::Stderr);
         assert_eq!(event.line.text, "problem");
+        assert!(event.line.occurred_at().is_some());
     }
 }

@@ -1,13 +1,41 @@
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 use crate::session::store::StateStore;
+
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(rename_all = "snake_case")]
+pub enum TaskPriority {
+    Low,
+    #[default]
+    Normal,
+    High,
+    Critical,
+}
+
+impl fmt::Display for TaskPriority {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let label = match self {
+            Self::Low => "low",
+            Self::Normal => "normal",
+            Self::High => "high",
+            Self::Critical => "critical",
+        };
+        write!(f, "{label}")
+    }
+}
 
 /// Message types for inter-agent communication.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum MessageType {
     /// Task handoff from one agent to another
-    TaskHandoff { task: String, context: String },
+    TaskHandoff {
+        task: String,
+        context: String,
+        #[serde(default)]
+        priority: TaskPriority,
+    },
     /// Agent requesting information from another
     Query { question: String },
     /// Response to a query
@@ -46,7 +74,16 @@ pub fn parse(content: &str) -> Option<MessageType> {
 pub fn preview(msg_type: &str, content: &str) -> String {
     match parse(content) {
         Some(MessageType::TaskHandoff { task, .. }) => {
-            format!("handoff {}", truncate(&task, 56))
+            let priority = handoff_priority(content);
+            if priority == TaskPriority::Normal {
+                format!("handoff {}", truncate(&task, 56))
+            } else {
+                format!(
+                    "handoff [{}] {}",
+                    priority_label(priority),
+                    truncate(&task, 48)
+                )
+            }
         }
         Some(MessageType::Query { question }) => {
             format!("query {}", truncate(&question, 56))
@@ -72,6 +109,39 @@ pub fn preview(msg_type: &str, content: &str) -> String {
             format!("conflict {} | {}", file, truncate(&description, 40))
         }
         None => format!("{} {}", msg_type.replace('_', " "), truncate(content, 56)),
+    }
+}
+
+pub fn handoff_priority(content: &str) -> TaskPriority {
+    match parse(content) {
+        Some(MessageType::TaskHandoff { priority, .. }) => priority,
+        _ => extract_legacy_handoff_priority(content),
+    }
+}
+
+fn extract_legacy_handoff_priority(content: &str) -> TaskPriority {
+    let value: serde_json::Value = match serde_json::from_str(content) {
+        Ok(value) => value,
+        Err(_) => return TaskPriority::Normal,
+    };
+    match value
+        .get("priority")
+        .and_then(|priority| priority.as_str())
+        .unwrap_or("normal")
+    {
+        "low" => TaskPriority::Low,
+        "high" => TaskPriority::High,
+        "critical" => TaskPriority::Critical,
+        _ => TaskPriority::Normal,
+    }
+}
+
+fn priority_label(priority: TaskPriority) -> &'static str {
+    match priority {
+        TaskPriority::Low => "low",
+        TaskPriority::Normal => "normal",
+        TaskPriority::High => "high",
+        TaskPriority::Critical => "critical",
     }
 }
 

@@ -16,6 +16,7 @@ Located in `~/.claude/agents/`:
 | refactor-cleaner | Dead code cleanup | Code maintenance |
 | doc-updater | Documentation | Updating docs |
 | rust-reviewer | Rust code review | Rust projects |
+| harmonyos-app-resolver | HarmonyOS app development | HarmonyOS/ArkTS projects |
 
 ## Immediate Agent Usage
 

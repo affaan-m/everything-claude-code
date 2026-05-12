@@ -24,17 +24,25 @@ function getHelpText() {
 Usage: install.sh [--target <${LEGACY_INSTALL_TARGETS.join('|')}>] [--dry-run] [--json] <language> [<language> ...]
        install.sh [--target <${SUPPORTED_INSTALL_TARGETS.join('|')}>] [--dry-run] [--json] --profile <name> [--with <component>]... [--without <component>]...
        install.sh [--target <${SUPPORTED_INSTALL_TARGETS.join('|')}>] [--dry-run] [--json] --modules <id,id,...> [--with <component>]... [--without <component>]...
+       install.sh [--target <${SUPPORTED_INSTALL_TARGETS.join('|')}>] [--dry-run] [--json] --skills <skill-id[,skill-id...]>
        install.sh [--dry-run] [--json] --config <path>
 
 Targets:
-  claude       (default) - Install rules to ~/.claude/rules/
+  claude       (default) - Install ECC into ~/.claude/ with managed rules/skills under rules/ecc and skills/ecc
   cursor       - Install rules, hooks, and bundled Cursor configs to ./.cursor/
   antigravity  - Install rules, workflows, skills, and agents to ./.agent/
+  codex        - Install shared agents/config into ~/.codex/
+  gemini       - Install project-local Gemini config into ./.gemini/
+  opencode     - Install shared commands/hooks/config into ~/.opencode/
+  codebuddy    - Install commands, agents, skills, and flattened rules into ./.codebuddy/
+  joycode      - Install commands, agents, skills, and flattened rules into ./.joycode/
+  qwen         - Install commands, agents, skills, rules, and Qwen config into ~/.qwen/
 
 Options:
   --profile <name>    Resolve and install a manifest profile
   --modules <ids>     Resolve and install explicit module IDs
   --with <component>  Include a user-facing install component
+  --skills <ids>      Install one or more skill directories by ID, e.g. continuous-learning-v2
   --without <component>
                       Exclude a user-facing install component
   --config <path>     Load install intent from ecc-install.json

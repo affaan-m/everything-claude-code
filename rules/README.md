@@ -15,11 +15,13 @@ rules/
 │   ├── agents.md
 │   └── security.md
 ├── typescript/      # TypeScript/JavaScript specific
+├── angular/         # Angular specific
 ├── python/          # Python specific
 ├── golang/          # Go specific
 ├── web/             # Web and frontend specific
 ├── swift/           # Swift specific
-└── php/             # PHP specific
+├── php/             # PHP specific
+└── arkts/           # HarmonyOS / ArkTS specific
 ```
 
 - **common/** contains universal principles — no language-specific code examples.
@@ -32,11 +34,13 @@ rules/
 ```bash
 # Install common + one or more language-specific rule sets
 ./install.sh typescript
+./install.sh angular
 ./install.sh python
 ./install.sh golang
 ./install.sh web
 ./install.sh swift
 ./install.sh php
+./install.sh arkts
 
 # Install multiple languages at once
 ./install.sh typescript python
@@ -56,11 +60,13 @@ cp -r rules/common ~/.claude/rules/common
 
 # Install language-specific rules based on your project's tech stack
 cp -r rules/typescript ~/.claude/rules/typescript
+cp -r rules/angular ~/.claude/rules/angular
 cp -r rules/python ~/.claude/rules/python
 cp -r rules/golang ~/.claude/rules/golang
 cp -r rules/web ~/.claude/rules/web
 cp -r rules/swift ~/.claude/rules/swift
 cp -r rules/php ~/.claude/rules/php
+cp -r rules/arkts ~/.claude/rules/arkts
 
 # Attention ! ! ! Configure according to your actual project requirements; the configuration here is for reference only.
 ```

@@ -82,6 +82,14 @@
       ]
     },
     {
+      "id": "framework:angular",
+      "family": "framework",
+      "description": "Angular-focused engineering guidance and rules. Currently resolves through the shared framework-language module.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
       "id": "framework:react",
       "family": "framework",
       "description": "React-focused engineering guidance. Currently resolves through the shared framework-language module.",
@@ -111,6 +119,15 @@
       "description": "Spring Boot-focused engineering guidance. Currently resolves through the shared framework-language module.",
       "modules": [
         "framework-language"
+      ]
+    },
+    {
+      "id": "framework:quarkus",
+      "family": "framework",
+      "description": "Quarkus-focused engineering guidance for REST, Panache, security, testing, and verification.",
+      "modules": [
+        "framework-language",
+        "security"
       ]
     },
     {
@@ -194,9 +211,25 @@
       ]
     },
     {
+      "id": "lang:c",
+      "family": "language",
+      "description": "C engineering guidance using the shared C/C++ standards and testing stack. Currently resolves through the shared framework-language module.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
       "id": "lang:kotlin",
       "family": "language",
       "description": "Kotlin, Ktor, Exposed, Coroutines, and Compose Multiplatform guidance. Currently resolves through the shared framework-language module.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
+      "id": "lang:arkts",
+      "family": "language",
+      "description": "HarmonyOS, ArkTS, and ArkUI development guidance including V2 state management, Navigation routing, and HarmonyOS API best practices.",
       "modules": [
         "framework-language"
       ]
@@ -227,6 +260,14 @@
       ]
     },
     {
+      "id": "lang:fsharp",
+      "family": "language",
+      "description": "F# functional patterns and testing guidance. Currently resolves through the shared framework-language module.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
       "id": "framework:laravel",
       "family": "framework",
       "description": "Laravel patterns, TDD, verification, and security guidance. Resolves through framework-language and security modules.",
@@ -249,6 +290,14 @@
       "description": "Deployment, Docker, and infrastructure patterns.",
       "modules": [
         "devops-infra"
+      ]
+    },
+    {
+      "id": "capability:machine-learning",
+      "family": "capability",
+      "description": "Production machine-learning engineering workflows for data contracts, reproducible training, evaluation, deployment, monitoring, and rollback.",
+      "modules": [
+        "machine-learning"
       ]
     },
     {
@@ -324,6 +373,22 @@
       ]
     },
     {
+      "id": "agent:harmonyos-app-resolver",
+      "family": "agent",
+      "description": "HarmonyOS application development expert agent.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
+      "id": "agent:fsharp-reviewer",
+      "family": "agent",
+      "description": "F# code review agent for functional idioms, type safety, and .NET testing.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
       "id": "agent:refactor-cleaner",
       "family": "agent",
       "description": "Dead code cleanup and refactoring agent.",
@@ -340,6 +405,14 @@
       ]
     },
     {
+      "id": "agent:mle-reviewer",
+      "family": "agent",
+      "description": "Production machine-learning engineering reviewer for ML pipelines, evals, serving, monitoring, and rollback.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
       "id": "skill:tdd-workflow",
       "family": "skill",
       "description": "Test-driven development workflow skill.",
@@ -350,7 +423,7 @@
     {
       "id": "skill:continuous-learning",
       "family": "skill",
-      "description": "Session pattern extraction and continuous learning skill.",
+      "description": "Legacy v1 Stop-hook session pattern extraction skill; prefer continuous-learning-v2 for new installs.",
       "modules": [
         "workflow-quality"
       ]
@@ -367,6 +440,14 @@
       "id": "skill:verification-loop",
       "family": "skill",
       "description": "Verification loop for code quality assurance.",
+      "modules": [
+        "workflow-quality"
+      ]
+    },
+    {
+      "id": "skill:windows-desktop-e2e",
+      "family": "skill",
+      "description": "E2E testing for Windows native desktop apps with pywinauto and Windows UI Automation.",
       "modules": [
         "workflow-quality"
       ]
@@ -417,6 +498,14 @@
       "description": "Deep research and investigation workflows.",
       "modules": [
         "research-apis"
+      ]
+    },
+    {
+      "id": "skill:mle-workflow",
+      "family": "skill",
+      "description": "Production machine-learning engineering workflow for data contracts, reproducible training, evaluation, deployment, monitoring, and rollback.",
+      "modules": [
+        "machine-learning"
       ]
     }
   ]

@@ -3,6 +3,7 @@ const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
+const { toCursorAgentRelativePath } = require('./cursor-agent-names');
 const { LEGACY_INSTALL_TARGETS, parseInstallArgs } = require('./install/request');
 const {
   SUPPORTED_INSTALL_TARGETS,
@@ -13,6 +14,7 @@ const {
 const { getInstallTargetAdapter } = require('./install-targets/registry');
 
 const LANGUAGE_NAME_PATTERN = /^[a-zA-Z0-9_-]+$/;
+const CLAUDE_ECC_NAMESPACE = 'ecc';
 const EXCLUDED_GENERATED_SOURCE_SUFFIXES = [
   '/ecc-install-state.json',
   '/ecc/install-state.json',
@@ -154,7 +156,13 @@ function addRecursiveCopyOperations(operations, options) {
   for (const relativeFile of relativeFiles) {
     const sourceRelativePath = path.join(options.sourceRelativeDir, relativeFile);
     const sourcePath = path.join(options.sourceRoot, sourceRelativePath);
-    const destinationPath = path.join(options.destinationDir, relativeFile);
+    const destinationRelativePath = typeof options.destinationRelativePathTransform === 'function'
+      ? options.destinationRelativePathTransform(relativeFile, sourceRelativePath)
+      : relativeFile;
+    if (!destinationRelativePath) {
+      continue;
+    }
+    const destinationPath = path.join(options.destinationDir, destinationRelativePath);
     operations.push(buildCopyFileOperation({
       moduleId: options.moduleId,
       sourcePath,
@@ -180,6 +188,41 @@ function addFileCopyOperation(operations, options) {
     destinationPath: options.destinationPath,
     strategy: options.strategy || 'preserve-relative-path',
   }));
+
+  return true;
+}
+
+function readJsonObject(filePath, label) {
+  let parsed;
+  try {
+    parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch (error) {
+    throw new Error(`Failed to parse ${label} at ${filePath}: ${error.message}`);
+  }
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`Invalid ${label} at ${filePath}: expected a JSON object`);
+  }
+
+  return parsed;
+}
+
+function addJsonMergeOperation(operations, options) {
+  const sourcePath = path.join(options.sourceRoot, options.sourceRelativePath);
+  if (!fs.existsSync(sourcePath)) {
+    return false;
+  }
+
+  operations.push({
+    kind: 'merge-json',
+    moduleId: options.moduleId,
+    sourceRelativePath: options.sourceRelativePath,
+    destinationPath: options.destinationPath,
+    strategy: 'merge-json',
+    ownership: 'managed',
+    scaffoldOnly: false,
+    mergePayload: readJsonObject(sourcePath, options.sourceRelativePath),
+  });
 
   return true;
 }
@@ -222,7 +265,7 @@ function isDirectoryNonEmpty(dirPath) {
 function planClaudeLegacyInstall(context) {
   const adapter = getInstallTargetAdapter('claude');
   const targetRoot = adapter.resolveRoot({ homeDir: context.homeDir });
-  const rulesDir = context.claudeRulesDir || path.join(targetRoot, 'rules');
+  const rulesDir = context.claudeRulesDir || path.join(targetRoot, 'rules', CLAUDE_ECC_NAMESPACE);
   const installStatePath = adapter.getInstallStatePath({ homeDir: context.homeDir });
   const operations = [];
   const warnings = [];
@@ -316,6 +359,7 @@ function planCursorLegacyInstall(context) {
     sourceRoot: context.sourceRoot,
     sourceRelativeDir: path.join('.cursor', 'agents'),
     destinationDir: path.join(targetRoot, 'agents'),
+    destinationRelativePathTransform: toCursorAgentRelativePath,
   });
   addRecursiveCopyOperations(operations, {
     moduleId: 'legacy-cursor-install',
@@ -342,10 +386,10 @@ function planCursorLegacyInstall(context) {
     sourceRelativePath: path.join('.cursor', 'hooks.json'),
     destinationPath: path.join(targetRoot, 'hooks.json'),
   });
-  addFileCopyOperation(operations, {
+  addJsonMergeOperation(operations, {
     moduleId: 'legacy-cursor-install',
     sourceRoot: context.sourceRoot,
-    sourceRelativePath: path.join('.cursor', 'mcp.json'),
+    sourceRelativePath: '.mcp.json',
     destinationPath: path.join(targetRoot, 'mcp.json'),
   });
 
@@ -540,6 +584,22 @@ function createLegacyCompatInstallPlan(options = {}) {
 }
 
 function materializeScaffoldOperation(sourceRoot, operation) {
+  if (operation.kind === 'merge-json') {
+    return [{
+      kind: 'merge-json',
+      moduleId: operation.moduleId,
+      sourceRelativePath: operation.sourceRelativePath,
+      destinationPath: operation.destinationPath,
+      strategy: operation.strategy || 'merge-json',
+      ownership: operation.ownership || 'managed',
+      scaffoldOnly: Object.hasOwn(operation, 'scaffoldOnly') ? operation.scaffoldOnly : false,
+      mergePayload: readJsonObject(
+        path.join(sourceRoot, operation.sourceRelativePath),
+        operation.sourceRelativePath
+      ),
+    }];
+  }
+
   const sourcePath = path.join(sourceRoot, operation.sourceRelativePath);
   if (!fs.existsSync(sourcePath)) {
     return [];

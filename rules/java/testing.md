@@ -129,5 +129,5 @@ Use descriptive names with `@DisplayName`:
 ## References
 
 See skill: `springboot-tdd` for Spring Boot TDD patterns with MockMvc and Testcontainers.
-See skill: `quarkus-tdd` for Quarkus TDD patterns with REST Assured and Camel testing.
+See skill: `quarkus-tdd` for Quarkus TDD patterns with REST Assured and Dev Services.
 See skill: `java-coding-standards` for testing expectations.

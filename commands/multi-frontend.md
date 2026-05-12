@@ -1,3 +1,7 @@
+---
+description: Run a frontend-focused multi-model workflow for components, layouts, animation, and UI polish.
+---
+
 # Frontend - Frontend-Focused Development
 
 Frontend-focused workflow (Research → Ideation → Plan → Execute → Optimize → Review), Gemini-led.
