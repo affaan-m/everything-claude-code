@@ -358,7 +358,7 @@ If you stacked methods, clean up in this order:
 /plugin list ecc@ecc
 ```
 
-**That's it!** You now have access to 56 agents, 217 skills, and 74 legacy command shims.
+**That's it!** You now have access to 58 agents, 217 skills, and 74 legacy command shims.
 
 ### Dashboard GUI
 
@@ -456,7 +456,7 @@ everything-claude-code/
 |   |-- plugin.json         # Plugin metadata and component paths
 |   |-- marketplace.json    # Marketplace catalog for /plugin marketplace add
 |
-|-- agents/           # 56 specialized subagents for delegation
+|-- agents/           # 58 specialized subagents for delegation
 |   |-- planner.md           # Feature implementation planning
 |   |-- architect.md         # System design decisions
 |   |-- tdd-guide.md         # Test-driven development
@@ -1360,7 +1360,7 @@ The configuration is automatically detected from `.opencode/opencode.json`.
 
 | Feature | Claude Code | OpenCode | Status |
 |---------|-------------|----------|--------|
-| Agents | PASS: 56 agents | PASS: 12 agents | **Claude Code leads** |
+| Agents | PASS: 58 agents | PASS: 12 agents | **Claude Code leads** |
 | Commands | PASS: 74 commands | PASS: 35 commands | **Claude Code leads** |
 | Skills | PASS: 217 skills | PASS: 37 skills | **Claude Code leads** |
 | Hooks | PASS: 8 event types | PASS: 11 events | **OpenCode has more!** |
@@ -1465,7 +1465,7 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 
 | Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |
 |---------|------------|------------|-----------|----------|
-| **Agents** | 56 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
+| **Agents** | 58 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
 | **Commands** | 74 | Shared | Instruction-based | 35 |
 | **Skills** | 217 | Shared | 10 (native format) | 37 |
 | **Hook Events** | 8 types | 15 types | None yet | 11 types |
