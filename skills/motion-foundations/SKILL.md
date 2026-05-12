@@ -27,7 +27,7 @@ This skill produces:
 
 - A shared `motionTokens` object (duration, easing, distance, scale)
 - A shared `springs` preset map (5 named configs)
-- A `shouldAnimate` boolean gate used by all components
+- A `shouldAnimate()` gate used by all components
 - Accessibility-compliant animation defaults via `useReducedMotion`
 - SSR-safe initial states with zero hydration warnings
 
@@ -79,7 +79,7 @@ These are non-negotiable. They apply to every component in the system.
 
 ### When to disable animation entirely
 
-Disable (set `shouldAnimate = false`) when:
+Disable (make `shouldAnimate()` return `false`) when:
 
 - `prefersReduced` is `true`
 - `isLowEnd` is `true` and the animation is non-essential
@@ -134,20 +134,28 @@ export const springs = {
 ```ts
 // lib/motion-config.ts
 export const motionConfig = {
-  isLowEnd:
-    typeof navigator !== "undefined" &&
-    navigator.hardwareConcurrency <= 4,
-
-  prefersReduced:
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-
-  get shouldAnimate() {
-    return !this.prefersReduced
+  isLowEnd() {
+    return (
+      typeof navigator !== "undefined" &&
+      navigator.hardwareConcurrency <= 4
+    )
   },
 
-  get duration() {
-    return this.isLowEnd || this.prefersReduced
+  prefersReduced() {
+    return (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+  },
+
+  shouldAnimate({ essential = false } = {}) {
+    if (this.prefersReduced()) return false
+    if (!essential && this.isLowEnd()) return false
+    return true
+  },
+
+  duration() {
+    return this.isLowEnd() || this.prefersReduced()
       ? motionTokens.duration.instant
       : motionTokens.duration.normal
   },
@@ -240,7 +248,7 @@ export function FadeInCard({ children, delay = 0 }: FadeInCardProps) {
   const safeMotion = useSafeMotion(motionTokens.distance.md)
 
   // Device gate — skip animation on low-end hardware
-  if (!motionConfig.shouldAnimate || !mounted) {
+  if (!motionConfig.shouldAnimate() || !mounted) {
     return <div>{children}</div>
   }
 

@@ -141,7 +141,7 @@ const item = {
 ```tsx
 "use client"
 import { motion, AnimatePresence } from "motion/react"
-import { springs } from "@/lib/motion-tokens"
+import { motionTokens, springs } from "@/lib/motion-tokens"
 
 // Wrap at the call site:
 // <AnimatePresence>{isOpen && <Modal key="modal" />}</AnimatePresence>
@@ -164,9 +164,17 @@ export function Modal({ onClose }: { onClose: () => void }) {
         role="dialog"
         aria-modal="true"
         className="fixed inset-x-4 top-1/2 -translate-y-1/2 rounded-xl bg-white p-6"
-        initial={{ opacity: 0, scale: 0.95, y: 8 }}
-        animate={{ opacity: 1, scale: 1,    y: 0 }}
-        exit={{    opacity: 0, scale: 0.95, y: 8 }}
+        initial={{
+          opacity: 0,
+          scale: motionTokens.scale.press,
+          y: motionTokens.distance.sm,
+        }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{
+          opacity: 0,
+          scale: motionTokens.scale.press,
+          y: motionTokens.distance.sm,
+        }}
         transition={springs.gentle}
       />
     </>
@@ -179,16 +187,24 @@ export function Modal({ onClose }: { onClose: () => void }) {
 ```tsx
 "use client"
 import { motion, AnimatePresence } from "motion/react"
-import { springs } from "@/lib/motion-tokens"
+import { motionTokens, springs } from "@/lib/motion-tokens"
 
 <AnimatePresence mode="sync">
   {toasts.map((t) => (
     <motion.div
       key={t.id}
       layout
-      initial={{ opacity: 0, x: 48, scale: 0.9 }}
-      animate={{ opacity: 1, x: 0,  scale: 1   }}
-      exit={{    opacity: 0, x: 48, scale: 0.9 }}
+      initial={{
+        opacity: 0,
+        x: motionTokens.distance.xl,
+        scale: motionTokens.scale.subtle,
+      }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{
+        opacity: 0,
+        x: motionTokens.distance.xl,
+        scale: motionTokens.scale.subtle,
+      }}
       transition={springs.snappy}
     />
   ))}
@@ -317,7 +333,7 @@ export function ExpandingCard({ title, body }: { title: string; body: string }) 
   initial={false}
   animate={{ opacity: open ? 1 : 0, scaleY: open ? 1 : 0 }}
   style={{ transformOrigin: "top", overflow: "hidden" }}
- transition={{
+  transition={{
     duration: motionTokens.duration.normal,
     ease: motionTokens.easing.smooth,
   }}

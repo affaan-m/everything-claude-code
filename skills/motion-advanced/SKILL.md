@@ -278,7 +278,7 @@ import { motionTokens } from "@/lib/motion-tokens"
   d="M 0 100 Q 50 0 100 100"
   initial={{ pathLength: 0, opacity: 0 }}
   animate={{ pathLength: 1, opacity: 1 }}
-  transition={{ duration: motionTokens.duration.slow, ease: "easeInOut" }}
+  transition={{ duration: motionTokens.duration.slow, ease: motionTokens.easing.smooth }}
 />
 ```
 
@@ -336,12 +336,13 @@ const { ref, style } = useScrollReveal()
 "use client"
 import { useEffect } from "react"
 import { motion, useMotionValue, useSpring } from "motion/react"
+import { springs } from "@/lib/motion-tokens"
 
 export function CursorFollower() {
   const x = useMotionValue(-100)
   const y = useMotionValue(-100)
-  const sx = useSpring(x, { stiffness: 120, damping: 16 })
-  const sy = useSpring(y, { stiffness: 120, damping: 16 })
+  const sx = useSpring(x, springs.gentle)
+  const sy = useSpring(y, springs.gentle)
 
   useEffect(() => {
     const move = (e: MouseEvent) => { x.set(e.clientX); y.set(e.clientY) }
@@ -363,29 +364,44 @@ export function CursorFollower() {
 
 ```tsx
 "use client"
-import { motion } from "motion/react"
+import { useEffect } from "react"
+import { motion, useAnimation } from "motion/react"
+import { motionTokens } from "@/lib/motion-tokens"
 
- export function ShimmerSkeleton({ className }: { className?: string }) {
+export function ShimmerSkeleton({ className = "" }: { className?: string }) {
   const controls = useAnimation()
+
   useEffect(() => {
-    const run = () =>
-      controls.start({ x: ["-100%", "100%"], transition: { repeat: Infinity, duration: 1.2, ease: "linear" } })
-    const onVis = () => (document.visibilityState === "hidden" ? controls.stop() : run())
-    run()
-    document.addEventListener("visibilitychange", onVis)
-    return () => document.removeEventListener("visibilitychange", onVis)
+    const play = () =>
+      controls.start({
+        x: ["-100%", "100%"],
+        transition: {
+          repeat: Infinity,
+          duration: motionTokens.duration.crawl,
+          ease: motionTokens.easing.linear,
+        },
+      })
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "hidden") controls.stop()
+      else void play()
+    }
+
+    void play()
+    document.addEventListener("visibilitychange", handleVisibility)
+    return () => {
+      controls.stop()
+      document.removeEventListener("visibilitychange", handleVisibility)
+    }
   }, [controls])
-   return (
-     <div className={`relative overflow-hidden bg-gray-200 rounded ${className}`}>
-       <motion.div
-         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent"
-        animate={{ x: ["-100%", "100%"] }}
-        transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+
+  return (
+    <div className={`relative overflow-hidden bg-gray-200 rounded ${className}`}>
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent"
+        initial={{ x: "-100%" }}
         animate={controls}
-       />
-     </div>
-   )
- }
+      />
     </div>
   )
 }
@@ -443,8 +459,9 @@ export function LoadingButton({
 
 ```tsx
 "use client"
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 import { motion, useAnimation } from "motion/react"
+import { motionTokens } from "@/lib/motion-tokens"
 
 export function PulseDot() {
   const controls = useAnimation()
@@ -454,19 +471,23 @@ export function PulseDot() {
       controls.start({
         scale: [1, 1.4, 1],
         opacity: [1, 0.6, 1],
-        transition: { repeat: Infinity, duration: 1.8 },
+        transition: { repeat: Infinity, duration: motionTokens.duration.crawl },
       })
 
     // Rule 2: pause when tab is hidden
     const handleVisibility = () => {
       if (document.visibilityState === "hidden") controls.stop()
-      else pulse()
+      else void pulse()
     }
 
-    pulse()
+    void pulse()
     document.addEventListener("visibilitychange", handleVisibility)
-    return () => document.removeEventListener("visibilitychange", handleVisibility)  // Rule 7
-  }, [])
+    // Rule 7: stop controls and remove listeners on unmount.
+    return () => {
+      controls.stop()
+      document.removeEventListener("visibilitychange", handleVisibility)
+    }
+  }, [controls])
 
   return <motion.span className="w-2 h-2 rounded-full bg-green-400" animate={controls} />
 }
