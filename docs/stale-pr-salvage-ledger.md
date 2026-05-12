@@ -44,6 +44,7 @@ on fresh branches, and credit the source PR.
 | #1566 | Agent architecture audit skill | Salvaged in #1772. |
 | #1578 | OpenCode file-probe hardening | Salvaged in #1773. |
 | #1603 | `plan-orchestrate` skill | Salvaged in #1766 with current manifest/catalog wiring. |
+| #1658 | Code-reviewer false-positive suppression | Salvaged in the May 12 code-reviewer maintainer pass with current review-agent wording, a proof gate for HIGH/CRITICAL findings, common false-positive exclusions, and a regression test. |
 | #1659 | Frontend design direction and interface-polish skills | Salvaged in the May 12 frontend-design maintainer pass with canonical `skills/` layout and current ECC frontend guidance, while preserving the repo guardrail that the official `frontend-design` skill should be installed from `anthropics/skills`. |
 | #1674 | Production audit skill | Salvaged in #1732 after supply-chain/privacy review and rewrite. |
 | #1687 | zh-CN localization sync | Large safe subsets salvaged in #1746-#1752; remaining pieces require translator/manual review. |
@@ -77,6 +78,8 @@ porting.
 | #1504 | Already mapped to #1776 in the durable salvage table. |
 | #1508 | Already present as `skills/fastapi-patterns/` and `agents/fastapi-reviewer.md`. |
 | #1603 | Useful `/plan-orchestrate` work was already preserved in #1766 with current package/catalog metadata. |
+| #1631 | Already present in `scripts/hooks/suggest-compact.js` and `tests/hooks/hooks.test.js`; current code reads `session_id` from stdin JSON before falling back to `CLAUDE_SESSION_ID`. |
+| #1658 | Ported through the code-reviewer maintainer branch after confirming the false-positive proof gate and common false-positive skip list were still missing. |
 | #1693 | Already present as `skills/redis-patterns/`. |
 
 ## Already Present Or Superseded
@@ -87,6 +90,7 @@ porting.
 | #1318 | Gemini agent adaptation utility was already present on current `main`. |
 | #1323 | Hook config update was already present on current `main`. |
 | #1337 | Catalog count update was superseded by current catalog-count sync. |
+| #1631 | `suggest-compact` stdin `session_id` isolation was already present on current `main` with hook tests. |
 | #1608 | Unsafe dashboard document/terminal open handling was already present on current `main` through safe runtime helpers and project-bound document opening. |
 | #1678 | Windows MCP `.cmd`/`.bat` fallback behavior was already present on current `main` with current health-check tests. |
 | #1682/#1701 | Strategic compact hook-path fixes were merged directly or superseded by current docs fixes. |

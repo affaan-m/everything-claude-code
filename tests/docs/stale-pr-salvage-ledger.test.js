@@ -58,6 +58,7 @@ test('stale PR salvage ledger preserves representative source attribution', () =
     '#1493',
     '#1528/#1529/#1547',
     '#1603',
+    '#1658',
     '#1659',
     '#1674',
     '#1687',
@@ -110,6 +111,8 @@ test('stale PR salvage ledger records the May 12 gap pass', () => {
     '#1504',
     '#1508',
     '#1603',
+    '#1631',
+    '#1658',
     '#1693',
   ]) {
     assert.ok(source.includes(pr), `Missing May 12 gap-pass PR ${pr}`);
@@ -119,6 +122,8 @@ test('stale PR salvage ledger records the May 12 gap pass', () => {
   assert.ok(source.includes('already preserved in #1770'));
   assert.ok(source.includes('already preserved in #1769'));
   assert.ok(source.includes('already preserved in #1766'));
+  assert.ok(source.includes('false-positive proof gate'));
+  assert.ok(source.includes('session_id` from stdin JSON'));
   assert.ok(source.includes('Already present as `skills/redis-patterns/`'));
 });
 
