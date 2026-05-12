@@ -99,6 +99,11 @@ As of 2026-05-12:
   scope, expiry, and days-until-expiry reporting; terminal output and GitHub
   Action job-summary evidence; README docs; rebuilt action bundles; and
   1,708-test validation.
+- AgentShield PDF-export decision: defer a native PDF writer for now. The
+  self-contained HTML executive report remains the exportable buyer artifact
+  and can be printed to PDF when needed; native PDF generation should wait for
+  explicit enterprise/compliance demand or a print-fidelity gap in the HTML
+  report.
 - ECC PR #1778 recovered the useful stale #1413 network/homelab architect-agent
   concepts.
 - ECC-Tools PR #26 added cost/token-risk predictive follow-ups for AI routing,
@@ -203,7 +208,7 @@ is not complete unless the evidence column exists and has been freshly verified.
 | Naming and rename readiness | Naming matrix across package/plugin/docs/social surfaces | `docs/releases/2.0.0-rc.1/naming-and-publication-matrix.md` records current package, repo, Claude plugin, Codex plugin, OpenCode, and npm availability evidence | Complete for rc.1; post-rc rename remains future work |
 | Claude and Codex plugin publication | Contact/submission path with required artifacts and status | Publication readiness, naming matrix, and May 12 dry-run evidence document plugin validation, clean-checkout Claude tag/install smoke, and Codex marketplace CLI shape | Needs explicit approval for real tag/push and marketplace submission |
 | Articles, tweets, and announcements | X thread, LinkedIn copy, GitHub release copy, push checklist | Draft launch collateral exists under rc.1 release docs | Needs URL-backed refresh |
-| AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports, exception lifecycle audit | PRs #53, #55-#62 landed with test evidence | Needs PDF/export decision or next enterprise signal |
+| AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports, exception lifecycle audit | PRs #53, #55-#62 landed with test evidence; native PDF export deferred in favor of self-contained HTML plus print-to-PDF until explicit enterprise demand appears | Needs next enterprise signal |
 | ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog, evaluator/RAG corpus | PRs #26-#40 landed with test evidence | Needs capacity-backed Linear rollout |
 | GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy and deterministic follow-up checks | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, Analyzer Corpus Evidence, RAG/Evaluator Evidence, and PR Review/Salvage Evidence | Partially complete |
 | Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates plus `docs/architecture/evaluator-rag-prototype.md`, `examples/evaluator-rag-prototype/`, and ECC-Tools PR #40 define read-only stale-salvage, billing-readiness, CI-failure-diagnosis, harness-config-quality, AgentShield policy-exception, skill-quality evidence, deep-analyzer evidence, and RAG/evaluator comparison scenarios with trace, report, playbook, verifier, and predictive-check artifacts | Local corpus complete; hosted integration remains future |
@@ -226,7 +231,7 @@ back to the repo evidence and merge commits.
 | Release and publication | rc.1 release docs, publication readiness doc | Naming matrix and plugin submission/contact checklist | Before any tag |
 | Harness OS core | Audit, adapter matrix, observability docs, `ecc2/` | HUD/session-control acceptance spec | Weekly until GA |
 | Evaluation and RAG | Reference-set validation, harness audit, traces, ECC-Tools corpus | Read-only evaluator/RAG prototype plus stale-salvage, billing-readiness, CI-failure-diagnosis, harness-config-quality, AgentShield policy-exception, skill-quality evidence, deep-analyzer evidence, and RAG/evaluator comparison fixtures | Hosted retrieval/check-run automation plan |
-| AgentShield enterprise | AgentShield PR evidence and roadmap notes | PDF-export decision or next enterprise signal | After value decision |
+| AgentShield enterprise | AgentShield PR evidence and roadmap notes | Next enterprise signal | After PDF/export decision |
 | ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy, evaluator/RAG corpus | Capacity-backed Linear rollout | Next implementation batch |
 | Linear progress | Linear project status updates and this mirror | Status update with queue/evidence/missing gates | Every significant merge batch |
 
@@ -342,6 +347,9 @@ Acceptance:
 - Enterprise reports include JSON plus self-contained HTML executive output
   with risk posture, priority findings, category exposure, and policy-exception
   lifecycle evidence in terminal/CI summaries.
+- Native PDF export is not a GA blocker unless an enterprise/compliance
+  workflow requires a generated PDF file instead of the self-contained HTML
+  report and browser print-to-PDF path.
 
 ### 6. ECC Tools Billing, Deep Analysis, PR Checks, And Linear Sync
 
@@ -424,8 +432,9 @@ Acceptance:
 
 ## Next Engineering Slices
 
-1. Decide whether AgentShield PDF export adds value beyond the merged HTML
-   executive report, corpus benchmark output, and exception lifecycle audit.
+1. Identify the next AgentShield enterprise signal beyond the merged HTML
+   executive report, corpus benchmark output, exception lifecycle audit, and
+   deferred native-PDF decision.
 2. Enable/configure the merged Linear backlog sync path after workspace issue
    capacity clears or the Linear workspace is upgraded.
 3. Use the ECC-Tools evaluator/RAG corpus as the promotion gate before adding
