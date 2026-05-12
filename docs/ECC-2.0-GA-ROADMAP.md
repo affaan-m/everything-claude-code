@@ -85,6 +85,9 @@ As of 2026-05-12:
   plugin, agent, hook, command, and harness config changes that lack harness
   audit, adapter matrix, cross-harness docs, or compatibility regression
   evidence.
+- ECC PR #1803 landed the contributor Quarkus handling branch after maintainer
+  cleanup, current-`main` alignment, full local validation, and preservation of
+  the author's removal of incomplete ja-JP and zh-CN Quarkus translations.
 
 ## Operating Rules
 
@@ -99,6 +102,57 @@ As of 2026-05-12:
   salvage pass: inspect the closed diffs, port useful compatible work on
   maintainer-owned branches, and credit the source PR.
 - Do not create new Linear issues until the active issue limit is cleared.
+
+## Prompt-To-Artifact Execution Checklist
+
+This table keeps the long operator prompt tied to concrete artifacts. A status
+is not complete unless the evidence column exists and has been freshly verified.
+
+| Prompt requirement | Required artifact or gate | Current evidence | Status |
+| --- | --- | --- | --- |
+| Keep public PRs below 20 | Repo-family PR recheck | 0 open PRs across the tracked public repos on 2026-05-12 | Complete for this checkpoint |
+| Keep public issues below 20 | Repo-family issue recheck | 0 open issues across the tracked public repos on 2026-05-12 | Complete for this checkpoint |
+| Manage PR discussions | PR review/comment closure plus merge/close state | #1803 was maintainer-edited and merged; no open PRs remain | Complete for this checkpoint |
+| Salvage useful stale work | `docs/stale-pr-salvage-ledger.md` | Ledger records salvaged, superseded, skipped, and manual-review tails | Complete except #1687 manual review |
+| ECC 2.0 preview pack ready | Release docs, quickstart, publication readiness, release notes | `docs/releases/2.0.0-rc.1/` and readiness docs are in-tree | Needs final release evidence |
+| Hermes specialized skills included safely | Hermes setup/import docs and sanitized skill surface | Hermes setup and import playbook are public; secrets stay local | Needs final release review |
+| Naming and rename readiness | Naming matrix across package/plugin/docs/social surfaces | Milestone 1 defines the needed matrix | Not complete |
+| Claude and Codex plugin publication | Contact/submission path with required artifacts and status | Publication readiness gate exists | Not complete |
+| Articles, tweets, and announcements | X thread, LinkedIn copy, GitHub release copy, push checklist | Draft launch collateral exists under rc.1 release docs | Needs URL-backed refresh |
+| AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports | PRs #53, #55-#60 landed with test evidence | Needs next value decision |
+| ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog | PRs #26-#33 landed with test evidence | Needs skill/RAG and Linear sync slice |
+| GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy and deterministic follow-up checks | ECC-Tools risk taxonomy check plus follow-up signals landed | Partially complete |
+| Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates exist | Needs evaluation/RAG prototype |
+| Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation is blocked by workspace limit | Needs recurring status updates |
+| Flow separation and progress tracking | Flow lanes with owner artifacts and update cadence | This roadmap defines lanes below | Active |
+| Realtime Linear sync | Project updates while issue limit is blocked; issues later | Follow-up flood-control exists in ECC Tools | Not complete |
+| Observability for self-use | Local readiness gate, traces, status snapshots, risk ledger | `npm run observability:ready` reports 14/14 | Complete for local gate |
+| Proper release and notifications | Release tag, npm publish state, plugin state, social posts | Publication readiness gate exists | Not complete |
+
+## Execution Lanes And Tracking Contract
+
+Until Linear issue capacity is cleared, this document is the durable execution
+ledger and Linear receives project status updates only. When capacity is
+available, each lane below should become a small set of Linear issues linked
+back to the repo evidence and merge commits.
+
+| Lane | Source of truth | Next tracked artifact | Update cadence |
+| --- | --- | --- | --- |
+| Queue hygiene and salvage | GitHub PR/issue state, salvage ledger | Append ledger entries for any future stale closures | Every cleanup batch |
+| Release and publication | rc.1 release docs, publication readiness doc | Naming matrix and plugin submission/contact checklist | Before any tag |
+| Harness OS core | Audit, adapter matrix, observability docs, `ecc2/` | HUD/session-control acceptance spec | Weekly until GA |
+| Evaluation and RAG | Reference-set validation, harness audit, traces | Read-only evaluator/RAG prototype design | Before deep analyzer expansion |
+| AgentShield enterprise | AgentShield PR evidence and roadmap notes | PDF-export decision or next enterprise signal | After value decision |
+| ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy | Skill-quality/RAG follow-up signal slice | Next implementation batch |
+| Linear progress | Linear project status updates and this mirror | Status update with queue/evidence/missing gates | Every significant merge batch |
+
+The project status update should always include:
+
+1. Current public PR and issue counts.
+2. Merged evidence since the previous update.
+3. Deferred or blocked items with the reason.
+4. The next one or two implementation slices.
+5. Any release or publication gate that is still not evidence-backed.
 
 ## Reference Pressure
 
