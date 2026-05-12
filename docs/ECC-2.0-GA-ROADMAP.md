@@ -72,6 +72,9 @@ As of 2026-05-12:
 - ECC-Tools PR #29 added deterministic Reference Set Validation signals for
   analyzer, skill, agent, command, and harness-guidance changes that lack eval,
   golden trace, benchmark, or reference-set evidence.
+- ECC-Tools PR #30 capped follow-up generation to three new GitHub issues and
+  one draft PR per run, then emits the remaining deterministic findings as a
+  project sync backlog for Linear/status tracking without flooding trackers.
 
 ## Operating Rules
 
@@ -214,6 +217,8 @@ Acceptance:
   maintained reference-set evidence.
 - Linear sync design maps findings to issues/status without flooding the
   workspace.
+- Follow-up generation caps automatic GitHub object creation and keeps overflow
+  findings in a copy-ready project sync backlog.
 
 ### 7. Legacy Audit And Stale-Work Salvage Closure
 
