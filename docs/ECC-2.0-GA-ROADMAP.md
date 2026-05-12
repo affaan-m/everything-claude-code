@@ -88,6 +88,10 @@ As of 2026-05-12:
 - ECC-Tools PR #34 added skill-quality predictive follow-ups and a Skill
   Quality PR-risk bucket for skill, agent, command, and rule guidance changes
   that lack examples, validation, eval, or reference evidence.
+- ECC-Tools PR #35 added RAG/evaluator predictive follow-ups and a
+  RAG/Evaluator Evidence PR-risk bucket for retrieval, embedding, ranking, and
+  evaluator changes that lack reference-set comparison, golden trace,
+  benchmark, fixture, or eval-run evidence.
 - ECC PR #1803 landed the contributor Quarkus handling branch after maintainer
   cleanup, current-`main` alignment, full local validation, and preservation of
   the author's removal of incomplete ja-JP and zh-CN Quarkus translations.
@@ -123,8 +127,8 @@ is not complete unless the evidence column exists and has been freshly verified.
 | Claude and Codex plugin publication | Contact/submission path with required artifacts and status | Publication readiness gate exists | Not complete |
 | Articles, tweets, and announcements | X thread, LinkedIn copy, GitHub release copy, push checklist | Draft launch collateral exists under rc.1 release docs | Needs URL-backed refresh |
 | AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports | PRs #53, #55-#60 landed with test evidence | Needs next value decision |
-| ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog | PRs #26-#34 landed with test evidence | Needs RAG and Linear sync slice |
-| GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy and deterministic follow-up checks | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality | Partially complete |
+| ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog | PRs #26-#35 landed with test evidence | Needs Linear sync/deep-analyzer expansion |
+| GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy and deterministic follow-up checks | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality and RAG/Evaluator Evidence | Partially complete |
 | Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates exist | Needs evaluation/RAG prototype |
 | Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation is blocked by workspace limit | Needs recurring status updates |
 | Flow separation and progress tracking | Flow lanes with owner artifacts and update cadence | This roadmap defines lanes below | Active |
@@ -146,7 +150,7 @@ back to the repo evidence and merge commits.
 | Harness OS core | Audit, adapter matrix, observability docs, `ecc2/` | HUD/session-control acceptance spec | Weekly until GA |
 | Evaluation and RAG | Reference-set validation, harness audit, traces | Read-only evaluator/RAG prototype design | Before deep analyzer expansion |
 | AgentShield enterprise | AgentShield PR evidence and roadmap notes | PDF-export decision or next enterprise signal | After value decision |
-| ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy | RAG/evaluator follow-up signal slice | Next implementation batch |
+| ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy | Linear sync/deep-analyzer expansion slice | Next implementation batch |
 | Linear progress | Linear project status updates and this mirror | Status update with queue/evidence/missing gates | Every significant merge batch |
 
 The project status update should always include:
@@ -273,15 +277,18 @@ Acceptance:
   failure modes.
 - Deep analyzer covers diff patterns, CI/CD workflows, dependency/security
   surface, PR review behavior, failure history, harness config, skill quality,
-  and reference-set/RAG comparison.
+  RAG/evaluator comparison, and reference-set validation.
 - PR check suite taxonomy includes Security Evidence, Harness Drift, Install
-  Manifest Integrity, CI/CD Recommendation, Cost/Token Risk, and Agent Config
-  Review.
+  Manifest Integrity, CI/CD Recommendation, Cost/Token Risk, Reference Set
+  Validation, RAG/Evaluator Evidence, Skill Quality, and Agent Config Review.
 - Cost/token-risk predictive follow-ups flag AI routing, model-call, usage,
   quota, and budget changes when budget evidence is missing.
 - Reference-set validation follow-ups flag analyzer, skill, agent, command, and
   harness-guidance changes that lack eval, golden trace, benchmark, or
   maintained reference-set evidence.
+- RAG/evaluator follow-ups flag retrieval, embedding, ranking, and evaluator
+  changes that lack reference-set comparison, golden trace, benchmark, fixture,
+  or eval-run evidence.
 - PR analysis comments summarize review follow-up signals for requested
   changes, unresolved or outdated review threads, and missing approvals.
 - CI failure-mode predictive follow-ups flag workflow and test-runner changes
