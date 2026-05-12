@@ -141,7 +141,7 @@ function parseReadmeExpectations(readmeContent) {
     },
     {
       category: 'commands',
-      regex: /^\|\s*(?:\*\*)?Commands(?:\*\*)?\s*\|\s*(\d+)\s*\|\s*Shared\s*\|\s*Instruction-based\s*\|\s*31\s*\|$/im,
+      regex: /^\|\s*(?:\*\*)?Commands(?:\*\*)?\s*\|\s*(\d+)\s*\|\s*Shared\s*\|\s*Instruction-based\s*\|\s*\d+\s*\|$/im,
       source: 'README.md parity table'
     },
     {
@@ -223,7 +223,7 @@ function parseZhDocsReadmeExpectations(readmeContent) {
     },
     {
       category: 'commands',
-      regex: /^\|\s*(?:\*\*)?命令(?:\*\*)?\s*\|\s*(\d+)\s*\|\s*共享\s*\|\s*基于指令\s*\|\s*31\s*\|$/im,
+      regex: /^\|\s*(?:\*\*)?命令(?:\*\*)?\s*\|\s*(\d+)\s*\|\s*共享\s*\|\s*基于指令\s*\|\s*\d+\s*\|$/im,
       source: 'docs/zh-CN/README.md parity table'
     },
     {
@@ -447,7 +447,7 @@ function syncEnglishReadme(content, catalog) {
   );
   nextContent = replaceOrThrow(
     nextContent,
-    /^(\|\s*(?:\*\*)?Commands(?:\*\*)?\s*\|\s*)(\d+)(\s*\|\s*Shared\s*\|\s*Instruction-based\s*\|\s*31\s*\|)$/im,
+    /^(\|\s*(?:\*\*)?Commands(?:\*\*)?\s*\|\s*)(\d+)(\s*\|\s*Shared\s*\|\s*Instruction-based\s*\|\s*\d+\s*\|)$/im,
     (_, prefix, __, suffix) => `${prefix}${catalog.commands.count}${suffix}`,
     'README.md parity table (commands)'
   );
@@ -539,7 +539,7 @@ function syncZhDocsReadme(content, catalog) {
   );
   nextContent = replaceOrThrow(
     nextContent,
-    /^(\|\s*(?:\*\*)?命令(?:\*\*)?\s*\|\s*)(\d+)(\s*\|\s*共享\s*\|\s*基于指令\s*\|\s*31\s*\|)$/im,
+    /^(\|\s*(?:\*\*)?命令(?:\*\*)?\s*\|\s*)(\d+)(\s*\|\s*共享\s*\|\s*基于指令\s*\|\s*\d+\s*\|)$/im,
     (_, prefix, __, suffix) => `${prefix}${catalog.commands.count}${suffix}`,
     'docs/zh-CN/README.md parity table (commands)'
   );

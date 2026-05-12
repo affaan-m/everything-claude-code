@@ -205,6 +205,7 @@ commands:
   - rust-test
   - santa-loop
   - save-session
+  - security-scan
   - sessions
   - setup-pm
   - skill-create
