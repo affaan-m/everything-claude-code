@@ -58,6 +58,7 @@ test('stale PR salvage ledger preserves representative source attribution', () =
     '#1493',
     '#1528/#1529/#1547',
     '#1603',
+    '#1659',
     '#1674',
     '#1687',
     '#1705/#1780',
