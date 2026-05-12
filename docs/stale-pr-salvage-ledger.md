@@ -20,6 +20,7 @@ on fresh branches, and credit the source PR.
 | Source PR | Original contribution | Salvage result |
 | --- | --- | --- |
 | #1309 | Trading/community project material | Salvaged in #1761 as a neutral community-project README listing. |
+| #1310 | Django reviewer, build resolver, and Celery async task guidance | Salvaged in the May 12 Django/Celery maintainer pass with current catalog counts and minor example cleanup. |
 | #1322 | Vietnamese README translation | Salvaged in #1764 as `docs/vi-VN/README.md` plus selector updates. |
 | #1326 | Angular developer skill and rules | Salvaged in #1763 with current skill, rules, install wiring, and catalog updates. |
 | #1328 | Continuous-learning Windows UTF-8 stdout fix | Salvaged in #1761. |
@@ -49,6 +50,22 @@ on fresh branches, and credit the source PR.
 | #1715 | CI personal-path validator hardening | Ported through CI validator hardening in #1717. |
 | #1727 | MySQL patterns skill | Salvaged in #1733. |
 | #1757 | Machine-learning engineering workflow | Salvaged in #1758 and tuned in #1759. |
+
+## 2026-05-12 Gap Pass
+
+The initial stale-closure ledger covered the P0 cleanup cohort and the biggest
+salvage branches. A follow-up gap pass over PRs closed on 2026-05-11 found
+additional useful items that were already present on `main` or still worth
+porting.
+
+| Source PR | Disposition |
+| --- | --- |
+| #1310 | Ported through the Django/Celery maintainer branch after confirming `agents/django-reviewer.md`, `agents/django-build-resolver.md`, and `skills/django-celery/SKILL.md` were still missing. |
+| #1360 | Already present as `skills/security-bounty-hunter/`. |
+| #1415 | Already present as `skills/vite-patterns/`. |
+| #1438 | Already present as `skills/ui-to-vue/`. |
+| #1508 | Already present as `skills/fastapi-patterns/` and `agents/fastapi-reviewer.md`. |
+| #1693 | Already present as `skills/redis-patterns/`. |
 
 ## Already Present Or Superseded
 
