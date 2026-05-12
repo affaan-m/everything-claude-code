@@ -34,8 +34,9 @@ As of 2026-05-12:
 - Do not publish release or social announcements until the GitHub release,
   npm/package state, billing state, and plugin submission surfaces are verified
   with fresh evidence.
-- Do not treat closed stale PRs as discarded. Inspect them, port useful current
-  compatible work on maintainer-owned branches, and credit the source PR.
+- Do not treat closed stale PRs as discarded. Pair each cleanup batch with a
+  salvage pass: inspect the closed diffs, port useful compatible work on
+  maintainer-owned branches, and credit the source PR.
 - Do not create new Linear issues until the active issue limit is cleared.
 
 ## Reference Pressure
@@ -167,7 +168,8 @@ Acceptance:
 - Each useful artifact is marked landed, Linear/project-tracked, salvage
   branch, or archive/no-action.
 - Stale PR salvage policy stays in force: close stale/conflicted PRs first,
-  then port useful compatible content on maintainer branches with attribution.
+  record a salvage ledger item, then port useful compatible content on
+  maintainer branches with attribution.
 - #1687 localization leftovers are handled only by translator/manual review,
   not blind cherry-pick.
 
@@ -181,3 +183,5 @@ Acceptance:
    payments announcement.
 5. Inventory `_legacy-documents-*` and map useful artifacts to landed,
    milestone-tracked, salvage, or archive states.
+6. Build the stale-PR salvage ledger from closed cleanup batches, then port
+   useful pieces in small attributed maintainer PRs.
