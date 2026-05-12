@@ -152,6 +152,7 @@ commands:
   - cpp-build
   - cpp-review
   - cpp-test
+  - ecc-guide
   - evolve
   - fastapi-review
   - feature-dev
@@ -190,6 +191,7 @@ commands:
   - pm2
   - projects
   - promote
+  - project-init
   - prp-commit
   - prp-implement
   - prp-plan
