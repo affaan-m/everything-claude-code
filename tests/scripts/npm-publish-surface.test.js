@@ -56,6 +56,7 @@ function buildExpectedPublishPaths(repoRoot) {
     "scripts/observability-readiness.js",
     "scripts/skill-create-output.js",
     "scripts/repair.js",
+    "scripts/harness-adapter-compliance.js",
     "scripts/harness-audit.js",
     "scripts/session-inspect.js",
     "scripts/uninstall.js",
