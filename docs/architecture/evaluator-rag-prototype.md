@@ -7,9 +7,10 @@ that loop.
 
 The fixture set lives in
 [`examples/evaluator-rag-prototype/`](../../examples/evaluator-rag-prototype/).
-It uses the May 2026 stale-PR cleanup and salvage lane as the first concrete
-scenario because that lane has real inputs, real accepted work, and real
-rejected work.
+It started with the May 2026 stale-PR cleanup and salvage lane because that
+lane has real inputs, real accepted work, and real rejected work. The corpus now
+also includes a billing/Marketplace readiness scenario so launch copy cannot
+treat dry-run release evidence or roadmap intent as live billing state.
 
 ## Reference Pressure
 
@@ -83,6 +84,19 @@ The verifier rejects a blind cherry-pick proposal that:
 - lacks tests or ledger updates;
 - mutates release or plugin publication state.
 
+## Corpus Fixtures
+
+The root fixture files preserve the original
+`stale-pr-salvage-maintainer-branch` prototype. Additional scenarios can live in
+subdirectories when they reuse the same five-artifact contract.
+
+Current corpus:
+
+- `stale-pr-salvage-maintainer-branch`: recovers useful closed PR work through
+  maintainer-owned branches with attribution and validation.
+- `billing-marketplace-readiness`: verifies billing, App, and Marketplace
+  launch claims before public copy says they are live.
+
 ## ECC Tools Mapping
 
 ECC Tools already flags missing RAG/evaluator evidence for retrieval,
@@ -117,6 +131,4 @@ The next evaluator/RAG corpus should add:
 
 - a CI-failure diagnosis scenario with captured logs and a known fix;
 - a harness-config quality scenario covering MCP/plugin/hook drift;
-- a billing-readiness scenario that separates verified Marketplace claims from
-  launch-copy assumptions;
 - an AgentShield policy exception scenario with SARIF and report evidence.

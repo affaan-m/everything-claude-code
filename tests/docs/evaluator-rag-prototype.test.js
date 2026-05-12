@@ -30,6 +30,10 @@ function readJson(fileName) {
   return JSON.parse(fs.readFileSync(path.join(fixtureRoot, fileName), 'utf8'));
 }
 
+function readFixtureJson(relativePath) {
+  return JSON.parse(fs.readFileSync(path.join(fixtureRoot, relativePath), 'utf8'));
+}
+
 console.log('\n=== Testing evaluator RAG prototype ===\n');
 
 test('architecture doc records the artifact contract and reference pressure', () => {
@@ -132,6 +136,43 @@ test('roadmap points to the evaluator RAG prototype and keeps broader corpus wor
   assert.ok(roadmap.includes('docs/architecture/evaluator-rag-prototype.md'));
   assert.ok(roadmap.includes('examples/evaluator-rag-prototype/'));
   assert.ok(roadmap.includes('Needs broader evaluator corpus'));
+});
+
+test('billing readiness scenario rejects launch copy overclaims', () => {
+  const scenario = readFixtureJson('billing-marketplace-readiness/scenario.json');
+  const trace = readFixtureJson('billing-marketplace-readiness/trace.json');
+  const report = readFixtureJson('billing-marketplace-readiness/report.json');
+  const verifier = readFixtureJson('billing-marketplace-readiness/verifier-result.json');
+  const playbook = read('examples/evaluator-rag-prototype/billing-marketplace-readiness/candidate-playbook.md');
+
+  assert.strictEqual(scenario.scenario_id, 'billing-marketplace-readiness');
+  assert.strictEqual(trace.scenario_id, scenario.scenario_id);
+  assert.strictEqual(report.scenario_id, scenario.scenario_id);
+  assert.strictEqual(verifier.scenario_id, scenario.scenario_id);
+  assert.strictEqual(trace.read_only, true);
+  assert.strictEqual(report.read_only, true);
+  assert.strictEqual(verifier.read_only, true);
+
+  for (const blocked of [
+    'creating or editing GitHub Marketplace listings',
+    'changing plan limits, subscriptions, seats, or entitlements',
+    'posting announcement copy',
+    'claiming live billing readiness from dry-run evidence alone'
+  ]) {
+    assert.ok(scenario.forbidden_actions.includes(blocked), `Missing billing forbidden action: ${blocked}`);
+  }
+
+  const accepted = verifier.candidates.find(candidate => candidate.candidate_id === 'evidence-backed-billing-check');
+  const rejected = verifier.candidates.find(candidate => candidate.candidate_id === 'announcement-first-billing-copy');
+
+  assert.ok(accepted, 'Missing accepted billing evidence candidate');
+  assert.ok(rejected, 'Missing rejected announcement-overclaim candidate');
+  assert.strictEqual(accepted.decision, 'accepted');
+  assert.strictEqual(rejected.decision, 'rejected');
+  assert.strictEqual(verifier.promoted_candidate_id, accepted.candidate_id);
+  assert.ok(rejected.reasons.join('\n').includes('roadmap acceptance criteria'));
+  assert.ok(playbook.includes('remove-before-publication'));
+  assert.ok(playbook.includes('https://github.com/marketplace/ecc-tools'));
 });
 
 if (failed > 0) {
