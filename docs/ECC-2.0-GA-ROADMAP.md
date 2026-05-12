@@ -18,6 +18,13 @@ As of 2026-05-12:
 
 - Public GitHub queues are clean across `everything-claude-code`,
   `agentshield`, `JARVIS`, `ECC-Tools`, and `ECC-website`.
+- The final open public GitHub issue, #1314, was closed as a non-actionable
+  external badge/listing notification with a courtesy comment.
+- Linear issue creation for this project was re-tested after GitHub cleanup and
+  is still blocked by the workspace free issue limit. Seven roadmap-lane issue
+  creation attempts all returned the same limit error, so this repo mirror and
+  Linear project status updates remain the active tracking surfaces until the
+  workspace is upgraded or issue capacity is freed.
 - `npm run harness:audit -- --format json` reports 70/70 on current `main`.
 - `npm run observability:ready` reports 14/14 readiness on current `main`.
 - `docs/architecture/harness-adapter-compliance.md` maps Claude Code, Codex,
@@ -116,6 +123,12 @@ As of 2026-05-12:
 - ECC PR #1803 landed the contributor Quarkus handling branch after maintainer
   cleanup, current-`main` alignment, full local validation, and preservation of
   the author's removal of incomplete ja-JP and zh-CN Quarkus translations.
+- ECC PR #1812 salvaged useful Django reviewer, Django build resolver, and
+  Django Celery guidance from stale PR #1310 through a maintainer-owned branch
+  with source credit, catalog sync, and full local/remote validation.
+- ECC PR #1813 expanded the stale PR salvage ledger with source-to-salvage
+  mappings for #1325, #1414, #1478, #1504, and #1603, confirming those useful
+  stale contributions were already preserved through later maintainer PRs.
 
 ## Operating Rules
 
@@ -139,7 +152,7 @@ is not complete unless the evidence column exists and has been freshly verified.
 | Prompt requirement | Required artifact or gate | Current evidence | Status |
 | --- | --- | --- | --- |
 | Keep public PRs below 20 | Repo-family PR recheck | 0 open PRs across the tracked public repos on 2026-05-12 | Complete for this checkpoint |
-| Keep public issues below 20 | Repo-family issue recheck | 0 open issues across the tracked public repos on 2026-05-12 | Complete for this checkpoint |
+| Keep public issues below 20 | Repo-family issue recheck | 0 open issues across the tracked public repos on 2026-05-12 after closing #1314 as non-actionable badge/listing noise | Complete for this checkpoint |
 | Manage PR discussions | PR review/comment closure plus merge/close state | #1803 was maintainer-edited and merged; no open PRs remain | Complete for this checkpoint |
 | Salvage useful stale work | `docs/stale-pr-salvage-ledger.md` | Ledger records salvaged, superseded, skipped, and manual-review tails | Complete except #1687 manual review |
 | ECC 2.0 preview pack ready | Release docs, quickstart, publication readiness, release notes | `docs/releases/2.0.0-rc.1/` and readiness docs are in-tree | Needs final release evidence |
@@ -151,7 +164,7 @@ is not complete unless the evidence column exists and has been freshly verified.
 | ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog | PRs #26-#39 landed with test evidence | Needs capacity-backed Linear rollout / broader evaluator corpus |
 | GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy and deterministic follow-up checks | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, Analyzer Corpus Evidence, RAG/Evaluator Evidence, and PR Review/Salvage Evidence | Partially complete |
 | Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates exist | Needs evaluation/RAG prototype |
-| Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation is blocked by workspace limit | Needs recurring status updates |
+| Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation was retried on 2026-05-12 and remains blocked by the workspace free issue limit | Needs recurring status updates |
 | Flow separation and progress tracking | Flow lanes with owner artifacts and update cadence | This roadmap defines lanes below | Active |
 | Realtime Linear sync | Project updates while issue limit is blocked; issues later | ECC-Tools #39 implements opt-in Linear API sync for deferred follow-up backlog items | Needs workspace capacity/config rollout |
 | Observability for self-use | Local readiness gate, traces, status snapshots, risk ledger | `npm run observability:ready` reports 14/14 | Complete for local gate |
@@ -362,6 +375,6 @@ Acceptance:
 1. Decide whether AgentShield PDF export adds value beyond the merged HTML
    executive report, corpus benchmark output, and exception lifecycle audit.
 2. Enable/configure the merged Linear backlog sync path after workspace issue
-   capacity clears.
+   capacity clears or the Linear workspace is upgraded.
 3. Expand the evaluator/RAG corpus with real cleanup-batch cases as future
    maintainer-owned examples land.
