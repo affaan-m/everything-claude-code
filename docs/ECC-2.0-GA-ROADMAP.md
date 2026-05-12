@@ -92,6 +92,9 @@ As of 2026-05-12:
   RAG/Evaluator Evidence PR-risk bucket for retrieval, embedding, ranking, and
   evaluator changes that lack reference-set comparison, golden trace,
   benchmark, fixture, or eval-run evidence.
+- ECC-Tools PR #36 added deep-analyzer predictive follow-ups, a Deep Analyzer
+  Evidence PR-risk bucket, and a Linear-ready project sync backlog table for
+  deferred follow-up work.
 - ECC PR #1803 landed the contributor Quarkus handling branch after maintainer
   cleanup, current-`main` alignment, full local validation, and preservation of
   the author's removal of incomplete ja-JP and zh-CN Quarkus translations.
@@ -127,12 +130,12 @@ is not complete unless the evidence column exists and has been freshly verified.
 | Claude and Codex plugin publication | Contact/submission path with required artifacts and status | Publication readiness gate exists | Not complete |
 | Articles, tweets, and announcements | X thread, LinkedIn copy, GitHub release copy, push checklist | Draft launch collateral exists under rc.1 release docs | Needs URL-backed refresh |
 | AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports | PRs #53, #55-#60 landed with test evidence | Needs next value decision |
-| ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog | PRs #26-#35 landed with test evidence | Needs Linear sync/deep-analyzer expansion |
-| GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy and deterministic follow-up checks | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality and RAG/Evaluator Evidence | Partially complete |
+| ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog | PRs #26-#36 landed with test evidence | Needs native Linear API sync / deeper corpus coverage |
+| GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy and deterministic follow-up checks | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, and RAG/Evaluator Evidence | Partially complete |
 | Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates exist | Needs evaluation/RAG prototype |
 | Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation is blocked by workspace limit | Needs recurring status updates |
 | Flow separation and progress tracking | Flow lanes with owner artifacts and update cadence | This roadmap defines lanes below | Active |
-| Realtime Linear sync | Project updates while issue limit is blocked; issues later | Follow-up flood-control exists in ECC Tools | Not complete |
+| Realtime Linear sync | Project updates while issue limit is blocked; issues later | Follow-up flood-control and Linear-ready backlog tables exist in ECC Tools | Needs native API sync once capacity clears |
 | Observability for self-use | Local readiness gate, traces, status snapshots, risk ledger | `npm run observability:ready` reports 14/14 | Complete for local gate |
 | Proper release and notifications | Release tag, npm publish state, plugin state, social posts | Publication readiness gate exists | Not complete |
 
@@ -150,7 +153,7 @@ back to the repo evidence and merge commits.
 | Harness OS core | Audit, adapter matrix, observability docs, `ecc2/` | HUD/session-control acceptance spec | Weekly until GA |
 | Evaluation and RAG | Reference-set validation, harness audit, traces | Read-only evaluator/RAG prototype design | Before deep analyzer expansion |
 | AgentShield enterprise | AgentShield PR evidence and roadmap notes | PDF-export decision or next enterprise signal | After value decision |
-| ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy | Linear sync/deep-analyzer expansion slice | Next implementation batch |
+| ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy | Native Linear sync or deeper analyzer corpus slice | Next implementation batch |
 | Linear progress | Linear project status updates and this mirror | Status update with queue/evidence/missing gates | Every significant merge batch |
 
 The project status update should always include:
@@ -277,15 +280,20 @@ Acceptance:
   failure modes.
 - Deep analyzer covers diff patterns, CI/CD workflows, dependency/security
   surface, PR review behavior, failure history, harness config, skill quality,
-  RAG/evaluator comparison, and reference-set validation.
+  dedicated analyzer corpus evidence, RAG/evaluator comparison, and
+  reference-set validation.
 - PR check suite taxonomy includes Security Evidence, Harness Drift, Install
   Manifest Integrity, CI/CD Recommendation, Cost/Token Risk, Reference Set
-  Validation, RAG/Evaluator Evidence, Skill Quality, and Agent Config Review.
+  Validation, Deep Analyzer Evidence, RAG/Evaluator Evidence, Skill Quality,
+  and Agent Config Review.
 - Cost/token-risk predictive follow-ups flag AI routing, model-call, usage,
   quota, and budget changes when budget evidence is missing.
 - Reference-set validation follow-ups flag analyzer, skill, agent, command, and
   harness-guidance changes that lack eval, golden trace, benchmark, or
   maintained reference-set evidence.
+- Deep-analyzer follow-ups flag repository, commit, architecture, pattern, and
+  analysis-pipeline changes that lack analyzer corpus, snapshot, fixture, or
+  benchmark evidence.
 - RAG/evaluator follow-ups flag retrieval, embedding, ranking, and evaluator
   changes that lack reference-set comparison, golden trace, benchmark, fixture,
   or eval-run evidence.
@@ -298,7 +306,7 @@ Acceptance:
   command, and harness config changes that lack audit, adapter matrix,
   cross-harness doc, or compatibility regression evidence.
 - Linear sync design maps findings to issues/status without flooding the
-  workspace.
+  workspace, and deferred follow-up comments include a Linear-ready table.
 - Follow-up generation caps automatic GitHub object creation and keeps overflow
   findings in a copy-ready project sync backlog.
 
@@ -324,5 +332,5 @@ Acceptance:
 
 1. Decide whether AgentShield PDF export adds value beyond the merged HTML
    executive report and corpus benchmark output.
-2. Extend ECC Tools deep analysis and Linear/project sync without flooding the
-   workspace.
+2. Add native Linear API sync for ECC Tools backlog items after workspace issue
+   capacity clears.
