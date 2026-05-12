@@ -404,14 +404,15 @@ function validateAdapterRecords(records = ADAPTER_RECORDS) {
 }
 
 function extractMatrixBlock(markdown) {
-  const start = markdown.indexOf(MATRIX_BLOCK_START);
-  const end = markdown.indexOf(MATRIX_BLOCK_END);
+  const normalized = String(markdown).replace(/\r\n/g, '\n');
+  const start = normalized.indexOf(MATRIX_BLOCK_START);
+  const end = normalized.indexOf(MATRIX_BLOCK_END);
 
   if (start < 0 || end < 0 || end <= start) {
     return null;
   }
 
-  return markdown.slice(start + MATRIX_BLOCK_START.length, end).trim();
+  return normalized.slice(start + MATRIX_BLOCK_START.length, end).trim();
 }
 
 function validateDocumentation(options = {}) {
@@ -443,4 +444,3 @@ module.exports = {
   validateAdapterRecords,
   validateDocumentation,
 };
-

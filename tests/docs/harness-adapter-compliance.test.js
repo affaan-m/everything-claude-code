@@ -70,6 +70,11 @@ test('adapter compliance matrix is generated from source data', () => {
   assert.strictEqual(extractMatrixBlock(source), renderMarkdownTable());
 });
 
+test('adapter compliance matrix extraction tolerates Windows line endings', () => {
+  const source = read('docs/architecture/harness-adapter-compliance.md').replace(/\n/g, '\r\n');
+  assert.strictEqual(extractMatrixBlock(source), renderMarkdownTable());
+});
+
 test('adapter compliance matrix includes the required evidence columns', () => {
   const source = read('docs/architecture/harness-adapter-compliance.md');
   for (const heading of [
