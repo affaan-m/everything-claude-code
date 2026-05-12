@@ -9,10 +9,12 @@ model:
   fallback:
     - claude-sonnet-4-6
 skills:
+  - agent-architecture-audit
   - agent-eval
   - agent-harness-construction
   - agent-payment-x402
   - agentic-engineering
+  - agentic-os
   - ai-first-engineering
   - ai-regression-testing
   - android-clean-architecture
@@ -61,6 +63,7 @@ skills:
   - e2e-testing
   - energy-procurement
   - enterprise-agent-ops
+  - error-handling
   - eval-harness
   - exa-search
   - fal-ai-media
@@ -96,6 +99,7 @@ skills:
   - logistics-exception-management
   - market-research
   - mcp-server-patterns
+  - motion-ui
   - nanoclaw-repl
   - nextjs-turbopack
   - nutrient-document-processing
