@@ -55,6 +55,9 @@ As of 2026-05-12:
 - AgentShield PR #59 added self-contained HTML executive summaries with risk
   posture, critical/high priority findings, category exposure, README/API
   docs, built-CLI smoke validation, and 1,704-test coverage.
+- AgentShield PR #60 added category-level built-in corpus benchmark output,
+  a `readyForRegressionGate` signal, terminal `--corpus` category coverage,
+  README/API docs, built-CLI smoke validation, and 1,705-test coverage.
 - ECC PR #1778 recovered the useful stale #1413 network/homelab architect-agent
   concepts.
 - ECC-Tools PR #26 added cost/token-risk predictive follow-ups for AI routing,
@@ -180,7 +183,7 @@ Acceptance:
 - Supply-chain intelligence covers MCP package provenance and has an extension
   path for npm/pip reputation, CVEs, typosquats, and dependency risk.
 - Prompt-injection corpus and regression benchmark are ready for continuous
-  rule hardening.
+  rule hardening with category-level coverage and regression-gate output.
 - Enterprise reports include JSON plus self-contained HTML executive output
   with risk posture, priority findings, and category exposure.
 
@@ -226,7 +229,7 @@ Acceptance:
 
 ## Next Engineering Slices
 
-1. Finish AgentShield prompt-injection corpus/regression benchmark work and
-   decide whether PDF export adds value beyond the merged HTML executive report.
+1. Decide whether AgentShield PDF export adds value beyond the merged HTML
+   executive report and corpus benchmark output.
 2. Extend ECC Tools deep analysis and Linear/project sync without flooding the
    workspace.
