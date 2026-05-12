@@ -52,6 +52,9 @@ As of 2026-05-12:
 - AgentShield PR #58 added MCP package provenance fields and report-level
   counts for npm vs git, pinned vs unpinned, known-good, and registry-backed
   supply-chain evidence.
+- AgentShield PR #59 added self-contained HTML executive summaries with risk
+  posture, critical/high priority findings, category exposure, README/API
+  docs, built-CLI smoke validation, and 1,704-test coverage.
 - ECC PR #1778 recovered the useful stale #1413 network/homelab architect-agent
   concepts.
 - ECC-Tools PR #26 added cost/token-risk predictive follow-ups for AI routing,
@@ -178,7 +181,8 @@ Acceptance:
   path for npm/pip reputation, CVEs, typosquats, and dependency risk.
 - Prompt-injection corpus and regression benchmark are ready for continuous
   rule hardening.
-- Enterprise reports include JSON plus HTML/PDF or equivalent executive output.
+- Enterprise reports include JSON plus self-contained HTML executive output
+  with risk posture, priority findings, and category exposure.
 
 ### 6. ECC Tools Billing, Deep Analysis, PR Checks, And Linear Sync
 
@@ -222,7 +226,7 @@ Acceptance:
 
 ## Next Engineering Slices
 
-1. Extend AgentShield enterprise reporting beyond terminal/JSON supply-chain
-   evidence toward executive HTML/PDF or equivalent report output.
+1. Finish AgentShield prompt-injection corpus/regression benchmark work and
+   decide whether PDF export adds value beyond the merged HTML executive report.
 2. Extend ECC Tools deep analysis and Linear/project sync without flooding the
    workspace.
