@@ -60,6 +60,9 @@ As of 2026-05-12:
 - ECC-Tools PR #27 added the non-blocking `ECC Tools / PR Risk Taxonomy`
   check-run for Security Evidence, Harness Drift, Install Manifest Integrity,
   CI/CD Recommendation, Cost/Token Risk, and Agent Config Review buckets.
+- ECC-Tools PR #28 added billing readiness audit checks for plan limits,
+  entitlements, Marketplace plan shape, subscription source, seats, and
+  overage metering.
 
 ## Operating Rules
 
@@ -185,8 +188,9 @@ Acceptance:
 
 - Native GitHub Marketplace billing announcement is backed by verified
   implementation and docs.
-- Billing audit covers plan limits, seats, org/account mapping, subscription
-  state, overage hooks, and failure modes.
+- Internal billing readiness audit covers plan limits, seats, entitlement
+  mapping, Marketplace plan shape, subscription state, overage hooks, and
+  failure modes.
 - Deep analyzer covers diff patterns, CI/CD workflows, dependency/security
   surface, PR review behavior, failure history, harness config, skill quality,
   and reference-set/RAG comparison.
@@ -220,5 +224,5 @@ Acceptance:
 
 1. Extend AgentShield enterprise reporting beyond terminal/JSON supply-chain
    evidence toward executive HTML/PDF or equivalent report output.
-2. Audit ECC Tools billing, entitlement, and marketplace surfaces before any
-   native GitHub payments announcement.
+2. Extend ECC Tools deep analysis and Linear/project sync without flooding the
+   workspace.
