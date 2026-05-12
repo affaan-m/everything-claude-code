@@ -81,6 +81,10 @@ As of 2026-05-12:
 - ECC-Tools PR #32 added CI failure-mode predictive follow-ups for workflow
   and test-runner changes that lack failure fixtures, captured logs,
   troubleshooting notes, dry-run evidence, or regression coverage.
+- ECC-Tools PR #33 added harness-config quality predictive follow-ups for MCP,
+  plugin, agent, hook, command, and harness config changes that lack harness
+  audit, adapter matrix, cross-harness docs, or compatibility regression
+  evidence.
 
 ## Operating Rules
 
@@ -226,6 +230,9 @@ Acceptance:
 - CI failure-mode predictive follow-ups flag workflow and test-runner changes
   that lack failure fixtures, captured logs, troubleshooting notes, dry-run
   evidence, or regression coverage.
+- Harness-config quality predictive follow-ups flag MCP, plugin, agent, hook,
+  command, and harness config changes that lack audit, adapter matrix,
+  cross-harness doc, or compatibility regression evidence.
 - Linear sync design maps findings to issues/status without flooding the
   workspace.
 - Follow-up generation caps automatic GitHub object creation and keeps overflow
