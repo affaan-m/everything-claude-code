@@ -13,6 +13,7 @@
 
 - verify package, plugin, marketplace, OpenCode, and agent metadata stays at `2.0.0-rc.1`
 - verify `ecc2/Cargo.toml` stays at `0.1.0` for rc.1; `ecc2/` remains an alpha control-plane scaffold
+- complete `publication-readiness.md` with fresh evidence before any GitHub release, npm publish, plugin submission, or announcement post
 - update release metadata in one dedicated release-version PR
 - run the root test suite
 - run `cd ecc2 && cargo test`

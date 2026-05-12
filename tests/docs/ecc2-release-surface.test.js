@@ -50,6 +50,7 @@ const expectedReleaseFiles = [
   'telegram-handoff.md',
   'demo-prompts.md',
   'quickstart.md',
+  'publication-readiness.md',
 ];
 
 test('release candidate directory includes the public launch pack', () => {
@@ -173,6 +174,53 @@ test('launch checklist records the ecc2 alpha version policy', () => {
   assert.ok(cargoToml.includes('version = "0.1.0"'));
   assert.ok(launchChecklist.includes('`ecc2/Cargo.toml` stays at `0.1.0`'));
   assert.ok(!launchChecklist.includes('confirm whether `ecc2/Cargo.toml` moves'));
+});
+
+test('publication readiness checklist gates public release actions on evidence', () => {
+  const source = read('docs/releases/2.0.0-rc.1/publication-readiness.md');
+
+  for (const section of [
+    '## Release Identity Matrix',
+    '## Publication Gates',
+    '## Required Command Evidence',
+    '## Do Not Publish If',
+    '## Announcement Order',
+  ]) {
+    assert.ok(source.includes(section), `publication readiness missing ${section}`);
+  }
+
+  for (const field of [
+    'Fresh check',
+    'Evidence artifact',
+    'Owner',
+    'Status',
+    'Blocker field',
+    'Recorded output',
+  ]) {
+    assert.ok(source.includes(field), `publication readiness missing ${field}`);
+  }
+
+  for (const surface of [
+    'GitHub release',
+    'npm package',
+    'Claude plugin',
+    'Codex plugin',
+    'OpenCode package',
+    'ECC Tools billing reference',
+    'Announcement copy',
+  ]) {
+    assert.ok(source.includes(surface), `publication readiness missing ${surface}`);
+  }
+});
+
+test('release checklist and roadmap link to publication readiness evidence gate', () => {
+  const launchChecklist = read('docs/releases/2.0.0-rc.1/launch-checklist.md');
+  const roadmap = read('docs/ECC-2.0-GA-ROADMAP.md');
+
+  assert.ok(launchChecklist.includes('publication-readiness.md'));
+  assert.ok(launchChecklist.includes('fresh evidence'));
+  assert.ok(roadmap.includes('docs/releases/2.0.0-rc.1/publication-readiness.md'));
+  assert.ok(roadmap.includes('npm dist-tag'));
 });
 
 test('localized changelogs include rc.1 and 1.10.0 release entries', () => {

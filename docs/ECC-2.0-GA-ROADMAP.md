@@ -27,6 +27,9 @@ As of 2026-05-12:
 - `npm run harness:adapters -- --check` validates that the public adapter
   matrix still matches the source data in
   `scripts/lib/harness-adapter-compliance.js`.
+- `docs/releases/2.0.0-rc.1/publication-readiness.md` gates GitHub release,
+  npm dist-tag, Claude plugin, Codex plugin, OpenCode package, billing, and
+  announcement publication on fresh evidence fields.
 - AgentShield PR #53 reduced two context-rule false positives and closed the
   remaining AgentShield issues.
 - ECC PR #1778 recovered the useful stale #1413 network/homelab architect-agent
@@ -182,12 +185,11 @@ Acceptance:
 
 ## Next Engineering Slices
 
-1. Add the release/name/plugin publication checklist with evidence fields.
-2. Start AgentShield enterprise policy schema and SARIF implementation in the
+1. Start AgentShield enterprise policy schema and SARIF implementation in the
    AgentShield repo.
-3. Audit ECC Tools billing and check-run surfaces before any native GitHub
+2. Audit ECC Tools billing and check-run surfaces before any native GitHub
    payments announcement.
-4. Inventory `_legacy-documents-*` and map useful artifacts to landed,
+3. Inventory `_legacy-documents-*` and map useful artifacts to landed,
    milestone-tracked, salvage, or archive states.
-5. Build the stale-PR salvage ledger from closed cleanup batches, then port
+4. Build the stale-PR salvage ledger from closed cleanup batches, then port
    useful pieces in small attributed maintainer PRs.
