@@ -12,7 +12,9 @@ lane has real inputs, real accepted work, and real rejected work. The corpus now
 also includes a billing/Marketplace readiness scenario so launch copy cannot
 treat dry-run release evidence or roadmap intent as live billing state. A
 CI-failure diagnosis scenario adds the log-first workflow needed before an
-agent proposes fixes for red checks.
+agent proposes fixes for red checks. A harness-config quality scenario keeps
+MCP, plugin, hook, command, agent, and adapter recommendations tied to the
+adapter matrix before they mutate setup guidance.
 
 ## Reference Pressure
 
@@ -100,6 +102,9 @@ Current corpus:
   launch claims before public copy says they are live.
 - `ci-failure-diagnosis`: requires failed-job logs, changed-file scope, and a
   named regression command before a CI fix playbook can be promoted.
+- `harness-config-quality`: requires adapter state, install/onramp path,
+  verification commands, risk notes, and config-preservation behavior before a
+  harness setup recommendation can be promoted.
 
 ## ECC Tools Mapping
 
@@ -133,5 +138,4 @@ A candidate can be promoted only when:
 
 The next evaluator/RAG corpus should add:
 
-- a harness-config quality scenario covering MCP/plugin/hook drift;
 - an AgentShield policy exception scenario with SARIF and report evidence.

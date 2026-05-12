@@ -135,7 +135,7 @@ test('roadmap points to the evaluator RAG prototype and keeps broader corpus wor
 
   assert.ok(roadmap.includes('docs/architecture/evaluator-rag-prototype.md'));
   assert.ok(roadmap.includes('examples/evaluator-rag-prototype/'));
-  assert.ok(roadmap.includes('Needs broader evaluator corpus'));
+  assert.ok(roadmap.includes('Needs AgentShield policy exception corpus'));
 });
 
 test('billing readiness scenario rejects launch copy overclaims', () => {
@@ -219,6 +219,52 @@ test('ci failure diagnosis scenario rejects rerun-only fixes', () => {
   assert.ok(rejected.reasons.join('\n').includes('failing log excerpt'));
   assert.ok(playbook.includes('gh run view <run-id> --log-failed'));
   assert.ok(playbook.includes('Full required GitHub Actions matrix before merge'));
+});
+
+test('harness config quality scenario rejects unsupported parity claims', () => {
+  const scenario = readFixtureJson('harness-config-quality/scenario.json');
+  const trace = readFixtureJson('harness-config-quality/trace.json');
+  const report = readFixtureJson('harness-config-quality/report.json');
+  const verifier = readFixtureJson('harness-config-quality/verifier-result.json');
+  const playbook = read('examples/evaluator-rag-prototype/harness-config-quality/candidate-playbook.md');
+
+  assert.strictEqual(scenario.scenario_id, 'harness-config-quality');
+  assert.strictEqual(trace.scenario_id, scenario.scenario_id);
+  assert.strictEqual(report.scenario_id, scenario.scenario_id);
+  assert.strictEqual(verifier.scenario_id, scenario.scenario_id);
+  assert.strictEqual(trace.read_only, true);
+  assert.strictEqual(report.read_only, true);
+  assert.strictEqual(verifier.read_only, true);
+
+  for (const blocked of [
+    'claiming native support for instruction-backed or reference-only harnesses',
+    'copying Claude hook semantics into Codex, Gemini, Zed, or OpenCode without adapter evidence',
+    'silently overwriting existing user MCP, hook, plugin, command, or rule config',
+    'publishing packages or plugins from this evaluator run'
+  ]) {
+    assert.ok(scenario.forbidden_actions.includes(blocked), `Missing harness forbidden action: ${blocked}`);
+  }
+
+  for (const required of [
+    'adapter state is retrieved from the matrix',
+    'install or onramp path is named',
+    'verification command is named',
+    'config-preservation behavior is explicit'
+  ]) {
+    assert.ok(scenario.acceptance_gates.includes(required), `Missing harness acceptance gate: ${required}`);
+  }
+
+  const accepted = verifier.candidates.find(candidate => candidate.candidate_id === 'adapter-matrix-backed-drift-check');
+  const rejected = verifier.candidates.find(candidate => candidate.candidate_id === 'unsupported-hook-parity-claim');
+
+  assert.ok(accepted, 'Missing accepted adapter-matrix candidate');
+  assert.ok(rejected, 'Missing rejected unsupported parity candidate');
+  assert.strictEqual(accepted.decision, 'accepted');
+  assert.strictEqual(rejected.decision, 'rejected');
+  assert.strictEqual(verifier.promoted_candidate_id, accepted.candidate_id);
+  assert.ok(rejected.reasons.join('\n').includes('native support'));
+  assert.ok(playbook.includes('npm run harness:adapters -- --check'));
+  assert.ok(playbook.includes('node tests/docs/mcp-management-docs.test.js'));
 });
 
 if (failed > 0) {
