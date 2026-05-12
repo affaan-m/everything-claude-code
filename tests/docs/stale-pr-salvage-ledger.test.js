@@ -49,9 +49,13 @@ test('stale PR salvage ledger preserves representative source attribution', () =
     '#1322',
     '#1326',
     '#1310',
+    '#1325',
     '#1413',
+    '#1414',
+    '#1478',
     '#1493',
     '#1528/#1529/#1547',
+    '#1603',
     '#1674',
     '#1687',
     '#1705/#1780',
@@ -92,11 +96,26 @@ test('legacy inventory and roadmap link to the durable salvage ledger', () => {
 test('stale PR salvage ledger records the May 12 gap pass', () => {
   const source = read('docs/stale-pr-salvage-ledger.md');
 
-  for (const pr of ['#1310', '#1360', '#1415', '#1438', '#1508', '#1693']) {
+  for (const pr of [
+    '#1310',
+    '#1325',
+    '#1360',
+    '#1414',
+    '#1415',
+    '#1478',
+    '#1438',
+    '#1504',
+    '#1508',
+    '#1603',
+    '#1693',
+  ]) {
     assert.ok(source.includes(pr), `Missing May 12 gap-pass PR ${pr}`);
   }
 
   assert.ok(source.includes('Django/Celery maintainer branch'));
+  assert.ok(source.includes('already preserved in #1770'));
+  assert.ok(source.includes('already preserved in #1769'));
+  assert.ok(source.includes('already preserved in #1766'));
   assert.ok(source.includes('Already present as `skills/redis-patterns/`'));
 });
 
