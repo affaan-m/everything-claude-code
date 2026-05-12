@@ -46,6 +46,8 @@ test('stale PR salvage ledger preserves representative source attribution', () =
 
   for (const pr of [
     '#1309',
+    '#1232',
+    '#1304',
     '#1322',
     '#1326',
     '#1310',

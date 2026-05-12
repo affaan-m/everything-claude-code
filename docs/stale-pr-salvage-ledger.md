@@ -19,6 +19,8 @@ on fresh branches, and credit the source PR.
 
 | Source PR | Original contribution | Salvage result |
 | --- | --- | --- |
+| #1232 | `skill-scout` search-before-creating workflow | Salvaged in the May 12 cost/skill-scout maintainer pass with current repo wording, external-source vetting, and no stale catalog-count edits. |
+| #1304 | Cost tracking skill and `/cost-report` command | Salvaged in the May 12 cost/skill-scout maintainer pass with current command/skill conventions and without stale hard-coded model pricing. |
 | #1309 | Trading/community project material | Salvaged in #1761 as a neutral community-project README listing. |
 | #1310 | Django reviewer, build resolver, and Celery async task guidance | Salvaged in the May 12 Django/Celery maintainer pass with current catalog counts and minor example cleanup. |
 | #1322 | Vietnamese README translation | Salvaged in #1764 as `docs/vi-VN/README.md` plus selector updates. |
