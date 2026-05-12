@@ -16,7 +16,10 @@ agent proposes fixes for red checks. A harness-config quality scenario keeps
 MCP, plugin, hook, command, agent, and adapter recommendations tied to the
 adapter matrix before they mutate setup guidance. An AgentShield policy
 exception scenario gates security exceptions on SARIF/report evidence, owner
-fields, expiry state, and remediation-versus-exception decisions.
+fields, expiry state, and remediation-versus-exception decisions. A
+skill-quality evidence scenario requires observed failure or feedback evidence,
+working examples, reference-set gaps, and validation commands before a skill
+amendment can be promoted.
 
 ## Reference Pressure
 
@@ -110,6 +113,9 @@ Current corpus:
 - `agentshield-policy-exception`: requires AgentShield SARIF or report
   evidence, policy-pack source, owner/ticket/scope/expiry fields, and expired
   exception enforcement before a policy exception can be promoted.
+- `skill-quality-evidence`: requires focused skill scope, observed failure or
+  user-feedback evidence, examples/reference-set coverage, validation commands,
+  and publication safety before a skill amendment can be promoted.
 
 ## ECC Tools Mapping
 
@@ -143,5 +149,5 @@ A candidate can be promoted only when:
 
 The next evaluator/RAG corpus should add:
 
-- skill-quality or deep-analyzer evidence scenarios with maintained reference
-  sets and rejected low-evidence candidates.
+- a deep-analyzer evidence scenario with maintained reference sets and rejected
+  low-evidence candidates.

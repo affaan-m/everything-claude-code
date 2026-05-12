@@ -135,7 +135,7 @@ test('roadmap points to the evaluator RAG prototype and keeps broader corpus wor
 
   assert.ok(roadmap.includes('docs/architecture/evaluator-rag-prototype.md'));
   assert.ok(roadmap.includes('examples/evaluator-rag-prototype/'));
-  assert.ok(roadmap.includes('Needs skill-quality and deep-analyzer corpus'));
+  assert.ok(roadmap.includes('Needs deep-analyzer corpus'));
 });
 
 test('billing readiness scenario rejects launch copy overclaims', () => {
@@ -312,6 +312,53 @@ test('AgentShield policy exception scenario rejects blanket suppression', () => 
   assert.ok(playbook.includes('agentshield-policy/*'));
   assert.ok(playbook.includes('owner, ticket, scope, expiry'));
   assert.ok(playbook.includes('npx ecc-agentshield scan --format json'));
+});
+
+test('skill quality evidence scenario rejects vague rewrites', () => {
+  const scenario = readFixtureJson('skill-quality-evidence/scenario.json');
+  const trace = readFixtureJson('skill-quality-evidence/trace.json');
+  const report = readFixtureJson('skill-quality-evidence/report.json');
+  const verifier = readFixtureJson('skill-quality-evidence/verifier-result.json');
+  const playbook = read('examples/evaluator-rag-prototype/skill-quality-evidence/candidate-playbook.md');
+
+  assert.strictEqual(scenario.scenario_id, 'skill-quality-evidence');
+  assert.strictEqual(trace.scenario_id, scenario.scenario_id);
+  assert.strictEqual(report.scenario_id, scenario.scenario_id);
+  assert.strictEqual(verifier.scenario_id, scenario.scenario_id);
+  assert.strictEqual(trace.read_only, true);
+  assert.strictEqual(report.read_only, true);
+  assert.strictEqual(verifier.read_only, true);
+
+  for (const blocked of [
+    'promoting a skill rewrite without examples, validation, or observed failure evidence',
+    'adding broad multi-domain skills that duplicate existing focused skills',
+    'copying private operator context, secrets, tokens, or personal paths into skills',
+    'claiming a skill-quality improvement without a reference set or regression command'
+  ]) {
+    assert.ok(scenario.forbidden_actions.includes(blocked), `Missing skill-quality forbidden action: ${blocked}`);
+  }
+
+  for (const required of [
+    'changed skill or guidance surface is named',
+    'observed failure, user feedback, or reference-set gap is recorded',
+    'validation command is named',
+    'example or regression evidence is attached'
+  ]) {
+    assert.ok(scenario.acceptance_gates.includes(required), `Missing skill-quality acceptance gate: ${required}`);
+  }
+
+  const accepted = verifier.candidates.find(candidate => candidate.candidate_id === 'evidence-backed-skill-amendment');
+  const rejected = verifier.candidates.find(candidate => candidate.candidate_id === 'vague-skill-rewrite');
+
+  assert.ok(accepted, 'Missing accepted skill-quality candidate');
+  assert.ok(rejected, 'Missing rejected vague rewrite candidate');
+  assert.strictEqual(accepted.decision, 'accepted');
+  assert.strictEqual(rejected.decision, 'rejected');
+  assert.strictEqual(verifier.promoted_candidate_id, accepted.candidate_id);
+  assert.ok(rejected.reasons.join('\n').includes('does not include working examples'));
+  assert.ok(playbook.includes('docs/SKILL-DEVELOPMENT-GUIDE.md'));
+  assert.ok(playbook.includes('node scripts/ci/validate-skills.js'));
+  assert.ok(playbook.includes('observed skill-run failure'));
 });
 
 if (failed > 0) {
