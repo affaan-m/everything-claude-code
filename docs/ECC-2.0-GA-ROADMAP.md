@@ -78,6 +78,9 @@ As of 2026-05-12:
 - ECC-Tools PR #31 added review follow-up signals to analysis completion
   comments for outstanding change requests, unresolved or outdated review
   threads, and review activity without an explicit approval.
+- ECC-Tools PR #32 added CI failure-mode predictive follow-ups for workflow
+  and test-runner changes that lack failure fixtures, captured logs,
+  troubleshooting notes, dry-run evidence, or regression coverage.
 
 ## Operating Rules
 
@@ -220,6 +223,9 @@ Acceptance:
   maintained reference-set evidence.
 - PR analysis comments summarize review follow-up signals for requested
   changes, unresolved or outdated review threads, and missing approvals.
+- CI failure-mode predictive follow-ups flag workflow and test-runner changes
+  that lack failure fixtures, captured logs, troubleshooting notes, dry-run
+  evidence, or regression coverage.
 - Linear sync design maps findings to issues/status without flooding the
   workspace.
 - Follow-up generation caps automatic GitHub object creation and keeps overflow
