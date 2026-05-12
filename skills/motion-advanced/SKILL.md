@@ -365,14 +365,27 @@ export function CursorFollower() {
 "use client"
 import { motion } from "motion/react"
 
-export function ShimmerSkeleton({ className }: { className?: string }) {
-  return (
-    <div className={`relative overflow-hidden bg-gray-200 rounded ${className}`}>
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent"
+ export function ShimmerSkeleton({ className }: { className?: string }) {
+  const controls = useAnimation()
+  useEffect(() => {
+    const run = () =>
+      controls.start({ x: ["-100%", "100%"], transition: { repeat: Infinity, duration: 1.2, ease: "linear" } })
+    const onVis = () => (document.visibilityState === "hidden" ? controls.stop() : run())
+    run()
+    document.addEventListener("visibilitychange", onVis)
+    return () => document.removeEventListener("visibilitychange", onVis)
+  }, [controls])
+   return (
+     <div className={`relative overflow-hidden bg-gray-200 rounded ${className}`}>
+       <motion.div
+         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent"
         animate={{ x: ["-100%", "100%"] }}
         transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
-      />
+        animate={controls}
+       />
+     </div>
+   )
+ }
     </div>
   )
 }
