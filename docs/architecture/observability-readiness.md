@@ -19,6 +19,10 @@ operator needs.
 
 - Live status: `scripts/loop-status.js` can emit JSON, watch active loops, and
   write snapshots for dashboards or handoffs.
+- HUD/status contract: `docs/architecture/hud-status-session-control.md` and
+  `examples/hud-status-contract.json` define the portable payload for context,
+  tool calls, active agents, todos, checks, cost, risk, queues, session
+  controls, and tracker sync.
 - Session traces: `scripts/session-inspect.js` can inspect Claude, dmux, and
   adapter-backed sessions, then write canonical snapshots.
 - Harness baseline: `scripts/harness-audit.js` provides a repeatable scorecard
@@ -56,9 +60,11 @@ later, but only after the local event model is useful enough to trust.
    scorecard.
 3. Run `node scripts/loop-status.js --json --write-dir .ecc/loop-status`
    during longer autonomous batches.
-4. Run `node scripts/session-inspect.js --list-adapters` to confirm which
+4. Review `examples/hud-status-contract.json` before wiring a new HUD or
+   operator dashboard.
+5. Run `node scripts/session-inspect.js --list-adapters` to confirm which
    session surfaces are available.
-5. Use ECC2 tool logs for risky operations, conflict analysis, and handoff
+6. Use ECC2 tool logs for risky operations, conflict analysis, and handoff
    review before increasing autonomy.
 
 The end-state is practical: before asking ECC to run larger multi-agent loops,

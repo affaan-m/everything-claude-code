@@ -103,6 +103,13 @@ function includesAll(text, needles) {
   return needles.every(needle => text.includes(needle));
 }
 
+function hasObjectKeys(value, keys) {
+  return value
+    && typeof value === 'object'
+    && !Array.isArray(value)
+    && keys.every(key => Object.prototype.hasOwnProperty.call(value, key));
+}
+
 function buildChecks(rootDir) {
   const packageJsonText = readText(rootDir, 'package.json');
   const packageJson = safeParseJson(packageJsonText) || {};
@@ -116,6 +123,8 @@ function buildChecks(rootDir) {
   const sessionStoreRust = readText(rootDir, 'ecc2/src/session/store.rs');
   const sessionManagerRust = readText(rootDir, 'ecc2/src/session/manager.rs');
   const readinessDoc = readText(rootDir, 'docs/architecture/observability-readiness.md');
+  const hudStatusContract = readText(rootDir, 'docs/architecture/hud-status-session-control.md');
+  const hudStatusFixture = safeParseJson(readText(rootDir, 'examples/hud-status-contract.json')) || {};
   const quickstart = readText(rootDir, 'docs/releases/2.0.0-rc.1/quickstart.md');
   const releaseNotes = readText(rootDir, 'docs/releases/2.0.0-rc.1/release-notes.md');
 
@@ -129,6 +138,50 @@ function buildChecks(rootDir) {
       pass: fileExists(rootDir, 'scripts/loop-status.js')
         && includesAll(loopStatus, ['--json', '--watch', '--write-dir']),
       fix: 'Restore loop-status JSON/watch/write-dir support.'
+    },
+    {
+      id: 'hud-status-control-contract',
+      category: 'Live Status',
+      points: 2,
+      path: 'docs/architecture/hud-status-session-control.md',
+      description: 'HUD/status and session-control surfaces have a portable JSON contract',
+      pass: fileExists(rootDir, 'docs/architecture/hud-status-session-control.md')
+        && fileExists(rootDir, 'examples/hud-status-contract.json')
+        && includesAll(hudStatusContract, [
+          'context',
+          'toolCalls',
+          'activeAgents',
+          'todos',
+          'checks',
+          'cost',
+          'risk',
+          'queueState',
+          'create',
+          'resume',
+          'status',
+          'stop',
+          'diff',
+          'pr',
+          'mergeQueue',
+          'conflictQueue',
+          'Linear',
+          'GitHub',
+          'handoff'
+        ])
+        && hudStatusFixture.schema_version === 'ecc.hud-status.v1'
+        && hasObjectKeys(hudStatusFixture, [
+          'context',
+          'toolCalls',
+          'activeAgents',
+          'todos',
+          'checks',
+          'cost',
+          'risk',
+          'queueState',
+          'sessionControls',
+          'sync'
+        ]),
+      fix: 'Add the HUD/status session-control contract doc and example JSON fixture.'
     },
     {
       id: 'session-inspect-adapter-registry',

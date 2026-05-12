@@ -62,6 +62,24 @@ function seedMinimalRepo(rootDir, overrides = {}) {
     'ecc2/src/session/store.rs': 'insert_tool_log query_tool_logs',
     'ecc2/src/session/manager.rs': 'sync_tool_activity_metrics tool-usage.jsonl',
     'docs/architecture/observability-readiness.md': 'node scripts/observability-readiness.js --format json',
+    'docs/architecture/hud-status-session-control.md': [
+      'context toolCalls activeAgents todos checks cost risk queueState',
+      'create resume status stop diff pr mergeQueue conflictQueue',
+      'Linear GitHub handoff'
+    ].join('\n'),
+    'examples/hud-status-contract.json': JSON.stringify({
+      schema_version: 'ecc.hud-status.v1',
+      context: {},
+      toolCalls: {},
+      activeAgents: [],
+      todos: {},
+      checks: {},
+      cost: {},
+      risk: {},
+      queueState: {},
+      sessionControls: {},
+      sync: {}
+    }, null, 2),
     'docs/releases/2.0.0-rc.1/quickstart.md': 'observability-readiness.md',
     'docs/releases/2.0.0-rc.1/release-notes.md': 'observability-readiness.md'
   };
@@ -189,6 +207,23 @@ function runTests() {
 
       assert.strictEqual(report.ready, false);
       assert.ok(report.checks.some(check => check.id === 'release-observability-onramp' && !check.pass));
+      assert.ok(report.checks.some(check => check.id === 'loop-status-live-signal' && check.pass));
+    } finally {
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('missing HUD status contract fails without disturbing core tool checks', () => {
+    const projectRoot = createTempDir('observability-readiness-hud-fail-');
+
+    try {
+      seedMinimalRepo(projectRoot, {
+        'examples/hud-status-contract.json': null
+      });
+      const report = buildReport(projectRoot);
+
+      assert.strictEqual(report.ready, false);
+      assert.ok(report.checks.some(check => check.id === 'hud-status-control-contract' && !check.pass));
       assert.ok(report.checks.some(check => check.id === 'loop-status-live-signal' && check.pass));
     } finally {
       cleanup(projectRoot);

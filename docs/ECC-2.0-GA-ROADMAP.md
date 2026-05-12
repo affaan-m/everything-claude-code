@@ -30,7 +30,7 @@ As of 2026-05-12:
   Linear project status updates remain the active tracking surfaces until the
   workspace is upgraded or issue capacity is freed.
 - `npm run harness:audit -- --format json` reports 70/70 on current `main`.
-- `npm run observability:ready` reports 14/14 readiness on current `main`.
+- `npm run observability:ready` reports 16/16 readiness on current `main`.
 - `docs/architecture/harness-adapter-compliance.md` maps Claude Code, Codex,
   OpenCode, Cursor, Gemini, Zed-adjacent, dmux, Orca, Superset, Ghast, and
   terminal-only support to install paths, verification commands, and risk
@@ -153,7 +153,7 @@ As of 2026-05-12:
 
 - Keep public PRs and issues below 20, with zero as the preferred release-lane
   target.
-- Maintain 70/70 harness audit and 14/14 observability readiness after every
+- Maintain 70/70 harness audit and 16/16 observability readiness after every
   GA-readiness batch.
 - Do not publish release or social announcements until the GitHub release,
   npm/package state, billing state, and plugin submission surfaces are verified
@@ -187,7 +187,7 @@ is not complete unless the evidence column exists and has been freshly verified.
 | Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation was retried on 2026-05-12 and remains blocked by the workspace free issue limit | Needs recurring status updates after each merge batch |
 | Flow separation and progress tracking | Flow lanes with owner artifacts and update cadence | This roadmap defines lanes below | Active |
 | Realtime Linear sync | Project updates while issue limit is blocked; issues later | ECC-Tools #39 implements opt-in Linear API sync for deferred follow-up backlog items | Needs workspace capacity/config rollout |
-| Observability for self-use | Local readiness gate, traces, status snapshots, risk ledger | `npm run observability:ready` reports 14/14 | Complete for local gate |
+| Observability for self-use | Local readiness gate, traces, status snapshots, HUD/status contract, risk ledger | `npm run observability:ready` reports 16/16 | Complete for local gate |
 | Proper release and notifications | Release tag, npm publish state, plugin state, social posts | Publication readiness gate exists | Not complete |
 
 ## Execution Lanes And Tracking Contract
@@ -275,7 +275,7 @@ Target: 2026-06-07
 
 Acceptance:
 
-- Observability readiness remains 14/14 and is backed by JSONL traces, status
+- Observability readiness remains 16/16 and is backed by JSONL traces, status
   snapshots, risk ledger, and exportable handoff contracts.
 - HUD/status model covers context, tool calls, active agents, todos, checks,
   cost, risk, and queue state.

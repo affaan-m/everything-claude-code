@@ -45,7 +45,7 @@ Record the exact commit SHA and command output before any publication action:
 | Clean release branch | `git status --short --branch` | On intended release commit; no unrelated files | Pending |
 | Harness audit | `npm run harness:audit -- --format json` | 70/70 passing | Pending |
 | Adapter scorecard | `npm run harness:adapters -- --check` | PASS | Pending |
-| Observability readiness | `npm run observability:ready` | 14/14 passing | Pending |
+| Observability readiness | `npm run observability:ready` | 16/16 passing | Pending |
 | Root suite | `node tests/run-all.js` | 0 failures | Pending |
 | Markdown lint | `npx markdownlint-cli '**/*.md' --ignore node_modules` | 0 failures | Pending |
 | Package surface | `node tests/scripts/npm-publish-surface.test.js` | 0 failures | Pending |
