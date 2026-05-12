@@ -71,7 +71,9 @@ test('adapter compliance matrix is generated from source data', () => {
 });
 
 test('adapter compliance matrix extraction tolerates Windows line endings', () => {
-  const source = read('docs/architecture/harness-adapter-compliance.md').replace(/\n/g, '\r\n');
+  const source = read('docs/architecture/harness-adapter-compliance.md')
+    .replace(/\r\n/g, '\n')
+    .replace(/\n/g, '\r\n');
   assert.strictEqual(extractMatrixBlock(source), renderMarkdownTable());
 });
 
