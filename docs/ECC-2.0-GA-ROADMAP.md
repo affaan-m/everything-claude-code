@@ -109,6 +109,10 @@ As of 2026-05-12:
 - ECC-Tools PR #38 added PR review/stale-salvage predictive follow-ups, a
   PR Review/Salvage Evidence taxonomy bucket, and maintained corpus fixtures
   for stale-closure salvage, reviewer-thread, and reopen-flow evidence.
+- ECC-Tools PR #39 added opt-in native Linear GraphQL sync for deferred
+  follow-up backlog items, preserving GitHub object caps while creating or
+  reusing Linear issues when `LINEAR_API_KEY` and `LINEAR_TEAM_ID` are
+  configured.
 - ECC PR #1803 landed the contributor Quarkus handling branch after maintainer
   cleanup, current-`main` alignment, full local validation, and preservation of
   the author's removal of incomplete ja-JP and zh-CN Quarkus translations.
@@ -144,12 +148,12 @@ is not complete unless the evidence column exists and has been freshly verified.
 | Claude and Codex plugin publication | Contact/submission path with required artifacts and status | Publication readiness gate exists | Not complete |
 | Articles, tweets, and announcements | X thread, LinkedIn copy, GitHub release copy, push checklist | Draft launch collateral exists under rc.1 release docs | Needs URL-backed refresh |
 | AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports, exception lifecycle audit | PRs #53, #55-#62 landed with test evidence | Needs PDF/export decision or next enterprise signal |
-| ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog | PRs #26-#38 landed with test evidence | Needs native Linear API sync / broader evaluator corpus |
+| ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog | PRs #26-#39 landed with test evidence | Needs capacity-backed Linear rollout / broader evaluator corpus |
 | GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy and deterministic follow-up checks | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, Analyzer Corpus Evidence, RAG/Evaluator Evidence, and PR Review/Salvage Evidence | Partially complete |
 | Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates exist | Needs evaluation/RAG prototype |
 | Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation is blocked by workspace limit | Needs recurring status updates |
 | Flow separation and progress tracking | Flow lanes with owner artifacts and update cadence | This roadmap defines lanes below | Active |
-| Realtime Linear sync | Project updates while issue limit is blocked; issues later | Follow-up flood-control and Linear-ready backlog tables exist in ECC Tools | Needs native API sync once capacity clears |
+| Realtime Linear sync | Project updates while issue limit is blocked; issues later | ECC-Tools #39 implements opt-in Linear API sync for deferred follow-up backlog items | Needs workspace capacity/config rollout |
 | Observability for self-use | Local readiness gate, traces, status snapshots, risk ledger | `npm run observability:ready` reports 14/14 | Complete for local gate |
 | Proper release and notifications | Release tag, npm publish state, plugin state, social posts | Publication readiness gate exists | Not complete |
 
@@ -167,7 +171,7 @@ back to the repo evidence and merge commits.
 | Harness OS core | Audit, adapter matrix, observability docs, `ecc2/` | HUD/session-control acceptance spec | Weekly until GA |
 | Evaluation and RAG | Reference-set validation, harness audit, traces | Read-only evaluator/RAG prototype design | Before deep analyzer expansion |
 | AgentShield enterprise | AgentShield PR evidence and roadmap notes | PDF-export decision or next enterprise signal | After value decision |
-| ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy | Native Linear sync or broader evaluator/RAG corpus slice | Next implementation batch |
+| ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy | Capacity-backed Linear rollout or broader evaluator/RAG corpus slice | Next implementation batch |
 | Linear progress | Linear project status updates and this mirror | Status update with queue/evidence/missing gates | Every significant merge batch |
 
 The project status update should always include:
@@ -329,8 +333,9 @@ Acceptance:
 - Harness-config quality predictive follow-ups flag MCP, plugin, agent, hook,
   command, and harness config changes that lack audit, adapter matrix,
   cross-harness doc, or compatibility regression evidence.
-- Linear sync design maps findings to issues/status without flooding the
-  workspace, and deferred follow-up comments include a Linear-ready table.
+- Linear sync maps deferred backlog findings to Linear issues without flooding
+  GitHub, creates or reuses exact-title Linear issues when configured, and
+  reports skipped sync when credentials or team configuration are absent.
 - Follow-up generation caps automatic GitHub object creation and keeps overflow
   findings in a copy-ready project sync backlog.
 
@@ -356,7 +361,7 @@ Acceptance:
 
 1. Decide whether AgentShield PDF export adds value beyond the merged HTML
    executive report, corpus benchmark output, and exception lifecycle audit.
-2. Add native Linear API sync for ECC Tools backlog items after workspace issue
+2. Enable/configure the merged Linear backlog sync path after workspace issue
    capacity clears.
 3. Expand the evaluator/RAG corpus with real cleanup-batch cases as future
    maintainer-owned examples land.
