@@ -40,8 +40,15 @@ As of 2026-05-12:
   review tail.
 - AgentShield PR #53 reduced two context-rule false positives and closed the
   remaining AgentShield issues.
+- AgentShield PR #55 added GitHub Action organization-policy enforcement with
+  `policy` / `fail-on-policy` inputs, `policy-status` /
+  `policy-violations` outputs, job-summary evidence, and policy violation
+  annotations.
 - ECC PR #1778 recovered the useful stale #1413 network/homelab architect-agent
   concepts.
+- ECC-Tools PR #26 added cost/token-risk predictive follow-ups for AI routing,
+  Claude/model calls, usage limits, quota, and analysis-budget changes that lack
+  budget, quota, rate-limit, or cost validation evidence.
 
 ## Operating Rules
 
@@ -149,6 +156,8 @@ Acceptance:
 - Formal policy schema exists for org baselines, exceptions, owners,
   expiration, severity, and audit trails.
 - SARIF/code-scanning output is implemented and tested.
+- GitHub Action policy gates expose organization policy status and violation
+  counts for branch-protection and CI evidence.
 - Policy packs are defined for OSS, team, enterprise, regulated, high-risk
   hooks/MCP, and CI enforcement.
 - Supply-chain intelligence plan covers MCP package provenance, npm/pip
@@ -173,6 +182,8 @@ Acceptance:
 - PR check suite taxonomy includes Security Evidence, Harness Drift, Install
   Manifest Integrity, CI/CD Recommendation, Cost/Token Risk, and Agent Config
   Review.
+- Cost/token-risk predictive follow-ups flag AI routing, model-call, usage,
+  quota, and budget changes when budget evidence is missing.
 - Linear sync design maps findings to issues/status without flooding the
   workspace.
 
