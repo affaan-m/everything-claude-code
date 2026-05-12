@@ -358,7 +358,7 @@ If you stacked methods, clean up in this order:
 /plugin list ecc@ecc
 ```
 
-**That's it!** You now have access to 55 agents, 208 skills, and 72 legacy command shims.
+**That's it!** You now have access to 56 agents, 209 skills, and 72 legacy command shims.
 
 ### Dashboard GUI
 
@@ -456,7 +456,7 @@ everything-claude-code/
 |   |-- plugin.json         # Plugin metadata and component paths
 |   |-- marketplace.json    # Marketplace catalog for /plugin marketplace add
 |
-|-- agents/           # 55 specialized subagents for delegation
+|-- agents/           # 56 specialized subagents for delegation
 |   |-- planner.md           # Feature implementation planning
 |   |-- architect.md         # System design decisions
 |   |-- tdd-guide.md         # Test-driven development
@@ -472,6 +472,7 @@ everything-claude-code/
 |   |-- harness-optimizer.md # Harness config tuning
 |   |-- cpp-reviewer.md      # C++ code review
 |   |-- cpp-build-resolver.md # C++ build error resolution
+|   |-- fsharp-reviewer.md   # F# functional code review
 |   |-- go-reviewer.md       # Go code review
 |   |-- go-build-resolver.md # Go build error resolution
 |   |-- python-reviewer.md   # Python code review
@@ -986,6 +987,7 @@ Not sure where to start? Use this quick reference. Skills are the canonical work
 | Update documentation | `/update-docs` | doc-updater |
 | Review Go code | `/go-review` | go-reviewer |
 | Review Python code | `/python-review` | python-reviewer |
+| Review F# code | *(invoke `fsharp-reviewer` directly)* | fsharp-reviewer |
 | Review TypeScript/JavaScript code | *(invoke `typescript-reviewer` directly)* | typescript-reviewer |
 | Develop HarmonyOS apps | *(invoke `harmonyos-app-resolver` directly)* | harmonyos-app-resolver |
 | Audit database queries | *(auto-delegated)* | database-reviewer |
@@ -1354,9 +1356,9 @@ The configuration is automatically detected from `.opencode/opencode.json`.
 
 | Feature | Claude Code | OpenCode | Status |
 |---------|-------------|----------|--------|
-| Agents | PASS: 55 agents | PASS: 12 agents | **Claude Code leads** |
+| Agents | PASS: 56 agents | PASS: 12 agents | **Claude Code leads** |
 | Commands | PASS: 72 commands | PASS: 35 commands | **Claude Code leads** |
-| Skills | PASS: 208 skills | PASS: 37 skills | **Claude Code leads** |
+| Skills | PASS: 209 skills | PASS: 37 skills | **Claude Code leads** |
 | Hooks | PASS: 8 event types | PASS: 11 events | **OpenCode has more!** |
 | Rules | PASS: 29 rules | PASS: 13 instructions | **Claude Code leads** |
 | MCP Servers | PASS: 14 servers | PASS: Full | **Full parity** |
@@ -1459,9 +1461,9 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 
 | Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |
 |---------|------------|------------|-----------|----------|
-| **Agents** | 55 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
+| **Agents** | 56 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
 | **Commands** | 72 | Shared | Instruction-based | 35 |
-| **Skills** | 208 | Shared | 10 (native format) | 37 |
+| **Skills** | 209 | Shared | 10 (native format) | 37 |
 | **Hook Events** | 8 types | 15 types | None yet | 11 types |
 | **Hook Scripts** | 20+ scripts | 16 scripts (DRY adapter) | N/A | Plugin hooks |
 | **Rules** | 34 (common + lang) | 34 (YAML frontmatter) | Instruction-based | 13 instructions |

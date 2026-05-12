@@ -234,6 +234,21 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  console.log('\nF# Detection:');
+
+  if (test('detects fsharp from project and source files', () => {
+    const dir = createTempDir();
+    try {
+      writeTestFile(dir, 'App.fsproj', '<Project Sdk="Microsoft.NET.Sdk"></Project>');
+      writeTestFile(dir, 'Program.fs', 'printfn "hello"\n');
+      const result = detectProjectType(dir);
+      assert.ok(result.languages.includes('fsharp'));
+      assert.strictEqual(result.primary, 'fsharp');
+    } finally {
+      cleanupDir(dir);
+    }
+  })) passed++; else failed++;
+
   // Go detection
   console.log('\nGo Detection:');
 

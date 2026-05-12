@@ -251,6 +251,14 @@
       ]
     },
     {
+      "id": "lang:fsharp",
+      "family": "language",
+      "description": "F# functional patterns and testing guidance. Currently resolves through the shared framework-language module.",
+      "modules": [
+        "framework-language"
+      ]
+    },
+    {
       "id": "framework:laravel",
       "family": "framework",
       "description": "Laravel patterns, TDD, verification, and security guidance. Resolves through framework-language and security modules.",
@@ -359,6 +367,14 @@
       "id": "agent:harmonyos-app-resolver",
       "family": "agent",
       "description": "HarmonyOS application development expert agent.",
+      "modules": [
+        "agents-core"
+      ]
+    },
+    {
+      "id": "agent:fsharp-reviewer",
+      "family": "agent",
+      "description": "F# code review agent for functional idioms, type safety, and .NET testing.",
       "modules": [
         "agents-core"
       ]
