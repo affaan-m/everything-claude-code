@@ -4,6 +4,9 @@ This checklist is the release gate for public publication surfaces. Do not use
 it as evidence by itself. Fill the evidence fields with fresh command output or
 URLs from the exact commit being released.
 
+For the current rc.1 naming decision and package/plugin publication path, see
+[`naming-and-publication-matrix.md`](naming-and-publication-matrix.md).
+
 ## Release Identity Matrix
 
 | Surface | Expected value | Source of truth | Fresh check | Evidence artifact | Owner | Status |
