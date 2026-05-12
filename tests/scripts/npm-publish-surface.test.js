@@ -71,9 +71,16 @@ function buildExpectedPublishPaths(repoRoot) {
     "agent.yaml",
     "VERSION",
   ]
+  const exclusionPaths = [
+    "!**/__pycache__/**",
+    "!**/*.pyc",
+    "!**/*.pyo",
+    "!**/*.pyd",
+    "!**/.pytest_cache/**",
+  ]
 
   const combined = new Set(
-    [...modules.flatMap((module) => module.paths || []), ...extraPaths].map(normalizePublishPath)
+    [...modules.flatMap((module) => module.paths || []), ...extraPaths, ...exclusionPaths].map(normalizePublishPath)
   )
 
   return [...combined]
@@ -137,6 +144,17 @@ function main() {
         assert.ok(
           !packagedPaths.has(excludedPath),
           `npm pack should not include ${excludedPath}`
+        )
+      }
+
+      for (const packagedPath of packagedPaths) {
+        assert.ok(
+          !packagedPath.includes("__pycache__/"),
+          `npm pack should not include Python bytecode cache path ${packagedPath}`
+        )
+        assert.ok(
+          !/\.py[cod]$/.test(packagedPath),
+          `npm pack should not include Python bytecode file ${packagedPath}`
         )
       }
     }],
