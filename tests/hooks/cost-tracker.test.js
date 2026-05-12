@@ -152,6 +152,28 @@ function runTests() {
     fs.rmSync(tmpHome, { recursive: true, force: true });
   }) ? passed++ : failed++);
 
+  // 7. Uses sanitized hook input session_id when environment session IDs are absent
+  (test('uses input session_id for session correlation when env vars are absent', () => {
+    const tmpHome = makeTempDir();
+    const input = {
+      session_id: 'hook-session-abc',
+      model: 'claude-sonnet-4-20250514',
+      usage: { input_tokens: 120, output_tokens: 30 },
+    };
+    const result = runScript(input, {
+      ...withTempHome(tmpHome),
+      ECC_SESSION_ID: '',
+      CLAUDE_SESSION_ID: '',
+    });
+    assert.strictEqual(result.code, 0, `Expected exit code 0, got ${result.code}`);
+
+    const metricsFile = path.join(tmpHome, '.claude', 'metrics', 'costs.jsonl');
+    const row = JSON.parse(fs.readFileSync(metricsFile, 'utf8').trim());
+    assert.strictEqual(row.session_id, 'hook-session-abc', 'Expected input session_id to be recorded');
+
+    fs.rmSync(tmpHome, { recursive: true, force: true });
+  }) ? passed++ : failed++);
+
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
 }
