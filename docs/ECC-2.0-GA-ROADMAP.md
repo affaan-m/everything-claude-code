@@ -24,6 +24,9 @@ As of 2026-05-12:
   OpenCode, Cursor, Gemini, Zed-adjacent, dmux, Orca, Superset, Ghast, and
   terminal-only support to install paths, verification commands, and risk
   notes.
+- `npm run harness:adapters -- --check` validates that the public adapter
+  matrix still matches the source data in
+  `scripts/lib/harness-adapter-compliance.js`.
 - AgentShield PR #53 reduced two context-rule false positives and closed the
   remaining AgentShield issues.
 - ECC PR #1778 recovered the useful stale #1413 network/homelab architect-agent
@@ -179,14 +182,12 @@ Acceptance:
 
 ## Next Engineering Slices
 
-1. Move the harness adapter compliance matrix from Markdown to a data-backed
-   validator.
-2. Add the release/name/plugin publication checklist with evidence fields.
-3. Start AgentShield enterprise policy schema and SARIF implementation in the
+1. Add the release/name/plugin publication checklist with evidence fields.
+2. Start AgentShield enterprise policy schema and SARIF implementation in the
    AgentShield repo.
-4. Audit ECC Tools billing and check-run surfaces before any native GitHub
+3. Audit ECC Tools billing and check-run surfaces before any native GitHub
    payments announcement.
-5. Inventory `_legacy-documents-*` and map useful artifacts to landed,
+4. Inventory `_legacy-documents-*` and map useful artifacts to landed,
    milestone-tracked, salvage, or archive states.
-6. Build the stale-PR salvage ledger from closed cleanup batches, then port
+5. Build the stale-PR salvage ledger from closed cleanup batches, then port
    useful pieces in small attributed maintainer PRs.
