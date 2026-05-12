@@ -13,6 +13,9 @@ The goal is to keep the durable parts of agentic work in one repo:
 
 Claude Code, Codex, OpenCode, Cursor, Gemini, and future harnesses should adapt those assets at the edge instead of requiring a new workflow model for every tool.
 
+For the operator-facing support matrix and scorecard workflow, see
+[Harness Adapter Compliance Matrix](harness-adapter-compliance.md).
+
 ## Portability Model
 
 | Surface | Shared Source | Harness Adapter | Current Status |

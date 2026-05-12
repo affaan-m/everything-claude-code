@@ -20,6 +20,10 @@ As of 2026-05-12:
   `agentshield`, `JARVIS`, `ECC-Tools`, and `ECC-website`.
 - `npm run harness:audit -- --format json` reports 70/70 on current `main`.
 - `npm run observability:ready` reports 14/14 readiness on current `main`.
+- `docs/architecture/harness-adapter-compliance.md` maps Claude Code, Codex,
+  OpenCode, Cursor, Gemini, Zed-adjacent, dmux, Orca, Superset, Ghast, and
+  terminal-only support to install paths, verification commands, and risk
+  notes.
 - AgentShield PR #53 reduced two context-rule false positives and closed the
   remaining AgentShield issues.
 - ECC PR #1778 recovered the useful stale #1413 network/homelab architect-agent
@@ -175,7 +179,8 @@ Acceptance:
 
 ## Next Engineering Slices
 
-1. Add the harness adapter compliance matrix and public scorecard onramp.
+1. Move the harness adapter compliance matrix from Markdown to a data-backed
+   validator.
 2. Add the release/name/plugin publication checklist with evidence fields.
 3. Start AgentShield enterprise policy schema and SARIF implementation in the
    AgentShield repo.
