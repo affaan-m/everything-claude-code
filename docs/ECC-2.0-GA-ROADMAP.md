@@ -31,8 +31,10 @@ As of 2026-05-12:
   npm dist-tag, Claude plugin, Codex plugin, OpenCode package, billing, and
   announcement publication on fresh evidence fields.
 - `docs/legacy-artifact-inventory.md` records that no `_legacy-documents-*`
-  directories exist in the current checkout and classifies
-  `legacy-command-shims/` as an opt-in archive/no-action surface.
+  directories exist in the current checkout, inventories the two sibling
+  workspace-level `_legacy-documents-*` repos as sanitized extraction sources,
+  and classifies `legacy-command-shims/` as an opt-in archive/no-action
+  surface.
 - `docs/stale-pr-salvage-ledger.md` records stale PR salvage outcomes,
   skipped PRs, superseded work, and the remaining #1687 translator/manual
   review tail.
@@ -183,6 +185,9 @@ Acceptance:
 - Legacy directories and orphaned handoffs are inventoried.
 - Each useful artifact is marked landed, Linear/project-tracked, salvage
   branch, or archive/no-action.
+- Workspace-level legacy repos are mined only through sanitized maintainer
+  branches; raw context, secrets, personal paths, local settings, and private
+  drafts are never imported wholesale.
 - Stale PR salvage policy stays in force: close stale/conflicted PRs first,
   record a salvage ledger item, then port useful compatible content on
   maintainer branches with attribution.

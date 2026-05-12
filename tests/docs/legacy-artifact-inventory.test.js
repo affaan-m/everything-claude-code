@@ -75,6 +75,36 @@ test('any _legacy-documents directories are explicitly inventoried', () => {
   }
 });
 
+test('workspace-level legacy repos are inventoried without personal paths', () => {
+  const source = read('docs/legacy-artifact-inventory.md');
+
+  for (const dir of [
+    '../_legacy-documents-ecc-context-2026-04-30',
+    '../_legacy-documents-ecc-everything-claude-code-2026-04-30',
+  ]) {
+    assert.ok(source.includes(dir), `Missing workspace legacy repo ${dir}`);
+  }
+
+  assert.ok(source.includes('Workspace-Level Legacy Repos'));
+  assert.ok(!source.includes('/Users/'), 'Inventory should avoid machine-local absolute paths');
+});
+
+test('workspace legacy import rules block raw private context', () => {
+  const source = read('docs/legacy-artifact-inventory.md');
+
+  for (const required of [
+    'Do not read, print, stage, or copy `.env` files',
+    'tokens',
+    'OAuth secrets',
+    'personal paths',
+    'private operator context',
+    'Do not import raw marketing drafts',
+    'public-safe ideas',
+  ]) {
+    assert.ok(source.includes(required), `Missing import guardrail: ${required}`);
+  }
+});
+
 test('legacy command shims remain classified as an opt-in archive', () => {
   const source = read('docs/legacy-artifact-inventory.md');
   const readme = read('legacy-command-shims/README.md');

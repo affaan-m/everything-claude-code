@@ -29,6 +29,24 @@ Expected result: no output.
 The only tracked legacy directory currently found by filename scan is
 `legacy-command-shims/`.
 
+The umbrella ECC workspace also contains sibling legacy git repositories outside
+this tracked checkout. These are intentionally inventoried separately because
+they can contain raw operator context, local settings, private drafts, or
+untracked files that should not be copied into the public repo wholesale.
+
+Fresh workspace-level check from the ECC umbrella directory:
+
+```sh
+find .. -maxdepth 1 -type d -name '_legacy-documents-*' -print | sort
+```
+
+Expected result:
+
+```text
+../_legacy-documents-ecc-context-2026-04-30
+../_legacy-documents-ecc-everything-claude-code-2026-04-30
+```
+
 ## Inventory
 
 | Artifact | State | Evidence | Action |
@@ -37,6 +55,28 @@ The only tracked legacy directory currently found by filename scan is
 | `legacy-command-shims/` | Archive/no-action | `legacy-command-shims/README.md` states these retired short-name shims are opt-in and no longer loaded by the default plugin command surface. | Keep as an explicit compatibility archive. Do not move these back into the default plugin surface without a migration decision. |
 | Closed-stale PR salvage ledger | Landed | `docs/stale-pr-salvage-ledger.md` records useful stale work recovered through maintainer PRs. | Continue using the ledger pattern for future stale closures. |
 | #1687 zh-CN localization tail | Translator/manual review | Large safe subsets landed in #1746-#1752; remaining pieces require translator/manual review per salvage ledger. | Do not blindly cherry-pick. Split by docs, commands, agents, and skills if a translator review lane opens. |
+
+## Workspace-Level Legacy Repos
+
+These sibling repositories live outside the tracked `everything-claude-code`
+checkout. They are source material for future salvage passes, not installable
+release assets.
+
+| Artifact | State | Evidence | Action |
+| --- | --- | --- | --- |
+| `../_legacy-documents-ecc-everything-claude-code-2026-04-30` | Archive/no-action | Separate legacy checkout on `fix/configure-ecc-skill-copy-paths-1483` at `b78ddbd0`; useful configure-ecc and install-path concepts have been superseded by current install docs and tests. The checkout also has untracked localized project-guidelines examples and a Finder duplicate `skills/social-graph-ranker/SKILL 2.md`. | Do not import wholesale. If configure-ecc copy-root regressions reappear, use this branch only as source-attributed archaeology and port through a fresh maintainer branch. Leave Finder duplicates out of source control. |
+| `../_legacy-documents-ecc-context-2026-04-30` | Milestone-tracked | Archived `ECC-context` repo is four commits ahead of its origin and contains context, gameplan, knowledge, marketing, AgentShield, and ECC Tools planning material. It also contains local/private surfaces such as `.env` and local settings. | Keep as a sanitized extraction source for roadmap, launch, AgentShield, and ECC Tools work. Never copy raw context, secrets, personal paths, private settings, or unpublished drafts into this repo. Port only focused, public-safe content with attribution. |
+
+## Workspace Legacy Import Rules
+
+When mining workspace-level legacy repos:
+
+1. Do not read, print, stage, or copy `.env` files, tokens, OAuth secrets,
+   local settings, personal paths, or private operator context.
+2. Do not import raw marketing drafts, gameplans, or chat/context dumps.
+3. Extract only focused, public-safe ideas into current docs or code.
+4. Attribute the source legacy repo, branch, commit, or stale PR in the new PR.
+5. Validate the result with the same tests and release checks as native work.
 
 ## Legacy Command Shim Contents
 
