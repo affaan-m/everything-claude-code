@@ -77,8 +77,20 @@ porting.
 | #1438 | Already present as `skills/ui-to-vue/`. |
 | #1504 | Already mapped to #1776 in the durable salvage table. |
 | #1508 | Already present as `skills/fastapi-patterns/` and `agents/fastapi-reviewer.md`. |
+| #1563/#1564/#1565 | Translator/manual review: zh-TW, tr, and pt-BR README syncs may contain useful localization updates, but stale README/version/count text must be reviewed by language owners before import. |
+| #1567 | Already present as the current GateGuard subagent file-gate bypass in `scripts/hooks/gateguard-fact-force.js`, with Bash gates preserved and regression tests in `tests/hooks/gateguard-fact-force.test.js`. |
+| #1570 | Already present as public `llm.prompt` imports, keyword-based `PromptBuilder` construction, and template registry helpers; current tests register the `unit` marker through `tests/conftest.py`. |
+| #1584 | Already present as the iTerm2 native desktop-notification fast path in `scripts/hooks/desktop-notify.js`, with multiplexer fallback to `osascript`. |
+| #1589 | Already present as quoted `actions/checkout` detection in `scripts/ci/validate-workflow-security.js` plus double/single-quote regression tests. |
+| #1594 | Already present as HTTP MCP reachability handling that treats HTTP 400, 401, and 403 probe responses as reachable/auth-gated, with hook tests. |
+| #1597 | Already present as catalog-count validation for README, AGENTS, zh-CN docs, `.claude-plugin/plugin.json`, and `.claude-plugin/marketplace.json`. |
+| #1602 | Already present as the `continuous-learning` v1 deprecation that routes new usage to `continuous-learning-v2` while preserving the archival v1 surface. |
 | #1603 | Useful `/plan-orchestrate` work was already preserved in #1766 with current package/catalog metadata. |
+| #1604 | Skipped: Windows drag-and-drop local installer copies files directly and runs `git pull`; current managed installer/profile flow is safer and supersedes it. |
+| #1609 | Translator/manual review: Persian README translation may be useful, but needs language review and current catalog/version refresh before import. |
+| #1613 | Already present in `rules/web/hooks.md` as the `tsc --incremental` plus timeout-capped PostToolUse example. |
 | #1631 | Already present in `scripts/hooks/suggest-compact.js` and `tests/hooks/hooks.test.js`; current code reads `session_id` from stdin JSON before falling back to `CLAUDE_SESSION_ID`. |
+| #1648 | Already present in `src/llm/providers/claude.py`; current Claude provider collects all text and tool-use content blocks and covers the behavior in `tests/test_claude_provider.py`. |
 | #1658 | Ported through the code-reviewer maintainer branch after confirming the false-positive proof gate and common false-positive skip list were still missing. |
 | #1693 | Already present as `skills/redis-patterns/`. |
 
@@ -105,15 +117,22 @@ porting.
 | #1341 | Very large low-signal generated change with no safe focused salvage unit. |
 | #1416/#1465 | Accidental fork-sync PRs with no focused contribution. |
 | #1475 | One-line Gemini CLI bridge idea was too stale and underspecified to port safely. |
+| #1604 | Drag-and-drop Windows installer bypasses the current managed installer, performs direct broad copies, and runs `git pull` from a local install script. |
 
 ## Remaining Manual-Review Backlog
 
-Only the #1687 localization tail remains plausibly useful but unsafe to
-auto-port.
+The remaining plausibly useful backlog is translation/localization work that is
+unsafe to auto-port without language-owner review:
+
+- #1687 zh-CN localization tail
+- #1609 Persian README translation
+- #1563 zh-TW README sync
+- #1564 Turkish README sync
+- #1565 pt-BR README sync
 
 Handling rule:
 
-1. Keep #1687 in translator/manual review.
+1. Keep these PRs in translator/manual review.
 2. Split any future work by surface: agents, commands, top-level docs, release
    and count surfaces, then skills.
 3. Do not import stale top-level docs that carry old version or catalog-count
