@@ -49,6 +49,9 @@ As of 2026-05-12:
 - AgentShield PR #57 added OSS, team, enterprise, regulated,
   high-risk-hooks/MCP, and CI-enforcement policy-pack presets plus
   `agentshield policy init --pack`.
+- AgentShield PR #58 added MCP package provenance fields and report-level
+  counts for npm vs git, pinned vs unpinned, known-good, and registry-backed
+  supply-chain evidence.
 - ECC PR #1778 recovered the useful stale #1413 network/homelab architect-agent
   concepts.
 - ECC-Tools PR #26 added cost/token-risk predictive follow-ups for AI routing,
@@ -168,8 +171,8 @@ Acceptance:
   counts for branch-protection and CI evidence.
 - Policy packs are defined for OSS, team, enterprise, regulated, high-risk
   hooks/MCP, and CI enforcement.
-- Supply-chain intelligence plan covers MCP package provenance, npm/pip
-  reputation, CVEs, typosquats, and dependency risk.
+- Supply-chain intelligence covers MCP package provenance and has an extension
+  path for npm/pip reputation, CVEs, typosquats, and dependency risk.
 - Prompt-injection corpus and regression benchmark are ready for continuous
   rule hardening.
 - Enterprise reports include JSON plus HTML/PDF or equivalent executive output.
@@ -215,7 +218,7 @@ Acceptance:
 
 ## Next Engineering Slices
 
-1. Continue AgentShield enterprise supply-chain intelligence and reporting in
-   the AgentShield repo.
+1. Extend AgentShield enterprise reporting beyond terminal/JSON supply-chain
+   evidence toward executive HTML/PDF or equivalent report output.
 2. Audit ECC Tools billing, entitlement, and marketplace surfaces before any
    native GitHub payments announcement.
