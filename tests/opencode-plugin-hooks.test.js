@@ -119,6 +119,52 @@ async function main() {
         )
       }),
     ],
+    [
+      "session.created ignores directories named CLAUDE.md",
+      async () => {
+        const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), "ecc-opencode-plugin-"))
+        try {
+          fs.mkdirSync(path.join(projectDir, "CLAUDE.md"))
+
+          const client = createClient()
+          const $ = createFailingShell()
+          const hooks = await ECCHooksPlugin({ client, $, directory: projectDir })
+
+          await hooks["session.created"]()
+
+          assert.deepStrictEqual($.calls, [], `Unexpected shell probes: ${$.calls.join(", ")}`)
+          assert.ok(
+            !client.logs.some((entry) => entry.message === "[ECC] Found CLAUDE.md - loading project context"),
+            "Directory named CLAUDE.md should not be treated as project context"
+          )
+        } finally {
+          fs.rmSync(projectDir, { recursive: true, force: true })
+        }
+      },
+    ],
+    [
+      "shell.env ignores directories named like lockfiles and language markers",
+      async () => {
+        const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), "ecc-opencode-plugin-"))
+        try {
+          fs.mkdirSync(path.join(projectDir, "pnpm-lock.yaml"))
+          fs.mkdirSync(path.join(projectDir, "tsconfig.json"))
+
+          const client = createClient()
+          const $ = createFailingShell()
+          const hooks = await ECCHooksPlugin({ client, $, directory: projectDir })
+
+          const env = await hooks["shell.env"]()
+
+          assert.deepStrictEqual($.calls, [], `Unexpected shell probes: ${$.calls.join(", ")}`)
+          assert.ok(!("PACKAGE_MANAGER" in env), "Lockfile directory should not set PACKAGE_MANAGER")
+          assert.ok(!("DETECTED_LANGUAGES" in env), "Marker directory should not set DETECTED_LANGUAGES")
+          assert.ok(!("PRIMARY_LANGUAGE" in env), "Marker directory should not set PRIMARY_LANGUAGE")
+        } finally {
+          fs.rmSync(projectDir, { recursive: true, force: true })
+        }
+      },
+    ],
   ]
 
   let passed = 0

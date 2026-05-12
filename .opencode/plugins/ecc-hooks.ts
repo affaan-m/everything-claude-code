@@ -45,7 +45,7 @@ export const ECCHooksPlugin: ECCHooksPluginFn = async ({
 
   function hasProjectFile(relativePath: string): boolean {
     try {
-      return fs.existsSync(resolvePath(relativePath))
+      return fs.statSync(resolvePath(relativePath)).isFile()
     } catch {
       return false
     }
