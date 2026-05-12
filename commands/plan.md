@@ -1,10 +1,11 @@
 ---
 description: Restate requirements, assess risks, and create step-by-step implementation plan. WAIT for user CONFIRM before touching any code.
+argument-hint: "[feature description | path/to/*.prd.md]"
 ---
 
 # Plan Command
 
-This command creates a comprehensive implementation plan before writing any code.
+This command creates a comprehensive implementation plan before writing any code. It accepts either free-form requirements or a PRD markdown file.
 
 Run inline by default. Do not call the Task tool or any subagent by default. This keeps `/plan` usable from plugin installs that ship commands without agent files.
 
@@ -29,11 +30,86 @@ Use `/plan` when:
 The assistant will:
 
 1. **Analyze the request** and restate requirements in clear terms
-2. **Break down into phases** with specific, actionable steps
-3. **Identify dependencies** between components
-4. **Assess risks** and potential blockers
-5. **Estimate complexity** (High/Medium/Low)
-6. **Present the plan** and WAIT for your explicit confirmation
+2. **Ground the plan** in relevant codebase patterns when the repo is available
+3. **Break down into phases** with specific, actionable steps
+4. **Identify dependencies** between components
+5. **Assess risks** and potential blockers
+6. **Estimate complexity** (High/Medium/Low)
+7. **Present the plan** and WAIT for your explicit confirmation
+
+## Input Modes
+
+| Input | Mode | Behavior |
+|---|---|---|
+| `path/to/name.prd.md` | PRD artifact mode | Read the PRD, pick the next pending delivery milestone or implementation phase, and write `.claude/plans/{name}.plan.md` |
+| Any other markdown path | Reference mode | Read the file as context and produce an inline plan |
+| Free-form text | Conversational mode | Produce an inline plan |
+| Empty input | Clarification mode | Ask what should be planned |
+
+In PRD artifact mode, create `.claude/plans/` if needed. If the PRD contains a `Delivery Milestones` table, update only the selected row from `pending` to `in-progress` and set its `Plan` cell to the generated plan path. If the PRD uses the legacy `.claude/PRPs/prds/` format with `Implementation Phases`, read it without migrating paths.
+
+## Pattern Grounding
+
+Before writing the plan, search the codebase for conventions the implementation should mirror. Capture the top example for each relevant category with file references:
+
+| Category | What to capture |
+|---|---|
+| Naming | File, function, type, command, or script naming in the affected area |
+| Error handling | How failures are raised, returned, logged, or handled gracefully |
+| Logging | Levels, format, and what gets logged |
+| Data access | Repository, service, query, or filesystem patterns |
+| Tests | Test file location, framework, fixtures, and assertion style |
+
+If no similar code exists, state that explicitly. Do not invent a pattern.
+
+## PRD Artifact Output
+
+When called with a `.prd.md` file, write the plan to `.claude/plans/{kebab-case-name}.plan.md` using this structure:
+
+````markdown
+# Plan: {Feature Name}
+
+**Source PRD**: {path}
+**Selected Milestone**: {milestone or phase name}
+**Complexity**: {Small | Medium | Large}
+
+## Summary
+{2-3 sentences}
+
+## Patterns to Mirror
+| Category | Source | Pattern |
+|---|---|---|
+| Naming | `path:line` | {short description} |
+| Errors | `path:line` | {short description} |
+| Tests | `path:line` | {short description} |
+
+## Files to Change
+| File | Action | Why |
+|---|---|---|
+| `path` | CREATE / UPDATE / DELETE | {reason} |
+
+## Tasks
+### Task 1: {name}
+- **Action**: {what to do}
+- **Mirror**: {pattern to follow}
+- **Validate**: {command that proves correctness}
+
+## Validation
+```bash
+{project-specific validation commands}
+```
+
+## Risks
+| Risk | Likelihood | Mitigation |
+|---|---|---|
+
+## Acceptance
+- [ ] All tasks complete
+- [ ] Validation passes
+- [ ] Patterns mirrored, not reinvented
+````
+
+After writing the artifact, report its path and WAIT for confirmation before writing code.
 
 ## Example Usage
 
@@ -108,8 +184,11 @@ After planning:
 - Use the `tdd-workflow` skill to implement with test-driven development
 - Use `/build-fix` if build errors occur
 - Use `/code-review` to review completed implementation
+- Use `/pr` or `/prp-pr` to open a pull request
 
-> **Need deeper planning?** Use `/prp-plan` for artifact-producing planning with PRD integration, codebase analysis, and pattern extraction. Use `/prp-implement` to execute those plans with rigorous validation loops.
+> **Need requirements first?** Use `/plan-prd` for a lean PRD at `.claude/prds/{name}.prd.md`.
+>
+> **Need the legacy PRP flow?** Use `/prp-plan` for deep PRP planning with `.claude/PRPs/` artifacts. Use `/prp-implement` to execute those plans with rigorous validation loops.
 
 ## Optional Planner Agent
 

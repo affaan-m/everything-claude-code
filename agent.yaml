@@ -197,10 +197,12 @@ commands:
   - multi-plan
   - multi-workflow
   - plan
+  - plan-prd
   - pm2
   - projects
   - promote
   - project-init
+  - pr
   - prp-commit
   - prp-implement
   - prp-plan
