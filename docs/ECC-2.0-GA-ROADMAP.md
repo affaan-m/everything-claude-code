@@ -44,6 +44,11 @@ As of 2026-05-12:
   `policy` / `fail-on-policy` inputs, `policy-status` /
   `policy-violations` outputs, job-summary evidence, and policy violation
   annotations.
+- AgentShield PR #56 added SARIF/code-scanning output for organization-policy
+  violations as `agentshield-policy/*` results.
+- AgentShield PR #57 added OSS, team, enterprise, regulated,
+  high-risk-hooks/MCP, and CI-enforcement policy-pack presets plus
+  `agentshield policy init --pack`.
 - ECC PR #1778 recovered the useful stale #1413 network/homelab architect-agent
   concepts.
 - ECC-Tools PR #26 added cost/token-risk predictive follow-ups for AI routing,
@@ -207,7 +212,7 @@ Acceptance:
 
 ## Next Engineering Slices
 
-1. Start AgentShield enterprise policy schema and SARIF implementation in the
-   AgentShield repo.
+1. Continue AgentShield enterprise supply-chain intelligence and reporting in
+   the AgentShield repo.
 2. Audit ECC Tools billing and check-run surfaces before any native GitHub
    payments announcement.
