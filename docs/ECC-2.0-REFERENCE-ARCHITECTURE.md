@@ -2,6 +2,9 @@
 
 Research summary from competitor/reference analysis (2026-03-22).
 
+For the current GA execution roadmap and Linear milestone mirror, see
+[`ECC-2.0-GA-ROADMAP.md`](ECC-2.0-GA-ROADMAP.md).
+
 ## Competitive Landscape
 
 | Project | Stars | Language | Type | Multi-Agent | Worktrees | Terminal-native |

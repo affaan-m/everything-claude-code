@@ -3,6 +3,7 @@
 ## Repo
 
 - verify local `main` is synced to `origin/main`
+- verify `docs/ECC-2.0-GA-ROADMAP.md` reflects the current Linear milestone plan
 - verify `docs/HERMES-SETUP.md` is present
 - verify `docs/architecture/cross-harness.md` is present
 - verify this release directory is committed
