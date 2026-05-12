@@ -30,6 +30,9 @@ As of 2026-05-12:
 - `docs/releases/2.0.0-rc.1/publication-readiness.md` gates GitHub release,
   npm dist-tag, Claude plugin, Codex plugin, OpenCode package, billing, and
   announcement publication on fresh evidence fields.
+- `docs/legacy-artifact-inventory.md` records that no `_legacy-documents-*`
+  directories exist in the current checkout and classifies
+  `legacy-command-shims/` as an opt-in archive/no-action surface.
 - AgentShield PR #53 reduced two context-rule false positives and closed the
   remaining AgentShield issues.
 - ECC PR #1778 recovered the useful stale #1413 network/homelab architect-agent
@@ -189,7 +192,5 @@ Acceptance:
    AgentShield repo.
 2. Audit ECC Tools billing and check-run surfaces before any native GitHub
    payments announcement.
-3. Inventory `_legacy-documents-*` and map useful artifacts to landed,
-   milestone-tracked, salvage, or archive states.
-4. Build the stale-PR salvage ledger from closed cleanup batches, then port
+3. Build the stale-PR salvage ledger from closed cleanup batches, then port
    useful pieces in small attributed maintainer PRs.
