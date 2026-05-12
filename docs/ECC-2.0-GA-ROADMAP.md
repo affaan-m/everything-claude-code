@@ -69,6 +69,9 @@ As of 2026-05-12:
 - ECC-Tools PR #28 added billing readiness audit checks for plan limits,
   entitlements, Marketplace plan shape, subscription source, seats, and
   overage metering.
+- ECC-Tools PR #29 added deterministic Reference Set Validation signals for
+  analyzer, skill, agent, command, and harness-guidance changes that lack eval,
+  golden trace, benchmark, or reference-set evidence.
 
 ## Operating Rules
 
@@ -206,6 +209,9 @@ Acceptance:
   Review.
 - Cost/token-risk predictive follow-ups flag AI routing, model-call, usage,
   quota, and budget changes when budget evidence is missing.
+- Reference-set validation follow-ups flag analyzer, skill, agent, command, and
+  harness-guidance changes that lack eval, golden trace, benchmark, or
+  maintained reference-set evidence.
 - Linear sync design maps findings to issues/status without flooding the
   workspace.
 
