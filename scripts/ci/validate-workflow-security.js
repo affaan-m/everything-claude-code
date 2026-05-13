@@ -108,6 +108,18 @@ function findViolations(filePath, source) {
   }
 
   if (WRITE_PERMISSION_PATTERN.test(source)) {
+    for (const step of checkoutSteps) {
+      if (!/persist-credentials:\s*['"]?false['"]?\b/m.test(step.text)) {
+        violations.push({
+          filePath,
+          event: 'write-permission checkout',
+          description: 'workflows with write permissions must disable checkout credential persistence',
+          expression: 'actions/checkout without persist-credentials: false',
+          line: step.startLine,
+        });
+      }
+    }
+
     for (const match of source.matchAll(NPM_CI_PATTERN)) {
       violations.push({
         filePath,
