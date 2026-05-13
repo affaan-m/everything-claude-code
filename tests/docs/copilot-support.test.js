@@ -27,7 +27,8 @@ function read(relativePath) {
 }
 
 function parseSimpleFrontmatter(source, relativePath) {
-  const match = source.match(/^---\n([\s\S]*?)\n---\n/);
+  const normalizedSource = source.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n');
+  const match = normalizedSource.match(/^---\n([\s\S]*?)\n---\n/);
   assert.ok(match, `${relativePath} must start with YAML frontmatter`);
 
   const fields = {};
