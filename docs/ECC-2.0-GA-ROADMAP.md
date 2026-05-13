@@ -14,14 +14,14 @@ so the live execution truth is split across:
 
 ## Current Evidence
 
-As of 2026-05-12:
+As of 2026-05-13:
 
 - Public GitHub queues are clean across `affaan-m/everything-claude-code`,
   `affaan-m/agentshield`, `affaan-m/JARVIS`, `ECC-Tools/ECC-Tools`, and
   `ECC-Tools/ECC-website`.
 - Public GitHub discussions are also clean across those tracked repos:
-  `states: OPEN` returned zero discussions for every accessible discussion
-  surface on 2026-05-12.
+  the latest GraphQL sweep found only closed discussions on the trunk
+  discussion surface, and satellite discussion surfaces are disabled or empty.
 - The final open public GitHub issue, #1314, was closed as a non-actionable
   external badge/listing notification with a courtesy comment.
 - Linear issue creation for this project was re-tested after GitHub cleanup and
@@ -31,6 +31,9 @@ As of 2026-05-12:
   workspace is upgraded or issue capacity is freed.
 - `npm run harness:audit -- --format json` reports 70/70 on current `main`.
 - `npm run observability:ready` reports 16/16 readiness on current `main`.
+- PR #1846 merged as `797f283036904128bb1b348ae62019eb9f08cf39` and made
+  npm registry signature verification a durable workflow-security gate:
+  workflows that run `npm audit` now need `npm audit signatures`.
 - `docs/architecture/harness-adapter-compliance.md` maps Claude Code, Codex,
   OpenCode, Cursor, Gemini, Zed-adjacent, dmux, Orca, Superset, Ghast, and
   terminal-only support to install paths, verification commands, and risk
@@ -49,6 +52,10 @@ As of 2026-05-12:
   dry-run publication evidence pass: npm pack/publish dry-runs, temp install
   smoke, Claude plugin validation/tag preflight, Codex marketplace CLI shape,
   OpenCode build, and the remaining approval-gated release blockers.
+- `docs/releases/2.0.0-rc.1/publication-evidence-2026-05-13.md` records the
+  release-readiness evidence refresh: 70/70 harness audit, adapter compliance
+  PASS, 16/16 observability readiness, 2376/2376 root Node tests, markdownlint,
+  release-surface and npm publish-surface tests, and 462/462 `ecc2` Rust tests.
 - A detached clean worktree at
   `bfacf37715b39655cbc2c48f12f2a35c67cb0253` verified Claude plugin tag
   dry-run without `--force`, local marketplace discovery, temp-home local
@@ -211,12 +218,12 @@ is not complete unless the evidence column exists and has been freshly verified.
 
 | Prompt requirement | Required artifact or gate | Current evidence | Status |
 | --- | --- | --- | --- |
-| Keep public PRs below 20 | Repo-family PR recheck | 0 open PRs across the tracked public repos on 2026-05-12 | Complete for this checkpoint |
-| Keep public issues below 20 | Repo-family issue recheck | 0 open issues across the tracked public repos on 2026-05-12 after closing #1314 as non-actionable badge/listing noise | Complete for this checkpoint |
-| Manage repository discussions | Repo-family discussion recheck | 0 open discussions across the tracked public repos on 2026-05-12 via GraphQL `states: OPEN` checks | Complete for this checkpoint |
-| Manage PR discussions | PR review/comment closure plus merge/close state | #1803 was maintainer-edited and merged; no open PRs remain | Complete for this checkpoint |
+| Keep public PRs below 20 | Repo-family PR recheck | 0 open PRs across the tracked public repos on 2026-05-13 after merging #1846 | Complete for this checkpoint |
+| Keep public issues below 20 | Repo-family issue recheck | 0 open issues across the tracked public repos on 2026-05-13 | Complete for this checkpoint |
+| Manage repository discussions | Repo-family discussion recheck | Latest trunk discussion GraphQL sweep returned closed discussions only; satellite repos remain disabled or empty | Complete for this checkpoint |
+| Manage PR discussions | PR review/comment closure plus merge/close state | #1846 merged after current-head CI; no open PRs remain | Complete for this checkpoint |
 | Salvage useful stale work | `docs/stale-pr-salvage-ledger.md` | Ledger records salvaged, superseded, skipped, and manual-review tails; #1815-#1818 added cost tracking, skill scout, frontend design guidance, code-reviewer false-positive guardrails, and the May 12 gap pass | Complete except translation/manual review tail |
-| ECC 2.0 preview pack ready | Release docs, quickstart, publication readiness, release notes | `docs/releases/2.0.0-rc.1/` and readiness docs are in-tree | Needs final release evidence |
+| ECC 2.0 preview pack ready | Release docs, quickstart, publication readiness, release notes | `docs/releases/2.0.0-rc.1/` and readiness docs are in-tree; May 13 evidence refresh records harness, adapter, observability, Node, lint, release-surface, npm publish-surface, and Rust checks | Needs final clean-checkout release approval |
 | Hermes specialized skills included safely | Hermes setup/import docs and sanitized skill surface | Hermes setup and import playbook are public; secrets stay local | Needs final release review |
 | Naming and rename readiness | Naming matrix across package/plugin/docs/social surfaces | `docs/releases/2.0.0-rc.1/naming-and-publication-matrix.md` records current package, repo, Claude plugin, Codex plugin, OpenCode, and npm availability evidence | Complete for rc.1; post-rc rename remains future work |
 | Claude and Codex plugin publication | Contact/submission path with required artifacts and status | Publication readiness, naming matrix, and May 12 dry-run evidence document plugin validation, clean-checkout Claude tag/install smoke, and Codex marketplace CLI shape | Needs explicit approval for real tag/push and marketplace submission |
@@ -229,7 +236,7 @@ is not complete unless the evidence column exists and has been freshly verified.
 | Flow separation and progress tracking | Flow lanes with owner artifacts and update cadence | This roadmap defines lanes below | Active |
 | Realtime Linear sync | Project updates while issue limit is blocked; issues later | ECC-Tools #39 implements opt-in Linear API sync for deferred follow-up backlog items | Needs workspace capacity/config rollout |
 | Observability for self-use | Local readiness gate, traces, status snapshots, HUD/status contract, risk ledger | `npm run observability:ready` reports 16/16 | Complete for local gate |
-| Proper release and notifications | Release tag, npm publish state, plugin state, social posts | Publication readiness gate exists | Not complete |
+| Proper release and notifications | Release tag, npm publish state, plugin state, social posts | Publication readiness gate exists with May 12 dry-run and May 13 readiness evidence | Not complete; approval/live URLs required |
 
 ## Execution Lanes And Tracking Contract
 
