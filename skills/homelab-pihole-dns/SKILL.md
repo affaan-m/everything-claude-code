@@ -46,7 +46,7 @@ straightforward.
 # docker-compose.yml
 services:
   pihole:
-    image: pihole/pihole:latest
+    image: pihole/pihole:<pinned-release-tag>
     container_name: pihole
     ports:
       - "53:53/tcp"
@@ -62,11 +62,15 @@ services:
       - "./etc-dnsmasq.d:/etc/dnsmasq.d"
     restart: unless-stopped
     cap_add:
-      - NET_ADMIN
+      - NET_ADMIN              # only needed if Pi-hole will serve DHCP
 ```
 
-Set `PIHOLE_WEBPASSWORD` in a `.env` file next to `docker-compose.yml` — do not put
-the password directly in the compose file.
+Replace `<pinned-release-tag>` with a current Pi-hole release tag before deploying.
+Avoid `latest` for long-lived DNS infrastructure so upgrades are deliberate and
+reviewable.
+
+Set `PIHOLE_WEBPASSWORD` in a `.env` file next to `docker-compose.yml`, chmod it to
+`600`, and keep it out of git — do not put the password directly in the compose file.
 
 Access web admin at: `http://<pi-ip>/admin`
 
@@ -83,7 +87,8 @@ static ip_address=192.168.3.2/24
 static routers=192.168.3.1
 static domain_name_servers=192.168.3.1
 
-# Step 2: Download and inspect the installer before running it
+# Step 2: Download and inspect the installer before running it.
+# Prefer the package or installer path documented by Pi-hole for your OS/version.
 curl -sSL https://install.pi-hole.net -o pi-hole-install.sh
 less pi-hole-install.sh   # review before proceeding
 
@@ -104,8 +109,9 @@ bash pi-hole-install.sh
 # Method 1: Change DNS in your router DHCP settings (recommended)
   Router admin UI → DHCP Settings → DNS Server
   Primary DNS: 192.168.3.2  (Pi-hole IP)
-  Secondary DNS: 1.1.1.1    (fallback — prevents outage if Pi-hole is down,
-                              but bypasses blocking for any query that reaches it)
+  Secondary DNS: leave blank for strict blocking, or use a second Pi-hole.
+                 A public fallback such as 1.1.1.1 improves availability during
+                 rollout but can bypass blocking because clients may query it.
 
   All devices get Pi-hole as DNS automatically on next DHCP renewal.
   Force renewal: reconnect Wi-Fi or run 'sudo dhclient -r && sudo dhclient' on Linux
@@ -152,9 +158,12 @@ bash pi-hole-install.sh
 DNS-over-HTTPS encrypts your DNS queries so your ISP cannot see what sites you resolve.
 
 ```bash
-# Install cloudflared (Cloudflare's DoH proxy)
-# On Raspberry Pi (ARM64):
-wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64
+# Install cloudflared (Cloudflare's DoH proxy).
+# Prefer Cloudflare's package repository for automatic signed package verification.
+# If you download a binary directly, pin a release version and verify its checksum.
+CLOUDFLARED_VERSION="<pinned-version>"
+curl -LO "https://github.com/cloudflare/cloudflared/releases/download/${CLOUDFLARED_VERSION}/cloudflared-linux-arm64"
+# Verify the checksum/signature from Cloudflare's release notes before installing.
 sudo mv cloudflared-linux-arm64 /usr/local/bin/cloudflared
 sudo chmod +x /usr/local/bin/cloudflared
 
@@ -231,10 +240,10 @@ pihole -g
 ## Anti-Patterns
 
 ```
-# BAD: Setting Pi-hole as DNS with no fallback
-# If Pi-hole crashes or the Pi loses power, all DNS stops working
-# GOOD: Set Pi-hole as primary DNS, a public resolver as secondary
-# BETTER: Run two Pi-hole instances for redundancy
+# BAD: Depending on one Pi-hole without a recovery path
+# If Pi-hole crashes or the Pi loses power, DNS can stop working
+# GOOD: Keep a documented router fallback for rollback during setup
+# BETTER: Run two Pi-hole instances for redundancy; avoid public fallback DNS for strict blocking
 
 # BAD: Installing Pi-hole without a static IP
 # If the Pi gets a new DHCP IP, all devices lose DNS
@@ -252,7 +261,8 @@ pihole -g
 ## Best Practices
 
 - Give the Pi a static IP or DHCP reservation before installing Pi-hole
-- Use Pi-hole as primary DNS, add a public resolver as secondary
+- Use Pi-hole as primary DNS; for redundancy, add a second Pi-hole instead of a
+  public resolver if you need strict blocking
 - Enable DoH (DNS-over-HTTPS) with cloudflared for encrypted upstream queries
 - Set `home.lan` as your local domain and create DNS records for all your services
 - Review the Query Log occasionally — blocked queries show you what devices are doing
