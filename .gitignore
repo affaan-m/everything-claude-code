@@ -25,7 +25,7 @@ Desktop.ini
 
 # Editor files
 .idea/
-.vscode/
+.vscode/*
 !.vscode/settings.json
 *.swp
 *.swo
