@@ -42,7 +42,217 @@ const EDIT_WRITE_HOOK_ID = 'pre:edit-write:gateguard-fact-force';
 const BASH_HOOK_ID = 'pre:bash:gateguard-fact-force';
 const ECC_DISABLE_VALUES = new Set(['0', 'false', 'off', 'disabled', 'disable']);
 
-const DESTRUCTIVE_BASH = /\b(rm\s+-rf|git\s+reset\s+--hard|git\s+checkout\s+--|git\s+clean\s+-f|drop\s+table|delete\s+from|truncate|git\s+push\s+--force(?!-with-lease)|git\s+commit\s+--amend|dd\s+if=)\b/i;
+// SQL-keyword + dd patterns stay as a single regex — they are stable
+// phrases without shell-flag ordering concerns. Quoted strings are
+// stripped before this regex runs so a commit message mentioning
+// "drop table" no longer triggers a false positive.
+const DESTRUCTIVE_SQL_DD = /\b(drop\s+table|delete\s+from|truncate|dd\s+if=)\b/i;
+
+/**
+ * Strip the contents of single- and double-quoted strings so phrases
+ * mentioned inside a commit message or echoed argument do not trigger
+ * the destructive detector. Mirrors the approach used by
+ * block-no-verify.js.
+ *
+ * @param {string} input
+ * @returns {string}
+ */
+function stripQuotedStrings(input) {
+  return input
+    .replace(/'(?:[^'\\]|\\.)*'/g, "''")
+    .replace(/"(?:[^"\\]|\\.)*"/g, '""');
+}
+
+/**
+ * Split a command line into top-level segments at unquoted shell
+ * separators (`;`, `|`, `&`, `&&`, `||`). Quoted strings are stripped
+ * first so separators inside quotes are not split on. Per-segment
+ * comments are also stripped.
+ *
+ * @param {string} input
+ * @returns {string[]}
+ */
+function splitCommandSegments(input) {
+  const stripped = stripQuotedStrings(input);
+  return stripped
+    .split(/[;|&]+/)
+    .map(segment => segment.replace(/(^|\s)#.*/, '$1').trim())
+    .filter(Boolean);
+}
+
+/**
+ * Tokenize a single command segment by whitespace. Quoted strings
+ * are already collapsed to empty quotes by `stripQuotedStrings`, so
+ * naive whitespace splitting is sufficient.
+ *
+ * @param {string} segment
+ * @returns {string[]}
+ */
+function tokenize(segment) {
+  return segment.split(/\s+/).filter(Boolean);
+}
+
+/**
+ * Strip a leading path and trailing `.exe` from a command token so
+ * `/usr/bin/git`, `git.exe`, and `GIT` all normalize to `git`.
+ *
+ * @param {string} token
+ * @returns {string}
+ */
+function commandBasename(token) {
+  if (!token) return '';
+  return token.replace(/^.*[\\/]/, '').replace(/\.exe$/i, '').toLowerCase();
+}
+
+/**
+ * Detect `rm` invocations that recursively force-delete files. Handles
+ * combined (`-rf`, `-fr`, `-Rf`) and split (`-r -f`) flag forms.
+ *
+ * @param {string[]} tokens
+ * @returns {boolean}
+ */
+function isDestructiveRm(tokens) {
+  if (tokens.length === 0 || commandBasename(tokens[0]) !== 'rm') return false;
+  let hasR = false;
+  let hasF = false;
+  for (const t of tokens.slice(1)) {
+    if (!t.startsWith('-') || t.startsWith('--')) continue;
+    const body = t.slice(1);
+    if (/[rR]/.test(body)) hasR = true;
+    if (/f/.test(body)) hasF = true;
+  }
+  return hasR && hasF;
+}
+
+/**
+ * Locate the git subcommand within a token list, skipping over git's
+ * global options like `-c key=value`, `-C <path>`, `--git-dir=...`,
+ * `--work-tree=...`, `--namespace=...`, `--super-prefix=...`.
+ *
+ * @param {string[]} tokens
+ * @returns {{ command: string, rest: string[] } | null}
+ */
+function findGitSubcommand(tokens) {
+  if (tokens.length === 0 || commandBasename(tokens[0]) !== 'git') return null;
+  const valueConsumingShort = new Set(['-c', '-C']);
+  const valueConsumingLong = new Set(['--git-dir', '--work-tree', '--namespace', '--super-prefix']);
+  let i = 1;
+  while (i < tokens.length) {
+    const t = tokens[i];
+    if (valueConsumingShort.has(t) || valueConsumingLong.has(t)) {
+      i += 2;
+      continue;
+    }
+    if (t.startsWith('--git-dir=') || t.startsWith('--work-tree=') || t.startsWith('--namespace=') || t.startsWith('--super-prefix=')) {
+      i += 1;
+      continue;
+    }
+    if (t.startsWith('-')) {
+      // Unknown global option — skip without consuming a value.
+      i += 1;
+      continue;
+    }
+    return { command: t.toLowerCase(), rest: tokens.slice(i + 1) };
+  }
+  return null;
+}
+
+/**
+ * Detect destructive `git` invocations: `reset --hard`, `checkout --`,
+ * `clean -f...`, `push --force` (but not `--force-with-lease`),
+ * `commit --amend`, `rm -rf`.
+ *
+ * @param {string[]} tokens
+ * @returns {boolean}
+ */
+function isDestructiveGit(tokens) {
+  const sub = findGitSubcommand(tokens);
+  if (!sub) return false;
+  const { command, rest } = sub;
+
+  if (command === 'reset') {
+    return rest.includes('--hard');
+  }
+
+  if (command === 'checkout') {
+    return rest.includes('--');
+  }
+
+  if (command === 'clean') {
+    // `git clean -f`, `-fd`, `-fdx`, `-df`, `--force`
+    return rest.some(t => {
+      if (t === '--force') return true;
+      if (!t.startsWith('-') || t.startsWith('--')) return false;
+      return t.slice(1).includes('f');
+    });
+  }
+
+  if (command === 'push') {
+    // `--force-with-lease` and `--force-if-includes` are safety-checked
+    // force variants; anything else with -f or bare --force is the
+    // destructive form. The original regex blocked --force-if-includes
+    // because its negative-lookahead only spelled out --force-with-lease;
+    // we exempt both here since their intent is the safe path.
+    let safe = false;
+    let force = false;
+    for (const t of rest) {
+      if (
+        t === '--force-with-lease'
+        || t.startsWith('--force-with-lease=')
+        || t === '--force-if-includes'
+        || t.startsWith('--force-if-includes=')
+      ) {
+        safe = true;
+        continue;
+      }
+      if (t === '--force' || t.startsWith('--force=')) {
+        force = true;
+        continue;
+      }
+      if (t.startsWith('-') && !t.startsWith('--') && t.slice(1).includes('f')) {
+        force = true;
+      }
+    }
+    return force && !safe;
+  }
+
+  if (command === 'commit') {
+    return rest.includes('--amend');
+  }
+
+  if (command === 'rm') {
+    // `git rm -r` / `-rf` / `-r -f` — destructive within the index too.
+    let hasR = false;
+    for (const t of rest) {
+      if (!t.startsWith('-') || t.startsWith('--')) continue;
+      if (/[rR]/.test(t.slice(1))) hasR = true;
+    }
+    return hasR;
+  }
+
+  return false;
+}
+
+/**
+ * Decide whether a bash command line contains a destructive action
+ * the fact-forcing gate should challenge. Combines SQL-keyword
+ * detection (regex on quote-stripped input) with per-segment shell
+ * tokenization for shell commands.
+ *
+ * @param {string} command
+ * @returns {boolean}
+ */
+function isDestructiveBash(command) {
+  const stripped = stripQuotedStrings(String(command || ''));
+  if (DESTRUCTIVE_SQL_DD.test(stripped)) return true;
+
+  for (const segment of splitCommandSegments(command)) {
+    const tokens = tokenize(segment);
+    if (isDestructiveRm(tokens)) return true;
+    if (isDestructiveGit(tokens)) return true;
+  }
+  return false;
+}
 
 // --- State management (per-session, atomic writes, bounded) ---
 
@@ -483,7 +693,7 @@ function run(rawInput) {
       return rawInput;
     }
 
-    if (DESTRUCTIVE_BASH.test(command)) {
+    if (isDestructiveBash(command)) {
       // Gate destructive commands on first attempt; allow retry after facts presented
       const key = '__destructive__' + crypto.createHash('sha256').update(command).digest('hex').slice(0, 16);
       if (!isChecked(key)) {
