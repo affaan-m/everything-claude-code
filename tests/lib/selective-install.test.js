@@ -236,6 +236,7 @@ function runTests() {
     assert.ok(components.some(c => c.id === 'lang:python'), 'Should have lang:python');
     assert.ok(components.some(c => c.id === 'lang:go'), 'Should have lang:go');
     assert.ok(components.some(c => c.id === 'lang:java'), 'Should have lang:java');
+    assert.ok(components.some(c => c.id === 'lang:ruby'), 'Should have lang:ruby');
   })) passed++; else failed++;
 
   if (test('component catalog includes framework: family entries', () => {
@@ -244,6 +245,7 @@ function runTests() {
     assert.ok(components.some(c => c.id === 'framework:nextjs'), 'Should have framework:nextjs');
     assert.ok(components.some(c => c.id === 'framework:django'), 'Should have framework:django');
     assert.ok(components.some(c => c.id === 'framework:springboot'), 'Should have framework:springboot');
+    assert.ok(components.some(c => c.id === 'framework:rails'), 'Should have framework:rails');
   })) passed++; else failed++;
 
   if (test('component catalog includes capability: family entries', () => {

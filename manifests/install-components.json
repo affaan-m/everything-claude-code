@@ -244,6 +244,24 @@
       ]
     },
     {
+      "id": "lang:ruby",
+      "family": "language",
+      "description": "Ruby and Rails coding, testing, and security guidance. Resolves through framework-language and security modules.",
+      "modules": [
+        "framework-language",
+        "security"
+      ]
+    },
+    {
+      "id": "framework:rails",
+      "family": "framework",
+      "description": "Rails 8 application guidance for MVC, Hotwire, Solid Queue/Cache/Cable, authentication, testing, and security.",
+      "modules": [
+        "framework-language",
+        "security"
+      ]
+    },
+    {
       "id": "lang:rust",
       "family": "language",
       "description": "Rust patterns and testing guidance. Currently resolves through the shared framework-language module.",
