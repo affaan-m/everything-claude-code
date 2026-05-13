@@ -64,16 +64,40 @@ function stripQuotedStrings(input) {
 }
 
 /**
+ * Promote subshell delimiters to top-level segment separators so the
+ * destructive check applies inside `$(...)` and backtick subshells.
+ * Without this, `echo y | $(rm -rf /tmp)` and ``echo y | `rm -rf /tmp` ``
+ * slip past the segment splitter because the destructive command lives
+ * inside a sub-expression. Run iteratively to handle a layer of nesting
+ * (deep nesting is rare in practice and any remaining leak only delays
+ * the gate; it does not introduce its own destructive command).
+ *
+ * @param {string} input
+ * @returns {string}
+ */
+function explodeSubshells(input) {
+  let out = input;
+  for (let i = 0; i < 4; i += 1) {
+    const before = out;
+    out = out.replace(/\$\(([^()`]*)\)/g, ';$1;');
+    out = out.replace(/`([^`]*)`/g, ';$1;');
+    if (out === before) break;
+  }
+  return out;
+}
+
+/**
  * Split a command line into top-level segments at unquoted shell
- * separators (`;`, `|`, `&`, `&&`, `||`). Quoted strings are stripped
- * first so separators inside quotes are not split on. Per-segment
- * comments are also stripped.
+ * separators (`;`, `|`, `&`, `&&`, `||`) and across subshells
+ * (`$(...)` / backticks). Quoted strings are stripped first so
+ * separators inside quotes are not split on. Per-segment comments
+ * are also stripped.
  *
  * @param {string} input
  * @returns {string[]}
  */
 function splitCommandSegments(input) {
-  const stripped = stripQuotedStrings(input);
+  const stripped = explodeSubshells(stripQuotedStrings(input));
   return stripped
     .split(/[;|&]+/)
     .map(segment => segment.replace(/(^|\s)#.*/, '$1').trim())
@@ -188,21 +212,21 @@ function isDestructiveGit(tokens) {
   }
 
   if (command === 'push') {
-    // `--force-with-lease` and `--force-if-includes` are safety-checked
-    // force variants; anything else with -f or bare --force is the
-    // destructive form. The original regex blocked --force-if-includes
-    // because its negative-lookahead only spelled out --force-with-lease;
-    // we exempt both here since their intent is the safe path.
-    let safe = false;
+    // Only `--force-with-lease` qualifies as a safety-checked force.
+    // `--force-if-includes` is a no-op when used WITHOUT
+    // `--force-with-lease` (per git-scm.com/docs/git-push), and when
+    // combined with a bare `--force` it does NOT make the push safer —
+    // the bare force is still in effect. So `--force --force-if-includes`
+    // must be treated as destructive.
+    //
+    // A `+` refspec prefix (e.g. `git push origin +main`,
+    // `+refs/heads/main:refs/heads/main`) also forces a non-fast-forward
+    // update of that ref and is destructive on its own.
+    let withLease = false;
     let force = false;
     for (const t of rest) {
-      if (
-        t === '--force-with-lease'
-        || t.startsWith('--force-with-lease=')
-        || t === '--force-if-includes'
-        || t.startsWith('--force-if-includes=')
-      ) {
-        safe = true;
+      if (t === '--force-with-lease' || t.startsWith('--force-with-lease=')) {
+        withLease = true;
         continue;
       }
       if (t === '--force' || t.startsWith('--force=')) {
@@ -211,9 +235,16 @@ function isDestructiveGit(tokens) {
       }
       if (t.startsWith('-') && !t.startsWith('--') && t.slice(1).includes('f')) {
         force = true;
+        continue;
+      }
+      // Refspec prefix: `+<src>[:<dst>]`. Match tokens like `+main`,
+      // `+refs/heads/main`, `+HEAD:branch`, `+:branch`. Exclude bare
+      // `+` and numeric-only `+123` which are not refspecs.
+      if (t.startsWith('+') && t.length > 1 && /^\+(?:[a-zA-Z_/.:]|HEAD)/.test(t)) {
+        force = true;
       }
     }
-    return force && !safe;
+    return force && !withLease;
   }
 
   if (command === 'commit') {
@@ -230,6 +261,20 @@ function isDestructiveGit(tokens) {
     return hasR;
   }
 
+  if (command === 'switch') {
+    // `git switch` can discard local working-tree changes in three forms:
+    //   --discard-changes           explicit discard
+    //   --force / -f                ignore conflicts and overwrite
+    //   -C <branch>                 force-create (overwrites existing branch)
+    return rest.some(t => {
+      if (t === '--discard-changes' || t === '--force') return true;
+      if (!t.startsWith('-') || t.startsWith('--')) return false;
+      // Short combined form: -f, -fC, -Cf, -C
+      const body = t.slice(1);
+      return /[fC]/.test(body);
+    });
+  }
+
   return false;
 }
 
@@ -243,8 +288,12 @@ function isDestructiveGit(tokens) {
  * @returns {boolean}
  */
 function isDestructiveBash(command) {
-  const stripped = stripQuotedStrings(String(command || ''));
-  if (DESTRUCTIVE_SQL_DD.test(stripped)) return true;
+  // The SQL/dd phrases live in command bodies, not as flag-bearing
+  // arguments, so we still match them by regex — but on the input
+  // after quoting AND subshell delimiters are normalized so phrases
+  // inside `$(...)` or backticks are also caught.
+  const flattened = explodeSubshells(stripQuotedStrings(String(command || '')));
+  if (DESTRUCTIVE_SQL_DD.test(flattened)) return true;
 
   for (const segment of splitCommandSegments(command)) {
     const tokens = tokenize(segment);

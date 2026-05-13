@@ -1213,6 +1213,53 @@ function runTests() {
       'git push --force-if-includes');
   })) passed++; else failed++;
 
+  // --- Review-round-2 findings ---
+
+  if (test('denies git push --force even with --force-if-includes present', () => {
+    expectDestructiveDeny('git push --force --force-if-includes origin main',
+      'git push --force --force-if-includes');
+  })) passed++; else failed++;
+
+  if (test('denies git push with +refspec prefix (bare branch)', () => {
+    expectDestructiveDeny('git push origin +main', 'git push origin +main');
+  })) passed++; else failed++;
+
+  if (test('denies git push with +refspec prefix (full ref)', () => {
+    expectDestructiveDeny('git push origin +refs/heads/main:refs/heads/main',
+      'git push origin +refs/heads/main:refs/heads/main');
+  })) passed++; else failed++;
+
+  if (test('denies git switch --discard-changes', () => {
+    expectDestructiveDeny('git switch --discard-changes feature',
+      'git switch --discard-changes');
+  })) passed++; else failed++;
+
+  if (test('denies git switch --force', () => {
+    expectDestructiveDeny('git switch --force main', 'git switch --force');
+  })) passed++; else failed++;
+
+  if (test('denies git switch -f short form', () => {
+    expectDestructiveDeny('git switch -f main', 'git switch -f');
+  })) passed++; else failed++;
+
+  if (test('denies git switch -C force-create', () => {
+    expectDestructiveDeny('git switch -C feature', 'git switch -C');
+  })) passed++; else failed++;
+
+  if (test('still allows plain git switch', () => {
+    expectAllow('git switch feature', 'git switch feature');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf nested inside a backtick subshell', () => {
+    expectDestructiveDeny('echo y | `rm -rf /tmp/junk`',
+      'backtick subshell');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf nested inside a $(...) subshell', () => {
+    expectDestructiveDeny('echo y | $(rm -rf /tmp/junk)',
+      'dollar-paren subshell');
+  })) passed++; else failed++;
+
   // Cleanup only the temp directory created by this test file.
   try {
     if (fs.existsSync(stateDir)) {
