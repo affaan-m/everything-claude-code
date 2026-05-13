@@ -24,6 +24,11 @@ const RULES = [
   },
 ];
 
+const WRITE_PERMISSION_PATTERN = /^\s*(?:contents|issues|pull-requests|actions|checks|deployments|discussions|id-token|packages|pages|repository-projects|security-events|statuses):\s*write\b/m;
+const NPM_CI_PATTERN = /\bnpm\s+ci\b(?![^\n]*--ignore-scripts)/g;
+const ACTIONS_CACHE_PATTERN = /uses:\s*['"]?actions\/cache@/m;
+const ID_TOKEN_WRITE_PATTERN = /^\s*id-token:\s*write\b/m;
+
 function getWorkflowFiles(workflowsDir) {
   if (!fs.existsSync(workflowsDir)) {
     return [];
@@ -98,6 +103,28 @@ function findViolations(filePath, source) {
         });
       }
     }
+  }
+
+  if (WRITE_PERMISSION_PATTERN.test(source)) {
+    for (const match of source.matchAll(NPM_CI_PATTERN)) {
+      violations.push({
+        filePath,
+        event: 'write-permission install',
+        description: 'workflows with write permissions must install npm dependencies with --ignore-scripts',
+        expression: match[0],
+        line: getLineNumber(source, match.index),
+      });
+    }
+  }
+
+  if (ID_TOKEN_WRITE_PATTERN.test(source) && ACTIONS_CACHE_PATTERN.test(source)) {
+    violations.push({
+      filePath,
+      event: 'id-token cache',
+      description: 'workflows with id-token: write must not restore or save shared dependency caches',
+      expression: 'id-token: write + actions/cache',
+      line: getLineNumber(source, source.search(ID_TOKEN_WRITE_PATTERN)),
+    });
   }
 
   return violations;

@@ -99,6 +99,29 @@ function run() {
     assert.match(result.stderr, /pull_request\.head\.sha/);
   })) passed++; else failed++;
 
+  if (test('rejects npm ci without ignore-scripts in workflows with write permissions', () => {
+    const result = runValidator({
+      'unsafe-write-install.yml': `name: Unsafe\non:\n  workflow_dispatch:\npermissions:\n  contents: read\n  issues: write\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm ci\n`,
+    });
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on npm ci without --ignore-scripts');
+    assert.match(result.stderr, /write permissions must install npm dependencies with --ignore-scripts/);
+  })) passed++; else failed++;
+
+  if (test('allows npm ci with ignore-scripts in workflows with write permissions', () => {
+    const result = runValidator({
+      'safe-write-install.yml': `name: Safe\non:\n  workflow_dispatch:\npermissions:\n  contents: read\n  issues: write\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm ci --ignore-scripts\n`,
+    });
+    assert.strictEqual(result.status, 0, result.stderr || result.stdout);
+  })) passed++; else failed++;
+
+  if (test('rejects actions/cache in workflows with id-token write', () => {
+    const result = runValidator({
+      'unsafe-oidc-cache.yml': `name: Unsafe\non:\n  push:\npermissions:\n  contents: read\n  id-token: write\njobs:\n  release:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/cache@v5\n        with:\n          path: ~/.npm\n          key: cache\n`,
+    });
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on id-token workflow cache use');
+    assert.match(result.stderr, /id-token: write must not restore or save shared dependency caches/);
+  })) passed++; else failed++;
+
   console.log(`\nPassed: ${passed}`);
   console.log(`Failed: ${failed}`);
 
