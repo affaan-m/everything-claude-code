@@ -38,7 +38,7 @@
 
 Not just configs. A complete system: skills, instincts, memory optimization, continuous learning, security scanning, and research-first development. Production-ready agents, skills, hooks, rules, MCP configurations, and legacy command shims evolved over 10+ months of intensive daily use building real products.
 
-Works across **Claude Code**, **Codex**, **Cursor**, **OpenCode**, **Gemini**, and other AI agent harnesses.
+Works across **Claude Code**, **Codex**, **Cursor**, **OpenCode**, **Gemini**, **GitHub Copilot**, and other AI agent harnesses.
 
 ECC v2.0.0-rc.1 adds the public Hermes operator story on top of that reusable layer: start with the [Hermes setup guide](docs/HERMES-SETUP.md), then review the [rc.1 release notes](docs/releases/2.0.0-rc.1/release-notes.md) and [cross-harness architecture](docs/architecture/cross-harness.md).
 
@@ -1096,13 +1096,14 @@ Each component is fully independent.
 </details>
 
 <details>
-<summary><b>Does this work with Cursor / OpenCode / Codex / Antigravity?</b></summary>
+<summary><b>Does this work with Cursor / OpenCode / Codex / Antigravity / GitHub Copilot?</b></summary>
 
 Yes. ECC is cross-platform:
 - **Cursor**: Pre-translated configs in `.cursor/`. See [Cursor IDE Support](#cursor-ide-support).
 - **Gemini CLI**: Experimental project-local support via `.gemini/GEMINI.md` and shared installer plumbing.
 - **OpenCode**: Full plugin support in `.opencode/`. See [OpenCode Support](#opencode-support).
 - **Codex**: First-class support for both macOS app and CLI, with adapter drift guards and SessionStart fallback. See PR [#257](https://github.com/affaan-m/everything-claude-code/pull/257).
+- **GitHub Copilot (VS Code)**: Instruction and prompt layer via `.github/copilot-instructions.md`, `.vscode/settings.json`, and `.github/prompts/`. See [GitHub Copilot Support](#github-copilot-support).
 - **Antigravity**: Tightly integrated setup for workflows, skills, and flattened rules in `.agent/`. See [Antigravity Guide](docs/ANTIGRAVITY-GUIDE.md).
 - **JoyCode / CodeBuddy**: Project-local selective install adapters for commands, agents, skills, and flattened rules. See [JoyCode Adapter Guide](docs/JOYCODE-GUIDE.md).
 - **Qwen CLI**: Home-directory selective install adapter for commands, agents, skills, rules, and Qwen config. See [Qwen CLI Adapter Guide](docs/QWEN-GUIDE.md).
@@ -1459,25 +1460,81 @@ For the full ECC OpenCode setup, either:
 
 ---
 
+## GitHub Copilot Support
+
+ECC provides **GitHub Copilot support** for VS Code via Copilot Chat's native instruction and prompt file system — no extra tooling required.
+
+### What's Included
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| Core instructions | `.github/copilot-instructions.md` | Always-loaded rules: coding style, security, testing, git workflow |
+| VS Code settings | `.vscode/settings.json` | Per-task instruction files for code gen, test gen, review, and commit messages |
+| Plan prompt | `.github/prompts/plan.prompt.md` | Phased implementation planning |
+| TDD prompt | `.github/prompts/tdd.prompt.md` | Red-Green-Improve cycle |
+| Code review prompt | `.github/prompts/code-review.prompt.md` | Quality and security review |
+| Security review prompt | `.github/prompts/security-review.prompt.md` | Deep OWASP-aligned security analysis |
+| Build fix prompt | `.github/prompts/build-fix.prompt.md` | Systematic build and CI error resolution |
+| Refactor prompt | `.github/prompts/refactor.prompt.md` | Dead code cleanup and simplification |
+
+### Quick Start (GitHub Copilot)
+
+The files are already in place — open any repo that contains this project and GitHub Copilot Chat will automatically pick up `.github/copilot-instructions.md`.
+
+To use the workflow prompts in Copilot Chat:
+1. Open the Copilot Chat panel in VS Code.
+2. Click the **paperclip / attach** icon and select **Prompt...**, or type `/` and choose a prompt.
+3. Select the prompt (e.g. `plan`, `tdd`, `code-review`).
+
+### How It Works
+
+GitHub Copilot in VS Code reads two types of files automatically:
+
+- **`.github/copilot-instructions.md`** — repository-level instructions, always injected into every Copilot Chat request. Contains ECC's core coding standards, security checklist, testing requirements, and git workflow.
+- **`.github/prompts/*.prompt.md`** — reusable prompt files users invoke on demand. Each prompt walks Copilot through a specific ECC workflow (plan → TDD → review → ship).
+
+The **`.vscode/settings.json`** adds per-task instruction overlays so Copilot receives the right context depending on whether you are generating code, writing tests, reviewing a selection, or drafting a commit message.
+
+### Feature Coverage
+
+| ECC Feature | Copilot equivalent |
+|-------------|-------------------|
+| Coding standards | Always-on via `copilot-instructions.md` |
+| Security checklist | Always-on + `security-review` prompt |
+| Testing / TDD | Always-on + `tdd` prompt |
+| Implementation planning | `plan` prompt |
+| Code review | `code-review` prompt |
+| Build error resolution | `build-fix` prompt |
+| Refactoring | `refactor` prompt |
+| Commit message format | Per-task instruction in `settings.json` |
+| Hooks / automation | Not supported (Copilot has no hook system) |
+| Agents / delegation | Not supported (Copilot has no subagent API) |
+
+### Limitations
+
+GitHub Copilot does not have a hook system or a subagent API, so ECC's hook automations (auto-format, TypeScript check, session persistence, dev-server guard) and agent delegation are unavailable. The instruction and prompt layer still brings the full ECC coding philosophy — standards, security, TDD, and workflow — into every Copilot Chat session.
+
+---
+
 ## Cross-Tool Feature Parity
 
 ECC is the **first plugin to maximize every major AI coding tool**. Here's how each harness compares:
 
-| Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |
-|---------|------------|------------|-----------|----------|
-| **Agents** | 60 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
-| **Commands** | 75 | Shared | Instruction-based | 35 |
-| **Skills** | 228 | Shared | 10 (native format) | 37 |
-| **Hook Events** | 8 types | 15 types | None yet | 11 types |
-| **Hook Scripts** | 20+ scripts | 16 scripts (DRY adapter) | N/A | Plugin hooks |
-| **Rules** | 34 (common + lang) | 34 (YAML frontmatter) | Instruction-based | 13 instructions |
-| **Custom Tools** | Via hooks | Via hooks | N/A | 6 native tools |
-| **MCP Servers** | 14 | Shared (mcp.json) | 7 (auto-merged via TOML parser) | Full |
-| **Config Format** | settings.json | hooks.json + rules/ | config.toml | opencode.json |
-| **Context File** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | AGENTS.md |
-| **Secret Detection** | Hook-based | beforeSubmitPrompt hook | Sandbox-based | Hook-based |
-| **Auto-Format** | PostToolUse hook | afterFileEdit hook | N/A | file.edited hook |
-| **Version** | Plugin | Plugin | Reference config | 2.0.0-rc.1 |
+| Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode | GitHub Copilot |
+|---------|------------|------------|-----------|----------|----------------|
+| **Agents** | 60 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 | N/A |
+| **Commands** | 75 | Shared | Instruction-based | 35 | 6 prompts |
+| **Skills** | 228 | Shared | 10 (native format) | 37 | Via instructions |
+| **Hook Events** | 8 types | 15 types | None yet | 11 types | None |
+| **Hook Scripts** | 20+ scripts | 16 scripts (DRY adapter) | N/A | Plugin hooks | N/A |
+| **Rules** | 34 (common + lang) | 34 (YAML frontmatter) | Instruction-based | 13 instructions | 1 always-on file |
+| **Custom Tools** | Via hooks | Via hooks | N/A | 6 native tools | N/A |
+| **MCP Servers** | 14 | Shared (mcp.json) | 7 (auto-merged via TOML parser) | Full | N/A |
+| **Config Format** | settings.json | hooks.json + rules/ | config.toml | opencode.json | copilot-instructions.md + settings.json |
+| **Context File** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | AGENTS.md | copilot-instructions.md |
+| **Secret Detection** | Hook-based | beforeSubmitPrompt hook | Sandbox-based | Hook-based | Instruction-based |
+| **Auto-Format** | PostToolUse hook | afterFileEdit hook | N/A | file.edited hook | N/A |
+| **Version** | Plugin | Plugin | Reference config | 2.0.0-rc.1 | Instruction layer |
 
 **Key architectural decisions:**
 - **AGENTS.md** at root is the universal cross-tool file (read by all 4 tools)
