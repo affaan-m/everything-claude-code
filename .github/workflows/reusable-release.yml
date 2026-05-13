@@ -50,7 +50,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Verify OpenCode package payload
         run: node tests/scripts/build-opencode.test.js

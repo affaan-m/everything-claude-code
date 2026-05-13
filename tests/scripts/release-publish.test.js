@@ -41,6 +41,10 @@ for (const workflow of [
     assert.match(content, /registry-url:\s*['"]https:\/\/registry\.npmjs\.org['"]/);
   });
 
+  test(`${workflow} ignores dependency lifecycle scripts before privileged publish`, () => {
+    assert.match(content, /npm ci --ignore-scripts/);
+  });
+
   test(`${workflow} checks whether the tagged npm version already exists`, () => {
     assert.match(content, /Check npm publish state/);
     assert.match(content, /npm view "\$\{PACKAGE_NAME\}@\$\{PACKAGE_VERSION\}" version/);
