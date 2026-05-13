@@ -57,11 +57,22 @@ function seedMinimalRepo(rootDir, overrides = {}) {
     'scripts/session-inspect.js': '--list-adapters --write inspectSessionTarget',
     'scripts/lib/session-adapters/registry.js': 'module.exports = {};',
     'scripts/harness-audit.js': 'Deterministic harness audit --format overall_score',
+    'scripts/work-items.js': 'sync-github github-pr github-issue sourceClosedAt ecc-work-items-sync-github',
     'scripts/hooks/session-activity-tracker.js': 'tool-usage.jsonl session_id tool_name',
     'ecc2/src/observability/mod.rs': 'ToolCallEvent RiskAssessment ToolLogger',
     'ecc2/src/session/store.rs': 'insert_tool_log query_tool_logs',
     'ecc2/src/session/manager.rs': 'sync_tool_activity_metrics tool-usage.jsonl',
     'docs/architecture/observability-readiness.md': 'node scripts/observability-readiness.js --format json',
+    'docs/architecture/progress-sync-contract.md': [
+      'Linear GitHub handoff work-items issue capacity status update',
+      'queue counts release gate flow lanes evidence'
+    ].join('\n'),
+    'docs/ECC-2.0-GA-ROADMAP.md': [
+      'Execution Lanes And Tracking Contract',
+      'docs/architecture/progress-sync-contract.md',
+      'Linear progress',
+      'Every significant merge batch'
+    ].join('\n'),
     'docs/architecture/hud-status-session-control.md': [
       'context toolCalls activeAgents todos checks cost risk queueState',
       'create resume status stop diff pr mergeQueue conflictQueue',
@@ -224,6 +235,23 @@ function runTests() {
 
       assert.strictEqual(report.ready, false);
       assert.ok(report.checks.some(check => check.id === 'hud-status-control-contract' && !check.pass));
+      assert.ok(report.checks.some(check => check.id === 'loop-status-live-signal' && check.pass));
+    } finally {
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('missing progress sync contract fails without disturbing core tool checks', () => {
+    const projectRoot = createTempDir('observability-readiness-sync-fail-');
+
+    try {
+      seedMinimalRepo(projectRoot, {
+        'docs/architecture/progress-sync-contract.md': null
+      });
+      const report = buildReport(projectRoot);
+
+      assert.strictEqual(report.ready, false);
+      assert.ok(report.checks.some(check => check.id === 'progress-sync-contract' && !check.pass));
       assert.ok(report.checks.some(check => check.id === 'loop-status-live-signal' && check.pass));
     } finally {
       cleanup(projectRoot);

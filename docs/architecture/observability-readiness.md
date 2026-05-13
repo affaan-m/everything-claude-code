@@ -32,6 +32,9 @@ operator needs.
   `tool-usage.jsonl` events that ECC2 can sync.
 - Risk ledger: `ecc2/src/observability/mod.rs` scores tool calls and stores a
   paginated ledger for review.
+- Progress sync: `docs/architecture/progress-sync-contract.md` defines how
+  GitHub, Linear, local handoffs, the repo roadmap, and `scripts/work-items.js`
+  stay aligned during merge batches and release-gate reviews.
 
 ## Reference Pressure
 
@@ -64,9 +67,12 @@ later, but only after the local event model is useful enough to trust.
    operator dashboard.
 5. Run `node scripts/session-inspect.js --list-adapters` to confirm which
    session surfaces are available.
-6. Use ECC2 tool logs for risky operations, conflict analysis, and handoff
+6. Run `node scripts/work-items.js sync-github --repo <owner/repo>` before
+   relying on local work-item status for a tracked repository.
+7. Use ECC2 tool logs for risky operations, conflict analysis, and handoff
    review before increasing autonomy.
 
 The end-state is practical: before asking ECC to run larger multi-agent loops,
 the operator can prove the system has live status, durable session traces,
-baseline scorecards, and a local risk ledger.
+baseline scorecards, a local risk ledger, and a progress-sync contract that
+keeps GitHub, Linear, handoffs, and roadmap evidence from drifting apart.

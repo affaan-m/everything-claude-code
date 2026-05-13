@@ -124,6 +124,9 @@ function buildChecks(rootDir) {
   const sessionManagerRust = readText(rootDir, 'ecc2/src/session/manager.rs');
   const readinessDoc = readText(rootDir, 'docs/architecture/observability-readiness.md');
   const hudStatusContract = readText(rootDir, 'docs/architecture/hud-status-session-control.md');
+  const progressSyncContract = readText(rootDir, 'docs/architecture/progress-sync-contract.md');
+  const gaRoadmap = readText(rootDir, 'docs/ECC-2.0-GA-ROADMAP.md');
+  const workItems = readText(rootDir, 'scripts/work-items.js');
   const hudStatusFixture = safeParseJson(readText(rootDir, 'examples/hud-status-contract.json')) || {};
   const quickstart = readText(rootDir, 'docs/releases/2.0.0-rc.1/quickstart.md');
   const releaseNotes = readText(rootDir, 'docs/releases/2.0.0-rc.1/release-notes.md');
@@ -237,6 +240,40 @@ function buildChecks(rootDir) {
         && quickstart.includes('observability-readiness.md')
         && releaseNotes.includes('observability-readiness.md'),
       fix: 'Add the observability readiness doc and link it from rc.1 release docs.'
+    },
+    {
+      id: 'progress-sync-contract',
+      category: 'Tracker Sync',
+      points: 2,
+      path: 'docs/architecture/progress-sync-contract.md',
+      description: 'Linear, GitHub, handoff, and roadmap progress sync has an evidence-backed contract',
+      pass: fileExists(rootDir, 'docs/architecture/progress-sync-contract.md')
+        && includesAll(progressSyncContract, [
+          'Linear',
+          'GitHub',
+          'handoff',
+          'work-items',
+          'issue capacity',
+          'status update',
+          'queue counts',
+          'release gate',
+          'flow lanes',
+          'evidence'
+        ])
+        && includesAll(gaRoadmap, [
+          'Execution Lanes And Tracking Contract',
+          'docs/architecture/progress-sync-contract.md',
+          'Linear progress',
+          'Every significant merge batch'
+        ])
+        && includesAll(workItems, [
+          'sync-github',
+          'github-pr',
+          'github-issue',
+          'sourceClosedAt',
+          'ecc-work-items-sync-github'
+        ]),
+      fix: 'Add the progress sync contract, link it from the GA roadmap, and preserve work-items GitHub sync.'
     },
     {
       id: 'package-exposes-readiness-gate',
