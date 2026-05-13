@@ -95,13 +95,13 @@ Before marking work complete:
 
 Use these prompts in Copilot Chat for deeper workflows:
 
-| Prompt | Trigger | Purpose |
-|--------|---------|---------|
-| `#plan` | Complex feature | Phased implementation plan |
-| `#tdd` | New feature or bug fix | Test-driven development cycle |
-| `#code-review` | After writing code | Quality and security review |
-| `#security-review` | Before a release | Deep security analysis |
-| `#build-fix` | Build/CI failure | Systematic error resolution |
-| `#refactor` | Code maintenance | Dead code cleanup and simplification |
+| Prompt | When to use | Purpose |
+|--------|-------------|---------|
+| `/plan` | Complex feature | Phased implementation plan |
+| `/tdd` | New feature or bug fix | Test-driven development cycle |
+| `/code-review` | After writing code | Quality and security review |
+| `/security-review` | Before a release | Deep security analysis |
+| `/build-fix` | Build/CI failure | Systematic error resolution |
+| `/refactor` | Code maintenance | Dead code cleanup and simplification |
 
-To use: open Copilot Chat, type `/` and select the prompt, or type `#` and reference the file.
+To use: open Copilot Chat, type `/` and select the prompt from the picker.
