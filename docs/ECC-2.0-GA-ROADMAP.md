@@ -103,6 +103,10 @@ As of 2026-05-12:
   `baseline` / `save-baseline` inputs, baseline drift outputs, job-summary
   evidence, regression annotations, README/API docs, rebuilt action bundles,
   and green remote action/self-scan/Node verification.
+- AgentShield PR #64 added the first-class `agentshield baseline write`
+  CLI command with severity filtering, JSON metadata output, README/API docs,
+  rebuilt CLI bundle, local TDD coverage, and green remote action/self-scan/Node
+  verification.
 - AgentShield PDF-export decision: defer a native PDF writer for now. The
   self-contained HTML executive report remains the exportable buyer artifact
   and can be printed to PDF when needed; native PDF generation should wait for
@@ -217,7 +221,7 @@ is not complete unless the evidence column exists and has been freshly verified.
 | Naming and rename readiness | Naming matrix across package/plugin/docs/social surfaces | `docs/releases/2.0.0-rc.1/naming-and-publication-matrix.md` records current package, repo, Claude plugin, Codex plugin, OpenCode, and npm availability evidence | Complete for rc.1; post-rc rename remains future work |
 | Claude and Codex plugin publication | Contact/submission path with required artifacts and status | Publication readiness, naming matrix, and May 12 dry-run evidence document plugin validation, clean-checkout Claude tag/install smoke, and Codex marketplace CLI shape | Needs explicit approval for real tag/push and marketplace submission |
 | Articles, tweets, and announcements | X thread, LinkedIn copy, GitHub release copy, push checklist | Draft launch collateral exists under rc.1 release docs | Needs URL-backed refresh |
-| AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports, exception lifecycle audit, baseline drift action surface, enterprise research roadmap | PRs #53, #55-#63 landed with test evidence; native PDF export deferred in favor of self-contained HTML plus print-to-PDF until explicit enterprise demand appears; `docs/architecture/agentshield-enterprise-research-roadmap.md` selects baseline drift as the first control-plane slice | Baseline-drift Action surface landed; CLI/evidence-pack routing remains |
+| AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports, exception lifecycle audit, baseline drift Action/CLI surfaces, enterprise research roadmap | PRs #53, #55-#64 landed with test evidence; native PDF export deferred in favor of self-contained HTML plus print-to-PDF until explicit enterprise demand appears; `docs/architecture/agentshield-enterprise-research-roadmap.md` selects baseline drift as the first control-plane slice | Baseline-drift Action and CLI write surfaces landed; evidence-pack routing remains |
 | ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog, evaluator/RAG corpus | PRs #26-#40 landed with test evidence | Needs capacity-backed Linear rollout |
 | GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy and deterministic follow-up checks | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, Analyzer Corpus Evidence, RAG/Evaluator Evidence, and PR Review/Salvage Evidence | Partially complete |
 | Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates plus `docs/architecture/evaluator-rag-prototype.md`, `examples/evaluator-rag-prototype/`, and ECC-Tools PR #40 define read-only stale-salvage, billing-readiness, CI-failure-diagnosis, harness-config-quality, AgentShield policy-exception, skill-quality evidence, deep-analyzer evidence, and RAG/evaluator comparison scenarios with trace, report, playbook, verifier, and predictive-check artifacts | Local corpus complete; hosted integration remains future |
@@ -240,7 +244,7 @@ back to the repo evidence and merge commits.
 | Release and publication | rc.1 release docs, publication readiness doc | Naming matrix and plugin submission/contact checklist | Before any tag |
 | Harness OS core | Audit, adapter matrix, observability docs, `ecc2/` | HUD/session-control acceptance spec | Weekly until GA |
 | Evaluation and RAG | Reference-set validation, harness audit, traces, ECC-Tools corpus | Read-only evaluator/RAG prototype plus stale-salvage, billing-readiness, CI-failure-diagnosis, harness-config-quality, AgentShield policy-exception, skill-quality evidence, deep-analyzer evidence, and RAG/evaluator comparison fixtures | Hosted retrieval/check-run automation plan |
-| AgentShield enterprise | AgentShield PR evidence and roadmap notes | Baseline-drift CLI/evidence-pack follow-up | Next implementation batch |
+| AgentShield enterprise | AgentShield PR evidence and roadmap notes | Baseline-drift evidence-pack and backlog sync follow-up | Next implementation batch |
 | ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy, evaluator/RAG corpus | Capacity-backed Linear rollout | Next implementation batch |
 | Linear progress | Linear project status updates and this mirror | Status update with queue/evidence/missing gates | Every significant merge batch |
 
@@ -443,9 +447,10 @@ Acceptance:
 
 1. Finish the AgentShield baseline-drift control-plane slice from
    `docs/architecture/agentshield-enterprise-research-roadmap.md`: PR #63
-   shipped the GitHub Action baseline outputs and job-summary evidence; the
-   remaining work is CLI baseline UX, evidence-pack routing, and ECC-Tools
-   backlog sync integration.
+   shipped the GitHub Action baseline outputs and job-summary evidence; PR #64
+   shipped first-class baseline snapshot creation through
+   `agentshield baseline write`; the remaining work is evidence-pack routing
+   and ECC-Tools backlog sync integration.
 2. Enable/configure the merged Linear backlog sync path after workspace issue
    capacity clears or the Linear workspace is upgraded.
 3. Use the ECC-Tools evaluator/RAG corpus as the promotion gate before adding

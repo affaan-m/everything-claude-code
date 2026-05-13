@@ -98,13 +98,14 @@ security posture across time, repos, teams, and harnesses.
 Enterprise buyers need to know whether a repo, team, or agent fleet is getting
 safer or riskier over time. AgentShield has scan logs and baseline comparison
 modules, and PR #63 now exposes that drift through GitHub Action inputs,
-outputs, annotations, and job-summary evidence. The remaining product surface
-should make baseline snapshots, CLI drift summaries, and owner-ready deltas
-explicit.
+outputs, annotations, and job-summary evidence. PR #64 adds first-class
+baseline snapshot creation through `agentshield baseline write`. The remaining
+product surface should make CLI drift summaries, evidence packs, and
+owner-ready deltas explicit.
 
 Target capability:
 
-- `agentshield baseline write --output agentshield-baseline.json`
+- `agentshield baseline write --path .claude --output agentshield-baseline.json`
 - `agentshield scan --baseline agentshield-baseline.json`
 - Report sections for new, fixed, unchanged, suppressed, and policy-excepted
   findings.
