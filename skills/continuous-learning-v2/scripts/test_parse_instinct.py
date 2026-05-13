@@ -45,6 +45,7 @@ _find_cross_project_instincts = _mod._find_cross_project_instincts
 load_registry = _mod.load_registry
 _validate_instinct_id = _mod._validate_instinct_id
 _update_registry = _mod._update_registry
+_confidence_bar = _mod._confidence_bar
 
 
 # ─────────────────────────────────────────────
@@ -640,6 +641,39 @@ def test_cmd_status_with_instincts(patch_globals, monkeypatch, capsys):
     assert "Global instincts:  1" in out
     assert "PROJECT-SCOPED" in out
     assert "GLOBAL" in out
+
+
+def test_confidence_bar_uses_unicode_when_supported():
+    """Confidence bars should retain block glyphs on UTF-8 streams."""
+    stream = SimpleNamespace(encoding="utf-8")
+    assert _confidence_bar(0.8, stream=stream) == "\u2588" * 8 + "\u2591" * 2
+
+
+def test_confidence_bar_uses_ascii_when_stream_rejects_block_glyphs():
+    """Windows cp1252 streams cannot encode block glyphs."""
+    stream = SimpleNamespace(encoding="cp1252")
+    assert _confidence_bar(0.8, stream=stream) == "########.."
+
+
+def test_print_instincts_by_domain_is_cp1252_safe(monkeypatch):
+    """Status rendering should not crash on Windows cp1252 stdout."""
+    raw = io.BytesIO()
+    stream = io.TextIOWrapper(raw, encoding="cp1252")
+    monkeypatch.setattr(_mod.sys, "stdout", stream)
+
+    _mod._print_instincts_by_domain([{
+        "id": "windows-safe",
+        "trigger": "when stdout uses cp1252",
+        "confidence": 0.8,
+        "domain": "platform",
+        "scope": "project",
+    }])
+
+    stream.flush()
+    out = raw.getvalue().decode("cp1252")
+    assert "########.." in out
+    assert "\u2588" not in out
+    assert "\u2591" not in out
 
 
 def test_cmd_status_returns_int(patch_globals, monkeypatch):
