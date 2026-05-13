@@ -34,6 +34,7 @@ jobs:
         run: |
           if [ -f package-lock.json ]; then
             npm ci --ignore-scripts
+            npm audit signatures
             npm audit --audit-level=high
           else
             echo "No package-lock.json found; skipping npm audit"

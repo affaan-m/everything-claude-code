@@ -122,6 +122,21 @@ function run() {
     assert.match(result.stderr, /id-token: write must not restore or save shared dependency caches/);
   })) passed++; else failed++;
 
+  if (test('rejects npm audit without registry signature verification', () => {
+    const result = runValidator({
+      'unsafe-audit.yml': `name: Unsafe\non:\n  push:\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm audit --audit-level=high\n`,
+    });
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail when npm audit signatures is missing');
+    assert.match(result.stderr, /npm audit must also verify registry signatures/);
+  })) passed++; else failed++;
+
+  if (test('allows npm audit when registry signatures are verified', () => {
+    const result = runValidator({
+      'safe-audit.yml': `name: Safe\non:\n  push:\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: |\n          npm audit signatures\n          npm audit --audit-level=high\n`,
+    });
+    assert.strictEqual(result.status, 0, result.stderr || result.stdout);
+  })) passed++; else failed++;
+
   console.log(`\nPassed: ${passed}`);
   console.log(`Failed: ${failed}`);
 

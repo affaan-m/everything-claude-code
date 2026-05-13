@@ -26,6 +26,8 @@ const RULES = [
 
 const WRITE_PERMISSION_PATTERN = /^\s*(?:contents|issues|pull-requests|actions|checks|deployments|discussions|id-token|packages|pages|repository-projects|security-events|statuses):\s*write\b/m;
 const NPM_CI_PATTERN = /\bnpm\s+ci\b(?![^\n]*--ignore-scripts)/g;
+const NPM_AUDIT_PATTERN = /\bnpm\s+audit\b(?!\s+signatures\b)/;
+const NPM_AUDIT_SIGNATURES_PATTERN = /\bnpm\s+audit\s+signatures\b/;
 const ACTIONS_CACHE_PATTERN = /uses:\s*['"]?actions\/cache@/m;
 const ID_TOKEN_WRITE_PATTERN = /^\s*id-token:\s*write\b/m;
 
@@ -124,6 +126,16 @@ function findViolations(filePath, source) {
       description: 'workflows with id-token: write must not restore or save shared dependency caches',
       expression: 'id-token: write + actions/cache',
       line: getLineNumber(source, source.search(ID_TOKEN_WRITE_PATTERN)),
+    });
+  }
+
+  if (NPM_AUDIT_PATTERN.test(source) && !NPM_AUDIT_SIGNATURES_PATTERN.test(source)) {
+    violations.push({
+      filePath,
+      event: 'npm audit signatures',
+      description: 'workflows that run npm audit must also verify registry signatures',
+      expression: 'npm audit without npm audit signatures',
+      line: getLineNumber(source, source.search(NPM_AUDIT_PATTERN)),
     });
   }
 
