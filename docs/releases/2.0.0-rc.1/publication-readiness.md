@@ -10,6 +10,8 @@ For the May 12 dry-run evidence pass, see
 [`publication-evidence-2026-05-12.md`](publication-evidence-2026-05-12.md).
 For the May 13 release-readiness evidence refresh, see
 [`publication-evidence-2026-05-13.md`](publication-evidence-2026-05-13.md).
+For the May 13 post-hardening evidence refresh after PR #1850 and PR #1851, see
+[`publication-evidence-2026-05-13-post-hardening.md`](publication-evidence-2026-05-13-post-hardening.md).
 
 ## Release Identity Matrix
 
@@ -39,6 +41,7 @@ For the May 13 release-readiness evidence refresh, see
 | OpenCode package | Build output is regenerated from source and package metadata is current | `npm run build:opencode` | `Blocker: none for local build; public distribution still follows npm/plugin release` | Package owner | Evidence recorded |
 | ECC Tools billing reference | Any billing claim links to verified Marketplace/App state | `gh api repos/ECC-Tools/ECC-Tools` plus app/marketplace URL check | `Blocker:` | ECC Tools owner | Pending |
 | Announcement copy | X, LinkedIn, GitHub release, and longform copy point to live URLs | `rg -n "TODO" docs/releases/2.0.0-rc.1` and repeat for `TBD` | `Blocker:` | Release owner | Pending |
+| Privileged workflow hardening | Release and maintenance workflows avoid persisted checkout tokens | `node scripts/ci/validate-workflow-security.js` | `Blocker:` | Release owner | Evidence recorded in post-hardening refresh |
 
 ## Required Command Evidence
 
@@ -49,8 +52,8 @@ Record the exact commit SHA and command output before any publication action:
 | Clean release branch | `git status --short --branch` | On intended release commit; no unrelated files | Pending final clean-checkout release pass; May 13 evidence branch still had unrelated untracked `docs/drafts/` |
 | Harness audit | `npm run harness:audit -- --format json` | 70/70 passing | `publication-evidence-2026-05-13.md`: 70/70 |
 | Adapter scorecard | `npm run harness:adapters -- --check` | PASS | `publication-evidence-2026-05-13.md`: PASS, 11 adapters |
-| Observability readiness | `npm run observability:ready` | 16/16 passing | `publication-evidence-2026-05-13.md`: 16/16, ready true |
-| Root suite | `node tests/run-all.js` | 0 failures | `publication-evidence-2026-05-13.md`: 2376 passed, 0 failed |
+| Observability readiness | `npm run observability:ready` | 18/18 passing | `publication-evidence-2026-05-13-post-hardening.md`: 18/18, ready true |
+| Root suite | `node tests/run-all.js` | 0 failures | `publication-evidence-2026-05-13-post-hardening.md`: 2380 passed, 0 failed |
 | Markdown lint | `npx markdownlint-cli '**/*.md' --ignore node_modules` | 0 failures | `publication-evidence-2026-05-13.md`: passed after zh-CN CLAUDE list-marker normalization |
 | Package surface | `node tests/scripts/npm-publish-surface.test.js` | 0 failures; no Python bytecode in npm tarball | `2/2` passed in May 12 evidence pass |
 | Release surface | `node tests/docs/ecc2-release-surface.test.js` | 0 failures | `publication-evidence-2026-05-13.md`: 18/18 passed |

@@ -39,6 +39,12 @@ As of 2026-05-13:
   `docs/security/supply-chain-incident-response.md`, plus a workflow-security
   validator rule blocking `pull_request_target` workflows from restoring or
   saving shared dependency caches.
+- PR #1850 merged as `248673271455e9dc85b8add2a6ab76107b718639` and removed
+  shell access from read-only analyzer agents and zh-CN copies, reducing
+  AgentShield high findings on that surface without changing operator agents.
+- PR #1851 merged as `209abd403b7eaa968c6d4fa67be82e04b55706d6` and made
+  `persist-credentials: false` mandatory for `actions/checkout` in workflows
+  with write permissions.
 - `docs/architecture/harness-adapter-compliance.md` maps Claude Code, Codex,
   OpenCode, Cursor, Gemini, Zed-adjacent, dmux, Orca, Superset, Ghast, and
   terminal-only support to install paths, verification commands, and risk
@@ -61,8 +67,12 @@ As of 2026-05-13:
   release-readiness evidence refresh: 70/70 harness audit, adapter compliance
   PASS, 16/16 observability readiness, 2376/2376 root Node tests, markdownlint,
   release-surface and npm publish-surface tests, and 462/462 `ecc2` Rust tests.
-- After #1848, `node tests/run-all.js` reports 2377/2377 and the current
-  observability gate reports 18/18.
+- `docs/releases/2.0.0-rc.1/publication-evidence-2026-05-13-post-hardening.md`
+  records the post-hardening release-readiness refresh after PR #1850 and
+  PR #1851: 70/70 harness audit, adapter compliance PASS, 18/18 observability
+  readiness, 2380/2380 root Node tests, markdownlint, release-surface and
+  npm publish-surface tests, 462/462 `ecc2` Rust tests, npm audit/signature
+  checks, Rust advisory audit, and TanStack/Mini Shai-Hulud IOC checks.
 - A detached clean worktree at
   `bfacf37715b39655cbc2c48f12f2a35c67cb0253` verified Claude plugin tag
   dry-run without `--force`, local marketplace discovery, temp-home local
@@ -225,10 +235,10 @@ is not complete unless the evidence column exists and has been freshly verified.
 
 | Prompt requirement | Required artifact or gate | Current evidence | Status |
 | --- | --- | --- | --- |
-| Keep public PRs below 20 | Repo-family PR recheck | 0 open PRs across the tracked public repos on 2026-05-13 after merging #1848 | Complete for this checkpoint |
+| Keep public PRs below 20 | Repo-family PR recheck | 0 open PRs across the tracked public repos on 2026-05-13 after merging #1851 | Complete for this checkpoint |
 | Keep public issues below 20 | Repo-family issue recheck | 0 open issues across the tracked public repos on 2026-05-13 | Complete for this checkpoint |
 | Manage repository discussions | Repo-family discussion recheck | Latest trunk discussion GraphQL sweep returned closed discussions only; satellite repos remain disabled or empty | Complete for this checkpoint |
-| Manage PR discussions | PR review/comment closure plus merge/close state | #1848 merged after current-head CI; no open PRs remain | Complete for this checkpoint |
+| Manage PR discussions | PR review/comment closure plus merge/close state | #1851 merged after current-head CI; no open PRs remain | Complete for this checkpoint |
 | Salvage useful stale work | `docs/stale-pr-salvage-ledger.md` | Ledger records salvaged, superseded, skipped, and manual-review tails; #1815-#1818 added cost tracking, skill scout, frontend design guidance, code-reviewer false-positive guardrails, and the May 12 gap pass | Complete except translation/manual review tail |
 | ECC 2.0 preview pack ready | Release docs, quickstart, publication readiness, release notes | `docs/releases/2.0.0-rc.1/` and readiness docs are in-tree; May 13 evidence refresh records harness, adapter, observability, Node, lint, release-surface, npm publish-surface, and Rust checks | Needs final clean-checkout release approval |
 | Hermes specialized skills included safely | Hermes setup/import docs and sanitized skill surface | Hermes setup and import playbook are public; secrets stay local | Needs final release review |
@@ -237,7 +247,7 @@ is not complete unless the evidence column exists and has been freshly verified.
 | Articles, tweets, and announcements | X thread, LinkedIn copy, GitHub release copy, push checklist | Draft launch collateral exists under rc.1 release docs | Needs URL-backed refresh |
 | AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports, exception lifecycle audit, baseline drift Action/CLI surfaces, enterprise research roadmap | PRs #53, #55-#64 landed with test evidence; native PDF export deferred in favor of self-contained HTML plus print-to-PDF until explicit enterprise demand appears; `docs/architecture/agentshield-enterprise-research-roadmap.md` selects baseline drift as the first control-plane slice | Baseline-drift Action and CLI write surfaces landed; evidence-pack routing remains |
 | ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog, evaluator/RAG corpus | PRs #26-#40 landed with test evidence | Needs capacity-backed Linear rollout |
-| GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy, deterministic follow-up checks, and local supply-chain gates | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, Analyzer Corpus Evidence, RAG/Evaluator Evidence, and PR Review/Salvage Evidence; #1846 added npm registry signature gates; #1848 added the supply-chain incident-response playbook and `pull_request_target` cache-poisoning validator guard | Partially complete |
+| GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy, deterministic follow-up checks, and local supply-chain gates | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, Analyzer Corpus Evidence, RAG/Evaluator Evidence, and PR Review/Salvage Evidence; #1846 added npm registry signature gates; #1848 added the supply-chain incident-response playbook and `pull_request_target` cache-poisoning validator guard; #1851 added the privileged checkout credential-persistence guard | Partially complete |
 | Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates plus `docs/architecture/evaluator-rag-prototype.md`, `examples/evaluator-rag-prototype/`, and ECC-Tools PR #40 define read-only stale-salvage, billing-readiness, CI-failure-diagnosis, harness-config-quality, AgentShield policy-exception, skill-quality evidence, deep-analyzer evidence, and RAG/evaluator comparison scenarios with trace, report, playbook, verifier, and predictive-check artifacts | Local corpus complete; hosted integration remains future |
 | Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation was retried on 2026-05-12 and remains blocked by the workspace free issue limit | Needs recurring status updates after each merge batch |
 | Flow separation and progress tracking | Flow lanes with owner artifacts and update cadence | This roadmap defines lanes below and `docs/architecture/progress-sync-contract.md` makes GitHub/Linear/handoff/roadmap sync part of the readiness gate | Active |
