@@ -462,7 +462,7 @@ test('.opencode/package-lock.json root version matches package.json', () => {
 
 test('README version row matches package.json', () => {
   const readme = fs.readFileSync(path.join(repoRoot, 'README.md'), 'utf8');
-  const match = readme.match(new RegExp(`^\\| \\*\\*Version\\*\\* \\| Plugin \\| Plugin \\| Reference config \\| (${semverPattern}) \\|$`, 'm'));
+  const match = readme.match(new RegExp(`^\\| \\*\\*Version\\*\\* \\| Plugin \\| Plugin \\| Reference config \\| (${semverPattern}) \\|(?: Instruction layer \\|)?$`, 'm'));
   assert.ok(match, 'Expected README version summary row');
   assert.strictEqual(match[1], expectedVersion);
 });

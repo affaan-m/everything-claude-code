@@ -136,17 +136,17 @@ function parseReadmeExpectations(readmeContent) {
   const parityPatterns = [
     {
       category: 'agents',
-      regex: /^\|\s*(?:\*\*)?Agents(?:\*\*)?\s*\|\s*(\d+)\s*\|\s*Shared\s*\(AGENTS\.md\)\s*\|\s*Shared\s*\(AGENTS\.md\)\s*\|\s*12\s*\|$/im,
+      regex: /^\|\s*(?:\*\*)?Agents(?:\*\*)?\s*\|\s*(\d+)\s*\|\s*Shared\s*\(AGENTS\.md\)\s*\|\s*Shared\s*\(AGENTS\.md\)\s*\|\s*12\s*\|(?:\s*N\/A\s*\|)?$/im,
       source: 'README.md parity table'
     },
     {
       category: 'commands',
-      regex: /^\|\s*(?:\*\*)?Commands(?:\*\*)?\s*\|\s*(\d+)\s*\|\s*Shared\s*\|\s*Instruction-based\s*\|\s*\d+\s*\|$/im,
+      regex: /^\|\s*(?:\*\*)?Commands(?:\*\*)?\s*\|\s*(\d+)\s*\|\s*Shared\s*\|\s*Instruction-based\s*\|\s*\d+\s*\|(?:\s*\d+\s+prompts\s*\|)?$/im,
       source: 'README.md parity table'
     },
     {
       category: 'skills',
-      regex: /^\|\s*(?:\*\*)?Skills(?:\*\*)?\s*\|\s*(\d+)\s*\|\s*Shared\s*\|\s*10\s*\(native format\)\s*\|\s*37\s*\|$/im,
+      regex: /^\|\s*(?:\*\*)?Skills(?:\*\*)?\s*\|\s*(\d+)\s*\|\s*Shared\s*\|\s*10\s*\(native format\)\s*\|\s*37\s*\|(?:\s*Via instructions\s*\|)?$/im,
       source: 'README.md parity table'
     }
   ];
@@ -441,19 +441,19 @@ function syncEnglishReadme(content, catalog) {
   );
   nextContent = replaceOrThrow(
     nextContent,
-    /^(\|\s*(?:\*\*)?Agents(?:\*\*)?\s*\|\s*)(\d+)(\s*\|\s*Shared\s*\(AGENTS\.md\)\s*\|\s*Shared\s*\(AGENTS\.md\)\s*\|\s*12\s*\|)$/im,
+    /^(\|\s*(?:\*\*)?Agents(?:\*\*)?\s*\|\s*)(\d+)(\s*\|\s*Shared\s*\(AGENTS\.md\)\s*\|\s*Shared\s*\(AGENTS\.md\)\s*\|\s*12\s*\|(?:\s*N\/A\s*\|)?)$/im,
     (_, prefix, __, suffix) => `${prefix}${catalog.agents.count}${suffix}`,
     'README.md parity table (agents)'
   );
   nextContent = replaceOrThrow(
     nextContent,
-    /^(\|\s*(?:\*\*)?Commands(?:\*\*)?\s*\|\s*)(\d+)(\s*\|\s*Shared\s*\|\s*Instruction-based\s*\|\s*\d+\s*\|)$/im,
+    /^(\|\s*(?:\*\*)?Commands(?:\*\*)?\s*\|\s*)(\d+)(\s*\|\s*Shared\s*\|\s*Instruction-based\s*\|\s*\d+\s*\|(?:\s*\d+\s+prompts\s*\|)?)$/im,
     (_, prefix, __, suffix) => `${prefix}${catalog.commands.count}${suffix}`,
     'README.md parity table (commands)'
   );
   nextContent = replaceOrThrow(
     nextContent,
-    /^(\|\s*(?:\*\*)?Skills(?:\*\*)?\s*\|\s*)(\d+)(\s*\|\s*Shared\s*\|\s*10\s*\(native format\)\s*\|\s*37\s*\|)$/im,
+    /^(\|\s*(?:\*\*)?Skills(?:\*\*)?\s*\|\s*)(\d+)(\s*\|\s*Shared\s*\|\s*10\s*\(native format\)\s*\|\s*37\s*\|(?:\s*Via instructions\s*\|)?)$/im,
     (_, prefix, __, suffix) => `${prefix}${catalog.skills.count}${suffix}`,
     'README.md parity table (skills)'
   );
