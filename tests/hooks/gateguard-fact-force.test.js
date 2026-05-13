@@ -1143,6 +1143,145 @@ function runTests() {
       'second subagent edit should pass even on a new file');
   })) passed++; else failed++;
 
+  // --- Shell-words tokenizer: bypasses the old regex missed ---
+
+  function expectDestructiveDeny(command, label) {
+    clearState();
+    const input = { tool_name: 'Bash', tool_input: { command } };
+    const result = runBashHook(input);
+    assert.strictEqual(result.code, 0, `${label}: exit code should be 0`);
+    const output = parseOutput(result.stdout);
+    assert.ok(output, `${label}: should produce JSON output`);
+    assert.strictEqual(output.hookSpecificOutput.permissionDecision, 'deny', `${label}: should deny`);
+    assert.ok(output.hookSpecificOutput.permissionDecisionReason.includes('Destructive'),
+      `${label}: reason should mention "Destructive"`);
+  }
+
+  function expectAllow(command, label) {
+    clearState();
+    writeState({ checked: ['__bash_session__'], last_active: Date.now() });
+    const input = { tool_name: 'Bash', tool_input: { command } };
+    const result = runBashHook(input);
+    assert.strictEqual(result.code, 0, `${label}: exit code should be 0`);
+    const output = parseOutput(result.stdout);
+    assert.ok(output, `${label}: should produce JSON output`);
+    if (output.hookSpecificOutput) {
+      assert.notStrictEqual(output.hookSpecificOutput.permissionDecision, 'deny', `${label}: should not deny`);
+    } else {
+      assert.strictEqual(output.tool_name, 'Bash', `${label}: pass-through should preserve input`);
+    }
+  }
+
+  if (test('denies short-form git push -f as destructive', () => {
+    expectDestructiveDeny('git push -f origin main', 'git push -f');
+  })) passed++; else failed++;
+
+  if (test('denies git reset --hard even with intervening -c global option', () => {
+    expectDestructiveDeny('git -c core.foo=bar reset --hard', 'git -c ... reset --hard');
+  })) passed++; else failed++;
+
+  if (test('denies rm -fr (reverse flag order)', () => {
+    expectDestructiveDeny('rm -fr /tmp/junk', 'rm -fr');
+  })) passed++; else failed++;
+
+  if (test('denies rm -r -f (split flag form)', () => {
+    expectDestructiveDeny('rm -r -f /tmp/junk', 'rm -r -f');
+  })) passed++; else failed++;
+
+  if (test('denies rm --recursive --force (long flag form)', () => {
+    expectDestructiveDeny('rm --recursive --force /tmp/junk', 'rm --recursive --force');
+  })) passed++; else failed++;
+
+  if (test('denies git reset HEAD --hard (with intervening ref)', () => {
+    expectDestructiveDeny('git reset HEAD --hard', 'git reset HEAD --hard');
+  })) passed++; else failed++;
+
+  if (test('denies git clean -fd (combined force+dirs flag)', () => {
+    expectDestructiveDeny('git clean -fd', 'git clean -fd');
+  })) passed++; else failed++;
+
+  if (test('denies destructive command in second chained segment', () => {
+    expectDestructiveDeny('echo y | rm -rf /tmp/junk', 'echo y | rm -rf');
+  })) passed++; else failed++;
+
+  if (test('denies destructive command inside command substitution', () => {
+    expectDestructiveDeny('echo $(rm -rf /tmp/junk)', 'rm -rf inside $()');
+  })) passed++; else failed++;
+
+  if (test('denies destructive command inside backticks', () => {
+    expectDestructiveDeny('echo `git push -f origin main`', 'git push -f inside backticks');
+  })) passed++; else failed++;
+
+  if (test('allows destructive phrase quoted inside a commit message', () => {
+    expectAllow('git commit -m "fix: rm -rf race in worker"', 'rm -rf in -m');
+  })) passed++; else failed++;
+
+  if (test('allows SQL phrase quoted inside a commit message', () => {
+    expectAllow('git commit -m "docs: explain when drop table is safe"', 'drop table in -m');
+  })) passed++; else failed++;
+
+  if (test('allows git push --force-if-includes as a safety-checked variant', () => {
+    expectAllow('git push --force-with-lease --force-if-includes origin main',
+      'git push --force-if-includes');
+  })) passed++; else failed++;
+
+  // --- Review-round-2 findings ---
+
+  if (test('denies git push --force even with --force-if-includes present', () => {
+    expectDestructiveDeny('git push --force --force-if-includes origin main',
+      'git push --force --force-if-includes');
+  })) passed++; else failed++;
+
+  if (test('denies git push when bare --force is mixed with lease flags', () => {
+    expectDestructiveDeny('git push --force-with-lease --force origin main',
+      'git push --force-with-lease --force');
+  })) passed++; else failed++;
+
+  if (test('denies git push with +refspec prefix (bare branch)', () => {
+    expectDestructiveDeny('git push origin +main', 'git push origin +main');
+  })) passed++; else failed++;
+
+  if (test('denies git push with +refspec prefix (full ref)', () => {
+    expectDestructiveDeny('git push origin +refs/heads/main:refs/heads/main',
+      'git push origin +refs/heads/main:refs/heads/main');
+  })) passed++; else failed++;
+
+  if (test('denies git switch --discard-changes', () => {
+    expectDestructiveDeny('git switch --discard-changes feature',
+      'git switch --discard-changes');
+  })) passed++; else failed++;
+
+  if (test('denies git switch --force', () => {
+    expectDestructiveDeny('git switch --force main', 'git switch --force');
+  })) passed++; else failed++;
+
+  if (test('denies git switch -f short form', () => {
+    expectDestructiveDeny('git switch -f main', 'git switch -f');
+  })) passed++; else failed++;
+
+  if (test('denies git switch -C force-create', () => {
+    expectDestructiveDeny('git switch -C feature', 'git switch -C');
+  })) passed++; else failed++;
+
+  if (test('still allows plain git switch', () => {
+    expectAllow('git switch feature', 'git switch feature');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf nested inside a backtick subshell', () => {
+    expectDestructiveDeny('echo y | `rm -rf /tmp/junk`',
+      'backtick subshell');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf nested inside a $(...) subshell', () => {
+    expectDestructiveDeny('echo y | $(rm -rf /tmp/junk)',
+      'dollar-paren subshell');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf inside double-quoted command substitution', () => {
+    expectDestructiveDeny('echo "$(rm -rf /tmp/junk)"',
+      'double-quoted dollar-paren subshell');
+  })) passed++; else failed++;
+
   // Cleanup only the temp directory created by this test file.
   try {
     if (fs.existsSync(stateDir)) {
