@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Systematically diagnose and fix build errors, type errors, or failing CI
 ---
 

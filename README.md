@@ -1480,6 +1480,7 @@ ECC provides **GitHub Copilot support** for VS Code via Copilot Chat's native in
 ### Quick Start (GitHub Copilot)
 
 The files are already in place — open any repo that contains this project and GitHub Copilot Chat will automatically pick up `.github/copilot-instructions.md`.
+The committed `.vscode/settings.json` enables `chat.promptFiles` so VS Code can load the reusable prompts from `.github/prompts/`.
 
 To use the workflow prompts in Copilot Chat:
 1. Open the Copilot Chat panel in VS Code.

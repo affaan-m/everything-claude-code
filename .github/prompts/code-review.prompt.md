@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Comprehensive code quality and security review of the selected code or recent changes
 ---
 

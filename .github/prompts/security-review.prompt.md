@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Deep security analysis — OWASP Top 10, secrets, auth, injection, and dependency risks
 ---
 
@@ -63,8 +63,8 @@ Issue: [what is wrong and why it is dangerous]
 Fix: [concrete remediation]
 
 ## Summary
-- Critical: N  
-- High: N  
-- Medium: N  
+- Critical: N
+- High: N
+- Medium: N
 - Safe to ship: yes / no
 ```
