@@ -16,13 +16,14 @@ so the live execution truth is split across:
 
 As of 2026-05-13:
 
-- Public GitHub queues are clean across `affaan-m/everything-claude-code`,
-  `affaan-m/agentshield`, and `affaan-m/JARVIS`. `ECC-Tools/ECC-Tools` and
-  `ECC-Tools/ECC-website` remain locally checked but are not currently visible
-  through the active GitHub token.
-- Public GitHub discussions are also clean across those tracked repos:
-  the latest GraphQL sweep found only closed discussions on the trunk
-  discussion surface, and satellite discussion surfaces are disabled or empty.
+- GitHub queues are clean across `affaan-m/everything-claude-code`,
+  `affaan-m/agentshield`, `affaan-m/JARVIS`, `ECC-Tools/ECC-Tools`, and
+  `ECC-Tools/ECC-website`: the latest sweep found 0 open PRs and 0 open
+  issues across all five repos.
+- GitHub discussions are also clean across those tracked repos:
+  the latest GraphQL sweep found 52 total trunk discussions with 0 open,
+  and 0 total/open discussions on AgentShield, JARVIS, ECC-Tools, and the
+  ECC-Tools website.
 - The final open public GitHub issue, #1314, was closed as a non-actionable
   external badge/listing notification with a courtesy comment.
 - Linear issue creation for this project was re-tested after GitHub cleanup and
@@ -56,6 +57,9 @@ As of 2026-05-13:
   and hardened CI/deploy workflows with npm registry signature verification,
   disabled persisted checkout credentials in write-permission jobs, and pinned
   the Vercel CLI install instead of using `latest`.
+- ECC-Tools PR #53 merged as `99018e943d03f024de8c9d278c91f66393d4f1ee`
+  and added npm registry signature verification before the existing production
+  dependency audit in CI.
 - Handoff `ecc-supply-chain-audit-20260513-0645.md` under
   `~/.cluster-swarm/handoffs/`
   records the May 13 supply-chain sweep: no active lockfile/manifest hit for
@@ -63,13 +67,10 @@ As of 2026-05-13:
   active npm lockfiles; `cargo audit` clean for `ecc2`; trunk `pip-audit`
   clean; JARVIS backend pinned-graph Python audit clean under the supported
   Python 3.12 target.
-- Local PR #1861 validation refreshed `node scripts/harness-audit.js --format json`
+- PR #1861 validation refreshed `node scripts/harness-audit.js --format json`
   at 70/70 and `npm run observability:ready` at 21/21.
-- `ECC-Tools` has a local-only hardening branch
-  `supply-chain-workflow-hardening-20260513` at `1090236` that adds
-  `npm audit signatures` before `npm audit --omit=dev --audit-level=high`.
-  Publishing is blocked because the current token cannot resolve or push
-  `ECC-Tools/ECC-Tools`.
+- PR #1862 updated this roadmap after the JARVIS backend Python audit was
+  re-run against the supported Python 3.12 pinned graph.
 - `docs/architecture/harness-adapter-compliance.md` maps Claude Code, Codex,
   OpenCode, Cursor, Gemini, Zed-adjacent, dmux, Orca, Superset, Ghast, and
   terminal-only support to install paths, verification commands, and risk
@@ -284,10 +285,10 @@ is not complete unless the evidence column exists and has been freshly verified.
 
 | Prompt requirement | Required artifact or gate | Current evidence | Status |
 | --- | --- | --- | --- |
-| Keep public PRs below 20 | Repo-family PR recheck | 0 open PRs across accessible `everything-claude-code`, AgentShield, and JARVIS repos on 2026-05-13 after merging ECC #1860, AgentShield #78, and JARVIS #13; `ECC-Tools/*` visibility is blocked by token scope | Complete for accessible repos; blocked for `ECC-Tools/*` |
-| Keep public issues below 20 | Repo-family issue recheck | 0 open issues across accessible `everything-claude-code`, AgentShield, and JARVIS repos on 2026-05-13 | Complete for accessible repos; blocked for `ECC-Tools/*` |
-| Manage repository discussions | Repo-family discussion recheck | Trunk open-discussion GraphQL sweep returned 0 open discussions; satellite discussion surfaces are disabled or empty where accessible | Complete for accessible repos |
-| Manage PR discussions | PR review/comment closure plus merge/close state | ECC #1860, AgentShield #78, and JARVIS #13 merged after current-head CI; no open accessible PRs remain | Complete for accessible repos |
+| Keep public PRs below 20 | Repo-family PR recheck | 0 open PRs across `everything-claude-code`, AgentShield, JARVIS, `ECC-Tools/ECC-Tools`, and `ECC-Tools/ECC-website` on 2026-05-13 after merging ECC #1860, AgentShield #78, JARVIS #13, and ECC-Tools #53 | Complete |
+| Keep public issues below 20 | Repo-family issue recheck | 0 open issues across `everything-claude-code`, AgentShield, JARVIS, `ECC-Tools/ECC-Tools`, and `ECC-Tools/ECC-website` on 2026-05-13 | Complete |
+| Manage repository discussions | Repo-family discussion recheck | GraphQL sweep returned 52 total trunk discussions with 0 open; AgentShield, JARVIS, ECC-Tools, and ECC-Tools website returned 0 total/open discussions | Complete |
+| Manage PR discussions | PR review/comment closure plus merge/close state | ECC #1860, AgentShield #78, JARVIS #13, and ECC-Tools #53 merged after current-head CI/builds; no open tracked PRs remain | Complete |
 | Salvage useful stale work | `docs/stale-pr-salvage-ledger.md` | Ledger records salvaged, superseded, skipped, and manual-review tails; #1815-#1818 added cost tracking, skill scout, frontend design guidance, code-reviewer false-positive guardrails, and the May 12 gap pass | Complete except translation/manual review tail |
 | ECC 2.0 preview pack ready | Release docs, quickstart, publication readiness, release notes | `docs/releases/2.0.0-rc.1/` and readiness docs are in-tree; May 13 evidence refresh records harness, adapter, observability, Node, lint, release-surface, npm publish-surface, and Rust checks | Needs final clean-checkout release approval |
 | Hermes specialized skills included safely | Hermes setup/import docs and sanitized skill surface | Hermes setup and import playbook are public; secrets stay local | Needs final release review |
@@ -296,9 +297,9 @@ is not complete unless the evidence column exists and has been freshly verified.
 | Articles, tweets, and announcements | X thread, LinkedIn copy, GitHub release copy, push checklist | Draft launch collateral exists under rc.1 release docs | Needs URL-backed refresh |
 | AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports, exception lifecycle audit, baseline drift Action/CLI surfaces, evidence-pack redaction, harness adapter registry, enterprise research roadmap, supply-chain hardened release path | PRs #53, #55-#64, #67-#69, and #78 landed with test evidence; native PDF export deferred in favor of self-contained HTML plus print-to-PDF until explicit enterprise demand appears; `docs/architecture/agentshield-enterprise-research-roadmap.md` now has baseline drift, evidence-pack bundle, redaction, and adapter-registry slices landed | Next corpus accuracy gate or remediation/fingerprint workflow |
 | ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog, evaluator/RAG corpus | PRs #26-#43 landed with test evidence, including AgentShield evidence-pack gap routing and canonical bundle recognition | Needs capacity-backed Linear rollout |
-| GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy, deterministic follow-up checks, and local supply-chain gates | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, Analyzer Corpus Evidence, RAG/Evaluator Evidence, PR Review/Salvage Evidence, and AgentShield evidence-pack evidence; #1846 added npm registry signature gates; #1848 added the supply-chain incident-response playbook and `pull_request_target` cache-poisoning validator guard; #1851 added the privileged checkout credential-persistence guard; AgentShield #78 and JARVIS #13 applied the same hardening outside trunk; ECC-Tools has the matching local commit blocked on org access | Partially complete |
+| GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy, deterministic follow-up checks, and local supply-chain gates | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, Analyzer Corpus Evidence, RAG/Evaluator Evidence, PR Review/Salvage Evidence, and AgentShield evidence-pack evidence; #1846 added npm registry signature gates; #1848 added the supply-chain incident-response playbook and `pull_request_target` cache-poisoning validator guard; #1851 added the privileged checkout credential-persistence guard; AgentShield #78, JARVIS #13, and ECC-Tools #53 applied the same hardening outside trunk | Current supply-chain gate complete; deeper hosted review features remain future |
 | Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates plus `docs/architecture/evaluator-rag-prototype.md`, `examples/evaluator-rag-prototype/`, and ECC-Tools PR #40 define read-only stale-salvage, billing-readiness, CI-failure-diagnosis, harness-config-quality, AgentShield policy-exception, skill-quality evidence, deep-analyzer evidence, and RAG/evaluator comparison scenarios with trace, report, playbook, verifier, and predictive-check artifacts | Local corpus complete; hosted integration remains future |
-| Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation was retried on 2026-05-12 and remains blocked by the workspace free issue limit; this May 13 sync adds ECC #1860, AgentShield #78, JARVIS #13, and the blocked ECC-Tools supply-chain branch | Needs recurring status updates after each merge batch |
+| Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation was retried on 2026-05-12 and remains blocked by the workspace free issue limit; this May 13 sync adds ECC #1860, AgentShield #78, JARVIS #13, ECC-Tools #53, and the resolved queue/discussion counts | Needs recurring status updates after each merge batch |
 | Flow separation and progress tracking | Flow lanes with owner artifacts and update cadence | This roadmap defines lanes below and `docs/architecture/progress-sync-contract.md` makes GitHub/Linear/handoff/roadmap sync part of the readiness gate | Active |
 | Realtime Linear sync | Project updates while issue limit is blocked; issues later | ECC-Tools #39 implements opt-in Linear API sync for deferred follow-up backlog items; `docs/architecture/progress-sync-contract.md` defines the local file-backed realtime boundary while issue capacity is blocked | Needs workspace capacity/config rollout |
 | Observability for self-use | Local readiness gate, traces, status snapshots, HUD/status contract, risk ledger, progress-sync contract | `npm run observability:ready` reports 21/21 | Complete for local gate |
@@ -319,7 +320,7 @@ repo evidence and merge commits.
 | Harness OS core | Audit, adapter matrix, observability docs, `ecc2/` | HUD/session-control acceptance spec | Weekly until GA |
 | Evaluation and RAG | Reference-set validation, harness audit, traces, ECC-Tools corpus | Read-only evaluator/RAG prototype plus stale-salvage, billing-readiness, CI-failure-diagnosis, harness-config-quality, AgentShield policy-exception, skill-quality evidence, deep-analyzer evidence, and RAG/evaluator comparison fixtures | Hosted retrieval/check-run automation plan |
 | AgentShield enterprise | AgentShield PR evidence and roadmap notes | Adapter registry or corpus accuracy gate follow-up | Next implementation batch |
-| ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy, evaluator/RAG corpus | Publish blocked `supply-chain-workflow-hardening-20260513`, then capacity-backed Linear rollout plus hosted/deeper analysis follow-up | Next implementation batch |
+| ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy, evaluator/RAG corpus | ECC-Tools #53 published the supply-chain workflow hardening branch; next work is capacity-backed Linear rollout plus hosted/deeper analysis follow-up | Next implementation batch |
 | Linear progress | Linear project status updates, `docs/architecture/progress-sync-contract.md`, and this mirror | Status update with queue/evidence/missing gates | Every significant merge batch |
 
 The project status update should always include:
@@ -529,9 +530,9 @@ Acceptance:
    supply-chain incident class; and ECC-Tools PRs #42/#43 now route and
    recognize evidence packs. The next slice is either the corpus accuracy gate
    or remediation/fingerprint workflow.
-2. Restore `ECC-Tools/ECC-Tools` write visibility and publish the local
-   `supply-chain-workflow-hardening-20260513` branch, which is already locally
-   validated and committed at `1090236`.
+2. Keep ECC-Tools #53's supply-chain workflow gate in the recurring queue
+   evidence and use the org-scoped GitHub auth path for future ECC-Tools
+   maintenance while the narrow environment token remains active.
 3. Enable/configure the merged Linear backlog sync path after workspace issue
    capacity clears or the Linear workspace is upgraded.
 4. Use the ECC-Tools evaluator/RAG corpus as the promotion gate before adding
