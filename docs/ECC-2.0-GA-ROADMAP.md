@@ -90,6 +90,11 @@ As of 2026-05-13:
   analysis-depth readiness into concrete hosted jobs for CI diagnostics,
   security evidence review, harness compatibility, reference-set evaluation,
   AI routing/cost review, and team backlog routing.
+- ECC-Tools PR #57 merged as `4cc61112a4cc9feec7b07af09321f360e34af6a4`
+  and added the first executable hosted analysis job:
+  `/api/analysis/jobs/ci-diagnostics` now gates on CI/CD readiness, inspects
+  workflow/test-runner/failure-evidence artifacts, returns CI hardening
+  findings and next actions, and charges usage only after successful execution.
 - Handoff `ecc-supply-chain-audit-20260513-0645.md` under
   `~/.cluster-swarm/handoffs/`
   records the May 13 supply-chain sweep: no active lockfile/manifest hit for
@@ -281,6 +286,10 @@ As of 2026-05-13:
 - ECC-Tools PR #56 turned that signal into a hosted execution-plan contract:
   `/api/analysis/depth-plan` returns ready/blocked jobs and next action text
   without charging analysis usage or creating bundle PRs.
+- ECC-Tools PR #57 implemented the first job-specific hosted executor:
+  `/api/analysis/jobs/ci-diagnostics` reuses the depth-readiness gate, internal
+  API auth, installation ownership, repo-access billing checks, capped workflow
+  file reads, and usage accounting to return concrete CI hardening findings.
 - ECC PR #1803 landed the contributor Quarkus handling branch after maintainer
   cleanup, current-`main` alignment, full local validation, and preservation of
   the author's removal of incomplete ja-JP and zh-CN Quarkus translations.
@@ -334,10 +343,10 @@ is not complete unless the evidence column exists and has been freshly verified.
 | Claude and Codex plugin publication | Contact/submission path with required artifacts and status | Publication readiness, naming matrix, and May 12 dry-run evidence document plugin validation, clean-checkout Claude tag/install smoke, and Codex marketplace CLI shape | Needs explicit approval for real tag/push and marketplace submission |
 | Articles, tweets, and announcements | X thread, LinkedIn copy, GitHub release copy, push checklist | Draft launch collateral exists under rc.1 release docs | Needs URL-backed refresh |
 | AgentShield enterprise iteration | Policy gates, SARIF, packs, provenance, corpus, HTML reports, exception lifecycle audit, baseline drift Action/CLI surfaces, evidence-pack redaction, harness adapter registry, enterprise research roadmap, supply-chain hardened release path, CI-safe baseline fingerprints, corpus accuracy recommendations, remediation workflow phases, env proxy hijack corpus coverage | PRs #53, #55-#64, #67-#69, and #78-#82 landed with test evidence; native PDF export deferred in favor of self-contained HTML plus print-to-PDF until explicit enterprise demand appears; `docs/architecture/agentshield-enterprise-research-roadmap.md` now has baseline drift, evidence-pack bundle, redaction, adapter-registry, supply-chain hardening, hashed baseline fingerprints, corpus accuracy recommendation, remediation workflow, and env proxy hijack corpus slices landed | Next hosted evidence-pack workflow depth |
-| ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog, evaluator/RAG corpus, analysis-depth readiness, hosted execution planning | PRs #26-#43 plus #53-#56 landed with test evidence, including AgentShield evidence-pack gap routing, canonical bundle recognition, supply-chain signature gates, PR draft follow-up Linear tracking, evidence-backed/deep-ready repository classification, and the `/api/analysis/depth-plan` hosted job plan | Needs job-specific worker execution for the hosted recommendation lanes |
+| ECC Tools next-level app | Billing audit, PR checks, deep analyzer, sync backlog, evaluator/RAG corpus, analysis-depth readiness, hosted execution planning, hosted CI diagnostics | PRs #26-#43 plus #53-#57 landed with test evidence, including AgentShield evidence-pack gap routing, canonical bundle recognition, supply-chain signature gates, PR draft follow-up Linear tracking, evidence-backed/deep-ready repository classification, the `/api/analysis/depth-plan` hosted job plan, and the first executable `/api/analysis/jobs/ci-diagnostics` hosted worker | Needs the remaining hosted worker executors for security evidence, harness compatibility, reference-set evaluation, AI routing/cost, and team backlog routing |
 | GitGuardian/Dependabot/CodeRabbit-style checks | Non-blocking taxonomy, deterministic follow-up checks, and local supply-chain gates | ECC-Tools risk taxonomy check plus follow-up signals landed, including Skill Quality, Deep Analyzer Evidence, Analyzer Corpus Evidence, RAG/Evaluator Evidence, PR Review/Salvage Evidence, and AgentShield evidence-pack evidence; #1846 added npm registry signature gates; #1848 added the supply-chain incident-response playbook and `pull_request_target` cache-poisoning validator guard; #1851 added the privileged checkout credential-persistence guard; AgentShield #78, JARVIS #13, and ECC-Tools #53 applied the same hardening outside trunk | Current supply-chain gate complete; deeper hosted review features remain future |
 | Harness-agnostic learning system | Audit, adapter matrix, observability, traces, promotion loop | Audit/adapters/observability gates plus `docs/architecture/evaluator-rag-prototype.md`, `examples/evaluator-rag-prototype/`, and ECC-Tools PR #40 define read-only stale-salvage, billing-readiness, CI-failure-diagnosis, harness-config-quality, AgentShield policy-exception, skill-quality evidence, deep-analyzer evidence, and RAG/evaluator comparison scenarios with trace, report, playbook, verifier, and predictive-check artifacts | Local corpus complete; hosted integration remains future |
-| Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation was retried on 2026-05-12 and remains blocked by the workspace free issue limit; this May 13 sync adds ECC #1860, AgentShield #78-#82, JARVIS #13, ECC-Tools #53-#56, resolved queue/discussion counts, and Linear project status updates through ECC-Tools #55 | Needs recurring status updates after each merge batch |
+| Linear roadmap is detailed | Linear project status plus repo mirror | Repo mirror exists; issue creation was retried on 2026-05-12 and remains blocked by the workspace free issue limit; this May 13 sync adds ECC #1860, AgentShield #78-#82, JARVIS #13, ECC-Tools #53-#57, resolved queue/discussion counts, and Linear project status updates through ECC-Tools #56 | Needs recurring status updates after each merge batch |
 | Flow separation and progress tracking | Flow lanes with owner artifacts and update cadence | This roadmap defines lanes below and `docs/architecture/progress-sync-contract.md` makes GitHub/Linear/handoff/roadmap sync part of the readiness gate | Active |
 | Realtime Linear sync | Project updates while issue limit is blocked; issues later | ECC-Tools #39 implements opt-in Linear API sync for deferred follow-up backlog items, and ECC-Tools #54 adds copy-ready PR drafts to that backlog when draft PR shells are not opened; `docs/architecture/progress-sync-contract.md` defines the local file-backed realtime boundary while issue capacity is blocked | Needs workspace capacity/config rollout |
 | Observability for self-use | Local readiness gate, traces, status snapshots, HUD/status contract, risk ledger, progress-sync contract | `npm run observability:ready` reports 21/21 | Complete for local gate |
@@ -358,7 +367,7 @@ repo evidence and merge commits.
 | Harness OS core | Audit, adapter matrix, observability docs, `ecc2/` | HUD/session-control acceptance spec | Weekly until GA |
 | Evaluation and RAG | Reference-set validation, harness audit, traces, ECC-Tools corpus | Read-only evaluator/RAG prototype plus stale-salvage, billing-readiness, CI-failure-diagnosis, harness-config-quality, AgentShield policy-exception, skill-quality evidence, deep-analyzer evidence, and RAG/evaluator comparison fixtures | Hosted retrieval/check-run automation plan |
 | AgentShield enterprise | AgentShield PR evidence and roadmap notes | Remediation workflow depth or corpus expansion follow-up | Next implementation batch |
-| ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy, evaluator/RAG corpus | ECC-Tools #53 published the supply-chain workflow hardening branch, #54 tracks copy-ready PR drafts in the Linear/project backlog, #55 classifies analysis-depth readiness, and #56 exposes the hosted execution plan; next work is job-specific hosted execution | Next implementation batch |
+| ECC Tools app | ECC-Tools PR evidence, billing audit, risk taxonomy, evaluator/RAG corpus | ECC-Tools #53 published the supply-chain workflow hardening branch, #54 tracks copy-ready PR drafts in the Linear/project backlog, #55 classifies analysis-depth readiness, #56 exposes the hosted execution plan, and #57 executes the first hosted CI diagnostics job; next work is the remaining job-specific hosted executors | Next implementation batch |
 | Linear progress | Linear project status updates, `docs/architecture/progress-sync-contract.md`, and this mirror | Status update with queue/evidence/missing gates | Every significant merge batch |
 
 The project status update should always include:
@@ -575,10 +584,10 @@ Acceptance:
    PR #82 expanded corpus coverage for env proxy hijacks and out-of-band
    exfiltration; and ECC-Tools PRs #42/#43 now route and recognize evidence
    packs. The next slice is hosted evidence-pack workflow depth.
-2. Keep ECC-Tools #53's supply-chain workflow gate and #54's PR-draft backlog
-   tracking in the recurring queue evidence, and use the org-scoped GitHub auth
-   path for future ECC-Tools maintenance while the narrow environment token
-   remains active.
+2. Extend the ECC-Tools hosted execution lane beyond #57's CI diagnostics
+   worker into the remaining depth-plan jobs: security evidence review,
+   harness compatibility audit, reference-set evaluation, AI routing/cost
+   review, and team backlog routing.
 3. Enable/configure the merged Linear backlog sync path after workspace issue
    capacity clears or the Linear workspace is upgraded, then verify PR-draft
    salvage items land in the expected project.
