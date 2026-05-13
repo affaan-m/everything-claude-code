@@ -43,14 +43,15 @@ The prior post-#42 local checkout handoff recorded both ECC-Tools repos at
 | --- | --- | --- |
 | Harness audit | `npm run harness:audit -- --format json` | `overall_score: 70`, `max_score: 70`, no top actions |
 | Adapter scorecard | `npm run harness:adapters -- --check` | `Harness Adapter Compliance: PASS`; 11 adapters |
-| Observability readiness | `npm run observability:ready -- --format json` | `overall_score: 18`, `max_score: 18`, `ready: true`, no top actions |
+| Observability readiness | `npm run observability:ready -- --format json` | `overall_score: 21`, `max_score: 21`, `ready: true`, no top actions; includes Release Safety 3/3 |
 | Workflow security validator | `node scripts/ci/validate-workflow-security.js` | Validated 7 workflow files |
 | Workflow validator tests | `node tests/ci/validate-workflow-security.test.js` | Passed 14/14 |
 | Release surface | `node tests/docs/ecc2-release-surface.test.js` | Passed 18/18 |
 | Package surface | `node tests/scripts/npm-publish-surface.test.js` | Passed 2/2 |
-| Root suite | `node tests/run-all.js` | Passed 2380/2380, 0 failed |
+| Root suite | `node tests/run-all.js` | Passed 2381/2381, 0 failed |
 | Markdown lint | `npx markdownlint-cli '**/*.md' --ignore node_modules --ignore docs/drafts` | Passed |
 | Rust surface | `cd ecc2 && cargo test` | Passed 462/462; warnings only for unused functions/fields |
+| GitGuardian Security Checks | GitHub check on post-hardening security PRs | Passed before merge |
 
 ## Supply-Chain Evidence
 
@@ -60,6 +61,7 @@ The prior post-#42 local checkout handoff recorded both ECC-Tools repos at
 | Local npm signature audit | `npm audit signatures` | 241 verified registry signatures and 30 verified attestations |
 | Rust advisory audit | `cd ecc2 && cargo audit -q` | Passed silently |
 | TanStack / Mini Shai-Hulud IOC check | Grep for affected package namespaces, payload filenames, and known commit marker | No runtime or lockfile dependency on affected packages; no worm IOC matches |
+| GitGuardian Security Checks | GitHub check on post-hardening security PRs | Passed before merge |
 
 ## External Advisory Mapping
 

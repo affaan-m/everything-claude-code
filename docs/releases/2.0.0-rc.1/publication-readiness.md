@@ -52,8 +52,10 @@ Record the exact commit SHA and command output before any publication action:
 | Clean release branch | `git status --short --branch` | On intended release commit; no unrelated files | Pending final clean-checkout release pass; May 13 evidence branch still had unrelated untracked `docs/drafts/` |
 | Harness audit | `npm run harness:audit -- --format json` | 70/70 passing | `publication-evidence-2026-05-13.md`: 70/70 |
 | Adapter scorecard | `npm run harness:adapters -- --check` | PASS | `publication-evidence-2026-05-13.md`: PASS, 11 adapters |
-| Observability readiness | `npm run observability:ready` | 18/18 passing | `publication-evidence-2026-05-13-post-hardening.md`: 18/18, ready true |
-| Root suite | `node tests/run-all.js` | 0 failures | `publication-evidence-2026-05-13-post-hardening.md`: 2380 passed, 0 failed |
+| Observability readiness | `npm run observability:ready` | 21/21 passing | `publication-evidence-2026-05-13-post-hardening.md`: 21/21, ready true after release-safety gate refresh |
+| Release safety gate | `npm run observability:ready -- --format json` | Release Safety category passing with publication readiness, supply-chain, workflow security, package surface, and release-surface evidence | `publication-evidence-2026-05-13-post-hardening.md`: Release Safety 3/3 |
+| Supply-chain verification | `npm audit --json`; `npm audit signatures`; `cd ecc2 && cargo audit -q`; Dependabot alerts; GitGuardian Security Checks | 0 vulnerabilities/alerts, registry signatures verified, GitGuardian clean | `publication-evidence-2026-05-13-post-hardening.md`: npm, cargo, Dependabot, TanStack/Mini Shai-Hulud, and GitGuardian evidence |
+| Root suite | `node tests/run-all.js` | 0 failures | `publication-evidence-2026-05-13-post-hardening.md`: 2381 passed, 0 failed |
 | Markdown lint | `npx markdownlint-cli '**/*.md' --ignore node_modules` | 0 failures | `publication-evidence-2026-05-13.md`: passed after zh-CN CLAUDE list-marker normalization |
 | Package surface | `node tests/scripts/npm-publish-surface.test.js` | 0 failures; no Python bytecode in npm tarball | `2/2` passed in May 12 evidence pass |
 | Release surface | `node tests/docs/ecc2-release-surface.test.js` | 0 failures | `publication-evidence-2026-05-13.md`: 18/18 passed |

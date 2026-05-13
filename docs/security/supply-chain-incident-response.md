@@ -8,7 +8,9 @@ they do not prove that the workflow executed the intended code path.
 ## Current External Trigger
 
 As of 2026-05-13, the active incident class is the May 2026 TanStack npm
-supply-chain compromise:
+supply-chain compromise. ECC also keeps Mini Shai-Hulud-style npm worm IOCs in
+the same release-safety sweep because both incident classes target package
+install/publish paths and developer credentials:
 
 - TanStack reported 84 malicious versions across 42 `@tanstack/*` packages,
   published on 2026-05-11 between 19:20 and 19:26 UTC.

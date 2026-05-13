@@ -92,7 +92,43 @@ function seedMinimalRepo(rootDir, overrides = {}) {
       sync: {}
     }, null, 2),
     'docs/releases/2.0.0-rc.1/quickstart.md': 'observability-readiness.md',
-    'docs/releases/2.0.0-rc.1/release-notes.md': 'observability-readiness.md'
+    'docs/releases/2.0.0-rc.1/release-notes.md': 'observability-readiness.md',
+    'docs/releases/2.0.0-rc.1/publication-readiness.md': [
+      'Publication Gates',
+      'Required Command Evidence',
+      'Do Not Publish If',
+      'npm dist-tag',
+      'GitGuardian',
+      'Dependabot alerts',
+      'npm audit signatures'
+    ].join('\n'),
+    'docs/releases/2.0.0-rc.1/publication-evidence-2026-05-13-post-hardening.md': [
+      'npm audit --json',
+      'npm audit signatures',
+      'cargo audit',
+      'Dependabot alert API',
+      'TanStack',
+      'Mini Shai-Hulud',
+      'GitGuardian Security Checks'
+    ].join('\n'),
+    'docs/security/supply-chain-incident-response.md': [
+      'TanStack',
+      'Mini Shai-Hulud',
+      'npm audit signatures',
+      'trusted publishing',
+      'pull_request_target',
+      'id-token: write'
+    ].join('\n'),
+    'scripts/ci/validate-workflow-security.js': [
+      'persist-credentials: false',
+      'npm audit signatures',
+      'pull_request_target',
+      'id-token: write',
+      'shared cache'
+    ].join('\n'),
+    'tests/ci/validate-workflow-security.test.js': 'npm audit signatures persist-credentials: false',
+    'tests/scripts/npm-publish-surface.test.js': 'npm pack --dry-run Python bytecode',
+    'tests/docs/ecc2-release-surface.test.js': 'publication-readiness.md',
   };
 
   for (const [relativePath, content] of Object.entries({ ...files, ...overrides })) {
@@ -252,6 +288,23 @@ function runTests() {
 
       assert.strictEqual(report.ready, false);
       assert.ok(report.checks.some(check => check.id === 'progress-sync-contract' && !check.pass));
+      assert.ok(report.checks.some(check => check.id === 'loop-status-live-signal' && check.pass));
+    } finally {
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('missing release safety evidence fails without disturbing live status checks', () => {
+    const projectRoot = createTempDir('observability-readiness-release-safety-fail-');
+
+    try {
+      seedMinimalRepo(projectRoot, {
+        'docs/releases/2.0.0-rc.1/publication-evidence-2026-05-13-post-hardening.md': 'npm audit --json only'
+      });
+      const report = buildReport(projectRoot);
+
+      assert.strictEqual(report.ready, false);
+      assert.ok(report.checks.some(check => check.id === 'release-safety-evidence' && !check.pass));
       assert.ok(report.checks.some(check => check.id === 'loop-status-live-signal' && check.pass));
     } finally {
       cleanup(projectRoot);
