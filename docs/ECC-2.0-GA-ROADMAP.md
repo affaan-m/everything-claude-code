@@ -61,7 +61,8 @@ As of 2026-05-13:
   records the May 13 supply-chain sweep: no active lockfile/manifest hit for
   TanStack/Mini Shai-Hulud indicators; npm audit/signature checks clean across
   active npm lockfiles; `cargo audit` clean for `ecc2`; trunk `pip-audit`
-  clean; JARVIS backend Python audit blocked by unresolved `mediapipe==0.10.32`.
+  clean; JARVIS backend pinned-graph Python audit clean under the supported
+  Python 3.12 target.
 - Local PR #1861 validation refreshed `node scripts/harness-audit.js --format json`
   at 70/70 and `npm run observability:ready` at 21/21.
 - `ECC-Tools` has a local-only hardening branch
