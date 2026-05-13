@@ -1188,6 +1188,10 @@ function runTests() {
     expectDestructiveDeny('rm -r -f /tmp/junk', 'rm -r -f');
   })) passed++; else failed++;
 
+  if (test('denies rm --recursive --force (long flag form)', () => {
+    expectDestructiveDeny('rm --recursive --force /tmp/junk', 'rm --recursive --force');
+  })) passed++; else failed++;
+
   if (test('denies git reset HEAD --hard (with intervening ref)', () => {
     expectDestructiveDeny('git reset HEAD --hard', 'git reset HEAD --hard');
   })) passed++; else failed++;
@@ -1198,6 +1202,14 @@ function runTests() {
 
   if (test('denies destructive command in second chained segment', () => {
     expectDestructiveDeny('echo y | rm -rf /tmp/junk', 'echo y | rm -rf');
+  })) passed++; else failed++;
+
+  if (test('denies destructive command inside command substitution', () => {
+    expectDestructiveDeny('echo $(rm -rf /tmp/junk)', 'rm -rf inside $()');
+  })) passed++; else failed++;
+
+  if (test('denies destructive command inside backticks', () => {
+    expectDestructiveDeny('echo `git push -f origin main`', 'git push -f inside backticks');
   })) passed++; else failed++;
 
   if (test('allows destructive phrase quoted inside a commit message', () => {
@@ -1218,6 +1230,11 @@ function runTests() {
   if (test('denies git push --force even with --force-if-includes present', () => {
     expectDestructiveDeny('git push --force --force-if-includes origin main',
       'git push --force --force-if-includes');
+  })) passed++; else failed++;
+
+  if (test('denies git push when bare --force is mixed with lease flags', () => {
+    expectDestructiveDeny('git push --force-with-lease --force origin main',
+      'git push --force-with-lease --force');
   })) passed++; else failed++;
 
   if (test('denies git push with +refspec prefix (bare branch)', () => {
@@ -1258,6 +1275,11 @@ function runTests() {
   if (test('denies rm -rf nested inside a $(...) subshell', () => {
     expectDestructiveDeny('echo y | $(rm -rf /tmp/junk)',
       'dollar-paren subshell');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf inside double-quoted command substitution', () => {
+    expectDestructiveDeny('echo "$(rm -rf /tmp/junk)"',
+      'double-quoted dollar-paren subshell');
   })) passed++; else failed++;
 
   // Cleanup only the temp directory created by this test file.

@@ -51,8 +51,8 @@ const DESTRUCTIVE_SQL_DD = /\b(drop\s+table|delete\s+from|truncate|dd\s+if=)\b/i
 /**
  * Strip the contents of single- and double-quoted strings so phrases
  * mentioned inside a commit message or echoed argument do not trigger
- * the destructive detector. Mirrors the approach used by
- * block-no-verify.js.
+ * the destructive detector. Command substitutions are scanned separately
+ * before this runs because they execute even inside double quotes.
  *
  * @param {string} input
  * @returns {string}
@@ -68,9 +68,7 @@ function stripQuotedStrings(input) {
  * destructive check applies inside `$(...)` and backtick subshells.
  * Without this, `echo y | $(rm -rf /tmp)` and ``echo y | `rm -rf /tmp` ``
  * slip past the segment splitter because the destructive command lives
- * inside a sub-expression. Run iteratively to handle a layer of nesting
- * (deep nesting is rare in practice and any remaining leak only delays
- * the gate; it does not introduce its own destructive command).
+ * inside a sub-expression. Run iteratively to handle a layer of nesting.
  *
  * @param {string} input
  * @returns {string}
@@ -84,6 +82,105 @@ function explodeSubshells(input) {
     if (out === before) break;
   }
   return out;
+}
+
+/**
+ * Extract executable command-substitution bodies from a shell line. Single
+ * quotes are literal, so substitutions inside them are ignored; double quotes
+ * still permit substitutions, so those bodies are scanned before quoted text
+ * is stripped.
+ *
+ * @param {string} input
+ * @returns {string[]}
+ */
+function extractCommandSubstitutions(input) {
+  const source = String(input || '');
+  const substitutions = [];
+  let inSingle = false;
+  let inDouble = false;
+
+  for (let i = 0; i < source.length; i++) {
+    const ch = source[i];
+    const prev = source[i - 1];
+
+    if (ch === '\\' && !inSingle) {
+      i += 1;
+      continue;
+    }
+
+    if (ch === "'" && !inDouble && prev !== '\\') {
+      inSingle = !inSingle;
+      continue;
+    }
+
+    if (ch === '"' && !inSingle && prev !== '\\') {
+      inDouble = !inDouble;
+      continue;
+    }
+
+    if (inSingle) {
+      continue;
+    }
+
+    if (ch === '`') {
+      let body = '';
+      i += 1;
+      while (i < source.length) {
+        const inner = source[i];
+        if (inner === '\\') {
+          body += inner;
+          if (i + 1 < source.length) {
+            body += source[i + 1];
+            i += 2;
+            continue;
+          }
+        }
+        if (inner === '`') {
+          break;
+        }
+        body += inner;
+        i += 1;
+      }
+      if (body.trim()) {
+        substitutions.push(body);
+        substitutions.push(...extractCommandSubstitutions(body));
+      }
+      continue;
+    }
+
+    if (ch === '$' && source[i + 1] === '(') {
+      let depth = 1;
+      let body = '';
+      i += 2;
+      while (i < source.length && depth > 0) {
+        const inner = source[i];
+        if (inner === '\\') {
+          body += inner;
+          if (i + 1 < source.length) {
+            body += source[i + 1];
+            i += 2;
+            continue;
+          }
+        }
+        if (inner === '(') {
+          depth += 1;
+        } else if (inner === ')') {
+          depth -= 1;
+          if (depth === 0) {
+            break;
+          }
+        }
+        body += inner;
+        i += 1;
+      }
+      if (body.trim()) {
+        substitutions.push(body);
+        substitutions.push(...extractCommandSubstitutions(body));
+      }
+    }
+  }
+
+  return substitutions;
 }
 
 /**
@@ -140,6 +237,14 @@ function isDestructiveRm(tokens) {
   let hasR = false;
   let hasF = false;
   for (const t of tokens.slice(1)) {
+    if (t === '--recursive') {
+      hasR = true;
+      continue;
+    }
+    if (t === '--force') {
+      hasF = true;
+      continue;
+    }
     if (!t.startsWith('-') || t.startsWith('--')) continue;
     const body = t.slice(1);
     if (/[rR]/.test(body)) hasR = true;
@@ -215,36 +320,36 @@ function isDestructiveGit(tokens) {
     // Only `--force-with-lease` qualifies as a safety-checked force.
     // `--force-if-includes` is a no-op when used WITHOUT
     // `--force-with-lease` (per git-scm.com/docs/git-push), and when
-    // combined with a bare `--force` it does NOT make the push safer —
-    // the bare force is still in effect. So `--force --force-if-includes`
-    // must be treated as destructive.
+    // combined with a bare `--force` the bare force is still in effect.
+    // So `--force --force-if-includes` must be treated as destructive.
     //
     // A `+` refspec prefix (e.g. `git push origin +main`,
     // `+refs/heads/main:refs/heads/main`) also forces a non-fast-forward
     // update of that ref and is destructive on its own.
     let withLease = false;
-    let force = false;
+    let bareForce = false;
+    let plusRefspecForce = false;
     for (const t of rest) {
       if (t === '--force-with-lease' || t.startsWith('--force-with-lease=')) {
         withLease = true;
         continue;
       }
       if (t === '--force' || t.startsWith('--force=')) {
-        force = true;
+        bareForce = true;
         continue;
       }
       if (t.startsWith('-') && !t.startsWith('--') && t.slice(1).includes('f')) {
-        force = true;
+        bareForce = true;
         continue;
       }
       // Refspec prefix: `+<src>[:<dst>]`. Match tokens like `+main`,
       // `+refs/heads/main`, `+HEAD:branch`, `+:branch`. Exclude bare
       // `+` and numeric-only `+123` which are not refspecs.
       if (t.startsWith('+') && t.length > 1 && /^\+(?:[a-zA-Z_/.:]|HEAD)/.test(t)) {
-        force = true;
+        plusRefspecForce = true;
       }
     }
-    return force && !withLease;
+    return bareForce || (plusRefspecForce && !withLease);
   }
 
   if (command === 'commit') {
@@ -292,10 +397,13 @@ function isDestructiveBash(command) {
   // arguments, so we still match them by regex — but on the input
   // after quoting AND subshell delimiters are normalized so phrases
   // inside `$(...)` or backticks are also caught.
-  const flattened = explodeSubshells(stripQuotedStrings(String(command || '')));
+  const raw = String(command || '');
+  const flattened = explodeSubshells(stripQuotedStrings(raw));
   if (DESTRUCTIVE_SQL_DD.test(flattened)) return true;
 
-  for (const segment of splitCommandSegments(command)) {
+  const segments = [raw, ...extractCommandSubstitutions(raw)].flatMap(splitCommandSegments);
+  for (const segment of segments) {
+    if (DESTRUCTIVE_SQL_DD.test(stripQuotedStrings(segment))) return true;
     const tokens = tokenize(segment);
     if (isDestructiveRm(tokens)) return true;
     if (isDestructiveGit(tokens)) return true;
