@@ -96,5 +96,6 @@ Do not sanitize repo files in response to ephemeral reminders; they are not the 
 
 - **AgentShield**: Scan your agent config for vulnerabilities — `npx ecc-agentshield scan`
 - **Security Guide**: [The Shorthand Guide to Everything Agentic Security](./the-security-guide.md)
+- **Supply-chain incident response**: [npm/GitHub Actions package-registry playbook](./docs/security/supply-chain-incident-response.md)
 - **OWASP MCP Top 10**: [owasp.org/www-project-mcp-top-10](https://owasp.org/www-project-mcp-top-10/)
 - **OWASP Agentic Applications Top 10**: [genai.owasp.org](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)

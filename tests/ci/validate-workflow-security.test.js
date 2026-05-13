@@ -99,6 +99,14 @@ function run() {
     assert.match(result.stderr, /pull_request\.head\.sha/);
   })) passed++; else failed++;
 
+  if (test('rejects shared cache use in pull_request_target workflows', () => {
+    const result = runValidator({
+      'unsafe-pr-target-cache.yml': `name: Unsafe\non:\n  pull_request_target:\n    branches: [main]\njobs:\n  inspect:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/cache@v5\n        with:\n          path: ~/.npm\n          key: cache\n      - run: echo inspect\n`,
+    });
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on pull_request_target cache use');
+    assert.match(result.stderr, /pull_request_target workflows must not restore or save shared dependency caches/);
+  })) passed++; else failed++;
+
   if (test('rejects npm ci without ignore-scripts in workflows with write permissions', () => {
     const result = runValidator({
       'unsafe-write-install.yml': `name: Unsafe\non:\n  workflow_dispatch:\npermissions:\n  contents: read\n  issues: write\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm ci\n`,

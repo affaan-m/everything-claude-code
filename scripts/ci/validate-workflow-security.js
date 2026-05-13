@@ -129,6 +129,16 @@ function findViolations(filePath, source) {
     });
   }
 
+  if (/\bpull_request_target\s*:/m.test(source) && ACTIONS_CACHE_PATTERN.test(source)) {
+    violations.push({
+      filePath,
+      event: 'pull_request_target cache',
+      description: 'pull_request_target workflows must not restore or save shared dependency caches',
+      expression: 'pull_request_target + actions/cache',
+      line: getLineNumber(source, source.search(/\bpull_request_target\s*:/m)),
+    });
+  }
+
   if (NPM_AUDIT_PATTERN.test(source) && !NPM_AUDIT_SIGNATURES_PATTERN.test(source)) {
     violations.push({
       filePath,
