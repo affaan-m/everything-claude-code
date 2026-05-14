@@ -102,7 +102,8 @@ msg.put("text", "Hello, user!");
 SSEPushManager.getInstance().push(sessionId, msg);
 
 // Broadcast to all
-SSEPushManager.getInstance().broadcast(broadcastMsg);
+// Broadcast to all
+SSEPushManager.getInstance().broadcast(msg);
 ```
 
 ### File Upload
