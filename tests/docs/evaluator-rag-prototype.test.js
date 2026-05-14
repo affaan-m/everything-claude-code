@@ -130,12 +130,12 @@ test('candidate playbook preserves stale-salvage operating rules', () => {
   }
 });
 
-test('roadmap points to the evaluator RAG prototype and keeps hosted integration open', () => {
+test('roadmap points to the evaluator RAG prototype and hosted PR check', () => {
   const roadmap = read('docs/ECC-2.0-GA-ROADMAP.md');
 
   assert.ok(roadmap.includes('docs/architecture/evaluator-rag-prototype.md'));
   assert.ok(roadmap.includes('examples/evaluator-rag-prototype/'));
-  assert.ok(roadmap.includes('Local corpus complete; hosted integration remains future'));
+  assert.ok(roadmap.includes('Deterministic hosted PR check integrated; hosted retrieval remains future'));
 });
 
 test('billing readiness scenario rejects launch copy overclaims', () => {
