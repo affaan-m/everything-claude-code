@@ -12,7 +12,9 @@ Architecture and implementation patterns for building modules with the **tinystr
 
 **CLI and HTTP are equal citizens.** Every method annotated with `@Action` should ideally be runnable from both a terminal and a web browser without modification. This "dual-mode" capability is the core design philosophy of tinystruct.
 
-## When to Use
+## When to Activate
+
+### When to Use
 
 - Creating new `Application` modules by extending `AbstractApplication`.
 - Defining routes and command-line actions using `@Action`.
