@@ -7,12 +7,13 @@
  * the actual code. This hook steers the agent back to fixing the source.
  *
  * Exit codes:
- *   0 = allow (not a config file)
- *   2 = block (config file modification attempted)
+ *   0 = allow (not a config file, or first-time creation of one)
+ *   2 = block (existing config file modification attempted)
  */
 
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 
 const MAX_STDIN = 1024 * 1024;
@@ -94,6 +95,23 @@ function run(inputOrRaw, options = {}) {
 
   const basename = path.basename(filePath);
   if (PROTECTED_FILES.has(basename)) {
+    // Allow first-time creation — there's no existing config to weaken.
+    // The hook's purpose is blocking modifications; writing a brand-new
+    // config file in a project that has none is a legitimate bootstrap
+    // path (e.g. scaffolding ESLint into a fresh repo).
+    let exists = false;
+    try {
+      exists = fs.existsSync(filePath);
+    } catch {
+      // Be conservative: on stat errors (EACCES, etc.) treat as existing
+      // so we never silently weaken the guard.
+      exists = true;
+    }
+
+    if (!exists) {
+      return { exitCode: 0 };
+    }
+
     return {
       exitCode: 2,
       stderr:

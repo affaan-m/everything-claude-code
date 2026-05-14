@@ -4,6 +4,7 @@
 
 const assert = require('assert');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
@@ -71,18 +72,30 @@ function runTests() {
   let failed = 0;
 
   if (test('blocks protected config file edits through run-with-flags', () => {
-    const input = {
-      tool_name: 'Write',
-      tool_input: {
-        file_path: '.eslintrc.js',
-        content: 'module.exports = {};'
-      }
-    };
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-config-protect-'));
+    try {
+      const absPath = path.join(tmpDir, '.eslintrc.js');
+      fs.writeFileSync(absPath, 'module.exports = {};');
 
-    const result = runHook(input);
-    assert.strictEqual(result.code, 2, 'Expected protected config edit to be blocked');
-    assert.strictEqual(result.stdout, '', 'Blocked hook should not echo raw input');
-    assert.ok(result.stderr.includes('BLOCKED: Modifying .eslintrc.js is not allowed.'), `Expected block message, got: ${result.stderr}`);
+      const input = {
+        tool_name: 'Write',
+        tool_input: {
+          file_path: absPath,
+          content: 'module.exports = {};'
+        }
+      };
+
+      const result = runHook(input);
+      assert.strictEqual(result.code, 2, 'Expected protected config edit to be blocked');
+      assert.strictEqual(result.stdout, '', 'Blocked hook should not echo raw input');
+      assert.ok(result.stderr.includes('BLOCKED: Modifying .eslintrc.js is not allowed.'), `Expected block message, got: ${result.stderr}`);
+    } finally {
+      try {
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+      } catch {
+        // best-effort cleanup
+      }
+    }
   })) passed++; else failed++;
 
   if (test('passes through safe file edits unchanged', () => {
@@ -115,6 +128,59 @@ function runTests() {
     assert.strictEqual(result.stdout, '', 'Blocked truncated payload should not echo raw input');
     assert.ok(result.stderr.includes('Hook input exceeded 1048576 bytes'), `Expected size warning, got: ${result.stderr}`);
     assert.ok(result.stderr.includes('truncated payload'), `Expected truncated payload warning, got: ${result.stderr}`);
+  })) passed++; else failed++;
+
+  if (test('allows first-time creation of a protected config file', () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-config-protect-'));
+    try {
+      const absPath = path.join(tmpDir, 'eslint.config.mjs');
+      const input = {
+        tool_name: 'Write',
+        tool_input: {
+          file_path: absPath,
+          content: 'export default [];'
+        }
+      };
+
+      const rawInput = JSON.stringify(input);
+      const result = runHook(input);
+      assert.strictEqual(result.code, 0, `Expected exit 0 for first-time creation, got ${result.code}; stderr: ${result.stderr}`);
+      assert.strictEqual(result.stdout, rawInput, 'Expected raw passthrough when creation is allowed');
+      assert.strictEqual(result.stderr, '', `Expected no stderr for first-time creation, got: ${result.stderr}`);
+    } finally {
+      try {
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+      } catch {
+        // best-effort cleanup
+      }
+    }
+  })) passed++; else failed++;
+
+  if (test('still blocks writes to an existing protected config file', () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-config-protect-'));
+    try {
+      const absPath = path.join(tmpDir, '.eslintrc.js');
+      fs.writeFileSync(absPath, 'module.exports = { rules: {} };');
+
+      const input = {
+        tool_name: 'Edit',
+        tool_input: {
+          file_path: absPath,
+          content: 'module.exports = { rules: { "no-console": "off" } };'
+        }
+      };
+
+      const result = runHook(input);
+      assert.strictEqual(result.code, 2, 'Expected exit 2 when modifying an existing protected config');
+      assert.strictEqual(result.stdout, '', 'Blocked hook should not echo raw input');
+      assert.ok(result.stderr.includes('BLOCKED: Modifying .eslintrc.js is not allowed.'), `Expected block message, got: ${result.stderr}`);
+    } finally {
+      try {
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+      } catch {
+        // best-effort cleanup
+      }
+    }
   })) passed++; else failed++;
 
   if (test('legacy hooks do not echo raw input when they fail without stdout', () => {
