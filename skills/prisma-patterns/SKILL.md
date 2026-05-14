@@ -211,15 +211,20 @@ Catch at the service boundary and translate to domain errors. Never expose raw P
 
 ### Connection Pool — Serverless
 
+Embed connection params directly in `DATABASE_URL` — string concatenation breaks if the URL already has query parameters (e.g. `?schema=public`):
+
+```bash
+# .env — preferred: embed params in the URL
+DATABASE_URL="postgresql://user:pass@host/db?connection_limit=1&pool_timeout=20"
+
+# With an external pooler (PgBouncer, Supabase pooler)
+DATABASE_URL="postgresql://user:pass@host/db?pgbouncer=true&connection_limit=1"
+```
+
 ```ts
 // Vercel, AWS Lambda, and similar serverless runtimes: cap pool to 1 per instance
-const prisma = new PrismaClient({
-  datasources: {
-    db: { url: process.env.DATABASE_URL + '?connection_limit=1&pool_timeout=20' },
-  },
-});
-// Recommended: add an external pooler (PgBouncer, Supabase pooler) in front of the DB
-// DATABASE_URL="postgresql://...?pgbouncer=true&connection_limit=1"
+// connection_limit and pool_timeout are controlled via DATABASE_URL
+const prisma = new PrismaClient();
 ```
 
 ## Anti-Patterns
@@ -291,10 +296,14 @@ Adding `NOT NULL` to an existing column or renaming a column in one migration wi
 # Step 1: create migration locally, then deploy
 npx prisma migrate dev --name add_new_column   # local only
 npx prisma migrate deploy                       # staging / production
+```
 
-# Step 2: backfill data
+```ts
+// Step 2: backfill data (run in a script or migration job, not in the shell)
 await prisma.user.updateMany({ data: { newColumn: derivedValue } });
+```
 
+```bash
 # Step 3: create the NOT NULL constraint migration locally, then deploy
 npx prisma migrate dev --name make_new_column_required  # local only
 npx prisma migrate deploy                               # staging / production
