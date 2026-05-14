@@ -1,0 +1,798 @@
+{
+  "generated": "2026-05-14T18:36:38.210Z",
+  "totalCommands": 75,
+  "commands": [
+    {
+      "command": "aside",
+      "description": "Aside Command",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/aside.md"
+    },
+    {
+      "command": "auto-update",
+      "description": "Auto Update",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/auto-update.md"
+    },
+    {
+      "command": "build-fix",
+      "description": "Build and Fix",
+      "type": "refactoring",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/build-fix.md"
+    },
+    {
+      "command": "checkpoint",
+      "description": "Checkpoint Command",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/checkpoint.md"
+    },
+    {
+      "command": "code-review",
+      "description": "Code Review",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/code-review.md"
+    },
+    {
+      "command": "cost-report",
+      "description": "Cost Report",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/cost-report.md"
+    },
+    {
+      "command": "cpp-build",
+      "description": "C++ Build and Fix",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "cpp-coding-standards"
+      ],
+      "path": "commands/cpp-build.md"
+    },
+    {
+      "command": "cpp-review",
+      "description": "C++ Code Review",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "cpp-coding-standards",
+        "cpp-testing"
+      ],
+      "path": "commands/cpp-review.md"
+    },
+    {
+      "command": "cpp-test",
+      "description": "C++ TDD Command",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "cpp-testing",
+        "tdd-workflow"
+      ],
+      "path": "commands/cpp-test.md"
+    },
+    {
+      "command": "ecc-guide",
+      "description": "/ecc-guide",
+      "type": "review",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "ecc-guide",
+        "security-scan"
+      ],
+      "path": "commands/ecc-guide.md"
+    },
+    {
+      "command": "evolve",
+      "description": "Analyze instincts and suggest or generate evolved structures",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "continuous-learning-v2"
+      ],
+      "path": "commands/evolve.md"
+    },
+    {
+      "command": "fastapi-review",
+      "description": "FastAPI Review",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/fastapi-review.md"
+    },
+    {
+      "command": "feature-dev",
+      "description": "",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/feature-dev.md"
+    },
+    {
+      "command": "flutter-build",
+      "description": "Flutter Build and Fix",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "flutter-dart-code-review"
+      ],
+      "path": "commands/flutter-build.md"
+    },
+    {
+      "command": "flutter-review",
+      "description": "Flutter Code Review",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "flutter-dart-code-review"
+      ],
+      "path": "commands/flutter-review.md"
+    },
+    {
+      "command": "flutter-test",
+      "description": "Flutter Test",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "flutter-dart-code-review"
+      ],
+      "path": "commands/flutter-test.md"
+    },
+    {
+      "command": "gan-build",
+      "description": "",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/gan-build.md"
+    },
+    {
+      "command": "gan-design",
+      "description": "",
+      "type": "review",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/gan-design.md"
+    },
+    {
+      "command": "go-build",
+      "description": "Go Build and Fix",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "golang-patterns"
+      ],
+      "path": "commands/go-build.md"
+    },
+    {
+      "command": "go-review",
+      "description": "Go Code Review",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "golang-patterns",
+        "golang-testing"
+      ],
+      "path": "commands/go-review.md"
+    },
+    {
+      "command": "go-test",
+      "description": "Go TDD Command",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "golang-testing",
+        "tdd-workflow"
+      ],
+      "path": "commands/go-test.md"
+    },
+    {
+      "command": "gradle-build",
+      "description": "Gradle Build Fix",
+      "type": "build",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/gradle-build.md"
+    },
+    {
+      "command": "harness-audit",
+      "description": "Harness Audit Command",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/harness-audit.md"
+    },
+    {
+      "command": "hookify-configure",
+      "description": "",
+      "type": "general",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/hookify-configure.md"
+    },
+    {
+      "command": "hookify-help",
+      "description": "",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/hookify-help.md"
+    },
+    {
+      "command": "hookify-list",
+      "description": "",
+      "type": "general",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/hookify-list.md"
+    },
+    {
+      "command": "hookify",
+      "description": "",
+      "type": "general",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/hookify.md"
+    },
+    {
+      "command": "instinct-export",
+      "description": "Export instincts from project/global scope to a file",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/instinct-export.md"
+    },
+    {
+      "command": "instinct-import",
+      "description": "Import instincts from file or URL into project/global scope",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "continuous-learning-v2"
+      ],
+      "path": "commands/instinct-import.md"
+    },
+    {
+      "command": "instinct-status",
+      "description": "Show learned instincts (project + global) with confidence",
+      "type": "general",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "continuous-learning-v2"
+      ],
+      "path": "commands/instinct-status.md"
+    },
+    {
+      "command": "jira",
+      "description": "Jira Command",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "jira-integration"
+      ],
+      "path": "commands/jira.md"
+    },
+    {
+      "command": "kotlin-build",
+      "description": "Kotlin Build and Fix",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "kotlin-patterns"
+      ],
+      "path": "commands/kotlin-build.md"
+    },
+    {
+      "command": "kotlin-review",
+      "description": "Kotlin Code Review",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "kotlin-patterns",
+        "kotlin-testing"
+      ],
+      "path": "commands/kotlin-review.md"
+    },
+    {
+      "command": "kotlin-test",
+      "description": "Kotlin TDD Command",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "kotlin-testing",
+        "tdd-workflow"
+      ],
+      "path": "commands/kotlin-test.md"
+    },
+    {
+      "command": "learn-eval",
+      "description": "\"Under 130 characters\"",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/learn-eval.md"
+    },
+    {
+      "command": "learn",
+      "description": "/learn - Extract Reusable Patterns",
+      "type": "review",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/learn.md"
+    },
+    {
+      "command": "loop-start",
+      "description": "Loop Start Command",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/loop-start.md"
+    },
+    {
+      "command": "loop-status",
+      "description": "Loop Status Command",
+      "type": "general",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/loop-status.md"
+    },
+    {
+      "command": "model-route",
+      "description": "Model Route Command",
+      "type": "review",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/model-route.md"
+    },
+    {
+      "command": "multi-backend",
+      "description": "Backend - Backend-Focused Development",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/multi-backend.md"
+    },
+    {
+      "command": "multi-execute",
+      "description": "Execute - Multi-Model Collaborative Execution",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/multi-execute.md"
+    },
+    {
+      "command": "multi-frontend",
+      "description": "Frontend - Frontend-Focused Development",
+      "type": "review",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/multi-frontend.md"
+    },
+    {
+      "command": "multi-plan",
+      "description": "Plan - Multi-Model Collaborative Planning",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "accessibility"
+      ],
+      "path": "commands/multi-plan.md"
+    },
+    {
+      "command": "multi-workflow",
+      "description": "Workflow - Multi-Model Collaborative Development",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/multi-workflow.md"
+    },
+    {
+      "command": "plan-prd",
+      "description": "PRD Command",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/plan-prd.md"
+    },
+    {
+      "command": "plan",
+      "description": "Plan Command",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/plan.md"
+    },
+    {
+      "command": "pm2",
+      "description": "PM2 Init",
+      "type": "general",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/pm2.md"
+    },
+    {
+      "command": "pr",
+      "description": "Create Pull Request",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/pr.md"
+    },
+    {
+      "command": "project-init",
+      "description": "/project-init",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "ecc-guide"
+      ],
+      "path": "commands/project-init.md"
+    },
+    {
+      "command": "projects",
+      "description": "List known projects and their instinct statistics",
+      "type": "general",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "continuous-learning-v2"
+      ],
+      "path": "commands/projects.md"
+    },
+    {
+      "command": "promote",
+      "description": "Promote project-scoped instincts to global scope",
+      "type": "review",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "continuous-learning-v2"
+      ],
+      "path": "commands/promote.md"
+    },
+    {
+      "command": "prp-commit",
+      "description": "Smart Commit",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/prp-commit.md"
+    },
+    {
+      "command": "prp-implement",
+      "description": "PRP Implement",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/prp-implement.md"
+    },
+    {
+      "command": "prp-plan",
+      "description": "PRP Plan",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/prp-plan.md"
+    },
+    {
+      "command": "prp-pr",
+      "description": "Create Pull Request",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/prp-pr.md"
+    },
+    {
+      "command": "prp-prd",
+      "description": "Product Requirements Document Generator",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/prp-prd.md"
+    },
+    {
+      "command": "prune",
+      "description": "Delete pending instincts older than 30 days that were never promoted",
+      "type": "review",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "continuous-learning-v2"
+      ],
+      "path": "commands/prune.md"
+    },
+    {
+      "command": "python-review",
+      "description": "Python Code Review",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "python-patterns",
+        "python-testing"
+      ],
+      "path": "commands/python-review.md"
+    },
+    {
+      "command": "quality-gate",
+      "description": "Quality Gate Command",
+      "type": "review",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/quality-gate.md"
+    },
+    {
+      "command": "refactor-clean",
+      "description": "Refactor Clean",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/refactor-clean.md"
+    },
+    {
+      "command": "resume-session",
+      "description": "Resume Session Command",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/resume-session.md"
+    },
+    {
+      "command": "review-pr",
+      "description": "",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/review-pr.md"
+    },
+    {
+      "command": "rust-build",
+      "description": "Rust Build and Fix",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "rust-patterns"
+      ],
+      "path": "commands/rust-build.md"
+    },
+    {
+      "command": "rust-review",
+      "description": "Rust Code Review",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "rust-patterns",
+        "rust-testing"
+      ],
+      "path": "commands/rust-review.md"
+    },
+    {
+      "command": "rust-test",
+      "description": "Rust TDD Command",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "rust-patterns",
+        "rust-testing"
+      ],
+      "path": "commands/rust-test.md"
+    },
+    {
+      "command": "santa-loop",
+      "description": "Santa Loop",
+      "type": "review",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/santa-loop.md"
+    },
+    {
+      "command": "save-session",
+      "description": "Save Session Command",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/save-session.md"
+    },
+    {
+      "command": "security-scan",
+      "description": "Security Scan Command",
+      "type": "review",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [
+        "security-scan"
+      ],
+      "path": "commands/security-scan.md"
+    },
+    {
+      "command": "sessions",
+      "description": "Sessions Command",
+      "type": "general",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/sessions.md"
+    },
+    {
+      "command": "setup-pm",
+      "description": "Package Manager Setup",
+      "type": "build",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/setup-pm.md"
+    },
+    {
+      "command": "skill-create",
+      "description": "Analyze local git history to extract coding patterns and generate SKILL.md files. Local version of the Skill Creator GitHub App.",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/skill-create.md"
+    },
+    {
+      "command": "skill-health",
+      "description": "Show skill portfolio health dashboard with charts and analytics",
+      "type": "review",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/skill-health.md"
+    },
+    {
+      "command": "test-coverage",
+      "description": "Test Coverage",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/test-coverage.md"
+    },
+    {
+      "command": "update-codemaps",
+      "description": "Update Codemaps",
+      "type": "planning",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/update-codemaps.md"
+    },
+    {
+      "command": "update-docs",
+      "description": "Update Documentation",
+      "type": "testing",
+      "primaryAgents": [],
+      "allAgents": [],
+      "skills": [],
+      "path": "commands/update-docs.md"
+    }
+  ],
+  "statistics": {
+    "byType": {
+      "testing": 52,
+      "refactoring": 1,
+      "review": 11,
+      "build": 2,
+      "general": 8,
+      "planning": 1
+    },
+    "topAgents": [],
+    "topSkills": [
+      {
+        "skill": "continuous-learning-v2",
+        "count": 6
+      },
+      {
+        "skill": "tdd-workflow",
+        "count": 3
+      },
+      {
+        "skill": "flutter-dart-code-review",
+        "count": 3
+      },
+      {
+        "skill": "rust-patterns",
+        "count": 3
+      },
+      {
+        "skill": "cpp-coding-standards",
+        "count": 2
+      },
+      {
+        "skill": "cpp-testing",
+        "count": 2
+      },
+      {
+        "skill": "ecc-guide",
+        "count": 2
+      },
+      {
+        "skill": "security-scan",
+        "count": 2
+      },
+      {
+        "skill": "golang-patterns",
+        "count": 2
+      },
+      {
+        "skill": "golang-testing",
+        "count": 2
+      }
+    ]
+  }
+}

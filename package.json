@@ -285,6 +285,8 @@
     "postinstall": "echo '\\n  ecc-universal installed!\\n  Run: npx ecc typescript\\n  Compat: npx ecc-install typescript\\n  Docs: https://github.com/affaan-m/everything-claude-code\\n'",
     "catalog:check": "node scripts/ci/catalog.js --text",
     "catalog:sync": "node scripts/ci/catalog.js --write --text",
+    "command-registry:generate": "node scripts/ci/generate-command-registry.js",
+    "command-registry:write": "node scripts/ci/generate-command-registry.js --write",
     "lint": "eslint . && markdownlint '**/*.md' --ignore node_modules",
     "harness:adapters": "node scripts/harness-adapter-compliance.js",
     "harness:audit": "node scripts/harness-audit.js",
