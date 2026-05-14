@@ -4,13 +4,15 @@
 
 Use the built-in ORM-like data layer for database operations. It provides a lightweight alternative to JPA/Hibernate using POJOs extending `AbstractData` and XML mapping files.
 
-## Architecture
+## How It Works
+
+### Architecture
 
 Each table is represented by:
 1. **Java POJO**: Extends `AbstractData`, provides getters/setters and `setData(Row)`.
 2. **Mapping XML**: `ClassName.map.xml` in resources, binding Java fields to DB columns.
 
-### Key Base Class: `AbstractData`
+#### Key Base Class: `AbstractData`
 Provides CRUD methods:
 - `append()` / `appendAndGetId()`
 - `update()`
@@ -19,11 +21,11 @@ Provides CRUD methods:
 - `findWith(where, params)`
 - `find(SQL, params)`
 
-## POJO Generation (CLI)
+### POJO Generation (CLI)
 
 Introspect a live database table to produce the POJO and mapping file.
 
-### Configuration
+#### Configuration
 `application.properties`:
 ```properties
 driver=com.mysql.cj.jdbc.Driver
@@ -32,7 +34,7 @@ database.user=root
 database.password=secret
 ```
 
-### Command
+#### Command
 ```bash
 # Interactive mode
 bin/dispatcher generate
