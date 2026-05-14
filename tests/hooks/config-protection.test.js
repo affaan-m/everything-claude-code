@@ -206,6 +206,51 @@ function runTests() {
   else failed++;
 
   if (
+    test('blocks protected paths that exist as a dangling symlink', () => {
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-config-protect-'));
+      try {
+        const missingTarget = path.join(tmpDir, 'nowhere.js');
+        const linkPath = path.join(tmpDir, '.eslintrc.js');
+        try {
+          fs.symlinkSync(missingTarget, linkPath);
+        } catch (err) {
+          // Windows without Developer Mode or certain sandboxes disallow
+          // symlinks. Skip cleanly rather than fail the suite.
+          if (err.code === 'EPERM' || err.code === 'EACCES') {
+            console.log('    (skipped: symlink creation not permitted here)');
+            return;
+          }
+          throw err;
+        }
+
+        const input = {
+          tool_name: 'Write',
+          tool_input: {
+            file_path: linkPath,
+            content: 'module.exports = {};'
+          }
+        };
+
+        const result = runHook(input);
+        assert.strictEqual(result.code, 2, `Expected exit 2 for dangling symlink, got ${result.code}; stderr: ${result.stderr}`);
+        assert.strictEqual(result.stdout, '', 'Blocked hook should not echo raw input');
+        assert.ok(
+          result.stderr.includes('BLOCKED: Modifying .eslintrc.js is not allowed.'),
+          `Expected block message, got: ${result.stderr}`
+        );
+      } finally {
+        try {
+          fs.rmSync(tmpDir, { recursive: true, force: true });
+        } catch {
+          // best-effort cleanup
+        }
+      }
+    })
+  )
+    passed++;
+  else failed++;
+
+  if (
     test('still blocks writes to an existing protected config file', () => {
       const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-config-protect-'));
       try {

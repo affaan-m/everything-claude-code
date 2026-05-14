@@ -100,15 +100,17 @@ function run(inputOrRaw, options = {}) {
     // config file in a project that has none is a legitimate bootstrap
     // path (e.g. scaffolding ESLint into a fresh repo).
     //
-    // Fail closed on any stat error other than ENOENT. fs.existsSync would
-    // swallow EACCES/EPERM and return false, which would let an agent
-    // overwrite a file whose parent directory we cannot traverse. statSync
-    // exposes the error code explicitly so we can treat only genuine
-    // "file not found" as absent.
+    // Fail closed on any stat error other than ENOENT. Use lstatSync so a
+    // symlink at the protected path is treated as present even if its target
+    // is missing — a dangling symlink at e.g. .eslintrc.js still represents
+    // an existing config entry that an agent should not silently replace.
+    // fs.existsSync would swallow EACCES/EPERM as false; lstatSync exposes
+    // the error code so we can treat only genuine "path not found" (ENOENT)
+    // as absent.
     let exists = true;
     try {
-      fs.statSync(filePath);
-      // stat succeeded — file exists.
+      fs.lstatSync(filePath);
+      // lstat succeeded — something (file, dir, or symlink) exists here.
     } catch (err) {
       if (err && err.code === 'ENOENT') {
         exists = false;
