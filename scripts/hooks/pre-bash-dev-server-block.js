@@ -127,6 +127,8 @@ function getLeadingCommandWord(segment) {
       continue;
     }
 
+    if (token === '{' || token === '}') continue;
+
     if (/^[A-Za-z_][A-Za-z0-9_]*=.*/.test(token)) continue;
 
     const normalizedToken = normalizeCommandWord(token);
@@ -159,7 +161,7 @@ process.stdin.on('data', chunk => {
 });
 
 const TMUX_LAUNCHER = /^\s*tmux\s+(new|new-session|new-window|split-window)\b/;
-const DEV_PATTERN = /\b(npm\s+run\s+dev|pnpm(?:\s+run)?\s+dev|yarn\s+dev|bun\s+run\s+dev)\b/;
+const DEV_PATTERN = /\b(npm\s+run\s+dev|pnpm(?:\s+run)?\s+dev|yarn(?:\s+run)?\s+dev|bun(?:\s+run)?\s+dev)\b/;
 
 /**
  * Collect every command-line segment we should evaluate. Returns the top-level
