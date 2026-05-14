@@ -106,4 +106,114 @@ function extractCommandSubstitutions(input) {
   return substitutions;
 }
 
-module.exports = { extractCommandSubstitutions };
+/**
+ * Extract bodies of plain `(...)` subshell groups.
+ *
+ * Bash treats `(npm run dev)` as a subshell that executes its contents, but
+ * the regex-light segment splitters used by our PreToolUse hooks don't peer
+ * inside those parens. This helper finds top-level `(...)` groups (skipping
+ * `$(...)` command substitutions and backticks, which `extractCommandSubstitutions`
+ * already covers) and returns each body, recursing for nested groups.
+ *
+ * Quote semantics:
+ * - Single quotes are literal: `'( ... )'` is a string, not a subshell.
+ * - Double quotes are literal *for parens*: `"( ... )"` is a string too —
+ *   bash only honors `$( )` inside double quotes, not bare `( )`.
+ *
+ * @param {string} input
+ * @returns {string[]}
+ */
+function extractSubshellGroups(input) {
+  const source = String(input || '');
+  const groups = [];
+  let inSingle = false;
+  let inDouble = false;
+
+  for (let i = 0; i < source.length; i++) {
+    const ch = source[i];
+    const prev = source[i - 1];
+
+    if (ch === '\\' && !inSingle) {
+      i += 1;
+      continue;
+    }
+
+    if (ch === "'" && !inDouble && prev !== '\\') {
+      inSingle = !inSingle;
+      continue;
+    }
+
+    if (ch === '"' && !inSingle && prev !== '\\') {
+      inDouble = !inDouble;
+      continue;
+    }
+
+    if (inSingle || inDouble) {
+      continue;
+    }
+
+    if (ch === '$' && source[i + 1] === '(') {
+      let depth = 1;
+      i += 2;
+      while (i < source.length && depth > 0) {
+        const inner = source[i];
+        if (inner === '\\') {
+          i += 2;
+          continue;
+        }
+        if (inner === '(') depth += 1;
+        else if (inner === ')') depth -= 1;
+        i += 1;
+      }
+      i -= 1;
+      continue;
+    }
+
+    if (ch === '`') {
+      i += 1;
+      while (i < source.length && source[i] !== '`') {
+        if (source[i] === '\\' && i + 1 < source.length) {
+          i += 2;
+          continue;
+        }
+        i += 1;
+      }
+      continue;
+    }
+
+    if (ch === '(') {
+      let depth = 1;
+      let body = '';
+      i += 1;
+      while (i < source.length && depth > 0) {
+        const inner = source[i];
+        if (inner === '\\') {
+          body += inner;
+          if (i + 1 < source.length) {
+            body += source[i + 1];
+            i += 2;
+            continue;
+          }
+        }
+        if (inner === '(') {
+          depth += 1;
+        } else if (inner === ')') {
+          depth -= 1;
+          if (depth === 0) {
+            break;
+          }
+        }
+        body += inner;
+        i += 1;
+      }
+      if (body.trim()) {
+        groups.push(body);
+        groups.push(...extractSubshellGroups(body));
+      }
+    }
+  }
+
+  return groups;
+}
+
+module.exports = { extractCommandSubstitutions, extractSubshellGroups };
