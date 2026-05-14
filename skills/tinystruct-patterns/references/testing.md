@@ -33,7 +33,7 @@ class MyAppTest {
     void setUp() {
         app = new MyApp();
         app.setConfiguration(new Settings());
-        // init() is called automatically by setConfiguration
+        app.init(); // triggers @Action annotation processing and registers all actions
     }
 
     @Test
