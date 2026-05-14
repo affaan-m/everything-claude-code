@@ -74,10 +74,13 @@ function extractCommandSubstitutions(input) {
     if (ch === '$' && source[i + 1] === '(') {
       let depth = 1;
       let body = '';
+      let bodyInSingle = false;
+      let bodyInDouble = false;
       i += 2;
       while (i < source.length && depth > 0) {
         const inner = source[i];
-        if (inner === '\\') {
+        const innerPrev = source[i - 1];
+        if (inner === '\\' && !bodyInSingle) {
           body += inner;
           if (i + 1 < source.length) {
             body += source[i + 1];
@@ -85,12 +88,18 @@ function extractCommandSubstitutions(input) {
             continue;
           }
         }
-        if (inner === '(') {
-          depth += 1;
-        } else if (inner === ')') {
-          depth -= 1;
-          if (depth === 0) {
-            break;
+        if (inner === "'" && !bodyInDouble && innerPrev !== '\\') {
+          bodyInSingle = !bodyInSingle;
+        } else if (inner === '"' && !bodyInSingle && innerPrev !== '\\') {
+          bodyInDouble = !bodyInDouble;
+        } else if (!bodyInSingle && !bodyInDouble) {
+          if (inner === '(') {
+            depth += 1;
+          } else if (inner === ')') {
+            depth -= 1;
+            if (depth === 0) {
+              break;
+            }
           }
         }
         body += inner;
@@ -154,15 +163,24 @@ function extractSubshellGroups(input) {
 
     if (ch === '$' && source[i + 1] === '(') {
       let depth = 1;
+      let skipInSingle = false;
+      let skipInDouble = false;
       i += 2;
       while (i < source.length && depth > 0) {
         const inner = source[i];
-        if (inner === '\\') {
+        const innerPrev = source[i - 1];
+        if (inner === '\\' && !skipInSingle) {
           i += 2;
           continue;
         }
-        if (inner === '(') depth += 1;
-        else if (inner === ')') depth -= 1;
+        if (inner === "'" && !skipInDouble && innerPrev !== '\\') {
+          skipInSingle = !skipInSingle;
+        } else if (inner === '"' && !skipInSingle && innerPrev !== '\\') {
+          skipInDouble = !skipInDouble;
+        } else if (!skipInSingle && !skipInDouble) {
+          if (inner === '(') depth += 1;
+          else if (inner === ')') depth -= 1;
+        }
         i += 1;
       }
       i -= 1;
@@ -184,10 +202,13 @@ function extractSubshellGroups(input) {
     if (ch === '(') {
       let depth = 1;
       let body = '';
+      let bodyInSingle = false;
+      let bodyInDouble = false;
       i += 1;
       while (i < source.length && depth > 0) {
         const inner = source[i];
-        if (inner === '\\') {
+        const innerPrev = source[i - 1];
+        if (inner === '\\' && !bodyInSingle) {
           body += inner;
           if (i + 1 < source.length) {
             body += source[i + 1];
@@ -195,12 +216,18 @@ function extractSubshellGroups(input) {
             continue;
           }
         }
-        if (inner === '(') {
-          depth += 1;
-        } else if (inner === ')') {
-          depth -= 1;
-          if (depth === 0) {
-            break;
+        if (inner === "'" && !bodyInDouble && innerPrev !== '\\') {
+          bodyInSingle = !bodyInSingle;
+        } else if (inner === '"' && !bodyInSingle && innerPrev !== '\\') {
+          bodyInDouble = !bodyInDouble;
+        } else if (!bodyInSingle && !bodyInDouble) {
+          if (inner === '(') {
+            depth += 1;
+          } else if (inner === ')') {
+            depth -= 1;
+            if (depth === 0) {
+              break;
+            }
           }
         }
         body += inner;
