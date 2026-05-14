@@ -71,7 +71,7 @@ Table results = user.findWith("username LIKE ?", new Object[]{"%jam%"});
 // Fluent Condition Builder
 Condition condition = new Condition();
 condition.setRequestFields("id,username");
-Table results = user.find(
+Table filtered = user.find(
     condition.select("`users`").and("email LIKE ?").orderBy("id DESC"),
     new Object[]{"%@example.com"}
 );
