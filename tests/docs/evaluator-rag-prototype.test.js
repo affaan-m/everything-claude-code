@@ -135,7 +135,7 @@ test('roadmap points to the evaluator RAG prototype and hosted PR check', () => 
 
   assert.ok(roadmap.includes('docs/architecture/evaluator-rag-prototype.md'));
   assert.ok(roadmap.includes('examples/evaluator-rag-prototype/'));
-  assert.ok(roadmap.includes('Deterministic hosted PR check, cached output scoring, and retrieval planning integrated; hosted model judging remains future'));
+  assert.ok(roadmap.includes('Deterministic hosted PR check, cached output scoring, retrieval planning, and judge contract integrated; live hosted model execution remains future'));
 });
 
 test('billing readiness scenario rejects launch copy overclaims', () => {
