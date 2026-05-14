@@ -179,6 +179,24 @@ if (test('blocks plain text input with --no-verify', () => {
   assert.strictEqual(r.code, 2, `expected exit 2, got ${r.code}`);
 })) passed++; else failed++;
 
+// --- Case-insensitivity of git config keys + -t template short option ---
+
+if (test('blocks case-variant core.hooksPath (lowercase)', () => {
+  const r = runHook({ tool_input: { command: 'git -c core.hookspath=/dev/null commit -m "msg"' } });
+  assert.strictEqual(r.code, 2, `expected exit 2, got ${r.code}`);
+  assert.ok(/core\.hookspath/i.test(r.stderr), `stderr should mention core.hooksPath: ${r.stderr}`);
+})) passed++; else failed++;
+
+if (test('blocks case-variant core.hooksPath (uppercase)', () => {
+  const r = runHook({ tool_input: { command: 'git -c core.HOOKSPATH=/dev/null commit -m "msg"' } });
+  assert.strictEqual(r.code, 2, `expected exit 2, got ${r.code}`);
+})) passed++; else failed++;
+
+if (test('still allows -tn (n is the -t template path, not a flag)', () => {
+  const r = runHook({ tool_input: { command: 'git commit -tn -m "msg"' } });
+  assert.strictEqual(r.code, 0, `expected exit 0, got ${r.code}: ${r.stderr}`);
+})) passed++; else failed++;
+
 console.log('─'.repeat(50));
 console.log(`Passed: ${passed}  Failed: ${failed}`);
 

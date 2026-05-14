@@ -64,6 +64,16 @@ function runNode(scriptPath, args = [], options = {}) {
   }
 }
 
+function normalizeComparablePath(filePath) {
+  const normalized = path.normalize(filePath);
+  return process.platform === 'win32' ? normalized.toLowerCase() : normalized;
+}
+
+function pathListIncludes(paths, expectedPath) {
+  const normalizedExpected = normalizeComparablePath(expectedPath);
+  return paths.some(filePath => normalizeComparablePath(filePath) === normalizedExpected);
+}
+
 function test(name, fn) {
   try {
     fn();
@@ -117,7 +127,7 @@ function runTests() {
 
       const parsed = JSON.parse(repairResult.stdout);
       assert.strictEqual(parsed.results[0].status, 'repaired');
-      assert.ok(parsed.results[0].repairedPaths.includes(managedPath));
+      assert.ok(pathListIncludes(parsed.results[0].repairedPaths, managedPath));
       assert.strictEqual(fs.readFileSync(managedPath, 'utf8'), expectedContent);
       assert.ok(fs.existsSync(statePath));
     } finally {

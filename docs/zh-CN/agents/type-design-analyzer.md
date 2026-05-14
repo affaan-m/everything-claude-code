@@ -2,7 +2,7 @@
 name: type-design-analyzer
 description: 分析封装、不变式表达、实用性和强制性的类型设计。
 model: sonnet
-tools: [Read, Grep, Glob, Bash]
+tools: [Read, Grep, Glob]
 ---
 
 # 类型设计分析代理

@@ -2,7 +2,7 @@
 name: code-explorer
 description: 通过追踪执行路径、映射架构层和记录依赖关系，深入分析现有代码库功能，为新的开发提供信息。
 model: sonnet
-tools: [Read, Grep, Glob, Bash]
+tools: [Read, Grep, Glob]
 ---
 
 # 代码探索代理

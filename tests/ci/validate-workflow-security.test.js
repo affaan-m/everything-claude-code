@@ -99,6 +99,67 @@ function run() {
     assert.match(result.stderr, /pull_request\.head\.sha/);
   })) passed++; else failed++;
 
+  if (test('rejects shared cache use in pull_request_target workflows', () => {
+    const result = runValidator({
+      'unsafe-pr-target-cache.yml': `name: Unsafe\non:\n  pull_request_target:\n    branches: [main]\njobs:\n  inspect:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/cache@v5\n        with:\n          path: ~/.npm\n          key: cache\n      - run: echo inspect\n`,
+    });
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on pull_request_target cache use');
+    assert.match(result.stderr, /pull_request_target workflows must not restore or save shared dependency caches/);
+  })) passed++; else failed++;
+
+  if (test('rejects npm ci without ignore-scripts in workflows with write permissions', () => {
+    const result = runValidator({
+      'unsafe-write-install.yml': `name: Unsafe\non:\n  workflow_dispatch:\npermissions:\n  contents: read\n  issues: write\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm ci\n`,
+    });
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on npm ci without --ignore-scripts');
+    assert.match(result.stderr, /write permissions must install npm dependencies with --ignore-scripts/);
+  })) passed++; else failed++;
+
+  if (test('allows npm ci with ignore-scripts in workflows with write permissions', () => {
+    const result = runValidator({
+      'safe-write-install.yml': `name: Safe\non:\n  workflow_dispatch:\npermissions:\n  contents: read\n  issues: write\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm ci --ignore-scripts\n`,
+    });
+    assert.strictEqual(result.status, 0, result.stderr || result.stdout);
+  })) passed++; else failed++;
+
+  if (test('rejects checkout credential persistence in workflows with write permissions', () => {
+    const result = runValidator({
+      'unsafe-write-checkout.yml': `name: Unsafe\non:\n  workflow_dispatch:\npermissions:\n  contents: write\njobs:\n  release:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: npm ci --ignore-scripts\n`,
+    });
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on credential-persisting checkout');
+    assert.match(result.stderr, /write permissions must disable checkout credential persistence/);
+  })) passed++; else failed++;
+
+  if (test('allows checkout with disabled credential persistence in workflows with write permissions', () => {
+    const result = runValidator({
+      'safe-write-checkout.yml': `name: Safe\non:\n  workflow_dispatch:\npermissions:\n  contents: write\njobs:\n  release:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          persist-credentials: false\n      - run: npm ci --ignore-scripts\n`,
+    });
+    assert.strictEqual(result.status, 0, result.stderr || result.stdout);
+  })) passed++; else failed++;
+
+  if (test('rejects actions/cache in workflows with id-token write', () => {
+    const result = runValidator({
+      'unsafe-oidc-cache.yml': `name: Unsafe\non:\n  push:\npermissions:\n  contents: read\n  id-token: write\njobs:\n  release:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/cache@v5\n        with:\n          path: ~/.npm\n          key: cache\n`,
+    });
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on id-token workflow cache use');
+    assert.match(result.stderr, /id-token: write must not restore or save shared dependency caches/);
+  })) passed++; else failed++;
+
+  if (test('rejects npm audit without registry signature verification', () => {
+    const result = runValidator({
+      'unsafe-audit.yml': `name: Unsafe\non:\n  push:\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm audit --audit-level=high\n`,
+    });
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail when npm audit signatures is missing');
+    assert.match(result.stderr, /npm audit must also verify registry signatures/);
+  })) passed++; else failed++;
+
+  if (test('allows npm audit when registry signatures are verified', () => {
+    const result = runValidator({
+      'safe-audit.yml': `name: Safe\non:\n  push:\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: |\n          npm audit signatures\n          npm audit --audit-level=high\n`,
+    });
+    assert.strictEqual(result.status, 0, result.stderr || result.stdout);
+  })) passed++; else failed++;
+
   console.log(`\nPassed: ${passed}`);
   console.log(`Failed: ${failed}`);
 

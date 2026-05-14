@@ -176,6 +176,8 @@ function runTests() {
     assert.ok(languages.includes('golang'));
     assert.ok(languages.includes('kotlin'));
     assert.ok(languages.includes('rust'));
+    assert.ok(languages.includes('ruby'));
+    assert.ok(languages.includes('rails'));
     assert.ok(languages.includes('cpp'));
     assert.ok(languages.includes('c'));
     assert.ok(languages.includes('csharp'));
@@ -430,6 +432,22 @@ function runTests() {
     assert.ok(selection.moduleIds.includes('rules-core'));
     assert.ok(selection.moduleIds.includes('framework-language'),
       'fsharp should resolve to framework-language module');
+  })) passed++; else failed++;
+
+  if (test('resolves ruby and rails legacy compatibility into framework-language and security modules', () => {
+    const selection = resolveLegacyCompatibilitySelection({
+      target: 'cursor',
+      legacyLanguages: ['ruby', 'rails'],
+    });
+
+    assert.deepStrictEqual(selection.canonicalLegacyLanguages, ['ruby', 'ruby']);
+    assert.ok(selection.moduleIds.includes('rules-core'));
+    assert.strictEqual(selection.moduleIds.filter(moduleId => moduleId === 'framework-language').length, 1);
+    assert.strictEqual(selection.moduleIds.filter(moduleId => moduleId === 'security').length, 1);
+    assert.ok(selection.moduleIds.includes('framework-language'),
+      'ruby should resolve to framework-language module');
+    assert.ok(selection.moduleIds.includes('security'),
+      'rails alias should add security guidance for Rails apps');
   })) passed++; else failed++;
 
   if (test('keeps antigravity legacy compatibility selections target-safe', () => {

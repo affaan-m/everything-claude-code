@@ -143,6 +143,8 @@ function runTests() {
       const languages = listAvailableLanguages(sourceRoot);
 
       assert.ok(languages.includes('typescript'));
+      assert.ok(languages.includes('ruby'));
+      assert.ok(languages.includes('rails'));
       assert.ok(languages.includes('zig'));
       assert.ok(!languages.includes('common'));
       assert.deepStrictEqual([...languages].sort(), languages);

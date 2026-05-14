@@ -35,7 +35,12 @@ const GIT_COMMANDS_WITH_NO_VERIFY = [
  */
 const VALID_BEFORE_GIT = ' \t\n\r;&|$`(<{!"\']/.~\\';
 
-const GIT_CONFIG_KEY_PREFIX = 'core.hooksPath=';
+// Git config section and variable names are case-insensitive
+// (subsection names are case-sensitive but core.hooksPath has none),
+// so we normalize the candidate token to lowercase before matching.
+// See https://git-scm.com/docs/git-config — "The variable names are
+// case-insensitive."
+const GIT_CONFIG_KEY_PREFIX = 'core.hookspath=';
 
 const COMMIT_OPTIONS_WITH_VALUE = new Set([
   '-m',
@@ -67,7 +72,12 @@ const COMMIT_OPTIONS_WITH_INLINE_VALUE = [
   '--pathspec-from-file=',
 ];
 
-const COMMIT_SHORT_OPTIONS_WITH_VALUE = new Set(['m', 'F', 'C', 'c']);
+// Short options that take a value. When seen as part of a combined
+// short-option token (e.g. -tn), git's parser treats the rest of the
+// token as the option's value (template path 'n' here), so the scanner
+// must stop at this character — anything after it is the inline value,
+// not another flag.
+const COMMIT_SHORT_OPTIONS_WITH_VALUE = new Set(['m', 'F', 'C', 'c', 't']);
 
 function tokenizeShellWords(input, start = 0, end = input.length) {
   const tokens = [];
@@ -413,17 +423,21 @@ function hasHooksPathOverride(input, detected) {
 
   for (let i = 0; i < tokens.length; i++) {
     const value = tokens[i].value;
+    // Git config section + variable names are case-insensitive, so a
+    // bypass attempt like `core.HOOKSPATH=...` or `core.hookspath=...`
+    // must compare against the lowercased token.
+    const lowered = value.toLowerCase();
 
     if (value === '-c') {
       const next = tokens[i + 1] && tokens[i + 1].value;
-      if (typeof next === 'string' && next.startsWith(GIT_CONFIG_KEY_PREFIX)) {
+      if (typeof next === 'string' && next.toLowerCase().startsWith(GIT_CONFIG_KEY_PREFIX)) {
         return true;
       }
       i++;
       continue;
     }
 
-    if (value.startsWith(`-c${GIT_CONFIG_KEY_PREFIX}`)) {
+    if (lowered.startsWith(`-c${GIT_CONFIG_KEY_PREFIX}`)) {
       return true;
     }
   }

@@ -57,13 +57,78 @@ function seedMinimalRepo(rootDir, overrides = {}) {
     'scripts/session-inspect.js': '--list-adapters --write inspectSessionTarget',
     'scripts/lib/session-adapters/registry.js': 'module.exports = {};',
     'scripts/harness-audit.js': 'Deterministic harness audit --format overall_score',
+    'scripts/work-items.js': 'sync-github github-pr github-issue sourceClosedAt ecc-work-items-sync-github',
     'scripts/hooks/session-activity-tracker.js': 'tool-usage.jsonl session_id tool_name',
     'ecc2/src/observability/mod.rs': 'ToolCallEvent RiskAssessment ToolLogger',
     'ecc2/src/session/store.rs': 'insert_tool_log query_tool_logs',
     'ecc2/src/session/manager.rs': 'sync_tool_activity_metrics tool-usage.jsonl',
     'docs/architecture/observability-readiness.md': 'node scripts/observability-readiness.js --format json',
+    'docs/architecture/progress-sync-contract.md': [
+      'Linear GitHub handoff work-items issue capacity status update',
+      'queue counts release gate flow lanes evidence'
+    ].join('\n'),
+    'docs/ECC-2.0-GA-ROADMAP.md': [
+      'Execution Lanes And Tracking Contract',
+      'docs/architecture/progress-sync-contract.md',
+      'Linear progress',
+      'Every significant merge batch'
+    ].join('\n'),
+    'docs/architecture/hud-status-session-control.md': [
+      'context toolCalls activeAgents todos checks cost risk queueState',
+      'create resume status stop diff pr mergeQueue conflictQueue',
+      'Linear GitHub handoff'
+    ].join('\n'),
+    'examples/hud-status-contract.json': JSON.stringify({
+      schema_version: 'ecc.hud-status.v1',
+      context: {},
+      toolCalls: {},
+      activeAgents: [],
+      todos: {},
+      checks: {},
+      cost: {},
+      risk: {},
+      queueState: {},
+      sessionControls: {},
+      sync: {}
+    }, null, 2),
     'docs/releases/2.0.0-rc.1/quickstart.md': 'observability-readiness.md',
-    'docs/releases/2.0.0-rc.1/release-notes.md': 'observability-readiness.md'
+    'docs/releases/2.0.0-rc.1/release-notes.md': 'observability-readiness.md',
+    'docs/releases/2.0.0-rc.1/publication-readiness.md': [
+      'Publication Gates',
+      'Required Command Evidence',
+      'Do Not Publish If',
+      'npm dist-tag',
+      'GitGuardian',
+      'Dependabot alerts',
+      'npm audit signatures'
+    ].join('\n'),
+    'docs/releases/2.0.0-rc.1/publication-evidence-2026-05-13-post-hardening.md': [
+      'npm audit --json',
+      'npm audit signatures',
+      'cargo audit',
+      'Dependabot alert API',
+      'TanStack',
+      'Mini Shai-Hulud',
+      'GitGuardian Security Checks'
+    ].join('\n'),
+    'docs/security/supply-chain-incident-response.md': [
+      'TanStack',
+      'Mini Shai-Hulud',
+      'npm audit signatures',
+      'trusted publishing',
+      'pull_request_target',
+      'id-token: write'
+    ].join('\n'),
+    'scripts/ci/validate-workflow-security.js': [
+      'persist-credentials: false',
+      'npm audit signatures',
+      'pull_request_target',
+      'id-token: write',
+      'shared cache'
+    ].join('\n'),
+    'tests/ci/validate-workflow-security.test.js': 'npm audit signatures persist-credentials: false',
+    'tests/scripts/npm-publish-surface.test.js': 'npm pack --dry-run Python bytecode',
+    'tests/docs/ecc2-release-surface.test.js': 'publication-readiness.md',
   };
 
   for (const [relativePath, content] of Object.entries({ ...files, ...overrides })) {
@@ -189,6 +254,57 @@ function runTests() {
 
       assert.strictEqual(report.ready, false);
       assert.ok(report.checks.some(check => check.id === 'release-observability-onramp' && !check.pass));
+      assert.ok(report.checks.some(check => check.id === 'loop-status-live-signal' && check.pass));
+    } finally {
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('missing HUD status contract fails without disturbing core tool checks', () => {
+    const projectRoot = createTempDir('observability-readiness-hud-fail-');
+
+    try {
+      seedMinimalRepo(projectRoot, {
+        'examples/hud-status-contract.json': null
+      });
+      const report = buildReport(projectRoot);
+
+      assert.strictEqual(report.ready, false);
+      assert.ok(report.checks.some(check => check.id === 'hud-status-control-contract' && !check.pass));
+      assert.ok(report.checks.some(check => check.id === 'loop-status-live-signal' && check.pass));
+    } finally {
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('missing progress sync contract fails without disturbing core tool checks', () => {
+    const projectRoot = createTempDir('observability-readiness-sync-fail-');
+
+    try {
+      seedMinimalRepo(projectRoot, {
+        'docs/architecture/progress-sync-contract.md': null
+      });
+      const report = buildReport(projectRoot);
+
+      assert.strictEqual(report.ready, false);
+      assert.ok(report.checks.some(check => check.id === 'progress-sync-contract' && !check.pass));
+      assert.ok(report.checks.some(check => check.id === 'loop-status-live-signal' && check.pass));
+    } finally {
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('missing release safety evidence fails without disturbing live status checks', () => {
+    const projectRoot = createTempDir('observability-readiness-release-safety-fail-');
+
+    try {
+      seedMinimalRepo(projectRoot, {
+        'docs/releases/2.0.0-rc.1/publication-evidence-2026-05-13-post-hardening.md': 'npm audit --json only'
+      });
+      const report = buildReport(projectRoot);
+
+      assert.strictEqual(report.ready, false);
+      assert.ok(report.checks.some(check => check.id === 'release-safety-evidence' && !check.pass));
       assert.ok(report.checks.some(check => check.id === 'loop-status-live-signal' && check.pass));
     } finally {
       cleanup(projectRoot);

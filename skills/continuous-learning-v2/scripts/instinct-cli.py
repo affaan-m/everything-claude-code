@@ -82,6 +82,27 @@ def _normalize_remote_url(remote_url: str) -> str:
     return normalized.lower() if is_network else normalized
 
 
+def _stream_can_encode(text: str, stream=None) -> bool:
+    stream = stream or sys.stdout
+    encoding = getattr(stream, "encoding", None) or sys.getdefaultencoding()
+    try:
+        text.encode(encoding)
+    except (LookupError, UnicodeEncodeError):
+        return False
+    return True
+
+
+def _confidence_bar(confidence, stream=None) -> str:
+    try:
+        filled = int(float(confidence) * 10)
+    except (TypeError, ValueError):
+        filled = 5
+    filled = max(0, min(10, filled))
+
+    full, empty = ("\u2588", "\u2591") if _stream_can_encode("\u2588\u2591", stream) else ("#", ".")
+    return full * filled + empty * (10 - filled)
+
+
 def _project_hash(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:12]
 
@@ -550,7 +571,7 @@ def _print_instincts_by_domain(instincts: list[dict]) -> None:
 
         for inst in sorted(domain_instincts, key=lambda x: -x.get('confidence', 0.5)):
             conf = inst.get('confidence', 0.5)
-            conf_bar = '\u2588' * int(conf * 10) + '\u2591' * (10 - int(conf * 10))
+            conf_bar = _confidence_bar(conf)
             trigger = inst.get('trigger', 'unknown trigger')
             scope_tag = f"[{inst.get('scope', '?')}]"
 

@@ -126,10 +126,10 @@ update_readme_version_row() {
     const current = fs.readFileSync(file, "utf8");
     const updated = current.replace(
       new RegExp(
-        `^\\| \\*\\*${escape(label)}\\*\\* \\| ${escape(firstCol)} \\| ${escape(secondCol)} \\| ${escape(thirdCol)} \\| [0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)? \\|$`,
+        `^(\\| \\*\\*${escape(label)}\\*\\* \\| ${escape(firstCol)} \\| ${escape(secondCol)} \\| ${escape(thirdCol)} \\| )[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?( \\|(?: [^|]+ \\|)*)$`,
         "m"
       ),
-      `| **${label}** | ${firstCol} | ${secondCol} | ${thirdCol} | ${version} |`
+      (_, prefix, suffix) => `${prefix}${version}${suffix}`
     );
     if (updated === current) {
       console.error(`Error: could not update README version row in ${file}`);
