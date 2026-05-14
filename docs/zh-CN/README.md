@@ -637,16 +637,16 @@ Claude Code v2.1+ **会自动加载** 任何已安装插件中的 `hooks/hooks.j
 >
 > # 选项 A：用户级规则（适用于所有项目）
 > mkdir -p ~/.claude/rules
-> cp -r everything-claude-code/rules/common/* ~/.claude/rules/
-> cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/   # 选择您的技术栈
-> cp -r everything-claude-code/rules/python/* ~/.claude/rules/
-> cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
-> cp -r everything-claude-code/rules/php/* ~/.claude/rules/
+> cp -r everything-claude-code/rules/common ~/.claude/rules/common
+> cp -r everything-claude-code/rules/typescript ~/.claude/rules/typescript   # 选择您的技术栈
+> cp -r everything-claude-code/rules/python ~/.claude/rules/python
+> cp -r everything-claude-code/rules/golang ~/.claude/rules/golang
+> cp -r everything-claude-code/rules/php ~/.claude/rules/php
 >
 > # 选项 B：项目级规则（仅适用于当前项目）
 > mkdir -p .claude/rules
-> cp -r everything-claude-code/rules/common/* .claude/rules/
-> cp -r everything-claude-code/rules/typescript/* .claude/rules/     # 选择您的技术栈
+> cp -r everything-claude-code/rules/common .claude/rules/common
+> cp -r everything-claude-code/rules/typescript .claude/rules/typescript     # 选择您的技术栈
 > ```
 
 ***
@@ -663,11 +663,11 @@ git clone https://github.com/affaan-m/everything-claude-code.git
 cp everything-claude-code/agents/*.md ~/.claude/agents/
 
 # Copy rules (common + language-specific)
-cp -r everything-claude-code/rules/common/* ~/.claude/rules/
-cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/   # pick your stack
-cp -r everything-claude-code/rules/python/* ~/.claude/rules/
-cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
-cp -r everything-claude-code/rules/php/* ~/.claude/rules/
+cp -r everything-claude-code/rules/common ~/.claude/rules/common
+cp -r everything-claude-code/rules/typescript ~/.claude/rules/typescript   # pick your stack
+cp -r everything-claude-code/rules/python ~/.claude/rules/python
+cp -r everything-claude-code/rules/golang ~/.claude/rules/golang
+cp -r everything-claude-code/rules/php ~/.claude/rules/php
 
 # Copy maintained commands
 cp everything-claude-code/commands/*.md ~/.claude/commands/
@@ -885,7 +885,7 @@ claude
 cp everything-claude-code/agents/*.md ~/.claude/agents/
 
 # Just rules
-cp -r everything-claude-code/rules/common/* ~/.claude/rules/
+cp -r everything-claude-code/rules/common ~/.claude/rules/common
 ```
 
 每个组件都是完全独立的。
