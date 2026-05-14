@@ -59,7 +59,7 @@ const PROTECTED_FILES = new Set([
   '.stylelintrc.yml',
   '.markdownlint.json',
   '.markdownlint.yaml',
-  '.markdownlintrc',
+  '.markdownlintrc'
 ]);
 
 function parseInput(inputOrRaw) {
@@ -99,13 +99,22 @@ function run(inputOrRaw, options = {}) {
     // The hook's purpose is blocking modifications; writing a brand-new
     // config file in a project that has none is a legitimate bootstrap
     // path (e.g. scaffolding ESLint into a fresh repo).
-    let exists = false;
+    //
+    // Fail closed on any stat error other than ENOENT. fs.existsSync would
+    // swallow EACCES/EPERM and return false, which would let an agent
+    // overwrite a file whose parent directory we cannot traverse. statSync
+    // exposes the error code explicitly so we can treat only genuine
+    // "file not found" as absent.
+    let exists = true;
     try {
-      exists = fs.existsSync(filePath);
-    } catch {
-      // Be conservative: on stat errors (EACCES, etc.) treat as existing
-      // so we never silently weaken the guard.
-      exists = true;
+      fs.statSync(filePath);
+      // stat succeeded — file exists.
+    } catch (err) {
+      if (err && err.code === 'ENOENT') {
+        exists = false;
+      }
+      // Any other error (EACCES, EPERM, ELOOP, etc.) leaves exists=true
+      // so the guard is never silently weakened.
     }
 
     if (!exists) {
@@ -118,7 +127,7 @@ function run(inputOrRaw, options = {}) {
         `BLOCKED: Modifying ${basename} is not allowed. ` +
         'Fix the source code to satisfy linter/formatter rules instead of ' +
         'weakening the config. If this is a legitimate config change, ' +
-        'disable the config-protection hook temporarily.',
+        'disable the config-protection hook temporarily.'
     };
   }
 
@@ -143,7 +152,7 @@ process.stdin.on('data', chunk => {
 process.stdin.on('end', () => {
   const result = run(raw, {
     truncated,
-    maxStdin: Number(process.env.ECC_HOOK_INPUT_MAX_BYTES) || MAX_STDIN,
+    maxStdin: Number(process.env.ECC_HOOK_INPUT_MAX_BYTES) || MAX_STDIN
   });
 
   if (result.stderr) {
