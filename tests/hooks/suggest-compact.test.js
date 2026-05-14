@@ -366,6 +366,66 @@ function runTests() {
   })) passed++;
   else failed++;
 
+  // ── hookSpecificOutput JSON on stdout ──
+  // Claude Code 2.1+ drops non-blocking PreToolUse stderr; the suggestion has
+  // to ride on stdout as { hookSpecificOutput: { additionalContext } } to reach
+  // the model. These tests pin that contract.
+  console.log('\nhookSpecificOutput stdout JSON:');
+
+  if (test('emits hookSpecificOutput.additionalContext on stdout at threshold', () => {
+    const { sessionId, counterFile, cleanup } = createCounterContext();
+    cleanup();
+    fs.writeFileSync(counterFile, '49');
+    const result = runCompact({ CLAUDE_SESSION_ID: sessionId });
+    assert.strictEqual(result.code, 0, 'Should exit 0');
+    assert.ok(result.stdout.trim().length > 0, `Expected stdout payload at threshold. Got: "${result.stdout}"`);
+    const parsed = JSON.parse(result.stdout);
+    assert.strictEqual(parsed.hookSpecificOutput.hookEventName, 'PreToolUse',
+      `hookEventName should be PreToolUse. Got: ${JSON.stringify(parsed)}`);
+    assert.ok(parsed.hookSpecificOutput.additionalContext.includes('50 tool calls reached'),
+      `additionalContext should include threshold text. Got: ${parsed.hookSpecificOutput.additionalContext}`);
+    cleanup();
+  })) passed++;
+  else failed++;
+
+  if (test('emits hookSpecificOutput.additionalContext on stdout at +25 interval', () => {
+    const { sessionId, counterFile, cleanup } = createCounterContext();
+    cleanup();
+    // threshold=3, set counter to 27 → next run = 28 → 28-3=25 → interval hit
+    fs.writeFileSync(counterFile, '27');
+    const result = runCompact({ CLAUDE_SESSION_ID: sessionId, COMPACT_THRESHOLD: '3' });
+    assert.strictEqual(result.code, 0, 'Should exit 0');
+    assert.ok(result.stdout.trim().length > 0, `Expected stdout payload at interval. Got: "${result.stdout}"`);
+    const parsed = JSON.parse(result.stdout);
+    assert.strictEqual(parsed.hookSpecificOutput.hookEventName, 'PreToolUse');
+    assert.ok(parsed.hookSpecificOutput.additionalContext.includes('28 tool calls'),
+      `additionalContext should include count. Got: ${parsed.hookSpecificOutput.additionalContext}`);
+    cleanup();
+  })) passed++;
+  else failed++;
+
+  if (test('emits no stdout below threshold (silent)', () => {
+    const { sessionId, cleanup } = createCounterContext();
+    cleanup();
+    const result = runCompact({ CLAUDE_SESSION_ID: sessionId, COMPACT_THRESHOLD: '5' });
+    assert.strictEqual(result.code, 0);
+    assert.strictEqual(result.stdout.trim(), '',
+      `Expected empty stdout below threshold. Got: "${result.stdout}"`);
+    cleanup();
+  })) passed++;
+  else failed++;
+
+  if (test('still writes [StrategicCompact] to stderr (debug log retained)', () => {
+    const { sessionId, counterFile, cleanup } = createCounterContext();
+    cleanup();
+    fs.writeFileSync(counterFile, '49');
+    const result = runCompact({ CLAUDE_SESSION_ID: sessionId });
+    assert.ok(result.stderr.includes('[StrategicCompact]'),
+      `stderr should retain [StrategicCompact] for debug log capture. Got: "${result.stderr}"`);
+    cleanup();
+  })) passed++;
+  else failed++;
+
   // ── Round 64: default session ID fallback ──
   console.log('\nDefault session ID fallback (Round 64):');
 
