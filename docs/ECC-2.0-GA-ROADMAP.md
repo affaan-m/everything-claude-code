@@ -23,7 +23,7 @@ As of 2026-05-15:
   `env -u GITHUB_TOKEN` in this shell so the configured GitHub host credential
   is used instead of the incompatible environment token.
 - GitHub discussions are current across those tracked repos:
-  `affaan-m/everything-claude-code` has 57 total discussions and 0 without
+  `affaan-m/everything-claude-code` has 58 total discussions and 0 without
   maintainer touch after May 15 maintainer updates on #73 and #1239; AgentShield,
   JARVIS, ECC Tools, and the ECC Tools website have discussions disabled or 0
   total discussions.
@@ -32,8 +32,10 @@ As of 2026-05-15:
   and Publication, AgentShield Enterprise Iteration, ECC Tools Next-Level
   Platform, and Legacy Audit and Salvage.
 - `docs/releases/2.0.0-rc.1/publication-evidence-2026-05-15.md` records the
-  queue, discussion, Linear roadmap, ECC Tools access, and PR #1921
-  Mini Shai-Hulud/TanStack follow-up evidence refresh.
+  queue, discussion, Linear roadmap, ECC Tools access, Mini Shai-Hulud/TanStack
+  full-campaign follow-up, restore-only CI cache hardening, AgentShield #85
+  registry-signature verification, ECC-Tools #75 billing-gate tightening, and
+  PR #1935 `ecc2` current-dir test stabilization evidence refresh.
 - `npm run harness:audit -- --format json` reports 70/70 on current `main`.
 - `npm run observability:ready` reports 21/21 readiness on current `main`,
   including the GitHub/Linear/handoff/roadmap progress-sync contract.

@@ -7,9 +7,9 @@ npm publication, plugin tag, marketplace submission, or announcement post.
 
 | Field | Evidence |
 | --- | --- |
-| Upstream main base | `acbc152375c215b4fe2a20abb29dfb733727c4cb` |
-| Evidence branch | `docs/ecc2-rc1-preview-pack-refresh` |
-| Evidence scope | Current `main` after PR #1921, #1924, #1925, #1926, AgentShield #83/#84 follow-ups, and ECC-Tools #74 billing verifier follow-up |
+| Upstream main base | `6b8a49a6eed11cc7df19d8b1f2add085b37cf466` |
+| Evidence branch | `codex/rc1-current-publication-evidence` |
+| Evidence scope | Current `main` after PR #1932, #1933, #1934, and #1935; AgentShield #85; and ECC-Tools #75 |
 | Git remote | `https://github.com/affaan-m/everything-claude-code.git` |
 | Local status caveat | Working tree had the unrelated untracked `docs/drafts/` directory before this docs refresh |
 
@@ -27,6 +27,7 @@ final release commit with a clean checkout before publishing.
 | ECC website PRs/issues | `env -u GITHUB_TOKEN gh pr list` and `env -u GITHUB_TOKEN gh issue list` for `ECC-Tools/ECC-website` | 0 open PRs, 0 open issues |
 | Trunk discussions | GraphQL discussion count and maintainer-touch sweep | 58 total discussions; 0 without maintainer touch after May 15 maintainer comments |
 | Other repo discussions | GraphQL discussion count for AgentShield, JARVIS, ECC Tools, and ECC website | Discussions disabled or 0 total |
+| Platform audit | `node scripts/platform-audit.js --json --allow-untracked docs/drafts/` | Ready; open PRs 0/20, open issues 0/20, discussions needing maintainer touch 0, conflicting open PRs 0, blocking dirty files 0 |
 
 The ECC Tools organization is reachable with the configured GitHub host
 credential. In this shell, the exported `GITHUB_TOKEN` overrides that credential
@@ -66,15 +67,24 @@ Project documents added in Linear:
 | PR #1921 | Merged supply-chain IOC expansion for Mini Shai-Hulud/TanStack follow-up |
 | Node IPC follow-up / PR #1924 | Added May 14 `node-ipc` malicious-version, hash, DNS, and runtime IOC coverage |
 | PR #1926 | Added `platform:audit` and `security-ioc-scan` command surfaces plus release workflow IOC gates |
+| PR #1932 | Added `scripts/platform-audit.js` JSON/Markdown/file-output modes so queue, discussion, roadmap, and release evidence can be captured as a durable artifact instead of terminal-only output |
+| PR #1933 | Expanded home-scan IOC coverage to Claude `settings.local.json`, `.claude/hooks/hooks.json`, and user-level VS Code / Code Insiders `tasks.json` across macOS, Linux, and Windows |
+| PR #1934 | Switched ordinary CI dependency caches to restore-only `actions/cache/restore` usage so test jobs do not save mutable dependency state back into shared caches |
+| PR #1935 | Stabilized `ecc2` current-directory-mutating tests with a test-only serialized current-dir guard, preserving the Rust release-surface gate under parallel test execution |
 | AgentShield PR #83 | Merged Mini Shai-Hulud IOC coverage for TanStack, Mistral, OpenSearch, Guardrails, UiPath, Squawk, Claude Code / VS Code persistence, and dead-man switch artifacts |
 | AgentShield PR #84 | Merged the broader Mini Shai-Hulud full-campaign affected-package table, including additional `@cap-js`, `@draftlab`, `@tallyui`, `intercom-client`, `lightning`, and related package/version IOCs |
-| Trunk merge commits | `f04702bdac132662c8496e817bcd850c86e2b854`, `ee85e1482e3d6322ddb2706392ea0fc97469bd26`, `13585f1092c92fa3f20ffe0d756e40c5720b0de5` |
-| AgentShield merge commits | `f899b27ba3fa60ec7e0dca41cc2dadcb1a1fb75d`, `d1aa5313afd915d0b7296e57aabaeb979b1ea93b` |
-| Local IOC tests | `node tests/ci/scan-supply-chain-iocs.test.js` passed 12/12 |
+| AgentShield PR #85 | Added GitHub Action supply-chain verification, gating, and evidence packs so AgentShield's enterprise scanner release path has a verified registry-signature surface |
+| ECC-Tools PR #75 | Tightened the native GitHub payments announcement gate so public billing claims remain blocked until live Marketplace-managed test-account readback is ready |
+| Trunk merge commits | `f04702bdac132662c8496e817bcd850c86e2b854`, `ee85e1482e3d6322ddb2706392ea0fc97469bd26`, `13585f1092c92fa3f20ffe0d756e40c5720b0de5`, `553d507ea63bc252e815a924c0d2baea961351a1`, `c0bac4d6ced7f78a5464c6e3fd8cfbb43515a9d5`, `c2c54e7c0b84a213848b9ab3dfeb3ae16fb9844d`, `6b8a49a6eed11cc7df19d8b1f2add085b37cf466` |
+| AgentShield merge commits | `f899b27ba3fa60ec7e0dca41cc2dadcb1a1fb75d`, `d1aa5313afd915d0b7296e57aabaeb979b1ea93b`, `908d8f3a52a6a65b21e737339b56906603eb1345` |
+| ECC-Tools merge commits | `6d00d67043e92cadc80f160bfe947115bfef33b1` |
+| Local IOC tests | `node tests/ci/scan-supply-chain-iocs.test.js` passed 15/15 |
 | Unicode safety | `node scripts/ci/check-unicode-safety.js` passed |
-| IOC scan | `npm run security:ioc-scan` passed |
-| Root suite | `npm test` passed 2427/2427, 0 failed |
-| Repo sweeps | `node scripts/ci/scan-supply-chain-iocs.js --root <ECC-workspace> --home` passed with 1238 files inspected; targeted persistence path checks found no active `gh-token-monitor`, `pgsql-monitor`, `transformers.pyz`, or `pgmonitor.py` artifacts |
+| IOC scan | `node scripts/ci/scan-supply-chain-iocs.js --root <ECC-workspace> --home` passed with 1241 files inspected |
+| npm registry verification | `npm audit signatures` verified 241 registry signatures and 30 attestations; `npm audit --audit-level=moderate` found 0 vulnerabilities |
+| Rust release-surface gate | `cd ecc2 && cargo test` passed 462/462 with the existing 14 dead-code/unused warnings |
+| Root suite | `node tests/run-all.js` passed 2442/2442, 0 failed |
+| Repo sweeps | Targeted persistence path checks found no active `gh-token-monitor`, `pgsql-monitor`, `transformers.pyz`, or `pgmonitor.py` artifacts |
 
 The May 15 IOC expansion added coverage for OpenSearch/Mistral/Guardrails/
 UiPath/Squawk-style campaign variants, `opensearch_init.js`, `vite_setup.mjs`,
@@ -94,6 +104,13 @@ the extra affected npm package scopes and unscoped packages reported in the
 current Wiz table, rebuilding `dist/action.js` and `dist/index.js`, and passing
 1758/1758 local tests plus the full AgentShield GitHub Actions matrix before
 merge.
+AgentShield PR #85 and trunk PR #1934 extend the response from IOC detection
+into release-path hardening: AgentShield now records registry-signature evidence
+for its action surface, while trunk CI restore-only dependency caches avoid
+writing ordinary test dependency state back into shared caches.
+PR #1933 closes the practical workstation persistence gap for the documented
+Claude Code and VS Code automation paths, including user-level config files that
+survive package uninstall.
 
 ## Preview Pack State
 

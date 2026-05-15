@@ -14,8 +14,9 @@ For the May 13 release-readiness evidence refresh, see
 [`publication-evidence-2026-05-13.md`](publication-evidence-2026-05-13.md).
 For the May 13 post-hardening evidence refresh after PR #1850 and PR #1851, see
 [`publication-evidence-2026-05-13-post-hardening.md`](publication-evidence-2026-05-13-post-hardening.md).
-For the May 15 queue, discussion, Linear roadmap, and Mini Shai-Hulud/TanStack
-follow-up evidence refresh after PR #1921, see
+For the May 15 queue, discussion, Linear roadmap, Mini Shai-Hulud/TanStack
+follow-up, restore-only cache, AgentShield release-verification, billing-gate,
+and `ecc2` current-dir guard evidence refresh through PR #1935, see
 [`publication-evidence-2026-05-15.md`](publication-evidence-2026-05-15.md).
 
 ## Release Identity Matrix
@@ -60,13 +61,13 @@ Record the exact commit SHA and command output before any publication action:
 | Adapter scorecard | `npm run harness:adapters -- --check` | PASS | `publication-evidence-2026-05-13.md`: PASS, 11 adapters |
 | Observability readiness | `npm run observability:ready` | 21/21 passing | `publication-evidence-2026-05-13-post-hardening.md`: 21/21, ready true after release-safety gate refresh |
 | Release safety gate | `npm run observability:ready -- --format json` | Release Safety category passing with publication readiness, supply-chain, workflow security, package surface, and release-surface evidence | `publication-evidence-2026-05-13-post-hardening.md`: Release Safety 3/3 |
-| Supply-chain verification | `npm audit --json`; `npm audit signatures`; `cd ecc2 && cargo audit -q`; Dependabot alerts; GitGuardian Security Checks | 0 vulnerabilities/alerts, registry signatures verified, GitGuardian clean | `publication-evidence-2026-05-13-post-hardening.md`: npm, cargo, Dependabot, TanStack/Mini Shai-Hulud, and GitGuardian evidence |
-| Root suite | `node tests/run-all.js` | 0 failures | `publication-evidence-2026-05-13-post-hardening.md`: 2381 passed, 0 failed |
+| Supply-chain verification | `npm audit --json`; `npm audit signatures`; `cd ecc2 && cargo audit -q`; Dependabot alerts; GitGuardian Security Checks | 0 vulnerabilities/alerts, registry signatures verified, GitGuardian clean | `publication-evidence-2026-05-15.md`: npm registry signatures and attestations verified, 0 moderate-or-higher npm vulnerabilities, Mini Shai-Hulud/TanStack IOC scan clean |
+| Root suite | `node tests/run-all.js` | 0 failures | `publication-evidence-2026-05-15.md`: 2442 passed, 0 failed |
 | Markdown lint | `npx markdownlint-cli '**/*.md' --ignore node_modules` | 0 failures | `publication-evidence-2026-05-13.md`: passed after zh-CN CLAUDE list-marker normalization |
 | Package surface | `node tests/scripts/npm-publish-surface.test.js` | 0 failures; no Python bytecode in npm tarball | `2/2` passed in May 12 evidence pass |
 | Release surface | `node tests/docs/ecc2-release-surface.test.js` | 0 failures | `publication-evidence-2026-05-13.md`: 18/18 passed |
-| Optional Rust surface | `cd ecc2 && cargo test` | 0 failures or explicit deferral | `publication-evidence-2026-05-13.md`: 462/462 passed, warnings only |
-| Queue baseline | `gh pr list` / `gh issue list` across trunk, AgentShield, JARVIS, ECC Tools, and ECC website | Under 20 open PRs and under 20 open issues | `publication-evidence-2026-05-15.md`: 0 open PRs and 0 open issues across checked repos |
+| Optional Rust surface | `cd ecc2 && cargo test` | 0 failures or explicit deferral | `publication-evidence-2026-05-15.md`: 462/462 passed, existing warnings only after PR #1935 current-dir guard |
+| Queue baseline | `gh pr list` / `gh issue list` across trunk, AgentShield, JARVIS, ECC Tools, and ECC website | Under 20 open PRs and under 20 open issues | `publication-evidence-2026-05-15.md`: platform audit ready, 0 open PRs and 0 open issues across checked repos |
 | Discussion baseline | GraphQL discussion count and maintainer-touch sweep | No unmanaged active discussion queue | `publication-evidence-2026-05-15.md`: 58 trunk discussions, 0 without maintainer touch; other tracked repos disabled or 0 |
 | Linear roadmap | Linear project and issue readback | Detailed roadmap exists with release, security, AgentShield, ECC Tools, legacy, and observability lanes | `publication-evidence-2026-05-15.md`: project and 16 issue lanes recorded |
 
