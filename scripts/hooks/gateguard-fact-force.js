@@ -25,7 +25,11 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const { extractCommandSubstitutions } = require('../lib/shell-substitution');
+const {
+  extractCommandSubstitutions,
+  extractSubshellGroups,
+  extractBraceGroups
+} = require('../lib/shell-substitution');
 
 // Session state — scoped per session to avoid cross-session races.
 const STATE_DIR = process.env.GATEGUARD_STATE_DIR || path.join(process.env.HOME || process.env.USERPROFILE || '/tmp', '.gateguard');
@@ -294,6 +298,51 @@ function isDestructiveGit(tokens) {
  * @param {string} command
  * @returns {boolean}
  */
+/**
+ * Walk every executable body reachable from a raw command line and
+ * return them as a flat list. Bodies that bash will execute live in
+ * three different syntactic constructs, each handled by a sibling
+ * extractor in `scripts/lib/shell-substitution.js`:
+ *   - `$(...)` and backticks via `extractCommandSubstitutions`
+ *   - plain `(...)` subshells   via `extractSubshellGroups`
+ *   - `{ ...; }` brace groups   via `extractBraceGroups`
+ *
+ * Each extractor recurses into its own syntax. The BFS here adds
+ * cross-syntax discovery — e.g. a `(...)` inside a `$(...)` body, or
+ * a `{ ...; }` inside a `(...)` body — by feeding every harvested
+ * body back through all three extractors. A `seen` set bounds the
+ * cost to O(unique bodies).
+ *
+ * @param {string} raw
+ * @returns {string[]}
+ */
+function collectExecutableBodies(raw) {
+  const bodies = [raw];
+  const queue = [raw];
+  const seen = new Set();
+
+  while (queue.length) {
+    const current = queue.shift();
+    if (seen.has(current)) continue;
+    seen.add(current);
+
+    for (const body of extractCommandSubstitutions(current)) {
+      bodies.push(body);
+      queue.push(body);
+    }
+    for (const body of extractSubshellGroups(current)) {
+      bodies.push(body);
+      queue.push(body);
+    }
+    for (const body of extractBraceGroups(current)) {
+      bodies.push(body);
+      queue.push(body);
+    }
+  }
+
+  return bodies;
+}
+
 function isDestructiveBash(command) {
   // The SQL/dd phrases live in command bodies, not as flag-bearing
   // arguments, so we still match them by regex — but on the input
@@ -303,7 +352,7 @@ function isDestructiveBash(command) {
   const flattened = explodeSubshells(stripQuotedStrings(raw));
   if (DESTRUCTIVE_SQL_DD.test(flattened)) return true;
 
-  const segments = [raw, ...extractCommandSubstitutions(raw)].flatMap(splitCommandSegments);
+  const segments = collectExecutableBodies(raw).flatMap(splitCommandSegments);
   for (const segment of segments) {
     if (DESTRUCTIVE_SQL_DD.test(stripQuotedStrings(segment))) return true;
     const tokens = tokenize(segment);
