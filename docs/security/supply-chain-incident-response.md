@@ -7,16 +7,24 @@ they do not prove that the workflow executed the intended code path.
 
 ## Current External Trigger
 
-As of 2026-05-13, the active incident class is the May 2026 TanStack npm
-supply-chain compromise. ECC also keeps Mini Shai-Hulud-style npm worm IOCs in
-the same release-safety sweep because both incident classes target package
-install/publish paths and developer credentials:
+As of 2026-05-15, the active incident class is the May 2026 TanStack npm
+supply-chain compromise and broader Mini Shai-Hulud campaign. ECC keeps the
+same IOC sweep for the related npm/PyPI waves because these incidents target
+package install/publish paths, AI developer-tool configs, and developer
+credentials:
 
 - TanStack reported 84 malicious versions across 42 `@tanstack/*` packages,
   published on 2026-05-11 between 19:20 and 19:26 UTC.
 - GitHub advisory `GHSA-g7cv-rxg3-hmpx` / `CVE-2026-45321` describes
   install-time malware that harvests cloud credentials, GitHub tokens, npm
   credentials, Vault tokens, Kubernetes tokens, and SSH private keys.
+- Follow-on reporting from StepSecurity, Socket, Aikido, and Wiz describes the
+  same campaign expanding into packages associated with Mistral AI, UiPath,
+  OpenSearch, Guardrails AI, Squawk, and other npm/PyPI packages.
+- The live IOC set includes persistence through Claude Code
+  `.claude/settings.json`, VS Code `.vscode/tasks.json`, and OS-level
+  `gh-token-monitor` LaunchAgent/systemd services. Remove those persistence
+  hooks before rotating a stolen GitHub token.
 - The attack chain combined `pull_request_target`, GitHub Actions cache
   poisoning across a fork/base trust boundary, and OIDC token extraction from a
   GitHub Actions runner.
@@ -38,8 +46,8 @@ Run this before a release candidate, after a broad dependency bump, and after
 any package-registry incident.
 
 ```bash
-rg -n '(@tanstack|mistralai|uipath|opensearch|guardrails|axios)' \
-  package.json package-lock.json .opencode/package.json .opencode/package-lock.json
+npm run security:ioc-scan
+node scripts/ci/scan-supply-chain-iocs.js --home
 npm ci --ignore-scripts
 npm audit signatures
 npm audit --audit-level=high
@@ -63,16 +71,23 @@ If ECC or a maintainer machine installed a known-bad package version:
    - npm package versions and tarball integrity hashes;
    - outbound network logs where available.
 3. Treat the install host as compromised if lifecycle scripts may have run.
-4. Rotate every credential reachable by the process:
+4. Remove persistence hooks before token revocation:
+   - `~/.claude/settings.json` `SessionStart` hooks and adjacent
+     `router_runtime.js` / `setup.mjs` payload files;
+   - `.vscode/tasks.json` folder-open tasks and adjacent payload files;
+   - `~/Library/LaunchAgents/com.user.gh-token-monitor.plist`;
+   - `~/.config/systemd/user/gh-token-monitor.service`;
+   - `~/.local/bin/gh-token-monitor.sh`.
+5. Rotate every credential reachable by the process:
    - npm automation tokens and maintainer tokens;
    - GitHub PATs, fine-grained tokens, deploy keys, and Actions secrets;
    - cloud credentials, Vault tokens, Kubernetes service-account tokens, SSH
      keys, and local `.npmrc` tokens;
    - any MCP, plugin, or harness credentials available in environment variables
      or user-scope config.
-5. Purge GitHub Actions caches for affected repositories.
-6. Reinstall from a clean environment with `npm ci --ignore-scripts` first.
-7. Re-enable lifecycle scripts only after the dependency tree and package
+6. Purge GitHub Actions caches for affected repositories.
+7. Reinstall from a clean environment with `npm ci --ignore-scripts` first.
+8. Re-enable lifecycle scripts only after the dependency tree and package
    versions are pinned to known-clean releases.
 
 ## GitHub Actions Rules
@@ -108,6 +123,8 @@ Before tagging or publishing ECC:
 Escalate to a maintainer security review before any release or merge if:
 
 - a dependency lockfile references a package named in an active advisory;
+- `node scripts/ci/scan-supply-chain-iocs.js --home` finds Claude Code,
+  VS Code, or OS-level persistence indicators;
 - a workflow combines `pull_request_target` with dependency installation,
   cache restore/save, PR-head checkout, or write permissions;
 - a release workflow combines `id-token: write` with shared cache usage;
