@@ -7,9 +7,9 @@ npm publication, plugin tag, marketplace submission, or announcement post.
 
 | Field | Evidence |
 | --- | --- |
-| Upstream main base | `f04702bdac132662c8496e817bcd850c86e2b854` |
-| Evidence branch | `docs/ecc2-rc1-may15-readiness` |
-| Evidence scope | Current `main` after PR #1921 supply-chain IOC expansion |
+| Upstream main base | `acbc152375c215b4fe2a20abb29dfb733727c4cb` |
+| Evidence branch | `docs/ecc2-rc1-preview-pack-refresh` |
+| Evidence scope | Current `main` after PR #1921, #1924, #1925, #1926, and AgentShield #83 follow-up |
 | Git remote | `https://github.com/affaan-m/everything-claude-code.git` |
 | Local status caveat | Working tree had the unrelated untracked `docs/drafts/` directory before this docs refresh |
 
@@ -25,7 +25,7 @@ final release commit with a clean checkout before publishing.
 | JARVIS PRs/issues | `gh pr list` and `gh issue list` for `affaan-m/JARVIS` | 0 open PRs, 0 open issues |
 | ECC Tools PRs/issues | `env -u GITHUB_TOKEN gh pr list` and `env -u GITHUB_TOKEN gh issue list` for `ECC-Tools/ECC-Tools` | 0 open PRs, 0 open issues |
 | ECC website PRs/issues | `env -u GITHUB_TOKEN gh pr list` and `env -u GITHUB_TOKEN gh issue list` for `ECC-Tools/ECC-website` | 0 open PRs, 0 open issues |
-| Trunk discussions | GraphQL discussion count for `affaan-m/everything-claude-code` | 57 total discussions; 0 without maintainer touch after May 15 maintainer comments |
+| Trunk discussions | GraphQL discussion count and maintainer-touch sweep | 58 total discussions; 0 without maintainer touch after May 15 maintainer comments |
 | Other repo discussions | GraphQL discussion count for AgentShield, JARVIS, ECC Tools, and ECC website | Discussions disabled or 0 total |
 
 The ECC Tools organization is reachable with the configured GitHub host
@@ -64,13 +64,16 @@ Project documents added in Linear:
 | Surface | Evidence |
 | --- | --- |
 | PR #1921 | Merged supply-chain IOC expansion for Mini Shai-Hulud/TanStack follow-up |
-| Node IPC follow-up | Added May 14 `node-ipc` malicious-version, hash, DNS, and runtime IOC coverage |
-| Merge commit | `f04702bdac132662c8496e817bcd850c86e2b854` |
+| Node IPC follow-up / PR #1924 | Added May 14 `node-ipc` malicious-version, hash, DNS, and runtime IOC coverage |
+| PR #1926 | Added `platform:audit` and `security-ioc-scan` command surfaces plus release workflow IOC gates |
+| AgentShield PR #83 | Merged Mini Shai-Hulud IOC coverage for TanStack, Mistral, OpenSearch, Guardrails, UiPath, Squawk, Claude Code / VS Code persistence, and dead-man switch artifacts |
+| Trunk merge commits | `f04702bdac132662c8496e817bcd850c86e2b854`, `ee85e1482e3d6322ddb2706392ea0fc97469bd26`, `13585f1092c92fa3f20ffe0d756e40c5720b0de5` |
+| AgentShield merge commit | `f899b27ba3fa60ec7e0dca41cc2dadcb1a1fb75d` |
 | Local IOC tests | `node tests/ci/scan-supply-chain-iocs.test.js` passed 12/12 |
 | Unicode safety | `node scripts/ci/check-unicode-safety.js` passed |
 | IOC scan | `npm run security:ioc-scan` passed |
 | Root suite | `npm test` passed 2427/2427, 0 failed |
-| Repo sweeps | IOC scanner sweep passed for trunk, AgentShield, ECC Tools, ECC website, JARVIS, and the ECC document mirror |
+| Repo sweeps | `node scripts/ci/scan-supply-chain-iocs.js --root <ECC-workspace> --home` passed with 1238 files inspected; targeted persistence path checks found no active `gh-token-monitor`, `pgsql-monitor`, `transformers.pyz`, or `pgmonitor.py` artifacts |
 
 The May 15 IOC expansion added coverage for OpenSearch/Mistral/Guardrails/
 UiPath/Squawk-style campaign variants, `opensearch_init.js`, `vite_setup.mjs`,
@@ -80,6 +83,28 @@ The May 15 node-ipc follow-up blocks `node-ipc@9.1.6`, `9.2.3`, `10.1.1`,
 `10.1.2`, `11.0.0`, `11.1.0`, and `12.0.1`, plus the `node-ipc.cjs` payload
 hash, malicious tarball hashes, DNS exfil domains, and runtime markers reported
 by Socket.
+AgentShield PR #83 adds the matching scanner-side enterprise coverage:
+version-pinned package detections, `.claude` / `.vscode` automation-surface
+discovery, `gh-token-monitor` LaunchAgent/systemd/local-bin artifact detection,
+network/payload IOCs, built action/CLI bundles, 1758/1758 local tests, and
+green GitHub Actions verification before merge.
+
+## Preview Pack State
+
+`preview-pack-manifest.md` now assembles the rc.1 preview-pack boundary:
+
+- release notes, quickstart, launch checklist, publication readiness, naming
+  matrix, and May 15 evidence;
+- `docs/HERMES-SETUP.md` and `skills/hermes-imports/SKILL.md` as the public
+  Hermes-specialized surface;
+- cross-harness, harness-adapter, observability, and progress-sync docs;
+- X, LinkedIn, article, Telegram, and demo collateral that must receive final
+  live URLs after release/package/plugin publication;
+- explicit blockers for GitHub release, npm `next` publish, Claude plugin,
+  Codex plugin, ECC Tools billing/product-readiness, and announcements.
+
+The preview pack is assembled for final clean-checkout gating, but it is still
+not a publication action.
 
 ## Current Publication Blockers
 

@@ -6,6 +6,8 @@ URLs from the exact commit being released.
 
 For the current rc.1 naming decision and package/plugin publication path, see
 [`naming-and-publication-matrix.md`](naming-and-publication-matrix.md).
+For the assembled rc.1 preview pack boundary, see
+[`preview-pack-manifest.md`](preview-pack-manifest.md).
 For the May 12 dry-run evidence pass, see
 [`publication-evidence-2026-05-12.md`](publication-evidence-2026-05-12.md).
 For the May 13 release-readiness evidence refresh, see
@@ -64,7 +66,7 @@ Record the exact commit SHA and command output before any publication action:
 | Release surface | `node tests/docs/ecc2-release-surface.test.js` | 0 failures | `publication-evidence-2026-05-13.md`: 18/18 passed |
 | Optional Rust surface | `cd ecc2 && cargo test` | 0 failures or explicit deferral | `publication-evidence-2026-05-13.md`: 462/462 passed, warnings only |
 | Queue baseline | `gh pr list` / `gh issue list` across trunk, AgentShield, JARVIS, ECC Tools, and ECC website | Under 20 open PRs and under 20 open issues | `publication-evidence-2026-05-15.md`: 0 open PRs and 0 open issues across checked repos |
-| Discussion baseline | GraphQL discussion count and maintainer-touch sweep | No unmanaged active discussion queue | `publication-evidence-2026-05-15.md`: 57 trunk discussions, 0 without maintainer touch; other tracked repos disabled or 0 |
+| Discussion baseline | GraphQL discussion count and maintainer-touch sweep | No unmanaged active discussion queue | `publication-evidence-2026-05-15.md`: 58 trunk discussions, 0 without maintainer touch; other tracked repos disabled or 0 |
 | Linear roadmap | Linear project and issue readback | Detailed roadmap exists with release, security, AgentShield, ECC Tools, legacy, and observability lanes | `publication-evidence-2026-05-15.md`: project and 16 issue lanes recorded |
 
 ## Do Not Publish If

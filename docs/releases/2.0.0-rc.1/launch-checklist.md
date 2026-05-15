@@ -8,6 +8,9 @@
 - verify `docs/HERMES-SETUP.md` is present
 - verify `docs/architecture/cross-harness.md` is present
 - verify this release directory is committed
+- verify `preview-pack-manifest.md` lists the public release, Hermes, adapter,
+  observability, publication, and announcement artifacts before running final
+  publish checks
 - keep private tokens, personal docs, and raw workspace exports out of the repo
 
 ## Release Surface

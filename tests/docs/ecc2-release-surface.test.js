@@ -50,6 +50,7 @@ const expectedReleaseFiles = [
   'telegram-handoff.md',
   'demo-prompts.md',
   'quickstart.md',
+  'preview-pack-manifest.md',
   'publication-readiness.md',
 ];
 
@@ -144,6 +145,34 @@ test('release notes route new contributors through the rc.1 quickstart', () => {
   assert.ok(releaseNotes.includes('[rc.1 quickstart](quickstart.md)'));
 });
 
+test('preview pack manifest assembles release, Hermes, and publication gates', () => {
+  const manifest = read('docs/releases/2.0.0-rc.1/preview-pack-manifest.md');
+
+  for (const artifact of [
+    'docs/HERMES-SETUP.md',
+    'skills/hermes-imports/SKILL.md',
+    'docs/architecture/harness-adapter-compliance.md',
+    'docs/releases/2.0.0-rc.1/publication-readiness.md',
+    'docs/releases/2.0.0-rc.1/naming-and-publication-matrix.md',
+  ]) {
+    assert.ok(manifest.includes(artifact), `preview pack manifest missing ${artifact}`);
+  }
+
+  for (const blocker of [
+    'GitHub prerelease `v2.0.0-rc.1`',
+    'npm `ecc-universal@2.0.0-rc.1`',
+    'Claude plugin tag',
+    'Codex plugin publication',
+    'ECC Tools billing/product readiness',
+  ]) {
+    assert.ok(manifest.includes(blocker), `preview pack manifest missing blocker ${blocker}`);
+  }
+
+  assert.ok(manifest.includes('no raw workspace exports'));
+  assert.ok(manifest.includes('Final Verification Commands'));
+  assert.ok(manifest.includes('Reference-Inspired Adapter Direction'));
+});
+
 test('rc.1 quickstart gives a clone-to-cross-harness path', () => {
   const quickstart = read('docs/releases/2.0.0-rc.1/quickstart.md');
   for (const heading of ['Clone', 'Install', 'Verify', 'First Skill', 'Switch Harness']) {
@@ -215,6 +244,9 @@ test('publication readiness checklist gates public release actions on evidence',
 
   assert.ok(source.includes('publication-evidence-2026-05-15.md'));
   assert.ok(may15Evidence.includes('PR #1921'));
+  assert.ok(may15Evidence.includes('AgentShield PR #83'));
+  assert.ok(may15Evidence.includes('| Trunk discussions | GraphQL discussion count and maintainer-touch sweep | 58 total discussions;'));
+  assert.ok(source.includes('58 trunk discussions, 0 without maintainer touch'));
   assert.ok(may15Evidence.includes('env -u GITHUB_TOKEN'));
   assert.ok(may15Evidence.includes('ITO-44'));
   assert.ok(may15Evidence.includes('0 open PRs, 0 open issues'));
