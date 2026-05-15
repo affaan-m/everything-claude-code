@@ -1282,6 +1282,77 @@ function runTests() {
       'double-quoted dollar-paren subshell');
   })) passed++; else failed++;
 
+  // --- Subshell + brace-group bypass coverage ---
+  // Destructive commands inside `(...)`, `((...))`, and `{ ...; }`
+  // execute the same way they do at the top level, so the destructive
+  // classifier must see inside those bodies too.
+
+  if (test('denies rm -rf inside plain (...) subshell group', () => {
+    expectDestructiveDeny('(rm -rf /tmp/junk)', 'plain subshell group');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf inside nested ((...)) subshell', () => {
+    expectDestructiveDeny('((rm -rf /tmp/junk))', 'nested subshell');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf inside { ...; } brace group', () => {
+    expectDestructiveDeny('{ rm -rf /tmp/junk; }', 'brace group');
+  })) passed++; else failed++;
+
+  if (test('denies git push --force inside plain (...) subshell group', () => {
+    expectDestructiveDeny('(git push --force origin main)',
+      'git-force in subshell');
+  })) passed++; else failed++;
+
+  if (test('denies git push --force inside { ...; } brace group', () => {
+    expectDestructiveDeny('{ git push --force origin main; }',
+      'git-force in brace group');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf nested across () and {} (cross-syntax)', () => {
+    expectDestructiveDeny('(echo y; { rm -rf /tmp/junk; })',
+      '() containing {} cross-syntax');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf nested across $() and () (cross-syntax)', () => {
+    expectDestructiveDeny('$(echo y; (rm -rf /tmp/junk))',
+      '$() containing () cross-syntax');
+  })) passed++; else failed++;
+
+  // Negative cases — literals and non-destructive commands must NOT
+  // be promoted to destructive by the new grouping-body walker.
+
+  if (test('allows literal (rm -rf ...) inside single quotes', () => {
+    expectAllow("git commit -m '(rm -rf /tmp/junk)'",
+      'single-quoted subshell literal');
+  })) passed++; else failed++;
+
+  if (test('allows literal (rm -rf ...) inside double quotes', () => {
+    expectAllow('echo "(rm -rf /tmp/junk)"',
+      'double-quoted subshell literal');
+  })) passed++; else failed++;
+
+  if (test('allows literal { rm -rf ...; } inside double quotes', () => {
+    expectAllow('echo "{ rm -rf /tmp/junk; }"',
+      'double-quoted brace-group literal');
+  })) passed++; else failed++;
+
+  if (test('allows non-destructive (echo hello)', () => {
+    expectAllow('(echo hello)', 'non-destructive subshell');
+  })) passed++; else failed++;
+
+  if (test('allows non-destructive { echo hello; }', () => {
+    expectAllow('{ echo hello; }', 'non-destructive brace group');
+  })) passed++; else failed++;
+
+  if (test('allows {rm -rf} — no space after { is not a brace group', () => {
+    // bash treats `{rm` as a single token; no destructive intent
+    // can be statically derived from this form, and the command
+    // would not actually run rm at runtime either.
+    expectAllow('echo {rm -rf /tmp/junk}',
+      'no-space brace literal');
+  })) passed++; else failed++;
+
   // Cleanup only the temp directory created by this test file.
   try {
     if (fs.existsSync(stateDir)) {
