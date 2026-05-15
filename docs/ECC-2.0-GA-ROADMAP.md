@@ -33,9 +33,10 @@ As of 2026-05-15:
   Platform, and Legacy Audit and Salvage.
 - `docs/releases/2.0.0-rc.1/publication-evidence-2026-05-15.md` records the
   queue, discussion, Linear roadmap, ECC Tools access, Mini Shai-Hulud/TanStack
-  full-campaign follow-up, restore-only CI cache hardening, AgentShield #85
+  full-campaign follow-up, scheduled supply-chain watch coverage, no-lifecycle
+  CI install hardening, GitHub Actions cache purge, AgentShield #85
   registry-signature verification, AgentShield #86 evidence-pack CI provenance,
-  ECC-Tools #75 billing-gate tightening, and PR #1936 release-evidence refresh.
+  ECC-Tools #75 billing-gate tightening, and PR #1941 release-evidence refresh.
 - `npm run harness:audit -- --format json` reports 70/70 on current `main`.
 - `npm run observability:ready` reports 21/21 readiness on current `main`,
   including the GitHub/Linear/handoff/roadmap progress-sync contract.
@@ -46,6 +47,12 @@ As of 2026-05-15:
   `docs/security/supply-chain-incident-response.md`, plus a workflow-security
   validator rule blocking `pull_request_target` workflows from restoring or
   saving shared dependency caches.
+- PR #1940 merged as `6951b8d5d29d13cac6b89b461104ad03838553de` and added a
+  scheduled supply-chain watch workflow that emits a durable IOC report.
+- PR #1941 merged as `f7035b5644ffc857879b71c39353b2141f17c3f0` and hardened
+  CI dependency installs against lifecycle-hook compromise by disabling package
+  manager lifecycle scripts, removing Actions dependency cache use, and adding
+  validator coverage so those patterns cannot be reintroduced silently.
 - PR #1850 merged as `248673271455e9dc85b8add2a6ab76107b718639` and removed
   shell access from read-only analyzer agents and zh-CN copies, reducing
   AgentShield high findings on that surface without changing operator agents.
