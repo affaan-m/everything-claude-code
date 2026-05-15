@@ -19,6 +19,9 @@ follow-up, restore-only cache, AgentShield release-verification, billing-gate,
 AgentShield #86 evidence-pack provenance, and `ecc2` current-dir guard evidence
 refresh through PR #1936, see
 [`publication-evidence-2026-05-15.md`](publication-evidence-2026-05-15.md).
+For the operator-facing prompt-to-artifact readiness dashboard from the same
+May 15 pass, see
+[`operator-readiness-dashboard-2026-05-15.md`](operator-readiness-dashboard-2026-05-15.md).
 
 ## Release Identity Matrix
 
@@ -71,6 +74,7 @@ Record the exact commit SHA and command output before any publication action:
 | Queue baseline | `gh pr list` / `gh issue list` across trunk, AgentShield, JARVIS, ECC Tools, and ECC website | Under 20 open PRs and under 20 open issues | `publication-evidence-2026-05-15.md`: platform audit ready, 0 open PRs and 0 open issues across checked repos |
 | Discussion baseline | GraphQL discussion count and maintainer-touch sweep | No unmanaged active discussion queue | `publication-evidence-2026-05-15.md`: 58 trunk discussions, 0 without maintainer touch; other tracked repos disabled or 0 |
 | Linear roadmap | Linear project and issue readback | Detailed roadmap exists with release, security, AgentShield, ECC Tools, legacy, and observability lanes | `publication-evidence-2026-05-15.md`: project and 16 issue lanes recorded |
+| Operator readiness dashboard | `node scripts/platform-audit.js --json --allow-untracked docs/drafts/` plus prompt-to-artifact audit | Current queue state mapped to macro-goal deliverables and incomplete gaps | `operator-readiness-dashboard-2026-05-15.md`: live status, command evidence, Linear state, and next work order |
 
 ## Do Not Publish If
 

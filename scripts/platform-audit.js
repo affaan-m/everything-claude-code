@@ -477,6 +477,7 @@ function buildLocalEvidenceChecks(rootDir) {
   const progressSync = readText(rootDir, 'docs/architecture/progress-sync-contract.md');
   const supplyChain = readText(rootDir, 'docs/security/supply-chain-incident-response.md');
   const evidence = readText(rootDir, 'docs/releases/2.0.0-rc.1/publication-evidence-2026-05-15.md');
+  const operatorDashboard = readText(rootDir, 'docs/releases/2.0.0-rc.1/operator-readiness-dashboard-2026-05-15.md');
 
   return [
     buildCheck(
@@ -508,6 +509,12 @@ function buildLocalEvidenceChecks(rootDir) {
       includesAll(evidence, ['TanStack', 'Mini Shai-Hulud', 'Node IPC follow-up', 'node-ipc', 'IOC scan']) ? 'pass' : 'fail',
       'rc.1 evidence includes current supply-chain verification artifacts',
       { path: 'docs/releases/2.0.0-rc.1/publication-evidence-2026-05-15.md' }
+    ),
+    buildCheck(
+      'operator-readiness-dashboard',
+      includesAll(operatorDashboard, ['Prompt-To-Artifact Checklist', 'ITO-44', 'ITO-59', 'PR queue', 'Not complete']) ? 'pass' : 'fail',
+      'operator dashboard maps macro-goal requirements to current evidence and open gaps',
+      { path: 'docs/releases/2.0.0-rc.1/operator-readiness-dashboard-2026-05-15.md' }
     ),
   ];
 }

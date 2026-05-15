@@ -60,6 +60,13 @@ function seedRepo(rootDir, overrides = {}) {
       'Node IPC follow-up',
       'node-ipc',
       'IOC scan'
+    ].join('\n'),
+    'docs/releases/2.0.0-rc.1/operator-readiness-dashboard-2026-05-15.md': [
+      'Prompt-To-Artifact Checklist',
+      'ITO-44',
+      'ITO-59',
+      'PR queue',
+      'Not complete'
     ].join('\n')
   };
 
@@ -188,6 +195,7 @@ function runTests() {
       assert.strictEqual(parsed.github.skipped, true);
       assert.ok(parsed.checks.some(check => check.id === 'roadmap-linear-mirror' && check.status === 'pass'));
       assert.ok(parsed.checks.some(check => check.id === 'supply-chain-runbook' && check.status === 'pass'));
+      assert.ok(parsed.checks.some(check => check.id === 'operator-readiness-dashboard' && check.status === 'pass'));
       assert.deepStrictEqual(parsed.top_actions, []);
     } finally {
       cleanup(projectRoot);
