@@ -9,7 +9,7 @@ npm publication, plugin tag, marketplace submission, or announcement post.
 | --- | --- |
 | Upstream main base | `acbc152375c215b4fe2a20abb29dfb733727c4cb` |
 | Evidence branch | `docs/ecc2-rc1-preview-pack-refresh` |
-| Evidence scope | Current `main` after PR #1921, #1924, #1925, #1926, and AgentShield #83 follow-up |
+| Evidence scope | Current `main` after PR #1921, #1924, #1925, #1926, AgentShield #83/#84 follow-ups, and ECC-Tools #74 billing verifier follow-up |
 | Git remote | `https://github.com/affaan-m/everything-claude-code.git` |
 | Local status caveat | Working tree had the unrelated untracked `docs/drafts/` directory before this docs refresh |
 
@@ -67,8 +67,9 @@ Project documents added in Linear:
 | Node IPC follow-up / PR #1924 | Added May 14 `node-ipc` malicious-version, hash, DNS, and runtime IOC coverage |
 | PR #1926 | Added `platform:audit` and `security-ioc-scan` command surfaces plus release workflow IOC gates |
 | AgentShield PR #83 | Merged Mini Shai-Hulud IOC coverage for TanStack, Mistral, OpenSearch, Guardrails, UiPath, Squawk, Claude Code / VS Code persistence, and dead-man switch artifacts |
+| AgentShield PR #84 | Merged the broader Mini Shai-Hulud full-campaign affected-package table, including additional `@cap-js`, `@draftlab`, `@tallyui`, `intercom-client`, `lightning`, and related package/version IOCs |
 | Trunk merge commits | `f04702bdac132662c8496e817bcd850c86e2b854`, `ee85e1482e3d6322ddb2706392ea0fc97469bd26`, `13585f1092c92fa3f20ffe0d756e40c5720b0de5` |
-| AgentShield merge commit | `f899b27ba3fa60ec7e0dca41cc2dadcb1a1fb75d` |
+| AgentShield merge commits | `f899b27ba3fa60ec7e0dca41cc2dadcb1a1fb75d`, `d1aa5313afd915d0b7296e57aabaeb979b1ea93b` |
 | Local IOC tests | `node tests/ci/scan-supply-chain-iocs.test.js` passed 12/12 |
 | Unicode safety | `node scripts/ci/check-unicode-safety.js` passed |
 | IOC scan | `npm run security:ioc-scan` passed |
@@ -88,6 +89,11 @@ version-pinned package detections, `.claude` / `.vscode` automation-surface
 discovery, `gh-token-monitor` LaunchAgent/systemd/local-bin artifact detection,
 network/payload IOCs, built action/CLI bundles, 1758/1758 local tests, and
 green GitHub Actions verification before merge.
+AgentShield PR #84 closes the later full-campaign package-table gap by adding
+the extra affected npm package scopes and unscoped packages reported in the
+current Wiz table, rebuilding `dist/action.js` and `dist/index.js`, and passing
+1758/1758 local tests plus the full AgentShield GitHub Actions matrix before
+merge.
 
 ## Preview Pack State
 
@@ -114,8 +120,9 @@ not a publication action.
 - Codex plugin public marketplace/manual submission path still needs final
   owner verification.
 - ECC Tools PR #73 added a fail-closed `/api/billing/readiness`
-  `announcementGate` for native GitHub payments claims, but the live
-  Marketplace-managed test-account readback still must return
+  `announcementGate` for native GitHub payments claims, and ECC Tools PR #74
+  added `npm run billing:announcement-gate` as the operator verifier, but the
+  live Marketplace-managed test-account readback still must return
   `announcementGate.ready === true` before any public payment announcement.
 - Release notes, X, LinkedIn, and longform copy still need final live URLs after
   release/package/plugin URLs exist.
