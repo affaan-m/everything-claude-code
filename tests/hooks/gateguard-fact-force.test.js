@@ -1283,16 +1283,20 @@ function runTests() {
   })) passed++; else failed++;
 
   // --- Subshell + brace-group bypass coverage ---
-  // Destructive commands inside `(...)`, `((...))`, and `{ ...; }`
-  // execute the same way they do at the top level, so the destructive
-  // classifier must see inside those bodies too.
+  // Destructive commands inside `(...)` and `{ ...; }` execute the
+  // same way they do at the top level, so the destructive classifier
+  // must see inside those bodies too. Nested parens `((...))` are
+  // arithmetic-evaluation syntax in bash (not a nested subshell), but
+  // our parser depth-tracks them conservatively — i.e. the inner
+  // tokens are still scanned for destructive intent. That's safety
+  // over precision and the right default for this gate.
 
   if (test('denies rm -rf inside plain (...) subshell group', () => {
     expectDestructiveDeny('(rm -rf /tmp/junk)', 'plain subshell group');
   })) passed++; else failed++;
 
-  if (test('denies rm -rf inside nested ((...)) subshell', () => {
-    expectDestructiveDeny('((rm -rf /tmp/junk))', 'nested subshell');
+  if (test('denies rm -rf inside ((...)) — arithmetic eval, treated conservatively', () => {
+    expectDestructiveDeny('((rm -rf /tmp/junk))', 'arithmetic-eval parens');
   })) passed++; else failed++;
 
   if (test('denies rm -rf inside { ...; } brace group', () => {
@@ -1351,6 +1355,40 @@ function runTests() {
     // would not actually run rm at runtime either.
     expectAllow('echo {rm -rf /tmp/junk}',
       'no-space brace literal');
+  })) passed++; else failed++;
+
+  // --- Round 1 review fixes: brace-group span-skip + boundary ---
+  // Verifies the body-accumulation loop in `extractBraceGroups`
+  // correctly walks past `$(...)`, `(...)`, and backtick spans so
+  // a `}` inside one of those does not terminate the brace group
+  // early, plus the nested `{` boundary rule.
+
+  if (test('denies rm -rf in brace group with backtick containing }', () => {
+    expectDestructiveDeny('{ echo `echo }`; rm -rf /tmp/junk; }',
+      'brace + backtick containing }');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf in brace group with $() containing }', () => {
+    expectDestructiveDeny('{ echo $(echo "}"); rm -rf /tmp/junk; }',
+      'brace + $() containing }');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf in brace group with nested () containing }', () => {
+    expectDestructiveDeny('{ (echo "}"); rm -rf /tmp/junk; }',
+      'brace + () containing }');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf in brace group with $() body containing }', () => {
+    expectDestructiveDeny('{ x=$(echo a}b); rm -rf /tmp/junk; }',
+      'brace + $() body with }');
+  })) passed++; else failed++;
+
+  if (test('denies rm -rf when token like foo{ appears before brace group close', () => {
+    // tokens like `foo{` are not reserved-word `{` (no boundary,
+    // no whitespace after) — must not bump nested-depth and so
+    // must not delay brace-group close
+    expectDestructiveDeny('{ echo foo{bar; rm -rf /tmp/junk; }',
+      'foo{ token inside brace body');
   })) passed++; else failed++;
 
   // Cleanup only the temp directory created by this test file.
