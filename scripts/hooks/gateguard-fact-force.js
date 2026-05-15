@@ -327,14 +327,17 @@ function collectExecutableBodies(raw) {
     seen.add(current);
 
     for (const body of extractCommandSubstitutions(current)) {
+      if (seen.has(body)) continue;
       bodies.push(body);
       queue.push(body);
     }
     for (const body of extractSubshellGroups(current)) {
+      if (seen.has(body)) continue;
       bodies.push(body);
       queue.push(body);
     }
     for (const body of extractBraceGroups(current)) {
+      if (seen.has(body)) continue;
       bodies.push(body);
       queue.push(body);
     }
