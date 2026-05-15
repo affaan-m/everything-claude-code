@@ -35,6 +35,14 @@ function withTempHome(homeDir) {
   };
 }
 
+function writeTranscript(filePath, entries) {
+  fs.writeFileSync(
+    filePath,
+    entries.map(entry => JSON.stringify(entry)).join('\n') + '\n',
+    'utf8'
+  );
+}
+
 function runScript(input, envOverrides = {}) {
   const inputStr = typeof input === 'string' ? input : JSON.stringify(input);
   const result = spawnSync('node', [script], {
@@ -64,12 +72,40 @@ function runTests() {
     assert.strictEqual(result.stdout, inputStr, 'Expected stdout to match original input');
   }) ? passed++ : failed++);
 
-  // 2. Creates metrics file when given valid usage data
-  (test('creates metrics file when given valid usage data', () => {
+  // 2. Creates metrics file when given transcript usage data
+  (test('creates metrics file when given transcript usage data', () => {
     const tmpHome = makeTempDir();
+    const transcriptPath = path.join(tmpHome, 'session.jsonl');
+    writeTranscript(transcriptPath, [
+      { type: 'user', message: { content: 'ignored' } },
+      {
+        type: 'assistant',
+        message: {
+          model: 'claude-sonnet-4-20250514',
+          usage: {
+            input_tokens: 1000,
+            output_tokens: 500,
+            cache_creation_input_tokens: 200,
+            cache_read_input_tokens: 300,
+          },
+        },
+      },
+      { notJsonShape: true },
+      {
+        type: 'assistant',
+        message: {
+          model: 'claude-opus-4-20250514',
+          usage: {
+            input_tokens: 25,
+            output_tokens: 5,
+          },
+        },
+      },
+    ]);
+
     const input = {
-      model: 'claude-sonnet-4-20250514',
-      usage: { input_tokens: 1000, output_tokens: 500 },
+      session_id: 'session-from-hook',
+      transcript_path: transcriptPath,
     };
     const result = runScript(input, withTempHome(tmpHome));
     assert.strictEqual(result.code, 0, `Expected exit code 0, got ${result.code}`);
@@ -79,8 +115,13 @@ function runTests() {
 
     const content = fs.readFileSync(metricsFile, 'utf8').trim();
     const row = JSON.parse(content);
-    assert.strictEqual(row.input_tokens, 1000, 'Expected input_tokens to be 1000');
-    assert.strictEqual(row.output_tokens, 500, 'Expected output_tokens to be 500');
+    assert.strictEqual(row.session_id, 'session-from-hook', 'Expected input session ID to be recorded');
+    assert.strictEqual(row.transcript_path, transcriptPath, 'Expected transcript_path to be recorded');
+    assert.strictEqual(row.model, 'claude-opus-4-20250514', 'Expected last assistant model to be recorded');
+    assert.strictEqual(row.input_tokens, 1025, 'Expected input_tokens to be summed from transcript');
+    assert.strictEqual(row.output_tokens, 505, 'Expected output_tokens to be summed from transcript');
+    assert.strictEqual(row.cache_write_tokens, 200, 'Expected cache write tokens to be summed from transcript');
+    assert.strictEqual(row.cache_read_tokens, 300, 'Expected cache read tokens to be summed from transcript');
     assert.ok(row.timestamp, 'Expected timestamp to be present');
     assert.ok(typeof row.estimated_cost_usd === 'number', 'Expected estimated_cost_usd to be a number');
     assert.ok(row.estimated_cost_usd > 0, 'Expected estimated_cost_usd to be positive');

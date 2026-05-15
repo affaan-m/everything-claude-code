@@ -199,7 +199,8 @@
         "skills/database-migrations",
         "skills/jpa-patterns",
         "skills/mysql-patterns",
-        "skills/postgres-patterns"
+        "skills/postgres-patterns",
+        "skills/prisma-patterns"
       ],
       "targets": [
         "claude",

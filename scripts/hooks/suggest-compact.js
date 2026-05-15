@@ -19,7 +19,8 @@ const {
   getTempDir,
   writeFile,
   readStdinJson,
-  log
+  log,
+  output
 } = require('../lib/utils');
 
 async function resolveSessionId() {
@@ -77,14 +78,25 @@ async function main() {
     writeFile(counterFile, String(count));
   }
 
-  // Suggest compact after threshold tool calls
+  // Suggest compact after threshold tool calls.
+  //
+  // log() writes to stderr (debug log). Per the Claude Code hooks guide,
+  // non-blocking PreToolUse stderr (exit 0) is only written to the debug log;
+  // it does not reach the model. To inject a user-facing suggestion without
+  // blocking the tool call, emit structured JSON to stdout with
+  // hookSpecificOutput.additionalContext — the documented mechanism for
+  // PreToolUse hooks to add context to the next model turn.
   if (count === threshold) {
-    log(`[StrategicCompact] ${threshold} tool calls reached - consider /compact if transitioning phases`);
+    const msg = `[StrategicCompact] ${threshold} tool calls reached - consider /compact if transitioning phases`;
+    log(msg);
+    output({ hookSpecificOutput: { hookEventName: 'PreToolUse', additionalContext: msg } });
   }
 
   // Suggest at regular intervals after threshold (every 25 calls from threshold)
   if (count > threshold && (count - threshold) % 25 === 0) {
-    log(`[StrategicCompact] ${count} tool calls - good checkpoint for /compact if context is stale`);
+    const msg = `[StrategicCompact] ${count} tool calls - good checkpoint for /compact if context is stale`;
+    log(msg);
+    output({ hookSpecificOutput: { hookEventName: 'PreToolUse', additionalContext: msg } });
   }
 
   process.exit(0);
