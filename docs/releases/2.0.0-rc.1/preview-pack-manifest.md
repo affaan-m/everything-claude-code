@@ -85,7 +85,8 @@ surfaces exist and are recorded in a final evidence file:
 - GitHub prerelease `v2.0.0-rc.1`;
 - npm `ecc-universal@2.0.0-rc.1` on the `next` dist-tag;
 - Claude plugin tag / marketplace propagation for `ecc@ecc`;
-- Codex plugin publication or owner-approved manual submission path;
+- Codex repo-marketplace distribution evidence plus official Plugin Directory
+  availability status;
 - final announcement URLs in X, LinkedIn, GitHub release, and longform copy;
 - ECC Tools billing/product readiness evidence before any native-payments
   announcement copy is published.

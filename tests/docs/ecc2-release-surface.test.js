@@ -181,7 +181,7 @@ test('preview pack manifest assembles release, Hermes, and publication gates', (
     'GitHub prerelease `v2.0.0-rc.1`',
     'npm `ecc-universal@2.0.0-rc.1`',
     'Claude plugin tag',
-    'Codex plugin publication',
+    'Codex repo-marketplace distribution evidence',
     'ECC Tools billing/product readiness',
   ]) {
     assert.ok(manifest.includes(blocker), `preview pack manifest missing blocker ${blocker}`);
@@ -254,6 +254,7 @@ test('publication readiness checklist gates public release actions on evidence',
     'npm package',
     'Claude plugin',
     'Codex plugin',
+    'Codex repo marketplace',
     'OpenCode package',
     'ECC Tools billing reference',
     'Announcement copy',
@@ -265,8 +266,12 @@ test('publication readiness checklist gates public release actions on evidence',
   assert.ok(may15Evidence.includes('PR #1921'));
   assert.ok(may15Evidence.includes('AgentShield PR #83'));
   assert.ok(may15Evidence.includes('ECC Tools PR #73'));
+  assert.ok(may15Evidence.includes('## Codex Marketplace Evidence'));
+  assert.ok(may15Evidence.includes('codex plugin marketplace add <local-checkout>'));
+  assert.ok(may15Evidence.includes('Plugin Directory publishing is still blocked'));
   assert.ok(may15Evidence.includes('announcementGate.ready === true'));
   assert.ok(source.includes('ECC-Tools #73 added announcementGate'));
+  assert.ok(source.includes('official Plugin Directory publishing and self-serve management are documented as coming soon'));
   assert.ok(may15Evidence.includes('| Trunk discussions | GraphQL discussion count and maintainer-touch sweep | 58 total discussions;'));
   assert.ok(source.includes('58 trunk discussions, 0 without maintainer touch'));
   assert.ok(may15Evidence.includes('env -u GITHUB_TOKEN'));

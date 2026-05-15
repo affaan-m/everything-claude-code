@@ -18,17 +18,27 @@ This directory contains the **Codex plugin manifest** for Everything Claude Code
 
 ## Installation
 
-Codex plugin support is currently in preview. Once generally available:
+Codex plugin support is currently marketplace-backed. The repo exposes a
+repo-scoped marketplace at `.agents/plugins/marketplace.json`; Codex can add and
+track that marketplace source from the CLI:
 
 ```bash
-# Install from Codex CLI
-codex plugin install affaan-m/everything-claude-code
+# Add the public repo marketplace
+codex plugin marketplace add affaan-m/everything-claude-code
 
-# Or reference locally during development
-codex plugin install ./
-
-Run this from the repository root so `./` points to the repo root and `.mcp.json` resolves correctly.
+# Or add a local checkout while developing
+codex plugin marketplace add /absolute/path/to/everything-claude-code
 ```
+
+The marketplace entry points at the repository root so `.codex-plugin/plugin.json`,
+`skills/`, and `.mcp.json` resolve from one shared source of truth. After adding
+or updating the marketplace, restart Codex and install or enable `ecc` from the
+plugin directory.
+
+Official Plugin Directory publishing is coming soon in Codex. Until self-serve
+publishing exists, treat the public repo marketplace as the supported Codex
+distribution path and keep release copy framed as repo-marketplace/manual
+installation.
 
 The installed plugin registers under the short slug `ecc` so tool and command names
 stay below provider length limits.

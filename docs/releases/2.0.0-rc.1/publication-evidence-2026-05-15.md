@@ -112,13 +112,35 @@ merge.
 The preview pack is assembled for final clean-checkout gating, but it is still
 not a publication action.
 
+## Codex Marketplace Evidence
+
+OpenAI's current Codex plugin docs now distinguish repo/personal marketplace
+distribution from the official Plugin Directory. Repo marketplaces live at
+`.agents/plugins/marketplace.json`; `codex plugin marketplace add <source>`
+can add GitHub shorthand, Git URLs, SSH URLs, or local marketplace roots.
+Official Plugin Directory publishing and self-serve management are documented
+as coming soon:
+
+- <https://developers.openai.com/codex/plugins/build#add-a-marketplace-from-the-cli>
+- <https://developers.openai.com/codex/plugins/build#how-codex-uses-marketplaces>
+- <https://developers.openai.com/codex/plugins/build#publish-official-public-plugins>
+
+| Surface | Evidence |
+| --- | --- |
+| CLI shape | `codex plugin marketplace add --help` supports GitHub shorthand, Git URLs, SSH URLs, local marketplace roots, `--ref`, and Git-only `--sparse` |
+| Repo marketplace | `.agents/plugins/marketplace.json` exposes `ecc@2.0.0-rc.1` with `source.path: "./"` from the marketplace root |
+| Local add smoke | `HOME="$(mktemp -d)" codex plugin marketplace add <local-checkout>` added marketplace `ecc` and recorded the installed marketplace root as `<local-checkout>` without touching the real Codex config |
+| README alignment | `.codex-plugin/README.md` now uses `codex plugin marketplace add`, not the stale `codex plugin install` command |
+| Public-directory status | The supported Codex distribution path for rc.1 is repo-marketplace/manual install; official Plugin Directory submission remains blocked on OpenAI self-serve publishing availability |
+
 ## Current Publication Blockers
 
 - GitHub prerelease `v2.0.0-rc.1` is still not created in this pass.
 - npm `ecc-universal@2.0.0-rc.1` is still not published to the `next` dist-tag.
 - Claude plugin tag and marketplace propagation remain approval-gated.
-- Codex plugin public marketplace/manual submission path still needs final
-  owner verification.
+- Codex plugin repo-marketplace distribution is verified for rc.1, but official
+  Plugin Directory publishing is still blocked on OpenAI's coming-soon
+  self-serve publishing surface.
 - ECC Tools PR #73 added a fail-closed `/api/billing/readiness`
   `announcementGate` for native GitHub payments claims, and ECC Tools PR #74
   added `npm run billing:announcement-gate` as the operator verifier, but the

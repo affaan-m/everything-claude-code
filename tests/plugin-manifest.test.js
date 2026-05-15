@@ -433,11 +433,15 @@ test('marketplace local plugin path resolves to the repo-root Codex bundle', () 
       continue;
     }
 
-    const resolvedRoot = path.resolve(path.dirname(marketplacePath), plugin.source.path);
+    assert.ok(
+      plugin.source.path.startsWith('./'),
+      `Codex marketplace source.path must be ./-prefixed: ${plugin.source.path}`,
+    );
+    const resolvedRoot = path.resolve(repoRoot, plugin.source.path);
     assert.strictEqual(
       resolvedRoot,
       repoRoot,
-      `Expected local marketplace path to resolve to repo root, got: ${plugin.source.path}`,
+      `Expected local marketplace path to resolve to repo root from marketplace root, got: ${plugin.source.path}`,
     );
     assert.ok(
       fs.existsSync(path.join(resolvedRoot, '.codex-plugin', 'plugin.json')),
@@ -509,6 +513,22 @@ test('user-facing docs do not use the legacy non-URL marketplace add form', () =
     offenders,
     [],
     `Legacy non-URL marketplace add form must not appear in user-facing docs: ${offenders.join(', ')}`,
+  );
+});
+
+test('.codex-plugin README uses current marketplace add flow', () => {
+  const readme = fs.readFileSync(path.join(repoRoot, '.codex-plugin', 'README.md'), 'utf8');
+  assert.ok(
+    readme.includes('codex plugin marketplace add'),
+    'Expected .codex-plugin README to document codex plugin marketplace add',
+  );
+  assert.ok(
+    readme.includes('Official Plugin Directory publishing is coming soon'),
+    'Expected .codex-plugin README to document current official directory status',
+  );
+  assert.ok(
+    !/\bcodex plugin install\b/.test(readme),
+    'codex plugin install is not a current Codex CLI command',
   );
 });
 
