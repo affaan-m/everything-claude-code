@@ -53,6 +53,9 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
+      - name: Run supply-chain IOC scan
+        run: npm run security:ioc-scan
+
       - name: Verify OpenCode package payload
         run: node tests/scripts/build-opencode.test.js
 

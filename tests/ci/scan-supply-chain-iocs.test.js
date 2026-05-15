@@ -154,6 +154,21 @@ function run() {
     });
   })) passed++; else failed++;
 
+  if (test('does not flag benign substrings in clean package scripts', () => {
+    withFixture({
+      'node_modules/uuid/package.json': JSON.stringify({
+        name: 'uuid',
+        version: '9.0.1',
+        scripts: {
+          test: 'BABEL_ENV=commonjsNode node --throw-deprecation node_modules/.bin/jest test/unit/',
+        },
+      }, null, 2),
+    }, rootDir => {
+      const result = scanSupplyChainIocs({ rootDir });
+      assert.deepStrictEqual(result.findings, []);
+    });
+  })) passed++; else failed++;
+
   if (test('rejects malicious optional dependency markers', () => {
     withFixture({
       'package-lock.json': JSON.stringify({
@@ -241,7 +256,6 @@ function run() {
       assert.ok(indicators.includes('claude@users.noreply.github.com'));
       assert.ok(indicators.includes('dependabout/'));
       assert.ok(indicators.includes('signalservice'));
-      assert.ok(indicators.includes('snode'));
     });
   })) passed++; else failed++;
 

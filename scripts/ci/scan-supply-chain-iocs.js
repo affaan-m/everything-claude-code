@@ -253,7 +253,6 @@ const CRITICAL_TEXT_INDICATORS = [
   'seed2.getsession.org',
   'seed3.getsession.org',
   'signalservice',
-  'snode',
   'git-tanstack.com',
   'litter.catbox.moe/h8nc9u.js',
   'litter.catbox.moe/7rrc6l.mjs',
@@ -620,7 +619,9 @@ function parseArgs(argv) {
   const options = {};
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
-    if (arg === '--root') {
+    if (arg === '--help' || arg === '-h') {
+      options.help = true;
+    } else if (arg === '--root') {
       options.rootDir = argv[++i];
     } else if (arg === '--home') {
       options.home = true;
@@ -634,6 +635,26 @@ function parseArgs(argv) {
     }
   }
   return options;
+}
+
+function printHelp() {
+  console.log(`Usage: node scripts/ci/scan-supply-chain-iocs.js [options]
+
+Scan dependency manifests, lockfiles, installed package payloads, and AI-tool
+persistence paths for active supply-chain IOC markers.
+
+Options:
+  --root <dir>       Directory to scan (default: repo root)
+  --home             Also scan user-level Claude, VS Code, LaunchAgent, systemd,
+                     and /tmp persistence targets
+  --home-dir <dir>   Home directory to use with --home
+  --json             Emit JSON instead of text
+  --help, -h         Show this help
+
+Examples:
+  node scripts/ci/scan-supply-chain-iocs.js --home
+  node scripts/ci/scan-supply-chain-iocs.js --root /path/to/project --json
+`);
 }
 
 function printReport(result, json = false) {
@@ -658,6 +679,10 @@ function printReport(result, json = false) {
 if (require.main === module) {
   try {
     const options = parseArgs(process.argv.slice(2));
+    if (options.help) {
+      printHelp();
+      process.exit(0);
+    }
     const result = scanSupplyChainIocs(options);
     printReport(result, options.json);
     process.exit(result.findings.length > 0 ? 1 : 0);
