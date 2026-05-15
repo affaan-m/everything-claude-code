@@ -65,10 +65,10 @@ jobs:
         shell: bash
         run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
 
-      - name: Cache npm
+      - name: Restore npm cache
         if: inputs.package-manager == 'npm'
         continue-on-error: true
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ${{ steps.npm-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-node-${{ inputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}
@@ -83,10 +83,10 @@ jobs:
           COREPACK_ENABLE_STRICT: '0'
         run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
 
-      - name: Cache pnpm
+      - name: Restore pnpm cache
         if: inputs.package-manager == 'pnpm'
         continue-on-error: true
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ${{ steps.pnpm-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-node-${{ inputs.node-version }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -105,20 +105,20 @@ jobs:
             echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
           fi
 
-      - name: Cache yarn
+      - name: Restore yarn cache
         if: inputs.package-manager == 'yarn'
         continue-on-error: true
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ${{ steps.yarn-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-node-${{ inputs.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ inputs.node-version }}-yarn-
 
-      - name: Cache bun
+      - name: Restore bun cache
         if: inputs.package-manager == 'bun'
         continue-on-error: true
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
