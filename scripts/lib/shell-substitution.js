@@ -379,16 +379,103 @@ function extractBraceGroups(input) {
         }
         if (inner === "'" && !bodyInDouble && innerPrev !== '\\') {
           bodyInSingle = !bodyInSingle;
-        } else if (inner === '"' && !bodyInSingle && innerPrev !== '\\') {
+          body += inner;
+          i += 1;
+          continue;
+        }
+        if (inner === '"' && !bodyInSingle && innerPrev !== '\\') {
           bodyInDouble = !bodyInDouble;
-        } else if (!bodyInSingle && !bodyInDouble) {
-          if (inner === '{' && /\s/.test(source[i + 1] || '')) {
-            depth += 1;
-          } else if (inner === '}' && (innerPrev === ';' || /\s/.test(innerPrev))) {
-            depth -= 1;
-            if (depth === 0) {
-              break;
+          body += inner;
+          i += 1;
+          continue;
+        }
+        if (bodyInSingle || bodyInDouble) {
+          body += inner;
+          i += 1;
+          continue;
+        }
+        // Skip $(...) spans — a quoted `}` or `}`-as-text inside a
+        // substitution body must not close the enclosing brace group.
+        if (inner === '$' && source[i + 1] === '(') {
+          body += inner + source[i + 1];
+          let subDepth = 1;
+          let subInSingle = false;
+          let subInDouble = false;
+          i += 2;
+          while (i < source.length && subDepth > 0) {
+            const c = source[i];
+            const p = source[i - 1];
+            body += c;
+            if (c === '\\' && !subInSingle && i + 1 < source.length) {
+              body += source[i + 1];
+              i += 2;
+              continue;
             }
+            if (c === "'" && !subInDouble && p !== '\\') subInSingle = !subInSingle;
+            else if (c === '"' && !subInSingle && p !== '\\') subInDouble = !subInDouble;
+            else if (!subInSingle && !subInDouble) {
+              if (c === '(') subDepth += 1;
+              else if (c === ')') subDepth -= 1;
+            }
+            i += 1;
+          }
+          continue;
+        }
+        // Skip backtick spans for the same reason.
+        if (inner === '`') {
+          body += inner;
+          i += 1;
+          while (i < source.length && source[i] !== '`') {
+            if (source[i] === '\\' && i + 1 < source.length) {
+              body += source[i] + source[i + 1];
+              i += 2;
+              continue;
+            }
+            body += source[i];
+            i += 1;
+          }
+          if (i < source.length) {
+            body += source[i];
+            i += 1;
+          }
+          continue;
+        }
+        // Skip plain (...) subshell spans for the same reason.
+        if (inner === '(') {
+          body += inner;
+          let subDepth = 1;
+          let subInSingle = false;
+          let subInDouble = false;
+          i += 1;
+          while (i < source.length && subDepth > 0) {
+            const c = source[i];
+            const p = source[i - 1];
+            body += c;
+            if (c === '\\' && !subInSingle && i + 1 < source.length) {
+              body += source[i + 1];
+              i += 2;
+              continue;
+            }
+            if (c === "'" && !subInDouble && p !== '\\') subInSingle = !subInSingle;
+            else if (c === '"' && !subInSingle && p !== '\\') subInDouble = !subInDouble;
+            else if (!subInSingle && !subInDouble) {
+              if (c === '(') subDepth += 1;
+              else if (c === ')') subDepth -= 1;
+            }
+            i += 1;
+          }
+          continue;
+        }
+        if (inner === '{' && /\s/.test(source[i + 1] || '')) {
+          // Match the outer-scan boundary rule for nested `{` so
+          // tokens like `foo{` (no boundary, but followed by space
+          // via `foo{ bar`) cannot bump nested depth.
+          const nestedPrevIsBoundary = /[\s;|&(]/.test(innerPrev);
+          if (nestedPrevIsBoundary) depth += 1;
+        } else if (inner === '}' && (innerPrev === ';' || /\s/.test(innerPrev))) {
+          depth -= 1;
+          if (depth === 0) {
+            break;
           }
         }
         body += inner;
