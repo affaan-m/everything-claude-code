@@ -242,11 +242,16 @@ jobs:
         with:
           node-version: '20.x'
 
+      - name: Install audit dependencies
+        run: npm ci --ignore-scripts
+
       - name: Run npm audit
         run: |
           npm audit signatures
           npm audit --audit-level=high
-        continue-on-error: true  # Allows PR to proceed, but marks job as failed if vulnerabilities found
+
+      - name: Run supply-chain IOC scan
+        run: npm run security:ioc-scan
 
   lint:
     name: Lint
