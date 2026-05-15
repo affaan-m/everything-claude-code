@@ -25,11 +25,28 @@ const RULES = [
 ];
 
 const WRITE_PERMISSION_PATTERN = /^\s*(?:contents|issues|pull-requests|actions|checks|deployments|discussions|id-token|packages|pages|repository-projects|security-events|statuses):\s*write\b/m;
-const NPM_CI_PATTERN = /\bnpm\s+ci\b(?![^\n]*--ignore-scripts)/g;
 const NPM_AUDIT_PATTERN = /\bnpm\s+audit\b(?!\s+signatures\b)/;
 const NPM_AUDIT_SIGNATURES_PATTERN = /\bnpm\s+audit\s+signatures\b/;
 const ACTIONS_CACHE_PATTERN = /uses:\s*['"]?actions\/cache@/m;
 const ID_TOKEN_WRITE_PATTERN = /^\s*id-token:\s*write\b/m;
+const UNSAFE_INSTALL_PATTERNS = [
+  {
+    pattern: /\bnpm\s+ci\b(?![^\n]*--ignore-scripts)/g,
+    description: 'npm ci must include --ignore-scripts',
+  },
+  {
+    pattern: /\bpnpm\s+install\b(?![^\n]*--ignore-scripts)/g,
+    description: 'pnpm install must include --ignore-scripts',
+  },
+  {
+    pattern: /\byarn\s+install\b(?![^\n]*--mode=skip-build)/g,
+    description: 'yarn install must use --mode=skip-build',
+  },
+  {
+    pattern: /\bbun\s+install\b(?![^\n]*--ignore-scripts)/g,
+    description: 'bun install must include --ignore-scripts',
+  },
+];
 
 function getWorkflowFiles(workflowsDir) {
   if (!fs.existsSync(workflowsDir)) {
@@ -120,11 +137,14 @@ function findViolations(filePath, source) {
       }
     }
 
-    for (const match of source.matchAll(NPM_CI_PATTERN)) {
+  }
+
+  for (const installRule of UNSAFE_INSTALL_PATTERNS) {
+    for (const match of source.matchAll(installRule.pattern)) {
       violations.push({
         filePath,
-        event: 'write-permission install',
-        description: 'workflows with write permissions must install npm dependencies with --ignore-scripts',
+        event: 'dependency install scripts',
+        description: `workflow dependency installs must not run lifecycle scripts: ${installRule.description}`,
         expression: match[0],
         line: getLineNumber(source, match.index),
       });
@@ -138,6 +158,16 @@ function findViolations(filePath, source) {
       description: 'workflows with id-token: write must not restore or save shared dependency caches',
       expression: 'id-token: write + actions/cache',
       line: getLineNumber(source, source.search(ID_TOKEN_WRITE_PATTERN)),
+    });
+  }
+
+  if (ACTIONS_CACHE_PATTERN.test(source)) {
+    violations.push({
+      filePath,
+      event: 'dependency cache',
+      description: 'GitHub Actions dependency caches are disabled during active supply-chain hardening',
+      expression: 'actions/cache',
+      line: getLineNumber(source, source.search(ACTIONS_CACHE_PATTERN)),
     });
   }
 

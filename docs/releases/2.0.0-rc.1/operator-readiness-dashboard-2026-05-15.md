@@ -34,12 +34,12 @@ Run these from `everything-claude-code` unless a row says otherwise.
 | AgentShield PRs/issues | GitHub connector and `gh` readback | 0 open PRs; 0 open issues |
 | ECC Tools PRs/issues | Local `gh pr list` and `gh issue list` | 0 open PRs; 0 open issues |
 | Discussion baseline | GraphQL discussion sweep | Main repo #1923 marked answered; no answerable Q&A missing an answer |
-| Supply-chain IOC scan | `node scripts/ci/scan-supply-chain-iocs.js --root <ECC-workspace> --home` | Passed; 1241 files inspected |
+| Supply-chain IOC scan | `node scripts/ci/scan-supply-chain-iocs.js --root <ECC-workspace> --home` | Passed; repo/home targeted scan inspected 200 files after clean no-script reinstall |
 | IOC unit tests | `node tests/ci/scan-supply-chain-iocs.test.js` | 15/15 passed |
 | Dead-man switch persistence sweep | Process, LaunchAgent, and known payload filename sweep for Mini Shai-Hulud markers | No matches |
-| Workflow security gate | `node scripts/ci/validate-workflow-security.js` | Passed; 8 workflow files inspected |
+| Workflow security gate | `node scripts/ci/validate-workflow-security.js` | Passed; 8 workflow files inspected; package-manager test installs disable lifecycle scripts and no Actions cache use remains |
 | Supply-chain watch workflow | `.github/workflows/supply-chain-watch.yml` | Scheduled every 6 hours; emits `supply-chain-ioc-report.json` |
-| npm signatures and audit | `npm audit signatures && npm audit --audit-level=moderate` in main, AgentShield, ECC Tools | 0 vulnerabilities in each checked package |
+| npm signatures and audit | `npm audit signatures && npm audit --audit-level=high` in main | 213 verified signatures, 17 verified attestations, 0 high vulnerabilities |
 
 ## Prompt-To-Artifact Checklist
 

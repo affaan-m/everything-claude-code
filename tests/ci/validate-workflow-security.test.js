@@ -107,19 +107,37 @@ function run() {
     assert.match(result.stderr, /pull_request_target workflows must not restore or save shared dependency caches/);
   })) passed++; else failed++;
 
-  if (test('rejects npm ci without ignore-scripts in workflows with write permissions', () => {
+  if (test('rejects dependency cache use in ordinary workflows', () => {
     const result = runValidator({
-      'unsafe-write-install.yml': `name: Unsafe\non:\n  workflow_dispatch:\npermissions:\n  contents: read\n  issues: write\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm ci\n`,
+      'unsafe-cache.yml': `name: Unsafe\non:\n  pull_request:\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/cache@v5\n        with:\n          path: ~/.npm\n          key: cache\n`,
     });
-    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on npm ci without --ignore-scripts');
-    assert.match(result.stderr, /write permissions must install npm dependencies with --ignore-scripts/);
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on actions/cache use');
+    assert.match(result.stderr, /dependency caches are disabled during active supply-chain hardening/);
   })) passed++; else failed++;
 
-  if (test('allows npm ci with ignore-scripts in workflows with write permissions', () => {
+  if (test('rejects npm ci without ignore-scripts in any workflow', () => {
     const result = runValidator({
-      'safe-write-install.yml': `name: Safe\non:\n  workflow_dispatch:\npermissions:\n  contents: read\n  issues: write\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm ci --ignore-scripts\n`,
+      'unsafe-install.yml': `name: Unsafe\non:\n  pull_request:\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm ci\n`,
+    });
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on npm ci without --ignore-scripts');
+    assert.match(result.stderr, /npm ci must include --ignore-scripts/);
+  })) passed++; else failed++;
+
+  if (test('allows package-manager installs with lifecycle scripts disabled', () => {
+    const result = runValidator({
+      'safe-install.yml': `name: Safe\non:\n  pull_request:\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: |\n          npm ci --ignore-scripts\n          pnpm install --ignore-scripts --no-frozen-lockfile\n          yarn install --mode=skip-build\n          bun install --ignore-scripts\n`,
     });
     assert.strictEqual(result.status, 0, result.stderr || result.stdout);
+  })) passed++; else failed++;
+
+  if (test('rejects pnpm, yarn, and bun installs that run lifecycle scripts', () => {
+    const result = runValidator({
+      'unsafe-matrix-install.yml': `name: Unsafe\non:\n  pull_request:\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - run: |\n          pnpm install --no-frozen-lockfile\n          yarn install\n          bun install\n`,
+    });
+    assert.notStrictEqual(result.status, 0, 'Expected validator to fail on script-running installs');
+    assert.match(result.stderr, /pnpm install must include --ignore-scripts/);
+    assert.match(result.stderr, /yarn install must use --mode=skip-build/);
+    assert.match(result.stderr, /bun install must include --ignore-scripts/);
   })) passed++; else failed++;
 
   if (test('rejects checkout credential persistence in workflows with write permissions', () => {
