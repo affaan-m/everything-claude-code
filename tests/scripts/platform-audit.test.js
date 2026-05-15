@@ -32,6 +32,7 @@ function seedRepo(rootDir, overrides = {}) {
       scripts: {
         'platform:audit': 'node scripts/platform-audit.js',
         'discussion:audit': 'node scripts/discussion-audit.js',
+        'operator:dashboard': 'node scripts/operator-readiness-dashboard.js',
         'observability:ready': 'node scripts/observability-readiness.js',
         'security:ioc-scan': 'node scripts/ci/scan-supply-chain-iocs.js',
         'harness:audit': 'node scripts/harness-audit.js'
@@ -68,8 +69,11 @@ function seedRepo(rootDir, overrides = {}) {
       'ITO-44',
       'ITO-59',
       'PR queue',
-      'Not complete'
-    ].join('\n')
+      'Not complete',
+      'operator:dashboard',
+      'Next Work Order'
+    ].join('\n'),
+    'scripts/operator-readiness-dashboard.js': 'operator dashboard generator'
   };
 
   for (const [relativePath, content] of Object.entries({ ...files, ...overrides })) {
@@ -201,6 +205,7 @@ function runTests() {
       assert.strictEqual(parsed.github.skipped, true);
       assert.ok(parsed.checks.some(check => check.id === 'roadmap-linear-mirror' && check.status === 'pass'));
       assert.ok(parsed.checks.some(check => check.id === 'supply-chain-runbook' && check.status === 'pass'));
+      assert.ok(parsed.checks.some(check => check.id === 'operator-dashboard-command' && check.status === 'pass'));
       assert.ok(parsed.checks.some(check => check.id === 'operator-readiness-dashboard' && check.status === 'pass'));
       assert.deepStrictEqual(parsed.top_actions, []);
     } finally {

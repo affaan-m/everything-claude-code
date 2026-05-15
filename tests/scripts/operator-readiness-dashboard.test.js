@@ -1,0 +1,250 @@
+/**
+ * Tests for scripts/operator-readiness-dashboard.js
+ */
+
+const assert = require('assert');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { execFileSync, spawnSync } = require('child_process');
+
+const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'operator-readiness-dashboard.js');
+const { buildReport, parseArgs } = require(SCRIPT);
+
+function createTempDir(prefix) {
+  return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+}
+
+function cleanup(dirPath) {
+  fs.rmSync(dirPath, { recursive: true, force: true });
+}
+
+function writeFile(rootDir, relativePath, content) {
+  const targetPath = path.join(rootDir, relativePath);
+  fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+  fs.writeFileSync(targetPath, content);
+}
+
+function seedRepo(rootDir, overrides = {}) {
+  const files = {
+    'package.json': JSON.stringify({
+      name: 'everything-claude-code',
+      files: [
+        'scripts/observability-readiness.js',
+        'scripts/operator-readiness-dashboard.js',
+        'scripts/platform-audit.js'
+      ],
+      scripts: {
+        'discussion:audit': 'node scripts/discussion-audit.js',
+        'observability:ready': 'node scripts/observability-readiness.js',
+        'operator:dashboard': 'node scripts/operator-readiness-dashboard.js',
+        'platform:audit': 'node scripts/platform-audit.js',
+        'security:ioc-scan': 'node scripts/ci/scan-supply-chain-iocs.js'
+      }
+    }, null, 2),
+    'scripts/operator-readiness-dashboard.js': 'operator dashboard generator',
+    'docs/ECC-2.0-GA-ROADMAP.md': [
+      'https://linear.app/itomarkets/project/ecc-platform-roadmap-52b328ee03e1',
+      'Linear ITO-44 ITO-59',
+      'AgentShield PR #86 #78-#86',
+      'AgentShield Enterprise Iteration',
+      'ECC-Tools PR #73',
+      'hosted promotion',
+      'announcementGate',
+      'ITO-55'
+    ].join('\n'),
+    'docs/releases/2.0.0-rc.1/publication-readiness.md': 'Claude plugin Codex plugin',
+    'docs/releases/2.0.0-rc.1/naming-and-publication-matrix.md': 'Claude plugin Codex plugin npm package Publication Paths',
+    'docs/releases/2.0.0-rc.1/preview-pack-manifest.md': 'publication-readiness.md release-notes.md quickstart.md',
+    'docs/releases/2.0.0-rc.1/release-notes.md': 'release notes',
+    'docs/releases/2.0.0-rc.1/x-thread.md': 'x thread',
+    'docs/releases/2.0.0-rc.1/linkedin-post.md': 'linkedin post',
+    'docs/releases/2.0.0-rc.1/operator-readiness-dashboard-2026-05-15.md': [
+      'operator:dashboard',
+      'Prompt-To-Artifact Checklist',
+      'Next Work Order',
+      'ITO-44',
+      'ITO-59',
+      'PR queue',
+      'Not complete'
+    ].join('\n'),
+    'docs/HERMES-SETUP.md': 'Hermes setup',
+    'skills/hermes-imports/SKILL.md': 'Hermes imports',
+    'docs/stale-pr-salvage-ledger.md': 'Manual review tail',
+    'docs/architecture/progress-sync-contract.md': 'GitHub PRs/issues/discussions Linear project local handoff repo roadmap scripts/work-items.js',
+    'docs/architecture/observability-readiness.md': 'observability-readiness.js',
+    'docs/security/supply-chain-incident-response.md': 'TanStack Mini Shai-Hulud node-ipc scan-supply-chain-iocs.js',
+    'docs/releases/2.0.0-rc.1/publication-evidence-2026-05-15.md': 'TanStack Mini Shai-Hulud Node IPC follow-up node-ipc IOC scan',
+    '.github/workflows/supply-chain-watch.yml': 'name: Supply-Chain Watch'
+  };
+
+  for (const [relativePath, content] of Object.entries({ ...files, ...overrides })) {
+    if (content === null) {
+      continue;
+    }
+    writeFile(rootDir, relativePath, content);
+  }
+}
+
+function run(args = [], options = {}) {
+  return execFileSync('node', [SCRIPT, ...args], {
+    cwd: options.cwd || path.join(__dirname, '..', '..'),
+    encoding: 'utf8',
+    stdio: ['pipe', 'pipe', 'pipe'],
+    timeout: 10000
+  });
+}
+
+function runProcess(args = [], options = {}) {
+  return spawnSync('node', [SCRIPT, ...args], {
+    cwd: options.cwd || path.join(__dirname, '..', '..'),
+    encoding: 'utf8',
+    stdio: ['pipe', 'pipe', 'pipe'],
+    timeout: 10000
+  });
+}
+
+function test(name, fn) {
+  try {
+    fn();
+    console.log(`  PASS ${name}`);
+    return true;
+  } catch (error) {
+    console.log(`  FAIL ${name}`);
+    console.log(`    Error: ${error.message}`);
+    return false;
+  }
+}
+
+function runTests() {
+  console.log('\n=== Testing operator-readiness-dashboard.js ===\n');
+
+  let passed = 0;
+  let failed = 0;
+
+  if (test('parseArgs accepts dashboard flags and rejects invalid values', () => {
+    const rootDir = createTempDir('operator-dashboard-args-');
+
+    try {
+      const parsed = parseArgs([
+        'node',
+        'script',
+        '--format=json',
+        `--root=${rootDir}`,
+        '--skip-github',
+        '--allow-untracked',
+        'docs/drafts/',
+        '--repo',
+        'affaan-m/everything-claude-code',
+        '--generated-at',
+        '2026-05-15T00:00:00.000Z'
+      ]);
+
+      assert.strictEqual(parsed.format, 'json');
+      assert.strictEqual(parsed.root, path.resolve(rootDir));
+      assert.strictEqual(parsed.skipGithub, true);
+      assert.deepStrictEqual(parsed.allowUntracked, ['docs/drafts/']);
+      assert.deepStrictEqual(parsed.repos, ['affaan-m/everything-claude-code']);
+      assert.strictEqual(parsed.generatedAt, '2026-05-15T00:00:00.000Z');
+
+      assert.throws(() => parseArgs(['node', 'script', '--format', 'xml']), /Invalid format/);
+      assert.throws(() => parseArgs(['node', 'script', '--write', 'dashboard.md', '--format', 'text']), /--write requires/);
+      assert.throws(() => parseArgs(['node', 'script', '--max-open-prs', 'x']), /Invalid --max-open-prs/);
+      assert.throws(() => parseArgs(['node', 'script', '--unknown']), /Unknown argument/);
+    } finally {
+      cleanup(rootDir);
+    }
+  })) passed++; else failed++;
+
+  if (test('seeded repo emits an objective audit with remaining work', () => {
+    const rootDir = createTempDir('operator-dashboard-report-');
+
+    try {
+      seedRepo(rootDir);
+      const report = buildReport({
+        allowUntracked: [],
+        exitCode: false,
+        format: 'json',
+        generatedAt: '2026-05-15T00:00:00.000Z',
+        help: false,
+        repos: [],
+        root: rootDir,
+        skipGithub: true,
+        thresholds: { maxOpenPrs: 20, maxOpenIssues: 20, maxDirtyFiles: 0 },
+        useEnvGithubToken: false,
+        writePath: null
+      });
+
+      assert.strictEqual(report.schema_version, 'ecc.operator-readiness-dashboard.v1');
+      assert.strictEqual(report.generatedAt, '2026-05-15T00:00:00.000Z');
+      assert.strictEqual(report.dashboardReady, true);
+      assert.strictEqual(report.ready, false);
+      assert.strictEqual(report.publicationReady, false);
+      assert.ok(report.requirements.some(item => item.id === 'completion-dashboard' && item.status === 'complete'));
+      assert.ok(report.requirements.some(item => item.id === 'ecc-tools-next-level' && item.status === 'in_progress'));
+      assert.ok(report.top_actions.some(item => item.id === 'naming-and-plugin-publication'));
+    } finally {
+      cleanup(rootDir);
+    }
+  })) passed++; else failed++;
+
+  if (test('markdown output can be written as the dashboard artifact', () => {
+    const rootDir = createTempDir('operator-dashboard-markdown-');
+    const outputPath = path.join(rootDir, 'artifacts', 'dashboard.md');
+
+    try {
+      seedRepo(rootDir);
+      const stdout = run([
+        '--markdown',
+        '--skip-github',
+        `--root=${rootDir}`,
+        '--generated-at=2026-05-15T00:00:00.000Z',
+        '--write',
+        outputPath
+      ], { cwd: rootDir });
+      const written = fs.readFileSync(outputPath, 'utf8');
+
+      assert.strictEqual(stdout, written);
+      assert.ok(written.includes('# ECC Operator Readiness Dashboard'));
+      assert.ok(written.includes('Generated: 2026-05-15T00:00:00.000Z'));
+      assert.ok(written.includes('## Prompt-To-Artifact Checklist'));
+      assert.ok(written.includes('Build ITO-44 completion dashboard into a repeatable command'));
+      assert.ok(written.includes('## Next Work Order'));
+    } finally {
+      cleanup(rootDir);
+    }
+  })) passed++; else failed++;
+
+  if (test('exit-code mode fails closed while macro objective has gaps', () => {
+    const rootDir = createTempDir('operator-dashboard-exit-');
+
+    try {
+      seedRepo(rootDir);
+      const result = runProcess([
+        '--json',
+        '--skip-github',
+        `--root=${rootDir}`,
+        '--generated-at=2026-05-15T00:00:00.000Z',
+        '--exit-code'
+      ], { cwd: rootDir });
+
+      assert.strictEqual(result.status, 2);
+      assert.strictEqual(result.stderr, '');
+      assert.ok(result.stdout.includes('"ready": false'));
+      assert.ok(result.stdout.includes('"publicationReady": false'));
+    } finally {
+      cleanup(rootDir);
+    }
+  })) passed++; else failed++;
+
+  console.log(`\nPassed: ${passed}`);
+  console.log(`Failed: ${failed}`);
+
+  if (failed > 0) {
+    process.exit(1);
+  }
+}
+
+if (require.main === module) {
+  runTests();
+}
