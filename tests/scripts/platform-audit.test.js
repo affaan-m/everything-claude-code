@@ -148,6 +148,7 @@ function runTests() {
         'script',
         '--format=json',
         `--root=${rootDir}`,
+        '--json',
         '--repo',
         'affaan-m/everything-claude-code',
         '--max-open-prs',
@@ -166,6 +167,7 @@ function runTests() {
       assert.deepStrictEqual(parsed.allowUntracked, ['docs/drafts/']);
 
       assert.throws(() => parseArgs(['node', 'script', '--format', 'xml']), /Invalid format/);
+      assert.throws(() => parseArgs(['node', 'script', '--write', 'audit.md']), /--write requires/);
       assert.throws(() => parseArgs(['node', 'script', '--repo']), /--repo requires a value/);
       assert.throws(() => parseArgs(['node', 'script', '--max-open-prs', 'x']), /Invalid --max-open-prs/);
       assert.throws(() => parseArgs(['node', 'script', '--unknown']), /Unknown argument/);
@@ -187,6 +189,33 @@ function runTests() {
       assert.ok(parsed.checks.some(check => check.id === 'roadmap-linear-mirror' && check.status === 'pass'));
       assert.ok(parsed.checks.some(check => check.id === 'supply-chain-runbook' && check.status === 'pass'));
       assert.deepStrictEqual(parsed.top_actions, []);
+    } finally {
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('markdown output can be written as an operator artifact', () => {
+    const projectRoot = createTempDir('platform-audit-markdown-');
+    const outputPath = path.join(projectRoot, 'artifacts', 'platform-audit.md');
+
+    try {
+      seedRepo(projectRoot);
+      const stdout = run([
+        '--markdown',
+        '--write',
+        outputPath,
+        `--root=${projectRoot}`,
+        '--skip-github'
+      ], { cwd: projectRoot });
+      const written = fs.readFileSync(outputPath, 'utf8');
+
+      assert.strictEqual(stdout, written);
+      assert.ok(written.includes('# ECC Platform Audit'));
+      assert.ok(written.includes('## Queue Summary'));
+      assert.ok(written.includes('| Open PRs | 0 | 20 | PASS |'));
+      assert.ok(written.includes('`roadmap-linear-mirror`'));
+      assert.ok(written.includes('## Top Actions'));
+      assert.ok(written.includes('- none'));
     } finally {
       cleanup(projectRoot);
     }
