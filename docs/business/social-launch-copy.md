@@ -5,7 +5,7 @@ Use these templates as launch-ready starting points. Review channel tone before 
 ## X Post: Release Announcement
 
 ```text
-ECC v2.0.0-rc.1 is live.
+ECC v2.0.0-rc.1 preview pack is ready for final release review.
 
 The repo is moving from a Claude Code config pack into a cross-harness operating system for agentic work.
 
@@ -55,7 +55,7 @@ ECC v2.0.0-rc.1 pushes that further: reusable skills, thin harness adapters, and
 ## LinkedIn Post: Partner-Friendly Summary
 
 ```text
-ECC v2.0.0-rc.1 is live.
+ECC v2.0.0-rc.1 preview pack is ready for final release review.
 
 The practical shift: ECC is no longer just a Claude Code config pack. It is becoming a cross-harness operating system for agentic work.
 

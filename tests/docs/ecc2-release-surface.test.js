@@ -106,6 +106,10 @@ test('business launch copy stays aligned with the rc.1 public surface', () => {
   const source = read('docs/business/social-launch-copy.md');
   assert.ok(source.includes('ECC v2.0.0-rc.1'), 'business launch copy should use the rc.1 release');
   assert.ok(
+    source.includes('preview pack is ready for final release review'),
+    'business launch copy should stay pre-publication until release URLs exist'
+  );
+  assert.ok(
     source.includes('https://github.com/affaan-m/everything-claude-code'),
     'business launch copy should include the public repo URL'
   );
@@ -117,6 +121,21 @@ test('business launch copy stays aligned with the rc.1 public surface', () => {
   );
   assert.ok(!source.includes('<repo-link>'), 'business launch copy should not contain repo placeholders');
   assert.ok(!source.includes('v1.8.0'), 'business launch copy should not stay pinned to v1.8.0');
+});
+
+test('announcement drafts avoid live-release claims before publication', () => {
+  const announcementFiles = [
+    'docs/releases/2.0.0-rc.1/linkedin-post.md',
+    'docs/business/social-launch-copy.md',
+  ];
+
+  for (const relativePath of announcementFiles) {
+    const source = read(relativePath);
+    assert.ok(
+      !/ECC v2\.0\.0-rc\.1 is live\./.test(source),
+      `${relativePath} must not claim rc.1 is live before the release gate completes`
+    );
+  }
 });
 
 test('Hermes setup uses release-candidate wording for the rc.1 surface', () => {

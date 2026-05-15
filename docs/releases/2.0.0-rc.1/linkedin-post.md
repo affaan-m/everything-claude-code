@@ -1,6 +1,6 @@
 # LinkedIn Draft - ECC v2.0.0-rc.1
 
-ECC v2.0.0-rc.1 is live as the first release-candidate pass at the 2.0 direction.
+ECC v2.0.0-rc.1 is ready for final release review as the first release-candidate pass at the 2.0 direction.
 
 The practical shift is simple: ECC is no longer framed as only a Claude Code plugin or config bundle.
 
