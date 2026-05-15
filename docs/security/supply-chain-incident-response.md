@@ -57,6 +57,7 @@ Primary references:
 - <https://tanstack.com/blog/npm-supply-chain-compromise-postmortem>
 - <https://github.com/advisories/GHSA-g7cv-rxg3-hmpx>
 - <https://tanstack.com/blog/incident-followup>
+- <https://www.wiz.io/blog/mini-shai-hulud-strikes-again-tanstack-more-npm-packages-compromised>
 - <https://socket.dev/blog/node-ipc-package-compromised>
 - <https://docs.npmjs.com/trusted-publishers/>
 - <https://www.cisa.gov/news-events/alerts/2025/09/23/widespread-supply-chain-compromise-impacting-npm-ecosystem>
