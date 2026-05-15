@@ -81,6 +81,21 @@ node tests/run-all.js
 If a search hit appears only in documentation examples, note it in the release
 evidence but do not rotate credentials for a docs-only reference.
 
+## Durable Watch Workflow
+
+ECC also runs `.github/workflows/supply-chain-watch.yml` every six hours and on
+manual dispatch. The workflow is read-only, disables checkout credential
+persistence, installs with `npm ci --ignore-scripts`, verifies npm registry
+signatures, runs the IOC scanner fixtures, emits
+`supply-chain-ioc-report.json`, and re-validates GitHub Actions hardening rules.
+
+Treat a failed scheduled watch as a release blocker until an operator confirms
+whether the failure is a newly reported advisory, a stale scanner fixture, a
+registry-signature issue, or a workflow hardening regression. If the scanner
+needs new indicators, update `scripts/ci/scan-supply-chain-iocs.js`, add fixture
+coverage in `tests/ci/scan-supply-chain-iocs.test.js`, refresh this runbook, and
+attach the latest JSON artifact to the release evidence.
+
 ## Immediate Response
 
 If ECC or a maintainer machine installed a known-bad package version:

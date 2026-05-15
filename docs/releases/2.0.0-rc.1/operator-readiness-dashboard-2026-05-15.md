@@ -13,7 +13,7 @@ clean checkout.
 | Issue queue | Current | 0 open issues across checked repos |
 | Discussions | Current | 58 main-repo discussions; 0 need maintainer touch; 0 answerable discussions missing accepted answers |
 | Local worktree | Current with caveat | `main...origin/main`; unrelated `?? docs/drafts/` ignored |
-| Security sweep | Current with follow-up | IOC scan, audits, and package-manager hardening completed |
+| Security sweep | Current with follow-up | IOC scan, audits, package-manager hardening, and scheduled watch workflow completed |
 | Linear roadmap | Current with follow-up | `ECC Platform Roadmap`, ITO-44 through ITO-59 |
 | ECC 2.0 publication | Not complete | Release, npm, plugin, and announcement gates pending |
 | AgentShield enterprise depth | In progress | AgentShield #86 merged; live IOC loop still pending |
@@ -29,7 +29,7 @@ Run these from `everything-claude-code` unless a row says otherwise.
 | Platform audit | `node scripts/platform-audit.js --json --allow-untracked docs/drafts/` | `ready: true`; open PRs 0/20; open issues 0/20; discussions needing maintainer touch 0; answerable discussions missing accepted answers 0; blocking dirty files 0 |
 | Discussion audit | `node scripts/discussion-audit.js --json --repo affaan-m/everything-claude-code` | `ready: true`; 58 discussions sampled; 0 need maintainer touch; 0 answerable discussions missing accepted answers |
 | Main repo status | `git status --short --branch` | `## main...origin/main`; `?? docs/drafts/` remains unrelated |
-| Main commit | `git rev-parse HEAD` | `c0f8c3bc813360f29e9f2b66bcae7e977cd03327` |
+| Main commit | `git rev-parse HEAD` | `6887f2952d193cff10b3eb79af7765555d8ca9f5` |
 | Main repo PRs/issues | GitHub connector and `gh` readback | 0 open PRs; 0 open issues |
 | AgentShield PRs/issues | GitHub connector and `gh` readback | 0 open PRs; 0 open issues |
 | ECC Tools PRs/issues | Local `gh pr list` and `gh issue list` | 0 open PRs; 0 open issues |
@@ -37,7 +37,8 @@ Run these from `everything-claude-code` unless a row says otherwise.
 | Supply-chain IOC scan | `node scripts/ci/scan-supply-chain-iocs.js --root <ECC-workspace> --home` | Passed; 1241 files inspected |
 | IOC unit tests | `node tests/ci/scan-supply-chain-iocs.test.js` | 15/15 passed |
 | Dead-man switch persistence sweep | Process, LaunchAgent, and known payload filename sweep for Mini Shai-Hulud markers | No matches |
-| Workflow security gate | `node scripts/ci/validate-workflow-security.js` | Passed; 7 workflow files inspected |
+| Workflow security gate | `node scripts/ci/validate-workflow-security.js` | Passed; 8 workflow files inspected |
+| Supply-chain watch workflow | `.github/workflows/supply-chain-watch.yml` | Scheduled every 6 hours; emits `supply-chain-ioc-report.json` |
 | npm signatures and audit | `npm audit signatures && npm audit --audit-level=moderate` in main, AgentShield, ECC Tools | 0 vulnerabilities in each checked package |
 
 ## Prompt-To-Artifact Checklist
@@ -94,9 +95,9 @@ Still-open lanes:
   should not spend more time closing nonexistent PRs/issues.
 - The discussion queue is current and repeatable through `discussion:audit`.
   ITO-59 remains open only for recurring Linear/status synchronization.
-- The Mini Shai-Hulud/TanStack protection pass is strong enough for current
-  local protection, but ITO-57 remains open until incident response and IOC
-  updates become a durable workflow.
+- The Mini Shai-Hulud/TanStack protection pass now has a durable scheduled
+  watch workflow. ITO-57 remains open for advisory-source refresh automation
+  and Linear status synchronization.
 - The release is still blocked by publication, package, plugin, billing, and
   announcement gates. Passing `platform:audit` alone is not proof that ECC 2.0
   is publishable.
@@ -107,7 +108,7 @@ Still-open lanes:
    markdown artifact.
 2. Run `platform:audit` and `discussion:audit` from the final release commit
    before recording publication evidence.
-3. Continue ITO-57 by turning emergency hardening into documented incident
-   response and scanner update workflow.
+3. Continue ITO-57 by adding advisory-source refresh automation and Linear
+   status synchronization for the scheduled supply-chain watch.
 4. Resume release/publication lanes ITO-45, ITO-46, and ITO-56 only after the
    readiness dashboard can be refreshed from commands.
