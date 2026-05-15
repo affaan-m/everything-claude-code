@@ -12,6 +12,9 @@ For the May 13 release-readiness evidence refresh, see
 [`publication-evidence-2026-05-13.md`](publication-evidence-2026-05-13.md).
 For the May 13 post-hardening evidence refresh after PR #1850 and PR #1851, see
 [`publication-evidence-2026-05-13-post-hardening.md`](publication-evidence-2026-05-13-post-hardening.md).
+For the May 15 queue, discussion, Linear roadmap, and Mini Shai-Hulud/TanStack
+follow-up evidence refresh after PR #1921, see
+[`publication-evidence-2026-05-15.md`](publication-evidence-2026-05-15.md).
 
 ## Release Identity Matrix
 
@@ -39,8 +42,8 @@ For the May 13 post-hardening evidence refresh after PR #1850 and PR #1851, see
 | Claude plugin | Manifest validates, marketplace JSON points to public repo, install docs match slug | `claude plugin validate .claude-plugin/plugin.json`; `claude plugin tag .claude-plugin --dry-run`; isolated temp-home install smoke | `Blocker: real tag creation/push requires approval` | Plugin owner | Clean-checkout dry-run and install smoke recorded |
 | Codex plugin | Manifest version matches package and docs, hook limitations are explicit | `node tests/docs/ecc2-release-surface.test.js` | `Blocker: marketplace submission path still manual/owner-gated` | Plugin owner | Evidence recorded |
 | OpenCode package | Build output is regenerated from source and package metadata is current | `npm run build:opencode` | `Blocker: none for local build; public distribution still follows npm/plugin release` | Package owner | Evidence recorded |
-| ECC Tools billing reference | Any billing claim links to verified Marketplace/App state | `gh api repos/ECC-Tools/ECC-Tools` plus app/marketplace URL check | `Blocker:` | ECC Tools owner | Pending |
-| Announcement copy | X, LinkedIn, GitHub release, and longform copy point to live URLs | `rg -n "TODO" docs/releases/2.0.0-rc.1` and repeat for `TBD` | `Blocker:` | Release owner | Pending |
+| ECC Tools billing reference | Any billing claim links to verified Marketplace/App state | `env -u GITHUB_TOKEN gh repo view ECC-Tools/ECC-Tools --json nameWithOwner,isPrivate,viewerPermission` plus app/marketplace URL check | `Blocker: repo access verified on 2026-05-15; billing/product readiness still requires dedicated ECC Tools audit` | ECC Tools owner | Access verified; billing audit pending |
+| Announcement copy | X, LinkedIn, GitHub release, and longform copy point to live URLs | `rg -n "TODO" docs/releases/2.0.0-rc.1` and repeat for `TBD` | `Blocker: final live release/npm/plugin URLs do not exist yet` | Release owner | Pending |
 | Privileged workflow hardening | Release and maintenance workflows avoid persisted checkout tokens | `node scripts/ci/validate-workflow-security.js` | `Blocker:` | Release owner | Evidence recorded in post-hardening refresh |
 
 ## Required Command Evidence
@@ -60,6 +63,9 @@ Record the exact commit SHA and command output before any publication action:
 | Package surface | `node tests/scripts/npm-publish-surface.test.js` | 0 failures; no Python bytecode in npm tarball | `2/2` passed in May 12 evidence pass |
 | Release surface | `node tests/docs/ecc2-release-surface.test.js` | 0 failures | `publication-evidence-2026-05-13.md`: 18/18 passed |
 | Optional Rust surface | `cd ecc2 && cargo test` | 0 failures or explicit deferral | `publication-evidence-2026-05-13.md`: 462/462 passed, warnings only |
+| Queue baseline | `gh pr list` / `gh issue list` across trunk, AgentShield, JARVIS, ECC Tools, and ECC website | Under 20 open PRs and under 20 open issues | `publication-evidence-2026-05-15.md`: 0 open PRs and 0 open issues across checked repos |
+| Discussion baseline | GraphQL discussion count and maintainer-touch sweep | No unmanaged active discussion queue | `publication-evidence-2026-05-15.md`: 57 trunk discussions, 0 without maintainer touch; other tracked repos disabled or 0 |
+| Linear roadmap | Linear project and issue readback | Detailed roadmap exists with release, security, AgentShield, ECC Tools, legacy, and observability lanes | `publication-evidence-2026-05-15.md`: project and 16 issue lanes recorded |
 
 ## Do Not Publish If
 

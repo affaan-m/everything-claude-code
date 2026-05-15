@@ -1,36 +1,39 @@
 # ECC 2.0 GA Roadmap
 
-This roadmap is the durable repo mirror for the Linear project:
+This roadmap is the durable repo mirror for the active Linear project:
 
-<https://linear.app/ecctools/project/ecc-20-ga-harness-os-security-platform-de2a0ecace6f>
+<https://linear.app/itomarkets/project/ecc-platform-roadmap-52b328ee03e1>
 
-Linear issue creation is currently blocked by the workspace active issue limit,
-so the live execution truth is split across:
+Linear issue creation is available again in the Ito Markets workspace. The live
+execution truth is split across:
 
-- the Linear project description, status updates, and milestones;
+- the Linear project documents, issue lanes, dependencies, and milestones;
 - this repo document;
 - merged PR evidence;
 - handoffs under `~/.cluster-swarm/handoffs/`.
 
 ## Current Evidence
 
-As of 2026-05-13:
+As of 2026-05-15:
 
 - GitHub queues are clean across `affaan-m/everything-claude-code`,
   `affaan-m/agentshield`, `affaan-m/JARVIS`, `ECC-Tools/ECC-Tools`, and
-  `ECC-Tools/ECC-website`: the latest sweep found 0 open PRs and 0 open
-  issues across all five repos.
-- GitHub discussions are also clean across those tracked repos:
-  the latest GraphQL sweep found 52 total trunk discussions with 0 open,
-  and 0 total/open discussions on AgentShield, JARVIS, ECC-Tools, and the
-  ECC-Tools website.
-- The final open public GitHub issue, #1314, was closed as a non-actionable
-  external badge/listing notification with a courtesy comment.
-- Linear issue creation for this project was re-tested after GitHub cleanup and
-  is still blocked by the workspace free issue limit. Seven roadmap-lane issue
-  creation attempts all returned the same limit error, so this repo mirror and
-  Linear project status updates remain the active tracking surfaces until the
-  workspace is upgraded or issue capacity is freed.
+  `ECC-Tools/ECC-website`: the latest sweep found 0 open PRs and 0 open issues
+  across all five repos. ECC Tools org verification requires
+  `env -u GITHUB_TOKEN` in this shell so the configured GitHub host credential
+  is used instead of the incompatible environment token.
+- GitHub discussions are current across those tracked repos:
+  `affaan-m/everything-claude-code` has 57 total discussions and 0 without
+  maintainer touch after May 15 maintainer updates on #73 and #1239; AgentShield,
+  JARVIS, ECC Tools, and the ECC Tools website have discussions disabled or 0
+  total discussions.
+- The current Linear roadmap contains 16 issue lanes (`ITO-44` through
+  `ITO-59`) and five milestones: Security and Access Baseline, ECC 2.0 Preview
+  and Publication, AgentShield Enterprise Iteration, ECC Tools Next-Level
+  Platform, and Legacy Audit and Salvage.
+- `docs/releases/2.0.0-rc.1/publication-evidence-2026-05-15.md` records the
+  queue, discussion, Linear roadmap, ECC Tools access, and PR #1921
+  Mini Shai-Hulud/TanStack follow-up evidence refresh.
 - `npm run harness:audit -- --format json` reports 70/70 on current `main`.
 - `npm run observability:ready` reports 21/21 readiness on current `main`,
   including the GitHub/Linear/handoff/roadmap progress-sync contract.

@@ -178,6 +178,7 @@ test('launch checklist records the ecc2 alpha version policy', () => {
 
 test('publication readiness checklist gates public release actions on evidence', () => {
   const source = read('docs/releases/2.0.0-rc.1/publication-readiness.md');
+  const may15Evidence = read('docs/releases/2.0.0-rc.1/publication-evidence-2026-05-15.md');
 
   for (const section of [
     '## Release Identity Matrix',
@@ -211,6 +212,12 @@ test('publication readiness checklist gates public release actions on evidence',
   ]) {
     assert.ok(source.includes(surface), `publication readiness missing ${surface}`);
   }
+
+  assert.ok(source.includes('publication-evidence-2026-05-15.md'));
+  assert.ok(may15Evidence.includes('PR #1921'));
+  assert.ok(may15Evidence.includes('env -u GITHUB_TOKEN'));
+  assert.ok(may15Evidence.includes('ITO-44'));
+  assert.ok(may15Evidence.includes('0 open PRs, 0 open issues'));
 });
 
 test('release checklist and roadmap link to publication readiness evidence gate', () => {

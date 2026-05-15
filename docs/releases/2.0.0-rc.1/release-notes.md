@@ -14,6 +14,7 @@ Claude Code remains a core target. Codex, OpenCode, Cursor, Gemini, and other ha
 - Documented the cross-harness portability model for skills, hooks, MCPs, rules, and instructions.
 - Added a Hermes import playbook for turning local operator patterns into publishable ECC skills.
 - Added a local [observability readiness gate](../../architecture/observability-readiness.md) for loop status, session traces, harness audit, and ECC2 tool-risk logs.
+- Refreshed the release-readiness evidence after the May 2026 Mini Shai-Hulud/TanStack campaign follow-up, including expanded IOC coverage, clean queue/discussion checks, and a detailed Linear roadmap gate.
 
 ## Why This Matters
 
@@ -37,6 +38,7 @@ What ships in this surface:
 - release notes and launch collateral
 - cross-harness architecture documentation
 - Hermes import guidance for sanitized operator workflows
+- publication-readiness evidence for queue state, discussion state, Linear roadmap coverage, and supply-chain follow-up
 
 What stays local:
 
