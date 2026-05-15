@@ -1,6 +1,6 @@
 ---
 name: cpp-coding-standards
-description: C++ coding standards based on the C++ Core Guidelines (isocpp.github.io). Use when writing, reviewing, or refactoring C++ code to enforce modern, safe, and idiomatic practices.
+description: 基于 C++ Core Guidelines (isocpp.github.io) 的 C++ 编码规范。适用场景：编写、评审或重构 C++ 代码时，强制执行现代、安全与惯用做法。
 origin: ECC
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: Safely identify and remove dead code with verification after each change.
+description: 安全地识别并清理死代码，每次改动后都进行验证。
 ---
 
 # Refactor Clean

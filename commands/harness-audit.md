@@ -1,5 +1,5 @@
 ---
-description: Run a deterministic repository harness audit and return a prioritized scorecard.
+description: 对仓库执行确定性的 harness 审计并返回带优先级的评分卡。
 ---
 
 # Harness Audit Command

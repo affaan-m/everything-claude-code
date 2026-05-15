@@ -1,6 +1,6 @@
 ---
 name: healthcare-cdss-patterns
-description: Clinical Decision Support System (CDSS) development patterns. Drug interaction checking, dose validation, clinical scoring (NEWS2, qSOFA), alert severity classification, and integration into EMR workflows.
+description: 临床决策支持系统 (CDSS) 开发模式。药物相互作用检查、剂量校验、临床评分 (NEWS2、qSOFA)、告警严重度分级，以及与 EMR 工作流的集成。
 origin: Health1 Super Speciality Hospitals — contributed by Dr. Keyur Patel
 version: "1.0.0"
 ---

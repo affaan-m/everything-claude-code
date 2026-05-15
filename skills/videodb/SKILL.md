@@ -1,6 +1,6 @@
 ---
 name: videodb
-description: See, Understand, Act on video and audio. See- ingest from local files, URLs, RTSP/live feeds, or live record desktop; return realtime context and playable stream links. Understand- extract frames, build visual/semantic/temporal indexes, and search moments with timestamps and auto-clips. Act- transcode and normalize (codec, fps, resolution, aspect ratio), perform timeline edits (subtitles, text/image overlays, branding, audio overlays, dubbing, translation), generate media assets (image, audio, video), and create real time alerts for events from live streams or desktop capture.
+description: 对视频与音频实现 See、Understand、Act。See：摄入本地文件、URL、RTSP/直播流或实时录屏，返回实时上下文与可播放流链接。Understand：抽帧，构建视觉/语义/时间索引，按时间戳搜索片段并自动生成 clip。Act：转码与归一化（编码、fps、分辨率、宽高比），做时间线编辑（字幕、文字/图像叠加、品牌化、音轨叠加、配音、翻译），生成媒体资产（图像、音频、视频），并基于直播流或桌面采集创建实时事件告警。
 origin: ECC
 allowed-tools: Read Grep Glob Bash(python:*)
 argument-hint: "[task description]"

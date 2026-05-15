@@ -1,6 +1,6 @@
 ---
 name: django-verification
-description: "Verification loop for Django projects: migrations, linting, tests with coverage, security scans, and deployment readiness checks before release or PR."
+description: "面向 Django 项目的发布/PR 前验证回路：迁移、lint、带 coverage 的测试、安全扫描与部署就绪检查。"
 origin: ECC
 ---
 

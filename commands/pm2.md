@@ -1,5 +1,5 @@
 ---
-description: Analyze a project and generate PM2 service commands for detected frontend, backend, or database services.
+description: 分析项目并为识别到的前端、后端或数据库服务生成 PM2 服务命令。
 ---
 
 # PM2 Init

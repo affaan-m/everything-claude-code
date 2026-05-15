@@ -1,5 +1,5 @@
 ---
-description: Comprehensive C++ code review for memory safety, modern C++ idioms, concurrency, and security. Invokes the cpp-reviewer agent.
+description: 针对内存安全、现代 C++ 惯用法、并发与安全的全面 C++ 代码评审，调用 cpp-reviewer agent。
 ---
 
 # C++ Code Review

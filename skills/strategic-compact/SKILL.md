@@ -1,6 +1,6 @@
 ---
 name: strategic-compact
-description: Suggests manual context compaction at logical intervals to preserve context through task phases rather than arbitrary auto-compaction.
+description: 在合理节点建议手动压缩上下文，按任务阶段保留上下文，而不是被任意自动压缩。
 origin: ECC
 ---
 

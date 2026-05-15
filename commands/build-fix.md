@@ -1,5 +1,5 @@
 ---
-description: Detect the project build system and incrementally fix build/type errors with minimal safe changes.
+description: 识别项目构建系统，以最小安全改动逐步修复构建和类型错误。
 ---
 
 # Build and Fix

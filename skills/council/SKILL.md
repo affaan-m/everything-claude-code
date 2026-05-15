@@ -1,6 +1,6 @@
 ---
 name: council
-description: Convene a four-voice council for ambiguous decisions, tradeoffs, and go/no-go calls. Use when multiple valid paths exist and you need structured disagreement before choosing.
+description: 为模糊决策、权衡与 go/no-go 召集四方议会。适用场景：存在多条合理路径，需要在选择前进行结构化分歧讨论。
 origin: ECC
 ---
 

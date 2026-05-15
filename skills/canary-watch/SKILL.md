@@ -1,6 +1,6 @@
 ---
 name: canary-watch
-description: Use this skill to monitor a deployed URL for regressions after deploys, merges, or dependency upgrades.
+description: 在部署、合并或依赖升级后，持续监控目标 URL 是否出现回归。
 origin: ECC
 ---
 

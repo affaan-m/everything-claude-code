@@ -1,6 +1,6 @@
 ---
 name: product-capability
-description: Translate PRD intent, roadmap asks, or product discussions into an implementation-ready capability plan that exposes constraints, invariants, interfaces, and unresolved decisions before multi-service work starts. Use when the user needs an ECC-native PRD-to-SRS lane instead of vague planning prose.
+description: 把 PRD 意图、roadmap 诉求或产品讨论转译为可落地的能力计划，在跨服务工作启动前显式暴露约束、不变量、接口与未决议题。适用场景：用户需要一条 ECC 原生的 PRD-to-SRS 通道，而非含糊的规划文字。
 origin: ECC
 ---
 

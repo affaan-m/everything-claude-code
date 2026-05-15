@@ -1,6 +1,6 @@
 ---
 name: santa-method
-description: "Multi-agent adversarial verification with convergence loop. Two independent review agents must both pass before output ships."
+description: "带收敛回路的多 agent 对抗式验证。两个独立评审 agent 都通过后产物才能发布。"
 origin: "Ronald Skelton - Founder, RapportScore.ai"
 ---
 

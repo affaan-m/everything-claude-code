@@ -1,6 +1,6 @@
 ---
 name: benchmark
-description: Use this skill to measure performance baselines, detect regressions before/after PRs, and compare stack alternatives.
+description: 用于测量性能基线、在 PR 前后检测回归，并对比不同技术栈方案。
 origin: ECC
 ---
 

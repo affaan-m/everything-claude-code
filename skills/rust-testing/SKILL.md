@@ -1,6 +1,6 @@
 ---
 name: rust-testing
-description: Rust testing patterns including unit tests, integration tests, async testing, property-based testing, mocking, and coverage. Follows TDD methodology.
+description: Rust 测试模式：单元测试、集成测试、异步测试、基于属性的测试、mocking 与 coverage，遵循 TDD。
 origin: ECC
 ---
 

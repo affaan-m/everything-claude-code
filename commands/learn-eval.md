@@ -1,5 +1,5 @@
 ---
-description: "Extract reusable patterns from the session, self-evaluate quality before saving, and determine the right save location (Global vs Project)."
+description: "从会话中提取可复用模式，保存前自评质量，并判断合适的保存位置（Global 还是 Project）。"
 ---
 
 # /learn-eval - Extract, Evaluate, then Save

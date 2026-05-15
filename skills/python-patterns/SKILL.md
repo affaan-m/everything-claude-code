@@ -1,6 +1,6 @@
 ---
 name: python-patterns
-description: Pythonic idioms, PEP 8 standards, type hints, and best practices for building robust, efficient, and maintainable Python applications.
+description: 构建健壮、高效、可维护 Python 应用的 Pythonic 惯用法、PEP 8 规范、类型注解与最佳实践。
 origin: ECC
 ---
 

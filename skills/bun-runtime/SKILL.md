@@ -1,6 +1,6 @@
 ---
 name: bun-runtime
-description: Bun as runtime, package manager, bundler, and test runner. When to choose Bun vs Node, migration notes, and Vercel support.
+description: Bun 作为 runtime、包管理器、bundler 与测试运行器。何时选 Bun 而非 Node、迁移注意事项以及 Vercel 支持情况。
 origin: ECC
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: laravel-security
-description: Laravel security best practices for authn/authz, validation, CSRF, mass assignment, file uploads, secrets, rate limiting, and secure deployment.
+description: Laravel 安全最佳实践：认证/授权、校验、CSRF、批量赋值、文件上传、机密、限流与安全部署。
 origin: ECC
 ---
 

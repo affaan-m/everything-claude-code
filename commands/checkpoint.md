@@ -1,5 +1,5 @@
 ---
-description: Create, verify, or list workflow checkpoints after running verification checks.
+description: 在执行校验后创建、验证或列出工作流检查点。
 ---
 
 # Checkpoint Command

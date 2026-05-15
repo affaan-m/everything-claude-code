@@ -1,6 +1,6 @@
 ---
 name: enterprise-agent-ops
-description: Operate long-lived agent workloads with observability, security boundaries, and lifecycle management.
+description: 在具备可观测性、安全边界与生命周期管理的前提下运维长生命周期 agent 负载。
 origin: ECC
 ---
 

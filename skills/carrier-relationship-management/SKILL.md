@@ -1,12 +1,9 @@
 ---
 name: carrier-relationship-management
 description: >
-  Codified expertise for managing carrier portfolios, negotiating freight rates,
-  tracking carrier performance, allocating freight, and maintaining strategic
-  carrier relationships. Informed by transportation managers with 15+ years
-  experience. Includes scorecarding frameworks, RFP processes, market intelligence,
-  and compliance vetting. Use when managing carriers, negotiating rates, evaluating
-  carrier performance, or building freight strategies.
+  面向承运商组合管理、运费谈判、承运商绩效跟踪、运量分配与战略承运商关系维护的体系化经验。
+  来自具备 15+ 年经验的运输管理者。包含评分卡框架、RFP 流程、市场情报与合规审查。
+  适用场景：管理承运商、谈判运价、评估承运商绩效或构建货运策略。
 license: Apache-2.0
 version: 1.0.0
 homepage: https://github.com/affaan-m/everything-claude-code

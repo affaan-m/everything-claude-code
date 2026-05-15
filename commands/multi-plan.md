@@ -1,5 +1,5 @@
 ---
-description: Create a multi-model implementation plan without modifying production code.
+description: 在不修改生产代码的前提下，制定多模型实现方案。
 ---
 
 # Plan - Multi-Model Collaborative Planning

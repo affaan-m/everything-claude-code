@@ -1,6 +1,6 @@
 ---
 name: django-tdd
-description: Django testing strategies with pytest-django, TDD methodology, factory_boy, mocking, coverage, and testing Django REST Framework APIs.
+description: Django 的 TDD 策略：pytest-django、factory_boy、mocking、coverage，以及对 Django REST Framework API 的测试。
 origin: ECC
 ---
 

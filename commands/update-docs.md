@@ -1,5 +1,5 @@
 ---
-description: Sync documentation from source-of-truth files such as scripts, schemas, routes, and exports.
+description: 从脚本、schema、路由、导出等真源文件同步更新文档。
 ---
 
 # Update Documentation

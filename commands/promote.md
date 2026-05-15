@@ -1,6 +1,6 @@
 ---
 name: promote
-description: Promote project-scoped instincts to global scope
+description: 将 project 作用域的 instincts 提升到 global 作用域
 command: true
 ---
 

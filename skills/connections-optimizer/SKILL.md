@@ -1,6 +1,6 @@
 ---
 name: connections-optimizer
-description: Reorganize the user's X and LinkedIn network with review-first pruning, add/follow recommendations, and channel-specific warm outreach drafted in the user's real voice. Use when the user wants to clean up following lists, grow toward current priorities, or rebalance a social graph around higher-signal relationships.
+description: 以先审查再操作的方式重整用户的 X 与 LinkedIn 网络：剪枝、增添/关注建议、按渠道用用户真实声音起草温和外联文案。适用场景：用户想清理关注列表、围绕当前重点扩张人脉，或重新平衡社交图谱以突出高信号关系。
 origin: ECC
 ---
 

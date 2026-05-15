@@ -1,5 +1,5 @@
 ---
-description: Scan project structure and generate token-lean architecture codemaps.
+description: 扫描项目结构并生成精简 token 的架构 codemap。
 ---
 
 # Update Codemaps

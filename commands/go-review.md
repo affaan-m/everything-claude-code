@@ -1,5 +1,5 @@
 ---
-description: Comprehensive Go code review for idiomatic patterns, concurrency safety, error handling, and security. Invokes the go-reviewer agent.
+description: 针对惯用模式、并发安全、错误处理与安全的全面 Go 代码评审，调用 go-reviewer agent。
 ---
 
 # Go Code Review

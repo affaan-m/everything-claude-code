@@ -1,5 +1,5 @@
 ---
-description: Create hooks to prevent unwanted behaviors from conversation analysis or explicit instructions
+description: 基于对话分析或明确指令创建 hook，阻止不期望的行为
 ---
 
 Create hook rules to prevent unwanted Claude Code behaviors by analyzing conversation patterns or explicit user instructions.

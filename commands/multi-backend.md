@@ -1,5 +1,5 @@
 ---
-description: Run a backend-focused multi-model workflow for APIs, algorithms, data, and business logic.
+description: 运行聚焦后端的多模型工作流，处理 API、算法、数据与业务逻辑。
 ---
 
 # Backend - Backend-Focused Development

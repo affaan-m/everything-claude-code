@@ -8,14 +8,6 @@
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp@2.1.4"]
     },
-    "exa": {
-      "type": "http",
-      "url": "https://mcp.exa.ai/mcp"
-    },
-    "memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory@2026.1.26"]
-    },
     "playwright": {
       "command": "npx",
       "args": ["-y", "@playwright/mcp@0.0.69", "--extension"]

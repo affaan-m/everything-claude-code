@@ -1,6 +1,6 @@
 ---
 name: accessibility
-description: Design, implement, and audit inclusive digital products using WCAG 2.2 Level AA
+description: 使用 WCAG 2.2 Level AA 设计、实现并审计无障碍数字产品。
   standards. Use this skill to generate semantic ARIA for Web and accessibility traits for Web and Native platforms (iOS/Android).
 origin: ECC
 ---

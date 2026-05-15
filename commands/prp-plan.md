@@ -1,5 +1,5 @@
 ---
-description: Create comprehensive feature implementation plan with codebase analysis and pattern extraction
+description: 结合代码库分析与模式提取，生成完整的特性实现方案
 argument-hint: <feature description | path/to/prd.md>
 ---
 

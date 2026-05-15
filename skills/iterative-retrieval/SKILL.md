@@ -1,6 +1,6 @@
 ---
 name: iterative-retrieval
-description: Pattern for progressively refining context retrieval to solve the subagent context problem
+description: 渐进式精炼上下文检索的模式，用于解决 subagent 的上下文问题。
 origin: ECC
 ---
 

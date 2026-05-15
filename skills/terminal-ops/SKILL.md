@@ -1,6 +1,6 @@
 ---
 name: terminal-ops
-description: Evidence-first repo execution workflow for ECC. Use when the user wants a command run, a repo checked, a CI failure debugged, or a narrow fix pushed with exact proof of what was executed and verified.
+description: 面向 ECC 的证据优先仓库执行工作流。适用场景：用户希望运行命令、检查仓库、调试 CI 失败，或推送一个范围窄的修复，并附上明确的执行与验证证据。
 origin: ECC
 ---
 

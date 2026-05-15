@@ -1,5 +1,5 @@
 ---
-description: Run Flutter/Dart tests, report failures, and incrementally fix test issues. Covers unit, widget, golden, and integration tests.
+description: 运行 Flutter/Dart 测试、报告失败并逐步修复测试问题，覆盖单元、widget、golden 和集成测试。
 ---
 
 # Flutter Test

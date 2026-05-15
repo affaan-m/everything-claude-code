@@ -1,5 +1,5 @@
 ---
-description: Enforce TDD workflow for Rust. Write tests first, then implement. Verify 80%+ coverage with cargo-llvm-cov.
+description: 为 Rust 强制执行 TDD 流程：先写测试再实现，并用 cargo-llvm-cov 验证 80%+ 覆盖率。
 ---
 
 # Rust TDD Command

@@ -1,6 +1,6 @@
 ---
 name: content-hash-cache-pattern
-description: Cache expensive file processing results using SHA-256 content hashes — path-independent, auto-invalidating, with service layer separation.
+description: 用 SHA-256 内容哈希缓存昂贵的文件处理结果——与路径无关、自动失效，并通过服务层做好分离。
 origin: ECC
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: Load the most recent session file from ~/.claude/session-data/ and resume work with full context from where the last session ended.
+description: 从 ~/.claude/session-data/ 加载最近的会话文件，带着完整上下文从上次结束处继续工作。
 ---
 
 # Resume Session Command

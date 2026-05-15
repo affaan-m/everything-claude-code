@@ -1,6 +1,6 @@
 ---
 name: security-bounty-hunter
-description: Hunt for exploitable, bounty-worthy security issues in repositories. Focuses on remotely reachable vulnerabilities that qualify for real reports instead of noisy local-only findings.
+description: 在仓库中挖掘可利用、值得提交赏金的安全问题。聚焦能被远程触达、能形成真实报告的漏洞，而非只在本地嘈杂的发现。
 origin: ECC direct-port adaptation
 version: "1.0.0"
 ---

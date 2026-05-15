@@ -1,6 +1,6 @@
 ---
 name: evolve
-description: Analyze instincts and suggest or generate evolved structures
+description: 分析 instincts 并建议或生成演化后的结构
 command: true
 ---
 

@@ -1,18 +1,10 @@
 ---
 name: continuous-learning
-description: "[DEPRECATED - use continuous-learning-v2] Legacy v1 stop-hook skill extractor. v2 is a strict superset with instinct-based, project-scoped, hook-reliable learning. Do not invoke v1; route continuous learning, session learning, and pattern extraction requests to continuous-learning-v2."
+description: 自动从 Claude Code 会话中提炼可复用模式，保存为已学会的 skill 供后续使用。
 origin: ECC
 ---
 
-# Continuous Learning Skill - DEPRECATED
-
-> **DEPRECATED 2026-04-28.** Use `continuous-learning-v2` instead. v2 is a strict superset: stop-hook observation becomes PreToolUse/PostToolUse observation, full skills become atomic instincts with confidence scoring, and global-only storage becomes project-scoped plus global promotion.
->
-> This file is kept for archival reference and backward compatibility with existing installs.
-
----
-
-## Original v1 Documentation (archival)
+# Continuous Learning Skill
 
 Automatically evaluates Claude Code sessions on end to extract reusable patterns that can be saved as learned skills.
 

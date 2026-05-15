@@ -1,6 +1,6 @@
 ---
 name: gateguard
-description: Fact-forcing gate that blocks Edit/Write/Bash (including MultiEdit) and demands concrete investigation (importers, data schemas, user instruction) before allowing the action. Measurably improves output quality by +2.25 points vs ungated agents.
+description: 迫使事实落地的门控：在放行前阻塞 Edit/Write/Bash（含 MultiEdit），并要求具体调查（调用方、数据 schema、用户指令）。可测得地把输出质量比未加门控的 agent 提升 +2.25 分。
 origin: community
 ---
 

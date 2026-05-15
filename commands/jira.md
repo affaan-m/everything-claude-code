@@ -1,5 +1,5 @@
 ---
-description: Retrieve a Jira ticket, analyze requirements, update status, or add comments. Uses the jira-integration skill and MCP or REST API.
+description: 获取 Jira ticket，分析需求、更新状态或添加评论，使用 jira-integration skill 与 MCP 或 REST API。
 ---
 
 # Jira Command

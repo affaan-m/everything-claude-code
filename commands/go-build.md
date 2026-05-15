@@ -1,5 +1,5 @@
 ---
-description: Fix Go build errors, go vet warnings, and linter issues incrementally. Invokes the go-build-resolver agent for minimal, surgical fixes.
+description: 逐步修复 Go 构建错误、go vet 警告和 linter 问题，调用 go-build-resolver agent 进行最小化的精准修复。
 ---
 
 # Go Build and Fix

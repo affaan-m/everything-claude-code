@@ -1,5 +1,5 @@
 ---
-description: Inspect active loop state, progress, failure signals, and recommended intervention.
+description: 查看当前循环的状态、进度、失败信号及建议的干预措施。
 ---
 
 # Loop Status Command

@@ -1,6 +1,6 @@
 ---
 name: agent-harness-construction
-description: Design and optimize AI agent action spaces, tool definitions, and observation formatting for higher completion rates.
+description: 设计并优化 AI agent 的动作空间、工具定义与观察格式，提升完成率。
 origin: ECC
 ---
 

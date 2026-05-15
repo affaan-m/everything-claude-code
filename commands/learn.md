@@ -1,5 +1,5 @@
 ---
-description: Extract reusable patterns from the current session and save them as candidate skills or guidance.
+description: 从当前会话提取可复用模式，并保存为候选 skill 或指引。
 ---
 
 # /learn - Extract Reusable Patterns

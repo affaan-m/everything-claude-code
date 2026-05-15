@@ -1,6 +1,6 @@
 ---
 name: customer-billing-ops
-description: Operate customer billing workflows such as subscriptions, refunds, churn triage, billing-portal recovery, and plan analysis using connected billing tools like Stripe. Use when the user needs to help a customer, inspect subscription state, or manage revenue-impacting billing operations.
+description: 通过 Stripe 等接入的计费工具，操作订阅、退款、流失分流、计费门户挽回、套餐分析等客户计费工作流。适用场景：用户需要协助客户、查看订阅状态或管理影响营收的计费操作。
 origin: ECC
 ---
 

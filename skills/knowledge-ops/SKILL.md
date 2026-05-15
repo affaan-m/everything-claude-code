@@ -1,6 +1,6 @@
 ---
 name: knowledge-ops
-description: Knowledge base management, ingestion, sync, and retrieval across multiple storage layers (local files, MCP memory, vector stores, Git repos). Use when the user wants to save, organize, sync, deduplicate, or search across their knowledge systems.
+description: 跨多个存储层（本地文件、MCP memory、向量库、Git 仓库）做知识库管理、摄入、同步与检索。适用场景：用户希望保存、整理、同步、去重或在知识系统间检索。
 origin: ECC
 ---
 

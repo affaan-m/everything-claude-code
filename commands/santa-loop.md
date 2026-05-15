@@ -1,5 +1,5 @@
 ---
-description: Adversarial dual-review convergence loop — two independent model reviewers must both approve before code ships.
+description: 对抗式双评审收敛循环——两个独立模型评审员都通过后代码才能上线。
 ---
 
 # Santa Loop

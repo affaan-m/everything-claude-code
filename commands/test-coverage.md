@@ -1,5 +1,5 @@
 ---
-description: Analyze coverage, identify gaps, and generate missing tests toward the target threshold.
+description: 分析覆盖率、识别缺口，并补齐测试以达到目标阈值。
 ---
 
 # Test Coverage

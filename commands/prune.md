@@ -1,6 +1,6 @@
 ---
 name: prune
-description: Delete pending instincts older than 30 days that were never promoted
+description: 删除超过 30 天且从未被提升的待定 instincts
 command: true
 ---
 

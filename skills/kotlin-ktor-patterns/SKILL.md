@@ -1,6 +1,6 @@
 ---
 name: kotlin-ktor-patterns
-description: Ktor server patterns including routing DSL, plugins, authentication, Koin DI, kotlinx.serialization, WebSockets, and testApplication testing.
+description: Ktor 服务端模式：路由 DSL、插件、认证、Koin DI、kotlinx.serialization、WebSocket，以及基于 testApplication 的测试。
 origin: ECC
 ---
 

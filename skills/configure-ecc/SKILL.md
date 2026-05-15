@@ -1,6 +1,6 @@
 ---
 name: configure-ecc
-description: Interactive installer for Everything Claude Code — guides users through selecting and installing skills and rules to user-level or project-level directories, verifies paths, and optionally optimizes installed files.
+description: Everything Claude Code 的交互式安装器——引导用户选择并把 skill 与 rule 安装到用户级或项目级目录，校验路径，并可选地对已安装文件做优化。
 origin: ECC
 ---
 

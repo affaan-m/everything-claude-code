@@ -1,6 +1,6 @@
 ---
 name: evm-token-decimals
-description: Prevent silent decimal mismatch bugs across EVM chains. Covers runtime decimal lookup, chain-aware caching, bridged-token precision drift, and safe normalization for bots, dashboards, and DeFi tools.
+description: 防止跨 EVM 链的小数精度静默错误。涵盖运行时精度查询、按链缓存、跨链桥代币精度漂移，以及面向机器人、看板与 DeFi 工具的安全归一化。
 origin: ECC direct-port adaptation
 version: "1.0.0"
 ---

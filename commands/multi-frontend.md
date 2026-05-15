@@ -1,5 +1,5 @@
 ---
-description: Run a frontend-focused multi-model workflow for components, layouts, animation, and UI polish.
+description: 运行聚焦前端的多模型工作流，处理组件、布局、动画与 UI 打磨。
 ---
 
 # Frontend - Frontend-Focused Development

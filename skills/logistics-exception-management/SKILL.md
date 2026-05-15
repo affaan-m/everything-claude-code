@@ -1,12 +1,9 @@
 ---
 name: logistics-exception-management
 description: >
-  Codified expertise for handling freight exceptions, shipment delays,
-  damages, losses, and carrier disputes. Informed by logistics professionals
-  with 15+ years operational experience. Includes escalation protocols,
-  carrier-specific behaviors, claims procedures, and judgment frameworks.
-  Use when handling shipping exceptions, freight claims, delivery issues,
-  or carrier disputes.
+  面向运输异常、延误、货损、丢失与承运商纠纷处理的体系化经验。
+  来自具备 15+ 年运营经验的物流专家。涵盖升级流程、承运商具体行为模式、索赔流程与判断框架。
+  适用场景：处理运输异常、运输索赔、配送问题或承运商纠纷。
 license: Apache-2.0
 version: 1.0.0
 homepage: https://github.com/affaan-m/everything-claude-code

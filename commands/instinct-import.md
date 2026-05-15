@@ -1,6 +1,6 @@
 ---
 name: instinct-import
-description: Import instincts from file or URL into project/global scope
+description: 从文件或 URL 导入 instincts 到 project/global 作用域
 command: true
 ---
 

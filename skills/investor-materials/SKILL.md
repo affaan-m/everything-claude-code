@@ -1,6 +1,6 @@
 ---
 name: investor-materials
-description: Create and update pitch decks, one-pagers, investor memos, accelerator applications, financial models, and fundraising materials. Use when the user needs investor-facing documents, projections, use-of-funds tables, milestone plans, or materials that must stay internally consistent across multiple fundraising assets.
+description: 创建并更新 pitch deck、one-pager、investor memo、加速器申请、财务模型与融资材料。适用场景：用户需要面向投资人的文档、预测、资金用途表、里程碑计划，或在多份融资材料中保持内部一致性。
 origin: ECC
 ---
 

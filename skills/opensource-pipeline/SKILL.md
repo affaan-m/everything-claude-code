@@ -1,6 +1,6 @@
 ---
 name: opensource-pipeline
-description: "Open-source pipeline: fork, sanitize, and package private projects for safe public release. Chains 3 agents (forker, sanitizer, packager). Triggers: '/opensource', 'open source this', 'make this public', 'prepare for open source'."
+description: "开源流水线：fork、脱敏，并把私有项目打包为可安全公开的版本。串联 3 个 agent（forker、sanitizer、packager）。触发词：'/opensource'、'open source this'、'make this public'、'prepare for open source'。"
 origin: ECC
 ---
 

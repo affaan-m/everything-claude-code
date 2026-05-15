@@ -1,6 +1,6 @@
 ---
 name: research-ops
-description: Evidence-first current-state research workflow for ECC. Use when the user wants fresh facts, comparisons, enrichment, or a recommendation built from current public evidence and any supplied local context.
+description: 面向 ECC 的证据优先现状研究工作流。适用场景：用户希望得到基于当前公开证据并结合所提供本地上下文的事实、对比、信息增强或建议。
 origin: ECC
 ---
 

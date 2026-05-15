@@ -1,15 +1,10 @@
 ---
 name: blueprint
 description: >-
-  Turn a one-line objective into a step-by-step construction plan for
-  multi-session, multi-agent engineering projects. Each step has a
-  self-contained context brief so a fresh agent can execute it cold.
-  Includes adversarial review gate, dependency graph, parallel step
-  detection, anti-pattern catalog, and plan mutation protocol.
-  TRIGGER when: user requests a plan, blueprint, or roadmap for a
-  complex multi-PR task, or describes work that needs multiple sessions.
-  DO NOT TRIGGER when: task is completable in a single PR or fewer
-  than 3 tool calls, or user says "just do it".
+  把一句话目标转化为面向多会话、多 agent 工程项目的分步构建方案。每一步都附自包含的上下文简报，让一个全新 agent 可以冷启动执行。
+  包含对抗式评审门、依赖图、并行步骤识别、反模式目录与方案变更协议。
+  触发场景：用户为复杂多 PR 任务请求方案、蓝图或路线图，或描述的工作需要多个会话。
+  不触发：任务在单个 PR 或不到 3 次工具调用内可完成，或用户说"直接做"。
 origin: community
 ---
 

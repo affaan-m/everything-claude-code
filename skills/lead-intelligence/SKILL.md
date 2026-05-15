@@ -1,6 +1,6 @@
 ---
 name: lead-intelligence
-description: AI-native lead intelligence and outreach pipeline. Replaces Apollo, Clay, and ZoomInfo with agent-powered signal scoring, mutual ranking, warm path discovery, source-derived voice modeling, and channel-specific outreach across email, LinkedIn, and X. Use when the user wants to find, qualify, and reach high-value contacts.
+description: AI 原生的线索情报与外联流水线。用 agent 驱动的信号评分、双向排序、温启路径发现、源数据驱动的声音建模，以及邮件、LinkedIn、X 上的渠道特化外联，替代 Apollo、Clay、ZoomInfo。适用场景：用户希望发现、筛选并触达高价值联系人。
 origin: ECC
 ---
 

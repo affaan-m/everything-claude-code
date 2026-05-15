@@ -1,5 +1,5 @@
 ---
-description: Code review — local uncommitted changes or GitHub PR (pass PR number/URL for PR mode)
+description: 代码评审——本地未提交改动或 GitHub PR（传 PR 编号/URL 进入 PR 模式）
 argument-hint: [pr-number | pr-url | blank for local review]
 ---
 

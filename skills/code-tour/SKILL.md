@@ -1,6 +1,6 @@
 ---
 name: code-tour
-description: Create CodeTour `.tour` files — persona-targeted, step-by-step walkthroughs with real file and line anchors. Use for onboarding tours, architecture walkthroughs, PR tours, RCA tours, and structured "explain how this works" requests.
+description: 生成 CodeTour `.tour` 文件——基于真实文件与行号锚点、面向特定读者的分步走查。可用于上手导览、架构走查、PR 走查、RCA 走查，以及结构化的“讲讲这块怎么工作”请求。
 origin: ECC
 ---
 

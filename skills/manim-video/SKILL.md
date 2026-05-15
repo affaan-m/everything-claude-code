@@ -1,6 +1,6 @@
 ---
 name: manim-video
-description: Build reusable Manim explainers for technical concepts, graphs, system diagrams, and product walkthroughs, then hand off to the wider ECC video stack if needed. Use when the user wants a clean animated explainer rather than a generic talking-head script.
+description: 为技术概念、图表、系统图、产品走查构建可复用的 Manim 解释动画，需要时再交接给更广的 ECC 视频栈。适用场景：用户想要干净的动画解释，而不是泛泛的口播脚本。
 origin: ECC
 ---
 

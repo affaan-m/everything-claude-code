@@ -1,6 +1,6 @@
 ---
 name: brand-voice
-description: Build a source-derived writing style profile from real posts, essays, launch notes, docs, or site copy, then reuse that profile across content, outreach, and social workflows. Use when the user wants voice consistency without generic AI writing tropes.
+description: 从真实推文、文章、发布说明、文档或站点文案中提炼出写作风格画像，并在内容、外联与社交工作流中复用。适用场景：用户希望保持声音一致性，避免泛用 AI 写作腔。
 origin: ECC
 ---
 

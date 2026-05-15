@@ -1,6 +1,6 @@
 ---
 name: visa-doc-translate
-description: Translate visa application documents (images) to English and create a bilingual PDF with original and translation
+description: 把签证申请文档（图像）翻译为英文，并生成原文与译文并排的双语 PDF。
 ---
 
 You are helping translate visa application documents for visa applications.

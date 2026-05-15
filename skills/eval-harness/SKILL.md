@@ -1,6 +1,6 @@
 ---
 name: eval-harness
-description: Formal evaluation framework for Claude Code sessions implementing eval-driven development (EDD) principles
+description: 面向 Claude Code 会话的正式评估框架，落实 eval-driven development (EDD) 原则。
 origin: ECC
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---

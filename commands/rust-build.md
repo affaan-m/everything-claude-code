@@ -1,5 +1,5 @@
 ---
-description: Fix Rust build errors, borrow checker issues, and dependency problems incrementally. Invokes the rust-build-resolver agent for minimal, surgical fixes.
+description: 逐步修复 Rust 构建错误、借用检查问题与依赖问题，调用 rust-build-resolver agent 进行最小化的精准修复。
 ---
 
 # Rust Build and Fix

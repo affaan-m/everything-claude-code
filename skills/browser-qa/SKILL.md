@@ -1,6 +1,6 @@
 ---
 name: browser-qa
-description: Use this skill to automate visual testing and UI interaction verification using browser automation after deploying features.
+description: 通过浏览器自动化，在功能上线后做可视化测试与 UI 交互验证。
 origin: ECC
 ---
 

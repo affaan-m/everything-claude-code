@@ -1,5 +1,5 @@
 ---
-description: Run the ECC quality pipeline for a file or project scope and report remediation steps.
+description: 在文件或项目范围内运行 ECC 质量流水线并报告修复步骤。
 ---
 
 # Quality Gate Command

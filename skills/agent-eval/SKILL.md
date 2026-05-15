@@ -1,6 +1,6 @@
 ---
 name: agent-eval
-description: Head-to-head comparison of coding agents (Claude Code, Aider, Codex, etc.) on custom tasks with pass rate, cost, time, and consistency metrics
+description: 在自定义任务上对编码 agent（Claude Code、Aider、Codex 等）进行正面对比，输出通过率、成本、耗时与一致性指标。
 origin: ECC
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---

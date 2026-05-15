@@ -1,5 +1,5 @@
 ---
-description: Run a full multi-model development workflow with research, planning, execution, optimization, and review.
+description: 运行完整的多模型开发工作流，涵盖调研、规划、执行、优化与评审。
 ---
 
 # Workflow - Multi-Model Collaborative Development

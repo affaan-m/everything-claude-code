@@ -1,5 +1,5 @@
 ---
-description: Comprehensive Kotlin code review for idiomatic patterns, null safety, coroutine safety, and security. Invokes the kotlin-reviewer agent.
+description: 针对惯用模式、空安全、协程安全与安全性的全面 Kotlin 代码评审，调用 kotlin-reviewer agent。
 ---
 
 # Kotlin Code Review
