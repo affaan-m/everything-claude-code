@@ -7,9 +7,9 @@ npm publication, plugin tag, marketplace submission, or announcement post.
 
 | Field | Evidence |
 | --- | --- |
-| Upstream main base | `6b8a49a6eed11cc7df19d8b1f2add085b37cf466` |
-| Evidence branch | `codex/rc1-current-publication-evidence` |
-| Evidence scope | Current `main` after PR #1932, #1933, #1934, and #1935; AgentShield #85; and ECC-Tools #75 |
+| Upstream main base | `1949d75e18e59a37de269d88b188fc701f5cf122` |
+| Evidence branch | `codex/rc1-agentshield-86-evidence` |
+| Evidence scope | Current `main` after PR #1932, #1933, #1934, #1935, and #1936; AgentShield #86; and ECC-Tools #75 |
 | Git remote | `https://github.com/affaan-m/everything-claude-code.git` |
 | Local status caveat | Working tree had the unrelated untracked `docs/drafts/` directory before this docs refresh |
 
@@ -74,9 +74,10 @@ Project documents added in Linear:
 | AgentShield PR #83 | Merged Mini Shai-Hulud IOC coverage for TanStack, Mistral, OpenSearch, Guardrails, UiPath, Squawk, Claude Code / VS Code persistence, and dead-man switch artifacts |
 | AgentShield PR #84 | Merged the broader Mini Shai-Hulud full-campaign affected-package table, including additional `@cap-js`, `@draftlab`, `@tallyui`, `intercom-client`, `lightning`, and related package/version IOCs |
 | AgentShield PR #85 | Added GitHub Action supply-chain verification, gating, and evidence packs so AgentShield's enterprise scanner release path has a verified registry-signature surface |
+| AgentShield PR #86 | Added `ci-context.json` to AgentShield evidence packs with whitelisted GitHub Actions workflow, commit, run, and runtime provenance while keeping arbitrary environment variables and tokens out of the bundle |
 | ECC-Tools PR #75 | Tightened the native GitHub payments announcement gate so public billing claims remain blocked until live Marketplace-managed test-account readback is ready |
-| Trunk merge commits | `f04702bdac132662c8496e817bcd850c86e2b854`, `ee85e1482e3d6322ddb2706392ea0fc97469bd26`, `13585f1092c92fa3f20ffe0d756e40c5720b0de5`, `553d507ea63bc252e815a924c0d2baea961351a1`, `c0bac4d6ced7f78a5464c6e3fd8cfbb43515a9d5`, `c2c54e7c0b84a213848b9ab3dfeb3ae16fb9844d`, `6b8a49a6eed11cc7df19d8b1f2add085b37cf466` |
-| AgentShield merge commits | `f899b27ba3fa60ec7e0dca41cc2dadcb1a1fb75d`, `d1aa5313afd915d0b7296e57aabaeb979b1ea93b`, `908d8f3a52a6a65b21e737339b56906603eb1345` |
+| Trunk merge commits | `f04702bdac132662c8496e817bcd850c86e2b854`, `ee85e1482e3d6322ddb2706392ea0fc97469bd26`, `13585f1092c92fa3f20ffe0d756e40c5720b0de5`, `553d507ea63bc252e815a924c0d2baea961351a1`, `c0bac4d6ced7f78a5464c6e3fd8cfbb43515a9d5`, `c2c54e7c0b84a213848b9ab3dfeb3ae16fb9844d`, `6b8a49a6eed11cc7df19d8b1f2add085b37cf466`, `1949d75e18e59a37de269d88b188fc701f5cf122` |
+| AgentShield merge commits | `f899b27ba3fa60ec7e0dca41cc2dadcb1a1fb75d`, `d1aa5313afd915d0b7296e57aabaeb979b1ea93b`, `908d8f3a52a6a65b21e737339b56906603eb1345`, `69a5e25b675b77666d0c96abc22639a5ba883403` |
 | ECC-Tools merge commits | `6d00d67043e92cadc80f160bfe947115bfef33b1` |
 | Local IOC tests | `node tests/ci/scan-supply-chain-iocs.test.js` passed 15/15 |
 | Unicode safety | `node scripts/ci/check-unicode-safety.js` passed |
@@ -108,6 +109,13 @@ AgentShield PR #85 and trunk PR #1934 extend the response from IOC detection
 into release-path hardening: AgentShield now records registry-signature evidence
 for its action surface, while trunk CI restore-only dependency caches avoid
 writing ordinary test dependency state back into shared caches.
+AgentShield PR #86 completes the next evidence-pack provenance slice:
+`agentshield scan --evidence-pack <dir>` now writes `ci-context.json`, includes
+that artifact in the signed bundle digest, documents it in the bundle README,
+and verifies that token-bearing environment variables such as `GITHUB_TOKEN`
+are not copied into long-lived security-review artifacts. The PR passed local
+build, typecheck, lint, 1764/1764 tests, and the full GitHub Actions matrix
+across Node 18, 20, and 22 before merge.
 PR #1933 closes the practical workstation persistence gap for the documented
 Claude Code and VS Code automation paths, including user-level config files that
 survive package uninstall.

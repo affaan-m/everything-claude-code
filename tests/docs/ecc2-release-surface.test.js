@@ -269,6 +269,8 @@ test('publication readiness checklist gates public release actions on evidence',
   assert.ok(may15Evidence.includes('PR #1935'));
   assert.ok(may15Evidence.includes('AgentShield PR #83'));
   assert.ok(may15Evidence.includes('AgentShield PR #85'));
+  assert.ok(may15Evidence.includes('AgentShield PR #86'));
+  assert.ok(may15Evidence.includes('ci-context.json'));
   assert.ok(may15Evidence.includes('ECC Tools PR #73'));
   assert.ok(may15Evidence.includes('ECC-Tools PR #75'));
   assert.ok(may15Evidence.includes('| Platform audit |'));
