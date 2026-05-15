@@ -29,17 +29,17 @@ Run these from `everything-claude-code` unless a row says otherwise.
 | Platform audit | `node scripts/platform-audit.js --json --allow-untracked docs/drafts/` | `ready: true`; open PRs 0/20; open issues 0/20; discussions needing maintainer touch 0; answerable discussions missing accepted answers 0; blocking dirty files 0 |
 | Discussion audit | `node scripts/discussion-audit.js --json --repo affaan-m/everything-claude-code` | `ready: true`; 58 discussions sampled; 0 need maintainer touch; 0 answerable discussions missing accepted answers |
 | Main repo status | `git status --short --branch` | `## main...origin/main`; `?? docs/drafts/` remains unrelated |
-| Main commit | `git rev-parse HEAD` | `6887f2952d193cff10b3eb79af7765555d8ca9f5` |
+| Main commit | `git rev-parse HEAD` | `f7035b5644ffc857879b71c39353b2141f17c3f0` |
 | Main repo PRs/issues | GitHub connector and `gh` readback | 0 open PRs; 0 open issues |
 | AgentShield PRs/issues | GitHub connector and `gh` readback | 0 open PRs; 0 open issues |
 | ECC Tools PRs/issues | Local `gh pr list` and `gh issue list` | 0 open PRs; 0 open issues |
 | Discussion baseline | GraphQL discussion sweep | Main repo #1923 marked answered; no answerable Q&A missing an answer |
-| Supply-chain IOC scan | `node scripts/ci/scan-supply-chain-iocs.js --root <ECC-workspace> --home` | Passed; repo/home targeted scan inspected 200 files after clean no-script reinstall |
+| Supply-chain IOC scan | `node scripts/ci/scan-supply-chain-iocs.js --root <ECC-workspace> --home` | Passed; repo/home targeted scan inspected 229 files after clean no-script reinstall |
 | IOC unit tests | `node tests/ci/scan-supply-chain-iocs.test.js` | 15/15 passed |
 | Dead-man switch persistence sweep | Process, LaunchAgent, and known payload filename sweep for Mini Shai-Hulud markers | No matches |
 | Workflow security gate | `node scripts/ci/validate-workflow-security.js` | Passed; 8 workflow files inspected; package-manager test installs disable lifecycle scripts and no Actions cache use remains |
 | Supply-chain watch workflow | `.github/workflows/supply-chain-watch.yml` | Scheduled every 6 hours; emits `supply-chain-ioc-report.json` |
-| npm signatures and audit | `npm audit signatures && npm audit --audit-level=high` in main | 213 verified signatures, 17 verified attestations, 0 high vulnerabilities |
+| npm signatures and audit | `npm audit signatures && npm audit --audit-level=high` in main | 241 verified signatures, 30 verified attestations, 0 high vulnerabilities |
 
 ## Prompt-To-Artifact Checklist
 

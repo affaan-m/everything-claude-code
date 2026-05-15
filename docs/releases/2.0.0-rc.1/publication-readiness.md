@@ -15,9 +15,10 @@ For the May 13 release-readiness evidence refresh, see
 For the May 13 post-hardening evidence refresh after PR #1850 and PR #1851, see
 [`publication-evidence-2026-05-13-post-hardening.md`](publication-evidence-2026-05-13-post-hardening.md).
 For the May 15 queue, discussion, Linear roadmap, Mini Shai-Hulud/TanStack
-follow-up, restore-only cache, AgentShield release-verification, billing-gate,
+follow-up, scheduled supply-chain watch, no-lifecycle CI install hardening,
+GitHub Actions cache purge, AgentShield release-verification, billing-gate,
 AgentShield #86 evidence-pack provenance, and `ecc2` current-dir guard evidence
-refresh through PR #1936, see
+refresh through PR #1941, see
 [`publication-evidence-2026-05-15.md`](publication-evidence-2026-05-15.md).
 For the operator-facing prompt-to-artifact readiness dashboard from the same
 May 15 pass, see
