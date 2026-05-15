@@ -9,6 +9,7 @@ const path = require('path');
 const { execFileSync, spawnSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'platform-audit.js');
+const { DISCUSSION_QUERY } = require(path.join(__dirname, '..', '..', 'scripts', 'lib', 'github-discussions'));
 
 function createTempDir(prefix) {
   return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
@@ -30,6 +31,7 @@ function seedRepo(rootDir, overrides = {}) {
       name: 'everything-claude-code',
       scripts: {
         'platform:audit': 'node scripts/platform-audit.js',
+        'discussion:audit': 'node scripts/discussion-audit.js',
         'observability:ready': 'node scripts/observability-readiness.js',
         'security:ioc-scan': 'node scripts/ci/scan-supply-chain-iocs.js',
         'harness:audit': 'node scripts/harness-audit.js'
@@ -76,6 +78,10 @@ function seedRepo(rootDir, overrides = {}) {
     }
     writeFile(rootDir, relativePath, content);
   }
+}
+
+function discussionGhKey(owner, name, first = 100) {
+  return `api graphql -f owner=${owner} -f name=${name} -F first=${first} -f query=${DISCUSSION_QUERY}`;
 }
 
 function writeGhShim(rootDir, responses) {
@@ -237,7 +243,7 @@ function runTests() {
       const shimPath = writeGhShim(projectRoot, {
         'pr list --repo affaan-m/everything-claude-code --state open --json number,title,isDraft,mergeStateStatus,updatedAt,url,author': [],
         'issue list --repo affaan-m/everything-claude-code --state open --json number,title,updatedAt,url,author,labels': [],
-        'api graphql -f owner=affaan-m -f name=everything-claude-code -F first=100 -f query=query($owner: String!, $name: String!, $first: Int!) { repository(owner: $owner, name: $name) { hasDiscussionsEnabled discussions(first: $first, orderBy: {field: UPDATED_AT, direction: DESC}) { totalCount nodes { number title url updatedAt authorAssociation comments(first: 20) { nodes { authorAssociation } } } } } }': {
+        [discussionGhKey('affaan-m', 'everything-claude-code')]: {
           data: {
             repository: {
               hasDiscussionsEnabled: true,
@@ -250,6 +256,8 @@ function runTests() {
                     url: 'https://github.com/example/discussions/73',
                     updatedAt: '2026-05-15T00:00:00Z',
                     authorAssociation: 'NONE',
+                    category: { name: 'General', isAnswerable: false },
+                    answer: null,
                     comments: { nodes: [{ authorAssociation: 'OWNER' }] }
                   }
                 ]
@@ -276,7 +284,9 @@ function runTests() {
       assert.strictEqual(parsed.github.totals.openPrs, 0);
       assert.strictEqual(parsed.github.totals.openIssues, 0);
       assert.strictEqual(parsed.github.totals.discussionsNeedingMaintainerTouch, 0);
+      assert.strictEqual(parsed.github.totals.discussionsMissingAcceptedAnswer, 0);
       assert.ok(parsed.checks.some(check => check.id === 'github-discussion-touch' && check.status === 'pass'));
+      assert.ok(parsed.checks.some(check => check.id === 'github-discussion-answers' && check.status === 'pass'));
     } finally {
       cleanup(projectRoot);
     }
@@ -299,7 +309,7 @@ function runTests() {
       const shimPath = writeGhShim(projectRoot, {
         'pr list --repo affaan-m/everything-claude-code --state open --json number,title,isDraft,mergeStateStatus,updatedAt,url,author': prs,
         'issue list --repo affaan-m/everything-claude-code --state open --json number,title,updatedAt,url,author,labels': [],
-        'api graphql -f owner=affaan-m -f name=everything-claude-code -F first=100 -f query=query($owner: String!, $name: String!, $first: Int!) { repository(owner: $owner, name: $name) { hasDiscussionsEnabled discussions(first: $first, orderBy: {field: UPDATED_AT, direction: DESC}) { totalCount nodes { number title url updatedAt authorAssociation comments(first: 20) { nodes { authorAssociation } } } } } }': {
+        [discussionGhKey('affaan-m', 'everything-claude-code')]: {
           data: {
             repository: {
               hasDiscussionsEnabled: true,
@@ -312,6 +322,8 @@ function runTests() {
                     url: 'https://github.com/example/discussions/1239',
                     updatedAt: '2026-05-15T00:00:00Z',
                     authorAssociation: 'NONE',
+                    category: { name: 'Q&A', isAnswerable: true },
+                    answer: null,
                     comments: { nodes: [] }
                   }
                 ]
@@ -336,7 +348,9 @@ function runTests() {
       assert.strictEqual(parsed.ready, false);
       assert.ok(parsed.top_actions.some(action => action.id === 'github-open-pr-budget'));
       assert.ok(parsed.top_actions.some(action => action.id === 'github-discussion-touch'));
+      assert.ok(parsed.top_actions.some(action => action.id === 'github-discussion-answers'));
       assert.strictEqual(parsed.github.totals.discussionsNeedingMaintainerTouch, 1);
+      assert.strictEqual(parsed.github.totals.discussionsMissingAcceptedAnswer, 1);
     } finally {
       cleanup(projectRoot);
     }

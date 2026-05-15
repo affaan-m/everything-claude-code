@@ -11,7 +11,7 @@ clean checkout.
 | --- | --- | --- |
 | PR queue | Current | 0 open PRs across checked repos |
 | Issue queue | Current | 0 open issues across checked repos |
-| Discussions | Current | 58 main-repo discussions; 0 need maintainer touch |
+| Discussions | Current | 58 main-repo discussions; 0 need maintainer touch; 0 answerable discussions missing accepted answers |
 | Local worktree | Current with caveat | `main...origin/main`; unrelated `?? docs/drafts/` ignored |
 | Security sweep | Current with follow-up | IOC scan, audits, and package-manager hardening completed |
 | Linear roadmap | Current with follow-up | `ECC Platform Roadmap`, ITO-44 through ITO-59 |
@@ -26,7 +26,8 @@ Run these from `everything-claude-code` unless a row says otherwise.
 
 | Evidence | Command | 2026-05-15 result |
 | --- | --- | --- |
-| Platform audit | `node scripts/platform-audit.js --json --allow-untracked docs/drafts/` | `ready: true`; open PRs 0/20; open issues 0/20; discussions needing maintainer touch 0; blocking dirty files 0 |
+| Platform audit | `node scripts/platform-audit.js --json --allow-untracked docs/drafts/` | `ready: true`; open PRs 0/20; open issues 0/20; discussions needing maintainer touch 0; answerable discussions missing accepted answers 0; blocking dirty files 0 |
+| Discussion audit | `node scripts/discussion-audit.js --json --repo affaan-m/everything-claude-code` | `ready: true`; 58 discussions sampled; 0 need maintainer touch; 0 answerable discussions missing accepted answers |
 | Main repo status | `git status --short --branch` | `## main...origin/main`; `?? docs/drafts/` remains unrelated |
 | Main commit | `git rev-parse HEAD` | `c0f8c3bc813360f29e9f2b66bcae7e977cd03327` |
 | Main repo PRs/issues | GitHub connector and `gh` readback | 0 open PRs; 0 open issues |
@@ -45,7 +46,7 @@ Run these from `everything-claude-code` unless a row says otherwise.
 | --- | --- | --- | --- |
 | Keep PRs under 20 | `scripts/platform-audit.js`; live GitHub readback | Current | Repeat before release |
 | Keep issues under 20 | `scripts/platform-audit.js`; live GitHub readback | Current | Repeat before release |
-| Respond and manage discussions | Discussion GraphQL sweep; #1923 answer marked | Current | Automate repeatable queue scanner |
+| Respond and manage discussions | `scripts/discussion-audit.js`; #1923 answer marked | Current | Repeat before release |
 | ECC 2.0 preview pack ready | `preview-pack-manifest.md`; `publication-readiness.md` | In progress | Final publish evidence still pending |
 | Include Hermes specialized skills | `docs/HERMES-SETUP.md`; `skills/hermes-imports/SKILL.md` | In progress | Final preview-pack smoke still pending |
 | Name-change and availability path | `naming-and-publication-matrix.md`; ITO-46 | In progress | Final name/package/channel choice not approved |
@@ -71,7 +72,7 @@ Active issue state after this pass:
 | --- | --- | --- |
 | ITO-44 | Completion audit and readiness dashboard | In Progress |
 | ITO-57 | Supply-chain intelligence and local protection loop | In Progress |
-| ITO-59 | Discussions and public response queue | In Progress |
+| ITO-59 | Discussions and public response queue | Current; Linear status sync pending |
 
 Still-open lanes:
 
@@ -91,8 +92,8 @@ Still-open lanes:
 
 - The checked GitHub queues are below the explicit target, so the next work
   should not spend more time closing nonexistent PRs/issues.
-- The discussion queue is current, but repeatability is weak. ITO-59 remains
-  open until the sweep is scripted or documented as an operator command.
+- The discussion queue is current and repeatable through `discussion:audit`.
+  ITO-59 remains open only for recurring Linear/status synchronization.
 - The Mini Shai-Hulud/TanStack protection pass is strong enough for current
   local protection, but ITO-57 remains open until incident response and IOC
   updates become a durable workflow.
@@ -104,8 +105,8 @@ Still-open lanes:
 
 1. Build the ITO-44 completion dashboard into a repeatable command or generated
    markdown artifact.
-2. Productize the ITO-59 discussion queue sweep so the maintainer-touch and
-   accepted-answer checks do not depend on manual GraphQL.
+2. Run `platform:audit` and `discussion:audit` from the final release commit
+   before recording publication evidence.
 3. Continue ITO-57 by turning emergency hardening into documented incident
    response and scanner update workflow.
 4. Resume release/publication lanes ITO-45, ITO-46, and ITO-56 only after the
