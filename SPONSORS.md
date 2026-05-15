@@ -2,11 +2,11 @@
 
 Thank you to everyone funding ECC's open-source work. Your sponsorship is what lets the OSS layer stay free while the GitHub App, hosted security scans, and continuous improvements ship every week.
 
-## 🚀 Enterprise Sponsors — $2,500/mo
+## Enterprise Sponsors — $2,500/mo
 
 *Become an [Enterprise sponsor](https://github.com/sponsors/affaan-m) to be featured here.*
 
-## 🏢 Business Sponsors — $500/mo
+## Business Sponsors — $500/mo
 
 | Sponsor | Logo | Since |
 |---------|------|-------|
@@ -14,7 +14,7 @@ Thank you to everyone funding ECC's open-source work. Your sponsorship is what l
 
 *[Become a Business sponsor](https://github.com/sponsors/affaan-m) to be featured here with logo placement in the main README hero and a quarterly case study.*
 
-## 👥 Team Sponsors — $200/mo
+## Team Sponsors — $200/mo
 
 | Sponsor | Since |
 |---------|-------|
@@ -22,11 +22,11 @@ Thank you to everyone funding ECC's open-source work. Your sponsorship is what l
 
 *[Become a Team sponsor](https://github.com/sponsors/affaan-m) to get small logo placement and 5 ECC Pro seats.*
 
-## ⚡ Pro Sponsors — $50/mo
+## Pro Sponsors — $50/mo
 
 *[Become a Pro sponsor](https://github.com/sponsors/affaan-m) to be listed here with your name in the main README sponsor row.*
 
-## 🛠️ Builder Sponsors — $25/mo
+## Builder Sponsors — $25/mo
 
 - @jasonwu513 (grandfathered at $10)
 - @1anter (grandfathered at $10)
@@ -35,7 +35,7 @@ Thank you to everyone funding ECC's open-source work. Your sponsorship is what l
 
 *[Become a Builder sponsor](https://github.com/sponsors/affaan-m) to support the project and get your name in this list + a private monthly progress note.*
 
-## ☕ Supporters — $5/mo
+## Supporters — $5/mo
 
 *[Become a Supporter](https://github.com/sponsors/affaan-m) to back the project with a profile badge and a thank-you in our release notes.*
 
@@ -45,12 +45,12 @@ Thank you to everyone funding ECC's open-source work. Your sponsorship is what l
 
 | Tier | Monthly | Perks |
 |------|--------:|-------|
-| ☕ Supporter | $5 | Sponsor badge on profile, thank-you in release notes |
-| 🛠️ Builder | $25 | Above + name in SPONSORS.md + private monthly progress note |
-| ⚡ Pro Sponsor | $50 | Above + name in main README + 1 quarterly roadmap vote |
-| 👥 Team | $200 | Above + small org logo in README + 5 ECC Pro seats |
-| 🏢 Business | $500 | Above + featured logo in README hero + quarterly case study + Discord sponsors-lounge access |
-| 🚀 Enterprise | $2,500 | Above + unlimited Pro seats + 30 min/mo founder time + SLA + dedicated channel |
+|  Supporter | $5 | Sponsor badge on profile, thank-you in release notes |
+|  Builder | $25 | Above + name in SPONSORS.md + private monthly progress note |
+|  Pro Sponsor | $50 | Above + name in main README + 1 quarterly roadmap vote |
+|  Team | $200 | Above + small org logo in README + 5 ECC Pro seats |
+|  Business | $500 | Above + featured logo in README hero + quarterly case study + Discord sponsors-lounge access |
+|  Enterprise | $2,500 | Above + unlimited Pro seats + 30 min/mo founder time + SLA + dedicated channel |
 
 [**Become a Sponsor →**](https://github.com/sponsors/affaan-m)
 

@@ -29,6 +29,12 @@ credentials:
   files such as `.github/workflows/codeql_analysis.yml`, and Python runtime
   payloads such as `transformers.pyz` / `pgmonitor.py`. Remove those
   persistence hooks before rotating a stolen GitHub token.
+- The scanner also watches for late-reporting markers: `router_init.js`
+  SHA-256 prefix/suffix `ab4fcada...8601266c`, `tanstack_runner.js`
+  SHA-256 prefix/suffix `2ec78d55...6be27fc96`,
+  `opensearch_init.js`, `vite_setup.mjs`, campaign salt `svksjrhjkcejg`,
+  Session protocol strings, `claude@users.noreply.github.com` dead-drop
+  commits, `dependabout/` branch names, and `OhNoWhatsGoingOnWithGitHub`.
 - The attack chain combined `pull_request_target`, GitHub Actions cache
   poisoning across a fork/base trust boundary, and OIDC token extraction from a
   GitHub Actions runner.

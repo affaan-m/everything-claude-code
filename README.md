@@ -49,13 +49,13 @@ ECC v2.0.0-rc.1 adds the public Hermes operator story on top of that reusable la
 <tr>
 <td width="25%" align="center">
   <a href="https://ecc.tools/pricing">
-    <strong>💼 ECC Pro</strong><br />
+    <strong> ECC Pro</strong><br />
     <sub>Private repos · GitHub App · $19/seat/mo</sub>
   </a>
 </td>
 <td width="25%" align="center">
   <a href="https://github.com/sponsors/affaan-m">
-    <strong>❤️ Sponsor</strong><br />
+    <strong> Sponsor</strong><br />
     <sub>Fund the OSS · From $5/mo</sub>
   </a>
 </td>
@@ -68,7 +68,7 @@ ECC v2.0.0-rc.1 adds the public Hermes operator story on top of that reusable la
 </td>
 <td width="25%" align="center">
   <a href="https://github.com/apps/ecc-tools">
-    <strong>🤖 GitHub App</strong><br />
+    <strong> GitHub App</strong><br />
     <sub>Install · PR audits · Free tier</sub>
   </a>
 </td>
