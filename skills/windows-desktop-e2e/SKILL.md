@@ -422,6 +422,7 @@ class BasePage:
 - **PII / credentials**: `type_text` content is `<redacted>` by default. Never set `E2E_TRACE_INCLUDE_TEXT=1` on login or payment flows.
 - **Overhead**: ~50–200ms per action + one PNG per step on disk. Don't enable on the default CI matrix — only on a dedicated flake-repro job.
 - **Artifact bloat**: a long flow produces tens of MB; tune `retention-days` accordingly.
+- **Parallel/rerun hygiene**: this simple example appends to `trace.jsonl` and uses a class-level counter. Clear the artifact directory before reruns, and use per-worker artifact dirs for parallel tests.
 - **Coverage gap**: actions performed outside `BasePage` (raw `pywinauto` calls in test code) are not traced.
 
 ## Flaky Test Handling
@@ -799,7 +800,7 @@ def debug_match(template_path, out="artifacts/match_debug.png", confidence=0.85)
 
     NOT for production tests — use when calibrating confidence or chasing false matches.
     """
-    import cv2, pyautogui, numpy as np
+    import os, cv2, pyautogui, numpy as np
     screen = np.array(pyautogui.screenshot())[:, :, ::-1]
     tpl    = cv2.imread(template_path)
     if tpl is None:
