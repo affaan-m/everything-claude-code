@@ -264,6 +264,9 @@ test('publication readiness checklist gates public release actions on evidence',
   assert.ok(source.includes('publication-evidence-2026-05-15.md'));
   assert.ok(may15Evidence.includes('PR #1921'));
   assert.ok(may15Evidence.includes('AgentShield PR #83'));
+  assert.ok(may15Evidence.includes('ECC Tools PR #73'));
+  assert.ok(may15Evidence.includes('announcementGate.ready === true'));
+  assert.ok(source.includes('ECC-Tools #73 added announcementGate'));
   assert.ok(may15Evidence.includes('| Trunk discussions | GraphQL discussion count and maintainer-touch sweep | 58 total discussions;'));
   assert.ok(source.includes('58 trunk discussions, 0 without maintainer touch'));
   assert.ok(may15Evidence.includes('env -u GITHUB_TOKEN'));

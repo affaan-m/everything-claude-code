@@ -58,7 +58,7 @@ Reason:
 | Claude marketplace | `.claude-plugin/marketplace.json` points at `ecc` and the public repo | Verify marketplace update/install path after tag exists | External marketplace propagation not verified |
 | Codex plugin | `codex plugin marketplace` supports add/upgrade/remove; `.codex-plugin/plugin.json` is present and release-surface tests pass | Confirm marketplace source format, then test add/upgrade from the public repo or marketplace source | No public Codex marketplace submission path verified in this pass |
 | OpenCode package | `.opencode/package.json` builds from source and ships inside npm package | Re-run `npm run build:opencode` and package dry-run from release commit | OpenCode CLI 1.2.21 does not expose a separate plugin publication command in this pass |
-| ECC Tools billing claim | README and launch copy mention ECC Tools / marketplace context | Verify live GitHub App billing and plan state before any payment announcement | Billing dashboard/API evidence not recorded in this pass |
+| ECC Tools billing claim | README and launch copy mention ECC Tools / marketplace context | ECC-Tools #73 adds `/api/billing/readiness` `announcementGate`; run it against a Marketplace-managed test account before any payment announcement | Billing announcement code gate exists; live Marketplace account readback still pending |
 | Social and longform copy | X thread, LinkedIn copy, article outline, GitHub release copy exist | Replace any stale URLs, then publish only after release/npm/plugin URLs work | Public URLs not final until release actions complete |
 
 ## Rename After rc.1
