@@ -113,9 +113,10 @@ not a publication action.
 - Claude plugin tag and marketplace propagation remain approval-gated.
 - Codex plugin public marketplace/manual submission path still needs final
   owner verification.
-- ECC Tools billing claims are now GitHub-access-verifiable, but the billing
-  product surface still needs a dedicated payment-readiness audit before any
-  public payment announcement.
+- ECC Tools PR #73 added a fail-closed `/api/billing/readiness`
+  `announcementGate` for native GitHub payments claims, but the live
+  Marketplace-managed test-account readback still must return
+  `announcementGate.ready === true` before any public payment announcement.
 - Release notes, X, LinkedIn, and longform copy still need final live URLs after
   release/package/plugin URLs exist.
 
