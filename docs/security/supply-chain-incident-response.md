@@ -21,6 +21,10 @@ credentials:
 - Follow-on reporting from StepSecurity, Socket, Aikido, and Wiz describes the
   same campaign expanding into packages associated with Mistral AI, UiPath,
   OpenSearch, Guardrails AI, Squawk, and other npm/PyPI packages.
+- Socket's 2026-05-14 `node-ipc` report describes a separate active npm
+  compromise affecting `node-ipc` versions `9.1.6`, `9.2.3`, and `12.0.1`,
+  with historical malicious `node-ipc` versions also blocked by ECC because
+  they carried destructive or unauthorized file-writing behavior.
 - The live IOC set includes persistence through Claude Code
   `.claude/settings.json`, VS Code `.vscode/tasks.json`, and OS-level
   `gh-token-monitor` LaunchAgent/systemd services. Some variants add a
@@ -35,6 +39,12 @@ credentials:
   `opensearch_init.js`, `vite_setup.mjs`, campaign salt `svksjrhjkcejg`,
   Session protocol strings, `claude@users.noreply.github.com` dead-drop
   commits, `dependabout/` branch names, and `OhNoWhatsGoingOnWithGitHub`.
+- The `node-ipc` sweep watches for `node-ipc.cjs` payload hash
+  `96097e06...d9034144`, tarball hashes for the malicious `9.1.6`, `9.2.3`,
+  and `12.0.1` artifacts, `sh.azurestaticprovider.net`, `bt.node.js`,
+  `37.16.75.69`, DNS exfil labels `xh` / `xd` / `xf` where present in
+  artifacts, `__ntw`, `__ntRun`, `/nt-` temp archives, and archive entries such
+  as `uname.txt`, `envs.txt`, and `fixtures/_paths.txt`.
 - The attack chain combined `pull_request_target`, GitHub Actions cache
   poisoning across a fork/base trust boundary, and OIDC token extraction from a
   GitHub Actions runner.
@@ -47,6 +57,7 @@ Primary references:
 - <https://tanstack.com/blog/npm-supply-chain-compromise-postmortem>
 - <https://github.com/advisories/GHSA-g7cv-rxg3-hmpx>
 - <https://tanstack.com/blog/incident-followup>
+- <https://socket.dev/blog/node-ipc-package-compromised>
 - <https://docs.npmjs.com/trusted-publishers/>
 - <https://www.cisa.gov/news-events/alerts/2025/09/23/widespread-supply-chain-compromise-impacting-npm-ecosystem>
 

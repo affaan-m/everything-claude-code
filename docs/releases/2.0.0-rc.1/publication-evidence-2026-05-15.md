@@ -64,17 +64,22 @@ Project documents added in Linear:
 | Surface | Evidence |
 | --- | --- |
 | PR #1921 | Merged supply-chain IOC expansion for Mini Shai-Hulud/TanStack follow-up |
+| Node IPC follow-up | Added May 14 `node-ipc` malicious-version, hash, DNS, and runtime IOC coverage |
 | Merge commit | `f04702bdac132662c8496e817bcd850c86e2b854` |
-| Local IOC tests | `node tests/ci/scan-supply-chain-iocs.test.js` passed 11/11 |
+| Local IOC tests | `node tests/ci/scan-supply-chain-iocs.test.js` passed 12/12 |
 | Unicode safety | `node scripts/ci/check-unicode-safety.js` passed |
 | IOC scan | `npm run security:ioc-scan` passed |
-| Root suite | `npm test` passed 2426/2426, 0 failed |
+| Root suite | `npm test` passed 2427/2427, 0 failed |
 | Repo sweeps | IOC scanner sweep passed for trunk, AgentShield, ECC Tools, ECC website, JARVIS, and the ECC document mirror |
 
 The May 15 IOC expansion added coverage for OpenSearch/Mistral/Guardrails/
 UiPath/Squawk-style campaign variants, `opensearch_init.js`, `vite_setup.mjs`,
 dead-drop/session protocol strings, and AI-tooling persistence surfaces without
 committing full high-entropy indicators that trip secret scanners.
+The May 15 node-ipc follow-up blocks `node-ipc@9.1.6`, `9.2.3`, `10.1.1`,
+`10.1.2`, `11.0.0`, `11.1.0`, and `12.0.1`, plus the `node-ipc.cjs` payload
+hash, malicious tarball hashes, DNS exfil domains, and runtime markers reported
+by Socket.
 
 ## Current Publication Blockers
 
