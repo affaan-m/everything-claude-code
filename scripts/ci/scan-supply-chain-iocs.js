@@ -341,6 +341,8 @@ const INSPECT_ONLY_FILENAMES = new Set([
 
 const PERSISTENCE_FILENAMES = new Set([
   'settings.json',
+  'settings.local.json',
+  'hooks.json',
   'tasks.json',
   'router_runtime.js',
   'setup.mjs',
@@ -563,10 +565,18 @@ function scanFile(filePath, rootDir, findings) {
 function homeTargets(homeDir) {
   return [
     '.claude/settings.json',
+    '.claude/settings.local.json',
+    '.claude/hooks/hooks.json',
     '.claude/router_runtime.js',
     '.claude/setup.mjs',
     '.vscode/tasks.json',
     '.vscode/setup.mjs',
+    'Library/Application Support/Code/User/tasks.json',
+    'Library/Application Support/Code - Insiders/User/tasks.json',
+    '.config/Code/User/tasks.json',
+    '.config/Code - Insiders/User/tasks.json',
+    'AppData/Roaming/Code/User/tasks.json',
+    'AppData/Roaming/Code - Insiders/User/tasks.json',
     'Library/LaunchAgents/com.user.gh-token-monitor.plist',
     '.config/systemd/user/gh-token-monitor.service',
     '.config/systemd/user/pgsql-monitor.service',
@@ -646,7 +656,7 @@ persistence paths for active supply-chain IOC markers.
 Options:
   --root <dir>       Directory to scan (default: repo root)
   --home             Also scan user-level Claude, VS Code, LaunchAgent, systemd,
-                     and /tmp persistence targets
+                     local bin, and /tmp persistence targets
   --home-dir <dir>   Home directory to use with --home
   --json             Emit JSON instead of text
   --help, -h         Show this help
