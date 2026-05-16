@@ -54,7 +54,7 @@ Thank you to everyone funding ECC's open-source work. Your sponsorship is what l
 
 [**Become a Sponsor →**](https://github.com/sponsors/affaan-m)
 
-For corporate sponsorship inquiries, custom partnerships, or PR integrations, email **affaan@ecc.tools** with your company name and intended tier. We'll move fast — most agreements close within 48 hours.
+For corporate sponsorship inquiries, custom partnerships, or PR integrations, email **[affaan@ecc.tools](mailto:affaan@ecc.tools)** with your company name and intended tier. We'll move fast — most agreements close within 48 hours.
 
 ---
 
