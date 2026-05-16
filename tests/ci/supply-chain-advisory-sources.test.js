@@ -23,6 +23,7 @@ const {
   DEFAULT_ADVISORY_SOURCES,
   buildAdvisorySourceReport,
   parseArgs,
+  renderText,
 } = require(SCRIPT_PATH);
 
 async function test(name, fn) {
@@ -186,6 +187,13 @@ async function run() {
   })) passed++; else failed++;
 
   if (await test('CLI text output and invalid flag errors are stable', async () => {
+    const help = spawnSync('node', [SCRIPT_PATH, '--help'], {
+      encoding: 'utf8',
+      shell: process.platform === 'win32',
+    });
+    assert.strictEqual(help.status, 0);
+    assert.match(help.stdout, /--strict-refresh/);
+
     const text = spawnSync('node', [
       SCRIPT_PATH,
       '--generated-at',
@@ -204,6 +212,30 @@ async function run() {
     });
     assert.strictEqual(invalid.status, 2);
     assert.match(invalid.stderr, /Unknown argument/);
+  })) passed++; else failed++;
+
+  if (await test('text renderer covers blocked and refresh-warning states', async () => {
+    const blocked = await buildAdvisorySourceReport({
+      generatedAt: '2026-05-16T00:00:00.000Z',
+      sources: [],
+    });
+    const blockedText = renderText(blocked);
+    assert.match(blockedText, /blocked/);
+    assert.match(blockedText, /not requested/);
+
+    const warning = await buildAdvisorySourceReport({
+      generatedAt: '2026-05-16T00:00:00.000Z',
+      refresh: true,
+      fetchSource: async source => ({
+        ok: source.id !== 'tanstack-postmortem',
+        statusCode: source.id === 'tanstack-postmortem' ? 500 : 200,
+        error: source.id === 'tanstack-postmortem' ? 'server error' : null,
+        checkedAt: '2026-05-16T00:00:00.000Z',
+        finalUrl: source.url,
+      }),
+    });
+    const warningText = renderText(warning);
+    assert.match(warningText, /warnings=1/);
   })) passed++; else failed++;
 
   if (await test('default refresh follows redirects and retries GET for unsupported HEAD', async () => {
