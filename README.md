@@ -42,7 +42,6 @@ Works across **Claude Code**, **Codex**, **Cursor**, **OpenCode**, **Gemini**, *
 
 ECC v2.0.0-rc.1 adds the public Hermes operator story on top of that reusable layer: start with the [Hermes setup guide](docs/HERMES-SETUP.md), then review the [rc.1 release notes](docs/releases/2.0.0-rc.1/release-notes.md) and [cross-harness architecture](docs/architecture/cross-harness.md).
 
-
 ---
 
 <table>
