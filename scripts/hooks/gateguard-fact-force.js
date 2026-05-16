@@ -693,7 +693,8 @@ function withRecoveryHint(message, hookIds = [EDIT_WRITE_HOOK_ID]) {
   return [
     message,
     '',
-    `Recovery: if GateGuard is blocking setup or repair work, run this session with \`ECC_GATEGUARD=off\` or add ${disableTargets} to \`ECC_DISABLED_HOOKS\`.`
+    `Recovery: if GateGuard is blocking setup or repair work, set \`ECC_GATEGUARD=off\` or add ${disableTargets} to \`ECC_DISABLED_HOOKS\`.`,
+    'Set these in your shell before launching Claude Code, or add them to `~/.claude/settings.json` `env` and restart Claude Code — the `env` block is snapshotted into the Claude Code process at session start, so mid-session edits do NOT propagate to a running session.'
   ].join('\n');
 }
 
