@@ -333,6 +333,19 @@ print(json.dumps(observation))
 # Use flock for atomic check-then-act to prevent race conditions
 # Fallback for macOS (no flock): use lockfile or skip
 LAZY_START_LOCK="${PROJECT_DIR}/.observer-start.lock"
+_REMOVE_FILE_IF_PRESENT() {
+  local target="$1"
+  if [ -n "$target" ] && [ -e "$target" ]; then
+    rm -- "$target" 2>/dev/null || true
+  fi
+}
+
+_START_OBSERVER_LOGGED() {
+  local bootstrap_log="${PROJECT_DIR}/observer-start.log"
+  mkdir -p "$PROJECT_DIR"
+  "${SKILL_ROOT}/agents/start-observer.sh" start >> "$bootstrap_log" 2>&1 || true
+}
+
 _CHECK_OBSERVER_RUNNING() {
   local pid_file="$1"
   if [ -f "$pid_file" ]; then
@@ -341,7 +354,7 @@ _CHECK_OBSERVER_RUNNING() {
     # Validate PID is a positive integer (>1) to prevent signaling invalid targets
     case "$pid" in
       ''|*[!0-9]*|0|1)
-        rm -f "$pid_file" 2>/dev/null || true
+        _REMOVE_FILE_IF_PRESENT "$pid_file"
         return 1
         ;;
     esac
@@ -349,7 +362,7 @@ _CHECK_OBSERVER_RUNNING() {
       return 0  # Process is alive
     fi
     # Stale PID file - remove it
-    rm -f "$pid_file" 2>/dev/null || true
+    _REMOVE_FILE_IF_PRESENT "$pid_file"
   fi
   return 1  # No PID file or process dead
 }
@@ -396,7 +409,7 @@ if [ "$OBSERVER_ENABLED" = "true" ]; then
         _CHECK_OBSERVER_RUNNING "${PROJECT_DIR}/.observer.pid" || true
         _CHECK_OBSERVER_RUNNING "${CONFIG_DIR}/.observer.pid" || true
         if [ ! -f "${PROJECT_DIR}/.observer.pid" ] && [ ! -f "${CONFIG_DIR}/.observer.pid" ]; then
-          nohup "${SKILL_ROOT}/agents/start-observer.sh" start >/dev/null 2>&1 &
+          _START_OBSERVER_LOGGED
         fi
       ) 9>"$LAZY_START_LOCK"
     else
@@ -404,14 +417,14 @@ if [ "$OBSERVER_ENABLED" = "true" ]; then
       if command -v lockfile >/dev/null 2>&1; then
         # Use subshell to isolate exit and add trap for cleanup
         (
-          trap 'rm -f "$LAZY_START_LOCK" 2>/dev/null || true' EXIT
+          trap '_REMOVE_FILE_IF_PRESENT "$LAZY_START_LOCK"' EXIT
           lockfile -r 1 -l 30 "$LAZY_START_LOCK" 2>/dev/null || exit 0
           _CHECK_OBSERVER_RUNNING "${PROJECT_DIR}/.observer.pid" || true
           _CHECK_OBSERVER_RUNNING "${CONFIG_DIR}/.observer.pid" || true
           if [ ! -f "${PROJECT_DIR}/.observer.pid" ] && [ ! -f "${CONFIG_DIR}/.observer.pid" ]; then
-            nohup "${SKILL_ROOT}/agents/start-observer.sh" start >/dev/null 2>&1 &
+            _START_OBSERVER_LOGGED
           fi
-          rm -f "$LAZY_START_LOCK" 2>/dev/null || true
+          _REMOVE_FILE_IF_PRESENT "$LAZY_START_LOCK"
         )
       else
         # POSIX fallback: mkdir is atomic -- fails if dir already exists
@@ -421,7 +434,7 @@ if [ "$OBSERVER_ENABLED" = "true" ]; then
           _CHECK_OBSERVER_RUNNING "${PROJECT_DIR}/.observer.pid" || true
           _CHECK_OBSERVER_RUNNING "${CONFIG_DIR}/.observer.pid" || true
           if [ ! -f "${PROJECT_DIR}/.observer.pid" ] && [ ! -f "${CONFIG_DIR}/.observer.pid" ]; then
-            nohup "${SKILL_ROOT}/agents/start-observer.sh" start >/dev/null 2>&1 &
+            _START_OBSERVER_LOGGED
           fi
         )
       fi
@@ -459,7 +472,10 @@ if [ "$should_signal" -eq 1 ]; then
       observer_pid=$(cat "$pid_file" 2>/dev/null || true)
       # Validate PID is a positive integer (>1)
       case "$observer_pid" in
-        ''|*[!0-9]*|0|1) rm -f "$pid_file" 2>/dev/null || true; continue ;;
+        ''|*[!0-9]*|0|1)
+          _REMOVE_FILE_IF_PRESENT "$pid_file"
+          continue
+          ;;
       esac
       # Deduplicate: skip if already signaled this pass
       case "$signaled_pids" in
