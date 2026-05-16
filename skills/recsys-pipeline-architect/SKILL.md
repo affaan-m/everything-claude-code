@@ -92,11 +92,11 @@ Default to isolation. Joint only when there's a specific reason (e.g., explicit 
 
 ## Anti-Patterns
 
-- ❌ Scoring before filtering (wastes compute on candidates that will be dropped anyway)
-- ❌ Synchronous side effects (cache writes / impression emits blocking the response)
-- ❌ A single "relevance" score when the product needs to tune for multiple objectives (engagement vs safety vs diversity vs ads)
-- ❌ Joint scoring as default (non-deterministic, harder to cache, doesn't compose with reranking stages)
-- ❌ Generating pseudocode "for illustration" — the scaffold must actually run
+- Scoring before filtering (wastes compute on candidates that will be dropped anyway)
+- Synchronous side effects (cache writes / impression emits blocking the response)
+- A single "relevance" score when the product needs to tune for multiple objectives (engagement vs safety vs diversity vs ads)
+- Joint scoring as default (non-deterministic, harder to cache, doesn't compose with reranking stages)
+- Generating pseudocode "for illustration" — the scaffold must actually run
 
 ## Upstream contents
 
