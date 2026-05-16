@@ -392,11 +392,11 @@ function buildRequirements(rootDir, platformReport) {
       'agentshield-enterprise-iteration',
       'Advance AgentShield enterprise iteration',
       'AgentShield PR evidence plus enterprise roadmap',
-      roadmap.includes('AgentShield Enterprise Iteration') && roadmap.includes('#78-#89')
+      roadmap.includes('AgentShield Enterprise Iteration') && roadmap.includes('#78-#90')
         ? 'in_progress'
         : 'not_complete',
       'AgentShield enterprise PR evidence is mirrored in the GA roadmap',
-      'richer fleet-review workflow and durable policy export remain pending after fleet-summary consumption, evidence-path surfacing, and harness-route policy linking shipped'
+      'durable policy export and fleet-review workflow automation remain pending after reviewItems shipped'
     ),
     buildRequirement(
       'ecc-tools-next-level',

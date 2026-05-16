@@ -121,8 +121,9 @@ The next iteration after fleet routing should not be "add more regex rules" by
 default. ECC-Tools follow-up routing now consumes fleet summaries and surfaces
 source evidence paths in hosted findings, and the first cross-harness policy
 slice now links AgentShield fleet route target paths to harness-owner review.
-The higher leverage move is richer review workflow and durable policy export for
-routed fleet findings.
+AgentShield fleet output now also emits `reviewItems` with source evidence paths
+and owner-ready recommendations for routed packs. The higher leverage move is
+durable policy export and workflow automation for routed fleet findings.
 
 ## Enterprise Gaps
 

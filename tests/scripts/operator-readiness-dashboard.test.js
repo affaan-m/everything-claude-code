@@ -47,7 +47,7 @@ function seedRepo(rootDir, overrides = {}) {
     'docs/ECC-2.0-GA-ROADMAP.md': [
       'https://linear.app/itomarkets/project/ecc-platform-roadmap-52b328ee03e1',
       'Linear ITO-44 ITO-59',
-      'AgentShield PR #89 #78-#89',
+      'AgentShield PR #90 #78-#90',
       'AgentShield Enterprise Iteration',
       'ECC-Tools PR #78',
       'hosted promotion',
