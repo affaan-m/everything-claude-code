@@ -243,6 +243,14 @@ function includesAll(text, needles) {
   return needles.every(needle => text.includes(needle));
 }
 
+function hasLegacySalvageTracking({ stalePrSalvage, legacyInventory, roadmap }) {
+  return stalePrSalvage.includes('Manual review tail')
+    || stalePrSalvage.includes('Remaining Manual-Review Backlog')
+    || stalePrSalvage.includes('Translator/manual review')
+    || legacyInventory.includes('Translator/manual review')
+    || roadmap.includes('ITO-55');
+}
+
 function runCommand(command, args, options = {}) {
   const result = spawnSync(command, args, {
     cwd: options.cwd,
@@ -286,6 +294,7 @@ function buildRequirements(rootDir, platformReport) {
   const progressSync = readText(rootDir, 'docs/architecture/progress-sync-contract.md');
   const observabilityReadiness = readText(rootDir, 'docs/architecture/observability-readiness.md');
   const stalePrSalvage = readText(rootDir, 'docs/stale-pr-salvage-ledger.md');
+  const legacyInventory = readText(rootDir, 'docs/legacy-artifact-inventory.md');
   const supplyChainRunbook = readText(rootDir, 'docs/security/supply-chain-incident-response.md');
   const supplyChainWorkflow = readText(rootDir, '.github/workflows/supply-chain-watch.yml');
   const packageJson = readPackage(rootDir);
@@ -412,7 +421,7 @@ function buildRequirements(rootDir, platformReport) {
       'legacy-salvage',
       'Audit, prune, or attach legacy work',
       'docs/stale-pr-salvage-ledger.md and legacy inventory',
-      stalePrSalvage.includes('Manual review tail') || roadmap.includes('ITO-55')
+      hasLegacySalvageTracking({ stalePrSalvage, legacyInventory, roadmap })
         ? 'in_progress'
         : 'not_complete',
       'legacy salvage ledger and ITO-55 tracking are present',

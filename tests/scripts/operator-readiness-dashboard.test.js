@@ -190,6 +190,51 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (test('legacy salvage recognizes the real manual-review backlog heading', () => {
+    const rootDir = createTempDir('operator-dashboard-legacy-salvage-');
+
+    try {
+      seedRepo(rootDir, {
+        'docs/ECC-2.0-GA-ROADMAP.md': [
+          'https://linear.app/itomarkets/project/ecc-platform-roadmap-52b328ee03e1',
+          'Linear ITO-44 ITO-59',
+          'AgentShield PR #90 #78-#90',
+          'AgentShield Enterprise Iteration',
+          'ECC-Tools PR #78',
+          'hosted promotion',
+          'announcementGate'
+        ].join('\n'),
+        'docs/stale-pr-salvage-ledger.md': [
+          '# Stale PR Salvage Ledger',
+          '',
+          '## Remaining Manual-Review Backlog',
+          '',
+          '- #1609 Persian README translation',
+          '- #1563 zh-TW README sync'
+        ].join('\n')
+      });
+
+      const report = buildReport({
+        allowUntracked: [],
+        exitCode: false,
+        format: 'json',
+        generatedAt: '2026-05-15T00:00:00.000Z',
+        help: false,
+        repos: [],
+        root: rootDir,
+        skipGithub: true,
+        thresholds: { maxOpenPrs: 20, maxOpenIssues: 20, maxDirtyFiles: 0 },
+        useEnvGithubToken: false,
+        writePath: null
+      });
+
+      const legacySalvage = report.requirements.find(item => item.id === 'legacy-salvage');
+      assert.strictEqual(legacySalvage.status, 'in_progress');
+    } finally {
+      cleanup(rootDir);
+    }
+  })) passed++; else failed++;
+
   if (test('markdown output can be written as the dashboard artifact', () => {
     const rootDir = createTempDir('operator-dashboard-markdown-');
     const outputPath = path.join(rootDir, 'artifacts', 'dashboard.md');
