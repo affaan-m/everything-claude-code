@@ -251,6 +251,26 @@ function hasLegacySalvageTracking({ stalePrSalvage, legacyInventory, roadmap }) 
     || roadmap.includes('ITO-55');
 }
 
+function hasAgentShieldEnterpriseTracking(roadmap) {
+  return roadmap.includes('AgentShield Enterprise Iteration')
+    && (
+      roadmap.includes('#78-#91')
+      || roadmap.includes('AgentShield PR #91')
+      || roadmap.includes('AgentShield #91')
+      || roadmap.includes('checksum-backed policy export')
+      || roadmap.includes('#78-#90')
+    );
+}
+
+function agentShieldEnterpriseGap(roadmap) {
+  return roadmap.includes('#78-#91')
+    || roadmap.includes('AgentShield PR #91')
+    || roadmap.includes('AgentShield #91')
+    || roadmap.includes('checksum-backed policy export')
+    ? 'workflow automation plus policy promotion/review UX pending after policy export shipped'
+    : 'durable policy export and fleet-review workflow automation remain pending after reviewItems shipped';
+}
+
 function runCommand(command, args, options = {}) {
   const result = spawnSync(command, args, {
     cwd: options.cwd,
@@ -401,11 +421,11 @@ function buildRequirements(rootDir, platformReport) {
       'agentshield-enterprise-iteration',
       'Advance AgentShield enterprise iteration',
       'AgentShield PR evidence plus enterprise roadmap',
-      roadmap.includes('AgentShield Enterprise Iteration') && roadmap.includes('#78-#90')
+      hasAgentShieldEnterpriseTracking(roadmap)
         ? 'in_progress'
         : 'not_complete',
       'AgentShield enterprise PR evidence is mirrored in the GA roadmap',
-      'durable policy export and fleet-review workflow automation remain pending after reviewItems shipped'
+      agentShieldEnterpriseGap(roadmap)
     ),
     buildRequirement(
       'ecc-tools-next-level',
