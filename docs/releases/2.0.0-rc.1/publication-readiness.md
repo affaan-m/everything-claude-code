@@ -20,8 +20,11 @@ GitHub Actions cache purge, AgentShield release-verification, billing-gate,
 AgentShield #86 evidence-pack provenance, and `ecc2` current-dir guard evidence
 refresh through PR #1941, see
 [`publication-evidence-2026-05-15.md`](publication-evidence-2026-05-15.md).
+For the May 16 queue cleanup, recsys skill merge, GateGuard issue triage,
+operator dashboard refresh, and combined final-gate rerun on current `main`, see
+[`publication-evidence-2026-05-16.md`](publication-evidence-2026-05-16.md).
 For the operator-facing prompt-to-artifact readiness dashboard from the same
-May 15 pass, see
+May 16 pass, see
 [`operator-readiness-dashboard-2026-05-15.md`](operator-readiness-dashboard-2026-05-15.md).
 
 ## Release Identity Matrix
@@ -61,21 +64,21 @@ Record the exact commit SHA and command output before any publication action:
 
 | Evidence | Command | Required result | Recorded output |
 | --- | --- | --- | --- |
-| Clean release branch | `git status --short --branch` | On intended release commit; no unrelated files | Pending final clean-checkout release pass; May 13 evidence branch still had unrelated untracked `docs/drafts/` |
-| Harness audit | `npm run harness:audit -- --format json` | 70/70 passing | `publication-evidence-2026-05-13.md`: 70/70 |
-| Adapter scorecard | `npm run harness:adapters -- --check` | PASS | `publication-evidence-2026-05-13.md`: PASS, 11 adapters |
-| Observability readiness | `npm run observability:ready` | 21/21 passing | `publication-evidence-2026-05-13-post-hardening.md`: 21/21, ready true after release-safety gate refresh |
+| Clean release branch | `git status --short --branch` | On intended release commit; no unrelated files | Pending final strict clean-checkout release pass; `publication-evidence-2026-05-16.md` records current `main` with unrelated untracked `docs/drafts/` |
+| Harness audit | `npm run harness:audit -- --format json` | 70/70 passing | `publication-evidence-2026-05-16.md`: 70/70 |
+| Adapter scorecard | `npm run harness:adapters -- --check` | PASS | `publication-evidence-2026-05-16.md`: PASS, 11 adapters |
+| Observability readiness | `npm run observability:ready` | 21/21 passing | `publication-evidence-2026-05-16.md`: 21/21, ready yes |
 | Release safety gate | `npm run observability:ready -- --format json` | Release Safety category passing with publication readiness, supply-chain, workflow security, package surface, and release-surface evidence | `publication-evidence-2026-05-13-post-hardening.md`: Release Safety 3/3 |
-| Supply-chain verification | `npm audit --json`; `npm audit signatures`; `cd ecc2 && cargo audit -q`; Dependabot alerts; GitGuardian Security Checks | 0 vulnerabilities/alerts, registry signatures verified, GitGuardian clean | `publication-evidence-2026-05-15.md`: npm registry signatures and attestations verified, 0 moderate-or-higher npm vulnerabilities, Mini Shai-Hulud/TanStack IOC scan clean |
-| Root suite | `node tests/run-all.js` | 0 failures | `publication-evidence-2026-05-15.md`: 2442 passed, 0 failed |
+| Supply-chain verification | `npm audit --json`; `npm audit signatures`; `cd ecc2 && cargo audit -q`; Dependabot alerts; GitGuardian Security Checks | 0 vulnerabilities/alerts, registry signatures verified, GitGuardian clean | `publication-evidence-2026-05-16.md`: npm registry signatures and attestations verified, 0 moderate-or-higher npm vulnerabilities, supply-chain IOC scan clean |
+| Root suite | `node tests/run-all.js` | 0 failures | `publication-evidence-2026-05-16.md`: `npm test` passed 2469/2469, 0 failed |
 | Markdown lint | `npx markdownlint-cli '**/*.md' --ignore node_modules` | 0 failures | `publication-evidence-2026-05-13.md`: passed after zh-CN CLAUDE list-marker normalization |
 | Package surface | `node tests/scripts/npm-publish-surface.test.js` | 0 failures; no Python bytecode in npm tarball | `2/2` passed in May 12 evidence pass |
-| Release surface | `node tests/docs/ecc2-release-surface.test.js` | 0 failures | `publication-evidence-2026-05-13.md`: 18/18 passed |
-| Optional Rust surface | `cd ecc2 && cargo test` | 0 failures or explicit deferral | `publication-evidence-2026-05-15.md`: 462/462 passed, existing warnings only after PR #1935 current-dir guard |
-| Queue baseline | `gh pr list` / `gh issue list` across trunk, AgentShield, JARVIS, ECC Tools, and ECC website | Under 20 open PRs and under 20 open issues | `publication-evidence-2026-05-15.md`: platform audit ready, 0 open PRs and 0 open issues across checked repos |
+| Release surface | `node tests/docs/ecc2-release-surface.test.js` | 0 failures | `publication-evidence-2026-05-16.md`: 20/20 passed |
+| Optional Rust surface | `cd ecc2 && cargo test` | 0 failures or explicit deferral | `publication-evidence-2026-05-16.md`: 462/462 passed, existing warnings only |
+| Queue baseline | `gh pr list` / `gh issue list` across trunk, AgentShield, JARVIS, ECC Tools, and ECC website | Under 20 open PRs and under 20 open issues | `publication-evidence-2026-05-16.md`: platform audit ready, 0 open PRs and 0 open issues across checked repos |
 | Discussion baseline | `node scripts/discussion-audit.js --json` | No unmanaged active discussion queue and no answerable Q&A missing an accepted answer | `publication-evidence-2026-05-15.md`: 58 trunk discussions, 0 without maintainer touch; other tracked repos disabled or 0 |
 | Linear roadmap | Linear project and issue readback | Detailed roadmap exists with release, security, AgentShield, ECC Tools, legacy, and observability lanes | `publication-evidence-2026-05-15.md`: project and 16 issue lanes recorded |
-| Operator readiness dashboard | `npm run operator:dashboard -- --allow-untracked docs/drafts/ --write docs/releases/2.0.0-rc.1/operator-readiness-dashboard-2026-05-15.md` | Current queue state mapped to macro-goal deliverables and incomplete gaps | `operator-readiness-dashboard-2026-05-15.md`: generated live status, prompt-to-artifact checklist, Linear state, and next work order |
+| Operator readiness dashboard | `npm run operator:dashboard -- --allow-untracked docs/drafts/ --write docs/releases/2.0.0-rc.1/operator-readiness-dashboard-2026-05-15.md` | Current queue state mapped to macro-goal deliverables and incomplete gaps | `operator-readiness-dashboard-2026-05-15.md`: regenerated from `cecab597`, 0 open PRs, 0 open issues, 0 discussion gaps |
 
 ## Do Not Publish If
 
