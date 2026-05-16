@@ -154,6 +154,30 @@ function run() {
     });
   })) passed++; else failed++;
 
+  if (test('does not combine package-name substrings with unrelated versions', () => {
+    withFixture({
+      'package-lock.json': JSON.stringify({
+        packages: {
+          'node_modules/react-remove-scroll': {
+            version: '2.6.3',
+          },
+          'node_modules/@tailwindcss/node': {
+            version: '4.2.1',
+            dependencies: {
+              lightningcss: '1.31.1',
+            },
+          },
+          'node_modules/lightningcss': {
+            version: '1.31.1',
+          },
+        },
+      }, null, 2),
+    }, rootDir => {
+      const result = scanSupplyChainIocs({ rootDir });
+      assert.deepStrictEqual(result.findings, []);
+    });
+  })) passed++; else failed++;
+
   if (test('does not flag benign substrings in clean package scripts', () => {
     withFixture({
       'node_modules/uuid/package.json': JSON.stringify({

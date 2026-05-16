@@ -493,6 +493,65 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+function versionSpecifierMatches(value, version) {
+  if (value === undefined || value === null) return false;
+  const specifier = String(value);
+  const versionPattern = new RegExp(`(^|[^0-9A-Za-z.])${escapeRegExp(version)}([^0-9A-Za-z.]|$)`, 'i');
+  return specifier === version || versionPattern.test(specifier);
+}
+
+function packageKeyMatches(key, packageName) {
+  return key === packageName
+    || key === `node_modules/${packageName}`
+    || key.endsWith(`/node_modules/${packageName}`);
+}
+
+function jsonReferencesPackageVersion(value, packageName, version) {
+  if (!value || typeof value !== 'object') return false;
+
+  if (value.name === packageName && versionSpecifierMatches(value.version, version)) {
+    return true;
+  }
+
+  for (const [key, child] of Object.entries(value)) {
+    if (packageKeyMatches(key, packageName)) {
+      if (typeof child === 'string' && versionSpecifierMatches(child, version)) {
+        return true;
+      }
+      if (child && typeof child === 'object' && versionSpecifierMatches(child.version, version)) {
+        return true;
+      }
+    }
+
+    if (child && typeof child === 'object' && jsonReferencesPackageVersion(child, packageName, version)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function textReferencesPackageVersion(text, packageName, version) {
+  const escapedPackage = escapeRegExp(packageName);
+  const escapedVersion = escapeRegExp(version);
+  const packageToken = `${escapedPackage}(?![A-Za-z0-9._/-])`;
+  const sameLinePattern = new RegExp(`${packageToken}[^\\n]{0,200}${escapedVersion}(?![0-9A-Za-z.])`, 'i');
+  const requirementsPattern = new RegExp(`^\\s*${packageToken}\\s*(?:==|===|~=|>=|<=|>|<)\\s*${escapedVersion}(?![0-9A-Za-z.])`, 'im');
+  const poetryNamePattern = new RegExp(`name\\s*=\\s*["']${escapedPackage}["'][\\s\\S]{0,300}?version\\s*=\\s*["']${escapedVersion}["']`, 'i');
+
+  return sameLinePattern.test(text)
+    || requirementsPattern.test(text)
+    || poetryNamePattern.test(text);
+}
+
+function dependencyFileReferencesPackageVersion(text, packageName, version) {
+  try {
+    return jsonReferencesPackageVersion(JSON.parse(text), packageName, version);
+  } catch {
+    return textReferencesPackageVersion(text, packageName, version);
+  }
+}
+
 function addFinding(findings, severity, filePath, line, indicator, message) {
   findings.push({ severity, filePath, line, indicator, message });
 }
@@ -543,17 +602,14 @@ function scanFile(filePath, rootDir, findings) {
   if (!DEPENDENCY_FILENAMES.has(base)) return;
 
   for (const [packageName, versions] of Object.entries(MALICIOUS_PACKAGE_VERSIONS)) {
-    const packageIndex = lowerText.indexOf(normalizeForMatch(packageName));
-    if (packageIndex === -1) continue;
-
     for (const version of versions) {
-      const versionPattern = new RegExp(`(^|[^0-9a-z.])${escapeRegExp(version)}([^0-9a-z.]|$)`, 'i');
-      if (versionPattern.test(text) || lowerText.includes(`@${version}`)) {
+      if (dependencyFileReferencesPackageVersion(text, packageName, version)) {
+        const packageIndex = lowerText.indexOf(normalizeForMatch(packageName));
         addFinding(
           findings,
           'critical',
           relativePath,
-          lineForIndex(text, packageIndex),
+          lineForIndex(text, packageIndex === -1 ? 0 : packageIndex),
           `${packageName}@${version}`,
           'Dependency manifest or lockfile references a known compromised package version',
         );
