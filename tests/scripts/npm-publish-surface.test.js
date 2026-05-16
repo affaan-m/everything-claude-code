@@ -44,6 +44,7 @@ function buildExpectedPublishPaths(repoRoot) {
     "scripts/ecc.js",
     "scripts/catalog.js",
     "scripts/ci/scan-supply-chain-iocs.js",
+    "scripts/ci/supply-chain-advisory-sources.js",
     "scripts/consult.js",
     "scripts/claw.js",
     "scripts/discussion-audit.js",
@@ -124,6 +125,7 @@ function main() {
       for (const requiredPath of [
         "scripts/catalog.js",
         "scripts/ci/scan-supply-chain-iocs.js",
+        "scripts/ci/supply-chain-advisory-sources.js",
         "scripts/consult.js",
         "scripts/discussion-audit.js",
         "scripts/operator-readiness-dashboard.js",

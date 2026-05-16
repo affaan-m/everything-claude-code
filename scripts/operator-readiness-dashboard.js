@@ -287,6 +287,7 @@ function buildRequirements(rootDir, platformReport) {
   const observabilityReadiness = readText(rootDir, 'docs/architecture/observability-readiness.md');
   const stalePrSalvage = readText(rootDir, 'docs/stale-pr-salvage-ledger.md');
   const supplyChainRunbook = readText(rootDir, 'docs/security/supply-chain-incident-response.md');
+  const supplyChainWorkflow = readText(rootDir, '.github/workflows/supply-chain-watch.yml');
   const packageJson = readPackage(rootDir);
   const scripts = packageJson.scripts || {};
 
@@ -444,12 +445,16 @@ function buildRequirements(rootDir, platformReport) {
       'supply-chain-local-protection',
       'Keep Mini Shai-Hulud/TanStack protection loop current',
       'supply-chain watch plus runbook',
-      includesAll(supplyChainRunbook, ['TanStack', 'Mini Shai-Hulud', 'scan-supply-chain-iocs.js'])
+      includesAll(supplyChainRunbook, ['TanStack', 'Mini Shai-Hulud', 'scan-supply-chain-iocs.js', 'supply-chain-advisory-sources.js'])
+        && includesAll(supplyChainWorkflow, ['supply-chain-advisory-sources.js', 'supply-chain-advisory-sources.json'])
+        && scripts['security:advisory-sources'] === 'node scripts/ci/supply-chain-advisory-sources.js'
         && fileExists(rootDir, '.github/workflows/supply-chain-watch.yml')
         ? 'current'
         : 'in_progress',
-      'scheduled supply-chain watch and runbook are present',
-      'advisory-source refresh automation and Linear status synchronization remain ITO-57 follow-up'
+      scripts['security:advisory-sources'] === 'node scripts/ci/supply-chain-advisory-sources.js'
+        ? 'scheduled supply-chain watch now emits IOC and advisory-source refresh artifacts'
+        : 'scheduled supply-chain watch or advisory-source command is missing',
+      'Linear status synchronization remains ITO-57 follow-up after each significant merge batch'
     ),
   ];
 }
@@ -502,7 +507,7 @@ function buildReport(options) {
     top_actions: topActions,
     next_work_order: [
       'Regenerate this dashboard from the final release commit before publication evidence is recorded.',
-      'Continue ITO-57 with advisory-source refresh automation and Linear status synchronization for the scheduled supply-chain watch.',
+      'Continue ITO-57 with Linear status synchronization for the scheduled supply-chain watch advisory-source report.',
       'Advance ECC Tools live Marketplace test-account readback before publishing native-payments announcement copy.',
       'Resume ITO-45, ITO-46, and ITO-56 only after the generated dashboard and final release gates are refreshed.',
     ],

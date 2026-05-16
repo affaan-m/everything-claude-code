@@ -58,9 +58,13 @@ function run() {
   if (test('runs IOC fixtures, emits JSON report, and uploads the artifact', () => {
     assert.match(source, /node tests\/ci\/scan-supply-chain-iocs\.test\.js/);
     assert.match(source, /node scripts\/ci\/scan-supply-chain-iocs\.js --json > artifacts\/supply-chain-ioc-report\.json/);
+    assert.match(source, /node tests\/ci\/supply-chain-advisory-sources\.test\.js/);
+    assert.match(source, /node scripts\/ci\/supply-chain-advisory-sources\.js --refresh --json > artifacts\/supply-chain-advisory-sources\.json/);
     assert.match(source, /node scripts\/ci\/validate-workflow-security\.js/);
     assert.match(source, /uses: actions\/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a/);
     assert.match(source, /name: supply-chain-ioc-report/);
+    assert.match(source, /artifacts\/supply-chain-ioc-report\.json/);
+    assert.match(source, /artifacts\/supply-chain-advisory-sources\.json/);
     assert.match(source, /retention-days: 14/);
   })) passed++; else failed++;
 

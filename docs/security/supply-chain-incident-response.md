@@ -73,6 +73,7 @@ node scripts/ci/scan-supply-chain-iocs.js --home
 npm ci --ignore-scripts
 npm audit signatures
 npm audit --audit-level=high
+node scripts/ci/supply-chain-advisory-sources.js --json
 node scripts/ci/validate-workflow-security.js
 node tests/scripts/npm-publish-surface.test.js
 node tests/run-all.js
@@ -86,8 +87,10 @@ evidence but do not rotate credentials for a docs-only reference.
 ECC also runs `.github/workflows/supply-chain-watch.yml` every six hours and on
 manual dispatch. The workflow is read-only, disables checkout credential
 persistence, installs with `npm ci --ignore-scripts`, verifies npm registry
-signatures, runs the IOC scanner fixtures, emits
-`supply-chain-ioc-report.json`, and re-validates GitHub Actions hardening rules.
+signatures, runs the IOC scanner fixtures, runs
+`scripts/ci/supply-chain-advisory-sources.js --refresh --json`, emits
+`supply-chain-ioc-report.json` and `supply-chain-advisory-sources.json`, and
+re-validates GitHub Actions hardening rules.
 
 Treat a failed scheduled watch as a release blocker until an operator confirms
 whether the failure is a newly reported advisory, a stale scanner fixture, a
@@ -95,6 +98,12 @@ registry-signature issue, or a workflow hardening regression. If the scanner
 needs new indicators, update `scripts/ci/scan-supply-chain-iocs.js`, add fixture
 coverage in `tests/ci/scan-supply-chain-iocs.test.js`, refresh this runbook, and
 attach the latest JSON artifact to the release evidence.
+
+The advisory-source artifact is the ITO-57 status payload. It records the
+trusted source registry, live URL refresh warnings, and a Linear-ready summary.
+Refresh source coverage through `npm run security:advisory-sources -- --json`
+before changing IOC coverage, and attach the artifact to the next Linear project
+status update after each significant merge batch.
 
 ## Immediate Response
 

@@ -35,6 +35,7 @@ function seedRepo(rootDir, overrides = {}) {
         'operator:dashboard': 'node scripts/operator-readiness-dashboard.js',
         'observability:ready': 'node scripts/observability-readiness.js',
         'security:ioc-scan': 'node scripts/ci/scan-supply-chain-iocs.js',
+        'security:advisory-sources': 'node scripts/ci/supply-chain-advisory-sources.js',
         'harness:audit': 'node scripts/harness-audit.js'
       }
     }, null, 2),
@@ -55,7 +56,8 @@ function seedRepo(rootDir, overrides = {}) {
       'TanStack',
       'Mini Shai-Hulud',
       'node-ipc',
-      'scan-supply-chain-iocs.js'
+      'scan-supply-chain-iocs.js',
+      'supply-chain-advisory-sources.js'
     ].join('\n'),
     'docs/releases/2.0.0-rc.1/publication-evidence-2026-05-15.md': [
       'TanStack',

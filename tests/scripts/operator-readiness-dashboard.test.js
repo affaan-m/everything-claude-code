@@ -39,7 +39,8 @@ function seedRepo(rootDir, overrides = {}) {
         'observability:ready': 'node scripts/observability-readiness.js',
         'operator:dashboard': 'node scripts/operator-readiness-dashboard.js',
         'platform:audit': 'node scripts/platform-audit.js',
-        'security:ioc-scan': 'node scripts/ci/scan-supply-chain-iocs.js'
+        'security:ioc-scan': 'node scripts/ci/scan-supply-chain-iocs.js',
+        'security:advisory-sources': 'node scripts/ci/supply-chain-advisory-sources.js'
       }
     }, null, 2),
     'scripts/operator-readiness-dashboard.js': 'operator dashboard generator',
@@ -74,9 +75,9 @@ function seedRepo(rootDir, overrides = {}) {
     'docs/stale-pr-salvage-ledger.md': 'Manual review tail',
     'docs/architecture/progress-sync-contract.md': 'GitHub PRs/issues/discussions Linear project local handoff repo roadmap scripts/work-items.js',
     'docs/architecture/observability-readiness.md': 'observability-readiness.js',
-    'docs/security/supply-chain-incident-response.md': 'TanStack Mini Shai-Hulud node-ipc scan-supply-chain-iocs.js',
+    'docs/security/supply-chain-incident-response.md': 'TanStack Mini Shai-Hulud node-ipc scan-supply-chain-iocs.js supply-chain-advisory-sources.js',
     'docs/releases/2.0.0-rc.1/publication-evidence-2026-05-15.md': 'TanStack Mini Shai-Hulud Node IPC follow-up node-ipc IOC scan',
-    '.github/workflows/supply-chain-watch.yml': 'name: Supply-Chain Watch'
+    '.github/workflows/supply-chain-watch.yml': 'name: Supply-Chain Watch supply-chain-advisory-sources.js supply-chain-advisory-sources.json'
   };
 
   for (const [relativePath, content] of Object.entries({ ...files, ...overrides })) {

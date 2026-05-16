@@ -464,8 +464,11 @@ function buildLocalEvidenceChecks(rootDir) {
     ),
     buildCheck(
       'supply-chain-runbook',
-      includesAll(supplyChain, ['TanStack', 'Mini Shai-Hulud', 'node-ipc', 'scan-supply-chain-iocs.js']) ? 'pass' : 'fail',
-      'supply-chain runbook covers the current TanStack/Mini Shai-Hulud/node-ipc scanner lane',
+      includesAll(supplyChain, ['TanStack', 'Mini Shai-Hulud', 'node-ipc', 'scan-supply-chain-iocs.js', 'supply-chain-advisory-sources.js'])
+        && packageScripts['security:advisory-sources'] === 'node scripts/ci/supply-chain-advisory-sources.js'
+        ? 'pass'
+        : 'fail',
+      'supply-chain runbook covers the current TanStack/Mini Shai-Hulud/node-ipc scanner and advisory-source lanes',
       { path: 'docs/security/supply-chain-incident-response.md' }
     ),
     buildCheck(
