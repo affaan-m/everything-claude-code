@@ -9,7 +9,7 @@ const path = require('path');
 const { execFileSync, spawnSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'operator-readiness-dashboard.js');
-const { buildReport, parseArgs } = require(SCRIPT);
+const { buildReport, parseArgs, renderMarkdown, renderText } = require(SCRIPT);
 
 function createTempDir(prefix) {
   return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
@@ -216,6 +216,72 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (test('text output renders compact status and top actions', () => {
+    const rootDir = createTempDir('operator-dashboard-text-');
+
+    try {
+      seedRepo(rootDir);
+      const stdout = run([
+        '--format=text',
+        '--skip-github',
+        `--root=${rootDir}`,
+        '--generated-at=2026-05-15T00:00:00.000Z'
+      ], { cwd: rootDir });
+
+      assert.ok(stdout.includes('ECC Operator Readiness Dashboard'));
+      assert.ok(stdout.includes('work remaining'));
+      assert.ok(stdout.includes('Dashboard ready: true'));
+      assert.ok(stdout.includes('Publication ready: false'));
+      assert.ok(stdout.includes('Top actions:'));
+      assert.ok(stdout.includes('naming-and-plugin-publication'));
+    } finally {
+      cleanup(rootDir);
+    }
+  })) passed++; else failed++;
+
+  if (test('renderers handle a ready report with no top actions', () => {
+    const report = {
+      dashboardReady: true,
+      generatedAt: '2026-05-15T00:00:00.000Z',
+      head: 'abc123',
+      next_work_order: ['Ship release evidence'],
+      platform: {
+        blockingDirtyCount: 0,
+        discussionsMissingAcceptedAnswer: 0,
+        discussionsNeedingMaintainerTouch: 0,
+        githubSkipped: false,
+        ignoredDirtyCount: 0,
+        openIssues: 1,
+        openPrs: 1,
+        ready: true
+      },
+      publicationReady: true,
+      ready: true,
+      requirements: [
+        {
+          artifact: 'artifact.md',
+          evidence: 'verified',
+          gap: '',
+          id: 'release',
+          requirement: 'Release is approved',
+          status: 'complete'
+        }
+      ],
+      top_actions: []
+    };
+
+    const text = renderText(report);
+    assert.ok(text.includes('objective ready'));
+    assert.ok(text.includes('Commit: abc123'));
+    assert.ok(text.includes('  none'));
+
+    const markdown = renderMarkdown(report);
+    assert.ok(markdown.includes('Status: objective ready'));
+    assert.ok(markdown.includes('| PR queue | Current | 1 open PRs across tracked repos |'));
+    assert.ok(markdown.includes('| Publication | Ready |'));
+    assert.ok(markdown.includes('- none'));
+  })) passed++; else failed++;
+
   if (test('exit-code mode fails closed while macro objective has gaps', () => {
     const rootDir = createTempDir('operator-dashboard-exit-');
 
@@ -236,6 +302,19 @@ function runTests() {
     } finally {
       cleanup(rootDir);
     }
+  })) passed++; else failed++;
+
+  if (test('cli help exits successfully and invalid cli flags fail before reporting', () => {
+    const help = runProcess(['--help']);
+    assert.strictEqual(help.status, 0);
+    assert.strictEqual(help.stderr, '');
+    assert.ok(help.stdout.includes('Usage: node scripts/operator-readiness-dashboard.js'));
+    assert.ok(help.stdout.includes('--write <path>'));
+
+    const invalid = runProcess(['--format=xml']);
+    assert.strictEqual(invalid.status, 1);
+    assert.strictEqual(invalid.stdout, '');
+    assert.match(invalid.stderr, /Error: Invalid format/);
   })) passed++; else failed++;
 
   console.log(`\nPassed: ${passed}`);
