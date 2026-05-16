@@ -5,6 +5,7 @@
 
 const assert = require('assert');
 const fs = require('fs');
+const http = require('http');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
@@ -21,6 +22,7 @@ const SCRIPT_PATH = path.join(
 const {
   DEFAULT_ADVISORY_SOURCES,
   buildAdvisorySourceReport,
+  parseArgs,
 } = require(SCRIPT_PATH);
 
 async function test(name, fn) {
@@ -145,6 +147,105 @@ async function run() {
       assert.ok(parsed.linear.status.evidence.length >= 3);
     } finally {
       fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
+
+  if (await test('argument parser covers strict refresh, timeout validation, and unknown flags', async () => {
+    const parsed = parseArgs(['--strict-refresh', '--timeout-ms', '250', '--json']);
+    assert.strictEqual(parsed.refresh, true);
+    assert.strictEqual(parsed.strictRefresh, true);
+    assert.strictEqual(parsed.timeoutMs, 250);
+    assert.strictEqual(parsed.json, true);
+
+    assert.throws(() => parseArgs(['--timeout-ms', '0']), /positive number/);
+    assert.throws(() => parseArgs(['--write']), /requires a path/);
+    assert.throws(() => parseArgs(['--wat']), /Unknown argument/);
+  })) passed++; else failed++;
+
+  if (await test('invalid source coverage fails closed with actionable checks', async () => {
+    const report = await buildAdvisorySourceReport({
+      generatedAt: '2026-05-16T00:00:00.000Z',
+      sources: [
+        {
+          id: 'one-source',
+          title: 'Incomplete source set',
+          publisher: 'Test',
+          url: 'https://example.com',
+          sourceType: 'incident-analysis',
+          ecosystems: ['npm'],
+          signals: ['tanstack'],
+        },
+      ],
+    });
+
+    assert.strictEqual(report.ready, false);
+    assert.ok(report.checks.some(check => check.id === 'advisory-source-count' && check.status === 'fail'));
+    assert.ok(report.checks.some(check => check.id === 'advisory-ecosystem-coverage' && check.status === 'fail'));
+    assert.ok(report.checks.some(check => check.id === 'advisory-signal-coverage' && check.status === 'fail'));
+    assert.match(report.linear.status.summary, /needs repair/i);
+  })) passed++; else failed++;
+
+  if (await test('CLI text output and invalid flag errors are stable', async () => {
+    const text = spawnSync('node', [
+      SCRIPT_PATH,
+      '--generated-at',
+      '2026-05-16T00:00:00.000Z',
+    ], {
+      encoding: 'utf8',
+      shell: process.platform === 'win32',
+    });
+    assert.strictEqual(text.status, 0, text.stderr);
+    assert.match(text.stdout, /Supply-chain advisory sources: ready/);
+    assert.match(text.stdout, /Linear ITO-57:/);
+
+    const invalid = spawnSync('node', [SCRIPT_PATH, '--unknown'], {
+      encoding: 'utf8',
+      shell: process.platform === 'win32',
+    });
+    assert.strictEqual(invalid.status, 2);
+    assert.match(invalid.stderr, /Unknown argument/);
+  })) passed++; else failed++;
+
+  if (await test('default refresh follows redirects and retries GET for unsupported HEAD', async () => {
+    const server = http.createServer((request, response) => {
+      if (request.url === '/redirect') {
+        response.writeHead(302, { Location: '/ok' });
+        response.end();
+        return;
+      }
+
+      if (request.url === '/head-unsupported' && request.method === 'HEAD') {
+        response.writeHead(405);
+        response.end();
+        return;
+      }
+
+      response.writeHead(200, { 'Content-Type': 'text/plain' });
+      response.end('ok');
+    });
+
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    const { port } = server.address();
+
+    try {
+      const sources = DEFAULT_ADVISORY_SOURCES.map((source, index) => ({
+        ...source,
+        url: index === 0
+          ? `http://127.0.0.1:${port}/redirect`
+          : `http://127.0.0.1:${port}/head-unsupported`,
+      }));
+
+      const report = await buildAdvisorySourceReport({
+        generatedAt: '2026-05-16T00:00:00.000Z',
+        refresh: true,
+        sources,
+      });
+
+      assert.strictEqual(report.ready, true);
+      assert.strictEqual(report.refresh.ok, true);
+      assert.ok(report.sources.every(source => source.refreshStatus.status === 'ok'));
+    } finally {
+      await new Promise(resolve => server.close(resolve));
     }
   })) passed++; else failed++;
 
