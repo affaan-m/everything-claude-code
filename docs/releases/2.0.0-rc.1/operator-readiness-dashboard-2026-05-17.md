@@ -29,7 +29,7 @@ Status: work remaining
 | Include Hermes specialized skills safely | docs/HERMES-SETUP.md and skills/hermes-imports/SKILL.md | in_progress | Hermes setup and import skill are present | final preview-pack smoke and release review pending |
 | Prepare name-change, Claude plugin, and Codex plugin paths | naming-and-publication-matrix plus publication-readiness | in_progress | naming matrix and plugin readiness gates exist | real tag/push, marketplace submission, and final channel choice remain approval-gated |
 | Prepare release notes, articles, tweets, and push notifications | docs/releases/2.0.0-rc.1 social and release-copy files | in_progress | release notes, X thread, and LinkedIn draft are present | URL-backed refresh and publish approval still pending |
-| Advance AgentShield enterprise iteration | AgentShield PR evidence plus enterprise roadmap | in_progress | AgentShield enterprise PR evidence is mirrored in the GA roadmap | workflow automation around protected rollout and richer runtime review UX pending after policy promotion shipped |
+| Advance AgentShield enterprise iteration | AgentShield PR evidence plus enterprise roadmap | in_progress | AgentShield policy promotion `reviewItems` landed in `87aec47` and are mirrored in the GA roadmap | workflow automation still needs to consume promotion review items in CI/hosted/runtime smoke surfaces |
 | Advance ECC Tools native payments and AI-native harness-agnostic app | ECC Tools PR evidence, billing gate, hosted analysis lanes | in_progress | billing announcement gate, hosted analysis lanes, AgentShield fleet-summary consumption, hosted finding evidence paths, and harness-route policy linking are mirrored in the GA roadmap | live Marketplace test-account readback, hosted promotion telemetry, and richer operator review UX pending |
 | Audit, prune, or attach legacy work | docs/stale-pr-salvage-ledger.md and legacy inventory | in_progress | legacy salvage ledger and ITO-55 tracking are present | final translation/manual-review tail remains |
 | Keep Linear roadmap detailed and progress tracking synchronized | Linear project mirror plus progress-sync contract | in_progress | repo mirror and progress-sync contract are present | recurring Linear status sync and productized realtime sync remain pending |
@@ -42,7 +42,7 @@ Status: work remaining
 - `hermes-specialized-skills`: final preview-pack smoke and release review pending
 - `naming-and-plugin-publication`: real tag/push, marketplace submission, and final channel choice remain approval-gated
 - `release-notes-and-notifications`: URL-backed refresh and publish approval still pending
-- `agentshield-enterprise-iteration`: workflow automation around protected rollout and richer runtime review UX pending after policy promotion shipped
+- `agentshield-enterprise-iteration`: consume policy promotion review items in CI/hosted/runtime smoke surfaces
 - `ecc-tools-next-level`: live Marketplace test-account readback, hosted promotion telemetry, and richer operator review UX pending
 - `legacy-salvage`: final translation/manual-review tail remains
 - `linear-roadmap-and-progress`: recurring Linear status sync and productized realtime sync remain pending
