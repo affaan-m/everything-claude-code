@@ -45,6 +45,7 @@ function runTests() {
     assert.ok(targets.includes('codebuddy'), 'Should include codebuddy target');
     assert.ok(targets.includes('joycode'), 'Should include joycode target');
     assert.ok(targets.includes('qwen'), 'Should include qwen target');
+    assert.ok(targets.includes('zed'), 'Should include zed target');
   })) passed++; else failed++;
 
   if (test('resolves cursor adapter root and install-state path from project root', () => {
@@ -549,6 +550,29 @@ function runTests() {
     assert.ok(byTarget.supports('qwen-home'));
   })) passed++; else failed++;
 
+  if (test('resolves zed adapter root and install-state path from project root', () => {
+    const adapter = getInstallTargetAdapter('zed');
+    const projectRoot = '/workspace/app';
+    const root = adapter.resolveRoot({ projectRoot });
+    const statePath = adapter.getInstallStatePath({ projectRoot });
+
+    assert.strictEqual(adapter.id, 'zed-project');
+    assert.strictEqual(adapter.target, 'zed');
+    assert.strictEqual(adapter.kind, 'project');
+    assert.strictEqual(root, path.join(projectRoot, '.zed'));
+    assert.strictEqual(statePath, path.join(projectRoot, '.zed', 'ecc-install-state.json'));
+  })) passed++; else failed++;
+
+  if (test('zed adapter supports lookup by target and adapter id', () => {
+    const byTarget = getInstallTargetAdapter('zed');
+    const byId = getInstallTargetAdapter('zed-project');
+
+    assert.strictEqual(byTarget.id, 'zed-project');
+    assert.strictEqual(byId.id, 'zed-project');
+    assert.ok(byTarget.supports('zed'));
+    assert.ok(byTarget.supports('zed-project'));
+  })) passed++; else failed++;
+
   if (test('plans codebuddy rules with flat namespaced filenames', () => {
     const repoRoot = path.join(__dirname, '..', '..');
     const projectRoot = '/workspace/app';
@@ -706,6 +730,83 @@ function runTests() {
         && operation.destinationPath === path.join(homeDir, '.qwen', 'skills', 'tdd-workflow')
       )),
       'Should install skills under ~/.qwen/skills'
+    );
+  })) passed++; else failed++;
+
+  if (test('plans zed project settings, commands, agents, skills, and flattened rules', () => {
+    const repoRoot = path.join(__dirname, '..', '..');
+    const projectRoot = '/workspace/app';
+
+    const plan = planInstallTargetScaffold({
+      target: 'zed',
+      repoRoot,
+      projectRoot,
+      modules: [
+        {
+          id: 'rules-core',
+          paths: ['rules'],
+        },
+        {
+          id: 'agents-core',
+          paths: ['agents'],
+        },
+        {
+          id: 'commands-core',
+          paths: ['commands'],
+        },
+        {
+          id: 'platform-configs',
+          paths: ['.zed', '.cursor', 'mcp-configs'],
+        },
+        {
+          id: 'workflow-quality',
+          paths: ['skills/tdd-workflow'],
+        },
+      ],
+    });
+
+    assert.strictEqual(plan.adapter.id, 'zed-project');
+    assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.zed'));
+    assert.strictEqual(plan.installStatePath, path.join(projectRoot, '.zed', 'ecc-install-state.json'));
+    assert.ok(
+      plan.operations.some(operation => (
+        normalizedRelativePath(operation.sourceRelativePath) === '.zed'
+        && operation.destinationPath === path.join(projectRoot, '.zed')
+        && operation.strategy === 'sync-root-children'
+      )),
+      'Should sync Zed native project settings into .zed'
+    );
+    assert.ok(
+      plan.operations.some(operation => (
+        normalizedRelativePath(operation.sourceRelativePath) === 'rules/common/coding-style.md'
+        && operation.destinationPath === path.join(projectRoot, '.zed', 'rules', 'common-coding-style.md')
+      )),
+      'Should flatten common rules into namespaced files for zed'
+    );
+    assert.ok(
+      plan.operations.some(operation => (
+        normalizedRelativePath(operation.sourceRelativePath) === 'agents'
+        && operation.destinationPath === path.join(projectRoot, '.zed', 'agents')
+      )),
+      'Should install agents under .zed/agents'
+    );
+    assert.ok(
+      plan.operations.some(operation => (
+        normalizedRelativePath(operation.sourceRelativePath) === 'commands'
+        && operation.destinationPath === path.join(projectRoot, '.zed', 'commands')
+      )),
+      'Should install commands under .zed/commands'
+    );
+    assert.ok(
+      plan.operations.some(operation => (
+        normalizedRelativePath(operation.sourceRelativePath) === 'skills/tdd-workflow'
+        && operation.destinationPath === path.join(projectRoot, '.zed', 'skills', 'tdd-workflow')
+      )),
+      'Should install skills under .zed/skills'
+    );
+    assert.ok(
+      !plan.operations.some(operation => normalizedRelativePath(operation.sourceRelativePath) === '.cursor'),
+      'Should skip foreign Cursor platform config paths'
     );
   })) passed++; else failed++;
 

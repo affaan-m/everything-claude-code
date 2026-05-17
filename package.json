@@ -49,6 +49,7 @@
     ".gemini/",
     ".opencode/",
     ".qwen/",
+    ".zed/",
     ".mcp.json",
     "AGENTS.md",
     "VERSION",

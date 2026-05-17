@@ -37,6 +37,7 @@ Targets:
   codebuddy    - Install commands, agents, skills, and flattened rules into ./.codebuddy/
   joycode      - Install commands, agents, skills, and flattened rules into ./.joycode/
   qwen         - Install commands, agents, skills, rules, and Qwen config into ~/.qwen/
+  zed          - Install project settings, commands, agents, skills, and flattened rules into ./.zed/
 
 Options:
   --profile <name>    Resolve and install a manifest profile

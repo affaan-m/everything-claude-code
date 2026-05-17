@@ -38,7 +38,7 @@
 
 Not just configs. A complete system: skills, instincts, memory optimization, continuous learning, security scanning, and research-first development. Production-ready agents, skills, hooks, rules, MCP configurations, and legacy command shims evolved over 10+ months of intensive daily use building real products.
 
-Works across **Claude Code**, **Codex**, **Cursor**, **OpenCode**, **Gemini**, **GitHub Copilot**, and other AI agent harnesses.
+Works across **Claude Code**, **Codex**, **Cursor**, **OpenCode**, **Gemini**, **Zed**, **GitHub Copilot**, and other AI agent harnesses.
 
 ECC v2.0.0-rc.1 adds the public Hermes operator story on top of that reusable layer: start with the [Hermes setup guide](docs/HERMES-SETUP.md), then review the [rc.1 release notes](docs/releases/2.0.0-rc.1/release-notes.md) and [cross-harness architecture](docs/architecture/cross-harness.md).
 
@@ -429,7 +429,7 @@ python3 ./ecc_dashboard.py
 
 ## Cross-Platform Support
 
-This plugin now fully supports **Windows, macOS, and Linux**, alongside tight integration across major IDEs (Cursor, OpenCode, Antigravity) and CLI harnesses. All hooks and scripts have been rewritten in Node.js for maximum compatibility.
+This plugin now fully supports **Windows, macOS, and Linux**, alongside tight integration across major IDEs (Cursor, Zed, OpenCode, Antigravity) and CLI harnesses. All hooks and scripts have been rewritten in Node.js for maximum compatibility.
 
 ### Package Manager Detection
 
@@ -1150,6 +1150,7 @@ Yes. ECC is cross-platform:
 - **Antigravity**: Tightly integrated setup for workflows, skills, and flattened rules in `.agent/`. See [Antigravity Guide](docs/ANTIGRAVITY-GUIDE.md).
 - **JoyCode / CodeBuddy**: Project-local selective install adapters for commands, agents, skills, and flattened rules. See [JoyCode Adapter Guide](docs/JOYCODE-GUIDE.md).
 - **Qwen CLI**: Home-directory selective install adapter for commands, agents, skills, rules, and Qwen config. See [Qwen CLI Adapter Guide](docs/QWEN-GUIDE.md).
+- **Zed**: Project-local selective install adapter for `.zed/settings.json`, flattened rules, commands, agents, and skills.
 - **Non-native harnesses**: Manual fallback path for Grok and similar interfaces. See [Manual Adaptation Guide](docs/MANUAL-ADAPTATION-GUIDE.md).
 - **Claude Code**: Native — this is the primary target.
 </details>
@@ -1381,6 +1382,22 @@ ECC ships three sample role configs:
 | `explorer` | Read-only codebase evidence gathering before edits |
 | `reviewer` | Correctness, security, and missing-test review |
 | `docs_researcher` | Documentation and API verification before release/docs changes |
+
+---
+
+## Zed Support
+
+ECC provides Zed project support through a conservative `.zed` adapter for project-local settings, flattened rules, agents, commands, and skills.
+
+```bash
+./install.sh --profile minimal --target zed
+```
+
+```powershell
+.\install.ps1 --profile minimal --target zed
+```
+
+The adapter writes ECC-managed files under `.zed/` and keeps BYOK/OpenRouter credentials out of the repo. Configure Zed account or API keys through Zed's own settings UI or your local user settings.
 
 ---
 
