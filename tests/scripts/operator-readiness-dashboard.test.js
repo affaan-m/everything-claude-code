@@ -47,7 +47,7 @@ function seedRepo(rootDir, overrides = {}) {
     'docs/ECC-2.0-GA-ROADMAP.md': [
       'https://linear.app/itomarkets/project/ecc-platform-roadmap-52b328ee03e1',
       'Linear ITO-44 ITO-59',
-      'AgentShield PR #91 #78-#91 checksum-backed policy export',
+      'AgentShield PR #92 #78-#92 checksum-backed policy export policy promote checksum-verified policy promotion',
       'AgentShield Enterprise Iteration',
       'ECC-Tools PR #78',
       'hosted promotion',
@@ -186,7 +186,7 @@ function runTests() {
       assert.ok(report.requirements.some(item => item.id === 'ecc-tools-next-level' && item.status === 'in_progress'));
       assert.ok(report.requirements.some(item => (
         item.id === 'agentshield-enterprise-iteration'
-          && item.gap === 'workflow automation plus policy promotion/review UX pending after policy export shipped'
+          && item.gap === 'workflow automation around protected rollout and richer runtime review UX pending after policy promotion shipped'
       )));
       assert.ok(report.top_actions.some(item => item.id === 'naming-and-plugin-publication'));
     } finally {
@@ -202,7 +202,7 @@ function runTests() {
         'docs/ECC-2.0-GA-ROADMAP.md': [
           'https://linear.app/itomarkets/project/ecc-platform-roadmap-52b328ee03e1',
           'Linear ITO-44 ITO-59',
-          'AgentShield PR #91 #78-#91 checksum-backed policy export',
+          'AgentShield PR #92 #78-#92 checksum-backed policy export policy promote checksum-verified policy promotion',
           'AgentShield Enterprise Iteration',
           'ECC-Tools PR #78',
           'hosted promotion',
