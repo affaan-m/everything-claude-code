@@ -254,7 +254,12 @@ function hasLegacySalvageTracking({ stalePrSalvage, legacyInventory, roadmap }) 
 function hasAgentShieldEnterpriseTracking(roadmap) {
   return roadmap.includes('AgentShield Enterprise Iteration')
     && (
-      roadmap.includes('#78-#91')
+      roadmap.includes('#78-#92')
+      || roadmap.includes('AgentShield PR #92')
+      || roadmap.includes('AgentShield #92')
+      || roadmap.includes('policy promote')
+      || roadmap.includes('checksum-verified policy promotion')
+      || roadmap.includes('#78-#91')
       || roadmap.includes('AgentShield PR #91')
       || roadmap.includes('AgentShield #91')
       || roadmap.includes('checksum-backed policy export')
@@ -263,6 +268,14 @@ function hasAgentShieldEnterpriseTracking(roadmap) {
 }
 
 function agentShieldEnterpriseGap(roadmap) {
+  if (roadmap.includes('#78-#92')
+    || roadmap.includes('AgentShield PR #92')
+    || roadmap.includes('AgentShield #92')
+    || roadmap.includes('policy promote')
+    || roadmap.includes('checksum-verified policy promotion')) {
+    return 'workflow automation around protected rollout and richer runtime review UX pending after policy promotion shipped';
+  }
+
   return roadmap.includes('#78-#91')
     || roadmap.includes('AgentShield PR #91')
     || roadmap.includes('AgentShield #91')
