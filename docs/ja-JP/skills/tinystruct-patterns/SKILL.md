@@ -1,6 +1,6 @@
 ---
 name: tinystruct-patterns
-description: Use when developing application modules or microservices with the tinystruct Java framework. Covers routing, context management, JSON handling with Builder, and CLI/HTTP dual-mode patterns.
+description: tinystructフレームワークでアプリケーションモジュールまたはマイクロサービスを開発する際に使用。ルーティング、コンテキスト管理、BuilderによるJSON処理、CLI/HTTPデュアルモードのパターンをカバー。
 origin: ECC
 ---
 
