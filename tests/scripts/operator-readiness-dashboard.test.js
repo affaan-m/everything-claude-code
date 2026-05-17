@@ -106,6 +106,22 @@ function runProcess(args = [], options = {}) {
   });
 }
 
+function buildSeededReport(rootDir) {
+  return buildReport({
+    allowUntracked: [],
+    exitCode: false,
+    format: 'json',
+    generatedAt: '2026-05-15T00:00:00.000Z',
+    help: false,
+    repos: [],
+    root: rootDir,
+    skipGithub: true,
+    thresholds: { maxOpenPrs: 20, maxOpenIssues: 20, maxDirtyFiles: 0 },
+    useEnvGithubToken: false,
+    writePath: null
+  });
+}
+
 function test(name, fn) {
   try {
     fn();
@@ -163,19 +179,7 @@ function runTests() {
 
     try {
       seedRepo(rootDir);
-      const report = buildReport({
-        allowUntracked: [],
-        exitCode: false,
-        format: 'json',
-        generatedAt: '2026-05-15T00:00:00.000Z',
-        help: false,
-        repos: [],
-        root: rootDir,
-        skipGithub: true,
-        thresholds: { maxOpenPrs: 20, maxOpenIssues: 20, maxDirtyFiles: 0 },
-        useEnvGithubToken: false,
-        writePath: null
-      });
+      const report = buildSeededReport(rootDir);
 
       assert.strictEqual(report.schema_version, 'ecc.operator-readiness-dashboard.v1');
       assert.strictEqual(report.generatedAt, '2026-05-15T00:00:00.000Z');
@@ -191,6 +195,73 @@ function runTests() {
       assert.ok(report.top_actions.some(item => item.id === 'naming-and-plugin-publication'));
     } finally {
       cleanup(rootDir);
+    }
+  })) passed++; else failed++;
+
+  if (test('AgentShield enterprise evidence covers export and policy promotion markers', () => {
+    const cases = [
+      {
+        marker: 'AgentShield PR #92',
+        gap: 'workflow automation around protected rollout and richer runtime review UX pending after policy promotion shipped'
+      },
+      {
+        marker: 'AgentShield #92',
+        gap: 'workflow automation around protected rollout and richer runtime review UX pending after policy promotion shipped'
+      },
+      {
+        marker: 'policy promote',
+        gap: 'workflow automation around protected rollout and richer runtime review UX pending after policy promotion shipped'
+      },
+      {
+        marker: 'checksum-verified policy promotion',
+        gap: 'workflow automation around protected rollout and richer runtime review UX pending after policy promotion shipped'
+      },
+      {
+        marker: '#78-#91',
+        gap: 'workflow automation plus policy promotion/review UX pending after policy export shipped'
+      },
+      {
+        marker: 'AgentShield PR #91',
+        gap: 'workflow automation plus policy promotion/review UX pending after policy export shipped'
+      },
+      {
+        marker: 'AgentShield #91',
+        gap: 'workflow automation plus policy promotion/review UX pending after policy export shipped'
+      },
+      {
+        marker: 'checksum-backed policy export',
+        gap: 'workflow automation plus policy promotion/review UX pending after policy export shipped'
+      },
+      {
+        marker: '#78-#90',
+        gap: 'durable policy export and fleet-review workflow automation remain pending after reviewItems shipped'
+      }
+    ];
+
+    for (const { marker, gap } of cases) {
+      const rootDir = createTempDir('operator-dashboard-agentshield-');
+
+      try {
+        seedRepo(rootDir, {
+          'docs/ECC-2.0-GA-ROADMAP.md': [
+            'https://linear.app/itomarkets/project/ecc-platform-roadmap-52b328ee03e1',
+            'Linear ITO-44 ITO-59',
+            'AgentShield Enterprise Iteration',
+            marker,
+            'ECC-Tools PR #78',
+            'hosted promotion',
+            'announcementGate',
+            'ITO-55'
+          ].join('\n')
+        });
+
+        const report = buildSeededReport(rootDir);
+        const item = report.requirements.find(requirement => requirement.id === 'agentshield-enterprise-iteration');
+        assert.strictEqual(item.status, 'in_progress', marker);
+        assert.strictEqual(item.gap, gap, marker);
+      } finally {
+        cleanup(rootDir);
+      }
     }
   })) passed++; else failed++;
 
@@ -218,19 +289,7 @@ function runTests() {
         ].join('\n')
       });
 
-      const report = buildReport({
-        allowUntracked: [],
-        exitCode: false,
-        format: 'json',
-        generatedAt: '2026-05-15T00:00:00.000Z',
-        help: false,
-        repos: [],
-        root: rootDir,
-        skipGithub: true,
-        thresholds: { maxOpenPrs: 20, maxOpenIssues: 20, maxDirtyFiles: 0 },
-        useEnvGithubToken: false,
-        writePath: null
-      });
+      const report = buildSeededReport(rootDir);
 
       const legacySalvage = report.requirements.find(item => item.id === 'legacy-salvage');
       assert.strictEqual(legacySalvage.status, 'in_progress');
