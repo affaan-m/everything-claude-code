@@ -38,7 +38,7 @@
 - 公開採用シグナル：スター、フォーク、コントリビューター、リリース頻度
 - クロスハーネスサポート：Claude Code、Cursor、OpenCode、Codex app/CLI
 
-コピー＆ペースト可能なメトリクスプルワークフローについては、[`docs/business/metrics-and-sponsorship.md`](docs/business/metrics-and-sponsorship.md)を参照してください。
+コピー＆ペースト可能なメトリクスプルワークフローについては、[`docs/business/metrics-and-sponsorship.md`](../business/metrics-and-sponsorship.md)を参照してください。
 
 ## スポンサーティア
 
