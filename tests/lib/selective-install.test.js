@@ -27,6 +27,10 @@ const {
   resolveInstallPlan,
 } = require('../../scripts/lib/install-manifests');
 
+function normalizePlanPath(value) {
+  return String(value || '').replace(/\\/g, '/');
+}
+
 function test(name, fn) {
   try {
     fn();
@@ -542,7 +546,7 @@ function runTests() {
       assert.strictEqual(parsed.plan.adapter.id, 'zed-project');
       assert.strictEqual(parsed.plan.installRoot, path.join(fs.realpathSync(projectDir), '.zed'));
       assert.ok(
-        parsed.plan.operations.some(operation => operation.sourceRelativePath === '.zed/settings.json'),
+        parsed.plan.operations.some(operation => normalizePlanPath(operation.sourceRelativePath) === '.zed/settings.json'),
         'Should include Zed native settings operation'
       );
       assert.ok(
