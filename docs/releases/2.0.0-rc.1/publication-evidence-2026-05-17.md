@@ -7,9 +7,9 @@ npm publication, plugin tag, marketplace submission, or announcement post.
 
 | Field | Evidence |
 | --- | --- |
-| Upstream main | `afe0ae8d725f7773147dc4aa7943a45846853a0d` |
+| Upstream main | `744f4169972fd81618c3114ea1ca5ffb85ef4c82` |
 | Git remote | `https://github.com/affaan-m/everything-claude-code.git` |
-| Evidence scope | Current `main` after Japanese localization merge, Dependabot TypeScript and Node type merges, maintainer docs-link fixes, and the post-merge ja-JP markdown anchor repair |
+| Evidence scope | Current `main` after the Japanese localization and Dependabot merge batch, post-merge ja-JP markdown anchor repair, Zed install-target support, Mini Shai-Hulud/TanStack protection recheck, and the Windows-path CI fix |
 | Local status caveat | `git status --short --branch` showed `## main...origin/main` plus unrelated untracked `docs/drafts/` |
 
 The actual release operator should repeat all publish-facing checks from the
@@ -22,7 +22,7 @@ final release commit with a strictly clean checkout before publishing.
 | Trunk PRs | `gh pr list --state open --limit 50 --json number,title` | 0 open PRs |
 | Trunk issues | `gh issue list --state open --limit 50 --json number,title` | 0 open issues |
 | Platform audit | `node scripts/platform-audit.js --json --allow-untracked docs/drafts/` | Ready; tracked repos report 0 open PRs, 0 open issues, 0 discussion maintainer-touch gaps, 0 answerable Q&A missing accepted answers, and 0 blocking dirty files |
-| Operator dashboard | `npm run operator:dashboard -- --allow-untracked docs/drafts/ --write docs/releases/2.0.0-rc.1/operator-readiness-dashboard-2026-05-17.md` | Generated current dashboard for `afe0ae8d725f7773147dc4aa7943a45846853a0d`; status remains `work remaining` because release, npm, plugin, billing, and announcement gates are approval-gated |
+| Operator dashboard | `npm run operator:dashboard -- --allow-untracked docs/drafts/ --write docs/releases/2.0.0-rc.1/operator-readiness-dashboard-2026-05-17.md` | Generated current dashboard for `744f4169972fd81618c3114ea1ca5ffb85ef4c82`; status remains `work remaining` because release, npm, plugin, billing, and announcement gates are approval-gated |
 
 Tracked repositories in the platform audit were:
 
@@ -44,13 +44,17 @@ Tracked repositories in the platform audit were:
 | PR #1953 | Merged Japanese localization as `9495b109e2c5fc5b1044ddfa1e2179f9d4aa86be`; maintainer patches fixed localized security/sponsorship links, translated the stale cubic-reported frontmatter items, confirmed `docs/zh-CN` to `docs/ja-JP` parity has 0 missing files, and approved after CodeRabbit, GitGuardian, and cubic passed |
 | Post-merge trunk fix | Pushed `afe0ae8d725f7773147dc4aa7943a45846853a0d` to remove broken intra-file anchors from `docs/ja-JP/skills/autonomous-loops/SKILL.md`; this restored root lint on `main` after PR #1953 |
 | Issue #1951 | Closed automatically as completed when PR #1953 merged |
+| Zed adapter commit | Pushed `2371a3cf0543365c1c18e84eba786b1abcb28941` to add project-local Zed support through the selective install target, README Zed guidance, and `.zed/settings.json` planning coverage |
+| Zed Windows CI fix | Pushed `744f4169972fd81618c3114ea1ca5ffb85ef4c82` to normalize the Zed install-plan source-path assertion across Windows path separators |
+| Discussion #1896 | Added a maintainer update confirming Zed support on `main`, documenting the dry-run command, and clarifying that BYOK/OpenRouter secrets stay in Zed/local user settings rather than ECC-managed project files |
 
 ## Release Gate Commands
 
 | Gate | Command | Result |
 | --- | --- | --- |
 | Root lint | `npm run lint` | Passed after the ja-JP autonomous-loop anchor repair |
-| Root suite | `npm test` | 2473 passed, 0 failed |
+| Root suite | `npm test` | 2479 passed, 0 failed |
+| GitHub Actions CI | `gh run view 25989533576 --json status,conclusion,jobs` | Completed successfully with 37/37 jobs green, including Security Scan and all Windows test jobs |
 | Harness audit | `node scripts/harness-audit.js --format json` | 70/70, no top actions |
 | Observability readiness | `npm run observability:ready -- --format json` | 21/21, ready yes |
 | Workflow security | `node scripts/ci/validate-workflow-security.js` | Validated 8 workflow files |
