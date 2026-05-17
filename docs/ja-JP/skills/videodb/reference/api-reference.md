@@ -362,7 +362,7 @@ asset = CaptionAsset(
 )
 ```
 
-完全なCaptionAssetの使用方法については、[editor.md](../../../../../skills/videodb/reference/editor.md#caption-overlays) のエディターAPIを参照。
+完全なCaptionAssetの使用方法については、[editor.md](./editor.md#caption-overlays) のエディターAPIを参照。
 
 ## ビデオ検索パラメータ
 

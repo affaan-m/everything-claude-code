@@ -158,7 +158,7 @@ git log -p | grep -iE '(password|secret|api.?key|token)' | head -20
 | 設定の完全性 | PASS/WARN | {count}件の所見 |
 | git履歴 | PASS/FAIL | {count}件の所見 |
 
-## Critical所見（リリース前に修正必須）
+## 重大な所見（リリース前に修正必須）
 
 1. **[SECRETS]** `src/config.py:42` — ハードコードされたデータベースパスワード: `DB_P...`（切り捨て）
 2. **[INTERNAL]** `docker-compose.yml:15` — 内部ドメインを参照
@@ -174,9 +174,9 @@ git log -p | grep -iE '(password|secret|api.?key|token)' | head -20
 
 ## 推奨事項
 
-{FAILの場合: "{N}件のCritical所見を修正してサニタイザーを再実行してください。"}
+{FAILの場合: "{N}件の重大な所見を修正してサニタイザーを再実行してください。"}
 {PASSの場合: "プロジェクトはオープンソースリリースの準備完了。パッケージャーに進んでください。"}
-{WARNINGSの場合: "プロジェクトはCriticalチェックに合格。リリース前に{N}件の警告をレビューしてください。"}
+{WARNINGSの場合: "プロジェクトは重大チェックに合格。リリース前に{N}件の警告をレビューしてください。"}
 ```
 
 ## 例

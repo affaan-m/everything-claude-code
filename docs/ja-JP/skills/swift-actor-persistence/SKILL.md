@@ -35,13 +35,27 @@ public actor LocalRepository<T: Codable & Identifiable> where T.ID == String {
     // MARK: - Public API
 
     public func save(_ item: T) throws {
+        let previous = cache[item.id]
         cache[item.id] = item
-        try persistToFile()
+        do {
+            try persistToFile()
+        } catch {
+            // ディスク書き込み失敗時はキャッシュをロールバックして整合性を維持
+            cache[item.id] = previous
+            throw error
+        }
     }
 
     public func delete(_ id: String) throws {
+        let previous = cache[id]
         cache[id] = nil
-        try persistToFile()
+        do {
+            try persistToFile()
+        } catch {
+            // ディスク書き込み失敗時はキャッシュをロールバックして整合性を維持
+            cache[id] = previous
+            throw error
+        }
     }
 
     public func find(by id: String) -> T? {
@@ -131,7 +145,7 @@ final class QuestionListViewModel {
 
 * Swiftの新しい並行処理コードでActorの代わりに `DispatchQueue` または `NSLock` を使用する
 * 内部のキャッシュ辞書を外部の呼び出し元に公開する
-* 検証なしでファイルURLを設定可能にする
+* 初期化後にファイルURLを外部から変更可能にする（初期化時のみ設定を許可すること）
 * すべてのActor メソッド呼び出しが `await` であることを忘れる——呼び出し元は非同期コンテキストを処理する必要がある
 * Actor の分離をバイパスするために `nonisolated` を使用する（本末転倒）
 
