@@ -429,5 +429,5 @@ find ~/.claude/plugins -name "*.sh" -exec dos2unix {} \;
 
 - [README.md](./README.md) - インストールと機能
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - 開発ガイドライン
-- [docs/](./docs/) - 詳細なドキュメント
+- [docs/](./) - 詳細なドキュメント
 - [examples/](./examples/) - 使用例
