@@ -29,7 +29,7 @@ ECCはClaude Code、Cursor、OpenCode、Codex app/CLIにまたがるオープン
 - GitHub Appインストール推移
 - リリース頻度と信頼性マイルストーン
 
-正確なコマンドスニペットと再現可能なプルプロセスについては、[`docs/business/metrics-and-sponsorship.md`](docs/business/metrics-and-sponsorship.md)を参照してください。
+正確なコマンドスニペットと再現可能なプルプロセスについては、[`docs/business/metrics-and-sponsorship.md`](../business/metrics-and-sponsorship.md)を参照してください。
 
 ## 期待と範囲
 
