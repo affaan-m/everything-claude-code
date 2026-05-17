@@ -221,30 +221,33 @@ __metadata:
   linkType: hard
 
 "@opencode-ai/plugin@npm:^1.0.0":
-  version: 1.14.33
-  resolution: "@opencode-ai/plugin@npm:1.14.33"
+  version: 1.15.3
+  resolution: "@opencode-ai/plugin@npm:1.15.3"
   dependencies:
-    "@opencode-ai/sdk": "npm:1.14.33"
-    effect: "npm:4.0.0-beta.57"
+    "@opencode-ai/sdk": "npm:1.15.3"
+    effect: "npm:4.0.0-beta.65"
     zod: "npm:4.1.8"
   peerDependencies:
-    "@opentui/core": ">=0.2.2"
-    "@opentui/solid": ">=0.2.2"
+    "@opentui/core": ">=0.2.11"
+    "@opentui/keymap": ">=0.2.11"
+    "@opentui/solid": ">=0.2.11"
   peerDependenciesMeta:
     "@opentui/core":
       optional: true
+    "@opentui/keymap":
+      optional: true
     "@opentui/solid":
       optional: true
-  checksum: 10c0/0ce3e9876e12e4d9afc664c1a03bc3bebb12147bdea9b640a1bc3ed3b871b284a75b294f72e8afc86af8140f0d89cb223367c12ee7af4d6c25e9c1373893d13a
+  checksum: 10c0/8f680d7e318e3a8b64314c9923e00ecbbde33b195651b59ca4bbfb7cbf0a90a5ea30df7c806ec9611482fef96dfd6b48432267af6df3bde068535774a97d5fe9
   languageName: node
   linkType: hard
 
-"@opencode-ai/sdk@npm:1.14.33":
-  version: 1.14.33
-  resolution: "@opencode-ai/sdk@npm:1.14.33"
+"@opencode-ai/sdk@npm:1.15.3":
+  version: 1.15.3
+  resolution: "@opencode-ai/sdk@npm:1.15.3"
   dependencies:
     cross-spawn: "npm:7.0.6"
-  checksum: 10c0/10a52b224428fb05be055dbf2b96adbf1198a489a9eeedc68848231720559ec2cb98edf44b25afb2945a7609c485eea4265ea089d16fcdb4537113b78318ea21
+  checksum: 10c0/b9345d31fa53f2f22cb1a63e7fe39d3e260ea2d0ca65ae27525c203beefd5db0ce7854eeaa5054b2cf1680164f19cc9e90c2e049dfac9cdc804a4b53a9128a4c
   languageName: node
   linkType: hard
 
@@ -643,9 +646,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"effect@npm:4.0.0-beta.57":
-  version: 4.0.0-beta.57
-  resolution: "effect@npm:4.0.0-beta.57"
+"effect@npm:4.0.0-beta.65":
+  version: 4.0.0-beta.65
+  resolution: "effect@npm:4.0.0-beta.65"
   dependencies:
     "@standard-schema/spec": "npm:^1.1.0"
     fast-check: "npm:^4.6.0"
@@ -657,7 +660,7 @@ __metadata:
     toml: "npm:^4.1.1"
     uuid: "npm:^13.0.0"
     yaml: "npm:^2.8.3"
-  checksum: 10c0/0ae765176b305f6ec9c067122cdd0adae8c83b233973df57200b3fb68e417f94cd7e539e71fff520f9c98be59404a23d68989cd43a4b53d9926e9ae91ee13a44
+  checksum: 10c0/ed89d877461414af2bbfccc0c7b66a3f5a46d08e7e7d8b10bec9f969db97180b916e8c079138dab985937c8e9297fa003ef2d1d560458924cd2308203baf305c
   languageName: node
   linkType: hard
 
