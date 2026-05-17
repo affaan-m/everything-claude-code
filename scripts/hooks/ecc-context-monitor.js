@@ -24,6 +24,20 @@ const LOOP_THRESHOLD = 3;
 const STALE_SECONDS = 60;
 const DEBOUNCE_CALLS = 5;
 
+function isEnabledEnv(value, defaultValue = true) {
+  if (value === undefined || value === null || String(value).trim() === '') {
+    return defaultValue;
+  }
+  const normalized = String(value).trim().toLowerCase();
+  if (['0', 'false', 'no', 'off', 'disabled'].includes(normalized)) return false;
+  if (['1', 'true', 'yes', 'on', 'enabled'].includes(normalized)) return true;
+  return defaultValue;
+}
+
+function costWarningsEnabled(env = process.env) {
+  return isEnabledEnv(env.ECC_CONTEXT_MONITOR_COST_WARNINGS, true);
+}
+
 /**
  * Get debounce state file path.
  * @param {string} sessionId
@@ -84,7 +98,7 @@ function detectLoop(recentTools) {
  * Evaluate all warning conditions against bridge data.
  * Returns array of {severity, type, message} sorted by severity desc.
  */
-function evaluateConditions(bridge) {
+function evaluateConditions(bridge, options = {}) {
   const warnings = [];
   const remaining = bridge.context_remaining_pct;
 
@@ -109,25 +123,27 @@ function evaluateConditions(bridge) {
   }
 
   // Cost warnings
-  const cost = bridge.total_cost_usd || 0;
-  if (cost > COST_CRITICAL_USD) {
-    warnings.push({
-      severity: 3,
-      type: 'cost',
-      message: `COST CRITICAL: Session cost is $${cost.toFixed(2)}. ` + 'Stop and inform the user about high cost before continuing.'
-    });
-  } else if (cost > COST_WARNING_USD) {
-    warnings.push({
-      severity: 2,
-      type: 'cost',
-      message: `COST WARNING: Session cost is $${cost.toFixed(2)}. ` + 'Review whether the current approach justifies the expense.'
-    });
-  } else if (cost > COST_NOTICE_USD) {
-    warnings.push({
-      severity: 1,
-      type: 'cost',
-      message: `COST NOTICE: Session cost is $${cost.toFixed(2)}. ` + 'Consider whether the current approach is efficient.'
-    });
+  if (options.costWarnings !== false) {
+    const cost = bridge.total_cost_usd || 0;
+    if (cost > COST_CRITICAL_USD) {
+      warnings.push({
+        severity: 3,
+        type: 'cost',
+        message: `COST CRITICAL: Session cost is $${cost.toFixed(2)}. ` + 'Stop and inform the user about high cost before continuing.'
+      });
+    } else if (cost > COST_WARNING_USD) {
+      warnings.push({
+        severity: 2,
+        type: 'cost',
+        message: `COST WARNING: Session cost is $${cost.toFixed(2)}. ` + 'Review whether the current approach justifies the expense.'
+      });
+    } else if (cost > COST_NOTICE_USD) {
+      warnings.push({
+        severity: 1,
+        type: 'cost',
+        message: `COST NOTICE: Session cost is $${cost.toFixed(2)}. ` + 'Consider whether the current approach is efficient.'
+      });
+    }
   }
 
   // File scope warning
@@ -185,7 +201,7 @@ function run(rawInput) {
     // If bridge is stale, null out context data (still check cost/scope/loop)
     const evalBridge = isStale ? { ...bridge, context_remaining_pct: null } : bridge;
 
-    const warnings = evaluateConditions(evalBridge);
+    const warnings = evaluateConditions(evalBridge, { costWarnings: costWarningsEnabled() });
     if (warnings.length === 0) return rawInput;
 
     // Debounce logic
@@ -239,4 +255,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { run, evaluateConditions, detectLoop, severityLabel };
+module.exports = { run, evaluateConditions, detectLoop, severityLabel, costWarningsEnabled };
